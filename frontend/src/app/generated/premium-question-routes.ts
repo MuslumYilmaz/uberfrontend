@@ -96,6 +96,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/react/coding/react-image-slider",
   "/react/coding/react-implement-usememo-context",
   "/react/coding/react-like-button",
+  "/react/coding/react-listing-booking-widget",
   "/react/coding/react-multi-step-signup",
   "/react/coding/react-nested-checkboxes",
   "/react/coding/react-nested-comments",

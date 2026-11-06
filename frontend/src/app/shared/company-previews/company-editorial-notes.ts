@@ -999,13 +999,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public Airbnb frontend accounts and the official careers FAQ describe the loop: a technical screen, UI and JavaScript coding, and frontend system design.',
     hero: {
       kicker: 'Public preview',
-      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and a sourced table of what public frontend accounts describe.',
+      subtitle: 'Two coding components, one of them in three frameworks, a system design case and two concept items grouped under Airbnb, plus the official careers FAQ and a sourced table of what public frontend accounts describe.',
     },
     intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Public frontend accounts fill in the rest: the table below lists what they report, with a link to each one.'],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'An editorial practice grouping',
-      intro: 'The chips input is an editorial grouping with no Airbnb account behind it. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop.',
+      title: 'The booking widget screen and the chat design',
+      intro: 'Free items first, then the premium set. The booking widget and the messaging inbox are practice versions modelled on reported rounds, not leaked questions: a 2025 full-stack account describes the booking widget screen, and two accounts report a chat app design. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop. The chips input is an editorial grouping with no Airbnb account behind it.',
       steps: [
         {
           label: 'Closures',
@@ -1018,6 +1018,18 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           path: '/javascript/trivia/js-event-loop',
           access: 'free',
           why: 'A staple of JavaScript concept rounds.',
+        },
+        {
+          label: 'Listing booking widget in React',
+          path: '/react/coding/react-listing-booking-widget',
+          access: 'premium',
+          why: 'The 40-minute build of the reported screen: price a stay from dates and guests, grey out booked dates and confirm in a dialog.',
+        },
+        {
+          label: 'Real-time messaging inbox',
+          path: '/system-design/messaging-inbox-frontend',
+          access: 'premium',
+          why: 'A design-level practice version of the chat app round: WebSocket reconnects, offline sends and message order.',
         },
         {
           label: 'Chips input with autocomplete in React',

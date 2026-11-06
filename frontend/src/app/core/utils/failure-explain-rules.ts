@@ -377,6 +377,47 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-listing-booking-widget-quote',
+    questionId: 'react-listing-booking-widget',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['three-night stay', 'nightly fee', 'on or before check-in', 'overlap a booking']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-listing-booking-widget-quote',
+      title: 'Derive one quote from the dates and the guests',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The nightly line, the total, the date error, the booked message and Book now all describe one stay. Compute it once from the two dates and the guest count, and every check that reads them agrees.',
+      ),
+      actions: [
+        'Count nights in whole UTC days: parse the ISO date parts with `Date.UTC`, subtract and divide by a day.',
+        'Price a night at `nightlyPrice + Math.max(0, guests - includedGuests) * extraGuestFee`, and add the cleaning fee once to the total.',
+        'Return invalid when the nights are not positive and booked when `checkIn < range.to && range.from < checkOut` for a range; show no total and disable `.book` in both cases.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-listing-booking-widget-default',
+    questionId: 'react-listing-booking-widget',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-listing-booking-widget-default',
+      title: 'Confirm in a dialog that takes focus and gives it back',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The dialog checks read the summary, the focused element and the booked message: Book now opens the dialog, focus moves in, and closing it puts focus back on Book now.',
+      ),
+      actions: [
+        'Render `role="dialog"` with `aria-modal="true"` and a title, and focus `.confirm` in an effect when it opens.',
+        'Close on Escape from the dialog `onKeyDown` and on Cancel, then focus `.book` again.',
+        'Confirm closes the dialog, shows `.booked-message` with the dates and disables `.book`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-debug-transcript-sync-default',
     questionId: 'react-debug-transcript-sync',
     priority: 40,

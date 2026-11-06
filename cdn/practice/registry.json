@@ -7472,6 +7472,30 @@
     "assetRef": "questions/react/coding.json#react-chips-input-autocomplete"
   },
   {
+    "id": "react-listing-booking-widget",
+    "family": "question",
+    "title": "Listing Booking Widget: Dates, Guests and Total Price",
+    "route": "/react/coding/react-listing-booking-widget",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a listing booking widget that prices a stay from two dates and a guest count, greys out Book now on booked dates and confirms in an accessible dialog.",
+    "tags": [
+      "react",
+      "forms",
+      "derived-state",
+      "date-time",
+      "dialog",
+      "accessibility",
+      "focus",
+      "intl"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-listing-booking-widget"
+  },
+  {
     "id": "react-multi-step-signup",
     "family": "question",
     "title": "Multi-step Signup Form",

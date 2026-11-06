@@ -157,7 +157,8 @@
       "frontend-architecture"
     ],
     "companies": [
-      "walmart"
+      "walmart",
+      "airbnb"
     ],
     "type": "system-design",
     "access": "premium",

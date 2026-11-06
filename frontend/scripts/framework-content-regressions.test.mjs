@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 248, cssSources: 314, changedAssets: 0, changedCssSources: 0 },
+    { assets: 251, cssSources: 317, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6237,6 +6237,35 @@ for (const node of filesTableGraph.variants.approach1.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= filesTableLines.length, `${node.id}: invalid files table anchor range`);
   assert.ok(filesTableLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: files table anchor range must contain its snippet`);
+}
+
+const bookingWidgetQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-listing-booking-widget');
+assert.ok(bookingWidgetQuestion);
+assert.equal(bookingWidgetQuestion.access, 'premium');
+assert.deepEqual(bookingWidgetQuestion.companies, ['airbnb']);
+assert.equal(bookingWidgetQuestion.pressureModeAsset, 'assets/questions/pressure-modes/booking-widget.v1.json');
+const bookingWidgetStarter = json('cdn/sb/react/question/react-listing-booking-widget.v1.json').files['src/App.tsx'];
+const bookingWidgetSolution = json('cdn/sb/react/solution/react-listing-booking-widget-solution.v1.json').files['src/App.tsx'];
+const bookingWidgetPressureSolution = json('cdn/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json').files['src/App.tsx'];
+assert.doesNotMatch(bookingWidgetStarter, /useMemo|Date\.UTC|role="dialog"|range\.from < checkOut/, 'the starter leaves the quote, the night count, the overlap check and the dialog to the candidate');
+for (const [name, source] of [['solution', bookingWidgetSolution], ['pressure solution', bookingWidgetPressureSolution]]) {
+  assert.match(source, /const quote = useMemo<Quote>\(\(\) => \{/, `${name} derives one quote`);
+  assert.match(source, /Date\.UTC\(/, `${name} counts nights in UTC days`);
+  assert.match(source, /checkIn < range\.to && range\.from < checkOut/, `${name} checks booked dates as half-open ranges`);
+  assert.match(source, /Math\.max\(0, guests - LISTING\.includedGuests\) \* LISTING\.extraGuestFee/, `${name} prices extra guests per night`);
+  assert.match(source, /role="dialog"\n\s+aria-modal="true"/, `${name} confirms in a modal dialog`);
+  assert.doesNotMatch(source, /new Date\(check(In|Out)\)/, `${name} must not parse a date input as local time`);
+}
+assert.match(bookingWidgetPressureSolution, /className="currency"/);
+assert.match(bookingWidgetPressureSolution, /stay: convert\(quote\.nightly\) \* quote\.nights/, 'the pressure solution converts the nightly price once, so the lines add up');
+const bookingWidgetGraph = json('cdn/questions/react/decision-graphs/react-listing-booking-widget.v1.json');
+assert.equal(bookingWidgetGraph.variants.approach1.code, bookingWidgetSolution, 'booking widget decision graph must mirror the solution App.tsx');
+assert.equal(bookingWidgetQuestion.solutionBlock.approaches[0].codeJs, bookingWidgetSolution, 'the booking widget approach code must mirror the solution App.tsx');
+const bookingWidgetLines = bookingWidgetSolution.split('\n');
+for (const node of bookingWidgetGraph.variants.approach1.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= bookingWidgetLines.length, `${node.id}: invalid booking widget anchor range`);
+  assert.ok(bookingWidgetLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: booking widget anchor range must contain its snippet`);
 }
 
 const selectQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-select-compound-api');

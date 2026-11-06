@@ -1191,8 +1191,9 @@ describe('CompanyPreviewComponent', () => {
       expect(report.classList).toContain('company-link--locked');
       expect(report.hasAttribute('inert')).toBeTrue();
 
+      // The real Airbnb table: the star rating and the messaging case rows link Premium pages.
       const process = host().querySelector('app-company-interview-process') as HTMLElement;
-      expect(process.querySelectorAll('.interview-process__locked').length).toBe(1);
+      expect(process.querySelectorAll('.interview-process__locked').length).toBe(2);
       expect(process.textContent).toContain('Explain closures');
 
       const gate = host().querySelector('[data-testid="company-sample-gate"]') as HTMLElement;

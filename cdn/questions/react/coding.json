@@ -8370,5 +8370,459 @@
       "title": "React Files Table: Select All Across Pages",
       "description": "Build a React table of downloadable files with a filter, a sort and a select all that survives paging, using a mode plus exceptions keyed by file id."
     }
+  },
+  {
+    "id": "react-listing-booking-widget",
+    "title": "Listing Booking Widget: Dates, Guests and Total Price",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "forms",
+      "derived-state",
+      "date-time",
+      "dialog",
+      "accessibility",
+      "focus",
+      "intl"
+    ],
+    "description": {
+      "summary": "Build a booking widget for one listing: it prices a stay from check-in and check-out dates and the number of adults and children, greys out Book now when the dates are booked, and confirms in an accessible dialog. A curated 2025 account describes an Airbnb full-stack phone screen of this shape: 40 minutes of live coding on a small booking widget, then 20 minutes of product discussion. This is a FrontendAtlas practice version, not the company's prompt. Concepts: react, forms, derived state, dates, dialogs, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `LISTING` and `RATES` as given.",
+          "From the two date inputs, count the nights and show the nightly line (`$180 x 3 nights`) with its amount, the cleaning fee and the total; without both dates there is no total.",
+          "The nightly price covers two guests; each guest after that, adult or child, adds `$25` a night. Adults start at one and never go below it, children start at zero, and both plus buttons are disabled at four guests.",
+          "A check-out on or before check-in shows `Check-out must be after check-in`; a stay that overlaps a range in `LISTING.booked` shows `Those dates are booked`. In both cases there is no total and Book now is disabled.",
+          "Book now opens a dialog with `role=\"dialog\"`, `aria-modal=\"true\"` and a title, summarizing the dates, nights, guests and total; focus moves to Confirm booking, and Escape or Cancel closes it and returns focus to Book now.",
+          "Confirm booking closes the dialog, shows `Booked: Lakeside cabin, Dec 10 to Dec 13` and disables Book now.",
+          "Keep the class names `.check-in`, `.check-out`, `.adults-minus`, `.adults-plus`, `.adults-count`, `.children-minus`, `.children-plus`, `.children-count`, `.price-line`, `.price-amount`, `.cleaning-fee`, `.total`, `.date-error`, `.availability`, `.book`, `.confirm-dialog`, `.confirm-summary`, `.confirm`, `.cancel` and `.booked-message`."
+        ],
+        "expectedBehavior": [
+          "Book now is disabled until both dates are picked.",
+          "December 10 to 13 for one adult reads `$180 x 3 nights`, `$540`, a `$60` cleaning fee and a `$600` total.",
+          "Three adults and one child read `$230 x 3 nights` and a `$750` total, and both plus buttons are disabled.",
+          "December 23 to 26 reads `Those dates are booked`; December 27 to 29 is free and totals `$420`.",
+          "The dialog reads `Dec 10 to Dec 13 · 3 nights · 1 guest · $600` with focus on Confirm booking.",
+          "Escape closes the dialog and focus returns to Book now."
+        ],
+        "implementationNotes": [
+          "Derive one quote with `useMemo` over the dates and the guest count: empty, invalid, booked or ready with the nights and amounts.",
+          "Count nights as whole UTC days: parse the ISO date parts with `Date.UTC` and subtract.",
+          "Treat booked ranges as half-open: a stay overlaps when it starts before the range ends and ends after it starts.",
+          "Format amounts with `Intl.NumberFormat` in the listing currency with no fraction digits, and move focus with refs in an effect."
+        ],
+        "techFocus": [
+          "Derived state for a price breakdown",
+          "Date arithmetic without time zone drift",
+          "Range overlap checks",
+          "Accessible dialogs and focus return",
+          "Product follow-ups: currencies and request counts"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "booking-widget-price-stay",
+        "name": "Prices a three-night stay from the two dates",
+        "steps": [
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-line",
+            "text": "$180 x 3 nights",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-amount",
+            "text": "$540",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cleaning-fee",
+            "text": "$60",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$600",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-extra-guests",
+        "name": "Each guest after two adds a nightly fee, up to four guests",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".adults-minus"
+          },
+          {
+            "type": "click",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "click",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "click",
+            "selector": ".children-plus"
+          },
+          {
+            "type": "expectText",
+            "selector": ".adults-count",
+            "text": "3",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".children-count",
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-line",
+            "text": "$230 x 3 nights",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$750",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".children-plus"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-invalid-dates",
+        "name": "A check-out on or before check-in shows an error and no total",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "expectText",
+            "selector": ".date-error",
+            "text": "Check-out must be after check-in",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".total",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-booked-dates",
+        "name": "Dates that overlap a booking grey out Book now",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-23"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-26"
+          },
+          {
+            "type": "expectText",
+            "selector": ".availability",
+            "text": "Those dates are booked",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".total",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-27"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-29"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$420",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-dialog-opens",
+        "name": "Book now opens a dialog that says what is booked",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".confirm-dialog",
+            "attribute": "role",
+            "expected": "dialog"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".confirm-dialog",
+            "attribute": "aria-modal",
+            "expected": "true"
+          },
+          {
+            "type": "expectText",
+            "selector": ".confirm-summary",
+            "text": "Dec 10 to Dec 13 · 3 nights · 1 guest · $600",
+            "match": "equals"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".confirm"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-dialog-closes",
+        "name": "Escape and Cancel close the dialog and return focus to Book now",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "selector": ".confirm-dialog",
+            "key": "Escape"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".book"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".cancel"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".book"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-confirm",
+        "name": "Confirm books the stay",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".confirm"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".booked-message",
+            "text": "Booked: Lakeside cabin, Dec 10 to Dec 13",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-listing-booking-widget.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-listing-booking-widget"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/booking-widget.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-listing-booking-widget-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-listing-booking-widget.v1.json",
+    "companies": [
+      "airbnb"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Airbnb full-stack phone screen, August 2025",
+        "url": "https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite",
+        "company": "airbnb",
+        "publisher": "PracHub",
+        "date": "2025-08",
+        "note": "A curated account of a 60-minute screen: 40 minutes building a listing booking widget that prices a stay from dates and adults and children, greys out the button when booked and confirms in a dialog, then product follow-ups. Data, wording and tests are ours."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Build a listing booking widget that prices a stay from two dates and a guest count, greys out Book now on booked dates and confirms in an accessible dialog. The review signal is one derived quote that every line and the button read.",
+      "learningOutcomes": [
+        "Derive the nights, the price lines and the total from one quote.",
+        "Count nights in UTC days and check booked dates as half-open ranges.",
+        "Cap adults and children together and price extra guests per night.",
+        "Confirm in a dialog that takes focus, closes on Escape and returns focus."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Everything on the widget reads one quote derived from the two dates and the guest count. The quote is empty until both dates exist, invalid when check-out is not after check-in, booked when the stay overlaps a booking, and otherwise ready with the nights, the nightly price, the stay and the total. The lines, the total and Book now all read it, so they can never disagree.\n\nNights are whole UTC days, so a clock change cannot turn three nights into 2.96, and booked ranges are half-open, so a check-out on the morning a booking starts is fine. The confirmation is a dialog that takes focus, closes on Escape or Cancel and returns focus to Book now.\n\n**Test cases**\n- Book now is disabled until both dates are picked.\n- Three nights for one adult total $600.\n- Four guests pay $230 a night and the plus buttons disable.\n- A check-out before check-in shows an error and no total.\n- An overlap with a booking greys out Book now; a stay that starts on the booking's last morning is free.\n- The dialog takes focus, closes on Escape and returns focus.\n- Confirm shows the booked message.",
+      "approaches": [
+        {
+          "title": "One derived quote, half-open ranges and a focused dialog",
+          "prose": "Build it in the order the interviewer will follow up.\n\n1. Derive `quote` with `useMemo` over the dates and `adults + children`: empty without both dates, invalid when the nights are not positive, booked when a range overlaps, else ready.\n2. Count nights with a `toDay` helper over `Date.UTC`, and compare ISO strings for the overlap: `checkIn < range.to && range.from < checkOut`.\n3. Put the extra guest fee in the nightly price, and give both counters one cap: `guests < LISTING.maxGuests`.\n4. Enable Book now only for a ready quote, and show the reason when it is not: the date error or the booked message.\n5. Open the dialog, move focus to Confirm booking in an effect, close on Escape or Cancel and return focus to Book now.\n\nIn the product follow-ups, the same quote answers most questions: a currency picker changes one formatter and converts the rounded nightly price once, so the lines still add up; fewer requests come from fetching a month of availability at a time and pricing on the client; an offline cache keeps the last availability with the time it was fetched and says so; and payment details never go into that cache.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface BookedRange {\n  /** The first booked night, as an ISO date. */\n  from: string;\n  /** The check-out day after the last booked night, so a range is half-open. */\n  to: string;\n}\n\nexport interface Listing {\n  name: string;\n  currency: string;\n  nightlyPrice: number;\n  cleaningFee: number;\n  includedGuests: number;\n  extraGuestFee: number;\n  maxGuests: number;\n  booked: BookedRange[];\n}\n\n/** One listing; every price is in whole units of its currency. */\nexport const LISTING: Listing = {\n  name: 'Lakeside cabin',\n  currency: 'USD',\n  nightlyPrice: 180,\n  cleaningFee: 60,\n  includedGuests: 2,\n  extraGuestFee: 25,\n  maxGuests: 4,\n  booked: [{ from: '2026-12-24', to: '2026-12-27' }],\n};\n\n/** Exchange rates from the listing currency, for the currency follow-up. */\nexport const RATES: Record<string, number> = { USD: 1, EUR: 0.92 };\n\nconst DAY_MS = 86_400_000;\nconst ISO_DATE = /^\\d{4}-\\d{2}-\\d{2}$/;\n\n/** Whole days since the epoch in UTC, so a stay never gains or loses a night across a clock change. */\nconst toDay = (iso: string) => Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))) / DAY_MS;\n\nconst money = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: LISTING.currency,\n  minimumFractionDigits: 0,\n  maximumFractionDigits: 0,\n});\nconst shortDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });\nconst showDate = (iso: string) => shortDate.format(new Date(`${iso}T00:00:00Z`));\nconst plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;\n\ntype Quote =\n  | { kind: 'empty' }\n  | { kind: 'invalid'; message: string }\n  | { kind: 'booked'; message: string }\n  | { kind: 'ready'; nights: number; nightly: number; stay: number; total: number };\n\ninterface CounterProps {\n  name: string;\n  className: string;\n  value: number;\n  min: number;\n  canAdd: boolean;\n  onChange: (value: number) => void;\n}\n\nfunction Counter({ name, className, value, min, canAdd, onChange }: CounterProps) {\n  const noun = name.toLowerCase();\n  return (\n    <div className={`counter ${className}`}>\n      <span className=\"counter-name\">{name}</span>\n      <button type=\"button\" className={`step ${className}-minus`} aria-label={`Remove one from ${noun}`} disabled={value <= min} onClick={() => onChange(value - 1)}>\n        -\n      </button>\n      <output className={`${className}-count`} aria-live=\"polite\">{value}</output>\n      <button type=\"button\" className={`step ${className}-plus`} aria-label={`Add one to ${noun}`} disabled={!canAdd} onClick={() => onChange(value + 1)}>\n        +\n      </button>\n    </div>\n  );\n}\n\nexport default function App() {\n  const [checkIn, setCheckIn] = useState('');\n  const [checkOut, setCheckOut] = useState('');\n  const [adults, setAdults] = useState(1);\n  const [children, setChildren] = useState(0);\n  const [confirming, setConfirming] = useState(false);\n  const [bookedMessage, setBookedMessage] = useState('');\n  const bookRef = useRef<HTMLButtonElement>(null);\n  const confirmRef = useRef<HTMLButtonElement>(null);\n  const messageRef = useRef<HTMLParagraphElement>(null);\n  const guests = adults + children;\n\n  // One derived quote: every line, the total and the button read it, so they can never disagree.\n  const quote = useMemo<Quote>(() => {\n    if (!ISO_DATE.test(checkIn) || !ISO_DATE.test(checkOut)) return { kind: 'empty' };\n    const nights = toDay(checkOut) - toDay(checkIn);\n    if (nights <= 0) return { kind: 'invalid', message: 'Check-out must be after check-in' };\n    // Half-open ranges: a stay that checks out on the day a booking starts does not overlap it.\n    if (LISTING.booked.some((range) => checkIn < range.to && range.from < checkOut)) {\n      return { kind: 'booked', message: 'Those dates are booked' };\n    }\n    const nightly = LISTING.nightlyPrice + Math.max(0, guests - LISTING.includedGuests) * LISTING.extraGuestFee;\n    const stay = nightly * nights;\n    return { kind: 'ready', nights, nightly, stay, total: stay + LISTING.cleaningFee };\n  }, [checkIn, checkOut, guests]);\n\n  const canBook = quote.kind === 'ready' && !bookedMessage;\n\n  useEffect(() => {\n    if (confirming) confirmRef.current?.focus();\n  }, [confirming]);\n\n  useEffect(() => {\n    if (bookedMessage) messageRef.current?.focus();\n  }, [bookedMessage]);\n\n  const closeDialog = () => {\n    setConfirming(false);\n    bookRef.current?.focus();\n  };\n\n  const confirmBooking = () => {\n    if (quote.kind !== 'ready') return;\n    setConfirming(false);\n    setBookedMessage(`Booked: ${LISTING.name}, ${showDate(checkIn)} to ${showDate(checkOut)}`);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\" aria-labelledby=\"listing-title\">\n        <header className=\"header\">\n          <h1 id=\"listing-title\" className=\"title\">{LISTING.name}</h1>\n          <p className=\"subtitle\">\n            {money.format(LISTING.nightlyPrice)} a night for {LISTING.includedGuests} guests · up to {LISTING.maxGuests} guests\n          </p>\n        </header>\n\n        <div className=\"dates\">\n          <label className=\"field\">\n            <span className=\"label\">Check-in</span>\n            <input className=\"check-in\" type=\"date\" value={checkIn} onChange={(event) => setCheckIn(event.target.value)} />\n          </label>\n          <label className=\"field\">\n            <span className=\"label\">Check-out</span>\n            <input className=\"check-out\" type=\"date\" value={checkOut} onChange={(event) => setCheckOut(event.target.value)} />\n          </label>\n        </div>\n\n        <fieldset className=\"guests\">\n          <legend className=\"label\">Guests</legend>\n          <Counter name=\"Adults\" className=\"adults\" value={adults} min={1} canAdd={guests < LISTING.maxGuests} onChange={setAdults} />\n          <Counter name=\"Children\" className=\"children\" value={children} min={0} canAdd={guests < LISTING.maxGuests} onChange={setChildren} />\n        </fieldset>\n\n        {quote.kind === 'invalid' && <p className=\"date-error\" role=\"alert\">{quote.message}</p>}\n        {quote.kind === 'booked' && <p className=\"availability\" role=\"status\">{quote.message}</p>}\n        {quote.kind === 'ready' && (\n          <dl className=\"breakdown\">\n            <div className=\"line\">\n              <dt className=\"price-line\">{money.format(quote.nightly)} x {plural(quote.nights, 'night')}</dt>\n              <dd className=\"price-amount\">{money.format(quote.stay)}</dd>\n            </div>\n            <div className=\"line\">\n              <dt>Cleaning fee</dt>\n              <dd className=\"cleaning-fee\">{money.format(LISTING.cleaningFee)}</dd>\n            </div>\n            <div className=\"line line--total\">\n              <dt>Total</dt>\n              <dd className=\"total\">{money.format(quote.total)}</dd>\n            </div>\n          </dl>\n        )}\n\n        <button ref={bookRef} type=\"button\" className=\"book\" disabled={!canBook} onClick={() => setConfirming(true)}>\n          Book now\n        </button>\n        {bookedMessage && (\n          <p ref={messageRef} className=\"booked-message\" role=\"status\" tabIndex={-1}>\n            {bookedMessage}\n          </p>\n        )}\n\n        {confirming && quote.kind === 'ready' && (\n          <div className=\"backdrop\">\n            <div\n              className=\"confirm-dialog\"\n              role=\"dialog\"\n              aria-modal=\"true\"\n              aria-labelledby=\"confirm-title\"\n              onKeyDown={(event) => {\n                if (event.key === 'Escape') closeDialog();\n              }}\n            >\n              <h2 id=\"confirm-title\" className=\"dialog-title\">Confirm your stay</h2>\n              <p className=\"confirm-summary\">\n                {showDate(checkIn)} to {showDate(checkOut)} · {plural(quote.nights, 'night')} · {plural(guests, 'guest')} · {money.format(quote.total)}\n              </p>\n              <div className=\"dialog-actions\">\n                <button type=\"button\" className=\"cancel\" onClick={closeDialog}>\n                  Cancel\n                </button>\n                <button ref={confirmRef} type=\"button\" className=\"confirm\" onClick={confirmBooking}>\n                  Confirm booking\n                </button>\n              </div>\n            </div>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-06",
+    "seo": {
+      "title": "React Booking Widget: Dates, Guests and Total Price",
+      "description": "Build a React listing booking widget that prices a stay from dates and guests, greys out booked dates and confirms in an accessible dialog."
+    }
   }
 ]

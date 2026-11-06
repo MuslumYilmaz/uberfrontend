@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T20:30:28.759Z",
+  "generatedAt": "2026-11-06T11:55:43.928Z",
   "entries": [
     {
       "tech": "angular",
@@ -2040,6 +2040,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-like-button",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-listing-booking-widget",
       "file": "react/coding.json"
     },
     {

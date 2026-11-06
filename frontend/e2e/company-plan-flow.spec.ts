@@ -355,9 +355,9 @@ test.describe('company plan from a company guide', () => {
 
   test('a guest on the Airbnb guide reads the free questions, sees Premium names only under a blur, and is led into the plan', async ({ page }) => {
     await page.goto('/companies/airbnb/preview');
-    // The process stays open; only the name of a Premium practice page is blurred.
+    // The process stays open; only the names of the Premium practice pages (star rating, messaging case) are blurred.
     await expect(page.getByTestId('company-interview-process')).toContainText('Explain closures');
-    await expect(page.locator('.interview-process__locked')).toHaveCount(1);
+    await expect(page.locator('.interview-process__locked')).toHaveCount(2);
     await expect(page.locator('[data-testid="company-prep-steps"] .company-locked').first()).toHaveAttribute('inert', '');
     await expect(page.getByTestId('company-preview-question-js-closures')).toContainText('Explain Closures in JavaScript');
     await expect(page.locator('.sample-list .fa-question-row__concealed').first()).toBeVisible();

@@ -36,7 +36,7 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 32,
+      "react": 33,
       "angular": 22,
       "vue": 21,
       "javascript": 51,
@@ -2509,6 +2509,19 @@
       ],
       "family": "like-button"
     },
+    "react-listing-booking-widget": {
+      "id": "react-listing-booking-widget",
+      "title": "Listing Booking Widget: Dates, Guests and Total Price",
+      "route": "/react/coding/react-listing-booking-widget",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-nested-comments": {
       "id": "react-nested-comments",
       "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
@@ -3817,6 +3830,17 @@
           ],
           "tasks": [
             {
+              "id": "messaging-inbox-frontend",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-02"
+              },
+              "rounds": [
+                "frontend-system-design"
+              ],
+              "lead": true
+            },
+            {
               "id": "react-autocomplete-search-starter",
               "lead": true,
               "rounds": [
@@ -3838,13 +3862,6 @@
               ]
             },
             {
-              "id": "/guides/system-design-blueprint",
-              "lead": true,
-              "rounds": [
-                "frontend-system-design"
-              ]
-            },
-            {
               "id": "/guides/behavioral/stories",
               "lead": true,
               "rounds": [
@@ -3863,6 +3880,16 @@
               "lead": true,
               "rounds": [
                 "algorithms"
+              ]
+            },
+            {
+              "id": "react-listing-booking-widget",
+              "report": {
+                "publisher": "PracHub",
+                "date": "2025-08"
+              },
+              "rounds": [
+                "technical-screen"
               ]
             },
             {

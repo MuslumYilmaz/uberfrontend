@@ -215,6 +215,10 @@ const FILES_TABLE_PRESSURE_SOLUTION = readCanonicalFiles(
   '../cdn/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json',
 );
 
+const BOOKING_WIDGET_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json',
+);
+
 const LIKE_BUTTON_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-like-button-pressure-solution.v1.json',
@@ -324,6 +328,18 @@ const FILES_TABLE_PRESSURE_FLOW: PressureFlowContract = {
     'full-export',
   ],
   debriefText: 'You kept the selection true at any size',
+};
+
+const BOOKING_WIDGET_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5, 6],
+  roundIds: [
+    'price-the-stay',
+    'guests-within-the-cap',
+    'booked-dates',
+    'confirm-dialog',
+    'guest-currency',
+  ],
+  debriefText: 'You priced the stay and booked it once',
 };
 
 const DEBOUNCE_PRESSURE_FLOW: PressureFlowContract = {
@@ -1421,6 +1437,13 @@ test.describe('Framework checks against the production SSR build', () => {
       readySelector: '.row',
       solution: FILES_TABLE_PRESSURE_SOLUTION,
       flow: FILES_TABLE_PRESSURE_FLOW,
+    },
+    {
+      label: 'Airbnb listing booking widget',
+      route: '/react/coding/react-listing-booking-widget',
+      readySelector: '.book',
+      solution: BOOKING_WIDGET_PRESSURE_SOLUTION,
+      flow: BOOKING_WIDGET_PRESSURE_FLOW,
     },
   ] as const) {
     test(`${contract.label} opens its Premium pressure mode and clears every round`, async ({ page, baseURL }) => {

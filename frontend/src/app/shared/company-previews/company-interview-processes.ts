@@ -3235,7 +3235,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'Design a frontend app or component: state, data, APIs, trade-offs and optimisations. Two accounts report a chat app, one of them going into WebSockets and online and offline flows. One account says its question matched neither the job nor the prep packet.',
             appliesTo: 'Frontend engineers',
             sources: [AIRBNB_AB13_SWE_2025, AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB11_FE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB1_FE_2022],
-            practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
+            practice: { label: 'Real-time messaging inbox case', path: '/system-design/messaging-inbox-frontend' },
           },
           {
             stage: 'Experience deep dive',

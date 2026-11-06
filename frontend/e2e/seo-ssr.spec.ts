@@ -886,7 +886,7 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
     headings: [
-      'An editorial practice grouping',
+      'The booking widget screen and the chat design',
       'Common questions about this Airbnb page',
     ],
     markers: [

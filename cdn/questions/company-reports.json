@@ -64,6 +64,45 @@
         ]
       }
     ],
+    "airbnb": [
+      {
+        "id": "react-listing-booking-widget",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Listing Booking Widget: Dates, Guests and Total Price",
+        "access": "premium",
+        "route": "/react/coding/react-listing-booking-widget",
+        "sources": [
+          {
+            "label": "PracHub: Airbnb full-stack phone screen, August 2025",
+            "url": "https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite",
+            "publisher": "PracHub",
+            "date": "2025-08"
+          }
+        ]
+      },
+      {
+        "id": "messaging-inbox-frontend",
+        "kind": "system-design",
+        "title": "Design a Real-Time Messaging Inbox",
+        "access": "premium",
+        "route": "/system-design/messaging-inbox-frontend",
+        "sources": [
+          {
+            "label": "Taro: Airbnb staff frontend engineer interview, February 2025",
+            "url": "https://www.jointaro.com/interviews/companies/airbnb/experiences/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/",
+            "publisher": "Taro",
+            "date": "2025-02"
+          },
+          {
+            "label": "Taro: Airbnb front end engineer interview, San Francisco, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/airbnb/experiences/front-end-engineer-san-francisco-ca-june-1-2022-declined-offer-negative-afab47f0/",
+            "publisher": "Taro",
+            "date": "2022-06"
+          }
+        ]
+      }
+    ],
     "amazon": [
       {
         "id": "angular-star-rating",
