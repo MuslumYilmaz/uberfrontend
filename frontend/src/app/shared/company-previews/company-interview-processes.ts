@@ -1071,7 +1071,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A one-hour phone or video interview. Accounts mention React questions about a take-home assessment plus a LeetCode easy problem, and a live React session with basic JavaScript questions and a search bar.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T5_FE_2022, TESLA_T2_FE_2021, TESLA_B2_TAKE_HOME, TESLA_T1_FE_2025],
-            practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+            practice: { label: 'The one-hour screen, rehearsed', path: '/react/trivia/react-phone-screen-search-bar-rehearsal' },
           },
           {
             stage: 'Final loop: frontend coding',

@@ -490,6 +490,7 @@
 /react/trivia/react-lifting-state-up
 /react/trivia/react-mixing-state-and-props-responsibilities
 /react/trivia/react-one-way-data-flow
+/react/trivia/react-phone-screen-search-bar-rehearsal
 /react/trivia/react-portals
 /react/trivia/react-pure-function-of-props-and-state
 /react/trivia/react-render-nothing-return-value

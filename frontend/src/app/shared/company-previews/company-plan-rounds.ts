@@ -1157,6 +1157,17 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       'js-shallow-clone': ['engineers'],
       'react-battery-site-layout': ['engineers'],
     },
+    // The 2022 and 2021 accounts are cited on both the assessment and the screen. Their tasks were assessment items
+    // (the 2022 one lists five for a two-hour, five-question Codility test; the 2021 like button was in a three-hour
+    // assessment), so the screen gets its own rehearsal instead.
+    reportRounds: {
+      'css-positioning-badge': ['online-assessment'],
+      'html-forms-validation-required': ['online-assessment'],
+      'html-semantic-layout': ['online-assessment'],
+      'js-color-contrast-ratio': ['online-assessment'],
+      'react-fetch-list-states': ['online-assessment'],
+      'react-like-button': ['online-assessment'],
+    },
     variants: [
       {
         id: 'engineers',
@@ -1172,7 +1183,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['coding'],
             note: 'Often on Codility: one account lists 2 hours for 5 questions, another a three-hour assessment.',
           },
-          { id: 'technical-screen', stage: 'Technical screen', kinds: ['coding'] },
+          {
+            id: 'technical-screen',
+            stage: 'Technical screen',
+            kinds: ['coding'],
+            picks: ['/react/coding/react-autocomplete-search-starter', '/javascript/coding/js-valid-parentheses'],
+          },
           {
             id: 'final-loop-frontend-coding',
             stage: 'Final loop: frontend coding',

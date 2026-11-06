@@ -7363,6 +7363,30 @@
     "assetRef": "questions/react/trivia.json#react-take-home-table-review-questions"
   },
   {
+    "id": "react-phone-screen-search-bar-rehearsal",
+    "family": "question",
+    "title": "How do you rehearse a one-hour React screen with JS questions, a search bar and a LeetCode easy?",
+    "route": "/react/trivia/react-phone-screen-search-bar-rehearsal",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Rehearse a one-hour React screen in its parts: two-sentence answers to common JavaScript questions, a search bar with empty and stale states, and an easy problem narrated from brute force to one pass.",
+    "tags": [
+      "react",
+      "javascript",
+      "closures",
+      "event-loop",
+      "debounce",
+      "hash-map",
+      "search",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-phone-screen-search-bar-rehearsal"
+  },
+  {
     "id": "react-jsx-transform-and-why-not-required",
     "family": "question",
     "title": "How does JSX get transformed, and why doesn’t React require it?",

@@ -2550,6 +2550,19 @@
       ],
       "family": "pagination-table"
     },
+    "react-phone-screen-search-bar-rehearsal": {
+      "id": "react-phone-screen-search-bar-rehearsal",
+      "title": "How do you rehearse a one-hour React screen with JS questions, a search bar and a LeetCode easy?",
+      "route": "/react/trivia/react-phone-screen-search-bar-rehearsal",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "react-rerender-decision-and-render": {
       "id": "react-rerender-decision-and-render",
       "title": "Why does my component re-render when its props didn't change?",
@@ -11392,7 +11405,6 @@
               },
               "rounds": [
                 "online-assessment",
-                "technical-screen",
                 "final-loop-frontend-coding"
               ],
               "lead": true
@@ -11404,22 +11416,16 @@
                 "date": "2022-01"
               },
               "rounds": [
-                "online-assessment",
-                "technical-screen"
+                "online-assessment"
               ],
               "lead": true
             },
             {
-              "id": "react-fetch-list-states",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-01"
-              },
+              "id": "react-phone-screen-search-bar-rehearsal",
+              "lead": true,
               "rounds": [
-                "online-assessment",
                 "technical-screen"
-              ],
-              "lead": true
+              ]
             },
             {
               "id": "/guides/system-design-blueprint",
@@ -11466,8 +11472,7 @@
                 "date": "2022-01"
               },
               "rounds": [
-                "online-assessment",
-                "technical-screen"
+                "online-assessment"
               ]
             },
             {
@@ -11477,8 +11482,17 @@
                 "date": "2022-01"
               },
               "rounds": [
-                "online-assessment",
-                "technical-screen"
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-01"
+              },
+              "rounds": [
+                "online-assessment"
               ]
             },
             {
@@ -11488,12 +11502,20 @@
                 "date": "2021-01"
               },
               "rounds": [
-                "online-assessment",
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-autocomplete-search-starter",
+              "rounds": [
                 "technical-screen"
               ]
             },
             {
-              "id": "react-autocomplete-search-starter"
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "technical-screen"
+              ]
             },
             {
               "id": "js-json-stringify"

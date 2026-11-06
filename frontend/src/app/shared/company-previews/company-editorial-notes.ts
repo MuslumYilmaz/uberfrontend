@@ -381,6 +381,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           },
         },
         {
+          text: 'The one-hour screen took different shapes: basic JavaScript questions and a search bar in a live React session in a 2025 account, React questions about a take-home and a LeetCode easy in a 2022 one.',
+          link: {
+            label: 'See the technical screen',
+            fragment: 'tesla-interview-process-1-stage-technical-screen',
+          },
+        },
+        {
           text: 'Frontend coding is mostly React; one 2024 loop ran an Angular round followed by a TypeScript and JavaScript round.',
         },
         {
@@ -434,10 +441,28 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'Reported as fetching photos and rendering them with a theme context.',
         },
         {
+          label: 'React autocomplete search',
+          path: '/react/coding/react-autocomplete-search-starter',
+          access: 'free',
+          why: 'A search bar build for the live React session in a 2025 screen.',
+        },
+        {
+          label: 'Valid parentheses',
+          path: '/javascript/coding/js-valid-parentheses',
+          access: 'free',
+          why: 'A LeetCode easy of the kind a 2022 screen paired with React questions.',
+        },
+        {
           label: 'Shallow clone',
           path: '/javascript/coding/js-shallow-clone',
           access: 'free',
           why: 'Copy semantics came up in a published round-one file.',
+        },
+        {
+          label: 'The one-hour screen, rehearsed',
+          path: '/react/trivia/react-phone-screen-search-bar-rehearsal',
+          access: 'premium',
+          why: 'The screen in its parts: two-sentence JavaScript answers, the search bar with stale responses, and an easy problem narrated.',
         },
         {
           label: 'Deep clone',

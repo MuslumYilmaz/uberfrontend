@@ -6383,5 +6383,205 @@
       "correctOptionId": "page-scoped-selection",
       "rereadPrompt": "Close. Re-read what the table does on a page change: it rebuilds the selection from the rows it renders, so a state that only ever knows the current page cannot remember the other two."
     }
+  },
+  {
+    "id": "react-phone-screen-search-bar-rehearsal",
+    "title": "How do you rehearse a one-hour React screen with JS questions, a search bar and a LeetCode easy?",
+    "technology": "react",
+    "companies": [
+      "tesla"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "A one-hour React screen can pack three things into the hour: short JavaScript questions, a small component built live and an easy algorithm. Public Tesla frontend accounts describe that shape: a 2025 account had basic JavaScript questions and a search bar in a live React session, and a 2022 account had React questions about a take-home and a LeetCode easy. This guide rehearses each part: two-sentence answers to common JavaScript questions, a search bar with empty, loading and stale-response handling, and an easy problem narrated from brute force to one pass. It is a FrontendAtlas practice plan, not a list of the company's questions.",
+    "interviewFocus": {
+      "summary": "A one-hour screen rewards short, exact answers and a working component over breadth: answer each JavaScript question in two sentences with one example, build the search bar with its empty and stale states, and narrate the easy problem from brute force to the one-pass answer.",
+      "tests": [
+        "Scope, closures, this and the event loop, each in two sentences",
+        "A search bar that keeps only the newest query's results",
+        "Two sum narrated from brute force to a one-pass Map"
+      ]
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The screen as the accounts describe it</strong><br><br>Public Tesla frontend accounts describe a one-hour phone or video screen after the online assessment. In a 2025 account it was a live React session with basic JavaScript questions and a search bar to implement. In a 2022 account it was React questions about the candidate's take-home plus a LeetCode easy, and a 2021 account mentions JavaScript, HTML and React questions with a data structures question. None of them says how the hour was split or which questions came up, so rehearse all three parts and keep every answer short enough to leave time for the build."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Part",
+            "What to show",
+            "Time to aim for"
+          ],
+          "rows": [
+            [
+              "JavaScript questions",
+              "A two-sentence answer with one example, then stop and let them ask the follow-up",
+              "10 to 15 minutes"
+            ],
+            [
+              "Search bar",
+              "A controlled input, results derived from the query, an empty state, then debounce and stale responses if it fetches",
+              "25 to 30 minutes"
+            ],
+            [
+              "LeetCode easy",
+              "The brute force out loud, the faster idea, the code, its complexity and two edge cases",
+              "10 to 15 minutes"
+            ],
+            [
+              "Your questions",
+              "One question about the team's stack and one about the next round",
+              "5 minutes"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "<strong>JavaScript questions, two sentences each</strong><br><br>The accounts do not list the questions, so rehearse the ones a basic JavaScript round tends to cover. Answer the question asked, give one example and stop: a long answer to a short question is the most common way to lose the time the build needs. The table gives the answer and the follow-up that usually comes next."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Question",
+            "A two-sentence answer",
+            "The follow-up to expect"
+          ],
+          "rows": [
+            [
+              "var, let and const",
+              "var is function-scoped and hoisted as undefined; let and const are block-scoped and sit in the temporal dead zone until their declaration runs. const stops reassignment, not changes to the object it holds.",
+              "Why does for (var i = 0; i < 3; i++) setTimeout(() => console.log(i)) print 3 three times?"
+            ],
+            [
+              "Closures",
+              "A function keeps access to the variables of the scope it was created in, even after that scope has returned. That is how a counter keeps private state and how a debounce keeps its timer.",
+              "Write a counter or a once() helper with a closure."
+            ],
+            [
+              "this",
+              "this is set by how a function is called: the object before the dot, the value it was bound to, or undefined for a plain call in strict mode. Arrow functions have no this of their own and use the enclosing one.",
+              "Why does a method passed as a callback lose this, and how do bind or an arrow fix it?"
+            ],
+            [
+              "== and ===",
+              "=== compares without type conversion; == converts types first, so 0 == '' is true. Use === except for the deliberate x == null check, which matches null and undefined.",
+              "Why is 0 == '' true but null == 0 false?"
+            ],
+            [
+              "The event loop",
+              "Synchronous code runs to the end first; then every queued microtask, such as a promise callback, runs before the next task, such as a setTimeout callback. That is why a resolved promise logs before a zero-delay timeout.",
+              "Predict the order of a short log with a timeout, a promise and a plain log."
+            ],
+            [
+              "Promises and async/await",
+              "An async function always returns a promise, and await pauses only that function until the promise settles. A rejection surfaces at the await, so wrap it in try/catch or attach a catch.",
+              "When do you use Promise.all, and what happens when one promise rejects?"
+            ],
+            [
+              "Event delegation",
+              "Events bubble from the target up through its ancestors, so one listener on a parent can handle clicks on many children by reading event.target. It saves listeners and covers children added later.",
+              "How do you find the clicked item when the click lands on an icon inside it?"
+            ],
+            [
+              "Debounce and throttle",
+              "Debounce waits until calls stop for a set time, then runs once; throttle runs at most once per interval. A search box wants debounce, a scroll handler usually throttle.",
+              "Write debounce from scratch."
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('a');\nsetTimeout(() => console.log('b'), 0);\nPromise.resolve().then(() => console.log('c'));\nconsole.log('d');\n// a, d, c, b: synchronous code first, then microtasks (c), then the timer task (b)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The search bar, in three passes</strong><br><br>Clarify first: does it filter a local list or call an API, is the match case-insensitive, and what does an empty query show? Then build it in three passes. First, a controlled input and results derived from the query, never copied into state, with a visible empty state and the result count. Second, if the results come from an API, wait about 300 ms after typing stops and keep only the newest query's response, because responses can arrive out of order. Third, accessibility: a label on the input and the status in a polite live region. Arrow-key navigation and a listbox are follow-ups for when they ask for suggestions."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function SearchBar({ search }) {\n  const [query, setQuery] = useState('');\n  const [state, setState] = useState({ status: 'idle', results: [] });\n\n  useEffect(() => {\n    const q = query.trim();\n    if (!q) {\n      setState({ status: 'idle', results: [] });\n      return undefined;\n    }\n    const controller = new AbortController();\n    const timer = setTimeout(() => {\n      setState((previous) => ({ ...previous, status: 'loading' }));\n      search(q, controller.signal)\n        .then((results) => {\n          if (!controller.signal.aborted) setState({ status: 'done', results });\n        })\n        .catch(() => {\n          if (!controller.signal.aborted) setState({ status: 'error', results: [] });\n        });\n    }, 300);\n    // A newer query clears the older timer and aborts its request, so only the newest results land.\n    return () => {\n      clearTimeout(timer);\n      controller.abort();\n    };\n  }, [query, search]);\n\n  const count = state.results.length;\n  return (\n    <div className=\"search\">\n      <label htmlFor=\"search-input\">Search</label>\n      <input id=\"search-input\" type=\"search\" value={query} onChange={(event) => setQuery(event.target.value)} />\n      <p aria-live=\"polite\">\n        {state.status === 'loading' && 'Searching'}\n        {state.status === 'error' && 'Search failed. Try again.'}\n        {state.status === 'done' && (count ? `${count} result${count === 1 ? '' : 's'}` : 'No results')}\n      </p>\n      <ul>\n        {state.results.map((item) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The LeetCode easy, narrated</strong><br><br>Easy problems tend to be array, string or hash map problems: two sum, valid anagram, valid parentheses, the first unique character. The code is short, so the signal is the narration. Say the brute force and its cost, name the data structure that removes the inner loop, write it, give the time and space, and run two edge cases out loud: an empty input and a repeated value. In JavaScript, reach for a Map or a Set when the keys are not strings, and do not sort when one pass with a Map is enough."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Brute force checks every pair: O(n^2). One pass with a Map of seen values is O(n) time and O(n) space.\nfunction twoSum(nums, target) {\n  const seen = new Map(); // value -> index\n  for (let i = 0; i < nums.length; i += 1) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  }\n  return []; // say what you return when no pair exists\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>React questions about your take-home</strong><br><br>When the screen follows a take-home, the React questions are about your code. Prepare three sentences: the state you chose and why it lives where it does, the one thing you would change with more time, and how you would test the part most likely to break. Open the project before the call so you can find a component when they ask about it."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common misses</strong><br><br>Long answers to short questions, so the build starts with ten minutes left. A search bar that copies filtered results into state and drifts from the query. Debounce presented as the fix for out-of-order responses, while an older response can still overwrite a newer query. No empty or error state. The easy problem coded in silence, then a guessed complexity. A sort where one pass with a Map is enough."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"I will answer each question in a sentence or two and stop, so we keep time for the build. For the search bar I derive the results from the query and show an empty state, and if it fetches I wait for a pause and keep only the newest query's response. For the algorithm I start with the brute force, then use a Map for one pass and state the time and space.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Rehearse the hour in its parts with a timer: two-sentence JavaScript answers with one example each, a search bar with derived results and empty, loading and stale-response handling, and an easy problem narrated from brute force to a one-pass Map with its complexity and edge cases."
+        }
+      ]
+    },
+    "access": "premium",
+    "premiumPreview": {
+      "summary": "Rehearse a one-hour React screen in its parts: two-sentence answers to common JavaScript questions, a search bar with empty and stale states, and an easy problem narrated from brute force to one pass.",
+      "learningOutcomes": [
+        "Answer scope, closures, this, equality and the event loop in two sentences with one example.",
+        "Build a search bar whose results are derived from the query, with empty, loading and error states.",
+        "Keep only the newest query's response with a pause before the request and an abort on every new query.",
+        "Narrate an easy problem from brute force to a one-pass Map with its complexity and edge cases."
+      ],
+      "unlockDescription": "Premium unlocks the timed plan for the hour, the two-sentence answers with their follow-ups, the search bar code and the narrated easy problem."
+    },
+    "type": "trivia",
+    "tags": [
+      "react",
+      "javascript",
+      "closures",
+      "event-loop",
+      "debounce",
+      "hash-map",
+      "search",
+      "accessibility"
+    ],
+    "publishedAt": "2026-11-06",
+    "updatedAt": "2026-11-06",
+    "seo": {
+      "title": "React Phone Screen Rehearsal: JS Questions and a Search Bar",
+      "description": "Rehearse a one-hour React screen: two-sentence answers to common JavaScript questions, a search bar with stale-response handling and a LeetCode easy."
+    },
+    "incidentCard": {
+      "title": "Old Results After a Pause Root Cause Check",
+      "scenario": "In the screen you type \"tes\", pause, then finish \"tesla\". Both requests start. The list shows the results for \"tesla\", then switches to the results for \"tes\" and stays there. Each response sets the results when it arrives. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "debounce-too-short",
+          "label": "The 300 ms delay is too short, so the request for \"tes\" should never have started."
+        },
+        {
+          "id": "batched-updates",
+          "label": "React batched the two state updates and kept the first one it received."
+        },
+        {
+          "id": "stale-response-wins",
+          "label": "The slower \"tes\" response arrived after the \"tesla\" one and overwrote it; abort the older request or ignore any response that is not for the newest query."
+        }
+      ],
+      "correctOptionId": "stale-response-wins",
+      "rereadPrompt": "Close. Re-read the order of events: both requests were sent, and nothing stops the slower, older one from setting the results when it finally arrives."
+    }
   }
 ]
