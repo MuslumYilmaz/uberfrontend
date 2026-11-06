@@ -335,6 +335,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-files-table-select-all-selection',
+    questionId: 'react-files-table-select-all',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['select all covers', 'deselection on another page', 'select all follows', 'download enables']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-files-table-select-all-selection',
+      title: 'Store the selection as a mode plus exceptions keyed by file id',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Select all has to cover files on pages that were never rendered, and an untick on page two has to survive paging. A set of the current page ids can do neither; a mode of all with a set of unticked ids can.',
+      ),
+      actions: [
+        'Hold `{ mode: \'none\' | \'all\', exceptions: Set<string> }` and toggle one id in the exceptions per row click.',
+        'Treat a file as selected when it is available and the mode and the exceptions agree; count only matching available files.',
+        'Derive the header state from that count, set `aria-checked="mixed"` in markup and `indeterminate` in an effect.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-files-table-select-all-default',
+    questionId: 'react-files-table-select-all',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-files-table-select-all-default',
+      title: 'Derive the visible rows from the filter, the sort and the page',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The first page, the sort and the empty line all read one derived list: filter by name, sort by name or size, then slice the page.',
+      ),
+      actions: [
+        'Compute the matching rows with `useMemo` over the filter and the sort key, and reset the page to one when the filter changes.',
+        'Sort by `localeCompare` on names or by `sizeKb`, and press the matching sort button with `aria-pressed`.',
+        'Render an `.empty` line instead of the table when nothing matches, and disable `.download` without a selection.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-debug-transcript-sync-default',
     questionId: 'react-debug-transcript-sync',
     priority: 40,

@@ -1,0 +1,374 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "files-table-pressure-v1",
+  "family": "files-table",
+  "title": "Downloadable Files Table Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-files-table-select-all"
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json"
+  },
+  "rounds": [
+    {
+      "id": "select-all-across-pages",
+      "title": "Select all survives paging",
+      "interviewerPrompt": "Build the selection first. Then the question every reviewer asked: someone selects all, moves to page two and unticks a row. What does the header show, and what is selected?",
+      "constraints": [
+        "Select all covers every available file that matches, on every page, without listing ids.",
+        "A row unticked on another page stays unticked, and the header turns mixed: `aria-checked=\"mixed\"` and the `indeterminate` property.",
+        "Unavailable files can never be selected, and `.selection-count` reads `N selected`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-files-table-select-all-pages",
+          "name": "Round 1 · Select all, page two, untick one",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "22 selected",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 2 of 3",
+              "match": "equals",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row--selected",
+              "count": 7
+            },
+            {
+              "type": "click",
+              "selector": ".select-row",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "21 selected",
+              "match": "equals"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-all",
+              "attribute": "aria-checked",
+              "expected": "mixed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filter-and-sort",
+      "title": "Filtering and sorting keep the selection honest",
+      "interviewerPrompt": "Now add filtering and sorting, as the follow-up asked. Sorting must never move a tick to another file, and a filter must never let a hidden file into the download.",
+      "constraints": [
+        "`.filter` matches names without regard to case and returns to page one.",
+        "`.sort-name` and `.sort-size` reorder the rows; ticks follow the file id, not the row.",
+        "A filter change clears the selection, so a hidden file is never downloaded."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-files-table-filter-sort",
+          "name": "Round 2 · Filter, select, sort, clear the filter",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".filter",
+              "value": "report"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "6 selected",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".sort-size"
+            },
+            {
+              "type": "expectText",
+              "selector": ".name",
+              "index": 0,
+              "text": "weekly-summary-report.pdf",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row--selected",
+              "count": 6
+            },
+            {
+              "type": "setValue",
+              "selector": ".filter",
+              "value": ""
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "0 selected",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "download-request",
+      "title": "Say what the download sends",
+      "interviewerPrompt": "Someone selected all 22 files and unticked one. Show me what the download request carries, without sending every id.",
+      "constraints": [
+        "Clicking `.download` shows `.download-summary`.",
+        "After select all it reads `Downloading N files: every match except K`, or `every match` when nothing is unticked.",
+        "Rows ticked one by one read `Downloading N files`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-files-table-download",
+          "name": "Round 3 · Two picked files, then every match except one",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".select-row",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".select-row",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".download"
+            },
+            {
+              "type": "expectText",
+              "selector": ".download-summary",
+              "text": "Downloading 2 files",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".select-all"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 2 of 3",
+              "match": "equals",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".select-row",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".download"
+            },
+            {
+              "type": "expectText",
+              "selector": ".download-summary",
+              "text": "Downloading 21 files: every match except 1",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "full-export",
+      "title": "Thousands of files",
+      "interviewerPrompt": "The export now holds 2,400 files. Load it and show me that select all, paging and an untick still give the right numbers.",
+      "constraints": [
+        "`.load-full` loads 2,400 files, 120 of them unavailable, on page one with nothing selected.",
+        "Select all reads `2280 selected`, and other pages stay ticked.",
+        "Untick one on page two: `2279 selected`, a mixed header and `Downloading 2279 files: every match except 1`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-files-table-full-select",
+          "name": "Round 4 · Select all across 300 pages",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".load-full"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 1 of 300",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "2280 selected",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 2 of 300",
+              "match": "equals",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row--selected",
+              "count": 8
+            }
+          ]
+        },
+        {
+          "id": "pressure-files-table-full-untick",
+          "name": "Round 4 · Untick one of 2,280 and download",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 8,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".load-full"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 1 of 300",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".select-all"
+            },
+            {
+              "type": "click",
+              "selector": ".next"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".page",
+              "text": "Page 2 of 300",
+              "match": "equals",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".select-row",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-count",
+              "text": "2279 selected",
+              "match": "equals"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".select-all",
+              "attribute": "aria-checked",
+              "expected": "mixed"
+            },
+            {
+              "type": "click",
+              "selector": ".download"
+            },
+            {
+              "type": "expectText",
+              "selector": ".download-summary",
+              "text": "Downloading 2279 files: every match except 1",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the selection true at any size",
+    "summary": "You built a selection that survives paging, filtering and sorting, said what the download request carries, and kept every number right when the export grew to thousands of files. The review signal is one model, a mode plus exceptions keyed by file id, that never needs every id in memory.",
+    "takeaways": [
+      "Store the selection as a mode plus exceptions keyed by a stable id, so select all never lists ids.",
+      "Derive the header state from counts: all, none or mixed, with aria-checked=\"mixed\" and the indeterminate property.",
+      "Decide what a filter change does to the selection and say it; clearing keeps hidden files out of the download.",
+      "Send the mode and the unticked ids, not thousands of selected ids."
+    ],
+    "frameworkNotes": {
+      "react": "The selection is one state object of mode and exceptions; useMemo derives the matching rows from the filter, the sort and the dataset; an effect sets the header checkbox indeterminate property, which React cannot set from markup."
+    }
+  }
+}

@@ -3014,7 +3014,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               CROWDSTRIKE_CS12_SENIOR_FE_2022,
               CROWDSTRIKE_CS16_UI_2022,
             ],
-            practice: { label: 'Component state from a mock', path: '/system-design/ui-component-state-from-mock' },
+            practice: { label: 'Take-home review questions, answered', path: '/react/trivia/react-take-home-table-review-questions' },
           },
           {
             stage: 'Closing round',

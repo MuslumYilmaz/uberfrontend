@@ -36,7 +36,7 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 31,
+      "react": 32,
       "angular": 22,
       "vue": 21,
       "javascript": 51,
@@ -2392,6 +2392,19 @@
         "ui"
       ]
     },
+    "react-files-table-select-all": {
+      "id": "react-files-table-select-all",
+      "title": "Downloadable Files Table: Select All Across Pages",
+      "route": "/react/coding/react-files-table-select-all",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 30,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-image-slider": {
       "id": "react-image-slider",
       "title": "Image Slider (Dots + Previous/Next)",
@@ -2563,6 +2576,19 @@
         "ui"
       ],
       "family": "tabs-switcher"
+    },
+    "react-take-home-table-review-questions": {
+      "id": "react-take-home-table-review-questions",
+      "title": "How do you defend and extend a downloadable-files table in a take-home review?",
+      "route": "/react/trivia/react-take-home-table-review-questions",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
     },
     "react-tictactoe": {
       "id": "react-tictactoe",
@@ -6055,7 +6081,34 @@
                 "take-home-build",
                 "take-home-review"
               ],
+              "lead": true
+            },
+            {
+              "id": "js-event-delegation",
               "lead": true,
+              "rounds": [
+                "web-fundamentals-with-engineers"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-take-home-table-review-questions",
+              "lead": true,
+              "rounds": [
+                "take-home-review"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-files-table-select-all",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-09"
+              },
+              "rounds": [
+                "take-home-build",
+                "take-home-review"
+              ],
               "prompt": true
             },
             {
@@ -6066,17 +6119,7 @@
               },
               "rounds": [
                 "take-home-review"
-              ],
-              "lead": true,
-              "prompt": true
-            },
-            {
-              "id": "js-event-delegation",
-              "lead": true,
-              "rounds": [
-                "web-fundamentals-with-engineers"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "model-training-progress-dashboard",
@@ -6219,6 +6262,9 @@
               "id": "html-tables-accessibility"
             },
             {
+              "id": "react-files-table-select-all"
+            },
+            {
               "id": "ui-component-state-from-mock"
             },
             {
@@ -6235,6 +6281,9 @@
             },
             {
               "id": "js-xss-dom-sinks"
+            },
+            {
+              "id": "react-take-home-table-review-questions"
             }
           ]
         },
@@ -6335,6 +6384,9 @@
               "id": "html-tables-accessibility"
             },
             {
+              "id": "react-files-table-select-all"
+            },
+            {
               "id": "model-training-progress-dashboard"
             },
             {
@@ -6354,6 +6406,9 @@
             },
             {
               "id": "js-xss-dom-sinks"
+            },
+            {
+              "id": "react-take-home-table-review-questions"
             },
             {
               "id": "js-secure-cors-handling"

@@ -152,8 +152,8 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Keeping selected ids for the current page only, so select all and paging silently lose or invent selections.',
-        resourceLabel: 'Practise semantic table markup (free)',
-        resourcePath: '/html/coding/html-tables-accessibility',
+        resourceLabel: 'Build the downloadable-files table with select all across pages (Premium)',
+        resourcePath: '/react/coding/react-files-table-select-all',
         reportedRound: { label: CROWDSTRIKE_EM_FE_2025_LABEL, url: CROWDSTRIKE_EM_FE_2025_URL },
       },
       {
@@ -175,8 +175,8 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'For thousands of entries, page or virtualise the rows and keep selection independent of what is rendered.',
         ],
         commonMiss: 'Defending every line instead of saying what you would change, or proposing a full rewrite.',
-        resourceLabel: 'Work through the component state from a mock case (Premium)',
-        resourcePath: '/system-design/ui-component-state-from-mock',
+        resourceLabel: 'Read the take-home review answer guide (Premium)',
+        resourcePath: '/react/trivia/react-take-home-table-review-questions',
         reportedRound: { label: CROWDSTRIKE_EM_FE_2025_LABEL, url: CROWDSTRIKE_EM_FE_2025_URL },
       },
       {
@@ -504,7 +504,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full CrowdStrike practice set',
     copy:
-      'Premium unlocks the component state from a mock case, the real-time model training dashboard case and the wider premium library for the same skills.',
+      'Premium unlocks the downloadable-files table task with its Pressure Mode, the take-home review answer guide, the real-time model training dashboard case and the wider premium library for the same skills.',
     buttonLabel: 'Unlock the full CrowdStrike practice set',
     src: 'company_preview_crowdstrike',
   },

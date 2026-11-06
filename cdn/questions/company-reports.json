@@ -816,6 +816,22 @@
     ],
     "crowdstrike": [
       {
+        "id": "react-files-table-select-all",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Downloadable Files Table: Select All Across Pages",
+        "access": "premium",
+        "route": "/react/coding/react-files-table-select-all",
+        "sources": [
+          {
+            "label": "Taro: CrowdStrike engineering manager (frontend) interview account, September 2025",
+            "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+            "publisher": "Taro",
+            "date": "2025-09"
+          }
+        ]
+      },
+      {
         "id": "html-tables-accessibility",
         "kind": "coding",
         "tech": "html",

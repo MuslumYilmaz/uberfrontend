@@ -484,6 +484,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     reportVariants: {
       'model-training-progress-dashboard': ['us'],
     },
+    // The 2025 account is cited on several stages. The table task belongs to the take-home build, and to the review,
+    // whose follow-ups its Pressure Mode rounds rehearse, for someone whose build is already behind them.
+    reportRounds: { 'react-files-table-select-all': ['take-home-build', 'take-home-review'] },
     variants: [
       {
         id: 'us',
@@ -510,7 +513,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['coding'],
             note: 'Spoken questions from engineers on JavaScript, the CSS box model, accessibility, XSS and other security topics.',
           },
-          { id: 'take-home-build', stage: 'Take-home build', kinds: ['coding'] },
+          { id: 'take-home-build', stage: 'Take-home build', kinds: ['coding'], picks: ['/react/coding/react-files-table-select-all'] },
           {
             id: 'take-home-review',
             stage: 'Take-home review',

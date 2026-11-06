@@ -7940,5 +7940,435 @@
       "title": "Debug a React Transcript Player That Lags Behind",
       "description": "Fix four bugs in a React dubbing review player: a stale clock closure, a missing cleanup, a filter that never reruns and a late transcript that wins."
     }
+  },
+  {
+    "id": "react-files-table-select-all",
+    "title": "Downloadable Files Table: Select All Across Pages",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "state-management",
+      "pagination",
+      "tables",
+      "accessibility",
+      "performance"
+    ],
+    "description": {
+      "summary": "Build a table of downloadable files from a sensor export with a filter, a sort and a select all that stays correct across pages. A public 2025 interview account describes a CrowdStrike take-home of this shape: a table with a few rows of downloadable files and their details, built from a screenshot, then a review with two engineers on filtering and sorting, thousands of entries and what happens when someone selects all, moves to another page and deselects a few. This is a FrontendAtlas practice version, not the company's brief. Concepts: react, state management, pagination, tables, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `FILES` and `PAGE_SIZE` as given.",
+          "Filter the rows by a case-insensitive name match and sort them by name or by size; a filter change returns to page one.",
+          "Store the selection as a mode plus exceptions keyed by file id, so select all covers every matching available file on every page without listing ids, and a row unticked on another page stays unticked.",
+          "The header checkbox is checked when every matching available file is selected, mixed (`aria-checked=\"mixed\"` and the `indeterminate` property) when some are, and unchecked when none are; checking it from the mixed state selects all.",
+          "Unavailable files show `Not available yet` and cannot be selected.",
+          "Show `N selected` in `.selection-count`, enable `.download` only with a selection, show an `.empty` line when nothing matches, and clear the selection when the filter changes.",
+          "Keep the class names `.row`, `.row--selected`, `.name`, `.size`, `.status--unavailable`, `.select-all`, `.select-row`, `.filter`, `.sort-name`, `.sort-size`, `.prev`, `.next`, `.page`, `.selection-count`, `.download` and `.empty`."
+        ],
+        "expectedBehavior": [
+          "The first page shows eight rows sorted by name, starting with `agent-config-2026-10.json`, and `Page 1 of 3`.",
+          "Select all reads `22 selected`; page two shows seven ticked rows and one unavailable file whose checkbox is disabled.",
+          "Unticking a row on page two reads `21 selected` and turns the header mixed; page one still shows eight ticked rows.",
+          "Filtering by `report` leaves six rows on one page, and select all then reads `6 selected`.",
+          "Sort by size puts `api-keys-rotation.log` (8 KB) first; Sort by name restores the name order.",
+          "A filter with no match shows `No files match` and disables Download."
+        ],
+        "implementationNotes": [
+          "Hold `{ mode: 'none' | 'all', exceptions: Set<string> }`; a file is selected when it is available and its id is in the exceptions for mode none, or missing from them for mode all.",
+          "Derive the matching rows with `useMemo` over the filter and the sort, then slice the current page.",
+          "Count the selected files among the matching available ones, and derive the header state from that count.",
+          "Set the header checkbox `indeterminate` property in an effect; React cannot set it from markup."
+        ],
+        "techFocus": [
+          "Selection models that scale past one page",
+          "Derived state for filtering, sorting and paging",
+          "Mixed checkbox state and its accessibility",
+          "Stable row identity",
+          "Take-home review follow-ups"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "files-table-first-page",
+        "name": "Shows eight rows of the first page sorted by name",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "agent-config-2026-10.json",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 1,
+            "text": "api-keys-rotation.log",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".page",
+            "text": "Page 1 of 3",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-select-all-across-pages",
+        "name": "Select all covers every available file that matches, across pages",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "22 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".select-all",
+            "attribute": "aria-checked",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 7
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".select-row",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--unavailable",
+            "text": "Not available yet",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-deselect-on-another-page",
+        "name": "A deselection on another page is kept and the header turns mixed",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "21 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".select-all",
+            "attribute": "aria-checked",
+            "expected": "mixed"
+          },
+          {
+            "type": "click",
+            "selector": ".prev"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 1 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 8
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "id": "files-table-filter-select-all",
+        "name": "The filter narrows the table and select all follows it",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "report"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".page",
+            "text": "Page 1 of 1",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "6 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "id": "files-table-sort-by-size",
+        "name": "Sort by size puts the smallest file first",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".sort-size"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "api-keys-rotation.log",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".size",
+            "index": 0,
+            "text": "8 KB",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".sort-size",
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".sort-name"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "agent-config-2026-10.json",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-empty-filter",
+        "name": "No match shows an empty line and nothing to download",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "zzz"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No files match",
+            "match": "contains",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download"
+          }
+        ]
+      },
+      {
+        "id": "files-table-download-enables",
+        "name": "Download enables with a selection and disables when it is cleared",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "1 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download",
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "0 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-files-table-select-all.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-files-table-select-all"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/files-table.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-files-table-select-all-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-files-table-select-all.v1.json",
+    "companies": [
+      "crowdstrike"
+    ],
+    "sources": [
+      {
+        "label": "Taro: CrowdStrike engineering manager (frontend) interview account, September 2025",
+        "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+        "company": "crowdstrike",
+        "publisher": "Taro",
+        "date": "2025-09",
+        "note": "The account describes a take-home table of downloadable files and their details built from a screenshot, then a review on filtering and sorting, the component, file status, thousands of entries and select all across pages. The data, wording and tests are ours."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Build a downloadable-files table whose select all stays correct across pages, filters and sorts. The selection model is the part a take-home review probes: a mode plus exceptions keyed by file id.",
+      "learningOutcomes": [
+        "Model the selection as a mode plus exceptions so select all never lists ids.",
+        "Keep a row unticked on another page unticked, with a mixed header.",
+        "Derive filtered, sorted and paged rows without copying them into state.",
+        "Keep unavailable files out of every selection and count."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "The selection is the whole exercise. Store it as `{ mode, exceptions }` keyed by file id: select all sets the mode to all with no exceptions, a tick or an untick toggles one id in the exceptions, and a file counts as selected when it is available and the mode and the exceptions agree. Paging, filtering and sorting are a slice of one derived list, so none of them can move or lose a tick.\n\nThe header state comes from counts over the matching available files: all, none or mixed. Mixed sets `aria-checked=\"mixed\"` in markup and the `indeterminate` property in an effect, because React cannot render that property. A filter change clears the selection and returns to page one, so a hidden file never reaches the download; say that decision out loud in the review.\n\n**Test cases**\n- The first page shows eight rows sorted by name.\n- Select all reads `22 selected` and page two shows seven ticked rows.\n- An untick on page two reads `21 selected`, turns the header mixed and leaves page one ticked.\n- A filter narrows to six rows and select all follows it.\n- Sort by size puts the smallest file first.\n- A filter with no match shows an empty line and disables Download.",
+      "approaches": [
+        {
+          "title": "Mode plus exceptions over one derived list",
+          "prose": "Build it in the order a reviewer will question it.\n\n1. Derive `matching` with `useMemo` over the filter and the sort, compute the page count, clamp the page, and slice the visible rows.\n2. Hold the selection as `{ mode: 'none' | 'all', exceptions: Set<string> }`. A file is selected when it is available and either the mode is all and its id is not an exception, or the mode is none and its id is.\n3. Count the selected files among the matching available ones, and derive the header state from that count; set `indeterminate` in an effect and `aria-checked=\"mixed\"` in markup.\n4. Select all from none or mixed sets the mode to all; from all it clears. A row toggles its own id in the exceptions.\n5. A filter change clears the selection and returns to page one; the download button reads the same count.\n\nIn the review, the same model answers the follow-ups: thousands of rows change nothing, because the selection never listed ids, and the download request sends the mode and the exceptions.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface FileRow {\n  id: string;\n  name: string;\n  sizeKb: number;\n  available: boolean;\n}\n\nexport const PAGE_SIZE = 8;\n\n/** Twenty-four files from a sensor export, two of them not yet available for download. */\nexport const FILES: FileRow[] = [\n  { id: 'f01', name: 'agent-config-2026-10.json', sizeKb: 12, available: true },\n  { id: 'f02', name: 'detections-report-q3.pdf', sizeKb: 2048, available: true },\n  { id: 'f03', name: 'host-inventory.csv', sizeKb: 640, available: true },\n  { id: 'f04', name: 'incident-timeline.xlsx', sizeKb: 300, available: true },\n  { id: 'f05', name: 'ioc-feed-latest.json', sizeKb: 96, available: false },\n  { id: 'f06', name: 'kernel-telemetry-sample.bin', sizeKb: 8192, available: true },\n  { id: 'f07', name: 'login-anomalies-report.pdf', sizeKb: 1536, available: true },\n  { id: 'f08', name: 'network-flows-day1.csv', sizeKb: 4096, available: true },\n  { id: 'f09', name: 'network-flows-day2.csv', sizeKb: 4100, available: true },\n  { id: 'f10', name: 'policy-audit-report.pdf', sizeKb: 720, available: true },\n  { id: 'f11', name: 'quarantine-log.txt', sizeKb: 48, available: true },\n  { id: 'f12', name: 'release-notes-7.12.md', sizeKb: 20, available: true },\n  { id: 'f13', name: 'sensor-crash-dump.dmp', sizeKb: 16384, available: false },\n  { id: 'f14', name: 'sensor-health-report.pdf', sizeKb: 880, available: true },\n  { id: 'f15', name: 'threat-graph-export.json', sizeKb: 2560, available: true },\n  { id: 'f16', name: 'user-sessions.csv', sizeKb: 512, available: true },\n  { id: 'f17', name: 'vuln-scan-results.xml', sizeKb: 1024, available: true },\n  { id: 'f18', name: 'weekly-summary-report.pdf', sizeKb: 400, available: true },\n  { id: 'f19', name: 'api-keys-rotation.log', sizeKb: 8, available: true },\n  { id: 'f20', name: 'cloud-posture-report.pdf', sizeKb: 1900, available: true },\n  { id: 'f21', name: 'dns-queries.csv', sizeKb: 3072, available: true },\n  { id: 'f22', name: 'endpoint-baseline.json', sizeKb: 256, available: true },\n  { id: 'f23', name: 'firewall-rules.yaml', sizeKb: 64, available: true },\n  { id: 'f24', name: 'malware-samples-index.csv', sizeKb: 128, available: true }\n];\n\ntype SortKey = 'name' | 'size';\n\n/** Selection as a mode plus exceptions, so select all never needs every id in memory. */\ninterface Selection {\n  mode: 'none' | 'all';\n  exceptions: Set<string>;\n}\n\nfunction formatSize(sizeKb: number): string {\n  return sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;\n}\n\nexport default function App() {\n  const [filter, setFilter] = useState('');\n  const [sortKey, setSortKey] = useState<SortKey>('name');\n  const [page, setPage] = useState(1);\n  const [selection, setSelection] = useState<Selection>({ mode: 'none', exceptions: new Set() });\n  const headerRef = useRef<HTMLInputElement>(null);\n\n  const matching = useMemo(() => {\n    const q = filter.trim().toLowerCase();\n    const rows = q ? FILES.filter((file) => file.name.toLowerCase().includes(q)) : FILES;\n    return [...rows].sort((a, b) => (sortKey === 'name' ? a.name.localeCompare(b.name) : a.sizeKb - b.sizeKb));\n  }, [filter, sortKey]);\n\n  const pageCount = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));\n  const currentPage = Math.min(page, pageCount);\n  const visible = matching.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);\n  const selectable = matching.filter((file) => file.available);\n\n  const isSelected = (file: FileRow) =>\n    file.available && (selection.mode === 'all' ? !selection.exceptions.has(file.id) : selection.exceptions.has(file.id));\n  const selectedCount = selectable.filter(isSelected).length;\n  const headerState: 'none' | 'some' | 'all' =\n    selectedCount === 0 ? 'none' : selectedCount === selectable.length ? 'all' : 'some';\n\n  useEffect(() => {\n    if (headerRef.current) headerRef.current.indeterminate = headerState === 'some';\n  }, [headerState]);\n\n  const toggleAll = () => {\n    setSelection(headerState === 'all' ? { mode: 'none', exceptions: new Set() } : { mode: 'all', exceptions: new Set() });\n  };\n\n  const toggleRow = (file: FileRow) => {\n    setSelection((current) => {\n      const exceptions = new Set(current.exceptions);\n      if (exceptions.has(file.id)) exceptions.delete(file.id);\n      else exceptions.add(file.id);\n      return { mode: current.mode, exceptions };\n    });\n  };\n\n  const changeFilter = (value: string) => {\n    setFilter(value);\n    setPage(1);\n    setSelection({ mode: 'none', exceptions: new Set() });\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Downloadable Files (Solution)</h1>\n          <p className=\"subtitle\">Select all follows the filter and survives paging, sorting and a few deselections.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"file-filter\">Filter by name</label>\n          <input\n            id=\"file-filter\"\n            className=\"filter\"\n            type=\"search\"\n            value={filter}\n            placeholder=\"Try report, csv or flows\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => changeFilter(event.target.value)}\n          />\n          <button type=\"button\" className=\"sort-name\" aria-pressed={sortKey === 'name'} onClick={() => setSortKey('name')}>\n            Sort by name\n          </button>\n          <button type=\"button\" className=\"sort-size\" aria-pressed={sortKey === 'size'} onClick={() => setSortKey('size')}>\n            Sort by size\n          </button>\n        </div>\n\n        <div className=\"summary\">\n          <span className=\"selection-count\">{selectedCount} selected</span>\n          <button type=\"button\" className=\"download\" disabled={selectedCount === 0}>\n            Download selected\n          </button>\n        </div>\n\n        {matching.length === 0 ? (\n          <p className=\"empty\">No files match &quot;{filter}&quot;.</p>\n        ) : (\n          <div className=\"table-scroll\">\n            <table className=\"files\">\n              <caption className=\"caption\">Files matching the filter, page {currentPage} of {pageCount}</caption>\n              <thead>\n                <tr>\n                  <th scope=\"col\" className=\"col-select\">\n                    <input\n                      ref={headerRef}\n                      type=\"checkbox\"\n                      className=\"select-all\"\n                      aria-label=\"Select all matching files\"\n                      aria-checked={headerState === 'some' ? 'mixed' : headerState === 'all'}\n                      checked={headerState === 'all'}\n                      onChange={toggleAll}\n                    />\n                  </th>\n                  <th scope=\"col\">Name</th>\n                  <th scope=\"col\">Size</th>\n                  <th scope=\"col\">Status</th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((file) => (\n                  <tr key={file.id} className={`row${isSelected(file) ? ' row--selected' : ''}`}>\n                    <td>\n                      <input\n                        type=\"checkbox\"\n                        className=\"select-row\"\n                        aria-label={`Select ${file.name}`}\n                        checked={isSelected(file)}\n                        disabled={!file.available}\n                        onChange={() => toggleRow(file)}\n                      />\n                    </td>\n                    <td className=\"name\">{file.name}</td>\n                    <td className=\"size\">{formatSize(file.sizeKb)}</td>\n                    <td className={`status${file.available ? '' : ' status--unavailable'}`}>\n                      {file.available ? 'Available' : 'Not available yet'}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n\n        <div className=\"pager\">\n          <button type=\"button\" className=\"prev\" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>\n            Previous\n          </button>\n          <span className=\"page\">Page {currentPage} of {pageCount}</span>\n          <button type=\"button\" className=\"next\" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>\n            Next\n          </button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "React Files Table: Select All Across Pages",
+      "description": "Build a React table of downloadable files with a filter, a sort and a select all that survives paging, using a mode plus exceptions keyed by file id."
+    }
   }
 ]

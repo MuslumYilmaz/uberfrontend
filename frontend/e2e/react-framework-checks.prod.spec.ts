@@ -207,6 +207,14 @@ const FILE_EXPLORER_PRESSURE_SOLUTION = readCanonicalFiles(
   '../cdn/sb/react/solution/react-file-explorer-pressure-solution.v1.json',
 );
 
+const TRANSCRIPT_SYNC_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-debug-transcript-sync-pressure-solution.v1.json',
+);
+
+const FILES_TABLE_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json',
+);
+
 const LIKE_BUTTON_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-like-button-pressure-solution.v1.json',
@@ -294,6 +302,28 @@ const COUNTER_PRESSURE_FLOW: PressureFlowContract = {
     'auto-lifecycle',
   ],
   debriefText: 'You handled a changing interview contract',
+};
+
+const TRANSCRIPT_SYNC_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [2, 3, 4, 6],
+  roundIds: [
+    'clock-follows-the-controls',
+    'search-while-it-plays',
+    'switch-languages-mid-review',
+    'loop-and-seek',
+  ],
+  debriefText: 'You kept the transcript in step with the audio',
+};
+
+const FILES_TABLE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'select-all-across-pages',
+    'filter-and-sort',
+    'download-request',
+    'full-export',
+  ],
+  debriefText: 'You kept the selection true at any size',
 };
 
 const DEBOUNCE_PRESSURE_FLOW: PressureFlowContract = {
@@ -1372,6 +1402,39 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, TODO_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '#new-task');
       await completePressureRounds(page, TODO_PRESSURE_FLOW);
+    });
+  }
+
+  // Company-content tasks of 2026-11: each scenario must load in the app and its pressure solution must clear every
+  // round in the real runner. A scenario the loader rejects never opens, which no unit test of the files notices.
+  for (const contract of [
+    {
+      label: 'ElevenLabs transcript player',
+      route: '/react/coding/react-debug-transcript-sync',
+      readySelector: '.line',
+      solution: TRANSCRIPT_SYNC_PRESSURE_SOLUTION,
+      flow: TRANSCRIPT_SYNC_PRESSURE_FLOW,
+    },
+    {
+      label: 'CrowdStrike downloadable-files table',
+      route: '/react/coding/react-files-table-select-all',
+      readySelector: '.row',
+      solution: FILES_TABLE_PRESSURE_SOLUTION,
+      flow: FILES_TABLE_PRESSURE_FLOW,
+    },
+  ] as const) {
+    test(`${contract.label} opens its Premium pressure mode and clears every round`, async ({ page, baseURL }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`${contract.route}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, contract.readySelector);
+
+      await loadCanonicalBundle(page, contract.solution);
+      await rebuildPreview(page, contract.readySelector);
+      await completePressureRounds(page, contract.flow);
     });
   }
 

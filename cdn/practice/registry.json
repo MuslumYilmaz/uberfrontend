@@ -7148,6 +7148,28 @@
     "assetRef": "questions/react/coding.json#react-debug-transcript-sync"
   },
   {
+    "id": "react-files-table-select-all",
+    "family": "question",
+    "title": "Downloadable Files Table: Select All Across Pages",
+    "route": "/react/coding/react-files-table-select-all",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a downloadable-files table whose select all stays correct across pages, filters and sorts. The selection model is the part a take-home review probes: a mode plus exceptions keyed by file id.",
+    "tags": [
+      "react",
+      "state-management",
+      "pagination",
+      "tables",
+      "accessibility",
+      "performance"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-files-table-select-all"
+  },
+  {
     "id": "react-file-explorer",
     "family": "question",
     "title": "File Explorer Tree with Keyboard Navigation",
@@ -7317,6 +7339,28 @@
     "updatedAt": "2026-10-19",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-code-splitting-module-federation"
+  },
+  {
+    "id": "react-take-home-table-review-questions",
+    "family": "question",
+    "title": "How do you defend and extend a downloadable-files table in a take-home review?",
+    "route": "/react/trivia/react-take-home-table-review-questions",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Two reviewers open your take-home table and ask six questions, and the answers that score are the ones that name a change, a trade-off and an extension that keeps the code you shipped.",
+    "tags": [
+      "accessibility",
+      "pagination",
+      "react",
+      "state-management",
+      "testing",
+      "virtualization"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-take-home-table-review-questions"
   },
   {
     "id": "react-jsx-transform-and-why-not-required",

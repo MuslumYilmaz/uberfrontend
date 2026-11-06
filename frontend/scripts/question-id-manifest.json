@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-05T14:55:05.260Z",
+  "generatedAt": "2026-11-05T20:30:28.759Z",
   "entries": [
     {
       "tech": "angular",
@@ -2015,6 +2015,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-files-table-select-all",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-filterable-user-list",
       "file": "react/coding.json"
     },
@@ -2310,6 +2316,12 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-strictmode-double-invoke-effects",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-take-home-table-review-questions",
       "file": "react/trivia.json"
     },
     {

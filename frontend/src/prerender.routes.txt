@@ -446,6 +446,7 @@
 /react/coding/react-dynamic-table
 /react/coding/react-fetch-list-states
 /react/coding/react-file-explorer
+/react/coding/react-files-table-select-all
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider
 /react/coding/react-implement-usememo-context
@@ -497,6 +498,7 @@
 /react/trivia/react-stale-state-closures
 /react/trivia/react-state-management-redux
 /react/trivia/react-strictmode-double-invoke-effects
+/react/trivia/react-take-home-table-review-questions
 /react/trivia/react-useeffect-purpose
 /react/trivia/react-useeffect-vs-uselayouteffect
 /react/trivia/react-usememo-vs-usecallback

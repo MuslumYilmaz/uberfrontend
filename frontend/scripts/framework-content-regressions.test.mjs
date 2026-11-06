@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 245, cssSources: 311, changedAssets: 0, changedCssSources: 0 },
+    { assets: 248, cssSources: 314, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6209,6 +6209,34 @@ for (const node of transcriptVariant.nodes) {
   const { lineStart, lineEnd, snippet } = node.anchor;
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= transcriptLines.length, `${node.id}: invalid transcript anchor range`);
   assert.ok(transcriptLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: transcript anchor range must contain its snippet`);
+}
+
+const filesTableQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-files-table-select-all');
+assert.ok(filesTableQuestion);
+assert.equal(filesTableQuestion.access, 'premium');
+assert.deepEqual(filesTableQuestion.companies, ['crowdstrike']);
+assert.equal(filesTableQuestion.pressureModeAsset, 'assets/questions/pressure-modes/files-table.v1.json');
+const filesTableStarter = json('cdn/sb/react/question/react-files-table-select-all.v1.json').files['src/App.tsx'];
+const filesTableSolution = json('cdn/sb/react/solution/react-files-table-select-all-solution.v1.json').files['src/App.tsx'];
+const filesTablePressureSolution = json('cdn/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json').files['src/App.tsx'];
+assert.doesNotMatch(filesTableStarter, /exceptions: new Set|\.indeterminate =|useMemo\(/, 'the starter leaves the selection model, the mixed header and the derived rows to the candidate');
+for (const [name, source] of [['solution', filesTableSolution], ['pressure solution', filesTablePressureSolution]]) {
+  assert.match(source, /mode: 'none' \| 'all';\n\s+exceptions: Set<string>;/, `${name} stores the selection as a mode plus exceptions`);
+  assert.match(source, /headerRef\.current\.indeterminate = headerState === 'some';/, `${name} sets the mixed state in an effect`);
+  assert.match(source, /aria-checked=\{headerState === 'some' \? 'mixed' : headerState === 'all'\}/, `${name} exposes the mixed state to assistive technology`);
+  assert.doesNotMatch(source, /new Set\(matching\.map|new Set\(FILES\.map|selectedIds/, `${name} must never list every id on select all`);
+}
+assert.match(filesTablePressureSolution, /className="load-full"/);
+assert.match(filesTablePressureSolution, /className="download-summary"/);
+assert.match(filesTablePressureSolution, /length: 2400/);
+const filesTableGraph = json('cdn/questions/react/decision-graphs/react-files-table-select-all.v1.json');
+assert.equal(filesTableGraph.variants.approach1.code, filesTableSolution, 'files table decision graph must mirror the solution App.tsx');
+assert.equal(filesTableQuestion.solutionBlock.approaches[0].codeJs, filesTableSolution, 'the files table approach code must mirror the solution App.tsx');
+const filesTableLines = filesTableSolution.split('\n');
+for (const node of filesTableGraph.variants.approach1.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= filesTableLines.length, `${node.id}: invalid files table anchor range`);
+  assert.ok(filesTableLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: files table anchor range must contain its snippet`);
 }
 
 const selectQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-select-compound-api');
