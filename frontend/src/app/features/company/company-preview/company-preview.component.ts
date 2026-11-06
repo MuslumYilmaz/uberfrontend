@@ -52,6 +52,7 @@ import {
   GOOGLE_PREVIEW_TITLE,
   GOOGLE_PREVIEW_TRUST_NOTE,
   GOOGLE_PROCESS_NOTE,
+  GOOGLE_GOOGLEYNESS_SPOTLIGHT,
   GOOGLE_RESOURCE_LINKS,
 } from './google-preview-content';
 import {
@@ -366,6 +367,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly googlePrepSequence = GOOGLE_PREP_SEQUENCE;
   readonly googleFaqs = GOOGLE_PREVIEW_FAQS;
   readonly googleResourceLinks = GOOGLE_RESOURCE_LINKS;
+  readonly googleGoogleyness = GOOGLE_GOOGLEYNESS_SPOTLIGHT;
   readonly netflixH1 = NETFLIX_PREVIEW_H1;
   readonly netflixTrustNote = NETFLIX_PREVIEW_TRUST_NOTE;
   readonly netflixRoleLenses = NETFLIX_ROLE_LENSES;

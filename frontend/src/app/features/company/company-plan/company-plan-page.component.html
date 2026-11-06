@@ -169,7 +169,7 @@
         <span class="plan-task__why">{{ view.why }}<span class="plan-task__inline-time"> · {{ view.task.solved ? 'Solved' : 'about ' + view.time }}</span></span>
       </a>
     } @else {
-      <a class="plan-task__link" [routerLink]="view.task.route" [state]="view.state" (click)="taskOpened(view.task)">
+      <a class="plan-task__link" [routerLink]="view.task.route" [fragment]="view.task.fragment" [state]="view.state" (click)="taskOpened(view.task)">
         @if (view.next) {
           <span class="plan-task__next">Next up</span>
         }

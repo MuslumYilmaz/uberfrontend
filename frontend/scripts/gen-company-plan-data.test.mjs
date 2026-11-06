@@ -265,6 +265,29 @@ test('the practice link of a stage carries the lead flag; reports, picks and tag
   assert.equal(tasks.find((task) => task.id === 'js-tag-high').lead, undefined);
 });
 
+test('a stage that links a section of the company guide leads its round with that section', () => {
+  const withSection = (practice) => {
+    const process = baseProcess();
+    process.variants[0].stages[0] = { ...process.variants[0].stages[0], practice };
+    return build({ processes: { acme: process } });
+  };
+  const payload = withSection({ label: 'Acme values questions', path: '/companies/acme/preview', fragment: 'acme-values' });
+  const row = payload.companies.acme.variants[0].tasks.find((task) => task.id === '/companies/acme/preview#acme-values');
+  assert.deepEqual(row, { id: '/companies/acme/preview#acme-values', lead: true, rounds: ['recruiter-call'] });
+  assert.deepEqual(payload.tasks['/companies/acme/preview#acme-values'], {
+    id: '/companies/acme/preview#acme-values',
+    title: 'Acme values questions',
+    route: '/companies/acme/preview',
+    fragment: 'acme-values',
+    kind: 'guide',
+    access: 'free',
+    minutes: 15,
+  });
+  // Another company's guide, or a whole guide without a section, is a link the plan cannot open on the round.
+  assert.throws(() => withSection({ label: 'Other', path: '/companies/other/preview', fragment: 'x' }), /own guide/);
+  assert.throws(() => withSection({ label: 'Whole guide', path: '/companies/acme/preview' }), /own guide/);
+});
+
 test('a report belongs to the list citing it, and elsewhere is only a pick without a report line', () => {
   const [engineers, interns] = build().companies.acme.variants;
   assert.ok(interns.tasks.find((task) => task.id === 'js-old').report);

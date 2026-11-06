@@ -13,6 +13,8 @@ export type CompanyPlanDataTask = {
   readonly id: string;
   readonly title: string;
   readonly route: string;
+  /** A section of the page at `route`: a company guide's own section on a round, such as its behavioural round. */
+  readonly fragment?: string;
   readonly kind: 'coding' | 'debug' | 'trivia' | 'system-design' | 'guide';
   readonly tech?: string;
   readonly access: 'free' | 'premium';

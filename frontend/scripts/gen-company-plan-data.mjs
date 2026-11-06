@@ -95,9 +95,23 @@ function readCatalog(cdnRoot) {
   return byRoute;
 }
 
-function guideTask(route, label) {
-  return { id: route, title: label, route, kind: 'guide', access: 'free', minutes: MINUTES_BY_KIND.guide, companies: [], importance: 0 };
+/** A guide, or a section of one: a company guide's own section on a round keeps its anchor in the id and the link. */
+function guideTask(route, label, fragment) {
+  return {
+    id: fragment ? `${route}#${fragment}` : route,
+    title: label,
+    route,
+    ...(fragment ? { fragment } : {}),
+    kind: 'guide',
+    access: 'free',
+    minutes: MINUTES_BY_KIND.guide,
+    companies: [],
+    importance: 0,
+  };
 }
+
+const COMPANY_GUIDE_ROUTE = /^\/companies\/[a-z0-9-]+\/preview$/;
+const isGuideRoute = (route) => route.startsWith('/guides/') || COMPANY_GUIDE_ROUTE.test(route);
 
 function taskEntry({ companies, importance, ...task }, family) {
   return { ...task, ...(family ? { family } : {}) };
@@ -226,8 +240,11 @@ function buildCompany(slug, context) {
     for (const stage of variant.stages) {
       const round = metaRound(stage);
       if (stage.practice) {
-        const { path: route, label } = stage.practice;
-        leads.add(addLinked(route, route.startsWith('/guides/') ? guideTask(route, label) : catalog.get(route), round.id, true));
+        const { path: route, label, fragment } = stage.practice;
+        if (COMPANY_GUIDE_ROUTE.test(route) && (route !== `/companies/${slug}/preview` || !fragment)) {
+          throw new Error(`[gen-company-plan-data] ${slug}/${meta.id} links ${route}: a company guide link must be a section of ${slug}'s own guide.`);
+        }
+        leads.add(addLinked(route, isGuideRoute(route) ? guideTask(route, label, fragment) : catalog.get(route), round.id, true));
       }
       for (const route of round.picks ?? []) addLinked(route, catalog.get(route), round.id);
     }

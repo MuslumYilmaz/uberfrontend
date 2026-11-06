@@ -141,6 +141,24 @@
     }
   },
   "tasks": {
+    "/companies/amazon/preview#amazon-round-leadership-principles": {
+      "id": "/companies/amazon/preview#amazon-round-leadership-principles",
+      "title": "Leadership Principles interview questions",
+      "route": "/companies/amazon/preview",
+      "fragment": "amazon-round-leadership-principles",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/companies/google/preview#google-round-googleyness": {
+      "id": "/companies/google/preview#google-round-googleyness",
+      "title": "Googleyness interview questions",
+      "route": "/companies/google/preview",
+      "fragment": "google-round-googleyness",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/guides/behavioral": {
       "id": "/guides/behavioral",
       "title": "Behavioral interview guide",
@@ -3819,8 +3837,8 @@
       "aliases": [
         "AWS"
       ],
-      "checkedAt": "2026-10-20",
-      "sourceCount": 13,
+      "checkedAt": "2026-11-06",
+      "sourceCount": 24,
       "promptCount": 7,
       "variants": [
         {
@@ -3829,8 +3847,8 @@
           "from": "experienced hires",
           "ask": "Interviewing as an experienced hire?",
           "default": true,
-          "sourceCount": 9,
-          "newestReport": "2024-10",
+          "sourceCount": 12,
+          "newestReport": "2025-07",
           "rounds": [
             {
               "id": "online-assessment",
@@ -3948,19 +3966,19 @@
               ],
               "sources": [
                 {
+                  "label": "Amazon interview loop page",
+                  "date": "2026-11"
+                },
+                {
                   "label": "Amazon FEE prep page",
                   "date": "2026-10"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2023-01"
-                },
-                {
                   "label": "LeetCode",
-                  "date": "2022-04"
+                  "date": "2025-07"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 5
             }
           ],
           "tasks": [
@@ -3994,7 +4012,7 @@
               ]
             },
             {
-              "id": "/guides/behavioral",
+              "id": "/companies/amazon/preview#amazon-round-leadership-principles",
               "lead": true,
               "rounds": [
                 "loop-leadership-principles"
@@ -7351,15 +7369,15 @@
       "name": "Google",
       "signature": "Hiring committee",
       "framework": "javascript",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 10,
+      "checkedAt": "2026-11-06",
+      "sourceCount": 19,
       "promptCount": 7,
       "variants": [
         {
           "id": "main",
           "title": "Software engineers in front-end roles",
-          "sourceCount": 10,
-          "newestReport": "2026-04",
+          "sourceCount": 19,
+          "newestReport": "2026-09",
           "rounds": [
             {
               "id": "recruiter-conversations",
@@ -7410,7 +7428,7 @@
               ],
               "sources": [
                 {
-                  "label": "Medium (preview)",
+                  "label": "Medium",
                   "date": "2026-04"
                 },
                 {
@@ -7428,10 +7446,9 @@
               "id": "interview-loop",
               "name": "Interview loop",
               "kinds": [
-                "coding",
-                "people"
+                "coding"
               ],
-              "note": "Four or five interviews: algorithm coding, usually one JavaScript or frontend round, and a Googleyness interview.",
+              "note": "Four or five interviews: algorithm coding and usually one JavaScript or frontend round.",
               "focus": [
                 "algo",
                 "ui",
@@ -7452,6 +7469,32 @@
                 }
               ],
               "moreSources": 3
+            },
+            {
+              "id": "googleyness-interview",
+              "name": "Googleyness interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "About 45 minutes of behavioural and hypothetical questions, often called Googleyness and Leadership.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Google: Interview tips",
+                  "date": "2026-11"
+                },
+                {
+                  "label": "Google re:Work: structured interviewing",
+                  "date": "2026-11"
+                },
+                {
+                  "label": "Google interview page (2020 archive)",
+                  "date": "2020-05"
+                }
+              ],
+              "moreSources": 10
             },
             {
               "id": "system-design",
@@ -7512,6 +7555,13 @@
               "lead": true,
               "rounds": [
                 "interview-loop"
+              ]
+            },
+            {
+              "id": "/companies/google/preview#google-round-googleyness",
+              "lead": true,
+              "rounds": [
+                "googleyness-interview"
               ]
             },
             {

@@ -60,7 +60,7 @@
         <p class="preview__section-sub preview__section-sub--phone">{{ viewer() === 'premium' ? 'Read them here; the code runs on a desktop or tablet.' : 'Read them here; the code runs on a desktop or tablet. No account needed.' }}</p>
       </div>
       @for (row of openTasks(); track row.task.id) {
-        <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [state]="row.state" (click)="taskOpened(row.task)">
+        <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [fragment]="row.task.fragment" [state]="row.state" (click)="taskOpened(row.task)">
           <span class="plan-row__text">
             <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
             <span class="plan-row__meta">{{ row.why }}</span>
@@ -92,7 +92,7 @@
 
       @if (current.general) {
         @if (openTasks()[0]; as first) {
-          <a faButton variant="primary" size="lg" [block]="true" data-testid="company-plan-start-first" [routerLink]="first.task.route" [state]="first.state" (click)="taskOpened(first.task)">Start the first task <span aria-hidden="true">→</span></a>
+          <a faButton variant="primary" size="lg" [block]="true" data-testid="company-plan-start-first" [routerLink]="first.task.route" [fragment]="first.task.fragment" [state]="first.state" (click)="taskOpened(first.task)">Start the first task <span aria-hidden="true">→</span></a>
         }
         <a class="preview__panel-link" data-testid="company-plan-premium-link" routerLink="/pricing" [queryParams]="pricingParams()">See what Premium includes</a>
       } @else {
@@ -123,7 +123,7 @@
           <p class="preview__section-sub">{{ restLine() }}</p>
         </div>
         @for (row of restTasks(); track row.task.id) {
-          <a class="plan-row plan-row--rest" [class.plan-row--locked]="row.locked" data-testid="company-plan-rest-task" [routerLink]="row.task.route" [state]="row.state" [attr.aria-label]="row.aria" (click)="row.locked || taskOpened(row.task)">
+          <a class="plan-row plan-row--rest" [class.plan-row--locked]="row.locked" data-testid="company-plan-rest-task" [routerLink]="row.task.route" [fragment]="row.task.fragment" [state]="row.state" [attr.aria-label]="row.aria" (click)="row.locked || taskOpened(row.task)">
             @if (row.locked) {
               <svg class="plan-row__lock" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
             }

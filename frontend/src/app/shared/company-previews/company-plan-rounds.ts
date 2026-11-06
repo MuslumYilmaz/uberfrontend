@@ -701,8 +701,14 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           {
             id: 'interview-loop',
             stage: 'Interview loop',
-            kinds: ['coding', 'people'],
-            note: 'Four or five interviews: algorithm coding, usually one JavaScript or frontend round, and a Googleyness interview.',
+            kinds: ['coding'],
+            note: 'Four or five interviews: algorithm coding and usually one JavaScript or frontend round.',
+          },
+          {
+            id: 'googleyness-interview',
+            stage: 'Googleyness interview',
+            kinds: ['people'],
+            note: 'About 45 minutes of behavioural and hypothetical questions, often called Googleyness and Leadership.',
           },
           { id: 'system-design', stage: 'System design', kinds: ['design'] },
           { id: 'hiring-committee-and-team-match', stage: 'Hiring committee and team match', kinds: ['outcome'] },

@@ -144,6 +144,20 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(practice.nativeElement.getAttribute('href')).toBe('/javascript/coding/js-debounce');
   });
 
+  it('links a section of the company guide when the round is answered on the page itself', async () => {
+    const [experienced, ...rest] = FIXTURE.variants;
+    const [assessment, design] = experienced.stages;
+    const host = await render({
+      ...FIXTURE,
+      variants: [
+        { ...experienced, stages: [assessment, { ...design, practice: { label: 'Acme values questions', path: '/companies/acme/preview', fragment: 'acme-values' } }] },
+        ...rest,
+      ],
+    });
+    const links = [...host.querySelectorAll('.interview-process__practice a')];
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/javascript/coding/js-debounce', '/companies/acme/preview#acme-values']);
+  });
+
   it('uses the title override when the company names the role', async () => {
     const host = await render({ ...FIXTURE, title: 'Acme Front End Engineer interview process' });
     expect(host.querySelector('#acme-interview-process')?.textContent?.trim()).toBe('Acme Front End Engineer interview process');

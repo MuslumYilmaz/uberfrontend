@@ -18,6 +18,8 @@ export type InterviewProcessSource = {
 export type InterviewProcessPractice = {
   readonly label: string;
   readonly path: string;
+  /** A section of the page at `path`, for a round the company's own guide answers, such as a behavioural round. */
+  readonly fragment?: string;
 };
 
 export type InterviewProcessStage = {
@@ -65,6 +67,14 @@ const AMAZON_PHONE_NO_LP_2020 = amazonReport(678045, '2020-06');
 const AMAZON_ONSITE_2021 = amazonReport(1503301, '2021-10');
 const AMAZON_VANCOUVER_2022 = amazonReport(1984996, '2022-04');
 const AMAZON_SEATTLE_2024 = amazonReport(5934170, '2024-10');
+const AMAZON_INTERVIEW_LOOP: InterviewProcessSource = {
+  label: 'Amazon interview loop page',
+  url: 'https://www.amazon.jobs/content/en/how-we-hire/interview-loop',
+  kind: 'official',
+  date: '2026-11',
+};
+const AMAZON_HM_2019 = amazonReport(336727, '2019-07');
+const AMAZON_FEE_I_2025 = amazonReport(6968134, '2025-07');
 const AMAZON_BLIND_2022 = report(
   'Blind',
   'https://www.teamblind.com/post/amazon-frontend-fee-i-oa-phone-screen-loop-interview-2022-qqdjoknw',
@@ -155,10 +165,37 @@ const GOOGLE_GO5 = report(
   'https://www.jointaro.com/interviews/companies/google/experiences/front-end-developer-germany-june-23-2024-no-offer-positive-f76226db/',
   '2024-06',
 );
-const GOOGLE_GO6 = report('Medium (preview)', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
+const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
 const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
+// The Googleyness interview. Google's current pages no longer use the word; its interview tips describe the same
+// behavioural and hypothetical questions, and the archived 2020 interview page names it as one of four areas.
+// LeetCode posts were read through the GraphQL endpoint (post bodies, not comments).
+const GOOGLE_INTERVIEW_TIPS: InterviewProcessSource = {
+  label: 'Google: Interview tips',
+  url: 'https://www.google.com/about/careers/applications/interview-tips/',
+  kind: 'official',
+  date: '2026-11',
+};
+const GOOGLE_REWORK_STRUCTURED: InterviewProcessSource = {
+  label: 'Google re:Work: structured interviewing',
+  url: 'https://rework.withgoogle.com/intl/en/guides/a-guide-to-structured-interviewing-for-better-hiring-practices',
+  kind: 'official',
+  date: '2026-11',
+};
+const GOOGLE_INTERVIEW_2020: InterviewProcessSource = {
+  label: 'Google interview page (2020 archive)',
+  url: 'https://web.archive.org/web/20200504185427/https://careers.google.com/how-we-hire/interview/',
+  kind: 'official',
+  date: '2020-05',
+};
+const GOOGLE_GL_NEW_GRAD_2024 = report('LeetCode', 'https://leetcode.com/discuss/post/6022505/', '2024-10');
+const GOOGLE_GL_ML_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7093123/google-gl-googleyness-round-swe-iii-ml-b-0fe9/', '2025-08');
+const GOOGLE_GL_L4_US_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/7571793/', '2026-02');
+const GOOGLE_GL_L3_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8543506/', '2026-09');
+const GOOGLE_GL_L4_2024 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/5584385/', '2024-08');
+const GOOGLE_GL_L4_BLR_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8319665/', '2026-06');
 
 const META_HIRING = official('Meta: Hiring process', 'https://www.metacareers.com/hiring-process/');
 const META_FEE_INITIAL = official('Meta: FEE initial interview prep', 'https://www.metacareers.com/FEE-prep-initial/');
@@ -924,7 +961,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews.',
     caveat:
       'Each account describes one loop. Some added a bar raiser or a hiring-manager round, one 2020 phone screen had no behavioural questions, and one 2024 loop asked backend rather than frontend design. Confirm the format with your recruiter.',
-    checkedAt: '2026-10-20',
+    checkedAt: '2026-11-06',
     variants: [
       {
         title: 'Front End Engineer, experienced hires',
@@ -964,10 +1001,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Loop: Leadership Principles',
             format:
-              'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager.',
+              'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager, which is often all behavioural.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            sources: [AMAZON_FEE_PREP, AMAZON_INTERVIEW_LOOP, AMAZON_HM_2019, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022, AMAZON_FEE_I_2025],
+            practice: { label: 'Leadership Principles interview questions', path: '/companies/amazon/preview', fragment: 'amazon-round-leadership-principles' },
           },
         ],
       },
@@ -1215,8 +1252,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2020 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies; one 2026 account, read as a preview only, had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
-    checkedAt: '2026-10-20',
+      'The number of frontend rounds varies; one 2026 account had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
+    checkedAt: '2026-11-06',
     variants: [
       {
         title: 'Software engineers in front-end roles',
@@ -1242,10 +1279,32 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Interview loop',
-            format: 'Four or five interviews by video or onsite: algorithm coding, usually one JavaScript or frontend round (more in one account), and a Googleyness interview.',
+            format: 'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round (more in one account), plus the Googleyness interview in its own row below.',
             appliesTo: 'All candidates',
             sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
+          },
+          {
+            stage: 'Googleyness interview',
+            format:
+              'About 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership; in three 2026 accounts it sat in a first, virtual stage with one technical round, before the onsite coding, and one early-career loop added 15 minutes of it to a technical interview.',
+            appliesTo: 'All candidates',
+            sources: [
+              GOOGLE_INTERVIEW_TIPS,
+              GOOGLE_REWORK_STRUCTURED,
+              GOOGLE_INTERVIEW_2020,
+              GOOGLE_GO8,
+              GOOGLE_GO1,
+              GOOGLE_GO7,
+              GOOGLE_GO6,
+              GOOGLE_GL_NEW_GRAD_2024,
+              GOOGLE_GL_ML_2025,
+              GOOGLE_GL_L4_US_2026,
+              GOOGLE_GL_L3_2026,
+              GOOGLE_GL_L4_2024,
+              GOOGLE_GL_L4_BLR_2026,
+            ],
+            practice: { label: 'Googleyness interview questions', path: '/companies/google/preview', fragment: 'google-round-googleyness' },
           },
           {
             stage: 'System design',

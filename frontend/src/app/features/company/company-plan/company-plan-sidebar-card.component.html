@@ -25,6 +25,7 @@
       <a
         class="sidebar-plan__next"
         [routerLink]="next.task.route"
+        [fragment]="next.task.fragment"
         [state]="next.state"
         data-testid="sidebar-company-plan-next"
         (click)="nextOpened(next.task)">

@@ -37,6 +37,11 @@ describe('company interview processes', () => {
           expect(`${stage.format} ${stage.appliesTo}`).withContext(where).not.toMatch(ABSOLUTE_WORDS);
           expect(stage.sources.length).withContext(where).toBeGreaterThan(0);
           if (stage.practice) expect(stage.practice.path).withContext(where).toMatch(/^\/[a-z0-9/-]+$/);
+          // A section link opens the company's own guide on the section that answers the round.
+          if (stage.practice?.fragment !== undefined) {
+            expect(stage.practice.path).withContext(where).toBe(`/companies/${slug}/preview`);
+            expect(stage.practice.fragment).withContext(where).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+          }
 
           for (const source of stage.sources) {
             const url = new URL(source.url);

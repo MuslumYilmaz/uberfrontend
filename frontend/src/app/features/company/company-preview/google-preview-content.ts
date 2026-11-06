@@ -1,3 +1,5 @@
+import type { AuthoredRoundSpotlight } from '../../../shared/company-previews/authored-company-preview.model';
+
 export type GooglePracticePrompt = {
   readonly id: string;
   readonly title: string;
@@ -312,3 +314,55 @@ export const GOOGLE_RESOURCE_LINKS: readonly GoogleResourceLink[] = [
     path: '/javascript/trivia/js-compare-two-objects',
   },
 ];
+
+/**
+ * The Googleyness interview, decoded on the guide; the process table's Googleyness row links here. Google's current
+ * pages no longer use the word: the interview tips describe the same behavioural and hypothetical questions, and the
+ * archived 2020 interview page named it as one of four areas. Questions are quoted only from accounts read in full,
+ * and the ones from general software engineer loops say so.
+ */
+export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
+  id: 'googleyness',
+  kicker: 'Round decoder',
+  title: 'Google Googleyness interview for front-end engineers: what it is and what was asked',
+  lede: [
+    'Front-end loops at Google include one Googleyness interview beside the coding and design rounds: about 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership and which is rated on the same Hire scale as the coding rounds.',
+    'Google\'s current interview tips no longer use the word, but they describe the same questions, "Tell me about a time when…" and "How would you approach this situation…?", and ask for specific examples rather than habits.',
+  ],
+  facts: [
+    {
+      label: 'Position in the loop',
+      value: 'One of the four or five loop interviews in front-end accounts from 2021 and 2022. In three 2026 software engineer accounts it sat in a first, virtual stage with one technical round, before the onsite coding; one early-career loop added 15 minutes of it to a technical interview.',
+    },
+    {
+      label: 'What it looks for',
+      value: 'Google\'s 2020 interview page described it as how you work alone and on a team, how you help others, how you handle ambiguity and how you push yourself to grow; several accounts call it Googleyness and Leadership.',
+    },
+    {
+      label: 'Google\'s own examples',
+      value: 'The interview tips ask how you push yourself to grow outside your comfort zone, how you would address a conflict with someone you work with, and when you drove collaboration. Google\'s re:Work guide gives "Tell me about a time your behavior had a positive impact on your team."',
+    },
+    {
+      label: 'Asked in a 2026 front-end track',
+      value: 'A walkthrough of the current project and your role in it; joining a project with unclear requirements; a time you worked under a tight deadline, with follow-ups on what you would do differently and how the team responded (Medium, April 2026, an L4 frontend/SWE track).',
+    },
+    {
+      label: 'Patterns in other software engineer loops',
+      value: 'A conflict with teammates and whether your suggestions were considered; a teammate who takes the credit for shared work; every task marked P0; a time you worked to a strict deadline; leading an underperforming team as its manager (LeetCode, 2024 and 2025).',
+    },
+    {
+      label: 'Scoring',
+      value: 'A 2026 account reports a Hire to Strong Hire rating for this round, on the same scale as its coding rounds.',
+    },
+    {
+      label: 'A 2026 pilot',
+      value: 'May 2026 press reports describe a pilot for some US teams hiring early- and mid-career engineers in which the round also includes a technical design conversation about a past project; ask your recruiter whether it applies to you.',
+    },
+    {
+      label: 'Sources',
+      value: 'Google\'s interview tips, its re:Work guide and its archived 2020 interview page, the front-end accounts on Blind, LeetCode and Medium, and LeetCode accounts from 2024 to 2026; all are on the Googleyness row of the process table.',
+    },
+  ],
+  practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+  processLink: { label: 'See the Googleyness row in the reported process', fragment: 'google-interview-process-1-stage-googleyness-interview' },
+};

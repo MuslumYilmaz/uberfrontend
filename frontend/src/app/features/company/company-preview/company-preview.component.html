@@ -293,6 +293,28 @@
       </div>
     </section>
 
+    <!-- The Googleyness interview decoded on the page, the section the process table's behavioural row links to. -->
+    <section
+      class="company-guide-section company-round-spotlight"
+      [attr.aria-labelledby]="'google-round-' + googleGoogleyness.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ googleGoogleyness.kicker }}</p>
+        <h2 [attr.id]="'google-round-' + googleGoogleyness.id">{{ googleGoogleyness.title }}</h2>
+        <p *ngFor="let paragraph of googleGoogleyness.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of googleGoogleyness.facts; let i = index">
+          <dt>{{ fact.label }}</dt>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+        </ng-container>
+      </dl>
+      <p class="company-round-links" *ngIf="googleGoogleyness.practiceLink?.path || googleGoogleyness.processLink">
+        <a *ngIf="googleGoogleyness.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path" [state]="returnState">{{ googleGoogleyness.practiceLink!.label }}</a>
+        <a *ngIf="googleGoogleyness.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
+    </section>
+
     <section class="company-guide-section company-guide-section--intro" aria-labelledby="google-study-first">
       <div>
         <p class="preview-kicker">Study priorities</p>
