@@ -8748,6 +8748,31 @@
     "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
   },
   {
+    "id": "credit-card-application-page",
+    "family": "question",
+    "title": "Design a Credit Card Application Page and Its Confirmation Page",
+    "route": "/system-design/credit-card-application-page",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design a credit card application page and its confirmation page where one form store owns the fields, a retried submit creates one application, and a refresh never posts the form again.",
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "error-handling",
+      "forms",
+      "loading-states",
+      "multi-step",
+      "security",
+      "state-management",
+      "validation"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/credit-card-application-page/meta.json"
+  },
+  {
     "id": "hotel-search-page-frontend",
     "family": "question",
     "title": "Design a Hotel Search Page Frontend for Several Teams",

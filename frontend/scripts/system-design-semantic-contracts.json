@@ -1,6 +1,135 @@
 {
   "version": 1,
   "questions": {
+    "credit-card-application-page": {
+      "assertions": [
+        {
+          "id": "one-form-store",
+          "target": "all",
+          "require": [
+            "One store holds every field",
+            "touched flag",
+            "map back onto the same fields by name"
+          ]
+        },
+        {
+          "id": "idempotent-submit",
+          "target": "all",
+          "require": [
+            "idempotencyKey",
+            "same applicationId",
+            "double click"
+          ]
+        },
+        {
+          "id": "every-outcome",
+          "target": "all",
+          "require": [
+            "approved",
+            "declined",
+            "pending review",
+            "verify identity"
+          ]
+        },
+        {
+          "id": "confirmation-reads",
+          "target": "visible",
+          "require": [
+            "replaces the history entry",
+            "status route",
+            "instead of posting the form"
+          ]
+        },
+        {
+          "id": "sensitive-fields",
+          "target": "visible",
+          "require": [
+            "memory only",
+            "masked",
+            "never a field value"
+          ]
+        },
+        {
+          "id": "accessible-errors",
+          "target": "visible",
+          "require": [
+            "aria-describedby",
+            "error summary",
+            "live region"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "FormStoreState",
+          "requiredMembers": [
+            "section",
+            "fields",
+            "idempotencyKey",
+            "submitPhase"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "SubmitPhase",
+          "requiredLiterals": [
+            "idle",
+            "submitting",
+            "submitted",
+            "failed"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "DecisionStatus",
+          "requiredLiterals": [
+            "approved",
+            "declined",
+            "pending-review",
+            "verify-identity"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "ApplicationRecord",
+          "requiredMembers": [
+            "applicationId",
+            "status",
+            "summary",
+            "updatedAt"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "ApplicationGateway",
+          "requiredMembers": [
+            "submit",
+            "status",
+            "saveDraft"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "SubmitReply",
+          "requiredLiterals": [
+            "created",
+            "replayed",
+            "field-errors"
+          ]
+        },
+        {
+          "group": "credit-card-application-page-contract",
+          "name": "TelemetryEvent",
+          "requiredLiterals": [
+            "section_viewed",
+            "field_error",
+            "submit_sent",
+            "outcome_shown"
+          ]
+        }
+      ]
+    },
     "hotel-search-page-frontend": {
       "assertions": [
         {

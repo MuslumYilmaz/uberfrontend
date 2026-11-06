@@ -40,7 +40,7 @@
       "angular": 22,
       "vue": 21,
       "javascript": 51,
-      "systemDesign": 19
+      "systemDesign": 20
     },
     "familyMembers": {
       "accordion": {
@@ -553,6 +553,14 @@
         "concepts",
         "js"
       ]
+    },
+    "credit-card-application-page": {
+      "id": "credit-card-application-page",
+      "title": "Design a Credit Card Application Page and Its Confirmation Page",
+      "route": "/system-design/credit-card-application-page",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
     },
     "css-box-model": {
       "id": "css-box-model",
@@ -5755,6 +5763,18 @@
           ],
           "tasks": [
             {
+              "id": "credit-card-application-page",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-08"
+              },
+              "rounds": [
+                "power-day-frontend-design"
+              ],
+              "lead": true,
+              "prompt": true
+            },
+            {
               "id": "js-debug-nullish-defaults",
               "report": {
                 "publisher": "Taro",
@@ -5764,18 +5784,6 @@
                 "online-assessment",
                 "power-day-frontend-technical",
                 "power-day-case"
-              ],
-              "lead": true,
-              "prompt": true
-            },
-            {
-              "id": "multi-step-form-autosave",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-07"
-              },
-              "rounds": [
-                "power-day-frontend-design"
               ],
               "lead": true,
               "prompt": true
@@ -5792,6 +5800,16 @@
                 "power-day-case"
               ],
               "lead": true
+            },
+            {
+              "id": "multi-step-form-autosave",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-07"
+              },
+              "rounds": [
+                "power-day-frontend-design"
+              ]
             },
             {
               "id": "js-debug-mutating-input",
@@ -5918,6 +5936,9 @@
             },
             {
               "id": "js-debug-nullish-defaults"
+            },
+            {
+              "id": "credit-card-application-page"
             },
             {
               "id": "multi-step-form-autosave"

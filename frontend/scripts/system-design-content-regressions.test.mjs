@@ -86,6 +86,7 @@ const pilotExpectations = {
   'car-rental-booking-frontend': { targetLevel: 'mid', timeboxMinutes: 15, guidedMock: false },
   'messaging-inbox-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
   'hotel-search-page-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
+  'credit-card-application-page': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
 };
 
 for (const [id, expected] of Object.entries(pilotExpectations)) {
@@ -604,6 +605,38 @@ assert.doesNotMatch(
   /\b(?:filterState|localFilters|selectedFilters)\b/,
   'Hotel search units must not keep their own copy of the filters',
 );
+
+const cardApplication = bundleText('credit-card-application-page');
+const cardApplicationContractCode = ['data', 'interfaces']
+  .flatMap((section) => read('credit-card-application-page', section).blocks)
+  .filter((block) => block.type === 'code' && block.language === 'typescript')
+  .map((block) => block.code)
+  .join('\n');
+assert.match(cardApplication, /One store holds every field/i, 'One form store must own the card application fields');
+assert.match(cardApplication, /returns the same applicationId/i, 'A retried submit must return the same application');
+assert.match(cardApplication, /reads again instead of posting the form/i, 'A refresh of the confirmation must not submit again');
+assert.match(cardApplication, /stay in memory only/i, 'Sensitive fields must stay in memory');
+assert.match(cardApplication, /never a field value/i, 'Analytics must not carry field values');
+for (const contract of [
+  'FormStoreState',
+  'SubmitPhase',
+  'DecisionStatus',
+  'ApplicationRecord',
+  'SubmitReply',
+  'ApplicationGateway',
+  'TelemetryEvent',
+  'Telemetry',
+]) {
+  assert.match(
+    cardApplicationContractCode,
+    new RegExp(`(?:interface|type)\\s+${contract}\\b`),
+    `Card application must define ${contract}`,
+  );
+}
+// A draft can never carry a sensitive field, and telemetry has no slot for a field value.
+assert.match(cardApplicationContractCode, /saveDraft\(draftId: string, fields: Partial<Record<NonSensitiveField, string>>\)/);
+assert.match(cardApplicationContractCode, /type NonSensitiveField = Exclude<FieldName, SensitiveField>/);
+assert.doesNotMatch(cardApplicationContractCode, /name: 'field_error'[^}]*\bvalue\b/, 'A field error event must not carry the value');
 
 const autosave = bundleText('multi-step-form-autosave');
 assert.match(autosave, /schemaVersion/);

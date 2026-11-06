@@ -1533,8 +1533,8 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 514,
-  "premiumPracticeCount": 177,
+  "totalQuestions": 515,
+  "premiumPracticeCount": 178,
   "companyCounts": {
     "agoda": {
       "all": 12,
@@ -1579,10 +1579,10 @@ export const SHOWCASE_STATS = {
       "system": 0
     },
     "capital-one": {
-      "all": 6,
+      "all": 7,
       "coding": 1,
       "trivia": 3,
-      "system": 2
+      "system": 3
     },
     "crowdstrike": {
       "all": 11,

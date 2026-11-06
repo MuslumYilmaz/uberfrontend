@@ -143,8 +143,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Drawing the happy path only, with no answer for a double submit, a failed request or a pending decision.',
-        resourceLabel: 'Work through the multi-step form with autosave case (Premium)',
-        resourcePath: '/system-design/multi-step-form-autosave',
+        resourceLabel: 'Work through the credit card application page case (Premium)',
+        resourcePath: '/system-design/credit-card-application-page',
         reportedRound: { label: CAPITALONE_CARD_DESIGN_2024_LABEL, url: CAPITALONE_CARD_DESIGN_2024_URL },
       },
       {
@@ -340,7 +340,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Capital One practice set',
     copy:
-      'Premium unlocks the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
+      'Premium unlocks the credit card application page case, the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
     buttonLabel: 'Unlock the full Capital One practice set',
     src: 'company_preview_capital_one',
   },

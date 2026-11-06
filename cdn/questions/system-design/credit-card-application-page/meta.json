@@ -1,0 +1,138 @@
+{
+  "id": "credit-card-application-page",
+  "title": "Design a Credit Card Application Page and Its Confirmation Page",
+  "description": "Design a credit card application page and its confirmation page: one form store with layered validation, sensitive fields kept out of logs and storage, a submit that creates one application, and a confirmation that reads status.",
+  "tags": [
+    "accessibility",
+    "api-calls",
+    "error-handling",
+    "forms",
+    "loading-states",
+    "multi-step",
+    "security",
+    "state-management",
+    "validation"
+  ],
+  "companies": [
+    "capital-one"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interfaces",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-11-06",
+  "seo": {
+    "title": "Credit Card Application Page Frontend System Design",
+    "description": "Design a credit card application page: one form store, sensitive fields kept out of logs, one application per submit, and a status-read confirmation."
+  },
+  "premiumPreview": {
+    "summary": "Design a credit card application page and its confirmation page where one form store owns the fields, a retried submit creates one application, and a refresh never posts the form again.",
+    "learningOutcomes": [
+      "Keep every field and its errors in one form store and validate in three layers.",
+      "Keep sensitive values out of logs, URLs, analytics and browser storage, and mask them on the confirmation.",
+      "Send each submit with an idempotency key and render all five outcomes.",
+      "Make the confirmation a status read, so a refresh or a second tab never resubmits."
+    ],
+    "unlockDescription": "Premium unlocks the worked example of a double click during a slow submit, the typed form and gateway contracts, the application API semantics and the failure playbook."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/credit-card-application-page.md",
+    "primaryKeyword": "credit card application page frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for a credit card application page and its confirmation page.",
+    "readerPromise": "The reader can explain one form store with layered validation, sensitive fields kept out of logs and storage, an idempotent submit with five outcomes and a confirmation that reads status for a card application.",
+    "uniqueAngle": "Follow one application through a double click, a slow submit, a pending decision and a refresh, with the browser owning the form and the application service owning the record.",
+    "factCheckedAt": "2026-11-06",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": [
+      {
+        "company": "capital-one",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+        "sourceTitle": "Capital One senior frontend engineer Power Day, July 2024 (Taro)",
+        "checkedAt": "2026-11-06"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "Taro: Capital One senior frontend engineer Power Day, July 2024",
+      "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+      "company": "capital-one",
+      "publisher": "Taro",
+      "date": "2024-07",
+      "note": "A self-reported Power Day whose design round asked for a credit card information and application page followed by a confirmation page, mainly conversational with a whiteboard for notes. This case practices that shape; the fields, states and wording are ours."
+    },
+    {
+      "label": "Taro: Capital One senior frontend engineer loop, Chicago, August 2024",
+      "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-chicago-il-august-1-2024-no-offer-negative-958c2993/",
+      "company": "capital-one",
+      "publisher": "Taro",
+      "date": "2024-08",
+      "note": "A second account that names a frontend system design of the credit card application page, without describing how the round ran."
+    }
+  ],
+  "practice": {
+    "targetLevel": "senior",
+    "timeboxMinutes": 20,
+    "candidatePrompt": "Design the frontend of a credit card application page and the confirmation page after it. An applicant enters identity, address, income and housing costs, reviews the terms and submits. The decision can be approved, declined, pending review or a request to verify identity. Walk through the components, where form state and validation live, how sensitive fields are protected, and what the confirmation shows after a refresh.",
+    "constraints": [
+      "Sensitive fields never reach logs, URLs or storage.",
+      "One submit creates one application.",
+      "A decision can take minutes."
+    ],
+    "expectedDecisions": [
+      "Keep every field in one form store, validate on blur, per section and on the server, and map the server's field errors back by name.",
+      "Send each submit with an idempotency key and give every outcome its own screen: approved, declined, pending review, verify identity and failure.",
+      "Replace the submit entry with a status route that reads the application by id and shows masked values, so a refresh reads instead of posting."
+    ],
+    "prerequisites": [
+      "HTML form validation",
+      "HTTP idempotency",
+      "ARIA error messages"
+    ],
+    "coreSkills": [
+      "Form state ownership",
+      "Sensitive data handling",
+      "Idempotent submits",
+      "Accessible error recovery"
+    ],
+    "guidedMock": false,
+    "evaluationSpine": {
+      "mustCover": [
+        "One form store owns every field and its errors.",
+        "Each submit carries an idempotency key."
+      ],
+      "strongSignals": [
+        "Sensitive values are masked and never logged.",
+        "The confirmation reads status, so a refresh never resubmits."
+      ],
+      "expertStretch": "Resuming a draft on another device without sensitive fields.",
+      "redFlag": "Refreshing the confirmation posts the form again."
+    }
+  },
+  "contentSchemaVersion": 2
+}

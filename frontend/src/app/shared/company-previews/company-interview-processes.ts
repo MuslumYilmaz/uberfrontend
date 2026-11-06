@@ -2942,7 +2942,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A conversational design of a credit card application page and its confirmation page, with a whiteboard for notes, or the structure of a web app or single-page application from requirements: components, routing, data flow and API calls.',
             appliesTo: 'Frontend engineers',
             sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
-            practice: { label: 'Multi-step form with autosave', path: '/system-design/multi-step-form-autosave' },
+            practice: { label: 'Credit card application page case', path: '/system-design/credit-card-application-page' },
           },
           {
             stage: 'Power Day: frontend technical',

@@ -114,6 +114,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/system-design/ai-ux-considerations",
   "/system-design/car-rental-booking-frontend",
   "/system-design/component-design-system-architecture",
+  "/system-design/credit-card-application-page",
   "/system-design/cross-device-preferences-sync",
   "/system-design/endless-short-video-feed",
   "/system-design/flashcard-language-trainer",

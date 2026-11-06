@@ -1,0 +1,62 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The data model separates what the applicant is typing from what the service has decided. The form store's shape drives validation and masking; the record's shape limits what the confirmation can show."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SectionId = 'identity' | 'address' | 'income' | 'review';\n\ntype FieldName =\n  | 'firstName'\n  | 'lastName'\n  | 'dateOfBirth'\n  | 'ssn'\n  | 'street'\n  | 'city'\n  | 'state'\n  | 'postalCode'\n  | 'annualIncome'\n  | 'monthlyHousingCost'\n  | 'termsAccepted';\n\ninterface FieldState {\n  value: string;\n  touched: boolean;\n  error: string | null;\n  sensitive: boolean;\n}\n\ntype SubmitPhase = 'idle' | 'submitting' | 'submitted' | 'failed';\n\ninterface FormStoreState {\n  section: SectionId;\n  fields: Record<FieldName, FieldState>;\n  idempotencyKey: string | null;\n  submitPhase: SubmitPhase;\n}\n\ntype DecisionStatus = 'approved' | 'declined' | 'pending-review' | 'verify-identity';\n\ninterface MaskedSummary {\n  fullName: string;\n  ssnLast4: string;\n  cityAndState: string;\n}\n\ninterface ApplicationRecord {\n  applicationId: string;\n  status: DecisionStatus;\n  summary: MaskedSummary;\n  creditLimit: number | null;\n  updatedAt: string;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "credit-card-application-page-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Card application identifier rules",
+      "columns": [
+        "Identifier",
+        "Created by",
+        "Lifetime",
+        "Used for"
+      ],
+      "rows": [
+        [
+          "idempotencyKey",
+          "The form store, when the review section opens",
+          "One attempt; a field-error reply ends it, and the corrected submit gets a new key",
+          "Making a double click or a retry return the same application"
+        ],
+        [
+          "applicationId",
+          "The application service",
+          "The life of the application",
+          "The status route, polling and support"
+        ],
+        [
+          "draftId",
+          "The service, for a signed-in applicant who saves",
+          "Until submit or expiry",
+          "Resuming the non-sensitive sections on another device"
+        ],
+        [
+          "Section names",
+          "The shell",
+          "Fixed per release",
+          "Progress, analytics and error codes without values"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "What stays in memory and what never persists",
+      "text": "Every field lives in memory until the page closes. An optional server draft keeps only the non-sensitive sections of a signed-in applicant, keyed by draftId. The Social Security number, the full date of birth and income never go into URLs, logs, analytics, localStorage or sessionStorage."
+    }
+  ]
+}

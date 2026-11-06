@@ -515,6 +515,7 @@
 /system-design/ai-ux-considerations
 /system-design/car-rental-booking-frontend
 /system-design/component-design-system-architecture
+/system-design/credit-card-application-page
 /system-design/cross-device-preferences-sync
 /system-design/dashboard-widgets-draggable-resizable
 /system-design/endless-short-video-feed

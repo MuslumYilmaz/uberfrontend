@@ -752,6 +752,27 @@
         ]
       },
       {
+        "id": "credit-card-application-page",
+        "kind": "system-design",
+        "title": "Design a Credit Card Application Page and Its Confirmation Page",
+        "access": "premium",
+        "route": "/system-design/credit-card-application-page",
+        "sources": [
+          {
+            "label": "Taro: Capital One senior frontend engineer Power Day, July 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+            "publisher": "Taro",
+            "date": "2024-07"
+          },
+          {
+            "label": "Taro: Capital One senior frontend engineer loop, Chicago, August 2024",
+            "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-chicago-il-august-1-2024-no-offer-negative-958c2993/",
+            "publisher": "Taro",
+            "date": "2024-08"
+          }
+        ]
+      },
+      {
         "id": "multi-step-form-autosave",
         "kind": "system-design",
         "title": "Multi-step Form with Autosave",
