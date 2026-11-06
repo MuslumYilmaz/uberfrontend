@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "795ce6db9572574f52bee6063c968d6efcaa0575ae4fb25a8cfc709bebe537ed",
+    "registryContentHash": "8bd016acbc907b2db4d9ebe2804835150f619ed25efd8149918438463d1c48c8",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -21,12 +21,13 @@
       "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the nested-comments and contact-form source questions gained a Pressure Mode reference and the React nested-comments starter stopped rebuilding its reply input on every letter. That starter is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "64be5712c3aa9b32096d1852007b5d5d178557cb8d517b5cc6bb2ddbe0c9d149",
+  "definitionHash": "a6311ffc384356ae6d3e20e23897ea3574986e8b7a932eb8b60304c965ceaee4",
   "reviewBatch": {
-    "reviewedDefinitionHash": "64be5712c3aa9b32096d1852007b5d5d178557cb8d517b5cc6bb2ddbe0c9d149",
+    "reviewedDefinitionHash": "a6311ffc384356ae6d3e20e23897ea3574986e8b7a932eb8b60304c965ceaee4",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -44,7 +45,8 @@
         "2026-10-22 source-pin maintenance review: the js-unique-array, js-debounce and react-debounced-search catalog entries change only the label text of public sources (a Taro city or a placeholder month removed); starters, tests, solutions, rubrics and remediation are unchanged.",
         "2026-11-02 source-pin maintenance review: the React, Angular and Vue nested-comments and contact-form catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The React nested-comments starter renders its tree through a plain function instead of a component created in useMemo, so the reply input keeps focus while typing, and the same question's solution prose says so. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-11-02 source-pin maintenance review: the React, Angular and Vue multi-step form and nested-checkboxes catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The Vue nested-checkboxes starter comment said the parent should never become indeterminate, which contradicted the question and its solution, and now says the parent is checked, unchecked or indeterminate. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
-        "2026-11-02 source-pin maintenance review: the React, Angular and Vue transfer-list catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. Starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-11-02 source-pin maintenance review: the React, Angular and Vue transfer-list catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. Starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-11-06 source-pin maintenance review: the react-nested-comments catalog entry's ServiceNow source changed its date from 2026-03 to 2026-02 and its note wording on 2026-11-04. Source metadata only: starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant review carries forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -1410,7 +1412,7 @@
       "level": "senior",
       "catalog": "react",
       "sourceQuestionId": "react-nested-comments",
-      "expectedQuestionHash": "5a3a08ea49c2e466697608dc27f6d5d23d02e54052ddad44d09b3f637391b3f3",
+      "expectedQuestionHash": "c57b1d181f721784d33ed301de1e8da8ecb03b5450b797f0491419932be2ccd0",
       "expectedStarterAssetHash": "dee5d64380c9f5aa1e19a294b4a0cb5628357d06ac23773f925f2601146d10f0",
       "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
       "expectedPressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",

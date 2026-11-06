@@ -2,18 +2,18 @@
   "artifacts": {
     "private": {
       "file": "interview-system-design-registry-v1.private.json",
-      "sha256": "f3bed884e95a13fc9d4c7fb6c3a6d014276f76696c617a030453ccfa4b67ee99"
+      "sha256": "f3d34aed6151d5d2576313eab8b52cc7c9acc129c77defb4025a278bdcad4089"
     },
     "public": {
       "file": "interview-system-design-registry-v1.public.json",
-      "sha256": "0ebe494ad951c03f18a3944e00fe71234a4344abd2cbdcb62b6657b1bd0b22a3"
+      "sha256": "6a945dcc44e9115db98f6de6e201e02d98ed3abfeba8f9be8fa21ecfb734b96c"
     }
   },
-  "contentHash": "df5087f48b1f8aca7d9937e20521c8bd27082c3e697a6e4833e12a3ae34a891c",
-  "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
+  "contentHash": "579bdeb59c7f96a8c8e31c3c304767380ebf8196db02c1e47b90732f7c1d4900",
+  "definitionHash": "bb1ea97c0aa6502430e47d1d1eb14aa4f667f2185036d91c99c14aa9ada47474",
   "enabledScenarioCount": 8,
   "finalApproval": null,
-  "registryContentHash": "df5087f48b1f8aca7d9937e20521c8bd27082c3e697a6e4833e12a3ae34a891c",
+  "registryContentHash": "579bdeb59c7f96a8c8e31c3c304767380ebf8196db02c1e47b90732f7c1d4900",
   "registryId": "interview-system-design-registry-v1",
   "registryVersion": "1.2.0",
   "scenarioCount": 8,
@@ -75,12 +75,12 @@
       "sourceBundleHash": "79380efa4a18cff764a87d45c6ffe7d153e1b6deda4925fd50b0eed4c20347fc"
     },
     {
-      "contentHash": "29ad6171b84f09ccd9288a572279815c21e015c809950551850895991ade2de1",
+      "contentHash": "d2748188c51d517bfbc094be28be14c89f056fe00c88b063897f0535c2365519",
       "enabled": true,
       "id": "int-sd-toast-lifecycle-jr-v1",
       "level": "junior",
       "revision": 6,
-      "sourceBundleHash": "97f98e84935ee98c508b2d6671fe0ac7a4674abc8bf6eff030291d57b30603ff"
+      "sourceBundleHash": "84dcc5ee21547b5e6e09dea36f3d04ae56d9d9700e2efca0a81fd9b1c5f41e6a"
     }
   ],
   "schemaVersion": "1.0.0",
