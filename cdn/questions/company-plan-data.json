@@ -159,10 +159,35 @@
       "access": "free",
       "minutes": 15
     },
+    "/companies/revolut/preview#revolut-round-bar-raiser": {
+      "id": "/companies/revolut/preview#revolut-round-bar-raiser",
+      "title": "What the Bar Raiser covers",
+      "route": "/companies/revolut/preview",
+      "fragment": "revolut-round-bar-raiser",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/guides/behavioral": {
       "id": "/guides/behavioral",
       "title": "Behavioral interview guide",
       "route": "/guides/behavioral",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/guides/behavioral/common-questions": {
+      "id": "/guides/behavioral/common-questions",
+      "title": "Common behavioral questions",
+      "route": "/guides/behavioral/common-questions",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/guides/behavioral/evaluation-areas": {
+      "id": "/guides/behavioral/evaluation-areas",
+      "title": "Behavioral interview scorecard",
+      "route": "/guides/behavioral/evaluation-areas",
       "kind": "guide",
       "access": "free",
       "minutes": 15
@@ -1768,6 +1793,19 @@
       "focus": [
         "concepts",
         "js"
+      ]
+    },
+    "js-querystring-parse-1": {
+      "id": "js-querystring-parse-1",
+      "title": "Querystring Helper 1: Implement `parseQueryString`",
+      "route": "/javascript/coding/js-querystring-parse-1",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 15,
+      "focus": [
+        "js",
+        "algo"
       ]
     },
     "js-recover-bst-swapped-nodes": {
@@ -6118,6 +6156,13 @@
               "prompt": true
             },
             {
+              "id": "/guides/behavioral/evaluation-areas",
+              "lead": true,
+              "rounds": [
+                "closing-round"
+              ]
+            },
+            {
               "id": "react-files-table-select-all",
               "report": {
                 "publisher": "Taro",
@@ -7209,6 +7254,13 @@
               "prompt": true
             },
             {
+              "id": "/guides/behavioral/stories",
+              "lead": true,
+              "rounds": [
+                "director-interview"
+              ]
+            },
+            {
               "id": "css-flexbox-navbar",
               "report": {
                 "publisher": "Taro",
@@ -7370,13 +7422,13 @@
       "signature": "Hiring committee",
       "framework": "javascript",
       "checkedAt": "2026-11-06",
-      "sourceCount": 19,
+      "sourceCount": 20,
       "promptCount": 7,
       "variants": [
         {
           "id": "main",
           "title": "Software engineers in front-end roles",
-          "sourceCount": 19,
+          "sourceCount": 20,
           "newestReport": "2026-09",
           "rounds": [
             {
@@ -7468,7 +7520,7 @@
                   "date": "2022-07"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "googleyness-interview",
@@ -7541,13 +7593,14 @@
             {
               "id": "js-debounce",
               "report": {
-                "publisher": "Blind",
-                "date": "2020-12"
+                "publisher": "LeetCode Discuss",
+                "date": "2019-07"
               },
-              "lead": true,
               "rounds": [
+                "interview-loop",
                 "technical-screen"
               ],
+              "lead": true,
               "prompt": true
             },
             {
@@ -7595,8 +7648,8 @@
             {
               "id": "js-throttle",
               "report": {
-                "publisher": "Blind",
-                "date": "2020-12"
+                "publisher": "LeetCode Discuss",
+                "date": "2020-04"
               },
               "rounds": [
                 "technical-screen"
@@ -7607,7 +7660,10 @@
               "report": {
                 "publisher": "LeetCode Discuss",
                 "date": "2019-07"
-              }
+              },
+              "rounds": [
+                "interview-loop"
+              ]
             },
             {
               "id": "js-get-by-path-1",
@@ -9746,6 +9802,13 @@
               ]
             },
             {
+              "id": "/companies/revolut/preview#revolut-round-bar-raiser",
+              "lead": true,
+              "rounds": [
+                "bar-raiser"
+              ]
+            },
+            {
               "id": "react-debounced-search",
               "report": {
                 "publisher": "Taro",
@@ -10990,6 +11053,20 @@
               "lead": true,
               "rounds": [
                 "technical-screen"
+              ]
+            },
+            {
+              "id": "js-fetch-json-timeout",
+              "lead": true,
+              "rounds": [
+                "onsite-integration"
+              ]
+            },
+            {
+              "id": "js-querystring-parse-1",
+              "lead": true,
+              "rounds": [
+                "onsite-programming-exercise"
               ]
             },
             {
@@ -13163,7 +13240,7 @@
               ]
             },
             {
-              "id": "/guides/behavioral",
+              "id": "/guides/behavioral/common-questions",
               "lead": true,
               "rounds": [
                 "final-engineering-manager-or-hr"

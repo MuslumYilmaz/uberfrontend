@@ -111,6 +111,12 @@ function guideTask(route, label, fragment) {
 }
 
 const COMPANY_GUIDE_ROUTE = /^\/companies\/[a-z0-9-]+\/preview$/;
+/**
+ * The guides written into the preview template rather than the authored registry. With the authored guides they show
+ * no reports card, so a plan line must name a report the guide itself shows. Keep equal to LEGACY_EDITORIAL_COMPANIES
+ * in company-public-data.service.ts; the generator test checks it.
+ */
+export const INLINE_COMPANY_GUIDES = new Set(['google', 'netflix', 'openai']);
 const isGuideRoute = (route) => route.startsWith('/guides/') || COMPANY_GUIDE_ROUTE.test(route);
 
 function taskEntry({ companies, importance, ...task }, family) {
@@ -154,6 +160,10 @@ function buildCompany(slug, context) {
   // A source cited by both files shows the table's date: the table records the interview month when an account gives one.
   const tableDates = new Map(table.variants.flatMap((variant) => variant.stages.flatMap((stage) => stage.sources.map((source) => [source.url, source.date]))));
   const allCited = new Set(tableDates.keys());
+  // A catalog guide lists every reported item with its sources in a reports card; an authored or inline guide shows
+  // only its table and its own sources list.
+  const showsEveryReport = !context.sources?.[slug] && !context.prompts?.[slug] && !INLINE_COMPANY_GUIDES.has(slug);
+  const shownOnGuide = (source) => allCited.has(source.url) || (context.sources?.[slug] ?? []).includes(source.url);
 
   // Reported tasks merge by the task they land on, so a widget tagged in three frameworks is one row.
   const reported = new Map();
@@ -199,11 +209,14 @@ function buildCompany(slug, context) {
       .map((entry) => {
         // A source another list cites describes that list, so it cannot date a task in this one.
         const usable = entry.sources.filter((source) => cited.has(source.url) || !allCited.has(source.url));
-        const [newest] = [...(usable.length ? usable : entry.sources)].sort(newestFirst);
-        return { entry, newest };
+        const pool = usable.length ? usable : entry.sources;
+        // A guide without a reports card names the newest report it shows, on its table or in its sources list.
+        const visible = showsEveryReport ? pool : pool.filter(shownOnGuide);
+        const [newest] = [...(visible.length ? visible : pool)].sort(newestFirst);
+        return { entry, newest, hidden: !visible.length };
       })
       .sort((a, b) => newestFirst(a.newest, b.newest) || a.entry.task.id.localeCompare(b.entry.task.id));
-    for (const { entry, newest } of inList) {
+    for (const { entry, newest, hidden } of inList) {
       const urls = new Set(entry.sources.map((source) => source.url));
       const wanted = entry.task.kind === 'system-design' ? 'design' : 'coding';
       const citing = variant.stages.filter((stage) => stage.sources.some((source) => urls.has(source.url)));
@@ -223,13 +236,14 @@ function buildCompany(slug, context) {
           console.warn(`[gen-company-plan-data] ${slug}/${meta.id}: reportRounds puts ${entry.task.id} on ${id}, but that stage cites none of its reports.`);
         }
       }
-      // A guide with its own sources list shows every report a plan line names, so "Modelled on a report" can be
-      // followed on the guide. Catalog guides list their reported items in a reports card instead.
-      const listed = context.sources?.[slug];
-      if (listed && !allCited.has(newest.url) && !listed.includes(newest.url)) {
+      const rounds = named.length ? named : bound.length ? bound : cited;
+      // "Modelled on a report" must be followable on the guide. A guide with its own sources list has to list the
+      // report, so the generator stops; a guide without one keeps the task as a pick, with no report line.
+      if (hidden && context.sources?.[slug]) {
         throw new Error(`[gen-company-plan-data] ${slug}/${meta.id}: ${entry.task.id} is modelled on ${newest.url}, which neither the ${slug} guide's sources nor its process table list.`);
       }
-      add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds: named.length ? named : bound.length ? bound : cited });
+      if (hidden) add(publish(entry.task), { rounds });
+      else add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}) }, rounds });
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.
@@ -291,7 +305,7 @@ function buildCompany(slug, context) {
 
     const reportDates = [
       ...variant.stages.flatMap((stage) => stage.sources.filter((source) => source.kind === 'report').map((source) => source.date)),
-      ...inList.map(({ newest }) => newest.date),
+      ...inList.filter(({ hidden }) => !hidden).map(({ newest }) => newest.date),
     ];
 
     return {

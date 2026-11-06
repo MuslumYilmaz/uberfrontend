@@ -170,6 +170,9 @@ const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe
 const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/post/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
+// Read in the browser on 2026-11-06: a Sunnyvale front end onsite of five rounds, three of them JavaScript (combining
+// callback results, a delayed-run API, a sequential queue), one app design and one algorithm; no phone screen.
+const GOOGLE_ONSITE_2019 = report('LeetCode', 'https://leetcode.com/discuss/post/342364/', '2019-07');
 // The Googleyness interview. Google's current pages no longer use the word; its interview tips describe the same
 // behavioural and hypothetical questions, and the archived 2020 interview page names it as one of four areas.
 // LeetCode posts were read through the GraphQL endpoint (post bodies, not comments).
@@ -1251,9 +1254,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   google: {
     summary:
-      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2020 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
+      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2019 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies; one 2026 account had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
+      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
     checkedAt: '2026-11-06',
     variants: [
       {
@@ -1280,9 +1283,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Interview loop',
-            format: 'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round (more in one account), plus the Googleyness interview in its own row below.',
+            format: 'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round (more in two accounts), plus the Googleyness interview in its own row below.',
             appliesTo: 'All candidates',
-            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8],
+            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8, GOOGLE_ONSITE_2019],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
           },
           {
@@ -1605,12 +1608,15 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'Combine provided tools or APIs into a working feature.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST6_PLAN],
+            // Each onsite row gets its own practice, so the plan can fill all three rounds instead of one.
+            practice: { label: 'Fetch JSON with a timeout and abort', path: '/javascript/coding/js-fetch-json-timeout' },
           },
           {
             stage: 'Onsite: programming exercise',
             format: 'A coding exercise.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST6_PLAN],
+            practice: { label: 'Parse a query string', path: '/javascript/coding/js-querystring-parse-1' },
           },
           {
             stage: 'Onsite: frontend design',
@@ -1988,6 +1994,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'An interview on how you work and make decisions; listed in recent plans, with no first-hand account since 2022.',
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_BAR_RAISER, REVOLUT_RV1, REVOLUT_RV15_PLAN],
+            // The guide's own Bar Raiser section, so the team-fit round keeps the behavioural guide in the plan.
+            practice: { label: 'What the Bar Raiser covers', path: '/companies/revolut/preview', fragment: 'revolut-round-bar-raiser' },
           },
         ],
       },
@@ -2108,7 +2116,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: '45 minutes.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA2],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            // The hiring-manager round takes the general behavioural guide; this one gets its own page.
+            practice: { label: 'Common behavioral questions', path: '/guides/behavioral/common-questions' },
           },
         ],
       },
@@ -2862,6 +2871,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: '60 minutes with a Director of Engineering on past experience and values, with a few technical questions in some accounts.',
             appliesTo: 'All candidates',
             sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019],
+            // The behavioural round takes the general guide; past experience calls for prepared stories.
+            practice: { label: 'Crafting STAR stories', path: '/guides/behavioral/stories' },
           },
           {
             stage: 'References and offer',
@@ -3081,6 +3092,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'A culture interview with someone outside engineering, a collaboration panel, or an informational talk with the hiring manager about the team.',
             appliesTo: 'Some candidates',
             sources: [CROWDSTRIKE_CS1_EM_FE_2025, CROWDSTRIKE_CS6_SENIOR_2024, CROWDSTRIKE_CS16_UI_2022],
+            // The hiring-manager round takes the general behavioural guide; a culture round is scored on its signals.
+            practice: { label: 'Behavioral interview scorecard', path: '/guides/behavioral/evaluation-areas' },
           },
           {
             stage: 'Result',

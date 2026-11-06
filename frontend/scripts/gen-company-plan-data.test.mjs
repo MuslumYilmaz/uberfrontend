@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildCompanyPlanData, loadCompanyPlanSources, renderCompanyPlanData } from './gen-company-plan-data.mjs';
+import { INLINE_COMPANY_GUIDES, buildCompanyPlanData, loadCompanyPlanSources, renderCompanyPlanData } from './gen-company-plan-data.mjs';
 
 const realSources = loadCompanyPlanSources();
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -288,15 +288,49 @@ test('a stage that links a section of the company guide leads its round with tha
   assert.throws(() => withSection({ label: 'Whole guide', path: '/companies/acme/preview' }), /own guide/);
 });
 
+// One list, so a report no stage cites still dates its task, plus a task whose only report no stage cites.
+const singleList = () => {
+  const process = baseProcess();
+  process.variants = [process.variants[0]];
+  return process;
+};
+const withHidden = {
+  ...baseCatalog,
+  'javascript/coding.json': [
+    ...baseCatalog['javascript/coding.json'],
+    { id: 'js-hidden', title: 'Hidden', difficulty: 'easy', companies: ['acme'], sources: [catalogSource('hidden', '2025-05')] },
+  ],
+};
+const planRow = (payload, id) => payload.companies.acme.variants[0].tasks.find((task) => task.id === id);
+
+test('a guide without a reports card names the newest report it shows, and an unshown report gives no line', () => {
+  // A catalog guide lists every report in its reports card, so the newest one dates the line.
+  const catalogGuide = build({ processes: { acme: singleList() } }, withHidden);
+  assert.deepEqual(planRow(catalogGuide, 'react-star-rating').report, { publisher: 'Taro', date: '2023-03' });
+  assert.deepEqual(planRow(catalogGuide, 'js-hidden').report, { publisher: 'Taro', date: '2025-05' });
+  // An inline guide without a sources list, as Google: the table's report dates the line, an unshown one is dropped.
+  const inlineGuide = build({ processes: { acme: singleList() }, prompts: { acme: [] } }, withHidden);
+  assert.deepEqual(planRow(inlineGuide, 'react-star-rating').report, { publisher: 'Taro', date: '2021-02' });
+  assert.equal(planRow(inlineGuide, 'js-hidden').report, undefined);
+  assert.ok(planRow(inlineGuide, 'js-hidden'), 'the task stays as a pick');
+});
+
 test('a guide with a sources list must list the report a plan line names', () => {
-  // The stars widget is dated by its newest report, which the table does not cite.
+  const listed = (...urls) => build({ processes: { acme: singleList() }, sources: { acme: urls } }, withHidden);
   assert.throws(
-    () => build({ sources: { acme: ['https://acme.example/jobs'] } }),
-    /react-star-rating is modelled on https:\/\/www\.jointaro\.com\/interviews\/companies\/acme\/experiences\/stars-newer\/, which neither the acme guide's sources nor its process table list/,
+    () => listed('https://acme.example/jobs'),
+    /js-hidden is modelled on https:\/\/www\.jointaro\.com\/interviews\/companies\/acme\/experiences\/hidden\/, which neither the acme guide's sources nor its process table list/,
   );
-  assert.doesNotThrow(() => build({ sources: { acme: [reportUrl('stars-newer')] } }));
-  // A catalog guide has no sources list; its reports card names the report instead.
-  assert.doesNotThrow(() => build({ sources: {} }));
+  assert.doesNotThrow(() => listed(reportUrl('hidden'), reportUrl('old')));
+  // The guide's own list counts as shown, so the newer listed report dates the stars widget.
+  assert.deepEqual(planRow(listed(reportUrl('hidden'), reportUrl('old'), reportUrl('stars-newer')), 'react-star-rating').report, { publisher: 'Taro', date: '2023-03' });
+});
+
+test('the inline guides are the ones the preview renders without the catalog', () => {
+  const service = fs.readFileSync(path.join(repoRoot, 'frontend/src/app/core/services/company-public-data.service.ts'), 'utf8');
+  const literal = /LEGACY_EDITORIAL_COMPANIES = new Set\(\[([^\]]*)\]\)/.exec(service)?.[1] ?? '';
+  const slugs = [...literal.matchAll(/'([a-z0-9-]+)'/g)].map((match) => match[1]).sort();
+  assert.deepEqual(slugs, [...INLINE_COMPANY_GUIDES].sort());
 });
 
 test('a report belongs to the list citing it, and elsewhere is only a pick without a report line', () => {
