@@ -905,15 +905,15 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Waymo',
     path: '/companies/waymo/preview',
-    title: 'Waymo Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Waymo Frontend Interview Questions: 6 Prompts + Prep Guide',
     description:
-      'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.',
+      'Prepare for a Waymo frontend interview with 6 prompts modelled on a public 2026 report: tree filter and UI, Angular debugging, Promises, AI chat, autocomplete.',
     h1: 'Waymo Frontend Interview Questions',
     kicker: 'Public Waymo prep guide',
     headings: [
       'Prepare for product judgment, not Waymo trivia',
       'What the report establishes, and what you still need to confirm',
-      'Five Waymo frontend interview practice questions',
+      'Six Waymo frontend interview practice questions',
       'Scope the tree filter before writing the first line',
       'A 7-day Waymo frontend interview preparation plan',
       'Common Waymo frontend interview preparation questions',
@@ -923,6 +923,7 @@ const AUTHORED_GUIDE_CASES = [
     trustFragment: 'not leaked, confirmed or official Waymo questions',
     prompts: [
       { id: 'tree-filter-render', title: 'Filter a tree by substring and render it indented' },
+      { id: 'tree-filter-ui', title: 'Build a UI for the filtered tree' },
       { id: 'angular-bug-reports-debugging', title: 'Fix an Angular screen from three user bug reports' },
       { id: 'promise-contract-typescript', title: 'Implement a Promise contract in TypeScript' },
       { id: 'ai-chat-frontend-design', title: 'Design the frontend of an AI chat application' },
