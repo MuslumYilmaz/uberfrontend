@@ -55,6 +55,13 @@ describe('ReviewModeService', () => {
     expect(service.normalize({ ...REVIEW_PAYLOAD, sessionMinutes: 0 })).toBeNull();
   });
 
+  it('keeps the written review\'s own clock when the scenario gives one', () => {
+    expect(service.normalize({ ...REVIEW_PAYLOAD, reviewMinutes: 60 })?.reviewMinutes).toBe(60);
+    expect(service.normalize(REVIEW_PAYLOAD)?.reviewMinutes).toBeUndefined();
+    expect(service.normalize({ ...REVIEW_PAYLOAD, reviewMinutes: 0 })).toBeNull();
+    expect(service.normalize({ ...REVIEW_PAYLOAD, reviewMinutes: 'an hour' })).toBeNull();
+  });
+
   it('only loads files from the review-mode folder', async () => {
     expect(await firstValueFrom(service.load('assets/questions/pressure-modes/counter.v1.json'))).toBeNull();
   });

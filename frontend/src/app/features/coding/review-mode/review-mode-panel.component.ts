@@ -45,6 +45,7 @@ export function readReviewDraft(questionId: string): ReviewModeDraft | null {
     return {
       open: value.open !== false,
       startedAt: Number.isFinite(value.startedAt) ? Number(value.startedAt) : Date.now(),
+      ...(Number.isFinite(value.interviewStartedAt) ? { interviewStartedAt: Number(value.interviewStartedAt) } : {}),
       phase,
       comments: Object.fromEntries(Object.entries(comments).filter(([, text]) => typeof text === 'string')) as Record<string, string>,
       summary: typeof value.summary === 'string' ? value.summary : '',
@@ -91,6 +92,8 @@ export class ReviewModePanelComponent implements OnChanges {
   readonly comments = signal<Readonly<Record<string, string>>>({});
   readonly summary = signal('');
   private readonly startedAt = signal(Date.now());
+  /** The interview's clock, from the moment the written review was handed in. */
+  private readonly interviewStartedAt = signal<number | null>(null);
   private readonly now = signal(Date.now());
   private readonly scenarioSignal = signal<ReviewModeScenario | null>(null);
 
@@ -114,10 +117,13 @@ export class ReviewModePanelComponent implements OnChanges {
     .filter((entry) => entry.text));
 
   readonly timerLabel = computed(() => {
-    const total = this.scenarioSignal()?.sessionMinutes ?? 0;
-    const elapsed = Math.max(0, Math.floor((this.now() - this.startedAt()) / 60_000));
-    const left = total - elapsed;
-    return left > 0 ? `${left} of ${total} min left` : `Time is up: ${-left} min over ${total}`;
+    const scenario = this.scenarioSignal();
+    const session = scenario?.sessionMinutes ?? 0;
+    // A review sent ahead has its own clock; the fixes and the comparison then run on the interview's.
+    if (!scenario?.reviewMinutes) return this.clock(this.startedAt(), session, '');
+    return this.phase() === 'review'
+      ? this.clock(this.startedAt(), scenario.reviewMinutes, 'Review')
+      : this.clock(this.interviewStartedAt() ?? this.now(), session, 'Interview');
   });
 
   constructor() {
@@ -136,10 +142,20 @@ export class ReviewModePanelComponent implements OnChanges {
     this.phase.set(draft?.phase ?? 'review');
     this.comments.set(draft?.comments ?? {});
     this.summary.set(draft?.summary ?? '');
-    // A review started again keeps its comments and starts a new session clock.
+    // A review started again keeps its comments and starts new clocks, the interview's too when it reopens there.
     this.startedAt.set(draft?.open ? draft.startedAt : Date.now());
+    this.interviewStartedAt.set(draft?.open
+      ? draft.interviewStartedAt ?? null
+      : this.phase() === 'review' ? null : Date.now());
     this.now.set(Date.now());
     this.save();
+  }
+
+  private clock(from: number, total: number, name: string): string {
+    const elapsed = Math.max(0, Math.floor((this.now() - from) / 60_000));
+    const left = total - elapsed;
+    if (!name) return left > 0 ? `${left} of ${total} min left` : `Time is up: ${-left} min over ${total}`;
+    return left > 0 ? `${name}: ${left} of ${total} min left` : `${name}: time is up, ${-left} min over ${total}`;
   }
 
   severityLabel(severity: ReviewModeSeverity): string {
@@ -175,7 +191,10 @@ export class ReviewModePanelComponent implements OnChanges {
   }
 
   go(phase: ReviewModePhase): void {
+    // Handing in the written review starts the interview.
+    if (phase !== 'review' && this.interviewStartedAt() === null) this.interviewStartedAt.set(Date.now());
     this.phase.set(phase);
+    this.now.set(Date.now());
     this.save();
   }
 
@@ -186,9 +205,11 @@ export class ReviewModePanelComponent implements OnChanges {
 
   private save(open = true): void {
     if (!this.questionId) return;
+    const interviewStartedAt = this.interviewStartedAt();
     writeReviewDraft(this.questionId, {
       open,
       startedAt: this.startedAt(),
+      ...(interviewStartedAt !== null ? { interviewStartedAt } : {}),
       phase: this.phase(),
       comments: this.comments(),
       summary: this.summary(),

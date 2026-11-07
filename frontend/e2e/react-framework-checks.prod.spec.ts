@@ -1530,7 +1530,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await page.getByTestId('review-mode-start').click();
     const panel = page.getByTestId('review-mode-panel');
     await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Add label filters to the issue list');
-    await expect(page.getByTestId('review-mode-timer')).toHaveText('90 of 90 min left');
+    // GitLab's written review has up to an hour, finished before the 90-minute interview starts.
+    await expect(page.getByTestId('review-mode-timer')).toHaveText('Review: 60 of 60 min left');
     await expect(page.getByTestId('review-mode-file-0')).toContainText('watch(selectedLabel, loadIssues, { immediate: true });');
     await expect(page.getByTestId('review-mode-file-2')).toContainText('src/App.spec.js');
     await expectNoHorizontalOverflow(page);
@@ -1543,6 +1544,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page.getByTestId('review-mode-summary')).toHaveValue('Request changes: the filter reloads the list.');
 
     await page.getByTestId('review-mode-start-fixes').click();
+    await expect(page.getByTestId('review-mode-timer')).toHaveText('Interview: 90 of 90 min left');
     await expect(panel).toContainText('L84: the watch reloads the list on every label');
     await waitForFrameworkPreview(page, '.issue');
     await loadCanonicalBundle(page, REVIEW_FIXES);

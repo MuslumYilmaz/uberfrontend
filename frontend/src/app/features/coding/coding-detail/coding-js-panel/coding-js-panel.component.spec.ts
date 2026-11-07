@@ -152,6 +152,17 @@ describe('CodingJsPanelComponent', () => {
     });
   });
 
+  it("starts timed practice at the task's own minutes, the number its plan row shows", () => {
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    const reset = () => (component as any).resetRunnerStateForQuestionChange();
+    component.question = { id: 'js-debug-bug-squash-invoices', difficulty: 'hard' } as any;
+    reset();
+    expect(component.interviewDurationMin()).toBe(45);
+    component.question = { id: 'js-flatten-once', difficulty: 'easy' } as any;
+    reset();
+    expect(component.interviewDurationMin()).toBe(15);
+  });
+
   describe('in a rehearsal', () => {
     it('runs no tests once the review has locked the task', async () => {
       const runner = new RunnerStub();

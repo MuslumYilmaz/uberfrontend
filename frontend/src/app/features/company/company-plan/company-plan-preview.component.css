@@ -265,6 +265,11 @@
   color: var(--uf-text-tertiary);
 }
 
+/* On a phone the time moves into the row's line, so the minutes shown still add up to the plan's total. */
+.plan-row__inline-time {
+  display: none;
+}
+
 .plan-row__arrow,
 .plan-row__lock {
   flex: none;
@@ -400,6 +405,10 @@
 
   .plan-row__time {
     display: none;
+  }
+
+  .plan-row__inline-time {
+    display: inline;
   }
 
   .preview__panel {

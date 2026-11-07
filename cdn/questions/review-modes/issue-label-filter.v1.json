@@ -4,6 +4,7 @@
   "title": "Issue list label filter review",
   "access": "premium",
   "sessionMinutes": 90,
+  "reviewMinutes": 60,
   "supportedQuestions": {
     "vue": "vue-issue-list-merge-request-review"
   },

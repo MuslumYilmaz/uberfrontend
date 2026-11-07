@@ -18,7 +18,8 @@ export const COMPANY_PLAN_DATA_RELATIVE_PATH = path.join('questions', 'company-p
 
 const TECHS = ['javascript', 'react', 'angular', 'vue', 'css', 'html'];
 const FRAMEWORK_TECHS = new Set(['react', 'angular', 'vue']);
-const MINUTES_BY_DIFFICULTY = { easy: 15, intermediate: 30, hard: 45 };
+// A task's minutes come from the module the task page and timed practice read, so all three say the same number.
+const { practiceMinutes } = loadTsModule(path.join(sharedRoot, 'practice-minutes.ts'));
 const MINUTES_BY_KIND = { 'system-design': 45, trivia: 10, guide: 15 };
 const MAX_ROUND_SOURCES = 3;
 // The largest date budget in a plan: a list has no use for more concept questions than it takes to reach it.
@@ -65,7 +66,7 @@ function catalogTask(entry, kind, tech, sessionMinutes) {
     kind,
     ...(tech ? { tech } : {}),
     access: entry.access === 'premium' ? 'premium' : 'free',
-    minutes: sessionMinutes ?? MINUTES_BY_KIND[kind] ?? MINUTES_BY_DIFFICULTY[entry.difficulty] ?? MINUTES_BY_DIFFICULTY.intermediate,
+    minutes: sessionMinutes ?? MINUTES_BY_KIND[kind] ?? practiceMinutes(entry),
     ...(entry.pressureModeAsset ? { pressure: true } : {}),
     ...(focus ? { focus } : {}),
     companies: Array.isArray(entry.companies) ? entry.companies.map((value) => String(value).trim().toLowerCase()) : [],
@@ -73,7 +74,10 @@ function catalogTask(entry, kind, tech, sessionMinutes) {
   };
 }
 
-/** A merge request review runs on the clock its page shows, so the plan counts that session, not the difficulty. */
+/**
+ * A merge request review runs on the clocks its page shows, so the plan counts them, not the difficulty: the
+ * interview, and the written review before it when the scenario gives that its own time.
+ */
 function reviewSessionMinutes(cdnRoot, entry) {
   if (typeof entry.reviewModeAsset !== 'string') return undefined;
   const review = readJsonIfExists(path.join(cdnRoot, entry.reviewModeAsset.replace(/^assets\//, '')));
@@ -81,7 +85,11 @@ function reviewSessionMinutes(cdnRoot, entry) {
   if (!Number.isInteger(minutes) || minutes <= 0) {
     throw new Error(`[gen-company-plan-data] ${entry.id}: ${entry.reviewModeAsset} gives no session length.`);
   }
-  return minutes;
+  const reviewMinutes = review.reviewMinutes === undefined ? 0 : Number(review.reviewMinutes);
+  if (!Number.isInteger(reviewMinutes) || reviewMinutes < 0) {
+    throw new Error(`[gen-company-plan-data] ${entry.id}: ${entry.reviewModeAsset} gives no valid review length.`);
+  }
+  return reviewMinutes + minutes;
 }
 
 function readCatalog(cdnRoot) {

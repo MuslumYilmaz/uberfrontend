@@ -30,8 +30,13 @@ export type ReviewModeScenario = {
   readonly id: string;
   readonly title: string;
   readonly access: 'free' | 'premium';
-  /** The whole session, review and fixes, as the interview books it. */
+  /**
+   * The interview, as it is booked. Without `reviewMinutes` it covers the written review too; with them, it covers the
+   * fixes and the comparison that follow it.
+   */
   readonly sessionMinutes: number;
+  /** A written review sent ahead of the interview has its own clock, as GitLab's "up to an hour of review". */
+  readonly reviewMinutes?: number;
   readonly supportedQuestions: Readonly<Partial<Record<ReviewModeFramework, string>>>;
   readonly mergeRequest: {
     readonly title: string;
@@ -49,6 +54,8 @@ export type ReviewModeDraft = {
   /** The review is on screen; leaving it keeps the comments for the next start. */
   readonly open: boolean;
   readonly startedAt: number;
+  /** When the written review was handed in and the interview's clock began; absent before then. */
+  readonly interviewStartedAt?: number;
   readonly phase: ReviewModePhase;
   /** Comments by file path. */
   readonly comments: Readonly<Record<string, string>>;

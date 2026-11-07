@@ -415,6 +415,27 @@ test('a merge request review without a session length stops the generator', () =
   assert.throws(() => build(undefined, files), /react-review-gone: assets\/questions\/review-modes\/gone\.v1\.json gives no session length/);
 });
 
+test('a review sent ahead of the interview adds its own clock to the plan, as the page runs both', () => {
+  const files = (review) => ({
+    ...baseCatalog,
+    'react/coding.json': [
+      ...baseCatalog['react/coding.json'],
+      { id: 'react-review-cart', title: 'Review a cart', companies: ['acme'], reviewModeAsset: 'assets/questions/review-modes/cart.v1.json' },
+    ],
+    'review-modes/cart.v1.json': review,
+  });
+  assert.equal(build(undefined, files({ sessionMinutes: 90, reviewMinutes: 60 })).tasks['react-review-cart'].minutes, 150);
+  assert.throws(() => build(undefined, files({ sessionMinutes: 90, reviewMinutes: 'an hour' })), /gives no valid review length/);
+});
+
+test('a task with an author\'s estimate counts it, as its page and timed practice do', () => {
+  const files = { ...baseCatalog, 'javascript/coding.json': [...baseCatalog['javascript/coding.json'], { id: 'js-estimated', title: 'Estimated', difficulty: 'intermediate', estimatedMinutes: 40, companies: ['acme'] }] };
+  const tasks = build(undefined, files).tasks;
+  assert.equal(tasks['js-estimated'].minutes, 40);
+  assert.equal(tasks['js-new'].minutes, 45);
+  assert.equal(tasks['js-old'].minutes, 15);
+});
+
 test('the summary counts what Premium opens from the catalog', () => {
   const counts = build({ formatPractice: { javascript: ['js-starter'], react: ['js-starter'] } }).general.premiumCounts;
   assert.deepEqual(counts, { javascript: 1, react: 1, systemDesign: 1 });

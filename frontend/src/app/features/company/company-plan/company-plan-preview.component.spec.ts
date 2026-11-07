@@ -146,6 +146,9 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(text('.preview__section-sub')).toBe('They run in your browser. No account needed.');
       expect(rows[0].getAttribute('href')).toMatch(/^\/javascript\/(coding|debug)\//);
       expect(rows[0].textContent).toMatch(/Modelled on a report: Aced, (Jul|Oct) 2026 · Coding assessment/);
+      // A phone shows each row's minutes in its line, so the rows still add up to the plan's total there.
+      const times = fixture.componentInstance.openTasks().map((row) => ` · ${row.time}`);
+      expect(rows.map((row) => row.querySelector('[data-testid="company-plan-open-task-time"]')?.textContent)).toEqual(times);
       // "Fix async race in `fetchWithCache`" shows its code as code.
       expect(rows.map((row) => row.querySelector('code')?.textContent)).toContain('fetchWithCache');
       expect(rows.some((row) => row.textContent?.includes('`'))).toBeFalse();
@@ -346,7 +349,8 @@ describe('CompanyPlanPreviewComponent', () => {
 
     it('starts on the plan itself, with no free warm-ups', () => {
       setup({ companies: 'walmart', when: 'next-week', level: 'senior' }, { viewer: 'premium' });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?$/);
+      // hoursText's shape: whole hours, then the minutes in five-minute steps.
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?$/);
       expect(all('company-plan-open-task').length + all('company-plan-rest-task').length).toBe(6);
       expect(text('#company-plan-rest-title')).toBe('The rest of your plan');
     });

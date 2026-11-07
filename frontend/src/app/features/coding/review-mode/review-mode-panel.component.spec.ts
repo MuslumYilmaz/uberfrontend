@@ -58,6 +58,30 @@ describe('ReviewModePanelComponent', () => {
 
   afterEach(() => localStorage.removeItem(reviewDraftKey(QUESTION_ID)));
 
+  it('gives a review sent ahead its own clock, then starts the interview\'s when the review is handed in', () => {
+    const renderTimed = () => {
+      fixture = TestBed.createComponent(ReviewModePanelComponent);
+      fixture.componentRef.setInput('scenario', { ...SCENARIO, reviewMinutes: 60 });
+      fixture.componentRef.setInput('questionId', QUESTION_ID);
+      fixture.detectChanges();
+      host = fixture.nativeElement as HTMLElement;
+    };
+    const timer = () => host.querySelector('[data-testid="review-mode-timer"]')?.textContent?.trim();
+
+    renderTimed();
+    expect(timer()).toBe('Review: 60 of 60 min left');
+    expect(readReviewDraft(QUESTION_ID)?.interviewStartedAt).toBeUndefined();
+    click('review-mode-start-fixes');
+    expect(timer()).toBe('Interview: 90 of 90 min left');
+    expect(readReviewDraft(QUESTION_ID)?.interviewStartedAt).toEqual(jasmine.any(Number));
+    fixture.destroy();
+
+    // An hour and ten minutes into a review left open, its clock says how far over it is.
+    localStorage.setItem(reviewDraftKey(QUESTION_ID), JSON.stringify({ open: true, startedAt: Date.now() - 70 * 60_000, phase: 'review', comments: {}, summary: '' }));
+    renderTimed();
+    expect(timer()).toBe('Review: time is up, 10 min over 60');
+  });
+
   it('shows the request, a diff for each file and the session clock', () => {
     render();
     expect(host.querySelector('h1')?.textContent).toContain('Add the issue list');

@@ -63,7 +63,7 @@
         <a class="plan-row" data-testid="company-plan-open-task" [routerLink]="row.task.route" [fragment]="row.task.fragment" [state]="row.state" (click)="taskOpened(row.task)">
           <span class="plan-row__text">
             <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
-            <span class="plan-row__meta">{{ row.why }}</span>
+            <span class="plan-row__meta">{{ row.why }}<span class="plan-row__inline-time" data-testid="company-plan-open-task-time"> · {{ row.time }}</span></span>
             @if (row.task.pressure) {
               <span class="plan-row__tag">Pressure Mode</span>
             }

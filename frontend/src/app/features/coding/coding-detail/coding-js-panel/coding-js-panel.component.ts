@@ -18,6 +18,7 @@ import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-promp
 import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
+import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -1189,6 +1190,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.interviewRemainingSec.set(0);
     this.interviewSetupOpen.set(false);
     this.interviewSession = null;
+    // Timed practice starts at the task's own minutes, the number its plan row shows; a running session keeps its own.
+    this.interviewDurationMin.set(timedPracticeStep(practiceMinutes(this.question)));
     this.stopInterviewTicker();
     this.subTab.set('tests');
     this.testResultsChange.emit([]);

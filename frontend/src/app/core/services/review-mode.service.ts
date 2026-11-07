@@ -53,6 +53,7 @@ export class ReviewModeService {
     const title = this.text(source['title']);
     const access = source['access'] === 'premium' ? 'premium' : source['access'] === 'free' ? 'free' : null;
     const sessionMinutes = Number(source['sessionMinutes']);
+    const reviewMinutes = source['reviewMinutes'] === undefined ? null : Number(source['reviewMinutes']);
     const supportedQuestions = this.frameworkMap(source['supportedQuestions']);
     const request = this.record(source['mergeRequest']);
     const issue = this.record(request?.['issue']);
@@ -67,6 +68,7 @@ export class ReviewModeService {
 
     if (!schemaVersion || !id || !title || !access || !supportedQuestions) return null;
     if (!Number.isFinite(sessionMinutes) || sessionMinutes <= 0) return null;
+    if (reviewMinutes !== null && (!Number.isInteger(reviewMinutes) || reviewMinutes <= 0)) return null;
     if (!request || !issue || !files.length || paths.size !== files.length) return null;
     const requestTitle = this.text(request['title']);
     const description = this.text(request['description']);
@@ -84,6 +86,7 @@ export class ReviewModeService {
       title,
       access,
       sessionMinutes,
+      ...(reviewMinutes !== null ? { reviewMinutes } : {}),
       supportedQuestions,
       mergeRequest: { title: requestTitle, description, issue: { title: issueTitle, requirements }, files },
       sampleReview: { summary, comments },

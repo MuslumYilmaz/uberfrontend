@@ -2292,7 +2292,7 @@
       "kind": "coding",
       "tech": "react",
       "access": "free",
-      "minutes": 30,
+      "minutes": 40,
       "pressure": true,
       "focus": [
         "ui"
@@ -3022,7 +3022,7 @@
       "kind": "coding",
       "tech": "vue",
       "access": "premium",
-      "minutes": 90,
+      "minutes": 150,
       "focus": [
         "debug",
         "ui"
