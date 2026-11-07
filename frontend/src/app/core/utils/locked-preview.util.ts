@@ -65,7 +65,7 @@ export type CodingLockedPreviewQuestion = Pick<
   'id' | 'title' | 'description' | 'tags' | 'difficulty' | 'premiumPreview' | 'starterCode' | 'code'
 > & {
   starterCodeTs?: string;
-} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset'>>;
+} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset' | 'reviewModeAsset'>>;
 
 type TriviaContext = BuildContext & {
   technology?: string;
@@ -83,6 +83,10 @@ export const CODING_PREMIUM_UNLOCK_DESCRIPTION =
 /** Added to a coding task's unlock line when the task has an Interview Pressure Mode, as its plan row's chip says. */
 export const CODING_PRESSURE_MODE_UNLOCK =
   'It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.';
+
+/** Added to a coding task's unlock line when the task opens as a merge request review. */
+export const CODING_REVIEW_MODE_UNLOCK =
+  'It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.';
 
 export const SYSTEM_DESIGN_PREMIUM_UNLOCK_DESCRIPTION =
   'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
@@ -638,7 +642,11 @@ export const buildLockedPreviewForCoding = (
   const unlock = preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION;
   return {
     what,
-    unlockDescription: q.pressureModeAsset ? `${unlock} ${CODING_PRESSURE_MODE_UNLOCK}` : unlock,
+    unlockDescription: [
+      unlock,
+      ...(q.pressureModeAsset ? [CODING_PRESSURE_MODE_UNLOCK] : []),
+      ...(q.reviewModeAsset ? [CODING_REVIEW_MODE_UNLOCK] : []),
+    ].join(' '),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
     unlockBullets: buildUnlockBullets(ctx),

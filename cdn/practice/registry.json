@@ -9586,6 +9586,30 @@
     "assetRef": "questions/vue/coding.json#vue-chips-input-autocomplete"
   },
   {
+    "id": "vue-issue-list-merge-request-review",
+    "family": "question",
+    "title": "Merge Request Review: Issue List Label Filter",
+    "route": "/vue/coding/vue-issue-list-merge-request-review",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "Review a merge request that adds label filters to a Vue 3 issue list: read the three-file diff, write your comments, fix what blocks the merge in the workspace, then compare with a sample review.",
+    "tags": [
+      "vue",
+      "composition-api",
+      "watchers",
+      "computed",
+      "testing",
+      "accessibility",
+      "responsive",
+      "debugging"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/vue/coding.json#vue-issue-list-merge-request-review"
+  },
+  {
     "id": "vue-multi-step-form",
     "family": "question",
     "title": "Multi-step Signup Form (3-step Wizard)",

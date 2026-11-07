@@ -2961,5 +2961,252 @@
       "title": "Build Snake Game in Vue",
       "description": "Create a grid-based snake game with keyboard movement, timed updates, food spawning, score tracking, and game over on wall or self collisions."
     }
+  },
+  {
+    "id": "vue-issue-list-merge-request-review",
+    "title": "Merge Request Review: Issue List Label Filter",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "composition-api",
+      "watchers",
+      "computed",
+      "testing",
+      "accessibility",
+      "responsive",
+      "debugging"
+    ],
+    "description": {
+      "summary": "Review a merge request that adds label filters and an open-issue count to a small Vue 3 issue list, then fix what should hold the merge. Write your comments first, implement the top fixes in the workspace, and compare your review with a sample one. Two 2024 accounts of the GitLab frontend interview describe the format: one candidate got a merge request on a simple Vue app with an API call two days ahead, the other reviewed a Vue.js merge request with Jest unit tests.",
+      "specs": {
+        "requirements": [
+          "Start the review on this page and read the issue and the diff of `src/App.vue`, `src/App.css` and `src/App.spec.js` before you change any code.",
+          "Comment on each file with line numbers, and write a summary that says what blocks the merge and what you would fix first.",
+          "Then implement the fixes you would hold the merge for in the workspace, which opens on the merge request's code, and run the checks.",
+          "Keep the class names `.issue-count`, `.label-filter`, `.issues-state`, `.issues` and `.issue`, which the checks read."
+        ],
+        "expectedBehavior": [
+          "The page loads the issues once and lists the five open ones, and the header reads `5 open issues`.",
+          "A label filter shows its open issues at once, with no loading text: `bug` lists two and reads `2 open issues`, `docs` lists one and reads `1 open issue`.",
+          "The filters work from a keyboard and the selected one is marked as pressed; the issues are list items; the page fits a 360px-wide phone.",
+          "The spec fails when the filter reloads the list or the count is wrong."
+        ],
+        "implementationNotes": [
+          "The issues API is a stand-in inside `App.vue` that answers after 600 ms, because the preview runs `App.vue` only.",
+          "The preview does not run Jest: `App.spec.js` is there to review and improve.",
+          "The checks cover four of the fixes. The error state, the layout and the spec are yours to verify, so say them out loud as you would to the interviewer."
+        ],
+        "techFocus": [
+          "Reviewing a change against its issue",
+          "Watchers versus computed properties",
+          "Accessible toggle buttons and list markup",
+          "Grid layouts that fit a phone",
+          "Jest specs that can fail"
+        ]
+      }
+    },
+    "starterCodeHint": "Review first: open the merge request review on this page and comment on the diff. Then fix the change in `src/App.vue` and `src/App.css`, keeping the class names the checks read.",
+    "solutionBlock": {
+      "overview": "The merge request adds the filter bar but wires it to a watcher that loads the issues again on every click and once more on start. The fix is mostly deletion: keep `onMounted(loadIssues)`, let `visibleIssues` filter the loaded issues and count that list. Then make the filters buttons with `aria-pressed`, put the `li` back, restore the try, catch and finally, let the grid fall back to one column on a phone, and rewrite the spec so it awaits the load and asserts on what renders.",
+      "approaches": [
+        {
+          "title": "Review against the issue, then fix in order of risk",
+          "prose": "Read the issue first, then the diff with the issue beside it, and write each comment with its line and a severity.\n\n1. `watch(selectedLabel, loadIssues, { immediate: true })` breaks the one rule the issue states: a label must filter without a reload. It also fires on start next to `onMounted(loadIssues)`, so the page sends two requests on load. Delete it; `visibleIssues` already does the filtering.\n2. `openCount` counts every open issue. Derive the label from `visibleIssues.length`, with `issue` for one and `issues` otherwise.\n3. Turn each `<span @click>` into `<button type=\"button\" :aria-pressed=\"…\">` with a `:key`, and name the group with a label instead of an `h3`.\n4. Swap the `div` back to `li`, put back the try, catch and finally around `fetchIssues()`, and drop the `console.log`.\n5. Replace the fixed grid columns with `minmax(0, 1fr) auto` and a single column under 560px, and let the toolbar wrap.\n6. Rewrite the spec: fake timers, `await flushPromises()`, then assert the titles, the count and `aria-pressed`, and that the loading text stays away after a click.\n\nIn the call, walk through the review in the same order: what blocks the merge, what must change, then the nits."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Fixing the count but leaving the watch: the list still blanks on every click.",
+          "Removing `onMounted` instead of the watch: the page still loads on every click.",
+          "A `button` without `type=\"button\"` submits a surrounding form.",
+          "A spec that asserts inside `setTimeout` or `then` without awaiting it always passes."
+        ],
+        "techniques": [
+          "Derive filtered lists and counts with `computed`; keep watchers for side effects.",
+          "Toggle buttons expose their state with `aria-pressed`.",
+          "Grid columns with `minmax(0, 1fr)` let long text wrap instead of overflowing.",
+          "Fake timers plus `flushPromises()` make async component tests deterministic."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-issue-list-merge-request-review.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v2:ui:vue:vue-issue-list-merge-request-review"
+    },
+    "reviewModeAsset": "assets/questions/review-modes/issue-label-filter.v1.json",
+    "solutionAsset": "assets/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json",
+    "companies": [
+      "gitlab"
+    ],
+    "sources": [
+      {
+        "label": "Taro: GitLab front end engineer interview, Canada, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+        "company": "gitlab",
+        "publisher": "Taro",
+        "date": "2024-03",
+        "note": "One self-reported account: two days before the interview, a merge request to review on a simple Vue 2 app with an API call, some operations on the data and conditional rendering. This task practises the format in Vue 3; the app, its bugs and the checks are ours."
+      },
+      {
+        "label": "Taro: GitLab front end engineer interview, United States, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/",
+        "company": "gitlab",
+        "publisher": "Taro",
+        "date": "2024-02",
+        "note": "One self-reported account describes the technical round as a merge request review done in Vue.js along with unit tests in Jest, which is why this change ships a Jest spec to review."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Review a merge request that adds label filters to a Vue 3 issue list: read the three-file diff, write your comments, fix what blocks the merge in the workspace, then compare with a sample review.",
+      "learningOutcomes": [
+        "Spot a watcher that reloads data a computed property should filter.",
+        "Catch a count that ignores the filter next to it.",
+        "Flag controls and markup a keyboard or a screen reader cannot use.",
+        "Tell a Jest spec that can fail from one that always passes."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-06",
+    "seo": {
+      "title": "Vue Merge Request Review: Fix an Issue List Filter",
+      "description": "Review a Vue 3 merge request with seeded bugs: a filter that reloads the list, a wrong count, inaccessible filters, a phone overflow and a spec that cannot fail."
+    },
+    "frameworkTests": [
+      {
+        "id": "mr-review-filter-keeps-list",
+        "name": "A label filters the loaded issues without loading them again",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".issue",
+            "count": 5,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "click",
+            "selector": ".label-filter",
+            "index": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": ".issues-state",
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".issue",
+            "count": 2,
+            "timeoutMs": 200
+          },
+          {
+            "type": "expectText",
+            "selector": ".issue .issue-title",
+            "text": "Dark mode resets after sign-in"
+          }
+        ]
+      },
+      {
+        "id": "mr-review-count-follows-filter",
+        "name": "The count follows the selected label",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".issue",
+            "count": 5,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "expectText",
+            "selector": ".issue-count",
+            "text": "5 open issues"
+          },
+          {
+            "type": "click",
+            "selector": ".label-filter",
+            "index": 3
+          },
+          {
+            "type": "expectText",
+            "selector": ".issue-count",
+            "text": "1 open issue"
+          },
+          {
+            "type": "click",
+            "selector": ".label-filter",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".issue-count",
+            "text": "2 open issues"
+          }
+        ]
+      },
+      {
+        "id": "mr-review-filters-are-buttons",
+        "name": "The filters are buttons that say which one is pressed",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".issue",
+            "count": 5,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "expectCount",
+            "selector": "button.label-filter",
+            "count": 4
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".label-filter",
+            "index": 0,
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".label-filter",
+            "index": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".label-filter",
+            "index": 2,
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".label-filter",
+            "index": 0,
+            "attribute": "aria-pressed",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "mr-review-issues-are-list-items",
+        "name": "The issues are list items",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".issue",
+            "count": 5,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "expectCount",
+            "selector": ".issues > li.issue",
+            "count": 5
+          }
+        ]
+      }
+    ]
   }
 ]

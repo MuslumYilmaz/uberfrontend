@@ -39,6 +39,12 @@ const COUNTER_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const REVIEW_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json',
+);
+// The fixes live in the component and its stylesheet; the spec is reviewed, not run.
+const REVIEW_FIXES = { 'src/App.vue': REVIEW_SOLUTION['src/App.vue'], 'src/App.css': REVIEW_SOLUTION['src/App.css'] };
+
 const DEBOUNCE_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-debounced-search-pressure-solution.v1.json',
@@ -1345,6 +1351,59 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page).toHaveURL(/\/react\/coding\/react-debounced-search$/);
     await waitForFrameworkPreview(page, '.input');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  test('Vue merge request review keeps the written review, passes the top fixes and compares with the sample', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium review test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/vue/coding/vue-issue-list-merge-request-review');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.issue');
+
+    // The workspace opens on the change under review, which fails every check.
+    const starter = await runChecks(page, 4);
+    await expect(starter.locator('.framework-check-results__summary')).toHaveText('0/4 passed');
+    expect(await checkRows(page).evaluateAll((rows) => rows.map((row) => row.getAttribute('data-failure-kind'))))
+      .toEqual(['assertion', 'assertion', 'assertion', 'assertion']);
+
+    await page.getByTestId('review-mode-start').click();
+    const panel = page.getByTestId('review-mode-panel');
+    await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Add label filters to the issue list');
+    await expect(page.getByTestId('review-mode-timer')).toHaveText('90 of 90 min left');
+    await expect(page.getByTestId('review-mode-file-0')).toContainText('watch(selectedLabel, loadIssues, { immediate: true });');
+    await expect(page.getByTestId('review-mode-file-2')).toContainText('src/App.spec.js');
+    await expectNoHorizontalOverflow(page);
+    await page.getByTestId('review-mode-comment-0').fill('L84: the watch reloads the list on every label');
+    await page.getByTestId('review-mode-summary').fill('Request changes: the filter reloads the list.');
+
+    // The written review stays on this device and reopens where it was.
+    await page.reload();
+    await expect(page.getByTestId('review-mode-comment-0')).toHaveValue('L84: the watch reloads the list on every label', { timeout: 30_000 });
+    await expect(page.getByTestId('review-mode-summary')).toHaveValue('Request changes: the filter reloads the list.');
+
+    await page.getByTestId('review-mode-start-fixes').click();
+    await expect(panel).toContainText('L84: the watch reloads the list on every label');
+    await waitForFrameworkPreview(page, '.issue');
+    await loadCanonicalBundle(page, REVIEW_FIXES);
+    await rebuildPreview(page, '.issue');
+    const fixed = await runChecks(page, 4);
+    await expect(fixed.locator('.framework-check-results__summary')).toHaveText('4/4 passed');
+    await dismissPostPassPrompt(page);
+
+    await page.getByTestId('review-mode-compare').click();
+    const sample = page.getByTestId('review-mode-sample');
+    await expect(sample.locator('.review-mode__comment-title').first()).toHaveText('Every label click loads the list again');
+    await expect(sample.locator('.review-mode__comment')).toHaveCount(10);
+    await expect(sample.locator('.review-mode__checked')).toHaveCount(4);
+    await expect(sample).toContainText('L84: the watch reloads the list on every label');
+
+    await page.getByTestId('review-mode-exit').click();
+    await expect(panel).toHaveCount(0);
+    await expect(page.getByTestId('question-title')).toBeVisible();
+    await expect(page.getByTestId('review-mode-entry')).toBeVisible();
   });
 
   for (const framework of ['angular', 'vue'] as const) {

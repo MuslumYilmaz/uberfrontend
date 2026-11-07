@@ -17,6 +17,9 @@ import { SeoService } from '../../../core/services/seo.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
+import { ReviewModeService } from '../../../core/services/review-mode.service';
+import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
+import { reviewDraftKey } from '../review-mode/review-mode-panel.component';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
@@ -3336,6 +3339,123 @@ describe('CodingDetailComponent', () => {
     const names = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList')
       ?.itemListElement?.map((item: any) => item.name) || [];
     expect(names[names.length - 1]).toBe('Theme panels with var() tokens');
+  });
+
+  describe('merge request review', () => {
+    const reviewQuestion = {
+      id: 'vue-issue-list-merge-request-review',
+      title: 'Merge Request Review: Issue List Label Filter',
+      access: 'premium',
+      difficulty: 'intermediate',
+      reviewModeAsset: 'assets/questions/review-modes/issue-label-filter.v1.json',
+      sdk: {
+        asset: 'assets/sb/vue/question/vue-issue-list-merge-request-review.v1.json',
+        openFile: '/src/App.vue',
+        storageKey: 'v2:ui:vue:vue-issue-list-merge-request-review',
+      },
+      frameworkTests: [],
+    } as any;
+    const reviewScenario: ReviewModeScenario = {
+      schemaVersion: '1.0.0',
+      id: 'issue-label-filter-review-v1',
+      title: 'Issue list label filter review',
+      access: 'premium',
+      sessionMinutes: 90,
+      supportedQuestions: { vue: reviewQuestion.id },
+      mergeRequest: {
+        title: 'Add label filters to the issue list',
+        description: 'Adds a filter bar above the list.',
+        issue: { title: 'Filter issues by label', requirements: ['Filter without loading the list again.'] },
+        files: [{ path: 'src/App.vue', before: '<p>Issues</p>\n', after: '<p>Issues</p>\n<p>Filters</p>\n' }],
+      },
+      sampleReview: {
+        summary: 'Request changes.',
+        comments: [{ path: 'src/App.vue', line: 2, severity: 'blocker', title: 'Reloads on click', body: 'Filter the loaded list.', checked: true }],
+      },
+    };
+    let load: jasmine.Spy;
+
+    beforeEach(() => {
+      localStorage.removeItem(reviewDraftKey(reviewQuestion.id));
+      load = spyOn(TestBed.inject(ReviewModeService), 'load').and.returnValue(of(reviewScenario));
+    });
+
+    afterEach(() => localStorage.removeItem(reviewDraftKey(reviewQuestion.id)));
+
+    async function render() {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+      auth.isLoggedIn.and.returnValue(true);
+      questionService.loadQuestions.and.returnValue(of([reviewQuestion]));
+      component.questionId = reviewQuestion.id;
+      component.questionTech = 'vue';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'vue';
+      component.kind = 'coding';
+      component.question.set(reviewQuestion);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      return { fixture, component, find: (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`) };
+    }
+
+    it('opens in place of the description with room for the diff, and gives the layout back on leaving', async () => {
+      const { fixture, component, find } = await render();
+      component.horizontalRatio.set(0.3);
+      expect(find('review-mode-panel')).toBeNull();
+
+      find('review-mode-start')!.click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(load).toHaveBeenCalledWith(reviewQuestion.reviewModeAsset);
+      expect(find('review-mode-panel')?.textContent).toContain('Add label filters to the issue list');
+      expect(find('question-title')).toBeNull();
+      expect(find('review-mode-entry')).toBeNull();
+      expect(component.horizontalRatio()).toBe(0.42);
+
+      find('review-mode-exit')!.click();
+      fixture.detectChanges();
+
+      expect(find('review-mode-panel')).toBeNull();
+      expect(find('question-title')).not.toBeNull();
+      expect(component.horizontalRatio()).toBe(0.3);
+      expect(JSON.parse(localStorage.getItem(reviewDraftKey(reviewQuestion.id))!).open).toBeFalse();
+    });
+
+    it('reopens a review left open on this device at the step it was on', async () => {
+      localStorage.setItem(
+        reviewDraftKey(reviewQuestion.id),
+        JSON.stringify({ open: true, startedAt: Date.now(), phase: 'fix', comments: { 'src/App.vue': 'L2: filter the loaded list' }, summary: '' }),
+      );
+      const { find } = await render();
+
+      expect(find('review-mode-panel')?.textContent).toContain('L2: filter the loaded list');
+      expect(find('review-mode-compare')).not.toBeNull();
+    });
+
+    it('stays closed on a phone, and for a review written for another task', async () => {
+      const { component } = await render();
+      const open = (component as any).openReviewMode.bind(component);
+
+      component.isPhoneViewport.set(true);
+      await open(reviewQuestion);
+      expect(component.reviewOpen()).toBeFalse();
+
+      component.isPhoneViewport.set(false);
+      load.and.returnValue(of({ ...reviewScenario, supportedQuestions: { vue: 'vue-other-task' } }));
+      await open(reviewQuestion);
+      expect(component.reviewOpen()).toBeFalse();
+    });
   });
 
   describe('question sources', () => {

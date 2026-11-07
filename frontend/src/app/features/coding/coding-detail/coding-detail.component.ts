@@ -19,6 +19,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -82,6 +83,9 @@ import type { FailureHint } from '../../../core/models/editor-assist.model';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
+import { ReviewModeService } from '../../../core/services/review-mode.service';
+import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
+import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
 import {
   AuthPromptContext,
   LoginRequiredDialogComponent,
@@ -171,6 +175,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         LockedPreviewComponent,
         QuestionSourcesComponent,
         LoginRequiredDialogComponent,
+        ReviewModePanelComponent,
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
@@ -407,6 +412,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private pressurePreviousAsideRatio: number | null = null;
   private pendingPressureExitReason: 'button' | 'navigation' | null = null;
 
+  // Merge request review: the task opens as a change to review in writing, then to fix in the workspace.
+  private readonly reviewModes = inject(ReviewModeService);
+  reviewScenario = signal<ReviewModeScenario | null>(null);
+  reviewOpen = signal(false);
+  reviewSupported = computed(() => {
+    const q = this.question();
+    return this.kind === 'coding' && this.isFrameworkTech() && typeof q?.reviewModeAsset === 'string' && q.reviewModeAsset.trim().length > 0;
+  });
+  private reviewLoadSeq = 0;
+  private reviewPreviousAsideRatio: number | null = null;
+
   // Practice session
   private practice: PracticeSession = null;
 
@@ -452,6 +468,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       code: q.code,
       starterCodeTs: (q as Question & { starterCodeTs?: string }).starterCodeTs,
       pressureModeAsset: q.pressureModeAsset,
+      reviewModeAsset: q.reviewModeAsset,
     };
     const publicCandidates = this.allQuestions.map((candidate) => ({
       id: candidate.id,
@@ -897,6 +914,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         this.solved.set(solvedIds.includes(q.id));
       }
     }, { allowSignalWrites: true });
+
+    // A new task closes the review; a review left open on this device reopens where it was.
+    effect(() => {
+      const q = this.question();
+      untracked(() => {
+        if (this.reviewOpen()) this.exitReviewMode();
+        this.reviewScenario.set(null);
+        if (!q?.reviewModeAsset || !this.isBrowser || this.demoMode) return;
+        if (readReviewDraft(q.id)?.open) void this.openReviewMode(q);
+      });
+    });
 
     effect(() => {
       const q = this.question();
@@ -2415,6 +2443,38 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     if (q.pressureModeAsset) this.pressureLoading.set(true);
     void this.activatePressureMode(q);
+  }
+
+  startReviewMode(): void {
+    const q = this.question();
+    if (!q || this.showMobileDesktopGuard() || !this.reviewSupported()) return;
+    void this.openReviewMode(q);
+  }
+
+  exitReviewMode(): void {
+    this.reviewOpen.set(false);
+    if (this.reviewPreviousAsideRatio !== null) {
+      this.horizontalRatio.set(this.reviewPreviousAsideRatio);
+      this.lastAsideRatio = this.reviewPreviousAsideRatio;
+    }
+    this.reviewPreviousAsideRatio = null;
+  }
+
+  private async openReviewMode(q: Question): Promise<void> {
+    const loadSeq = ++this.reviewLoadSeq;
+    const scenario = await firstValueFrom(this.reviewModes.load(String(q.reviewModeAsset || '')));
+    // A later task or a second click wins; a scenario for another task never opens here.
+    if (loadSeq !== this.reviewLoadSeq || this.question()?.id !== q.id) return;
+    if (!scenario || scenario.supportedQuestions[this.tech as 'react' | 'angular' | 'vue'] !== q.id) return;
+    // On a phone the workspace is closed, so a draft left open waits for a wider screen.
+    if (this.showMobileDesktopGuard()) return;
+    this.reviewScenario.set(scenario);
+    this.reviewOpen.set(true);
+    // The diff needs room to read; the workspace keeps the rest.
+    if (this.reviewPreviousAsideRatio === null) this.reviewPreviousAsideRatio = this.horizontalRatio();
+    this.descCollapsed.set(false);
+    this.activePanel.set(0);
+    this.horizontalRatio.set(Math.max(0.42, this.horizontalRatio()));
   }
 
   startPressureMode(): void {

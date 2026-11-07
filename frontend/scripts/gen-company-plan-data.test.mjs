@@ -382,8 +382,10 @@ test('a round says what it tests in its own words, and a task says what it pract
     'react/coding.json': [
       ...baseCatalog['react/coding.json'],
       { id: 'react-debug-render', title: 'Debug a render', companies: ['acme'] },
+      { id: 'react-review-cart', title: 'Review a cart', companies: ['acme'], reviewModeAsset: 'assets/questions/review-modes/cart.v1.json' },
     ],
     'css/coding.json': [{ id: 'css-grid', title: 'Grid', companies: ['acme'] }],
+    'review-modes/cart.v1.json': { sessionMinutes: 75 },
   });
   const [recruiter, bugSquash] = payload.companies.acme.variants[0].rounds;
   assert.equal(recruiter.focus, undefined);
@@ -392,10 +394,25 @@ test('a round says what it tests in its own words, and a task says what it pract
   assert.deepEqual(payload.tasks['js-sort-it'].focus, ['algo', 'js']);
   assert.deepEqual(payload.tasks['js-debug-race'].focus, ['debug', 'js']);
   assert.deepEqual(payload.tasks['react-debug-render'].focus, ['debug', 'ui']);
+  // A merge request review is read for its bugs before it is fixed, and the plan counts the session its page runs.
+  assert.deepEqual(payload.tasks['react-review-cart'].focus, ['debug', 'ui']);
+  assert.equal(payload.tasks['react-review-cart'].minutes, 75);
+  assert.equal(payload.tasks['react-debug-render'].minutes, 30);
   assert.deepEqual(payload.tasks['react-star-rating'].focus, ['ui']);
   assert.deepEqual(payload.tasks['css-grid'].focus, ['css', 'ui']);
   assert.deepEqual(build().tasks['concept-a'].focus, ['concepts', 'js']);
   assert.equal(payload.tasks['case-a'].focus, undefined);
+});
+
+test('a merge request review without a session length stops the generator', () => {
+  const files = {
+    ...baseCatalog,
+    'react/coding.json': [
+      ...baseCatalog['react/coding.json'],
+      { id: 'react-review-gone', title: 'Review', companies: ['acme'], reviewModeAsset: 'assets/questions/review-modes/gone.v1.json' },
+    ],
+  };
+  assert.throws(() => build(undefined, files), /react-review-gone: assets\/questions\/review-modes\/gone\.v1\.json gives no session length/);
 });
 
 test('the summary counts what Premium opens from the catalog', () => {

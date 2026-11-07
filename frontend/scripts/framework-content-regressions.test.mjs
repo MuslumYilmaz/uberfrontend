@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 251, cssSources: 317, changedAssets: 0, changedCssSources: 0 },
+    { assets: 253, cssSources: 319, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6659,6 +6659,57 @@ for (const framework of PRESSURE_FRAMEWORKS) {
     assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its scenario must list it for ${framework}`);
   }
 }
+
+// A merge request review opens the workspace on the change under review, so every sample comment must sit on the
+// line it quotes in both, and each comment marked as checked has its check.
+const REVIEW_SEVERITIES = new Set(['blocker', 'major', 'minor', 'nit']);
+const reviewScenarios = new Map();
+for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/review-modes'))) {
+  const label = `review mode ${file}`;
+  assert.match(file, /^[a-z0-9.-]+\.json$/, `${label}: the service only loads lowercase .json names`);
+  const scenario = json(`cdn/questions/review-modes/${file}`);
+  assert.ok(scenario.sessionMinutes > 0, `${label}: needs a session length`);
+  const files = scenario.mergeRequest.files;
+  assert.equal(new Set(files.map((entry) => entry.path)).size, files.length, `${label}: file paths must be unique`);
+  for (const entry of files) assert.notEqual(entry.before, entry.after, `${label}: ${entry.path} must change`);
+  for (const comment of scenario.sampleReview.comments) {
+    const entry = files.find((candidate) => candidate.path === comment.path);
+    assert.ok(entry, `${label}: "${comment.title}" points at ${comment.path}, which the request does not change`);
+    assert.ok(REVIEW_SEVERITIES.has(comment.severity), `${label}: "${comment.title}" has an unknown severity`);
+    const line = entry.after.split('\n')[comment.line - 1];
+    assert.ok(comment.snippet && line?.includes(comment.snippet), `${label}: "${comment.title}" must sit on the line it quotes (${comment.path}:${comment.line})`);
+  }
+  reviewScenarios.set(`assets/questions/review-modes/${file}`, scenario);
+}
+for (const framework of PRESSURE_FRAMEWORKS) {
+  for (const question of json(`cdn/questions/${framework}/coding.json`)) {
+    if (!question.reviewModeAsset) continue;
+    const scenario = reviewScenarios.get(question.reviewModeAsset);
+    assert.ok(scenario, `${question.id}: reviewModeAsset ${question.reviewModeAsset} is not a review file`);
+    assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its review must list it for ${framework}`);
+    assert.equal(scenario.access, question.access, `${question.id}: the review and the task share their access`);
+    const starter = json(`cdn/${question.sdk.asset.replace(/^assets\//, '')}`);
+    for (const entry of scenario.mergeRequest.files) {
+      assert.equal(fileCode(starter, entry.path), entry.after, `${question.id}: the starter's ${entry.path} must be the change under review`);
+    }
+    const checked = scenario.sampleReview.comments.filter((comment) => comment.checked).length;
+    assert.equal(checked, (question.frameworkTests ?? []).length, `${question.id}: one check per comment marked as checked in the workspace`);
+  }
+}
+
+const reviewQuestion = json('cdn/questions/vue/coding.json').find((entry) => entry.id === 'vue-issue-list-merge-request-review');
+assert.ok(reviewQuestion);
+assert.equal(reviewQuestion.access, 'premium');
+assert.deepEqual(reviewQuestion.companies, ['gitlab']);
+const reviewStarter = fileCode(json('cdn/sb/vue/question/vue-issue-list-merge-request-review.v1.json'), 'src/App.vue');
+const reviewSolution = fileCode(json('cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json'), 'src/App.vue');
+assert.match(reviewStarter, /watch\(selectedLabel, loadIssues, \{ immediate: true \}\);\nonMounted\(loadIssues\);/, 'the change under review reloads on every label and twice on start');
+assert.doesNotMatch(reviewSolution, /\bwatch\(/, 'the solution filters the loaded issues instead of watching the label');
+assert.match(reviewSolution, /onMounted\(loadIssues\);/);
+assert.match(reviewSolution, /<button\n\s+v-for="label in LABELS"\n\s+:key="label"\n\s+type="button"/, 'the solution filters are keyed buttons');
+assert.match(reviewSolution, /<li v-for="issue in visibleIssues"/);
+assert.match(reviewSolution, /\} finally \{\n\s+loading\.value = false;/, 'the solution resets loading after a failed request');
+assert.doesNotMatch(reviewSolution, /console\.log/);
 
 console.log('Framework content regressions: PASS');
 console.log('Legacy RIGHT -> UP -> LEFT reproduction: pending direction became LEFT');

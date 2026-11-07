@@ -78,6 +78,12 @@ describe('locked preview builder', () => {
     expect(withPressure?.unlockDescription).toBe(
       'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.',
     );
+
+    // So does a task that opens as a merge request review.
+    const withReview = buildLockedPreviewForCoding({ ...q, reviewModeAsset: 'assets/questions/review-modes/sum.v1.json' }, { candidates, tech: 'javascript', kind: 'coding' });
+    expect(withReview?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.',
+    );
   });
 
   it('builds a trivia preview without relying on answers', () => {

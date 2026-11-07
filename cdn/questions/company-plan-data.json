@@ -44,7 +44,7 @@
     "premiumCounts": {
       "react": 33,
       "angular": 22,
-      "vue": 21,
+      "vue": 22,
       "javascript": 51,
       "systemDesign": 20
     },
@@ -2964,6 +2964,19 @@
         "ui"
       ],
       "family": "image-slider"
+    },
+    "vue-issue-list-merge-request-review": {
+      "id": "vue-issue-list-merge-request-review",
+      "title": "Merge Request Review: Issue List Label Filter",
+      "route": "/vue/coding/vue-issue-list-merge-request-review",
+      "kind": "coding",
+      "tech": "vue",
+      "access": "premium",
+      "minutes": 90,
+      "focus": [
+        "debug",
+        "ui"
+      ]
     },
     "vue-lifecycle-hooks": {
       "id": "vue-lifecycle-hooks",
@@ -7325,14 +7338,15 @@
           ],
           "tasks": [
             {
-              "id": "js-debug-async-race",
+              "id": "vue-issue-list-merge-request-review",
               "report": {
                 "publisher": "Taro",
                 "date": "2024-03",
                 "approx": true
               },
               "rounds": [
-                "merge-request-review"
+                "merge-request-review",
+                "technical-interview"
               ],
               "lead": true,
               "prompt": true
@@ -7379,18 +7393,23 @@
               "prompt": true
             },
             {
+              "id": "js-debug-async-race",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-03",
+                "approx": true
+              },
+              "rounds": [
+                "merge-request-review"
+              ],
+              "prompt": true
+            },
+            {
               "id": "html-head-seo-basics",
               "report": {
                 "publisher": "Taro",
                 "date": "2022-05"
               }
-            },
-            {
-              "id": "vue-debounced-search",
-              "prompt": true,
-              "rounds": [
-                "merge-request-review"
-              ]
             },
             {
               "id": "vue-lifecycle-hooks"
@@ -7513,6 +7532,9 @@
             },
             {
               "id": "js-debug-async-race"
+            },
+            {
+              "id": "vue-issue-list-merge-request-review"
             },
             {
               "id": "vue-lifecycle-hooks"

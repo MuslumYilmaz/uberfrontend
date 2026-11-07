@@ -1203,6 +1203,28 @@
         ]
       },
       {
+        "id": "vue-issue-list-merge-request-review",
+        "kind": "coding",
+        "tech": "vue",
+        "title": "Merge Request Review: Issue List Label Filter",
+        "access": "premium",
+        "route": "/vue/coding/vue-issue-list-merge-request-review",
+        "sources": [
+          {
+            "label": "Taro: GitLab front end engineer interview, Canada, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-canada-march-1-2024-no-offer-negative-fbb295a4/",
+            "publisher": "Taro",
+            "date": "2024-03"
+          },
+          {
+            "label": "Taro: GitLab front end engineer interview, United States, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/",
+            "publisher": "Taro",
+            "date": "2024-02"
+          }
+        ]
+      },
+      {
         "id": "html-head-seo-basics",
         "kind": "coding",
         "tech": "html",

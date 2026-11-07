@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-06T13:34:44.753Z",
+  "generatedAt": "2026-11-06T16:13:37.551Z",
   "entries": [
     {
       "tech": "angular",
@@ -2454,6 +2454,12 @@
       "tech": "vue",
       "kind": "coding",
       "id": "vue-image-slider",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-issue-list-merge-request-review",
       "file": "vue/coding.json"
     },
     {

@@ -65,7 +65,11 @@
         </p>
         <!-- Description Panel -->
         <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
-          <ng-container *ngIf="pressureActive(); else normalDescriptionContent">
+          <ng-template #reviewOrDescription>
+            <app-review-mode-panel *ngIf="reviewOpen() && reviewScenario() as scenario; else normalDescriptionContent"
+              [scenario]="scenario" [questionId]="question()!.id" (exit)="exitReviewMode()"></app-review-mode-panel>
+          </ng-template>
+          <ng-container *ngIf="pressureActive(); else reviewOrDescription">
             <div *ngIf="pressureScenario() as scenario" class="pressure-mode" data-testid="pressure-mode-panel">
               <header class="pressure-mode__header">
                 <div class="pressure-mode__header-copy">
@@ -197,6 +201,25 @@
                 <button type="button" faButton variant="primary" data-testid="pressure-mode-start"
                   (click)="startPressureMode()">
                   Start Interview Pressure Mode
+                </button>
+              </section>
+
+              <section
+                *ngIf="reviewSupported() && workspaceAvailable() && !reviewOpen()"
+                class="pressure-entry"
+                data-testid="review-mode-entry"
+              >
+                <div>
+                  <p class="pressure-entry__eyebrow">Merge request review</p>
+                  <h2>Review the change, then fix it</h2>
+                  <p>
+                    Read the merge request and comment on it in writing, implement the top fixes in the workspace, then
+                    compare your review with a sample one. The clock runs for the length of the interview session.
+                  </p>
+                </div>
+                <button type="button" faButton variant="primary" data-testid="review-mode-start"
+                  (click)="startReviewMode()">
+                  Start the review
                 </button>
               </section>
 

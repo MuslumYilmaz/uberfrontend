@@ -43,7 +43,8 @@ function readJsonIfExists(filePath) {
 function taskFocus(entry, kind, tech) {
   const frameworkTask = FRAMEWORK_TECHS.has(tech);
   if (kind === 'trivia') return ['concepts', 'js'];
-  if (kind === 'debug' || entry.id.includes('-debug-')) return ['debug', frameworkTask ? 'ui' : 'js'];
+  // A merge request review is read for its bugs before it is fixed, as a debugging task is.
+  if (kind === 'debug' || entry.id.includes('-debug-') || entry.reviewModeAsset) return ['debug', frameworkTask ? 'ui' : 'js'];
   if (kind !== 'coding') return null;
   if (frameworkTask) return ['ui'];
   if (tech === 'html' || tech === 'css') return ['css', 'ui'];
@@ -55,7 +56,7 @@ function roundFocus(stage) {
   return ROUND_FOCUS.filter(([, pattern]) => pattern.test(text)).map(([focus]) => focus);
 }
 
-function catalogTask(entry, kind, tech) {
+function catalogTask(entry, kind, tech, sessionMinutes) {
   const focus = taskFocus(entry, kind, tech);
   return {
     id: entry.id,
@@ -64,12 +65,23 @@ function catalogTask(entry, kind, tech) {
     kind,
     ...(tech ? { tech } : {}),
     access: entry.access === 'premium' ? 'premium' : 'free',
-    minutes: MINUTES_BY_KIND[kind] ?? MINUTES_BY_DIFFICULTY[entry.difficulty] ?? MINUTES_BY_DIFFICULTY.intermediate,
+    minutes: sessionMinutes ?? MINUTES_BY_KIND[kind] ?? MINUTES_BY_DIFFICULTY[entry.difficulty] ?? MINUTES_BY_DIFFICULTY.intermediate,
     ...(entry.pressureModeAsset ? { pressure: true } : {}),
     ...(focus ? { focus } : {}),
     companies: Array.isArray(entry.companies) ? entry.companies.map((value) => String(value).trim().toLowerCase()) : [],
     importance: Number(entry.importance) || 0,
   };
+}
+
+/** A merge request review runs on the clock its page shows, so the plan counts that session, not the difficulty. */
+function reviewSessionMinutes(cdnRoot, entry) {
+  if (typeof entry.reviewModeAsset !== 'string') return undefined;
+  const review = readJsonIfExists(path.join(cdnRoot, entry.reviewModeAsset.replace(/^assets\//, '')));
+  const minutes = Number(review?.sessionMinutes);
+  if (!Number.isInteger(minutes) || minutes <= 0) {
+    throw new Error(`[gen-company-plan-data] ${entry.id}: ${entry.reviewModeAsset} gives no session length.`);
+  }
+  return minutes;
 }
 
 function readCatalog(cdnRoot) {
@@ -79,7 +91,7 @@ function readCatalog(cdnRoot) {
       const list = readJsonIfExists(path.join(cdnRoot, 'questions', tech, `${kind}.json`));
       for (const entry of Array.isArray(list) ? list : []) {
         if (entry && typeof entry.id === 'string') {
-          const task = catalogTask(entry, kind, tech);
+          const task = catalogTask(entry, kind, tech, reviewSessionMinutes(cdnRoot, entry));
           byRoute.set(task.route, task);
         }
       }

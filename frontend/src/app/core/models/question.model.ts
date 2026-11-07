@@ -199,6 +199,8 @@ export interface Question {
   decisionGraphAsset?: string;
   decisionGraphKey?: string;
   pressureModeAsset?: string;
+  /** A merge request to review before the fixes, as in GitLab's technical interview (see review-mode.model.ts). */
+  reviewModeAsset?: string;
   incidentCard?: TriviaIncidentCard;
 }
 

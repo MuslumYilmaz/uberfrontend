@@ -141,6 +141,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/vue/coding/vue-dynamic-table",
   "/vue/coding/vue-filterable-user-list",
   "/vue/coding/vue-image-slider",
+  "/vue/coding/vue-issue-list-merge-request-review",
   "/vue/coding/vue-like-button",
   "/vue/coding/vue-multi-step-form",
   "/vue/coding/vue-nested-checkboxes",
