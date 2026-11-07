@@ -1,4 +1,4 @@
-import { PremiumPreviewContent, Question } from '../models/question.model';
+import { PremiumPreviewContent, Question, QuestionPreviewSample } from '../models/question.model';
 import type { IncidentListItem } from '../models/incident.model';
 import type { TradeoffBattleListItem } from '../models/tradeoff-battle.model';
 
@@ -18,6 +18,8 @@ export type LockedPreviewLink = {
 
 export type LockedPreviewData = {
   what: string;
+  /** One quote from the task, so the format can be judged before paying. */
+  sample?: QuestionPreviewSample;
   unlockDescription: string;
   keyDecisions?: string[];
   rubric?: string[];
@@ -65,7 +67,7 @@ export type CodingLockedPreviewQuestion = Pick<
   'id' | 'title' | 'description' | 'tags' | 'difficulty' | 'premiumPreview' | 'starterCode' | 'code'
 > & {
   starterCodeTs?: string;
-} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset' | 'reviewModeAsset'>>;
+} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset' | 'reviewModeAsset' | 'previewSample'>>;
 
 type TriviaContext = BuildContext & {
   technology?: string;
@@ -640,8 +642,10 @@ export const buildLockedPreviewForCoding = (
   if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
 
   const unlock = preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION;
+  const sample = previewSampleOf(q.previewSample);
   return {
     what,
+    ...(sample ? { sample } : {}),
     unlockDescription: [
       unlock,
       ...(q.pressureModeAsset ? [CODING_PRESSURE_MODE_UNLOCK] : []),
@@ -656,6 +660,15 @@ export const buildLockedPreviewForCoding = (
     pitfalls: buildPitfalls(ctx),
     related: buildRelatedLinks(opts.candidates, ctx.tags, 'coding', opts.tech, q.id, 6),
   };
+};
+
+/** The authored sample as the lock page shows it; an incomplete one shows nothing rather than half a quote. */
+const previewSampleOf = (sample: QuestionPreviewSample | undefined): QuestionPreviewSample | null => {
+  const label = normalizeText(sample?.label ?? '');
+  const quote = normalizeText(sample?.quote ?? '');
+  const note = normalizeText(sample?.note ?? '');
+  if (!label || !quote) return null;
+  return { label, quote, ...(note ? { note } : {}) };
 };
 
 export const buildLockedPreviewForTrivia = (

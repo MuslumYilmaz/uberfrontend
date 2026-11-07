@@ -26,9 +26,9 @@ const WHEN_OPTIONS: readonly { readonly id: CompanyPlanWhen; readonly label: str
 ];
 
 const LEVEL_OPTIONS: readonly { readonly id: CompanyPlanAnswerLevel; readonly label: string; readonly sub: string; readonly note: string }[] = [
-  { id: 'junior', label: 'Junior', sub: '0 to 2 years', note: 'At most one system design task.' },
+  { id: 'junior', label: 'Junior', sub: 'Under 2 years', note: 'At most one system design task.' },
   { id: 'mid', label: 'Mid-level', sub: '2 to 5 years', note: 'At most one system design task.' },
-  { id: 'senior', label: 'Senior', sub: '5+ years', note: 'Up to two system design tasks, where the rounds include design.' },
+  { id: 'senior', label: 'Senior', sub: 'More than 5 years', note: 'Up to two system design tasks, where the rounds include design.' },
   { id: 'staff', label: 'Staff', sub: 'Leading across teams', note: 'Up to three system design tasks, where the rounds include design.' },
 ];
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateQuestionSourceDate, validateQuestionSources } from './question-sources-lib.mjs';
+import { validatePreviewSample } from './question-preview-sample-lib.mjs';
 
 const today = new Date('2026-10-14T12:00:00.000Z');
 const valid = () => ({
@@ -68,4 +69,16 @@ test('company must be a slug and one of the entry companies when the entry list 
   assert.deepEqual(validateQuestionSources([{ ...valid(), company: 'waymo' }], { today, companies: ['waymo', 'intuit'] }), []);
   assert.match(validateQuestionSources([{ ...valid(), company: 'Waymo Inc' }], { today }).join('\n'), /lowercase company slug/);
   assert.match(validateQuestionSources([{ ...valid(), company: 'waymo' }], { today, companies: ['intuit'] }).join('\n'), /not one of the entry's companies/);
+});
+
+test('a lock page sample is prose on a Premium task, with a label and a quote', () => {
+  const sample = { label: 'One of the four reports from support', quote: 'A $5.00 coupon wipes out the whole invoice.', note: 'Five small files.' };
+  assert.deepEqual(validatePreviewSample(undefined, { access: 'free' }), []);
+  assert.deepEqual(validatePreviewSample(sample, { access: 'premium' }), []);
+  assert.match(validatePreviewSample(sample, { access: 'free' }).join('\n'), /belongs on a Premium task/);
+  assert.match(validatePreviewSample({ label: 'A report', quote: ' ' }, { access: 'premium' }).join('\n'), /quote must be text/);
+  assert.match(validatePreviewSample({ ...sample, extra: 'x' }, { access: 'premium' }).join('\n'), /unknown key: extra/);
+  for (const quote of ['Open `src/money.js` first.', 'See money.js for the cause.', 'It returns { total }.', 'Use a => b.']) {
+    assert.match(validatePreviewSample({ ...sample, quote }, { access: 'premium' }).join('\n'), /must read as prose/, quote);
+  }
 });

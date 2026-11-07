@@ -3001,10 +3001,10 @@
         ],
         "techFocus": [
           "Reviewing a change against its issue",
-          "Watchers versus computed properties",
-          "Accessible toggle buttons and list markup",
-          "Grid layouts that fit a phone",
-          "Jest specs that can fail"
+          "Ranking findings by what blocks the merge",
+          "Vue 3 data loading and reactivity",
+          "Accessible markup and responsive layout",
+          "Unit tests that protect a change"
         ]
       }
     },
@@ -3063,18 +3063,23 @@
     "premiumPreview": {
       "summary": "Review a merge request that adds label filters to a Vue 3 issue list: read the three-file diff, write your comments, fix what blocks the merge in the workspace, then compare with a sample review.",
       "learningOutcomes": [
-        "Spot a watcher that reloads data a computed property should filter.",
-        "Catch a count that ignores the filter next to it.",
-        "Flag controls and markup a keyboard or a screen reader cannot use.",
-        "Tell a Jest spec that can fail from one that always passes."
+        "Review a change against the issue it claims to close.",
+        "Rank what you find by what blocks the merge and what can wait.",
+        "Write comments a teammate can act on, each with its line and its fix.",
+        "Fix what holds the merge, then check it in the workspace."
       ],
       "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
     },
+    "previewSample": {
+      "label": "A comment from the sample review",
+      "quote": "Must fix, on the new spec file: The assertion sits in a setTimeout that fires after the test has returned, so Jest reports a pass even if no issue renders. Make the test async, use fake timers or mock the request, await flushPromises() and then assert on what renders.",
+      "note": "The sample review has ten comments like this one, ranked by what blocks the merge, each on its file and line."
+    },
     "access": "premium",
-    "updatedAt": "2026-11-06",
+    "updatedAt": "2026-11-07",
     "seo": {
       "title": "Vue Merge Request Review: Fix an Issue List Filter",
-      "description": "Review a Vue 3 merge request with seeded bugs: a filter that reloads the list, a wrong count, inaccessible filters, a phone overflow and a spec that cannot fail."
+      "description": "Review a three-file Vue 3 merge request in writing, fix what should block the merge, then compare your comments with a sample review."
     },
     "frameworkTests": [
       {

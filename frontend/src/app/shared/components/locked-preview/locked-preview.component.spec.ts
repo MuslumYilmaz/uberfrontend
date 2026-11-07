@@ -135,6 +135,29 @@ describe('LockedPreviewComponent', () => {
     expect(getComputedStyle(slot).display).toBe('none');
   });
 
+  it('quotes the task sample after the action, before the free links, and shows nothing without one', () => {
+    const fixture = TestBed.createComponent(LockedPreviewCtaHostComponent);
+    fixture.componentInstance.data = {
+      ...fixture.componentInstance.data,
+      sample: { label: 'One of the four reports from support', quote: 'A $5.00 coupon wipes out the whole invoice.', note: 'Five small files.' },
+    };
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const sample = host.querySelector('[data-testid="premium-preview-sample"]') as HTMLElement;
+    expect(sample.querySelector('h2')?.textContent).toBe('One of the four reports from support');
+    expect(sample.querySelector('blockquote')?.textContent).toBe('A $5.00 coupon wipes out the whole invoice.');
+    expect(sample.textContent).toContain('Five small files.');
+    const cta = host.querySelector('[data-testid="host-cta"]') as HTMLElement;
+    const freeLinks = host.querySelector('.locked-preview-rich__links') as HTMLElement;
+    expect(cta.compareDocumentPosition(sample) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(sample.compareDocumentPosition(freeLinks) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    const plain = TestBed.createComponent(LockedPreviewComponent);
+    plain.componentInstance.data = new LockedPreviewCtaHostComponent().data;
+    plain.detectChanges();
+    expect((plain.nativeElement as HTMLElement).querySelector('[data-testid="premium-preview-sample"]')).toBeNull();
+  });
+
   for (const authored of authoredCases) {
     it(`renders the complete authored ${authored.name} teaser`, () => {
       const fixture = TestBed.createComponent(LockedPreviewComponent);

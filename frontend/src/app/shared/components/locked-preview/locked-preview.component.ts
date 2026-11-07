@@ -27,6 +27,13 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
         <div class="locked-preview-rich__cta"><ng-content select="[lockedPreviewCta]"></ng-content></div>
       </section>
 
+      <!-- After the action: above it, a long sample pushes the action off a laptop's first screen. -->
+      <section class="locked-preview-rich__section" *ngIf="data.sample as sample" data-testid="premium-preview-sample">
+        <h2 class="locked-preview-rich__title">{{ sample.label }}</h2>
+        <blockquote class="locked-preview-rich__quote">{{ sample.quote }}</blockquote>
+        <p class="locked-preview-rich__text" *ngIf="sample.note">{{ sample.note }}</p>
+      </section>
+
       <section class="locked-preview-rich__section locked-preview-rich__section--secondary" *ngIf="freeRelated().length">
         <h2 class="locked-preview-rich__title">Free related practice</h2>
         <ul class="locked-preview-rich__links">

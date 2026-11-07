@@ -79,6 +79,12 @@ describe('locked preview builder', () => {
       'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.',
     );
 
+    // A task's sample reaches the lock page as written; one without its quote reaches it not at all.
+    const sample = { label: 'A comment from the sample review', quote: 'The assertion runs after the test returns.', note: 'Ten comments like this one.' };
+    expect(buildLockedPreviewForCoding({ ...q, previewSample: sample }, { candidates, tech: 'javascript', kind: 'coding' })?.sample).toEqual(sample);
+    expect(buildLockedPreviewForCoding({ ...q, previewSample: { label: 'A comment', quote: ' ' } }, { candidates, tech: 'javascript', kind: 'coding' })?.sample).toBeUndefined();
+    expect(preview.sample).toBeUndefined();
+
     // So does a task that opens as a merge request review.
     const withReview = buildLockedPreviewForCoding({ ...q, reviewModeAsset: 'assets/questions/review-modes/sum.v1.json' }, { candidates, tech: 'javascript', kind: 'coding' });
     expect(withReview?.unlockDescription).toBe(

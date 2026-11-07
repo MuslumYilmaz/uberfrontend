@@ -117,7 +117,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Leaving a handful of vague comments, or spending the session on cosmetic changes while a repeated API call or a failing test stays in place.',
-        resourceLabel: 'Review a Vue merge request on a 90-minute clock (Premium)',
+        resourceLabel: 'Review a Vue merge request (Premium)',
         resourcePath: '/vue/coding/vue-issue-list-merge-request-review',
         reportedRound: { label: GITLAB_TARO_LIVE_SESSION_2024_LABEL, url: GITLAB_TARO_LIVE_SESSION_2024_URL },
       },

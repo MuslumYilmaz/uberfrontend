@@ -15,7 +15,7 @@
       "requirements": [
         "Show one filter per label, plus All.",
         "Selecting a label shows the open issues with that label, without loading the list again.",
-        "Show how many open issues match the selected label.",
+        "Show how many open issues match the selected label, as \"1 open issue\" or \"2 open issues\".",
         "Cover the filter with unit tests."
       ]
     },

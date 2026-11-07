@@ -7,6 +7,7 @@ import {
 } from "./content-paths.mjs";
 import { validateOutputQuestion } from "./output-question-validator.mjs";
 import { validateQuestionSources } from "./question-sources-lib.mjs";
+import { validatePreviewSample } from "./question-preview-sample-lib.mjs";
 
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 
@@ -624,6 +625,9 @@ for (const file of questionFiles) {
 
       const tagCheck = validateTags({ file, id, tags: q.tags, canonicalTags, severity });
       validateSourcesField({ file, id, sources: q.sources, kind: info.kind, severity, companies: q.companies });
+      for (const message of validatePreviewSample(q.previewSample, { access: q.access })) {
+        severity.addError(file, id, message);
+      }
 
       const importance = q.importance;
       if (importance === undefined) {

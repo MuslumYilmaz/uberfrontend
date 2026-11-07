@@ -9629,7 +9629,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-11-06",
+    "updatedAt": "2026-11-07",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-issue-list-merge-request-review"
   },
