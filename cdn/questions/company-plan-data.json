@@ -1245,6 +1245,19 @@
         "js"
       ]
     },
+    "js-debug-bug-squash-invoices": {
+      "id": "js-debug-bug-squash-invoices",
+      "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
+      "route": "/javascript/debug/js-debug-bug-squash-invoices",
+      "kind": "debug",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "debug",
+        "js"
+      ]
+    },
     "js-debug-mutating-input": {
       "id": "js-debug-mutating-input",
       "title": "Stop mutating caller data in `unique`",
@@ -11175,16 +11188,14 @@
           ],
           "tasks": [
             {
-              "id": "js-debug-async-race",
+              "id": "js-debug-bug-squash-invoices",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-10",
+                "date": "2025-03",
                 "approx": true
               },
               "rounds": [
-                "onsite-bug-squash",
-                "onsite-integration",
-                "onsite-programming-exercise"
+                "onsite-bug-squash"
               ],
               "lead": true
             },
@@ -11241,6 +11252,19 @@
               },
               "rounds": [
                 "technical-screen"
+              ]
+            },
+            {
+              "id": "js-debug-async-race",
+              "report": {
+                "publisher": "Taro",
+                "date": "2023-10",
+                "approx": true
+              },
+              "rounds": [
+                "onsite-bug-squash",
+                "onsite-integration",
+                "onsite-programming-exercise"
               ]
             },
             {

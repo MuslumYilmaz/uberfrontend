@@ -1601,7 +1601,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'Find and fix bugs in an unfamiliar codebase.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST5, STRIPE_ST6_PLAN],
-            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+            practice: { label: 'Bug squash an unfamiliar repo', path: '/javascript/debug/js-debug-bug-squash-invoices' },
           },
           {
             stage: 'Onsite: integration',

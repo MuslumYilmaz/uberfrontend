@@ -3325,6 +3325,30 @@
     "assetRef": "questions/javascript/trivia.json#js-big-o-notation"
   },
   {
+    "id": "js-debug-bug-squash-invoices",
+    "family": "question",
+    "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
+    "route": "/javascript/debug/js-debug-bug-squash-invoices",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "Five files you have not seen and four bug reports from support: find the cause of each in a small invoicing repo, fix it without changing the public functions, and make the tests pass.",
+    "tags": [
+      "debugging",
+      "modules",
+      "numbers",
+      "immutability",
+      "async",
+      "promises",
+      "error-handling",
+      "testing"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-07",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-bug-squash-invoices"
+  },
+  {
     "id": "js-dom-renderer",
     "family": "question",
     "title": "Build a DOM Renderer from a Nested Object",

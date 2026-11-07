@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-06T16:13:37.551Z",
+  "generatedAt": "2026-11-07T06:42:18.208Z",
   "entries": [
     {
       "tech": "angular",
@@ -1398,6 +1398,12 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-async-race",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-bug-squash-invoices",
       "file": "javascript/debug.json"
     },
     {

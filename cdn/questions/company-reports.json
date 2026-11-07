@@ -2177,6 +2177,40 @@
         ]
       },
       {
+        "id": "js-debug-bug-squash-invoices",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
+        "access": "premium",
+        "route": "/javascript/debug/js-debug-bug-squash-invoices",
+        "sources": [
+          {
+            "label": "Taro: Stripe frontend engineer interview, Barcelona, 2023",
+            "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+            "publisher": "Taro",
+            "date": "2023-10"
+          },
+          {
+            "label": "Taro: Stripe front end developer interview, India, 2022",
+            "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/front-end-developer-india-november-15-2022-no-offer-positive-f4ea85cd/",
+            "publisher": "Taro",
+            "date": "2022-11"
+          },
+          {
+            "label": "Blind: Stripe frontend onsite rounds, 2024",
+            "url": "https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a",
+            "publisher": "Blind",
+            "date": "2024-11"
+          },
+          {
+            "label": "Taro: Stripe frontend developer interview, Barcelona, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/",
+            "publisher": "Taro",
+            "date": "2025-03"
+          }
+        ]
+      },
+      {
         "id": "js-debug-async-race",
         "kind": "debug",
         "tech": "javascript",

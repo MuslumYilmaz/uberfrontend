@@ -1129,7 +1129,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
   },
   stripe: {
     // The LeetCode Discuss post behind both tasks describes a software engineer 2 initial screen, not the onsite.
-    reportRounds: { 'js-group-by': ['technical-screen'], 'js-lodash-get': ['technical-screen'] },
+    // The bug squash rehearsal's accounts list every onsite round, and it rehearses one of them.
+    reportRounds: {
+      'js-group-by': ['technical-screen'],
+      'js-lodash-get': ['technical-screen'],
+      'js-debug-bug-squash-invoices': ['onsite-bug-squash'],
+    },
     variants: [
       {
         id: 'main',

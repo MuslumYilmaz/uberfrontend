@@ -17,6 +17,7 @@ import { createFailureSignature, normalizeErrorLine, stableHash } from '../../..
 import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-prompts.util';
 import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -43,7 +44,9 @@ declare const monaco: any;
 
 export type JsLang = 'js' | 'ts';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
-type Runner = { runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> };
+type Runner = {
+  runWithTests(args: { userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number }): Promise<RunnerOutput>;
+};
 type ApplySolutionOptions = {
   decisionGraphAsset?: string | null;
   decisionGraphKey?: string | null;
@@ -152,6 +155,16 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
+
+  // A multi-file task keeps its files in the one code string (file-bundle.util); the editor shows one file.
+  readonly bundleFiles = computed(() => parseFileBundle(this.editorContent()));
+  private readonly activeFilePath = signal('');
+  readonly activeBundleFile = computed(() => {
+    const files = this.bundleFiles();
+    return files ? files.find((file) => file.path === this.activeFilePath()) ?? files[0] : null;
+  });
+  /** What the code editor shows: the open file of a multi-file task, else the whole code. */
+  readonly editorCode = computed(() => this.activeBundleFile()?.code ?? this.editorContent());
   hasRunTests = signal(false);
   isRunningTests = signal(false);
   testResults = signal<TestResult[]>([]);
@@ -1696,9 +1709,20 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   /* ---------- Handlers ---------- */
-  onCodeChange(code: string) {
+  selectBundleFile(path: string): void {
+    this.activeFilePath.set(path);
+  }
+
+  /** The whole code for what the editor holds: in a multi-file task, the files with the open one's edits. */
+  private withEditorCode(code: string): string {
+    const file = this.activeBundleFile();
+    return file ? replaceBundleFile(this.editorContent(), file.path, code) : code;
+  }
+
+  onCodeChange(editorCode: string) {
     if (this._hydrating) return;
     const q = this.question; if (!q) return;
+    const code = this.withEditorCode(editorCode);
     if (this.disablePersistence) {
       if (code === this.editorContent()) return;
       this.editorContent.set(code);
@@ -1778,23 +1802,24 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     try {
       await this.flushEditorBuffer();
       if (runId !== this._runSeq) return;
-      const rawUser = this.codeEditor?.getValue?.() ?? this.editorContent();
+      const rawUser = this.withEditorCode(this.codeEditor?.getValue?.() ?? this.editorCode());
       rawUserSnapshot = rawUser;
       const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
       this.syncEditorBuffers(rawUser, rawTests);
-      const userSrc = await this.ensureJs(rawUser, `${q.id}.ts`);
+      // A multi-file task runs its files as modules that the tests import, in JavaScript only.
+      const files = parseFileBundle(rawUser);
+      const userSrc = files ? '' : await this.ensureJs(rawUser, `${q.id}.ts`);
       if (runId !== this._runSeq) return;
 
-      const testsSrc = await this.ensureJs(rawTests, `${q.id}.tests.ts`);
+      const testsSrc = files ? rawTests : await this.ensureJs(rawTests, `${q.id}.tests.ts`);
       if (runId !== this._runSeq) return;
-
-      const wrapped = this.wrapExportDefault(userSrc);
-      const prepared = this.transformTestCode(testsSrc);
 
       try {
         const runner = await this.loadRunner();
         if (runId !== this._runSeq) return;
-        const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
+        const out = await runner.runWithTests(files
+          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500 }
+          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         const sandboxResults = out?.results || [];

@@ -1353,6 +1353,65 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
   });
 
+  test('JavaScript bug squash runs its files as modules and keeps an edit in the file it was made in', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium bug squash test');
+    const id = 'js-debug-bug-squash-invoices';
+    const codeModel = `q-${id}-code`;
+    await seedPremiumSession(page, baseURL);
+    await page.goto(`/javascript/debug/${id}`);
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+
+    const tabs = page.getByTestId('js-file-tab');
+    await expect(tabs).toHaveText(['src/currency.js', 'src/line-items.js', 'src/ids.js', 'src/invoice.js', 'src/payments.js']);
+    await expect(tabs.first()).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('js-language-select')).toHaveCount(0);
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.floor(amount');
+
+    const runButton = page.getByTestId('js-run-tests');
+    const results = page.getByTestId('js-results-panel');
+    const run = async () => {
+      await expect(runButton).toBeEnabled();
+      await runButton.click();
+      await expect(results.getByTestId('test-result')).toHaveCount(6, { timeout: 30_000 });
+      await expect(runButton).toBeEnabled({ timeout: 10_000 });
+      return (await results.getByTestId('test-status').allTextContents()).map((status) => status.trim());
+    };
+
+    // The four reports fail; the zero-decimal and declined-card guards pass as the repo stands.
+    expect(await run()).toEqual(['FAIL', 'PASS', 'FAIL', 'FAIL', 'FAIL', 'PASS']);
+    expect(normalizeRunnerText(await results.innerText())).not.toMatch(RUNNER_FAILURE);
+
+    const currency = await getMonacoModelValue(page, codeModel);
+    await setMonacoModelValue(page, codeModel, currency.replace('Math.floor(amount', 'Math.round(amount'));
+    expect(await run()).toEqual(['PASS', 'PASS', 'FAIL', 'FAIL', 'FAIL', 'PASS']);
+
+    // Each tab shows its own file, and the fix stays in currency.js, on this device too.
+    await tabs.nth(4).click();
+    await expect(tabs.nth(4)).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('export async function payInvoice');
+    await tabs.first().click();
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.round(amount');
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_js',
+      keyPrefix: `v2:code:js2:${id}@`,
+      substring: 'Math.round(amount',
+    });
+    await page.reload();
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.round(amount');
+
+    // The solution loads as the same five files and passes every test.
+    await page.getByRole('button', { name: /^Solution$/ }).first().click();
+    await page.getByTestId('solution-load-approach-0').click();
+    await expect(tabs).toHaveCount(5);
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('round to the nearest minor unit');
+    expect(await run()).toEqual(['PASS', 'PASS', 'PASS', 'PASS', 'PASS', 'PASS']);
+  });
+
   test('Vue merge request review keeps the written review, passes the top fixes and compares with the sample', async ({
     page,
     baseURL,

@@ -113,6 +113,20 @@ describe('UserCodeSandboxService', () => {
     expect(worker.errorListenerCount()).toBe(0);
   }));
 
+  it('sends a multi-file task as its files, and a single-file task without any', fakeAsync(() => {
+    const service = new UserCodeSandboxService();
+    const files = [{ path: 'src/money.js', code: 'export const one = 1;\n' }];
+
+    void service.runWithTests({ userCode: '', testCode: "import { one } from './src/money.js';", files, timeoutMs: 10 });
+    void service.runWithTests({ userCode: 'const value = 1;', testCode: 'test()', timeoutMs: 10 });
+
+    expect(MockWorker.instances[0].lastPostedMessage.files).toEqual(files);
+    expect(MockWorker.instances[0].lastPostedMessage.files).not.toBe(files);
+    expect('files' in MockWorker.instances[1].lastPostedMessage).toBeFalse();
+    tick(1000);
+    flushMicrotasks();
+  }));
+
   it('prefers worker completion before the hard watchdog fires', fakeAsync(() => {
     const service = new UserCodeSandboxService();
     let resolved: RunnerOutput | undefined;

@@ -804,6 +804,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'An editorial grouping for the JavaScript fundamentals a screen can touch.',
         },
         {
+          label: 'Bug squash an unfamiliar invoicing repo',
+          path: '/javascript/debug/js-debug-bug-squash-invoices',
+          access: 'premium',
+          why: 'Five files you have not seen and four bug reports, the shape of the bug squash round.',
+        },
+        {
           label: 'Group by',
           path: '/javascript/coding/js-group-by',
           access: 'premium',

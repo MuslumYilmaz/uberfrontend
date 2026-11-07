@@ -51,7 +51,7 @@
                 Timed practice active
             </span>
 
-            <div class="lang-compact">
+            <div class="lang-compact" *ngIf="!bundleFiles()">
                 <app-fa-glyph class="lang-compact__icon" icon="pi pi-code" aria-hidden="true"></app-fa-glyph>
                 <div class="lang-wrap">
                     <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
@@ -92,9 +92,17 @@
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
             <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
+                <!-- A multi-file task: one tab per file; the editor below shows the open one. -->
+                <div *ngIf="bundleFiles() as files" class="file-tabs" role="group" aria-label="Files" data-testid="js-file-tabs">
+                    <button *ngFor="let file of files" type="button" class="file-tab" data-testid="js-file-tab"
+                        [attr.aria-pressed]="file.path === activeBundleFile()?.path" (click)="selectBundleFile(file.path)">
+                        {{ file.path }}
+                    </button>
+                </div>
+                <div class="code-editor-area" [class.file-tabs-offset]="!!bundleFiles()">
                 <ng-container *ngIf="useMonaco(); else liteCodeEditor">
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
-                        [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        [code]="editorCode()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
                         (lineClick)="onCodeEditorLineClick($event)"
                         (loadFailed)="onEditorLoadFailed()">
@@ -104,7 +112,7 @@
                         class="editor-fill lite-overlay"
                         [testId]="'js-code-editor-lite'"
                         [ariaLabel]="'Code editor preview'"
-                        [code]="editorContent()"
+                        [code]="editorCode()"
                         [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
@@ -115,7 +123,7 @@
                         data-testid="js-code-editor"
                         aria-label="Code editor fallback"
                         spellcheck="false"
-                        [value]="editorContent()"
+                        [value]="editorCode()"
                         (input)="onCodeChange($any($event.target).value)"></textarea>
                 </ng-template>
                 <ng-template #liteCodeSnapshot>
@@ -123,10 +131,11 @@
                         class="editor-fill"
                         [testId]="'js-code-editor'"
                         [ariaLabel]="'Code editor preview'"
-                        [code]="editorContent()"
+                        [code]="editorCode()"
                         [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
+                </div>
             </div>
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import type { BundleFile } from '../utils/file-bundle.util';
 
 export type ConsoleEntry = {
   level: 'log' | 'warn' | 'error';
@@ -15,7 +16,13 @@ const HARD_TIMEOUT_BUFFER_MS = 500;
 
 @Injectable({ providedIn: 'root' })
 export class UserCodeSandboxService {
-  async runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> {
+  /** With `files`, each file runs as its own module, the tests import them, and `userCode` is unused. */
+  async runWithTests(args: {
+    userCode: string;
+    testCode: string;
+    files?: readonly BundleFile[];
+    timeoutMs?: number;
+  }): Promise<RunnerOutput> {
     const nonce = crypto.getRandomValues(new Uint32Array(4)).join('-');
     const softTimeoutMs = args.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const hardTimeoutMs = softTimeoutMs + HARD_TIMEOUT_BUFFER_MS;
@@ -77,6 +84,7 @@ export class UserCodeSandboxService {
         nonce,
         userCode: args.userCode,
         testCode: args.testCode,
+        ...(args.files ? { files: args.files.map((file) => ({ path: file.path, code: file.code })) } : {}),
         timeoutMs: softTimeoutMs,
       });
     });

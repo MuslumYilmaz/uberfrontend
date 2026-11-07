@@ -1,15 +1,18 @@
 /// <reference lib="webworker" />
 
 import { normalizeError } from '../utils/console-normalize';
+import type { BundleFile } from '../utils/file-bundle.util';
 import { freezeHardenedPrototypes } from './user-code-sandbox-hardening';
 import { createSandboxExpect } from './user-code-sandbox-matchers';
+import { linkModules } from './user-code-sandbox-modules';
 
 // ---------- message contracts ----------
 type RunMsg = {
     type: 'run';
     nonce: string;
     userCode: string;    // transformed to set globalThis[globalName]
-    testCode: string;    // transformed to reference that global
+    testCode: string;    // transformed to reference that global; with files, imports them as they are
+    files?: BundleFile[]; // a multi-file task: each file runs as its own module and userCode is unused
     timeoutMs?: number;  // default 1500
 };
 
@@ -45,6 +48,7 @@ const now = () => Date.now();
 
 // ---------- limits ----------
 const MAX_CODE_BYTES = 200 * 1024;     // 200 KB per payload
+const MAX_FILES = 24;                  // per multi-file task
 const MAX_LOGS = 200;
 const MAX_LOG_CHARS = 2000;
 const MAX_PREVIEW_DEPTH = 4;
@@ -346,8 +350,25 @@ const runAsModule = async (code: string) => {
     try { await (0, eval)(`import("${url}")`); } finally { URL.revokeObjectURL(url); }
 };
 
+// A multi-file task: the same guard for every file, and a size limit for all of them together.
+const filesGuard = (files: unknown): string | null => {
+    if (!Array.isArray(files) || !files.length || files.length > MAX_FILES) return `A task runs 1 to ${MAX_FILES} files`;
+    let total = 0;
+    for (const file of files) {
+        if (!file || typeof file.path !== 'string' || typeof file.code !== 'string') return 'Invalid file';
+        total += file.code.length;
+        const problem = codeGuard(file.path, file.code);
+        if (problem) return problem;
+    }
+    return total > MAX_CODE_BYTES ? `The files exceed the limit (${(MAX_CODE_BYTES / 1024).toFixed(0)}KB)` : null;
+};
+
+// The tests of a multi-file task import the files; test framework imports are provided as globals instead.
+const stripFrameworkImports = (code: string) =>
+    code.replace(/^\s*import\s+[^;]+from\s+['"](?:jest|vitest|@jest\/globals)['"];?\s*$/gm, '');
+
 self.onmessage = async (e: MessageEvent<RunMsg>) => {
-    const { type, nonce, userCode, testCode, timeoutMs = 1500 } = e.data || ({} as any);
+    const { type, nonce, userCode, testCode, files, timeoutMs = 1500 } = e.data || ({} as any);
     if (type !== 'run' || !nonce || typeof userCode !== 'string' || typeof testCode !== 'string') return;
 
     // Reset per run
@@ -371,7 +392,7 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     logLimitHit = false;
 
     // Guard against oversized or dangerous inputs
-    const guardUser = codeGuard('User code', userCode);
+    const guardUser = files === undefined ? codeGuard('User code', userCode) : filesGuard(files);
     const guardTests = codeGuard('Tests', testCode);
     if (guardUser || guardTests) {
         sendDone({ entries: logs, results: [], error: guardUser || guardTests || 'Invalid input' });
@@ -385,9 +406,20 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
         sendDone({ entries: logs, results: [], timedOut: true });
     }, timeoutMs);
 
+    const moduleUrls: string[] = [];
     try {
-        await runAsModule(userCode);   // user solution (sets global)
-        if (!timedOut) await runAsModule(testCode); // test file (queues tests)
+        if (files !== undefined) {
+            // Each file is a module at its own URL; importing the tests loads the files they reach.
+            const linkedTests = linkModules(files, stripFrameworkImports(testCode), (code) => {
+                const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+                moduleUrls.push(url);
+                return url;
+            });
+            await runAsModule(linkedTests);
+        } else {
+            await runAsModule(userCode);   // user solution (sets global)
+            if (!timedOut) await runAsModule(testCode); // test file (queues tests)
+        }
         if (!timedOut) {
             const ordered = await runQueued();        // run in definition order
             sendDone({ entries: logs, results: ordered });
@@ -399,5 +431,6 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
         }
     } finally {
         clearTimeout(killer);
+        for (const url of moduleUrls) URL.revokeObjectURL(url);
     }
 };

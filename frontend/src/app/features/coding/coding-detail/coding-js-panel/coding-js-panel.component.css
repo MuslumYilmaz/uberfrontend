@@ -15,6 +15,52 @@ app-monaco-editor {
   min-height: 0;
 }
 
+/* A multi-file task: a row of file tabs above the editor, which starts below it. */
+.file-tabs {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  height: 36px;
+  padding: 4px 8px;
+  overflow-x: auto;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--uf-border-subtle);
+}
+
+.file-tab {
+  flex: 0 0 auto;
+  padding: 2px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--uf-text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.file-tab[aria-pressed="true"] {
+  color: var(--uf-text-primary);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
+  border-color: var(--uf-border-subtle);
+}
+
+.file-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--uf-focus-ring);
+}
+
+.code-editor-area {
+  position: absolute;
+  inset: 0;
+}
+
+.code-editor-area.file-tabs-offset {
+  top: 36px;
+}
+
 .lite-editor {
   display: block;
   box-sizing: border-box;
