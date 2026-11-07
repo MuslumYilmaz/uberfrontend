@@ -1,0 +1,126 @@
+:host {
+  display: block;
+  margin-top: var(--fa-space-4);
+}
+
+.rehearsal {
+  display: grid;
+  gap: var(--fa-space-3);
+  min-width: 0;
+  padding: var(--fa-space-4);
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 42%, var(--fa-border-subtle));
+  border-radius: 14px;
+}
+
+.rehearsal__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--fa-space-2) var(--fa-space-3);
+}
+
+.rehearsal__header-copy {
+  display: grid;
+  gap: var(--fa-space-1);
+  min-width: 0;
+}
+
+.rehearsal p,
+.rehearsal h2 {
+  margin: 0;
+}
+
+.rehearsal__eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fa-accent);
+}
+
+.rehearsal h2 {
+  font-size: 16px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.rehearsal__clock {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rehearsal__verdict {
+  font-weight: 600;
+}
+
+.rehearsal__items {
+  display: grid;
+  gap: var(--fa-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rehearsal__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px var(--fa-space-3);
+  padding: var(--fa-space-2) var(--fa-space-3);
+  border: 1px solid var(--fa-border-subtle);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.rehearsal__item.is-current {
+  border-color: var(--fa-accent);
+}
+
+.rehearsal__item-label {
+  color: var(--fa-text-muted);
+  white-space: nowrap;
+}
+
+.rehearsal__item-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rehearsal__hidden,
+.rehearsal__result {
+  color: var(--fa-text-muted);
+}
+
+.rehearsal__result {
+  grid-column: 2;
+}
+
+.rehearsal__item[data-status='passed'] .rehearsal__result {
+  color: var(--fa-text);
+}
+
+.rehearsal__note {
+  color: var(--fa-text-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rehearsal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fa-space-2);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

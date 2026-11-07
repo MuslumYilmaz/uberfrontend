@@ -1412,6 +1412,105 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(await run()).toEqual(['PASS', 'PASS', 'PASS', 'PASS', 'PASS', 'PASS']);
   });
 
+  test('Meta rehearsal runs two problems on one clock, on drafts of their own, and locks them for the review', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+    const debounceModel = 'q-js-debounce-code';
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
+
+    // The person's own draft of Debounce, which the rehearsal leaves alone.
+    await page.goto('/javascript/coding/js-debounce');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    const own = `${await getMonacoModelValue(page, debounceModel)}\n// my own draft\n`;
+    await setMonacoModelValue(page, debounceModel, own);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_js',
+      keyPrefix: 'v2:code:js2:js-debounce@',
+      substring: '// my own draft',
+    });
+
+    // A sequential rehearsal starts at its first problem, with the second one hidden and the solution locked.
+    const entry = page.getByTestId('rehearsal-entry');
+    await expect(entry).toContainText('Meta coding round: 2 problems in 40 minutes');
+    await entry.getByTestId('rehearsal-start').click();
+    await expect(page).toHaveURL(/\/javascript\/coding\/js-dom-twin-node$/);
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(40:00|39:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Find the Corresponding Node in Twin DOM Trees\s*Not run yet/,
+      /Problem 2\s*Opens when you move on/,
+    ]);
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left$/);
+    await expect(page.getByRole('button', { name: 'Solution locked', exact: true })).toBeDisabled();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
+    await expect(page.getByTestId('interview-mode-setup-toggle')).toHaveCount(0);
+
+    // A run counts toward the review.
+    const runButton = page.getByTestId('js-run-tests');
+    await expect(runButton).toBeEnabled({ timeout: 30_000 });
+    await runButton.click();
+    await expect(page.getByTestId('js-results-panel').getByTestId('test-result')).toHaveCount(4, { timeout: 30_000 });
+    await expect(panel.getByTestId('rehearsal-item').first()).toContainText(/(\d of 4|All 4) tests pass/);
+
+    // The second problem opens from its starter code, not from the person's draft.
+    await panel.getByTestId('rehearsal-next').click();
+    await expect(page).toHaveURL(/\/javascript\/coding\/js-debounce$/);
+    await expect(panel.getByTestId('rehearsal-item').nth(1)).toContainText('Debounce Function');
+    await expect.poll(() => getMonacoModelValue(page, debounceModel)).toContain('export default function debounce');
+    expect(await getMonacoModelValue(page, debounceModel)).not.toContain('// my own draft');
+
+    // When the time is up the editor turns read-only and the review lists both problems.
+    await page.clock.fastForward('40:00');
+    await expect(panel.getByTestId('rehearsal-verdict')).toHaveText(/^Time is up\. \d of 2 problems pass every test\.$/);
+    await expect(panel.getByTestId('rehearsal-item').nth(1)).toContainText('Not run');
+    await expect(runButton).toBeDisabled();
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText('Rehearsal over: read-only');
+    await expect.poll(() => isReadOnly(debounceModel)).toBe(true);
+    await expect(page.getByRole('button', { name: /^Solution$/ }).first()).toBeEnabled();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(1);
+
+    // Closing the review gives the task back the person's own draft.
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+    await expect.poll(() => getMonacoModelValue(page, debounceModel)).toContain('// my own draft');
+    await expect.poll(() => isReadOnly(debounceModel)).toBe(false);
+    await expect(runButton).toBeEnabled();
+    await expect(entry).toBeVisible();
+  });
+
+  test.describe('for a visitor', () => {
+    // The pricing page asks for its checkout config, which this visitor's mocked API refuses.
+    test.use({ consoleErrorAllowlist: ['\\/api\\/billing\\/checkout\\/config'] });
+
+    test('Meta rehearsal offers pricing to a visitor, and nothing on a phone', async ({ page }) => {
+      // A visitor with no session: nothing here may reach the production API.
+      await page.route('https://api.frontendatlas.com/**', (route) =>
+        route.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"Not signed in"}' }));
+      await page.goto('/javascript/coding/js-debounce');
+      await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+      const entry = page.getByTestId('rehearsal-entry');
+      await expect(entry).toContainText('Timed rehearsal · Premium');
+      await expect(entry.getByTestId('rehearsal-start')).toHaveCount(0);
+      await entry.getByTestId('rehearsal-pricing').click();
+      await expect(page).toHaveURL(/\/pricing\?src=coding_rehearsal_javascript/);
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto('/javascript/coding/js-debounce');
+      await expect(page.getByTestId('coding-mobile-notice')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('rehearsal-entry')).toHaveCount(0);
+    });
+  });
+
   test('Vue merge request review keeps the written review, passes the top fixes and compares with the sample', async ({
     page,
     baseURL,

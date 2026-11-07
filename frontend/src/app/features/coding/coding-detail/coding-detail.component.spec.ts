@@ -20,6 +20,9 @@ import { PressureModeService } from '../../../core/services/pressure-mode.servic
 import { ReviewModeService } from '../../../core/services/review-mode.service';
 import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
 import { reviewDraftKey } from '../review-mode/review-mode-panel.component';
+import { RehearsalService } from '../../../core/services/rehearsal.service';
+import type { RehearsalDefinition } from '../../../core/models/rehearsal.model';
+import { By } from '@angular/platform-browser';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
@@ -109,7 +112,7 @@ describe('CodingDetailComponent', () => {
       'UserProgressService',
       ['solvedIds', 'isSolved', 'setSolvedIds', 'markSolvedLocal', 'unmarkSolved'],
     );
-    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers', 'authUiState']);
     pressureModes = jasmine.createSpyObj<PressureModeService>('PressureModeService', ['load']);
     pressureProgress = jasmine.createSpyObj<PressureModeProgressService>(
       'PressureModeProgressService',
@@ -135,6 +138,7 @@ describe('CodingDetailComponent', () => {
     progress.unmarkSolved.and.resolveTo();
     authUser = signal<any>(null);
     (auth.user as any).and.callFake(() => authUser());
+    (auth.authUiState as any).and.callFake(() => (authUser() ? 'authenticated' : 'signed_out'));
     auth.isLoggedIn.and.returnValue(false);
     auth.ensureMe.and.returnValue(of(null));
     auth.headers.and.returnValue({} as any);
@@ -3472,6 +3476,157 @@ describe('CodingDetailComponent', () => {
       load.and.returnValue(of({ ...reviewScenario, supportedQuestions: { vue: 'vue-other-task' } }));
       await open(reviewQuestion);
       expect(component.reviewOpen()).toBeFalse();
+    });
+  });
+
+  describe('timed rehearsal', () => {
+    const payload = {
+      id: 'meta-full-loop-coding',
+      access: 'premium',
+      company: 'meta',
+      title: 'Meta coding round',
+      round: 'Full loop: coding',
+      summary: 'About two problems in about 40 minutes.',
+      minutes: 40,
+      order: 'sequential',
+      items: [
+        { path: '/javascript/coding/js-dom-twin-node', title: 'Find the Corresponding Node in Twin DOM Trees' },
+        { path: '/javascript/coding/js-debounce', title: 'Debounce Function' },
+      ],
+    };
+    const task = (id: string, title: string) => ({
+      id,
+      title,
+      description: 'Solve it.',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'intermediate',
+      tags: ['dom'],
+      importance: 3,
+      starterCode: 'export default function solve() {}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+    }) as any;
+    const twin = task('js-dom-twin-node', 'Find the Corresponding Node in Twin DOM Trees');
+    const debounce = task('js-debounce', 'Debounce Function');
+    const premium = { _id: 'premium-user', accessTier: 'premium' };
+    let rehearsals: RehearsalService;
+    let definition: RehearsalDefinition;
+
+    beforeEach(() => {
+      localStorage.removeItem('fa:rehearsal:v1');
+      rehearsals = TestBed.inject(RehearsalService);
+      rehearsals.close();
+      definition = rehearsals.normalize(payload)!;
+      spyOn(rehearsals, 'forTask').and.callFake((path: string) =>
+        of(definition.items.some((item) => item.path === path) ? [definition] : []));
+      // The JS panel announces a resize after loading a task; the page then measures a laptop-wide window.
+      spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    });
+
+    afterEach(() => {
+      rehearsals.close();
+      localStorage.removeItem('fa:rehearsal:v1');
+    });
+
+    async function render(question: any, user: any) {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set(user);
+      auth.isLoggedIn.and.returnValue(!!user);
+      questionService.loadQuestions.and.returnValue(of([question]));
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'javascript';
+      component.kind = 'coding';
+      component.question.set(question);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      return {
+        fixture,
+        component,
+        jsPanel: () => fixture.debugElement.query(By.directive(CodingJsPanelComponent))?.componentInstance as CodingJsPanelComponent,
+        find: (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`),
+      };
+    }
+
+    it('offers the rehearsal to Premium, pricing to everyone else, and nothing on a phone', async () => {
+      const member = await render(twin, premium);
+      expect(rehearsals.forTask).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
+      expect(member.find('rehearsal-entry')?.textContent).toContain('Meta coding round: 2 problems in 40 minutes');
+      expect(member.find('rehearsal-start')).not.toBeNull();
+      expect(member.find('rehearsal-pricing')).toBeNull();
+      member.component.isPhoneViewport.set(true);
+      member.fixture.detectChanges();
+      expect(member.find('rehearsal-entry')).toBeNull();
+      // On a phone the list is not read at all.
+      const reads = (rehearsals.forTask as jasmine.Spy).calls.count();
+      member.component.question.set({ ...twin });
+      member.fixture.detectChanges();
+      expect((rehearsals.forTask as jasmine.Spy).calls.count()).toBe(reads);
+      member.fixture.destroy();
+
+      const visitor = await render(twin, null);
+      const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+      expect(visitor.find('rehearsal-start')).toBeNull();
+      visitor.find('rehearsal-pricing')!.click();
+      expect(navigate).toHaveBeenCalledWith(['/pricing'], jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({ src: 'coding_rehearsal_javascript' }),
+      }));
+    });
+
+    it('starts on the first problem with the clock, a draft of its own, its runs counted and the solution locked', async () => {
+      const { fixture, component, jsPanel, find } = await render(twin, premium);
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      expect(rehearsals.phase()).toBe('active');
+      expect(find('rehearsal-entry')).toBeNull();
+      expect(find('rehearsal-clock')?.textContent?.trim()).toMatch(/^(40:00|39:5\d) left$/);
+      expect(component.jsStorageKey()).toBe(rehearsals.draftKey('js-dom-twin-node'));
+      expect(jsPanel().storageKeyOverride).toBe(rehearsals.draftKey('js-dom-twin-node'));
+      expect(jsPanel().clockLabel).toMatch(/left$/);
+      expect(jsPanel().locked).toBeFalse();
+      expect(component.solutionLocked()).toBeTrue();
+
+      component.onJsTestResults([{ name: 'a', passed: true }, { name: 'b', passed: false }]);
+      expect(rehearsals.session()?.results['js-dom-twin-node']).toEqual({ passed: 1, total: 2, runs: 1 });
+    });
+
+    it('locks the task for the review and gives the drafts back when the review closes', async () => {
+      const { fixture, component, jsPanel, find } = await render(twin, premium);
+      rehearsals.start(definition, twin.id);
+      rehearsals.end();
+      fixture.detectChanges();
+
+      expect(find('rehearsal-verdict')?.textContent).toContain('0 of 2 problems pass every test.');
+      expect(jsPanel().locked).toBeTrue();
+      expect(jsPanel().clockLabel).toBeNull();
+      expect(component.solutionLocked()).toBeFalse();
+      expect(jsPanel().storageKeyOverride).toBe(rehearsals.draftKey(twin.id));
+
+      find('rehearsal-close')!.click();
+      fixture.detectChanges();
+      expect(find('rehearsal-panel')).toBeNull();
+      expect(jsPanel().storageKeyOverride).toBeNull();
+      expect(jsPanel().locked).toBeFalse();
+      expect(find('rehearsal-entry')).not.toBeNull();
+    });
+
+    it('sends a sequential rehearsal started on its second problem to the first one', async () => {
+      const { find } = await render(debounce, premium);
+      const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+      find('rehearsal-start')!.click();
+      expect(navigate).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
+      expect(rehearsals.session()?.reached).toBe(0);
     });
   });
 

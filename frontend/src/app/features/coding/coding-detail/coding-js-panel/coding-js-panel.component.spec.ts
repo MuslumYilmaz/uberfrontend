@@ -152,6 +152,40 @@ describe('CodingJsPanelComponent', () => {
     });
   });
 
+  describe('in a rehearsal', () => {
+    it('runs no tests once the review has locked the task', async () => {
+      const runner = new RunnerStub();
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      (component as any).loadRunner = async () => runner;
+      component.question = { id: 'js-debounce' } as any;
+      component.disablePersistence = true;
+      component.locked = true;
+
+      await component.runTests();
+
+      expect(runner.runWithTests).not.toHaveBeenCalled();
+      expect(component.hasRunTests()).toBeFalse();
+    });
+
+    it('opens the draft under a new storage key on the same task, but not on the first binding', () => {
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      const init = spyOn(component, 'initFromQuestion').and.resolveTo();
+      component.question = { id: 'js-debounce' } as any;
+      const keyChange = (previous: string | null, current: string | null, first: boolean) =>
+        ({ storageKeyOverride: { previousValue: previous, currentValue: current, firstChange: first, isFirstChange: () => first } }) as any;
+
+      component.ngOnChanges(keyChange(undefined as any, null, true));
+      expect(init).not.toHaveBeenCalled();
+
+      component.ngOnChanges(keyChange(null, 'rehearsal:meta-full-loop-coding:1:js-debounce', false));
+      expect(init).toHaveBeenCalledTimes(1);
+
+      // A new task loads once, whatever key comes with it.
+      component.ngOnChanges({ ...keyChange('rehearsal:meta-full-loop-coding:1:js-debounce', null, false), question: {} as any });
+      expect(init).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('persists an intentionally cleared editor draft', fakeAsync(() => {
     const codeStoreStub = {
       saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),

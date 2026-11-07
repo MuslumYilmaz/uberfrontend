@@ -100,6 +100,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() hideRestoreBanner = false;
   @Input() disablePersistence = false;
   @Input() liteMode = false;
+  /** A rehearsal's review: the editors turn read-only and the tests stop running. */
+  @Input() locked = false;
+  /** A running rehearsal's clock; it takes the place of timed practice. */
+  @Input() clockLabel: string | null = null;
   private _solutionPanelOpen = false;
   @Input() set solutionPanelOpen(value: boolean) {
     this._solutionPanelOpen = !!value;
@@ -970,6 +974,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   ngOnChanges(ch: SimpleChanges) {
     if (ch['question'] && this.question) {
       this.initFromQuestion();                 // inputs are ready, initialize
+    } else if (ch['storageKeyOverride'] && !ch['storageKeyOverride'].firstChange && this.question) {
+      // A rehearsal started or its review closed on this page: open the draft kept under the new key. A pending
+      // save keeps the key it was scheduled with.
+      this.initFromQuestion();
     }
     if (ch['liteMode']) {
       this.configureLiteEditors();
@@ -1789,7 +1797,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   // Run tests
   async runTests() {
-    const q = this.question; if (!q || this.destroyed) return;
+    const q = this.question; if (!q || this.destroyed || this.locked) return;
     let rawUserSnapshot = this.editorContent();
 
     const runId = ++this._runSeq;

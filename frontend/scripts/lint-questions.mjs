@@ -8,6 +8,7 @@ import {
 import { validateOutputQuestion } from "./output-question-validator.mjs";
 import { validateQuestionSources } from "./question-sources-lib.mjs";
 import { validatePreviewSample } from "./question-preview-sample-lib.mjs";
+import { REHEARSAL_LIST, validateRehearsalList } from "./question-rehearsal-lib.mjs";
 
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 
@@ -551,6 +552,7 @@ function registerQuestionIdentity(file, tech, kind, id) {
 
 const systemDesignIndexById = new Map(); // id -> { file, entry }
 const systemDesignMetaById = new Map();  // id -> { file, meta, slug }
+const rehearsalTasks = new Map();        // /tech/kind/id -> { title }
 
 const jsonFiles = await listJsonFiles(questionsRoot);
 const questionFiles = jsonFiles
@@ -628,6 +630,7 @@ for (const file of questionFiles) {
       for (const message of validatePreviewSample(q.previewSample, { access: q.access })) {
         severity.addError(file, id, message);
       }
+      rehearsalTasks.set(`/${info.tech}/${info.kind}/${id}`, { title: q.title });
 
       const importance = q.importance;
       if (importance === undefined) {
@@ -956,6 +959,18 @@ for (const entry of collectionRefs) {
   const identityKey = `${ref.tech}:${ref.kind}:${ref.id}`;
   if (!questionIdentityIndex.has(identityKey)) {
     severity.addError(file, itemId, `${label} reference does not exist in the shipped question bank: ${identityKey}`);
+  }
+}
+
+const rehearsalListFile = path.join(questionsRoot, REHEARSAL_LIST);
+if (jsonFiles.includes(rehearsalListFile)) {
+  try {
+    const list = JSON.parse(await fs.readFile(rehearsalListFile, "utf8"));
+    for (const issue of validateRehearsalList(list, rehearsalTasks)) {
+      severity.addError(rehearsalListFile, issue.id, issue.message);
+    }
+  } catch (err) {
+    severity.addError(rehearsalListFile, "<file>", `Invalid JSON (${err?.message ?? err})`);
   }
 }
 

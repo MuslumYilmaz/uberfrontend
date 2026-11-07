@@ -1,0 +1,59 @@
+<section class="rehearsal" data-testid="rehearsal-panel" [attr.data-phase]="phase">
+  <header class="rehearsal__header">
+    <div class="rehearsal__header-copy">
+      <p class="rehearsal__eyebrow">Timed rehearsal</p>
+      <h2>{{ session.definition.title }}</h2>
+    </div>
+    @if (phase === 'active') {
+      <p class="rehearsal__clock" role="timer" data-testid="rehearsal-clock">{{ clock() }} left</p>
+    }
+  </header>
+
+  @if (phase === 'review') {
+    <p class="rehearsal__verdict" data-testid="rehearsal-verdict">{{ verdict() }}</p>
+  }
+  <!-- Always present, so a screen reader hears the review open once; the ticking clock stays out of it. -->
+  <p class="sr-only" role="status" data-testid="rehearsal-announcement">{{ phase === 'review' ? verdict() : '' }}</p>
+
+  <ol class="rehearsal__items" aria-label="Problems in this rehearsal">
+    @for (row of rows(); track row.path; let i = $index) {
+      <li class="rehearsal__item" [class.is-current]="row.current" [attr.data-status]="row.status"
+        data-testid="rehearsal-item">
+        <span class="rehearsal__item-label">Problem {{ i + 1 }}</span>
+        <span class="rehearsal__item-title">
+          @if (!row.visible) {
+            <span class="rehearsal__hidden">Opens when you move on</span>
+          } @else if (row.current) {
+            <span aria-current="step">{{ row.title }}</span>
+          } @else {
+            <a [routerLink]="row.path">{{ row.title }}</a>
+          }
+        </span>
+        @if (row.result) {
+          <span class="rehearsal__result">{{ row.result }}</span>
+        }
+      </li>
+    }
+  </ol>
+
+  @if (phase === 'active') {
+    <div class="rehearsal__actions">
+      @if (next(); as following) {
+        <a faButton variant="primary" [routerLink]="following.path" data-testid="rehearsal-next">Next problem</a>
+      }
+      <button faButton variant="ghost" type="button" data-testid="rehearsal-end" (click)="endRehearsal.emit()">
+        End the rehearsal
+      </button>
+    </div>
+  } @else {
+    <p class="rehearsal__note">
+      The editors stay read-only while this review is open, and the solutions are open. Closing the review brings back
+      your own drafts of these problems.
+    </p>
+    <div class="rehearsal__actions">
+      <button faButton variant="primary" type="button" data-testid="rehearsal-close" (click)="closeReview.emit()">
+        Close the review
+      </button>
+    </div>
+  }
+</section>

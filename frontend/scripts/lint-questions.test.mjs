@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateQuestionSourceDate, validateQuestionSources } from './question-sources-lib.mjs';
 import { validatePreviewSample } from './question-preview-sample-lib.mjs';
+import { validateRehearsalList } from './question-rehearsal-lib.mjs';
 
 const today = new Date('2026-10-14T12:00:00.000Z');
 const valid = () => ({
@@ -81,4 +82,54 @@ test('a lock page sample is prose on a Premium task, with a label and a quote', 
   for (const quote of ['Open `src/money.js` first.', 'See money.js for the cause.', 'It returns { total }.', 'Use a => b.']) {
     assert.match(validatePreviewSample({ ...sample, quote }, { access: 'premium' }).join('\n'), /must read as prose/, quote);
   }
+});
+
+const rehearsal = () => ({
+  id: 'meta-full-loop-coding',
+  access: 'premium',
+  company: 'meta',
+  title: 'Meta coding round',
+  round: 'Full loop: coding',
+  summary: 'About two problems in about 40 minutes.',
+  minutes: 40,
+  order: 'sequential',
+  items: [
+    { path: '/javascript/coding/js-dom-twin-node', title: 'Find the Corresponding Node in Twin DOM Trees' },
+    { path: '/javascript/coding/js-debounce', title: 'Debounce Function' },
+  ],
+});
+const rehearsalTasks = new Map([
+  ['/javascript/coding/js-dom-twin-node', { title: 'Find the Corresponding Node in Twin DOM Trees' }],
+  ['/javascript/coding/js-debounce', { title: 'Debounce Function' }],
+  ['/react/coding/react-counter', { title: 'Counter' }],
+]);
+const listIssues = (list) => validateRehearsalList(list, rehearsalTasks).map((issue) => `${issue.id}: ${issue.message}`).join('\n');
+const oneRehearsal = (patch) => listIssues({ schemaVersion: 1, rehearsals: [{ ...rehearsal(), ...patch }] });
+
+test('the rehearsal list holds distinct rehearsals under schema version 1', () => {
+  assert.equal(listIssues({ schemaVersion: 1, rehearsals: [rehearsal()] }), '');
+  assert.match(listIssues({ schemaVersion: 2, rehearsals: [rehearsal()] }), /schemaVersion must be 1/);
+  assert.match(listIssues({ schemaVersion: 1, rehearsals: [] }), /non-empty list/);
+  assert.match(listIssues({ schemaVersion: 1, rehearsals: [rehearsal()], extra: true }), /<file>: Unknown key: extra/);
+  assert.match(listIssues({ schemaVersion: 1, rehearsals: [rehearsal(), rehearsal()] }), /meta-full-loop-coding: id is listed twice/);
+  assert.match(listIssues([]), /must be a JSON object/);
+});
+
+test('a rehearsal lists two to six existing JavaScript tasks under their own titles', () => {
+  const [first, second] = rehearsal().items;
+  assert.match(oneRehearsal({ items: [first] }), /2 to 6 tasks/);
+  assert.match(oneRehearsal({ items: [first, first] }), /listed twice/);
+  assert.match(oneRehearsal({ items: [first, { path: '/react/coding/react-counter', title: 'Counter' }] }), /JavaScript coding or debug task/);
+  assert.match(oneRehearsal({ items: [first, { path: '/javascript/coding/js-missing', title: 'Missing' }] }), /does not exist/);
+  assert.match(oneRehearsal({ items: [first, { ...second, title: 'Debounce' }] }), /must match the task: "Debounce Function"/);
+});
+
+test('a rehearsal is Premium, with a clock, an order and known keys', () => {
+  assert.match(oneRehearsal({ access: 'free' }), /access must be premium/);
+  assert.match(oneRehearsal({ minutes: 4 }), /minutes must be a whole number/);
+  assert.match(oneRehearsal({ minutes: 40.5 }), /minutes must be a whole number/);
+  assert.match(oneRehearsal({ order: 'random' }), /order must be sequential or free/);
+  assert.match(oneRehearsal({ id: 'Meta Onsite' }), /kebab-case/);
+  assert.match(oneRehearsal({ summary: '' }), /summary must be text/);
+  assert.match(oneRehearsal({ extra: true }), /Unknown key: extra/);
 });

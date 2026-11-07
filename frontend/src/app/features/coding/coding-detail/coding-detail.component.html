@@ -28,9 +28,9 @@
 
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
-          [disabled]="pressureActive() && !pressureCompleted()"
-          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : 'Solution'">
-          <app-fa-glyph class="fa-btn__icon" [icon]="pressureActive() && !pressureCompleted() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
+          [disabled]="solutionLocked()"
+          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : rehearsalPhase() === 'active' ? 'Solution locked until the rehearsal ends' : 'Solution'">
+          <app-fa-glyph class="fa-btn__icon" [icon]="solutionLocked() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
         </button>
       </div>
       <div></div>
@@ -46,9 +46,9 @@
 
           <button class="px-4 py-2 flex-1 text-left font-medium" data-testid="coding-solution-tab" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            [disabled]="pressureActive() && !pressureCompleted()"
+            [disabled]="solutionLocked()"
             (click)="onSolutionTabClick()">
-            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : 'Solution' }}
+            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : rehearsalPhase() === 'active' ? 'Solution locked' : 'Solution' }}
           </button>
         </div>
 
@@ -225,6 +225,31 @@
 
             </ng-container>
 
+            <ng-container *ngIf="!demoMode && !isFrameworkTech() && workspaceAvailable()">
+              <app-rehearsal-panel *ngIf="rehearsalPhase() as phase" [session]="rehearsals.session()!" [phase]="phase"
+                [remainingMs]="rehearsals.remainingMs()" [questionId]="question()!.id"
+                (endRehearsal)="endRehearsal()" (closeReview)="closeRehearsalReview()"></app-rehearsal-panel>
+
+              <ng-container *ngIf="!rehearsalPhase()">
+                <section *ngFor="let offer of rehearsalOffers()" class="pressure-entry" data-testid="rehearsal-entry">
+                  <div>
+                    <p class="pressure-entry__eyebrow">Timed rehearsal · Premium</p>
+                    <h2>{{ offer.title }}: {{ offer.items.length }} problems in {{ offer.minutes }} minutes</h2>
+                    <p>{{ offer.summary }}</p>
+                    <p *ngIf="otherRehearsalTitle() as other">Starting it ends the {{ other }} rehearsal you have running.</p>
+                  </div>
+                  <button *ngIf="rehearsalAccess() === 'premium'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-start" (click)="startRehearsal(offer)">
+                    Start the rehearsal
+                  </button>
+                  <button *ngIf="rehearsalAccess() === 'locked'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-pricing" (click)="goToPricing('coding_rehearsal')">
+                    View pricing
+                  </button>
+                </section>
+              </ng-container>
+            </ng-container>
+
             <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
               <p class="detail-interview-hero__intent" *ngIf="interviewFocusSummary()">
                 {{ interviewFocusSummary() }}
@@ -393,8 +418,9 @@
               </div>
             </div>
 
-            <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab -->
-            <details *ngIf="solutionIdea()" class="solution-idea mt-6" data-testid="coding-solution-idea"
+            <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab.
+                 A running rehearsal hides it with the solution, once the browser view is ready, so hydration matches the server. -->
+            <details *ngIf="solutionIdea() && !(workspaceAvailable() && rehearsalPhase() === 'active')" class="solution-idea mt-6" data-testid="coding-solution-idea"
               [attr.open]="solutionIdeaOpen() ? '' : null">
               <summary><h3 class="inline text-sm font-semibold">Solution idea</h3></summary>
               <div class="solution-prose prose prose-invert max-w-none text-sm opacity-90 mt-1"
@@ -555,7 +581,7 @@
                   <h3 class="ap-title"><fa-inline-code [text]="ap.title"></fa-inline-code></h3>
                   <div class="ap-actions">
                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
-                      *ngIf="workspaceAvailable() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
+                      *ngIf="workspaceAvailable() && !rehearsalPhase() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
                       (click)="loadApproach(ap, i)" title="Load into editor">
                       Load into editor
                     </button>
@@ -867,12 +893,13 @@
       <!-- JS / TS EDITOR stays the same -->
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
-          [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+          [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="jsStorageKey()"
           [solutionPanelOpen]="activePanel()===1"
-          [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
+          [hideRestoreBanner]="demoMode || hideRestoreBanner || !!rehearsalPhase()" [disablePersistence]="disablePersistence || demoMode"
+          [locked]="rehearsalPhase() === 'review'" [clockLabel]="rehearsalClockLabel()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
           (langChange)="onChildLang($event)"
-          (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
+          (testResultsChange)="onJsTestResults($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
         </app-coding-js-panel>
       </ng-template>

@@ -86,6 +86,9 @@ import { PressureModeService } from '../../../core/services/pressure-mode.servic
 import { ReviewModeService } from '../../../core/services/review-mode.service';
 import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
 import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
+import { RehearsalService } from '../../../core/services/rehearsal.service';
+import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
+import { RehearsalPanelComponent, formatRehearsalClock } from '../rehearsal/rehearsal-panel.component';
 import {
   AuthPromptContext,
   LoginRequiredDialogComponent,
@@ -176,6 +179,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         QuestionSourcesComponent,
         LoginRequiredDialogComponent,
         ReviewModePanelComponent,
+        RehearsalPanelComponent,
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
@@ -422,6 +426,34 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
   private reviewLoadSeq = 0;
   private reviewPreviousAsideRatio: number | null = null;
+
+  // Timed rehearsal: the tasks of one round on one clock, each on its own page (see rehearsal.service.ts).
+  readonly rehearsals = inject(RehearsalService);
+  rehearsalOffers = signal<RehearsalDefinition[]>([]);
+  rehearsalPhase = computed<RehearsalPhase | null>(() => {
+    const q = this.question();
+    return q && this.rehearsals.includes(q.id) ? this.rehearsals.phase() : null;
+  });
+  rehearsalClockLabel = computed(() =>
+    this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
+  );
+  rehearsalAccess = computed<'pending' | 'premium' | 'locked'>(() => {
+    if (this.auth.authUiState() === 'pending') return 'pending';
+    return isProActive(this.auth.user()) ? 'premium' : 'locked';
+  });
+  /** A rehearsal running on other tasks, which starting one here would end. */
+  otherRehearsalTitle = computed(() => {
+    const session = this.rehearsals.session();
+    return session && this.rehearsals.phase() === 'active' && !this.rehearsalPhase() ? session.definition.title : null;
+  });
+  /** While a rehearsal runs or is reviewed, its tasks open on drafts of their own, from the starter code. */
+  jsStorageKey = computed(() => {
+    const q = this.question();
+    if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
+    return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
+  });
+  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active');
+  private rehearsalLoadSeq = 0;
 
   // Practice session
   private practice: PracticeSession = null;
@@ -682,11 +714,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
   }
 
-  goToPricing() {
+  goToPricing(context: 'coding_locked' | 'coding_rehearsal' = 'coding_locked') {
     const profile = this.onboarding.getProfile();
     this.analytics.track('premium_gate_path_clicked', {
       action: 'view_pricing',
-      context: 'coding_locked',
+      context,
       question_id: this.question()?.id ?? null,
       tech: this.tech,
       kind: this.kind,
@@ -696,7 +728,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
     this.analytics.track('premium_cta_click', {
       action: 'view_pricing',
-      context: 'coding_locked',
+      context,
       question_id: this.question()?.id ?? null,
       tech: this.tech,
       kind: this.kind,
@@ -706,7 +738,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
     this.router.navigate(['/pricing'], {
       queryParams: {
-        src: `coding_locked_${this.tech || 'javascript'}`,
+        src: `${context}_${this.tech || 'javascript'}`,
         framework: profile?.framework ?? undefined,
         timeline: profile?.timeline ?? undefined,
       },
@@ -924,6 +956,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         this.reviewScenario.set(null);
         if (!q?.reviewModeAsset || !this.isBrowser || this.demoMode) return;
         if (readReviewDraft(q.id)?.open) void this.openReviewMode(q);
+      });
+    });
+
+    // A task offers the rehearsals it belongs to; opening a task of the running rehearsal moves it on.
+    effect(() => {
+      const q = this.question();
+      const workspace = this.workspaceAvailable();
+      untracked(() => {
+        this.rehearsalOffers.set([]);
+        if (!q || !this.isBrowser || this.demoMode || this.tech !== 'javascript') return;
+        this.rehearsals.refresh();
+        if (this.rehearsals.includes(q.id)) this.rehearsals.reach(q.id);
+        // The list is read only where a rehearsal can start: a JavaScript task with the workspace open.
+        if (workspace) void this.loadRehearsalOffers(q);
       });
     });
 
@@ -2478,6 +2524,44 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.horizontalRatio.set(Math.max(0.42, this.horizontalRatio()));
   }
 
+  private async loadRehearsalOffers(q: Question): Promise<void> {
+    const loadSeq = ++this.rehearsalLoadSeq;
+    const offers = await firstValueFrom(this.rehearsals.forTask(`/${this.tech}/${this.kind}/${q.id}`));
+    if (loadSeq !== this.rehearsalLoadSeq || this.question()?.id !== q.id) return;
+    this.rehearsalOffers.set(offers);
+  }
+
+  startRehearsal(definition: RehearsalDefinition): void {
+    const q = this.question();
+    if (!q || this.showMobileDesktopGuard() || this.rehearsalAccess() !== 'premium') return;
+    this.rehearsals.start(definition, q.id);
+    this.showSolutionWarning.set(false);
+    this.activePanel.set(0);
+    const first = definition.items[0];
+    // A sequential rehearsal starts at its first problem, as the interviewer would.
+    if (definition.order === 'sequential' && first.questionId !== q.id) {
+      void this.router.navigateByUrl(first.path);
+    } else {
+      this.rehearsals.reach(q.id);
+    }
+  }
+
+  endRehearsal(): void {
+    this.rehearsals.end();
+  }
+
+  closeRehearsalReview(): void {
+    this.rehearsals.close();
+  }
+
+  onJsTestResults(results: TestResult[]): void {
+    this.testResults.set(results);
+    const q = this.question();
+    if (q && results.length && this.rehearsalPhase() === 'active') {
+      this.rehearsals.record(q.id, results.filter((result) => result.passed).length, results.length);
+    }
+  }
+
   startPressureMode(): void {
     if (this.showMobileDesktopGuard() || !this.pressureSupported()) return;
     this.router.navigate([], {
@@ -3935,7 +4019,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Load one approach directly into the appropriate editor
   loadApproach(ap: FAApproach, approachIndex: number) {
-    if (this.showMobileDesktopGuard()) return;
+    // A rehearsal's draft is the person's own attempt; its review is read-only.
+    if (this.showMobileDesktopGuard() || this.rehearsalPhase()) return;
     // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
@@ -4042,6 +4127,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   onSolutionTabClick() {
+    if (this.rehearsalPhase() === 'active') return;
     if (this.pressureActive()) {
       if (!this.pressureCompleted()) return;
       if (this.descriptionCollapsed()) this.toggleDescription();
@@ -4083,7 +4169,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
-    if (this.showMobileDesktopGuard()) return;
+    if (this.showMobileDesktopGuard() || this.rehearsalPhase()) return;
     // For frameworks: delegate to panel; for JS/TS keep existing behavior.
     if (this.isFrameworkTech()) {
       this.frameworkPanel?.applySolutionFiles(this.solutionCurrentPath());

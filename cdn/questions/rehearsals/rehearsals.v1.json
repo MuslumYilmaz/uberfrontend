@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "rehearsals": [
+    {
+      "id": "meta-full-loop-coding",
+      "access": "premium",
+      "company": "meta",
+      "title": "Meta coding round",
+      "round": "Full loop: coding",
+      "summary": "Public accounts of Meta's full loop describe about two JavaScript problems in about 40 minutes, with no dynamic programming, and name DOM and utility problems. This rehearsal pairs one of each: the second opens when you move on, and the solutions stay locked until the clock stops.",
+      "minutes": 40,
+      "order": "sequential",
+      "items": [
+        {
+          "path": "/javascript/coding/js-dom-twin-node",
+          "title": "Find the Corresponding Node in Twin DOM Trees"
+        },
+        {
+          "path": "/javascript/coding/js-debounce",
+          "title": "Debounce Function"
+        }
+      ]
+    }
+  ]
+}

@@ -14,7 +14,7 @@
                 Older version
             </span>
 
-            <div *ngIf="showInterviewSetup()" class="interview-setup">
+            <div *ngIf="showInterviewSetup() && !clockLabel && !locked" class="interview-setup">
                 <button
                     type="button"
                     class="compact-control-btn"
@@ -55,7 +55,7 @@
                 <app-fa-glyph class="lang-compact__icon" icon="pi pi-code" aria-hidden="true"></app-fa-glyph>
                 <div class="lang-wrap">
                     <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
-                        aria-label="Editor language">
+                        [disabled]="locked" aria-label="Editor language">
                         <option value="js">JavaScript</option>
                         <option value="ts">TypeScript</option>
                     </select>
@@ -75,12 +75,12 @@
     </app-restore-banner>
 
     <!-- Draft update banner (versioned drafts) -->
-    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
+    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion() && !locked"
         [isVisible]="true" mode="updated" [otherDrafts]="availableOlderDrafts()"
         (openVersion)="openOlderDraft($event)" (copyVersion)="copyDraftIntoLatest($event)" (dismiss)="dismissDraftUpdateBanner()">
     </app-draft-update-banner>
 
-    <app-draft-update-banner *ngIf="isViewingOlderVersion()"
+    <app-draft-update-banner *ngIf="isViewingOlderVersion() && !locked"
         [isVisible]="true" mode="older"
         (switchToCurrent)="backToLatestDraft()" (copyVersion)="copyActiveDraftIntoLatest()">
     </app-draft-update-banner>
@@ -102,7 +102,7 @@
                 <div class="code-editor-area" [class.file-tabs-offset]="!!bundleFiles()">
                 <ng-container *ngIf="useMonaco(); else liteCodeEditor">
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
-                        [code]="editorCode()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        [code]="editorCode()" [language]="jsLang()==='ts' ? 'typescript':'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
                         (lineClick)="onCodeEditorLineClick($event)"
                         (loadFailed)="onEditorLoadFailed()">
@@ -123,6 +123,7 @@
                         data-testid="js-code-editor"
                         aria-label="Code editor fallback"
                         spellcheck="false"
+                        [readOnly]="locked"
                         [value]="editorCode()"
                         (input)="onCodeChange($any($event.target).value)"></textarea>
                 </ng-template>
@@ -142,7 +143,7 @@
             <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
                 <ng-container *ngIf="useMonaco(); else liteTestsEditor">
                     <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
-                        [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                        [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
@@ -162,6 +163,7 @@
                         data-testid="js-tests-editor"
                         aria-label="Tests editor fallback"
                         spellcheck="false"
+                        [readOnly]="locked"
                         [value]="testCode()"
                         (input)="onTestsChange($any($event.target).value)"></textarea>
                 </ng-template>
@@ -338,13 +340,16 @@
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell" data-nosnippet>
             <div class="fa-runner-topbar">
                 <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()"
-                    [disabled]="!(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
+                    [disabled]="locked || !(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
                 <button *ngIf="!interviewModeEnabled()" class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
+                <div class="fa-runner-interview-controls" *ngIf="clockLabel || locked">
+                    <span class="interview-pill" data-testid="js-rehearsal-clock">{{ locked ? 'Rehearsal over: read-only' : clockLabel }}</span>
+                </div>
                 <div class="fa-runner-interview-controls" *ngIf="interviewModeEnabled()">
                     <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
                     <button class="interview-end-btn" type="button" data-testid="interview-mode-end" (click)="endInterviewMode('manual')">
