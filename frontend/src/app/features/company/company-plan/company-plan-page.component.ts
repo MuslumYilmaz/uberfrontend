@@ -177,7 +177,9 @@ export class CompanyPlanPageComponent {
         route: next.route,
         queryParams: null,
         state: this.views().get(next.id)?.state ?? {},
-        note: next.kind === 'coding' || next.kind === 'debug' ? 'Runs in your browser.' : '',
+        note: next.kind === 'coding' || next.kind === 'debug'
+          ? 'Runs in your browser.'
+          : next.kind === 'rehearsal' ? 'Runs in your browser, on one clock, on a laptop or tablet.' : '',
         task: next,
       };
     }

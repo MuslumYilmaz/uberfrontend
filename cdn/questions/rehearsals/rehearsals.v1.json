@@ -6,7 +6,7 @@
       "access": "premium",
       "company": "meta",
       "title": "Meta coding round",
-      "round": "Full loop: coding",
+      "round": "full-loop-coding",
       "summary": "Public accounts of Meta's full loop describe about two JavaScript problems in about 40 minutes, with no dynamic programming, and name DOM and utility problems. This rehearsal pairs one of each: the second opens when you move on, and the solutions stay locked until the clock stops.",
       "minutes": 40,
       "order": "sequential",
@@ -18,6 +18,50 @@
         {
           "path": "/javascript/coding/js-debounce",
           "title": "Debounce Function"
+        }
+      ]
+    },
+    {
+      "id": "revolut-hackerrank-assessment",
+      "access": "premium",
+      "company": "revolut",
+      "title": "Revolut HackerRank assessment",
+      "round": "hackerrank-assessment",
+      "summary": "Public accounts of Revolut's assessment describe three algorithm tasks on HackerRank in 85 to 110 minutes, done at home before a deadline. This rehearsal gives three such tasks the shorter 85 minutes; all three are open from the start, as on HackerRank, and the solutions stay locked until the clock stops.",
+      "minutes": 85,
+      "order": "free",
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-three-sum",
+          "title": "3Sum (find unique triplets that sum to zero)"
+        },
+        {
+          "path": "/javascript/coding/js-maze-path",
+          "title": "Maze Traversal (Find a Path in a Grid)"
+        }
+      ]
+    },
+    {
+      "id": "agoda-coding-interview",
+      "access": "premium",
+      "company": "agoda",
+      "title": "Agoda coding interview",
+      "round": "coding-interview",
+      "summary": "Public accounts of Agoda's coding interview describe 60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, then questions on test cases and the pull-request process. This rehearsal gives the two problems 45 minutes, so the questions still fit in the hour.",
+      "minutes": 45,
+      "order": "sequential",
+      "items": [
+        {
+          "path": "/javascript/coding/js-add-strings",
+          "title": "Add Large Integers as Strings"
+        },
+        {
+          "path": "/javascript/coding/js-recover-bst-swapped-nodes",
+          "title": "Recover a BST with Two Swapped Nodes"
         }
       ]
     }

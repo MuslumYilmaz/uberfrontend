@@ -18,7 +18,7 @@ export type RehearsalDefinition = {
   readonly company: string;
   /** The rehearsal's name, e.g. "Meta coding round". */
   readonly title: string;
-  /** The round in the company's process table. */
+  /** The id of the round in the company plan (company-plan-rounds.ts) that the plan shows this rehearsal on. */
   readonly round: string;
   readonly summary: string;
   readonly minutes: number;

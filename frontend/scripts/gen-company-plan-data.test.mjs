@@ -549,3 +549,45 @@ test('rendering the same input twice gives the same bytes', () => {
   const dir = fixture(baseCatalog);
   assert.equal(renderCompanyPlanData(buildCompanyPlanData(dir, sources())), renderCompanyPlanData(buildCompanyPlanData(dir, sources())));
 });
+
+const rehearsalDefinition = {
+  id: 'acme-coding',
+  access: 'premium',
+  company: 'acme',
+  title: 'Acme coding round',
+  round: 'coding',
+  summary: 'Two problems.',
+  minutes: 40,
+  order: 'sequential',
+  items: [{ path: '/javascript/coding/js-linked', title: 'Linked' }, { path: '/javascript/coding/js-old', title: 'Old' }],
+};
+const withRehearsal = (patch = {}) => ({ ...baseCatalog, 'rehearsals/rehearsals.v1.json': { schemaVersion: 1, rehearsals: [{ ...rehearsalDefinition, ...patch }] } });
+
+test('a timed rehearsal is one Premium task on its round, standing for its problems, after the list\'s own rows', () => {
+  const data = build({}, withRehearsal());
+  assert.deepEqual(data.tasks['rehearsal-acme-coding'], {
+    id: 'rehearsal-acme-coding',
+    title: 'Rehearse the Acme coding round',
+    route: '/javascript/coding/js-linked',
+    kind: 'rehearsal',
+    access: 'premium',
+    minutes: 40,
+    members: ['js-linked', 'js-old'],
+  });
+  // Both lists hold a coding round, so both carry the rehearsal there, as one more row: the concept questions the
+  // list counts toward the largest plan stay as they were.
+  const plain = build().companies.acme.variants;
+  data.companies.acme.variants.forEach((list, index) => {
+    assert.deepEqual(list.tasks.at(-1), { id: 'rehearsal-acme-coding', rounds: ['coding'] });
+    assert.deepEqual(list.tasks.slice(0, -1), plain[index].tasks);
+  });
+});
+
+test('a rehearsal on a company, round or problem the plan cannot place stops the generator', () => {
+  assert.throws(() => build({}, withRehearsal({ company: 'globex' })), /names globex, which has no company plan/);
+  assert.throws(() => build({}, withRehearsal({ round: 'onsite' })), /names the round onsite, which no acme list has/);
+  assert.throws(
+    () => build({}, withRehearsal({ items: [rehearsalDefinition.items[0], { path: '/javascript/coding/js-missing', title: 'Missing' }] })),
+    /holds \/javascript\/coding\/js-missing, which is not in the catalog/,
+  );
+});

@@ -107,6 +107,41 @@ function readCatalog(cdnRoot) {
   return byRoute;
 }
 
+/**
+ * The timed rehearsals, by company (cdn/questions/rehearsals/rehearsals.v1.json). Each becomes one plan task on its
+ * round, standing for its problems; the generator stops on a company, round or problem the plan cannot place.
+ */
+function readRehearsals(cdnRoot, catalog, rounds) {
+  const list = readJsonIfExists(path.join(cdnRoot, 'questions', 'rehearsals', 'rehearsals.v1.json'));
+  const byCompany = {};
+  for (const definition of Array.isArray(list?.rehearsals) ? list.rehearsals : []) {
+    const where = `[gen-company-plan-data] the rehearsal ${definition.id}`;
+    const plan = rounds[definition.company];
+    if (!plan) throw new Error(`${where} names ${definition.company}, which has no company plan.`);
+    if (!plan.variants.some((variant) => variant.rounds.some((round) => round.id === definition.round))) {
+      throw new Error(`${where} names the round ${definition.round}, which no ${definition.company} list has.`);
+    }
+    for (const item of definition.items) {
+      if (!catalog.get(item.path)) throw new Error(`${where} holds ${item.path}, which is not in the catalog.`);
+    }
+    (byCompany[definition.company] ??= []).push(definition);
+  }
+  return byCompany;
+}
+
+function rehearsalTask(definition) {
+  return {
+    id: `rehearsal-${definition.id}`,
+    title: `Rehearse the ${definition.title}`,
+    // The rehearsal starts from its first problem's page, where the page offers it.
+    route: definition.items[0].path,
+    kind: 'rehearsal',
+    access: 'premium',
+    minutes: definition.minutes,
+    members: definition.items.map((item) => item.path.slice(item.path.lastIndexOf('/') + 1)),
+  };
+}
+
 /** A guide, or a section of one: a company guide's own section on a round keeps its anchor in the id and the link. */
 function guideTask(route, label, fragment) {
   return {
@@ -316,6 +351,15 @@ function buildCompany(slug, context) {
     for (const task of taggedConcepts) {
       if (chosen.size < LARGEST_PLAN_BUDGET && !chosen.has(task.id)) add(publish(task), {});
     }
+    // A timed rehearsal of one of this list's rounds joins it on that round, after the count above: it stands for
+    // problems the list may hold as well, so it adds a row rather than taking a concept question's place. The engine
+    // opens the round with it.
+    for (const definition of context.rehearsals?.[slug] ?? []) {
+      if (!meta.rounds.some((round) => round.id === definition.round)) continue;
+      const task = rehearsalTask(definition);
+      tasks.set(task.id, taskEntry(task));
+      add(task.id, { rounds: [definition.round] });
+    }
 
     const reportDates = [
       ...variant.stages.flatMap((stage) => stage.sources.filter((source) => source.kind === 'report').map((source) => source.date)),
@@ -370,7 +414,8 @@ function buildCompany(slug, context) {
 export function buildCompanyPlanData(cdnRoot, sources) {
   const catalog = readCatalog(cdnRoot);
   const tasks = new Map();
-  const context = { ...sources, catalog, tasks, reports: buildCompanyReports(cdnRoot).companies };
+  const rehearsals = readRehearsals(cdnRoot, catalog, sources.rounds);
+  const context = { ...sources, catalog, tasks, rehearsals, reports: buildCompanyReports(cdnRoot).companies };
   const companies = {};
   for (const slug of Object.keys(sources.processes).sort()) companies[slug] = buildCompany(slug, context);
 

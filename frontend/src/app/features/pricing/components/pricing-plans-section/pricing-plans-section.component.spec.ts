@@ -568,6 +568,8 @@ describe('PricingPlansSectionComponent', () => {
     const runTests = faqItems.find((item) => item.id === 'run-tests');
     const solutions = faqItems.find((item) => item.id === 'solutions-and-explanations');
     expect(premiumIncludes?.a || '').toContain('each with a guided solution');
+    expect(premiumIncludes?.a || '').toContain('timed rehearsals of company rounds on one clock');
+    expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('Timed rehearsals of company rounds');
     expect(premiumIncludes?.a || '').not.toContain('Typically');
     expect(runTests?.a || '').toContain('Every JavaScript and debugging task has runnable checks');
     expect(solutions?.a || '').toContain('Every coding question, free or Premium, includes a guided solution');

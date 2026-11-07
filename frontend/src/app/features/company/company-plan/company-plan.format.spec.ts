@@ -56,7 +56,11 @@ describe('whyLineFor', () => {
     expect(whyLineFor({ kind: 'pick' }, 'Phone screen')).toBe('Our pick for the Phone screen');
     expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2025-05' }, 'Phone screen')).toBe('Modelled on a report: Taro, May 2025 · Phone screen');
     expect(whyLineFor({ kind: 'report', publisher: 'Taro', date: '2022-01', approx: true }, 'Online assessment')).toBe('Modelled on a report: Taro (approx.), Jan 2022 · Online assessment');
-    expect(whyLineFor({ kind: 'format' }, 'Extra React practice')).toBe('Extra practice in the reported format');
+    // The framework by name: "the reported format" read as the interview's format, a review or a bug squash.
+    expect(whyLineFor({ kind: 'format', framework: 'react' }, 'Extra React practice')).toBe('Extra React practice');
+    expect(whyLineFor({ kind: 'format' }, 'Extra practice')).toBe('Extra practice');
+    expect(whyLineFor({ kind: 'rehearsal', problems: 2 }, 'Full loop: coding')).toBe('Timed rehearsal: 2 problems on one clock · Full loop: coding');
+    expect(whyLine({ kind: 'rehearsal', problems: 3 })).toBe('Timed rehearsal: 3 problems on one clock');
     expect(whyLineFor({ kind: 'general' }, null)).toBe('General frontend practice');
     expect(whyLineFor({ kind: 'pick' }, null)).toBe('Our pick for this round');
   });

@@ -89,7 +89,7 @@ const rehearsal = () => ({
   access: 'premium',
   company: 'meta',
   title: 'Meta coding round',
-  round: 'Full loop: coding',
+  round: 'full-loop-coding',
   summary: 'About two problems in about 40 minutes.',
   minutes: 40,
   order: 'sequential',
@@ -131,5 +131,6 @@ test('a rehearsal is Premium, with a clock, an order and known keys', () => {
   assert.match(oneRehearsal({ order: 'random' }), /order must be sequential or free/);
   assert.match(oneRehearsal({ id: 'Meta Onsite' }), /kebab-case/);
   assert.match(oneRehearsal({ summary: '' }), /summary must be text/);
+  assert.match(oneRehearsal({ round: 'Full loop: coding' }), /round must be the id of a round/);
   assert.match(oneRehearsal({ extra: true }), /Unknown key: extra/);
 });

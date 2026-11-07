@@ -546,6 +546,11 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       premiumValue: 'The Premium prompts inside them',
     },
     {
+      label: 'Interview formats',
+      freeValue: 'Timed practice on any task you can open, and Pressure Mode on the free pilot tasks',
+      premiumValue: 'Timed rehearsals of company rounds, the merge request review and multi-file bug squash formats, and Pressure Mode on Premium tasks',
+    },
+    {
       // The same sentence as the sign-up page's "Save & resume" line: one promise, kept in both places.
       label: 'Progress',
       freeValue: 'Your plan and solved tasks stay on your account on every device; code drafts stay on this device',
@@ -612,6 +617,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
 - front-end system design walkthroughs with official-source checks<br>
 - debug scenarios and tradeoff battles<br>
 - company practice pages, with a public interview report cited wherever a prompt is modelled on one<br>
+- interview formats: timed rehearsals of company rounds on one clock, the merge request review and the multi-file bug squash<br>
 - content updates while your plan is active<br><br>
 Every paid plan unlocks the same library; only the access period changes.`,
         },

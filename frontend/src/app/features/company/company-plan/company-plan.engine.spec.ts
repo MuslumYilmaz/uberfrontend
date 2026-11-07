@@ -131,6 +131,9 @@ describe('company plan engine', () => {
               for (const entry of plan.tasks) {
                 if (entry.why.kind === 'report') expect(rows.get(entry.id)?.report).withContext(`${where}: ${entry.id} has no report`).toBeDefined();
               }
+              // A rehearsal stands for its problems, so none of them sits beside it.
+              const members = new Set(plan.tasks.flatMap((entry) => entry.members ?? []));
+              expect(plan.tasks.filter((entry) => members.has(entry.id)).map((entry) => entry.id)).withContext(`${where}: a rehearsal beside its problem`).toEqual([]);
 
               if (when === 'tomorrow') {
                 expect(plan.tasks.some((entry) => entry.access === 'premium')).withContext(`${where}: no Premium task`).toBeTrue();
@@ -173,6 +176,54 @@ describe('company plan engine', () => {
     });
   });
 
+  it('opens a round with its timed rehearsal and keeps the rehearsal\'s problems out beside it', () => {
+    const rehearsal = task('rehearsal-coding', { kind: 'rehearsal', tech: undefined, access: 'premium', minutes: 40, members: ['linked', 'tagged-a'] });
+    const base = fixture(
+      [{ id: 'linked', rounds: ['coding'], lead: true }, { id: 'tagged-a', rounds: ['coding'], report }, { id: 'tagged-b', rounds: ['coding'] }, { id: rehearsal.id, rounds: ['coding'] }],
+      [round('screen', ['recruiter']), round('coding', ['coding'])],
+    );
+    const data = { ...base, tasks: { ...base.tasks, [rehearsal.id]: rehearsal } } as CompanyPlanData;
+    const plan = buildCompanyPlan(data, input({ when: 'later' }));
+
+    expect(idsIn(plan, 'coding')[0]).toBe('rehearsal-coding');
+    expect(idsIn(plan, 'coding')).toContain('tagged-b');
+    expect(plan.tasks.map((entry) => entry.id)).not.toContain('linked');
+    expect(plan.tasks.map((entry) => entry.id)).not.toContain('tagged-a');
+    expect(plan.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2 });
+  });
+
+  it('gives the format share to the open tasks of the round the person faces next', () => {
+    const data = fixture(
+      [
+        { id: 'reported-old', rounds: ['squash'], report, lead: true },
+        { id: 'tagged-a', rounds: ['squash'], report },
+        { id: 'linked', rounds: ['integration'], lead: true },
+        { id: 'tagged-b', rounds: ['exercise'], lead: true },
+      ],
+      [
+        round('screen', ['recruiter']),
+        round('squash', ['coding'], { name: 'Onsite: squash' }),
+        round('integration', ['coding'], { name: 'Onsite: integration' }),
+        round('exercise', ['coding'], { name: 'Onsite: exercise' }),
+      ],
+    );
+    const plan = buildCompanyPlan(data, input({ when: 'this-week', level: 'mid' }));
+
+    // The onsite day takes a task per round; the squash round the person faces first then gets its open task before
+    // a format task no report names.
+    expect(idsIn(plan, 'squash')).toEqual(['reported-old', 'tagged-a']);
+    expect(plan.formatPractice).toEqual([]);
+  });
+
+  it('names the framework of its extra practice', () => {
+    const data = fixture([{ id: 'linked', rounds: ['coding'], lead: true }], [round('coding', ['coding'])]);
+    expect(buildCompanyPlan(data, input()).formatPractice.map((entry) => entry.why)).toEqual([
+      { kind: 'format', framework: 'javascript' },
+      { kind: 'format', framework: 'javascript' },
+    ]);
+    expect(buildCompanyPlan(data, input({ framework: 'angular' })).formatPractice[0].why).toEqual({ kind: 'format', framework: 'angular' });
+  });
+
   it('spends the budget on reports first, newest first, then links, tags and concept questions', () => {
     const data = fixture(
       [
@@ -190,7 +241,7 @@ describe('company plan engine', () => {
     expect(plan.tasks[0].why).toEqual(jasmine.objectContaining({ kind: 'report', publisher: 'Taro', date: '2026-05' }));
     expect(plan.tasks[2].why).toEqual(jasmine.objectContaining({ kind: 'pick' }));
     expect(plan.formatPractice.map((entry) => entry.id)).toEqual(['format-a']);
-    expect(plan.formatPractice[0].why).toEqual({ kind: 'format' });
+    expect(plan.formatPractice[0].why).toEqual({ kind: 'format', framework: 'javascript' });
 
     const later = buildCompanyPlan(data, input({ when: 'later' }));
     expect(idsIn(later, 'coding')).toEqual(['reported-new', 'reported-old', 'linked', 'tagged-a', 'tagged-b', 'concept']);

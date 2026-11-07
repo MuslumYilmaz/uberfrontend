@@ -2824,6 +2824,43 @@
       "access": "premium",
       "minutes": 45
     },
+    "rehearsal-agoda-coding-interview": {
+      "id": "rehearsal-agoda-coding-interview",
+      "title": "Rehearse the Agoda coding interview",
+      "route": "/javascript/coding/js-add-strings",
+      "kind": "rehearsal",
+      "access": "premium",
+      "minutes": 45,
+      "members": [
+        "js-add-strings",
+        "js-recover-bst-swapped-nodes"
+      ]
+    },
+    "rehearsal-meta-full-loop-coding": {
+      "id": "rehearsal-meta-full-loop-coding",
+      "title": "Rehearse the Meta coding round",
+      "route": "/javascript/coding/js-dom-twin-node",
+      "kind": "rehearsal",
+      "access": "premium",
+      "minutes": 40,
+      "members": [
+        "js-dom-twin-node",
+        "js-debounce"
+      ]
+    },
+    "rehearsal-revolut-hackerrank-assessment": {
+      "id": "rehearsal-revolut-hackerrank-assessment",
+      "title": "Rehearse the Revolut HackerRank assessment",
+      "route": "/javascript/coding/js-valid-parentheses",
+      "kind": "rehearsal",
+      "access": "premium",
+      "minutes": 85,
+      "members": [
+        "js-valid-parentheses",
+        "js-three-sum",
+        "js-maze-path"
+      ]
+    },
     "resilient-checkout-payment-flow": {
       "id": "resilient-checkout-payment-flow",
       "title": "Design a Resilient Checkout and Payment Flow",
@@ -3447,6 +3484,12 @@
             },
             {
               "id": "js-xss-dom-sinks"
+            },
+            {
+              "id": "rehearsal-agoda-coding-interview",
+              "rounds": [
+                "coding-interview"
+              ]
             }
           ]
         },
@@ -8790,6 +8833,12 @@
             },
             {
               "id": "js-palindrome-check"
+            },
+            {
+              "id": "rehearsal-meta-full-loop-coding",
+              "rounds": [
+                "full-loop-coding"
+              ]
             }
           ]
         },
@@ -9992,6 +10041,12 @@
             },
             {
               "id": "react-diffing-algorithm"
+            },
+            {
+              "id": "rehearsal-revolut-hackerrank-assessment",
+              "rounds": [
+                "hackerrank-assessment"
+              ]
             }
           ]
         }

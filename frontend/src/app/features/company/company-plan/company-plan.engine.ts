@@ -15,10 +15,12 @@ export type CompanyPlanDataTask = {
   readonly route: string;
   /** A section of the page at `route`: a company guide's own section on a round, such as its behavioural round. */
   readonly fragment?: string;
-  readonly kind: 'coding' | 'debug' | 'trivia' | 'system-design' | 'guide';
+  readonly kind: 'coding' | 'debug' | 'trivia' | 'system-design' | 'guide' | 'rehearsal';
   readonly tech?: string;
   readonly access: 'free' | 'premium';
   readonly minutes: number;
+  /** A timed rehearsal's problems, by task id: the rehearsal stands for them, so the plan never lists them beside it. */
+  readonly members?: readonly string[];
   /** The page can run it as an interview: the requirements change while the person codes. */
   readonly pressure?: true;
   readonly family?: string;
@@ -123,8 +125,11 @@ export type CompanyPlanWhy =
   /** `unbound`: the reports tie the task to no round, so it sits where the plan has room and names no round. */
   | ({ readonly kind: 'report'; readonly unbound?: true } & CompanyPlanReportLine)
   | { readonly kind: 'pick'; readonly unbound?: true }
-  | { readonly kind: 'format' }
-  | { readonly kind: 'general' };
+  /** Extra practice in the framework of the reports, or of the person's choice. */
+  | { readonly kind: 'format'; readonly framework?: CompanyPlanFramework }
+  | { readonly kind: 'general' }
+  /** The round's problems on one clock, as the round runs them. */
+  | { readonly kind: 'rehearsal'; readonly problems: number };
 
 export type PlannedTask = CompanyPlanDataTask & {
   readonly why: CompanyPlanWhy;
@@ -186,11 +191,12 @@ const LEVEL_WORDS: Readonly<Record<CompanyPlanLevel, string>> = { junior: 'junio
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**
- * The practice link the guide shows on a round opens that round, so the plan and the guide agree. Then reported tasks,
- * newest first, then tasks an editor tied to a round, then tags. Reading comes after practice, because a buyer pays
- * for tasks: guides next, concept questions last.
+ * A timed rehearsal of a round opens it: it runs the round's problems on one clock, the closest the plan gets to the
+ * round itself. Then the practice link the guide shows on a round, so the plan and the guide agree. Then reported
+ * tasks, newest first, then tasks an editor tied to a round, then tags. Reading comes after practice, because a buyer
+ * pays for tasks: guides next, concept questions last.
  */
-const PHASES = ['lead', 'report', 'link', 'pick', 'guide', 'concept'] as const;
+const PHASES = ['rehearsal', 'lead', 'report', 'link', 'pick', 'guide', 'concept'] as const;
 type Phase = (typeof PHASES)[number];
 
 type Candidate = { readonly task: CompanyPlanDataTask; readonly row: CompanyPlanDataRow | null; readonly phase: Phase };
@@ -211,7 +217,8 @@ export function companyPlanDefaultList(company: CompanyPlanDataCompany): Company
 }
 
 const isRunnable = (task: CompanyPlanDataTask) => task.kind === 'coding' || task.kind === 'debug' || task.kind === 'system-design';
-const whyOf = (row: CompanyPlanDataRow | null): CompanyPlanWhy => {
+const whyOf = (row: CompanyPlanDataRow | null, task: CompanyPlanDataTask): CompanyPlanWhy => {
+  if (task.kind === 'rehearsal') return { kind: 'rehearsal', problems: task.members?.length ?? 0 };
   const unbound = row && !row.rounds?.length ? { unbound: true as const } : {};
   return row?.report ? { kind: 'report', ...row.report, ...unbound } : { kind: 'pick', ...unbound };
 };
@@ -275,7 +282,7 @@ function slotsFor(
     const task = taskFor(row.id);
     if (!task) continue;
     // A guide linked on a round is still reading, so it waits like any guide.
-    const phase: Phase = row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
+    const phase: Phase = task.kind === 'rehearsal' ? 'rehearsal' : row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
     // A task stays with its rounds. Passing them all drops it and the budget moves on.
     const eligible = row.rounds?.length ? open.filter((round) => row.rounds?.includes(round.id)) : open.filter((round) => roundTakes(round, task));
     // Only a company with no round of this kind at all sends the task elsewhere, as with a reported design task.
@@ -330,7 +337,7 @@ function preferenceOrder(slots: readonly Slot[]): Selected[] {
           queue.at += 1;
           if (seen.has(candidate.task.id)) continue;
           seen.add(candidate.task.id);
-          order.push({ slug: queue.slot.slug, key: queue.slot.key, task: candidate.task, why: whyOf(candidate.row) });
+          order.push({ slug: queue.slot.slug, key: queue.slot.key, task: candidate.task, why: whyOf(candidate.row, candidate.task) });
           moved = true;
           break;
         }
@@ -432,6 +439,9 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   const selected: Selected[] = [];
   const canTake = (slug: string, task: CompanyPlanDataTask) => {
     if (selected.some((entry) => entry.task.id === task.id || (task.family && entry.task.family === task.family))) return false;
+    // A rehearsal stands for its problems: a problem it holds never sits beside it, and it never repeats one taken.
+    if (selected.some((entry) => entry.task.members?.includes(task.id))) return false;
+    if (task.members?.some((id) => selected.some((entry) => entry.task.id === id))) return false;
     if (task.kind !== 'system-design') return true;
     return selected.filter((entry) => entry.slug === slug && entry.task.kind === 'system-design').length < designCap;
   };
@@ -538,18 +548,34 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     selected.push(entry);
   });
 
-  // Format practice takes its share, and whatever a thin company left of the budget. It follows the person's
-  // framework when they chose one, and each company's reports otherwise.
+  // The round the person faces next takes the format share first, with its own open tasks: the free practice the
+  // guide sets for the round the person fears beats a task in the same framework that no report names.
+  const nextRoundOpen = (index: number) => byRound[index].find((candidates) => candidates[0].key === nextDays[index].key)
+    ?.find((candidate) => candidate.task.access === 'free' && isRunnable(candidate.task) && tiedHere(candidate) && canTake(candidate.slug, candidate.task));
+  const shareEnd = Math.min(budget.total, selected.length + budget.format);
+  for (let moved = true; moved && selected.length < shareEnd;) {
+    moved = false;
+    chosen.forEach((_, index) => {
+      if (selected.length >= shareEnd) return;
+      const entry = nextRoundOpen(index);
+      if (!entry) return;
+      selected.push(entry);
+      moved = true;
+    });
+  }
+
+  // Format practice takes what is left of its share, and whatever a thin company left of the budget. It follows the
+  // person's framework when they chose one, and each company's reports otherwise.
   const frameworks = input.framework ? [input.framework] : [...new Set(chosen.map(({ company }) => company.framework))];
   const formatPool = (index: number) => frameworks.flatMap((framework) => {
     const id = data.general.formatPractice[framework]?.[index];
-    return id && data.tasks[id] ? [data.tasks[id]] : [];
+    return id && data.tasks[id] ? [{ task: data.tasks[id], framework }] : [];
   });
   // A senior or staff person whose next round is design practises design there; framework extras would serve rounds
   // already behind them.
   const designNext = designPicks && nextDays.every((day) => day.round?.kinds.includes('design'));
-  for (const task of designNext ? [] : [...formatPool(0), ...formatPool(1)]) {
-    if (selected.length < budget.total && canTake('', task)) selected.push({ slug: '', key: null, task, why: { kind: 'format' } });
+  for (const { task, framework } of designNext ? [] : [...formatPool(0), ...formatPool(1)]) {
+    if (selected.length < budget.total && canTake('', task)) selected.push({ slug: '', key: null, task, why: { kind: 'format', framework } });
   }
   // When the plan already holds the format tasks, the rounds use what is left.
   fillRounds(budget.total);
@@ -574,8 +600,8 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     }
     if (!swapped) {
       const removed = selected.pop();
-      const premium = [...formatPool(0), ...formatPool(1)].find((task) => task.access === 'premium' && canTake('', task));
-      if (premium) selected.push({ slug: '', key: null, task: premium, why: { kind: 'format' } });
+      const premium = [...formatPool(0), ...formatPool(1)].find(({ task }) => task.access === 'premium' && canTake('', task));
+      if (premium) selected.push({ slug: '', key: null, task: premium.task, why: { kind: 'format', framework: premium.framework } });
       else if (removed) selected.push(removed);
     }
   }
@@ -624,7 +650,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
   const tasks = [...companies.flatMap((company) => company.rounds.flatMap((round) => round.tasks)), ...formatPractice];
   const extras = chosen.flatMap(({ list }) => list.tasks.flatMap((row) => {
     const task = taskFor(row.id);
-    return task ? [asPlanTask(task, whyOf(row))] : [];
+    return task ? [asPlanTask(task, whyOf(row, task))] : [];
   }));
 
   const warnings: string[] = [];

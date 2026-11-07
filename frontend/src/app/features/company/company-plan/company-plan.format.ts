@@ -56,9 +56,12 @@ export function whyLine(why: CompanyPlanWhy): string {
       // An approximate month carries the process table's mark: "Taro (approx.), Jan 2022".
       return `Modelled on a ${why.posting ? 'job posting' : 'report'}: ${why.publisher}${why.approx ? ' (approx.)' : ''}, ${shortMonth(why.date)}`;
     case 'format':
-      return 'Extra practice in the reported format';
+      // The framework, by name: "the reported format" read as the interview's format (a review, a bug squash).
+      return why.framework ? `Extra ${frameworkLabel(why.framework)} practice` : 'Extra practice';
     case 'general':
       return 'General frontend practice';
+    case 'rehearsal':
+      return `Timed rehearsal: ${why.problems} problems on one clock`;
     default:
       // A pick the reports tie to no round sits where the plan has room, so it claims no round.
       return why.unbound ? 'Our pick for this plan' : 'Our pick for this round';
@@ -71,8 +74,8 @@ export function whyLine(why: CompanyPlanWhy): string {
  */
 export function whyLineFor(why: CompanyPlanWhy, round: string | null): string {
   // A task the reports tie to no round sits where the plan has room; naming that round would overstate it.
-  if (!round || why.kind === 'format' || why.kind === 'general' || why.unbound) return whyLine(why);
-  return why.kind === 'report' ? `${whyLine(why)} · ${round}` : `Our pick for the ${round}`;
+  if (!round || why.kind === 'format' || why.kind === 'general' || (why.kind !== 'rehearsal' && why.unbound)) return whyLine(why);
+  return why.kind === 'report' || why.kind === 'rehearsal' ? `${whyLine(why)} · ${round}` : `Our pick for the ${round}`;
 }
 
 /** "Extra React practice", or plain "Extra practice" when the companies' reports name different frameworks. */
@@ -306,7 +309,8 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
  */
 export function practiceState(task: PlannedTask, tasks: readonly PlannedTask[], returnToUrl: string, returnLabel: string): Record<string, unknown> {
   if (task.kind === 'guide') return {};
-  if (task.kind === 'system-design') return { returnToUrl, returnLabel };
+  // A rehearsal opens on its first problem and moves through its own problems, so it gets only the way back.
+  if (task.kind === 'system-design' || task.kind === 'rehearsal') return { returnToUrl, returnLabel };
   const items = tasks
     .filter((entry) => entry.tech && entry.kind !== 'system-design' && entry.kind !== 'guide')
     .map((entry) => ({ tech: entry.tech, kind: entry.kind, id: entry.id }));

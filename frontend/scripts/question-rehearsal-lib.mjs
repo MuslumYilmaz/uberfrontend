@@ -6,7 +6,7 @@ export const REHEARSAL_LIST = 'rehearsals/rehearsals.v1.json';
 
 const LIST_KEYS = new Set(['schemaVersion', 'rehearsals']);
 const KEYS = new Set(['id', 'access', 'company', 'title', 'round', 'summary', 'minutes', 'order', 'items']);
-const TEXT_KEYS = [['company', 40], ['title', 60], ['round', 80], ['summary', 400]];
+const TEXT_KEYS = [['company', 40], ['title', 60], ['summary', 400]];
 // The panel that keeps the clock, records runs and turns read-only serves plain JavaScript tasks.
 const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
 
@@ -40,6 +40,8 @@ export function validateRehearsalList(data, tasks) {
     if (ids.has(id)) add('id is listed twice.');
     ids.add(id);
     if (definition.access !== 'premium') add('access must be premium: a rehearsal is part of Premium.');
+    // The plan generator places the rehearsal on this round of the company's plan, and stops when there is none.
+    if (typeof definition.round !== 'string' || !/^[a-z0-9-]+$/.test(definition.round)) add('round must be the id of a round in the company plan, in kebab-case.');
     for (const [key, max] of TEXT_KEYS) {
       if (typeof definition[key] !== 'string' || !definition[key].trim() || definition[key].length > max) {
         add(`${key} must be text of at most ${max} characters.`);
