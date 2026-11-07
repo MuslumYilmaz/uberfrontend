@@ -5,7 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { companyBrandFor } from '../../shared/company-branding';
 import { AUTHORED_COMPANY_SLUGS_TOKEN } from '../../shared/company-previews/authored-company-slugs';
 import { FRAMEWORK_FAMILY_BY_ID } from '../../shared/framework-families';
-import { collectCompanyCounts } from '../../shared/company-counts.util';
+import { collectCompanyCounts, emptyCompanyCounts } from '../../shared/company-counts.util';
 import { CompanyIndexResolved, CompanyPreviewQuestion, CompanyPreviewResolved } from '../models/company-public.model';
 import { SystemDesignListItem } from '../models/system-design.model';
 import { MixedQuestionListItem, QuestionService } from './question.service';
@@ -14,12 +14,12 @@ type CompanyCatalog = {
   coding: MixedQuestionListItem[];
   trivia: MixedQuestionListItem[];
   system: SystemDesignListItem[];
+  debug: MixedQuestionListItem[];
 };
 type CompanyQuestion = MixedQuestionListItem | SystemDesignListItem;
 
 // Hard-coded template branches; registry-driven authored guides are read from the injected registry.
 const LEGACY_EDITORIAL_COMPANIES = new Set(['google', 'openai', 'netflix']);
-const emptyCounts = () => ({ all: 0, coding: 0, trivia: 0, system: 0 });
 
 @Injectable({ providedIn: 'root' })
 export class CompanyPublicDataService {
@@ -48,7 +48,7 @@ export class CompanyPublicDataService {
     const fallback: CompanyPreviewResolved = {
       slug,
       mode: this.isEditorial(slug) ? 'editorial' : 'catalog',
-      counts: emptyCounts(),
+      counts: emptyCompanyCounts(),
       samples: [],
       reports: [],
     };
@@ -58,7 +58,7 @@ export class CompanyPublicDataService {
     return this.resolveWithTransferState(`company-public:preview:${slug}`, fallback, () =>
       forkJoin({ catalog: this.loadCatalog(), reports: this.questions.loadCompanyReports() }).pipe(map(({ catalog, reports }) => ({
         ...fallback,
-        counts: collectCompanyCounts(catalog)[slug] ?? emptyCounts(),
+        counts: collectCompanyCounts(catalog)[slug] ?? emptyCompanyCounts(),
         samples: this.buildSamples(slug, catalog),
         reports: reports.companies[slug] ?? [],
       }))),
@@ -74,6 +74,7 @@ export class CompanyPublicDataService {
       coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),
       trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
       system: this.questions.loadSystemDesign({ transferState: false }),
+      debug: this.questions.loadAllDebugSummaries({ transferState: false }),
     });
   }
 

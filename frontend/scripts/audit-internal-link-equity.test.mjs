@@ -277,3 +277,24 @@ test('CLI preserves build/output envs; historical link quotas never fail a healt
   assert.equal(report.summary.publicQuestions, registry.length);
   assert.equal(report.summary.orphanPages, 0);
 });
+
+test('a company preview counts its debugging tasks on the chip and in the total, with no sample card for them', (t) => {
+  const route = '/companies/stripe/preview';
+  const f = fixture(t, ['/', '/companies', route]);
+  const questionsDir = path.join(f.buildDir, 'catalog');
+  fs.mkdirSync(path.join(questionsDir, 'javascript'), { recursive: true });
+  fs.writeFileSync(path.join(questionsDir, 'javascript', 'coding.json'), JSON.stringify([{ id: 'js-coding', title: 'Coding', companies: ['stripe'] }]));
+  fs.writeFileSync(path.join(questionsDir, 'javascript', 'debug.json'), JSON.stringify([
+    { id: 'js-debug-one', title: 'Debug one', companies: ['stripe'] },
+    { id: 'js-debug-two', title: 'Debug two', companies: ['stripe'] },
+  ]));
+  f.page('/', link('/companies'));
+  f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 3)}</section>`);
+  const card = '<div data-testid="company-preview-question-js-coding"></div>';
+  const preview = '<span class="preview-chip">3 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 1 · Debugging 2</span>';
+  f.page(route, preview + card);
+  assert.deepEqual(f.audit({ questionsDir }).failures, []);
+  // A chip that leaves the debugging tasks out no longer matches the set.
+  f.page(route, preview.replace(' · Debugging 2', '') + card);
+  assert.match(failures(f.audit({ questionsDir })), /Company preview count mismatch/);
+});

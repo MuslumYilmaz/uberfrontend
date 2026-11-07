@@ -63,6 +63,7 @@ describe('CodingListComponent', () => {
           provide: QuestionService,
           useValue: {
             loadAllQuestionSummaries: jasmine.createSpy('loadAllQuestionSummaries').and.returnValue(of(options?.items ?? [])),
+            loadAllDebugSummaries: jasmine.createSpy('loadAllDebugSummaries').and.returnValue(of(options?.debugItems ?? [])),
             loadQuestionSummaries: jasmine.createSpy('loadQuestionSummaries').and.callFake((tech: string, kind: string) => {
               const source = kind === 'debug' ? (options?.debugItems ?? []) : (options?.items ?? []);
               return of(source.filter((item) => !item.tech || item.tech === tech));
@@ -229,11 +230,20 @@ describe('CodingListComponent', () => {
         question({ id: 'google-grouped', title: 'Grouped for Google practice', companies: ['google'] }),
         question({ id: 'amazon-grouped', title: 'Grouped for Amazon practice', companies: ['amazon'] }),
       ],
+      debugItems: [
+        question({ id: 'google-debug', title: 'Fix a Google bug', companies: ['google'] }),
+        question({ id: 'amazon-debug', title: 'Fix an Amazon bug', companies: ['amazon'] }),
+      ],
     });
     const host = fixture.nativeElement as HTMLElement;
 
     expect(host.querySelector('[data-testid="question-card-google-grouped"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="question-card-amazon-grouped"]')).toBeNull();
+    // The company's debugging tasks sit in its coding set and open on their own route.
+    const debugCard = host.querySelector('[data-testid="question-card-google-debug"]') as HTMLElement | null;
+    expect(debugCard?.textContent).toContain('Debugging');
+    expect(debugCard?.querySelector('a')?.getAttribute('href') ?? debugCard?.getAttribute('href')).toBe('/javascript/debug/google-debug');
+    expect(host.querySelector('[data-testid="question-card-amazon-debug"]')).toBeNull();
     expect(host.querySelector('[data-testid^="company-signal-"]')).toBeNull();
     expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',

@@ -37,6 +37,9 @@ describe('CompanyDetailComponent', () => {
             loadSystemDesign: jasmine
               .createSpy('loadSystemDesign')
               .and.returnValue(of([] as any)),
+            loadAllDebugSummaries: jasmine
+              .createSpy('loadAllDebugSummaries')
+              .and.returnValue(of([] as any)),
           },
         },
       ],

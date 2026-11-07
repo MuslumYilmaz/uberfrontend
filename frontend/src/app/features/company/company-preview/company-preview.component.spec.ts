@@ -69,7 +69,7 @@ describe('CompanyPreviewComponent', () => {
     routeData = new BehaviorSubject<Data>({ companyPreview: resolved ?? {
       slug,
       mode: ['google', 'netflix', 'openai'].includes(slug) || slug in authored ? 'editorial' : 'catalog',
-      counts: { all: 0, coding: 0, trivia: 0, system: 0 },
+      counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 },
       samples: [],
     } });
 
@@ -687,7 +687,7 @@ describe('CompanyPreviewComponent', () => {
       sources: [{ label: 'Blind: ByteDance new grad frontend engineer interview breakdown, January 2023', url: reportUrl, publisher: 'Blind', date: '2023-01' }],
     };
     const fixture = await createComponent('bytedance', {
-      slug: 'bytedance', mode: 'catalog', counts: { all: 2, coding: 2, trivia: 0, system: 0 },
+      slug: 'bytedance', mode: 'catalog', counts: { all: 2, coding: 2, trivia: 0, system: 0, debug: 0 },
       samples: [
         { id: 'js-build-tree-from-flat-list', title: 'Build a Tree from a Flat List of Nodes', kind: 'coding', tech: 'javascript', difficulty: 'intermediate', access: 'free' },
         { id: 'js-lodash-get', title: 'Implement lodash.get', kind: 'coding', tech: 'javascript', difficulty: 'intermediate', access: 'premium' },
@@ -731,7 +731,7 @@ describe('CompanyPreviewComponent', () => {
   it('renders resolved samples immediately and replaces metadata and samples when the company slug changes', async () => {
     await createComponent('microsoft', {
       slug: 'microsoft', mode: 'catalog',
-      counts: { all: 2, coding: 1, trivia: 1, system: 0 },
+      counts: { all: 2, coding: 1, trivia: 1, system: 0, debug: 0 },
       samples: [
         { id: 'free-prompt', title: 'Free prompt', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' },
         { id: 'premium-prompt', title: 'Premium prompt', kind: 'trivia', tech: 'javascript', difficulty: 'hard', access: 'premium' },
@@ -746,7 +746,7 @@ describe('CompanyPreviewComponent', () => {
 
     routeData.next({ companyPreview: {
       slug: 'bytedance', mode: 'catalog',
-      counts: { all: 1, coding: 1, trivia: 0, system: 0 },
+      counts: { all: 1, coding: 1, trivia: 0, system: 0, debug: 0 },
       samples: [{ id: 'feed', title: 'Feed', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' }],
     } });
     fixture.detectChanges();
@@ -758,7 +758,7 @@ describe('CompanyPreviewComponent', () => {
 
     routeData.next({ companyPreview: {
       slug: 'netflix', mode: 'editorial',
-      counts: { all: 0, coding: 0, trivia: 0, system: 0 }, samples: [],
+      counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 }, samples: [],
     } });
     fixture.detectChanges();
     expect(host.querySelector('h1')?.textContent).toBe('Netflix Frontend Interview Questions');
@@ -1156,7 +1156,7 @@ describe('CompanyPreviewComponent', () => {
 
   describe('the names of Premium questions', () => {
     const AIRBNB: CompanyPreviewResolved = {
-      slug: 'airbnb', mode: 'catalog', counts: { all: 3, coding: 1, trivia: 2, system: 0 },
+      slug: 'airbnb', mode: 'catalog', counts: { all: 3, coding: 1, trivia: 2, system: 0, debug: 0 },
       samples: [
         { id: 'js-closures', title: 'Explain Closures in JavaScript', kind: 'trivia', tech: 'javascript', difficulty: 'intermediate', access: 'free' },
         { id: 'react-chips-input-autocomplete', title: 'Invite Chips Input (Tags + Autocomplete)', kind: 'coding', tech: 'react', difficulty: 'intermediate', access: 'premium' },
@@ -1336,7 +1336,7 @@ describe('CompanyPreviewComponent', () => {
     it('shows a member every catalog sample without saying which ones are locked', async () => {
       await createComponent('microsoft', {
         slug: 'microsoft', mode: 'catalog',
-        counts: { all: 2, coding: 1, trivia: 1, system: 0 },
+        counts: { all: 2, coding: 1, trivia: 1, system: 0, debug: 0 },
         samples: [
           { id: 'open-item', title: 'Render a list', kind: 'coding', tech: 'react', difficulty: 'easy', access: 'free' },
           { id: 'paid-item', title: 'Debounce a search box', kind: 'trivia', tech: 'javascript', difficulty: 'hard', access: 'premium' },

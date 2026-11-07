@@ -150,6 +150,9 @@ describe('companySetLine', () => {
       .toBe('The full Amazon set: 42 questions (18 coding, 23 concept, 1 system design)');
     expect(companySetLine([{ name: 'Google', counts: { all: 45, coding: 14, trivia: 31, system: 0 } }]))
       .toBe('The full Google set: 45 questions (14 coding, 31 concept)');
+    // A bug squash round's tasks count too, as their own kind.
+    expect(companySetLine([{ name: 'Stripe', counts: { all: 6, coding: 2, trivia: 1, system: 0, debug: 3 } }]))
+      .toBe('The full Stripe set: 6 questions (2 coding, 3 debugging, 1 concept)');
   });
 
   it('lists several sets side by side and skips a company without one', () => {

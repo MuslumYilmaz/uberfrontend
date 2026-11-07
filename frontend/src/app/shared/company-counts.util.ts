@@ -1,15 +1,19 @@
 import { FRAMEWORK_FAMILY_BY_ID } from './framework-families';
 
-export type CompanyCountKind = 'coding' | 'trivia' | 'system';
-export type CompanyCountBucket = { all: number; coding: number; trivia: number; system: number };
+export type CompanyCountKind = 'coding' | 'trivia' | 'system' | 'debug';
+/** A company's practice set: debugging tasks count apart from coding, as a bug squash round is its own format. */
+export type CompanyCountBucket = { all: number; coding: number; trivia: number; system: number; debug: number };
 
-type CompanyCountSets = { coding: Set<string>; trivia: Set<string>; system: Set<string> };
+type CompanyCountSets = Record<CompanyCountKind, Set<string>>;
 
 const emptySets = (): CompanyCountSets => ({
   coding: new Set<string>(),
   trivia: new Set<string>(),
   system: new Set<string>(),
+  debug: new Set<string>(),
 });
+
+export const emptyCompanyCounts = (): CompanyCountBucket => ({ all: 0, coding: 0, trivia: 0, system: 0, debug: 0 });
 
 function canonicalCompanyQuestionKey(q: any, kind: CompanyCountKind): string {
   const id = String(q?.id || '').trim();
@@ -30,6 +34,7 @@ export function collectCompanyCounts(lists: {
   coding?: any[];
   trivia?: any[];
   system?: any[];
+  debug?: any[];
 }): Record<string, CompanyCountBucket> {
   const buckets = new Map<string, CompanyCountSets>();
 
@@ -48,17 +53,20 @@ export function collectCompanyCounts(lists: {
   (lists.coding ?? []).forEach((q) => add(q, 'coding'));
   (lists.trivia ?? []).forEach((q) => add(q, 'trivia'));
   (lists.system ?? []).forEach((q) => add(q, 'system'));
+  (lists.debug ?? []).forEach((q) => add(q, 'debug'));
 
   const out: Record<string, CompanyCountBucket> = {};
   buckets.forEach((set, slug) => {
     const coding = set.coding.size;
     const trivia = set.trivia.size;
     const system = set.system.size;
+    const debug = set.debug.size;
     out[slug] = {
       coding,
       trivia,
       system,
-      all: coding + trivia + system,
+      debug,
+      all: coding + trivia + system + debug,
     };
   });
 

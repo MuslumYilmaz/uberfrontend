@@ -9,6 +9,7 @@ import { validateOutputQuestion } from "./output-question-validator.mjs";
 import { validateQuestionSources } from "./question-sources-lib.mjs";
 import { validatePreviewSample } from "./question-preview-sample-lib.mjs";
 import { REHEARSAL_LIST, validateRehearsalList } from "./question-rehearsal-lib.mjs";
+import { loadTsModule } from "./load-ts-module.mjs";
 
 const tagRegistryPath = path.join(questionsRoot, "tag-registry.json");
 
@@ -960,6 +961,21 @@ for (const entry of collectionRefs) {
   if (!questionIdentityIndex.has(identityKey)) {
     severity.addError(file, itemId, `${label} reference does not exist in the shipped question bank: ${identityKey}`);
   }
+}
+
+// Company lists and counts ask only the debugging banks this list names, so a bank it misses would vanish from them.
+const { DEBUG_BANK_TECHS } = loadTsModule(path.join(projectRoot, "src", "app", "shared", "question-banks.ts"));
+const debugBankTechs = questionFiles
+  .map((file) => classifyQuestionAsset(file))
+  .filter((info) => info.kind === "debug")
+  .map((info) => info.tech)
+  .sort();
+if (debugBankTechs.join(",") !== [...DEBUG_BANK_TECHS].sort().join(",")) {
+  severity.addError(
+    path.join(projectRoot, "src", "app", "shared", "question-banks.ts"),
+    "DEBUG_BANK_TECHS",
+    `DEBUG_BANK_TECHS must name the technologies with a debug.json bank: ${debugBankTechs.join(", ") || "(none)"}`,
+  );
 }
 
 const rehearsalListFile = path.join(questionsRoot, REHEARSAL_LIST);

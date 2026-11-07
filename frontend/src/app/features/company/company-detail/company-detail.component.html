@@ -23,7 +23,7 @@
             {{ promptCountLabel((counts$ | async)?.all) }}
         </span>
         <span class="fa-chip fa-chip--label">
-            Coding: {{ (counts$ | async)?.coding }} • Concepts: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
+            Coding: {{ (counts$ | async)?.coding }}{{ (counts$ | async)?.debug ? ' • Debugging: ' + (counts$ | async)?.debug : '' }} • Concepts: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
         </span>
     </div>
 </div>

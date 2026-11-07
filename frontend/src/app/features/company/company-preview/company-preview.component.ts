@@ -380,7 +380,7 @@ export class CompanyPreviewComponent implements OnInit {
   data: CompanyPreviewResolved = {
     slug: '',
     mode: 'catalog',
-    counts: { all: 0, coding: 0, trivia: 0, system: 0 },
+    counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 },
     samples: [],
   };
   readonly lockChip = LOCK_CHIP;
@@ -655,7 +655,7 @@ export class CompanyPreviewComponent implements OnInit {
     this.data = resolved ?? {
       slug: this.slug,
       mode: 'catalog',
-      counts: { all: 0, coding: 0, trivia: 0, system: 0 },
+      counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 },
       samples: [],
     };
     this.reportedSampleKeys = new Set((this.data.reports ?? []).map((item) => `${item.kind}:${item.id}`));
@@ -705,8 +705,8 @@ export class CompanyPreviewComponent implements OnInit {
   }
 
   /** "Coding 8 · Concepts 14": a kind the set does not hold is left out rather than shown as zero. */
-  countsLabel(counts: { coding: number; trivia: number; system: number }): string {
-    return ([[counts.coding, 'Coding'], [counts.trivia, 'Concepts'], [counts.system, 'System']] as const)
+  countsLabel(counts: { coding: number; trivia: number; system: number; debug?: number }): string {
+    return ([[counts.coding, 'Coding'], [counts.debug ?? 0, 'Debugging'], [counts.trivia, 'Concepts'], [counts.system, 'System']] as const)
       .filter(([count]) => count > 0)
       .map(([count, kind]) => `${kind} ${count}`)
       .join(' · ');

@@ -228,7 +228,14 @@ export function nextRoundName(company: Pick<PlannedCompany, 'rounds'>): string |
 }
 
 /** How many questions a company's practice set holds, as the company pages count them. */
-export type CompanySetCounts = { readonly all: number; readonly coding: number; readonly trivia: number; readonly system: number };
+export type CompanySetCounts = {
+  readonly all: number;
+  readonly coding: number;
+  readonly trivia: number;
+  readonly system: number;
+  /** Debugging tasks, such as a bug squash round's; data from before they counted has none. */
+  readonly debug?: number;
+};
 
 /**
  * "The full Amazon set: 42 questions (18 coding, 23 concept, 1 system design)", or the sets side by side for several
@@ -238,7 +245,7 @@ export function companySetLine(sets: readonly { readonly name: string; readonly 
   const known = sets.flatMap((set) => (set.counts && set.counts.all > 0 ? [{ name: set.name, counts: set.counts }] : []));
   if (known.length === 1) {
     const { name, counts } = known[0];
-    const parts: [number, string][] = [[counts.coding, 'coding'], [counts.trivia, 'concept'], [counts.system, 'system design']];
+    const parts: [number, string][] = [[counts.coding, 'coding'], [counts.debug ?? 0, 'debugging'], [counts.trivia, 'concept'], [counts.system, 'system design']];
     const split = parts.filter(([count]) => count > 0).map(([count, kind]) => `${count} ${kind}`).join(', ');
     return `The full ${name} set: ${counts.all} questions (${split})`;
   }

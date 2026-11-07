@@ -6,181 +6,211 @@
       "all": 12,
       "coding": 1,
       "trivia": 8,
-      "system": 3
+      "system": 3,
+      "debug": 0
     },
     "airbnb": {
       "all": 5,
       "coding": 2,
       "trivia": 2,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "amazon": {
       "all": 42,
       "coding": 18,
       "trivia": 23,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "anduril": {
       "all": 6,
       "coding": 5,
       "trivia": 1,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "apple": {
       "all": 37,
       "coding": 23,
       "trivia": 14,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "booking-com": {
       "all": 15,
       "coding": 9,
       "trivia": 5,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "bytedance": {
       "all": 22,
       "coding": 8,
       "trivia": 14,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "capital-one": {
-      "all": 7,
+      "all": 9,
       "coding": 1,
       "trivia": 3,
-      "system": 3
+      "system": 3,
+      "debug": 2
     },
     "crowdstrike": {
       "all": 11,
       "coding": 2,
       "trivia": 7,
-      "system": 2
+      "system": 2,
+      "debug": 0
     },
     "datadog": {
       "all": 8,
       "coding": 6,
       "trivia": 0,
-      "system": 2
+      "system": 2,
+      "debug": 0
     },
     "elevenlabs": {
-      "all": 5,
-      "coding": 4,
-      "trivia": 0,
-      "system": 1
-    },
-    "gitlab": {
       "all": 6,
       "coding": 4,
+      "trivia": 0,
+      "system": 1,
+      "debug": 1
+    },
+    "gitlab": {
+      "all": 7,
+      "coding": 4,
       "trivia": 2,
-      "system": 0
+      "system": 0,
+      "debug": 1
     },
     "google": {
       "all": 45,
       "coding": 14,
       "trivia": 31,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "intuit": {
       "all": 10,
       "coding": 9,
       "trivia": 0,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "jpmorgan": {
       "all": 10,
       "coding": 3,
       "trivia": 7,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "meta": {
       "all": 51,
       "coding": 18,
       "trivia": 32,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "microsoft": {
       "all": 16,
       "coding": 4,
       "trivia": 12,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "netflix": {
       "all": 13,
       "coding": 7,
       "trivia": 6,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "openai": {
       "all": 9,
       "coding": 3,
       "trivia": 5,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "revolut": {
       "all": 6,
       "coding": 2,
       "trivia": 4,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "servicenow": {
       "all": 7,
       "coding": 6,
       "trivia": 0,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "shopee": {
       "all": 22,
       "coding": 10,
       "trivia": 12,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "spotify": {
       "all": 13,
       "coding": 4,
       "trivia": 9,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "stripe": {
-      "all": 3,
+      "all": 6,
       "coding": 2,
       "trivia": 1,
-      "system": 0
+      "system": 0,
+      "debug": 3
     },
     "tesla": {
       "all": 22,
       "coding": 11,
       "trivia": 10,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "uber": {
       "all": 5,
       "coding": 1,
       "trivia": 4,
-      "system": 0
+      "system": 0,
+      "debug": 0
     },
     "walmart": {
       "all": 42,
       "coding": 10,
       "trivia": 31,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "waymo": {
-      "all": 8,
+      "all": 9,
       "coding": 7,
       "trivia": 0,
-      "system": 1
+      "system": 1,
+      "debug": 1
     },
     "xai": {
       "all": 9,
       "coding": 4,
       "trivia": 4,
-      "system": 1
+      "system": 1,
+      "debug": 0
     },
     "zalando": {
       "all": 20,
       "coding": 4,
       "trivia": 15,
-      "system": 1
+      "system": 1,
+      "debug": 0
     }
   }
 }
