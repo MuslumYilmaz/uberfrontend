@@ -61,7 +61,9 @@ export function whyLine(why: CompanyPlanWhy): string {
     case 'general':
       return 'General frontend practice';
     case 'rehearsal':
-      return `Timed rehearsal: ${why.problems} problems on one clock`;
+      return why.shortAnswers
+        ? `Timed rehearsal: ${why.shortAnswers} short answers and ${why.problems} problems on one clock`
+        : `Timed rehearsal: ${why.problems} problems on one clock`;
     default:
       // A pick the reports tie to no round sits where the plan has room, so it claims no round.
       return why.unbound ? 'Our pick for this plan' : 'Our pick for this round';

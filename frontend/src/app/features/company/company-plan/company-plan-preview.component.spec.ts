@@ -253,7 +253,7 @@ describe('CompanyPlanPreviewComponent', () => {
         companies: { walmart: { ...walmart, variants: walmart.variants.map((list) => ({ ...list, tasks: list.tasks.filter((row) => DATA.tasks[row.id]?.access === 'premium') })) } },
       } as CompanyPlanData;
       setup({ companies: 'walmart', when: 'next-week', level: 'senior' }, { data: premiumOnly });
-      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about [\d.]+ hours?(: \d open now, \d with Premium)?, plus 3 free warm-ups outside the plan$/);
+      expect(text('.preview__facts li')).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?(: \d open now, \d with Premium)?, plus 3 free warm-ups outside the plan$/);
       expect(all('company-plan-rest-task').length).toBe(6);
       expect(text('#company-plan-rest-title')).toBe('Your plan');
     });

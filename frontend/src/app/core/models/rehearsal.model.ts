@@ -13,6 +13,21 @@ export type RehearsalItem = {
   readonly title: string;
 };
 
+/** A question asked for a one-line answer, as some screens open before their problems. */
+export type RehearsalShortAnswer = {
+  readonly question: string;
+  /** A sample answer, shown in the review next to the person's own. */
+  readonly answer: string;
+  /** The concept page with the full answer, e.g. /javascript/trivia/js-closures. */
+  readonly path: string;
+};
+
+export type RehearsalShortAnswers = {
+  /** About how long the reports give these questions; the rehearsal's one clock keeps running through them. */
+  readonly minutes: number;
+  readonly questions: readonly RehearsalShortAnswer[];
+};
+
 export type RehearsalDefinition = {
   readonly id: string;
   readonly company: string;
@@ -24,6 +39,8 @@ export type RehearsalDefinition = {
   readonly minutes: number;
   /** Sequential: each task opens when the person moves on, as an interviewer hands out the next problem. */
   readonly order: RehearsalOrder;
+  /** Questions answered before the problems open, such as the ten minutes that open a Karat screen. */
+  readonly shortAnswers?: RehearsalShortAnswers;
   readonly items: readonly RehearsalItem[];
 };
 
@@ -47,6 +64,10 @@ export type RehearsalSession = {
   /** The furthest task opened; later tasks of a sequential rehearsal stay hidden. */
   readonly reached: number;
   readonly results: Readonly<Record<string, RehearsalItemResult>>;
+  /** One answer per short-answer question, empty when not answered. */
+  readonly answers: readonly string[];
+  /** The short-answer question on screen; the problems open once it passes the last one. */
+  readonly answering: number;
 };
 
 export type RehearsalPhase = 'active' | 'review';

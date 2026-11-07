@@ -62,6 +62,11 @@
   white-space: normal;
 }
 
+/* A rehearsal's short answers come before its problems: the panel stays, and the problem waits out of sight. */
+.rehearsal-answering > :not(app-rehearsal-panel) {
+  display: none !important;
+}
+
 .pressure-mode {
   display: grid;
   gap: 16px;

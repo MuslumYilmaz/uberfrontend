@@ -64,6 +64,71 @@
           "title": "Recover a BST with Two Swapped Nodes"
         }
       ]
+    },
+    {
+      "id": "walmart-karat-screen",
+      "access": "premium",
+      "company": "walmart",
+      "title": "Walmart Karat screen",
+      "round": "coding-screen",
+      "summary": "Public accounts of Walmart's Karat screen describe about ten minutes of role-focused questions with one-line answers, then 45 minutes for two easy-to-medium algorithm problems. This rehearsal asks eight frontend questions on topics Walmart's reports name, then two algorithm problems from other Walmart rounds; sample answers and solutions open when the clock stops.",
+      "minutes": 55,
+      "order": "sequential",
+      "shortAnswers": {
+        "minutes": 10,
+        "questions": [
+          {
+            "question": "What is a closure in JavaScript?",
+            "answer": "A function that keeps access to the variables of the scope where it was created, even after that scope has finished running.",
+            "path": "/javascript/trivia/js-closures"
+          },
+          {
+            "question": "Is JavaScript block-scoped or function-scoped?",
+            "answer": "Both: `var` is function-scoped, while `let` and `const` are block-scoped and throw if used before their declaration runs (the temporal dead zone).",
+            "path": "/javascript/trivia/js-block-scoped-or-function-scoped"
+          },
+          {
+            "question": "A resolved promise's `then` callback and a `setTimeout(fn, 0)` callback are both waiting. Which runs first?",
+            "answer": "The promise callback: microtasks run as soon as the current task finishes, before the browser takes the next task, such as the timer.",
+            "path": "/javascript/trivia/js-event-loop"
+          },
+          {
+            "question": "How does `bind()` differ from `call()` and `apply()`?",
+            "answer": "`call()` and `apply()` run the function at once with the given `this` (`apply()` takes the arguments as an array); `bind()` returns a new function with `this` fixed.",
+            "path": "/javascript/trivia/js-call-apply-bind"
+          },
+          {
+            "question": "An element has `width: 300px`, `padding: 20px` and a 2px border. How wide does it render?",
+            "answer": "344px under the default `content-box`; with `box-sizing: border-box` the width includes padding and border, so it renders 300px wide.",
+            "path": "/css/trivia/css-box-model"
+          },
+          {
+            "question": "What is an element with `position: absolute` positioned against?",
+            "answer": "Its nearest ancestor with a `position` other than `static` (or a transform, filter or contain), else the initial containing block.",
+            "path": "/css/trivia/css-position-relative-absolute-fixed"
+          },
+          {
+            "question": "What is `useEffect` for?",
+            "answer": "Synchronizing a component with something outside React, such as a subscription, a timer or a request, after the render commits; values computed from props or state belong in render.",
+            "path": "/react/trivia/react-useeffect-purpose"
+          },
+          {
+            "question": "What is the difference between `useMemo` and `useCallback`?",
+            "answer": "`useMemo` caches a computed value and `useCallback` caches a function; both pay off only when the work is expensive or a memoized child or effect needs a stable reference.",
+            "path": "/react/trivia/react-usememo-vs-usecallback"
+          }
+        ]
+      },
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-stack-queue-implementation",
+          "title": "Implement Stack and Queue in JavaScript"
+        }
+      ]
     }
   ]
 }

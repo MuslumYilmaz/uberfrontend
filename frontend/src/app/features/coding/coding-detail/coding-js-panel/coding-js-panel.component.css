@@ -85,6 +85,26 @@ app-monaco-editor {
   z-index: 2;
 }
 
+/* A rehearsal's short answers come first: the problem's code waits behind this note, as the screen keeps it. */
+.concealed-note {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--uf-text-secondary);
+  background: var(--uf-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.concealed-note p {
+  max-width: 36ch;
+  margin: 0;
+}
+
 /* (optional) keep other sections from forcing layout overflow */
 .flex-1 { flex: 1 1 auto; min-height: 0; }
 .min-h-0 { min-height: 0; }

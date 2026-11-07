@@ -88,7 +88,7 @@ import type { ReviewModeScenario } from '../../../core/models/review-mode.model'
 import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
 import { RehearsalService } from '../../../core/services/rehearsal.service';
 import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
-import { RehearsalPanelComponent, formatRehearsalClock } from '../rehearsal/rehearsal-panel.component';
+import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading } from '../rehearsal/rehearsal-panel.component';
 import {
   AuthPromptContext,
   LoginRequiredDialogComponent,
@@ -437,6 +437,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   rehearsalClockLabel = computed(() =>
     this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
   );
+  /**
+   * The rehearsal's short answers are on screen, in the panel: the problem waits behind them, as it does in the
+   * screen, so its description and code are out of sight and its editor read-only. Only once the browser view is
+   * ready, as the panel itself, so hydration matches the server.
+   */
+  rehearsalAnswering = computed(() =>
+    this.workspaceAvailable() && this.rehearsalPhase() === 'active' && this.rehearsals.answering()
+  );
+  rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: short answers first` : null));
+  rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The first problem opens after the short answers.' : null));
+  readonly rehearsalHeading = rehearsalHeading;
   rehearsalAccess = computed<'pending' | 'premium' | 'locked'>(() => {
     if (this.auth.authUiState() === 'pending') return 'pending';
     return isProActive(this.auth.user()) ? 'premium' : 'locked';

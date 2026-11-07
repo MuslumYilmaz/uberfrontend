@@ -102,7 +102,18 @@ const rehearsalTasks = new Map([
   ['/javascript/coding/js-dom-twin-node', { title: 'Find the Corresponding Node in Twin DOM Trees' }],
   ['/javascript/coding/js-debounce', { title: 'Debounce Function' }],
   ['/react/coding/react-counter', { title: 'Counter' }],
+  ['/javascript/trivia/js-closures', { title: 'Explain Closures in JavaScript' }],
+  ['/css/trivia/css-box-model', { title: 'The box model' }],
+  ['/react/trivia/react-useeffect-purpose', { title: 'useEffect()' }],
 ]);
+const shortAnswers = () => ({
+  minutes: 10,
+  questions: [
+    { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
+    { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
+    { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
+  ],
+});
 const listIssues = (list) => validateRehearsalList(list, rehearsalTasks).map((issue) => `${issue.id}: ${issue.message}`).join('\n');
 const oneRehearsal = (patch) => listIssues({ schemaVersion: 1, rehearsals: [{ ...rehearsal(), ...patch }] });
 
@@ -133,4 +144,20 @@ test('a rehearsal is Premium, with a clock, an order and known keys', () => {
   assert.match(oneRehearsal({ summary: '' }), /summary must be text/);
   assert.match(oneRehearsal({ round: 'Full loop: coding' }), /round must be the id of a round/);
   assert.match(oneRehearsal({ extra: true }), /Unknown key: extra/);
+});
+
+test('short answers take part of the clock, and each links an existing concept page with a sample answer', () => {
+  assert.equal(oneRehearsal({ shortAnswers: shortAnswers() }), '');
+  const [first, second, third] = shortAnswers().questions;
+  const withQuestions = (questions) => oneRehearsal({ shortAnswers: { minutes: 10, questions } });
+  assert.match(oneRehearsal({ shortAnswers: [] }), /shortAnswers must be an object/);
+  assert.match(oneRehearsal({ shortAnswers: { ...shortAnswers(), minutes: 40 } }), /less than the rehearsal's/);
+  assert.match(oneRehearsal({ shortAnswers: { ...shortAnswers(), extra: 1 } }), /Unknown key in shortAnswers: extra/);
+  assert.match(withQuestions([first, second]), /3 to 12 questions/);
+  assert.match(withQuestions([first, second, first]), /linked twice: \/javascript\/trivia\/js-closures/);
+  assert.match(withQuestions([first, second, { ...third, path: '/javascript/coding/js-debounce' }]), /must link a concept question page/);
+  assert.match(withQuestions([first, second, { ...third, path: '/javascript/trivia/js-missing' }]), /does not exist: \/javascript\/trivia\/js-missing/);
+  assert.match(withQuestions([first, second, { ...third, answer: '' }]), /short-answer answer must be text/);
+  assert.match(withQuestions([first, second, { ...third, question: 'x'.repeat(161) }]), /short-answer question must be text of at most 160/);
+  assert.match(withQuestions([first, second, { ...third, hint: 'x' }]), /Unknown key in a short-answer question: hint/);
 });

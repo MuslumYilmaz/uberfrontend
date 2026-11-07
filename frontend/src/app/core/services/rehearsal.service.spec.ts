@@ -20,6 +20,23 @@ const REHEARSAL_ENTRY = {
   ],
 };
 
+const KARAT_ENTRY = {
+  ...REHEARSAL_ENTRY,
+  id: 'walmart-karat-screen',
+  company: 'walmart',
+  title: 'Walmart Karat screen',
+  round: 'coding-screen',
+  minutes: 55,
+  shortAnswers: {
+    minutes: 10,
+    questions: [
+      { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
+      { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
+      { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
+    ],
+  },
+};
+
 const STORAGE_KEY = 'fa:rehearsal:v1';
 const START = Date.UTC(2026, 10, 7, 12, 0, 0);
 const MINUTE = 60_000;
@@ -129,6 +146,95 @@ describe('RehearsalService', () => {
     expect(service.session()).toBeNull();
     expect(service.phase()).toBeNull();
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+  });
+
+  it('keeps short answers that take part of the clock and link a concept page, and drops any other', () => {
+    const service = create();
+    expect(service.normalize(KARAT_ENTRY)?.shortAnswers?.questions.map((entry) => entry.path)).toEqual([
+      '/javascript/trivia/js-closures',
+      '/css/trivia/css-box-model',
+      '/react/trivia/react-useeffect-purpose',
+    ]);
+    const [first, second] = KARAT_ENTRY.shortAnswers.questions;
+    const questions = (list: unknown[]) => ({ ...KARAT_ENTRY, shortAnswers: { minutes: 10, questions: list } });
+    expect(service.normalize(questions([first, second]))).toBeNull();
+    expect(service.normalize(questions([first, second, { ...first, path: '/javascript/coding/js-debounce' }]))).toBeNull();
+    expect(service.normalize(questions([first, second, { ...first, answer: ' ' }]))).toBeNull();
+    expect(service.normalize({ ...KARAT_ENTRY, shortAnswers: { ...KARAT_ENTRY.shortAnswers, minutes: 55 } })).toBeNull();
+    expect(service.normalize(REHEARSAL_ENTRY)?.shortAnswers).toBeUndefined();
+  });
+
+  it('asks the short answers first and keeps each answer, then opens the problems on the same clock', () => {
+    const service = create();
+    service.start(service.normalize(KARAT_ENTRY)!, 'js-dom-twin-node');
+    expect(service.answering()).toBeTrue();
+    expect(service.session()?.answers).toEqual(['', '', '']);
+    // The editor is read-only while the questions run, so no run counts.
+    service.record('js-dom-twin-node', 2, 2);
+    expect(service.session()?.results['js-dom-twin-node']).toBeUndefined();
+
+    service.answer('A function that remembers where it was made.');
+    service.nextQuestion();
+    service.answer('x'.repeat(500));
+    expect(service.session()?.answering).toBe(1);
+    expect(service.session()?.answers[1].length).toBe(400);
+    service.skipToProblems();
+    expect(service.answering()).toBeFalse();
+    expect(service.session()?.answering).toBe(3);
+    service.answer('too late');
+    expect(service.session()?.answers[2]).toBe('');
+
+    service.record('js-dom-twin-node', 2, 2);
+    expect(service.session()?.results['js-dom-twin-node']).toEqual({ passed: 2, total: 2, runs: 1 });
+    jasmine.clock().tick(55 * MINUTE);
+    expect(service.phase()).toBe('review');
+    expect(analytics.track).toHaveBeenCalledWith('rehearsal_ended', jasmine.objectContaining({
+      rehearsal_id: 'walmart-karat-screen',
+      short_answers: 3,
+      short_answers_given: 2,
+    }));
+  });
+
+  it('ends the questions with the clock: the review opens on the answers given so far', () => {
+    const service = create();
+    service.start(service.normalize(KARAT_ENTRY)!);
+    service.answer('Scope kept alive.');
+    jasmine.clock().tick(55 * MINUTE);
+    expect(service.answering()).toBeFalse();
+    expect(service.phase()).toBe('review');
+    service.nextQuestion();
+    expect(service.session()?.answering).toBe(0);
+    expect(service.session()?.answers).toEqual(['Scope kept alive.', '', '']);
+  });
+
+  it('picks the questions up after a reload, and reads a session kept before them as having none', () => {
+    const first = create();
+    first.start(first.normalize(KARAT_ENTRY)!);
+    first.answer('Scope kept alive.');
+    first.nextQuestion();
+    TestBed.resetTestingModule();
+
+    const reloaded = create();
+    expect(reloaded.answering()).toBeTrue();
+    expect(reloaded.session()?.answering).toBe(1);
+    expect(reloaded.session()?.answers).toEqual(['Scope kept alive.', '', '']);
+    TestBed.resetTestingModule();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stored, answering: 4 }));
+    expect(create().session()).toBeNull();
+    TestBed.resetTestingModule();
+
+    const older = create();
+    older.start(older.normalize(REHEARSAL_ENTRY)!);
+    const kept = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    delete kept.answers;
+    delete kept.answering;
+    TestBed.resetTestingModule();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(kept));
+    const restored = create();
+    expect(restored.session()?.answers).toEqual([]);
+    expect(restored.answering()).toBeFalse();
   });
 
   it('picks a running rehearsal up after a reload and drops a damaged one', () => {

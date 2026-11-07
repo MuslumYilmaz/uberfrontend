@@ -11,6 +11,8 @@ import {
   RehearsalOrder,
   RehearsalPhase,
   RehearsalSession,
+  RehearsalShortAnswer,
+  RehearsalShortAnswers,
 } from '../models/rehearsal.model';
 import { AnalyticsService } from './analytics.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
@@ -22,6 +24,9 @@ const ORDERS: readonly RehearsalOrder[] = ['sequential', 'free'];
 const END_REASONS: readonly RehearsalEndReason[] = ['expired', 'ended'];
 // The editor panel that records runs and turns read-only serves plain JavaScript tasks.
 const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
+// A short-answer question links the concept page that answers it in full.
+const CONCEPT_PATH = /^\/[a-z]+\/trivia\/[a-z0-9-]+$/;
+const MAX_ANSWER = 400;
 
 /**
  * Reads the rehearsal list and keeps the one running rehearsal on the device. The clock is the start time plus
@@ -48,6 +53,11 @@ export class RehearsalService implements OnDestroy {
     const session = this.session();
     if (!session) return null;
     return session.endedAt !== null || this.remainingMs() === 0 ? 'review' : 'active';
+  });
+  /** The short answers are on screen; the problems open after them. */
+  readonly answering = computed(() => {
+    const session = this.session();
+    return !!session && this.phase() === 'active' && session.answering < this.questionCount(session.definition);
   });
 
   // Another tab started, ended or closed a rehearsal.
@@ -117,13 +127,15 @@ export class RehearsalService implements OnDestroy {
     const order = ORDERS.find((entry) => entry === source['order']) ?? null;
     const rawItems = Array.isArray(source['items']) ? (source['items'] as unknown[]) : [];
     const items = rawItems.map((item) => this.item(item)).filter((item): item is RehearsalItem => item !== null);
+    const shortAnswers = source['shortAnswers'] === undefined ? undefined : this.shortAnswers(source['shortAnswers'], minutes);
 
     if (!id || !company || !title || !round || !summary || !order) return null;
     if (!Number.isInteger(minutes) || minutes < 5 || minutes > 240) return null;
     // A rehearsal with a task the panel cannot open, or the same task twice, would leave the clock without its list.
     if (items.length < 2 || items.length !== rawItems.length) return null;
     if (new Set(items.map((item) => item.questionId)).size !== items.length) return null;
-    return { id, company, title, round, summary, minutes, order, items };
+    if (shortAnswers === null) return null;
+    return { id, company, title, round, summary, minutes, order, ...(shortAnswers ? { shortAnswers } : {}), items };
   }
 
   includes(questionId: string | null | undefined): boolean {
@@ -149,6 +161,8 @@ export class RehearsalService implements OnDestroy {
       endReason: null,
       reached: 0,
       results: {},
+      answers: Array.from({ length: this.questionCount(definition) }, () => ''),
+      answering: 0,
     });
     this.analytics?.track('rehearsal_started', {
       rehearsal_id: definition.id,
@@ -177,11 +191,33 @@ export class RehearsalService implements OnDestroy {
     if (index > session.reached) this.write({ ...session, reached: index });
   }
 
+  /** Keeps the answer to the short-answer question on screen. */
+  answer(text: string): void {
+    this.refresh();
+    const session = this.session();
+    if (!session || !this.answering()) return;
+    const answers = [...session.answers];
+    answers[session.answering] = text.slice(0, MAX_ANSWER);
+    this.write({ ...session, answers });
+  }
+
+  /** Moves on to the next question; past the last one, the problems open. */
+  nextQuestion(): void {
+    const session = this.session();
+    if (session && this.answering()) this.write({ ...session, answering: session.answering + 1 });
+  }
+
+  /** Opens the problems now, leaving the questions not reached unanswered. */
+  skipToProblems(): void {
+    const session = this.session();
+    if (session && this.answering()) this.write({ ...session, answering: this.questionCount(session.definition) });
+  }
+
   /** Keeps the best test run of a task while the clock runs. */
   record(questionId: string, passed: number, total: number): void {
     this.refresh();
     const session = this.session();
-    if (!session || this.phase() !== 'active' || !this.includes(questionId) || total <= 0) return;
+    if (!session || this.phase() !== 'active' || this.answering() || !this.includes(questionId) || total <= 0) return;
     const previous = session.results[questionId];
     // On a tie the run with more tests wins, so a runner error (0 of 1) does not hide the real suite.
     const keep = !!previous && (previous.passed / previous.total > passed / total
@@ -212,12 +248,18 @@ export class RehearsalService implements OnDestroy {
       reason: endReason,
       passed_items: passedItems,
       items: session.definition.items.length,
+      short_answers: this.questionCount(session.definition),
+      short_answers_given: session.answers.filter((answer) => answer.trim()).length,
       elapsed_sec: Math.round((endedAt - session.startedAt) / 1000),
     });
   }
 
   private deadline(session: RehearsalSession): number {
     return session.startedAt + session.definition.minutes * 60_000;
+  }
+
+  private questionCount(definition: RehearsalDefinition): number {
+    return definition.shortAnswers?.questions.length ?? 0;
   }
 
   private write(session: RehearsalSession | null): void {
@@ -278,6 +320,15 @@ export class RehearsalService implements OnDestroy {
     if (!definition || !key || !Number.isFinite(startedAt)) return null;
     if (endedAt !== null && (!Number.isFinite(endedAt) || !endReason)) return null;
     if (!Number.isInteger(reached) || reached < 0 || reached >= definition.items.length) return null;
+    const count = this.questionCount(definition);
+    // A session kept before short answers existed has none to answer.
+    const answering = source['answering'] === undefined ? count : Number(source['answering']);
+    if (!Number.isInteger(answering) || answering < 0 || answering > count) return null;
+    const storedAnswers = Array.isArray(source['answers']) ? (source['answers'] as unknown[]) : [];
+    const answers = Array.from({ length: count }, (_, index) => {
+      const answer = storedAnswers[index];
+      return typeof answer === 'string' ? answer.slice(0, MAX_ANSWER) : '';
+    });
 
     const results: Record<string, RehearsalItemResult> = {};
     const storedResults = this.asObject(source['results']) ?? {};
@@ -290,7 +341,18 @@ export class RehearsalService implements OnDestroy {
         results[item.questionId] = { passed, total, runs };
       }
     }
-    return { version: 1, key, definition, startedAt, endedAt, endReason: endedAt === null ? null : endReason, reached, results };
+    return {
+      version: 1,
+      key,
+      definition,
+      startedAt,
+      endedAt,
+      endReason: endedAt === null ? null : endReason,
+      reached,
+      results,
+      answers,
+      answering,
+    };
   }
 
   private item(value: unknown): RehearsalItem | null {
@@ -300,6 +362,25 @@ export class RehearsalService implements OnDestroy {
     const match = ITEM_PATH.exec(path);
     if (!match || !title) return null;
     return { path, questionId: match[2], title };
+  }
+
+  private shortAnswers(value: unknown, minutes: number): RehearsalShortAnswers | null {
+    const source = this.asObject(value);
+    const budget = Number(source?.['minutes']);
+    const raw = Array.isArray(source?.['questions']) ? (source['questions'] as unknown[]) : [];
+    const questions = raw.map((entry) => this.shortAnswer(entry)).filter((entry): entry is RehearsalShortAnswer => entry !== null);
+    // The questions take part of the clock, never all of it, and each one links its full answer.
+    if (!Number.isInteger(budget) || budget < 1 || budget >= minutes) return null;
+    if (questions.length < 3 || questions.length !== raw.length) return null;
+    return { minutes: budget, questions };
+  }
+
+  private shortAnswer(value: unknown): RehearsalShortAnswer | null {
+    const source = this.asObject(value);
+    const question = this.text(source?.['question']);
+    const answer = this.text(source?.['answer']);
+    const path = this.text(source?.['path']);
+    return question && answer && CONCEPT_PATH.test(path) ? { question, answer, path } : null;
   }
 
   private asObject(value: unknown): Record<string, unknown> | null {

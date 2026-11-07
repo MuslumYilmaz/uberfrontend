@@ -1488,6 +1488,81 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(entry).toBeVisible();
   });
 
+  test('Walmart Karat rehearsal asks its short answers first, with the problem out of sight, then reviews them', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+    const parenthesesModel = 'q-js-valid-parentheses-code';
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
+
+    // The task is in two rehearsals, Revolut's assessment and Walmart's Karat screen.
+    await page.goto('/javascript/coding/js-valid-parentheses');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Walmart Karat screen' });
+    await expect(entry).toContainText('Walmart Karat screen: 8 short answers and 2 problems in 55 minutes');
+    await entry.getByTestId('rehearsal-start').click();
+
+    // The questions come first: the problem waits out of sight and its editor is read-only.
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(55:00|54:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Short answers: question 1 of 8');
+    await expect(panel.getByTestId('rehearsal-question')).toHaveText('What is a closure in JavaScript?');
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Opens after the short answers/,
+      /Problem 2\s*Opens after the short answers/,
+    ]);
+    await expect(page.getByTestId('question-title')).toBeHidden();
+    await expect(page.getByTestId('coding-breadcrumb')).toBeHidden();
+    await expect(page.getByTestId('js-concealed-note')).toHaveText('The first problem opens after the short answers.');
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left: short answers first$/);
+    const runButton = page.getByTestId('js-run-tests');
+    await expect(runButton).toBeDisabled();
+    await expect.poll(() => isReadOnly(parenthesesModel)).toBe(true);
+
+    // An answer is kept, through a reload too.
+    const answer = 'A function that keeps the variables of the scope it was made in.';
+    await panel.getByTestId('rehearsal-answer').fill(answer);
+    await panel.getByTestId('rehearsal-question-next').click();
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 8');
+    await expect(panel.getByTestId('rehearsal-answer')).toBeFocused();
+    await page.reload();
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 8', { timeout: 30_000 });
+
+    // Moving on opens the first problem, editable, on the same clock.
+    await panel.getByTestId('rehearsal-skip').click();
+    await expect(panel.getByTestId('rehearsal-questions')).toHaveCount(0);
+    await expect(page.getByTestId('question-title')).toBeVisible();
+    await expect(page.getByTestId('js-concealed-note')).toHaveCount(0);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Valid Parentheses \(Balanced Brackets\)\s*Not run yet/,
+      /Problem 2\s*Opens when you move on/,
+    ]);
+    await expect(runButton).toBeEnabled({ timeout: 30_000 });
+    await expect.poll(() => isReadOnly(parenthesesModel)).toBe(false);
+
+    // The review sets each answer beside a sample one and links the full answer.
+    await page.clock.fastForward('55:00');
+    await expect(panel.getByTestId('rehearsal-verdict'))
+      .toHaveText('Time is up. 0 of 2 problems pass every test. You answered 1 of 8 short questions.');
+    const reviewed = panel.getByTestId('rehearsal-answer-review');
+    await expect(reviewed).toHaveCount(8);
+    await expect(reviewed.first()).toContainText(`Your answer: ${answer}`);
+    await expect(reviewed.first()).toContainText('A sample answer: A function that keeps access to the variables');
+    await expect(reviewed.nth(1)).toContainText('Your answer: No answer');
+    await expect(reviewed.first().getByRole('link', { name: 'Read the full answer' }))
+      .toHaveAttribute('href', '/javascript/trivia/js-closures');
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+  });
+
   test.describe('for a visitor', () => {
     // The pricing page asks for its checkout config, which this visitor's mocked API refuses.
     test.use({ consoleErrorAllowlist: ['\\/api\\/billing\\/checkout\\/config'] });

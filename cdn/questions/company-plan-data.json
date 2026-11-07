@@ -2861,6 +2861,19 @@
         "js-maze-path"
       ]
     },
+    "rehearsal-walmart-karat-screen": {
+      "id": "rehearsal-walmart-karat-screen",
+      "title": "Rehearse the Walmart Karat screen",
+      "route": "/javascript/coding/js-valid-parentheses",
+      "kind": "rehearsal",
+      "access": "premium",
+      "minutes": 55,
+      "members": [
+        "js-valid-parentheses",
+        "js-stack-queue-implementation"
+      ],
+      "shortAnswers": 8
+    },
     "resilient-checkout-payment-flow": {
       "id": "resilient-checkout-payment-flow",
       "title": "Design a Resilient Checkout and Payment Flow",
@@ -12636,6 +12649,12 @@
             },
             {
               "id": "js-stack-queue-implementation"
+            },
+            {
+              "id": "rehearsal-walmart-karat-screen",
+              "rounds": [
+                "coding-screen"
+              ]
             }
           ]
         }

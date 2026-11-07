@@ -3628,6 +3628,49 @@ describe('CodingDetailComponent', () => {
       expect(navigate).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
       expect(rehearsals.session()?.reached).toBe(0);
     });
+
+    it('keeps the problem out of sight and its editor read-only while the short answers run', async () => {
+      definition = rehearsals.normalize({
+        ...payload,
+        id: 'walmart-karat-screen',
+        title: 'Walmart Karat screen',
+        minutes: 55,
+        shortAnswers: {
+          minutes: 10,
+          questions: [
+            { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
+            { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
+            { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
+          ],
+        },
+      })!;
+      const { fixture, jsPanel, find } = await render(twin, premium);
+      expect(find('rehearsal-entry')?.textContent).toContain('Walmart Karat screen: 3 short answers and 2 problems in 55 minutes');
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      const description = find('coding-description-panel')!;
+      const rendered = () => Array.from(description.children)
+        .filter((child) => child.getClientRects().length > 0)
+        .map((child) => child.tagName.toLowerCase());
+      expect(find('rehearsal-question')?.textContent?.trim()).toBe('What is a closure?');
+      expect(rendered()).toEqual(['app-rehearsal-panel']);
+      expect(jsPanel().locked).toBeTrue();
+      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left: short answers first$/);
+      // The starter code would give the problem away: it waits behind a note, out of reach of the keyboard too.
+      expect(find('js-concealed-note')?.textContent?.trim()).toBe('The first problem opens after the short answers.');
+      expect(find('js-code-editor')?.hasAttribute('inert')).toBeTrue();
+
+      find('rehearsal-skip')!.click();
+      fixture.detectChanges();
+      expect(find('js-concealed-note')).toBeNull();
+      expect(find('js-code-editor')?.hasAttribute('inert')).toBeFalse();
+      expect(rendered()).toContain('app-rehearsal-panel');
+      expect(rendered().length).toBeGreaterThan(1);
+      expect(description.querySelector('[data-testid="question-title"]')!.getClientRects().length).toBeGreaterThan(0);
+      expect(jsPanel().locked).toBeFalse();
+      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left$/);
+    });
   });
 
   describe('question sources', () => {

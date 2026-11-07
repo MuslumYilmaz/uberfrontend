@@ -190,6 +190,28 @@ describe('company plan engine', () => {
     expect(plan.tasks.map((entry) => entry.id)).not.toContain('linked');
     expect(plan.tasks.map((entry) => entry.id)).not.toContain('tagged-a');
     expect(plan.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2 });
+
+    // A rehearsal that opens with short answers carries their count to its line.
+    const screen = { ...rehearsal, shortAnswers: 8 };
+    const withQuestions = buildCompanyPlan({ ...data, tasks: { ...data.tasks, [rehearsal.id]: screen } } as CompanyPlanData, input({ when: 'later' }));
+    expect(withQuestions.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2, shortAnswers: 8 });
+  });
+
+  it('lets a rehearsal that holds none of its round\'s practice links follow the link, as one format among several', () => {
+    // Walmart's coding screen: the guide links a React task, and the Karat rehearsal holds two other problems.
+    const rehearsal = task('rehearsal-screen', { kind: 'rehearsal', tech: undefined, access: 'premium', minutes: 55, members: ['tagged-a', 'tagged-b'], shortAnswers: 8 });
+    const base = fixture(
+      [{ id: 'linked', rounds: ['coding'], lead: true }, { id: rehearsal.id, rounds: ['coding'] }, { id: 'reported-new', rounds: ['onsite'], report }],
+      [round('screen', ['recruiter']), round('coding', ['coding']), round('onsite', ['coding'])],
+    );
+    const data = { ...base, tasks: { ...base.tasks, [rehearsal.id]: rehearsal } } as CompanyPlanData;
+    expect(idsIn(buildCompanyPlan(data, input({ when: 'later' })), 'coding')).toEqual(['linked', 'rehearsal-screen']);
+
+    // One that holds the link is the round itself, and opens it.
+    const holding = { ...rehearsal, members: ['linked', 'tagged-b'] };
+    const opened = buildCompanyPlan({ ...data, tasks: { ...data.tasks, [rehearsal.id]: holding } } as CompanyPlanData, input({ when: 'later' }));
+    expect(idsIn(opened, 'coding')[0]).toBe('rehearsal-screen');
+    expect(idsIn(opened, 'coding')).not.toContain('linked');
   });
 
   it('gives the format share to the open tasks of the round the person faces next', () => {

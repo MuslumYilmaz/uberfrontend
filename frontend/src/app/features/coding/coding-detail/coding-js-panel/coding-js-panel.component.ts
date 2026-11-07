@@ -101,8 +101,12 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() hideRestoreBanner = false;
   @Input() disablePersistence = false;
   @Input() liteMode = false;
-  /** A rehearsal's review: the editors turn read-only and the tests stop running. */
+  /** A rehearsal's review, or its short answers: the editors turn read-only and the tests stop running. */
   @Input() locked = false;
+  /** Why the editors are read-only, when it is not the review. */
+  @Input() lockedLabel: string | null = null;
+  /** A rehearsal's short answers come first: the code and tests stay out of sight behind this note. */
+  @Input() concealedNote: string | null = null;
   /** A running rehearsal's clock; it takes the place of timed practice. */
   @Input() clockLabel: string | null = null;
   private _solutionPanelOpen = false;

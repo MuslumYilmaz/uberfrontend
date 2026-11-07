@@ -21,6 +21,8 @@ export type CompanyPlanDataTask = {
   readonly minutes: number;
   /** A timed rehearsal's problems, by task id: the rehearsal stands for them, so the plan never lists them beside it. */
   readonly members?: readonly string[];
+  /** How many questions a timed rehearsal asks for one-line answers before its problems. */
+  readonly shortAnswers?: number;
   /** The page can run it as an interview: the requirements change while the person codes. */
   readonly pressure?: true;
   readonly family?: string;
@@ -129,7 +131,7 @@ export type CompanyPlanWhy =
   | { readonly kind: 'format'; readonly framework?: CompanyPlanFramework }
   | { readonly kind: 'general' }
   /** The round's problems on one clock, as the round runs them. */
-  | { readonly kind: 'rehearsal'; readonly problems: number };
+  | { readonly kind: 'rehearsal'; readonly problems: number; readonly shortAnswers?: number };
 
 export type PlannedTask = CompanyPlanDataTask & {
   readonly why: CompanyPlanWhy;
@@ -194,7 +196,9 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
  * A timed rehearsal of a round opens it: it runs the round's problems on one clock, the closest the plan gets to the
  * round itself. Then the practice link the guide shows on a round, so the plan and the guide agree. Then reported
  * tasks, newest first, then tasks an editor tied to a round, then tags. Reading comes after practice, because a buyer
- * pays for tasks: guides next, concept questions last.
+ * pays for tasks: guides next, concept questions last. A rehearsal that holds none of its round's practice links is
+ * one format among the round's several (Walmart's coding screen names four), so it follows the link with the tied
+ * tasks.
  */
 const PHASES = ['rehearsal', 'lead', 'report', 'link', 'pick', 'guide', 'concept'] as const;
 type Phase = (typeof PHASES)[number];
@@ -218,7 +222,9 @@ export function companyPlanDefaultList(company: CompanyPlanDataCompany): Company
 
 const isRunnable = (task: CompanyPlanDataTask) => task.kind === 'coding' || task.kind === 'debug' || task.kind === 'system-design';
 const whyOf = (row: CompanyPlanDataRow | null, task: CompanyPlanDataTask): CompanyPlanWhy => {
-  if (task.kind === 'rehearsal') return { kind: 'rehearsal', problems: task.members?.length ?? 0 };
+  if (task.kind === 'rehearsal') {
+    return { kind: 'rehearsal', problems: task.members?.length ?? 0, ...(task.shortAnswers ? { shortAnswers: task.shortAnswers } : {}) };
+  }
   const unbound = row && !row.rounds?.length ? { unbound: true as const } : {};
   return row?.report ? { kind: 'report', ...row.report, ...unbound } : { kind: 'pick', ...unbound };
 };
@@ -277,12 +283,22 @@ function slotsFor(
   const open = list.rounds.filter((round) => !passed.has(companyPlanRoundKey(slug, list.id, round.id)));
   const byRound = new Map<string, Candidate[]>(open.map((round) => [round.id, []]));
   const fallback = open.filter((round) => round.kinds.includes('coding') || round.kinds.includes('design')).slice(0, 1);
+  // The practice links the guide shows on each round; a guide linked there is reading, not practice.
+  const links = new Map<string, string[]>();
+  for (const row of list.tasks) {
+    if (!row.lead || taskFor(row.id)?.kind === 'guide') continue;
+    for (const id of row.rounds ?? []) links.set(id, [...(links.get(id) ?? []), row.id]);
+  }
+  const opensRound = (task: CompanyPlanDataTask, row: CompanyPlanDataRow) => (row.rounds ?? []).every((id) => {
+    const own = links.get(id) ?? [];
+    return !own.length || own.some((link) => task.members?.includes(link));
+  });
 
   for (const row of list.tasks) {
     const task = taskFor(row.id);
     if (!task) continue;
     // A guide linked on a round is still reading, so it waits like any guide.
-    const phase: Phase = task.kind === 'rehearsal' ? 'rehearsal' : row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
+    const phase: Phase = task.kind === 'rehearsal' ? (opensRound(task, row) ? 'rehearsal' : 'link') : row.lead && task.kind !== 'guide' ? 'lead' : row.report ? 'report' : task.kind === 'guide' ? 'guide' : row.rounds?.length ? 'link' : task.kind === 'trivia' ? 'concept' : 'pick';
     // A task stays with its rounds. Passing them all drops it and the budget moves on.
     const eligible = row.rounds?.length ? open.filter((round) => row.rounds?.includes(round.id)) : open.filter((round) => roundTakes(round, task));
     // Only a company with no round of this kind at all sends the task elsewhere, as with a reported design task.

@@ -132,6 +132,9 @@ function readRehearsals(cdnRoot, catalog, rounds) {
     for (const item of definition.items) {
       if (!catalog.get(item.path)) throw new Error(`${where} holds ${item.path}, which is not in the catalog.`);
     }
+    for (const question of definition.shortAnswers?.questions ?? []) {
+      if (!catalog.get(question.path)) throw new Error(`${where} asks about ${question.path}, which is not in the catalog.`);
+    }
     (byCompany[definition.company] ??= []).push(definition);
   }
   return byCompany;
@@ -147,6 +150,8 @@ function rehearsalTask(definition) {
     access: 'premium',
     minutes: definition.minutes,
     members: definition.items.map((item) => item.path.slice(item.path.lastIndexOf('/') + 1)),
+    // The questions answered before the problems: the plan names them, and the problems stay its members.
+    ...(definition.shortAnswers ? { shortAnswers: definition.shortAnswers.questions.length } : {}),
   };
 }
 

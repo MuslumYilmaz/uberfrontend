@@ -64,7 +64,8 @@
           Read the question and solution on your phone. Use a desktop or tablet to write code and run checks.
         </p>
         <!-- Description Panel -->
-        <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
+        <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0"
+          [class.rehearsal-answering]="rehearsalAnswering()">
           <ng-template #reviewOrDescription>
             <app-review-mode-panel *ngIf="reviewOpen() && reviewScenario() as scenario; else normalDescriptionContent"
               [scenario]="scenario" [questionId]="question()!.id" (exit)="exitReviewMode()"></app-review-mode-panel>
@@ -229,13 +230,15 @@
             <ng-container *ngIf="!demoMode && !isFrameworkTech() && workspaceAvailable()">
               <app-rehearsal-panel *ngIf="rehearsalPhase() as phase" [session]="rehearsals.session()!" [phase]="phase"
                 [remainingMs]="rehearsals.remainingMs()" [questionId]="question()!.id"
-                (endRehearsal)="endRehearsal()" (closeReview)="closeRehearsalReview()"></app-rehearsal-panel>
+                (endRehearsal)="endRehearsal()" (closeReview)="closeRehearsalReview()"
+                (answer)="rehearsals.answer($event)" (nextQuestion)="rehearsals.nextQuestion()"
+                (skipToProblems)="rehearsals.skipToProblems()"></app-rehearsal-panel>
 
               <ng-container *ngIf="!rehearsalPhase()">
                 <section *ngFor="let offer of rehearsalOffers()" class="pressure-entry" data-testid="rehearsal-entry">
                   <div>
                     <p class="pressure-entry__eyebrow">Timed rehearsal · Premium</p>
-                    <h2>{{ offer.title }}: {{ offer.items.length }} problems in {{ offer.minutes }} minutes</h2>
+                    <h2>{{ rehearsalHeading(offer) }}</h2>
                     <p>{{ offer.summary }}</p>
                     <p *ngIf="otherRehearsalTitle() as other">Starting it ends the {{ other }} rehearsal you have running.</p>
                   </div>
@@ -897,7 +900,9 @@
           [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="jsStorageKey()"
           [solutionPanelOpen]="activePanel()===1"
           [hideRestoreBanner]="demoMode || hideRestoreBanner || !!rehearsalPhase()" [disablePersistence]="disablePersistence || demoMode"
-          [locked]="rehearsalPhase() === 'review'" [clockLabel]="rehearsalClockLabel()"
+          [locked]="rehearsalPhase() === 'review' || rehearsalAnswering()" [lockedLabel]="rehearsalLockedLabel()"
+          [concealedNote]="rehearsalConcealedNote()"
+          [clockLabel]="rehearsalClockLabel()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
           (langChange)="onChildLang($event)"
           (testResultsChange)="onJsTestResults($event)" (consoleEntriesChange)="consoleEntries.set($event)"

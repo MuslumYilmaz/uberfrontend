@@ -604,6 +604,24 @@ test('a timed rehearsal is one Premium task on its round, standing for its probl
   });
 });
 
+test('a rehearsal that opens with short answers says how many, and keeps only its problems as members', () => {
+  const shortAnswers = {
+    minutes: 10,
+    questions: [
+      { question: 'A?', answer: 'A.', path: '/javascript/trivia/concept-a' },
+      { question: 'B?', answer: 'B.', path: '/javascript/trivia/concept-b' },
+      { question: 'C?', answer: 'C.', path: '/react/trivia/react-concept' },
+    ],
+  };
+  const task = build({}, withRehearsal({ shortAnswers })).tasks['rehearsal-acme-coding'];
+  assert.equal(task.shortAnswers, 3);
+  assert.deepEqual(task.members, ['js-linked', 'js-old']);
+  assert.throws(
+    () => build({}, withRehearsal({ shortAnswers: { ...shortAnswers, questions: [...shortAnswers.questions.slice(1), { question: 'D?', answer: 'D.', path: '/javascript/trivia/missing' }] } })),
+    /asks about \/javascript\/trivia\/missing, which is not in the catalog/,
+  );
+});
+
 test('a rehearsal on a company, round or problem the plan cannot place stops the generator', () => {
   assert.throws(() => build({}, withRehearsal({ company: 'globex' })), /names globex, which has no company plan/);
   assert.throws(() => build({}, withRehearsal({ round: 'onsite' })), /names the round onsite, which no acme list has/);

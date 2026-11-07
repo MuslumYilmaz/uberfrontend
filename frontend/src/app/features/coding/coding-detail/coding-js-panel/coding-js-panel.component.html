@@ -91,7 +91,8 @@
         <!-- TOP: code/tests editor area with adjustable height -->
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
-            <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
+            <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor"
+                [attr.inert]="concealedNote ? '' : null">
                 <!-- A multi-file task: one tab per file; the editor below shows the open one. -->
                 <div *ngIf="bundleFiles() as files" class="file-tabs" role="group" aria-label="Files" data-testid="js-file-tabs">
                     <button *ngFor="let file of files" type="button" class="file-tab" data-testid="js-file-tab"
@@ -140,7 +141,8 @@
             </div>
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
-            <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
+            <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'"
+                [attr.inert]="concealedNote ? '' : null">
                 <ng-container *ngIf="useMonaco(); else liteTestsEditor">
                     <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
                         [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="locked"
@@ -176,6 +178,10 @@
                         [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
+            </div>
+
+            <div *ngIf="concealedNote" class="concealed-note" data-testid="js-concealed-note">
+                <p>{{ concealedNote }}</p>
             </div>
 
             <div
@@ -348,7 +354,7 @@
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
                 <div class="fa-runner-interview-controls" *ngIf="clockLabel || locked">
-                    <span class="interview-pill" data-testid="js-rehearsal-clock">{{ locked ? 'Rehearsal over: read-only' : clockLabel }}</span>
+                    <span class="interview-pill" data-testid="js-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
                 </div>
                 <div class="fa-runner-interview-controls" *ngIf="interviewModeEnabled()">
                     <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
