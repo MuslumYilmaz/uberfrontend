@@ -581,6 +581,23 @@ describe('CodingDetailComponent', () => {
     expect(locked.component.solutionIdea()).toBe('');
   });
 
+  it('shows a legacy solution string as the fixed code, not as an overview or a solution idea', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const fixed = 'export default function chunk(items, size) {\n  return items;\n}\n';
+    const question = { id: 'js-debug-legacy', title: 'Fix chunk', access: 'free', solution: fixed } as any;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question]));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.question.set(question);
+
+    expect(component.structuredSolution()).toEqual({ approaches: [{ title: 'The fixed code', codeJs: fixed }] });
+    expect(component.solutionIdea()).toBe('');
+    expect(component.solutionCodeForCurrentLang()).toBe(fixed);
+  });
+
   it('renders both HTML and CSS solution blocks as mobile read-only code', async () => {
     spyOnProperty(window, 'innerWidth', 'get').and.returnValue(360);
     const base = makeCssFlexboxNavbarQuestion();

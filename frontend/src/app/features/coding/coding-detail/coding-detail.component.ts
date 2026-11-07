@@ -3831,6 +3831,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const block = (q as any)?.solutionBlock as FASolutionBlock | undefined;
     if (block) return block;
     const legacy = this.solutionInfo();
+    // A legacy solution is the fixed code itself: show it as code the editor can load, not as an overview in prose.
+    if (legacy.codeJs.trim() || legacy.codeTs.trim()) {
+      return { approaches: [{ title: 'The fixed code', codeJs: legacy.codeJs, ...(legacy.codeTs ? { codeTs: legacy.codeTs } : {}) }] };
+    }
     return { overview: legacy.explanation };
   });
 

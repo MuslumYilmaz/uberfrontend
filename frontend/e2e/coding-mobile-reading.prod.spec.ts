@@ -11,7 +11,7 @@ import { listQuestionFailureHints } from '../src/app/core/utils/failure-explain-
 type HtmlNode = DefaultTreeAdapterMap['node'];
 type HtmlElement = DefaultTreeAdapterMap['element'];
 type SolutionCode = { language: 'js' | 'ts' | 'html' | 'css' | 'file'; code: string; file?: string };
-type SolutionCase = { tech: string; kind: 'coding' | 'debug'; id: string; access: string; codes: SolutionCode[]; legacy?: string };
+type SolutionCase = { tech: string; kind: 'coding' | 'debug'; id: string; access: string; codes: SolutionCode[] };
 type CatalogQuestion = {
   id: string;
   access?: string;
@@ -54,11 +54,10 @@ const solutionCases: SolutionCase[] = ['javascript', 'react', 'angular', 'vue', 
             if (code?.trim()) codes.push({ language, code });
           }
         }
+        // A legacy solution string is the fixed code itself, and the page shows it as one JavaScript block.
+        if (!question.solutionBlock && question.solution?.trim()) codes.push({ language: 'js', code: question.solution });
       }
-      return {
-        tech, kind, id: question.id, access: question.access || 'free', codes,
-        legacy: !codes.length && typeof question.solution === 'string' ? question.solution : undefined,
-      };
+      return { tech, kind, id: question.id, access: question.access || 'free', codes };
     });
   }),
 );
@@ -178,16 +177,6 @@ function expectInitialSolutionCode(html: string, item: SolutionCase) {
   const expected = item.codes.map(({ language, file, code }) =>
     JSON.stringify([language, file || '', canonicalCode(code, language)])).sort();
   expect(actual, `complete solution sources without duplicates: ${solutionRoute(item)}`).toEqual(expected);
-  if (item.legacy) {
-    const content = normalize(htmlText(panel));
-    // Legacy debug solutions are existing Markdown prose. Backticks become
-    // inline-code elements, so check every complete surrounding text segment
-    // and the inline payload rather than treating delimiters as source text.
-    for (const legacy of item.legacy.split('`').map(normalize).filter(Boolean)) {
-      expect(content).toContain(legacy);
-      expect(content.split(legacy)).toHaveLength(2);
-    }
-  }
   expect(elements(panel).filter((node) => node.tagName === 'app-monaco-editor')).toHaveLength(0);
 }
 
