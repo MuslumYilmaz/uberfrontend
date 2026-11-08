@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RehearsalDefinition, RehearsalSession } from '../../../core/models/rehearsal.model';
-import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading } from './rehearsal-panel.component';
+import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading, rehearsalPhoneNote } from './rehearsal-panel.component';
 
 const START = Date.UTC(2026, 10, 7, 12, 0, 0);
 const MINUTE = 60_000;
@@ -265,6 +265,16 @@ describe('RehearsalPanelComponent', () => {
     expect(rehearsalHeading(BOOKING)).toBe('Booking.com HackerRank assessment: 2 multiple-choice questions and 2 problems in 45 minutes');
     const mixed = { ...BOOKING, quiz: { questions: [KARAT.quiz!.questions[0], BOOKING.quiz!.questions[0]] } };
     expect(rehearsalHeading(mixed)).toBe('Booking.com HackerRank assessment: 1 short answer, 1 multiple-choice question and 2 problems in 45 minutes');
+  });
+
+  it('names on a phone the rehearsals a problem belongs to, and that they need a desktop or tablet', () => {
+    expect(rehearsalPhoneNote([])).toBeNull();
+    expect(rehearsalPhoneNote([KARAT]))
+      .toBe('This problem is also part of the Walmart Karat screen rehearsal (Premium): 3 short answers and 2 problems in 55 minutes, on a desktop or tablet.');
+    expect(rehearsalPhoneNote([DEFINITION, KARAT, BOOKING])).toBe(
+      'This problem is also part of 3 timed rehearsals (Premium), each on a desktop or tablet: ' +
+      'the Meta coding round, the Walmart Karat screen and the Booking.com HackerRank assessment.'
+    );
   });
 
   it('formats the clock in minutes, and with hours past one', () => {

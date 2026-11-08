@@ -131,9 +131,10 @@ describe('company plan engine', () => {
               for (const entry of plan.tasks) {
                 if (entry.why.kind === 'report') expect(rows.get(entry.id)?.report).withContext(`${where}: ${entry.id} has no report`).toBeDefined();
               }
-              // A rehearsal stands for its problems, so none of them sits beside it.
+              // A rehearsal stands for its problems, so none of them sits beside it, nor is offered as a free warm-up.
               const members = new Set(plan.tasks.flatMap((entry) => entry.members ?? []));
               expect(plan.tasks.filter((entry) => members.has(entry.id)).map((entry) => entry.id)).withContext(`${where}: a rehearsal beside its problem`).toEqual([]);
+              expect(plan.preview.open.filter((entry) => members.has(entry.id)).map((entry) => entry.id)).withContext(`${where}: a rehearsal's problem as a warm-up`).toEqual([]);
 
               if (when === 'tomorrow') {
                 expect(plan.tasks.some((entry) => entry.access === 'premium')).withContext(`${where}: no Premium task`).toBeTrue();
@@ -190,6 +191,8 @@ describe('company plan engine', () => {
     expect(plan.tasks.map((entry) => entry.id)).not.toContain('linked');
     expect(plan.tasks.map((entry) => entry.id)).not.toContain('tagged-a');
     expect(plan.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2 });
+    // Free as they are, its problems are not offered as warm-ups either: that would spoil the rehearsal before it starts.
+    expect(plan.preview.open.map((entry) => entry.id)).toEqual(['tagged-b', 'starter-free', 'starter-free-2']);
 
     // A rehearsal that opens with questions carries their counts, by kind, to its line.
     const screen = { ...rehearsal, shortAnswers: 8, choiceQuestions: 2 };

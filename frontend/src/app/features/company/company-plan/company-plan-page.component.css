@@ -606,6 +606,16 @@
   color: var(--uf-text-tertiary);
 }
 
+/* A timed rehearsal's own line: what it asks, in order, and where it runs. */
+.plan-task__detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--uf-text-tertiary);
+  overflow-wrap: anywhere;
+}
+
 .plan-task__inline-time {
   display: none;
 }

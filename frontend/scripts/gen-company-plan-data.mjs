@@ -152,7 +152,27 @@ function rehearsalTask(definition) {
     members: definition.items.map((item) => item.path.slice(item.path.lastIndexOf('/') + 1)),
     // The questions asked before the problems, by kind: the plan names them, and the problems stay its members.
     ...quizCounts(definition.quiz?.questions ?? []),
+    detail: rehearsalDetail(definition),
   };
+}
+
+const TOPICS = { css: 'CSS', html: 'HTML', javascript: 'JavaScript', react: 'React', angular: 'Angular', vue: 'Vue' };
+
+const listed = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')} and ${words.at(-1)}` : words[0]);
+
+/**
+ * What the rehearsal asks, in its order, for the plan row: "2 multiple-choice CSS questions, then Valid Parentheses,
+ * Merge Two Sorted Arrays and Contact Form, all open at once. On a laptop or tablet." The questions name their topics,
+ * the part a candidate fears; a title's bracketed gloss is left out, so the line stays short.
+ */
+function rehearsalDetail(definition) {
+  const names = definition.items.map((item) => item.title.replace(/\s*\([^)]*\)\s*$/, ''));
+  const problems = definition.order === 'sequential' ? names.join(', then ') : `${listed(names)}, all open at once`;
+  const questions = definition.quiz?.questions ?? [];
+  const topics = listed([...new Set(questions.map((question) => question.path.split('/')[1]))].map((tech) => TOPICS[tech] ?? tech));
+  const kind = questions.every((question) => question.choices) ? 'multiple-choice ' : questions.some((question) => question.choices) ? '' : 'short ';
+  const asked = questions.length ? `${questions.length} ${kind}${topics} ${questions.length === 1 ? 'question' : 'questions'}, then ` : '';
+  return `${asked}${problems}. On a laptop or tablet.`;
 }
 
 function quizCounts(questions) {

@@ -88,7 +88,7 @@ import type { ReviewModeScenario } from '../../../core/models/review-mode.model'
 import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
 import { RehearsalService } from '../../../core/services/rehearsal.service';
 import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
-import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading } from '../rehearsal/rehearsal-panel.component';
+import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading, rehearsalPhoneNote } from '../rehearsal/rehearsal-panel.component';
 import { RehearsalOffersComponent } from '../rehearsal/rehearsal-offers.component';
 import {
   AuthPromptContext,
@@ -441,17 +441,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
   );
   /**
-   * The rehearsal's questions are on screen, in the panel: the problem waits behind them, as it does in the round,
-   * so its description and code are out of sight and its editor read-only. Only once the browser view is ready, as
-   * the panel itself, so hydration matches the server.
+   * A running rehearsal keeps its task as the round would: nothing beside the problem teaches its method, and the
+   * footer leads to no other practice. Only once the browser view is ready, as the panel itself, so hydration matches
+   * the server.
    */
-  rehearsalAnswering = computed(() =>
-    this.workspaceAvailable() && this.rehearsalPhase() === 'active' && this.rehearsals.answering()
-  );
+  rehearsalRunning = computed(() => this.workspaceAvailable() && this.rehearsalPhase() === 'active');
+  /**
+   * The rehearsal's questions are on screen, in the panel: the problem waits behind them, as it does in the round,
+   * so its description and code are out of sight and its editor read-only.
+   */
+  rehearsalAnswering = computed(() => this.rehearsalRunning() && this.rehearsals.answering());
   /** The rehearsal keeps the task read-only: its questions are on screen, or its review is. */
   rehearsalLocked = computed(() => this.rehearsalPhase() === 'review' || this.rehearsalAnswering());
   rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: questions first` : null));
   rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The problems open after the questions.' : null));
+  rehearsalPhoneNote = computed(() => (this.showMobileDesktopGuard() ? rehearsalPhoneNote(this.rehearsalOffers()) : null));
   readonly rehearsalHeading = rehearsalHeading;
 
   /** The panels that keep a rehearsal's clock and record its runs serve plain JavaScript tasks and React tasks. */
@@ -843,15 +847,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.pressureActive()) {
       return `Round ${this.pressureRoundIndex() + 1} of ${this.pressureRounds().length}`;
     }
+    const rehearsal = this.rehearsalRunning() ? this.rehearsals.session() : null;
+    if (rehearsal) {
+      const items = rehearsal.definition.items;
+      return `Problem ${items.findIndex((item) => item.questionId === this.question()?.id) + 1} of ${items.length}`;
+    }
     if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
   hasPrev(): boolean {
-    if (this.pressureActive()) return false;
+    if (this.pressureActive() || this.rehearsalRunning()) return false;
     return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
   }
   hasNext(): boolean {
-    if (this.pressureActive()) return false;
+    if (this.pressureActive() || this.rehearsalRunning()) return false;
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
   }
@@ -985,14 +994,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // A task offers the rehearsals it belongs to; opening a task of the running rehearsal moves it on.
     effect(() => {
       const q = this.question();
-      const workspace = this.workspaceAvailable();
+      // The list is read where a rehearsal can start, a JavaScript or React task with the workspace open, and on a
+      // phone, which names the rehearsals in place of their card.
+      const listed = this.workspaceAvailable() || this.showMobileDesktopGuard();
       untracked(() => {
         this.rehearsalOffers.set([]);
         if (!q || !this.isBrowser || this.demoMode || !this.rehearsalSupported()) return;
         this.rehearsals.refresh();
         if (this.rehearsals.includes(q.id)) this.rehearsals.reach(q.id);
-        // The list is read only where a rehearsal can start: a JavaScript or React task with the workspace open.
-        if (workspace) void this.loadRehearsalOffers(q);
+        if (listed) void this.loadRehearsalOffers(q);
       });
     });
 

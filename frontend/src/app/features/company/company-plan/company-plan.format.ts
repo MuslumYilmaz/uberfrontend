@@ -301,6 +301,9 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
   const framework = plan.companies[0]?.framework ?? 'javascript';
   const counts = data.general.premiumCounts;
   const note = SOON_NOTES[answers.when] ?? '';
+  // The plan's timed rehearsals are what most buyers pay for, so the card names them first.
+  const rehearsals = plan.tasks.filter((task) => task.kind === 'rehearsal')
+    .map((task) => `A timed rehearsal of the ${task.title.replace(/^Rehearse the /, '')}`);
   return {
     title: `Your ${names} plan is waiting`,
     summary: `${planSummaryLine(plan, answers.when)}.${opens} Every round${plan.companies.some((company) => company.list.unordered) ? '' : ' in order'}, with the tasks the reports describe and your progress.`,
@@ -308,6 +311,7 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
     recommendedPlan: note ? 'monthly' : 'quarterly',
     lead: [
       `Your full ${names} plan`,
+      ...rehearsals,
       ...(counts ? [
         framework === 'javascript'
           ? `${counts.javascript} Premium JavaScript tasks with browser tests`

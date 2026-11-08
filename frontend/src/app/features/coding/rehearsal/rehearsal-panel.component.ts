@@ -54,8 +54,8 @@ export function formatRehearsalClock(ms: number): string {
 
 const count = (value: number, one: string, many: string) => `${value} ${value === 1 ? one : many}`;
 
-/** "Meta coding round: 2 problems in 40 minutes", naming the questions first when the rehearsal opens with them. */
-export function rehearsalHeading(definition: RehearsalDefinition): string {
+/** "2 problems in 40 minutes", naming the questions first when the rehearsal opens with them. */
+function rehearsalShape(definition: RehearsalDefinition): string {
   const questions = definition.quiz?.questions ?? [];
   const short = questions.filter((question) => !question.choices).length;
   const choice = questions.length - short;
@@ -64,7 +64,25 @@ export function rehearsalHeading(definition: RehearsalDefinition): string {
     ...(choice ? [count(choice, 'multiple-choice question', 'multiple-choice questions')] : []),
     count(definition.items.length, 'problem', 'problems'),
   ];
-  return `${definition.title}: ${parts.slice(0, -1).join(', ')}${parts.length > 1 ? ' and ' : ''}${parts.at(-1)} in ${definition.minutes} minutes`;
+  return `${parts.slice(0, -1).join(', ')}${parts.length > 1 ? ' and ' : ''}${parts.at(-1)} in ${definition.minutes} minutes`;
+}
+
+/** "Meta coding round: 2 problems in 40 minutes". */
+export function rehearsalHeading(definition: RehearsalDefinition): string {
+  return `${definition.title}: ${rehearsalShape(definition)}`;
+}
+
+/**
+ * A phone shows no rehearsal card, since a rehearsal runs on a desktop or tablet: one sentence names the rehearsals
+ * this problem belongs to, so nobody takes it for a plain warm-up.
+ */
+export function rehearsalPhoneNote(offers: readonly RehearsalDefinition[]): string | null {
+  if (!offers.length) return null;
+  if (offers.length === 1) {
+    return `This problem is also part of the ${offers[0].title} rehearsal (Premium): ${rehearsalShape(offers[0])}, on a desktop or tablet.`;
+  }
+  const titles = offers.map((offer) => `the ${offer.title}`);
+  return `This problem is also part of ${offers.length} timed rehearsals (Premium), each on a desktop or tablet: ${titles.slice(0, -1).join(', ')} and ${titles.at(-1)}.`;
 }
 
 /** The clock and the task list of a running rehearsal, then its review. */

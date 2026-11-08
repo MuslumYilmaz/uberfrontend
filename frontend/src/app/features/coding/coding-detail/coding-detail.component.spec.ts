@@ -2487,9 +2487,11 @@ describe('CodingDetailComponent', () => {
       openFile: 'src/App.tsx',
     }));
 
+    // A phone also reads the rehearsal list, to name the rehearsals a problem belongs to; only the solution counts here.
+    const solutionReads = () => httpGetSpy.calls.allArgs().filter(([url]) => url === 'https://assets.example/premium-solution.json').length;
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(httpGetSpy).not.toHaveBeenCalled();
+    expect(solutionReads()).toBe(0);
     expect(component.solutionFilesMap()).toEqual({});
 
     authUser.set({ accessTier: 'premium' });
@@ -2500,7 +2502,7 @@ describe('CodingDetailComponent', () => {
       (component as any).loadQuestionSeq,
     );
     expect(resolveSpy).toHaveBeenCalledTimes(1);
-    expect(httpGetSpy).toHaveBeenCalledOnceWith('https://assets.example/premium-solution.json');
+    expect(solutionReads()).toBe(1);
 
     expect(component.locked()).toBeFalse();
     expect(component.solutionFilesMap()['src/App.tsx']).toContain('Premium');
@@ -3528,16 +3530,16 @@ describe('CodingDetailComponent', () => {
       localStorage.removeItem('fa:rehearsal:v1');
     });
 
-    async function render(question: any, user: any) {
+    async function render(question: any, user: any, options: { list?: any[]; footer?: boolean } = {}) {
       const fixture = TestBed.createComponent(CodingDetailComponent);
       const component = fixture.componentInstance;
       authUser.set(user);
       auth.isLoggedIn.and.returnValue(!!user);
-      questionService.loadQuestions.and.returnValue(of([question]));
+      questionService.loadQuestions.and.returnValue(of(options.list ?? [question]));
       component.questionId = question.id;
       component.questionTech = 'javascript';
       component.disablePersistence = true;
-      component.hideFooterBar = true;
+      component.hideFooterBar = !options.footer;
 
       fixture.detectChanges();
       await fixture.whenStable();
@@ -3558,20 +3560,30 @@ describe('CodingDetailComponent', () => {
       };
     }
 
-    it('offers the rehearsal to Premium, pricing to everyone else, and nothing on a phone', async () => {
+    it('offers the rehearsal to Premium, pricing to everyone else, and names it on a phone', async () => {
       const member = await render(twin, premium);
       expect(rehearsals.forTask).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
       expect(member.find('rehearsal-entry')?.textContent).toContain('Meta coding round: 2 problems in 40 minutes');
       expect(member.find('rehearsal-start')).not.toBeNull();
       expect(member.find('rehearsal-pricing')).toBeNull();
+      expect(member.find('rehearsal-phone-note')).toBeNull();
+      // A phone cannot run it, so a sentence in the phone notice names it in place of its card: the problem is no
+      // plain warm-up.
       member.component.isPhoneViewport.set(true);
       member.fixture.detectChanges();
-      expect(member.find('rehearsal-entry')).toBeNull();
-      // On a phone the list is not read at all.
-      const reads = (rehearsals.forTask as jasmine.Spy).calls.count();
-      member.component.question.set({ ...twin });
+      await member.fixture.whenStable();
       member.fixture.detectChanges();
-      expect((rehearsals.forTask as jasmine.Spy).calls.count()).toBe(reads);
+      expect(member.find('rehearsal-entry')).toBeNull();
+      expect(member.find('rehearsal-start')).toBeNull();
+      expect(member.find('coding-mobile-notice')?.textContent).toContain(
+        'Use a desktop or tablet to write code and run checks. This problem is also part of the Meta coding round rehearsal (Premium): 2 problems in 40 minutes, on a desktop or tablet.'
+      );
+      member.component.question.set({ ...debounce, id: 'js-other' });
+      member.fixture.detectChanges();
+      await member.fixture.whenStable();
+      member.fixture.detectChanges();
+      expect(member.find('coding-mobile-notice')).not.toBeNull();
+      expect(member.find('rehearsal-phone-note')).toBeNull();
       member.fixture.destroy();
 
       const visitor = await render(twin, null);
@@ -3599,6 +3611,63 @@ describe('CodingDetailComponent', () => {
 
       component.onJsTestResults([{ name: 'a', passed: true }, { name: 'b', passed: false }]);
       expect(rehearsals.session()?.results['js-dom-twin-node']).toEqual({ passed: 1, total: 2, runs: 1 });
+    });
+
+    it('keeps a running rehearsal to its task: no coaching beside it, and no footer way on to other practice', async () => {
+      const coached = {
+        ...twin,
+        estimatedMinutes: 30,
+        description: {
+          summary: 'Return the node of tree B that sits where the given node sits in tree A.',
+          specs: {
+            practice: ['Walking both trees in sync'],
+            requirements: ['Return null when the node is not in tree A'],
+            implementationNotes: ['Export the function as the default export'],
+            commonMistakes: ['Comparing nodes by their text'],
+            interviewExplanation: 'A path of child indexes finds the twin.',
+            testingChecklist: ['A node at the root'],
+            faq: [{ question: 'Recursion or a loop?', answer: 'Either works.' }],
+          },
+        },
+      };
+      const { fixture, component, jsPanel, find } = await render(coached, premium, { list: [coached, debounce], footer: true });
+      const description = () => find('coding-description-panel')!.textContent ?? '';
+      const coaching = ['Walking both trees in sync', 'Comparing nodes by their text', 'A path of child indexes', 'A node at the root', 'Recursion or a loop?'];
+      // Of two tasks in the list, one is a step away, whichever order the list keeps.
+      const footerLinks = () => ['footer-prev', 'footer-next'].filter((id) => find(id)?.tagName === 'A');
+      for (const line of coaching) expect(description()).withContext(line).toContain(line);
+      expect(find('coding-interview-hero')?.textContent).toContain('30 min');
+      jsPanel().explainHint.set({ ruleId: 'off-by-one', title: 'Off by one', why: 'The loop stops one step early.', actions: ['Check the bound'], confidence: 0.9 });
+      fixture.detectChanges();
+      expect(find('assist-explain-card')?.textContent).toContain('Explain failure');
+      expect(footerLinks().length).toBe(1);
+      expect(find('footer-progress')?.textContent?.trim()).toMatch(/^[12] \/ 2$/);
+      expect(find('footer-left')?.textContent).toContain('Incidents hub');
+
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      for (const line of coaching) expect(description()).withContext(line).not.toContain(line);
+      expect(find('coding-interview-hero')).toBeNull();
+      expect(find('editor-assist-dock')).toBeNull();
+      // The task's own statement, requirements and notes stay: the round would give them too.
+      expect(description()).toContain('Return the node of tree B');
+      expect(description()).toContain('Return null when the node is not in tree A');
+      expect(description()).toContain('Export the function as the default export');
+      expect((find('footer-prev') as HTMLButtonElement).disabled).toBeTrue();
+      expect((find('footer-next') as HTMLButtonElement).disabled).toBeTrue();
+      expect(find('footer-progress')?.textContent?.trim()).toBe('Problem 1 of 2');
+      expect(find('footer-left')).toBeNull();
+
+      // A plan's way back stays, since the clock keeps running while the person reads the plan.
+      component.planReturn.set({ label: 'Back to my plan', route: ['/companies/plan'], queryParams: {} });
+      fixture.detectChanges();
+      expect(find('footer-left')?.textContent).toContain('Back to my plan');
+
+      rehearsals.end();
+      fixture.detectChanges();
+      for (const line of coaching) expect(description()).withContext(line).toContain(line);
+      expect(footerLinks().length).toBe(1);
     });
 
     it('locks the task for the review and gives the drafts back when the review closes', async () => {

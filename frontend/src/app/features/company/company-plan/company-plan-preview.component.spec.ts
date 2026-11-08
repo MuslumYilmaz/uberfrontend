@@ -166,7 +166,7 @@ describe('CompanyPlanPreviewComponent', () => {
         expect(element.getAttribute('href')).toBe(row.task.route);
         expect(element.textContent).toContain(title);
         expect(element.querySelector('.plan-row__meta')?.textContent).toMatch(/ · about \d/);
-        expect(element.querySelector('.plan-row__why')?.textContent).toBe(row.why);
+        expect(element.querySelector('.plan-row__why')?.textContent ?? '').toBe(row.why);
         if (row.locked) {
           expect(row.task.access).toBe('premium');
           expect(element.classList).toContain('plan-row--locked');
@@ -184,6 +184,23 @@ describe('CompanyPlanPreviewComponent', () => {
         }
       });
       expect(text('[data-testid="company-plan-rest"] .preview__section-sub')).toBe('Premium opens the locked tasks, with every round in order.');
+    });
+
+    it('names what a rehearsal asks on its row, offers none of its problems as a warm-up, and says a row\'s group once', () => {
+      setup({ companies: 'booking-com', when: 'this-week', level: 'mid' });
+      const plan = fixture.componentInstance.plan()!;
+      const rehearsal = plan.tasks.find((task) => task.kind === 'rehearsal')!;
+      const row = all('company-plan-rest-task').find((element) => element.textContent?.includes('Rehearse the Booking.com HackerRank assessment'))!;
+      expect(row.querySelector('[data-testid="company-plan-task-detail"]')?.textContent).toBe(
+        '2 multiple-choice CSS questions, then Valid Parentheses, Merge Two Sorted Arrays and Contact Form, all open at once. On a laptop or tablet.'
+      );
+      const open = fixture.componentInstance.openTasks().map((entry) => entry.task.id);
+      expect(open.length).toBe(3);
+      expect(open.filter((id) => rehearsal.members!.includes(id))).toEqual([]);
+      // "Extra React practice · about 30 min" carried "Extra React practice" again below it.
+      const extra = all('company-plan-rest-task').filter((element) => element.querySelector('.plan-row__meta')?.textContent?.startsWith('Extra '));
+      expect(extra.length).toBeGreaterThan(0);
+      for (const element of extra) expect(element.querySelector('.plan-row__why')).toBeNull();
     });
 
     it('marks the tasks that run as an interview, in the list and in the panel', () => {

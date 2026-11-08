@@ -24,6 +24,8 @@ export type CompanyPlanDataTask = {
   /** How many questions a timed rehearsal asks before its problems: for one-line answers, and with set options. */
   readonly shortAnswers?: number;
   readonly choiceQuestions?: number;
+  /** A timed rehearsal's own line: what it asks, in order, and that it runs on a laptop or tablet. */
+  readonly detail?: string;
   /** The page can run it as an interview: the requirements change while the person codes. */
   readonly pressure?: true;
   readonly family?: string;
@@ -670,9 +672,12 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   const formatPractice = selected.filter((entry) => entry.key === null).map((entry) => asPlanTask(entry.task, entry.why));
   const tasks = [...companies.flatMap((company) => company.rounds.flatMap((round) => round.tasks)), ...formatPractice];
+  // A rehearsal in the plan keeps its problems for its clock: none of them is offered beside it as a free warm-up,
+  // which would spoil it before it starts.
+  const rehearsed = new Set(tasks.flatMap((task) => task.members ?? []));
   const extras = chosen.flatMap(({ list }) => list.tasks.flatMap((row) => {
     const task = taskFor(row.id);
-    return task ? [asPlanTask(task, whyOf(row, task))] : [];
+    return task && !rehearsed.has(task.id) ? [asPlanTask(task, whyOf(row, task))] : [];
   }));
 
   const warnings: string[] = [];
@@ -692,7 +697,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     companies,
     formatPractice,
     tasks,
-    preview: buildPreview(tasks, extras, starters, true),
+    preview: buildPreview(tasks, extras, starters.filter((task) => !rehearsed.has(task.id)), true),
     next: tasks.find((task) => !task.solved && task.kind !== 'guide') ?? tasks.find((task) => !task.solved) ?? null,
     totalMinutes: tasks.reduce((sum, task) => sum + task.minutes, 0),
     remainingMinutes: tasks.filter((task) => !task.solved).reduce((sum, task) => sum + task.minutes, 0),

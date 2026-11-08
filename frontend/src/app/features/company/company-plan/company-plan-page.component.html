@@ -175,6 +175,9 @@
         }
         <span class="plan-task__title"><fa-inline-code [text]="view.task.title" /></span>
         <span class="plan-task__why">{{ view.why }}<span class="plan-task__inline-time"> · {{ view.task.solved ? 'Solved' : 'about ' + view.time }}</span></span>
+        @if (view.task.detail) {
+          <span class="plan-task__detail" data-testid="company-plan-task-detail">{{ view.task.detail }}</span>
+        }
       </a>
     }
     <span class="plan-task__time">{{ view.time }}</span>

@@ -141,7 +141,13 @@ describe('companyPlanPricingCopy', () => {
       `${counts.react} Premium React tasks with a live preview`,
       `${counts.systemDesign} Premium system design walkthroughs`,
     ]);
-    expect(copyFor('meta').lead[1]).toBe(`${counts.javascript} Premium JavaScript tasks with browser tests`);
+    // A plan with a timed rehearsal names it right after the plan, since that is what most buyers pay for.
+    expect(copyFor('meta').lead).toEqual([
+      'Your full Meta plan',
+      'A timed rehearsal of the Meta coding round',
+      `${counts.javascript} Premium JavaScript tasks with browser tests`,
+      `${counts.systemDesign} Premium system design walkthroughs`,
+    ]);
     for (const line of [...copyFor('elevenlabs').lead, ...copyFor('meta').lead]) expect(line).not.toMatch(/check/i);
   });
 

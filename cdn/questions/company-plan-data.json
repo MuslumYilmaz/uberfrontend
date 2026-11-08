@@ -2834,7 +2834,8 @@
       "members": [
         "js-add-strings",
         "js-recover-bst-swapped-nodes"
-      ]
+      ],
+      "detail": "Add Large Integers as Strings, then Recover a BST with Two Swapped Nodes. On a laptop or tablet."
     },
     "rehearsal-booking-com-hackerrank-assessment": {
       "id": "rehearsal-booking-com-hackerrank-assessment",
@@ -2848,7 +2849,8 @@
         "js-merge-sorted-arrays",
         "react-contact-form-starter"
       ],
-      "choiceQuestions": 2
+      "choiceQuestions": 2,
+      "detail": "2 multiple-choice CSS questions, then Valid Parentheses, Merge Two Sorted Arrays and Contact Form, all open at once. On a laptop or tablet."
     },
     "rehearsal-meta-full-loop-coding": {
       "id": "rehearsal-meta-full-loop-coding",
@@ -2860,7 +2862,8 @@
       "members": [
         "js-dom-twin-node",
         "js-debounce"
-      ]
+      ],
+      "detail": "Find the Corresponding Node in Twin DOM Trees, then Debounce Function. On a laptop or tablet."
     },
     "rehearsal-revolut-hackerrank-assessment": {
       "id": "rehearsal-revolut-hackerrank-assessment",
@@ -2873,7 +2876,8 @@
         "js-valid-parentheses",
         "js-three-sum",
         "js-maze-path"
-      ]
+      ],
+      "detail": "Valid Parentheses, 3Sum and Maze Traversal, all open at once. On a laptop or tablet."
     },
     "rehearsal-walmart-karat-screen": {
       "id": "rehearsal-walmart-karat-screen",
@@ -2886,7 +2890,8 @@
         "js-valid-parentheses",
         "js-stack-queue-implementation"
       ],
-      "shortAnswers": 8
+      "shortAnswers": 8,
+      "detail": "8 short JavaScript, CSS and React questions, then Valid Parentheses, then Implement Stack and Queue in JavaScript. On a laptop or tablet."
     },
     "resilient-checkout-payment-flow": {
       "id": "resilient-checkout-payment-flow",

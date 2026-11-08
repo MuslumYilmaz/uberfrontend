@@ -207,10 +207,12 @@ export class CompanyPlanPreviewComponent {
     const time = clockText(task.minutes);
     const title = stripInlineMarkup(task.title);
     const locked = this.viewer() !== 'premium' && task.access === 'premium';
+    const why = whyLine(task.why);
     return {
       task,
       locked,
-      why: whyLine(task.why),
+      // Extra practice names its group and its reason alike, so the line says it once.
+      why: why === group ? '' : why,
       meta: `${group} · about ${time}`,
       aria: locked ? `${title}, ${group}, about ${time}, opens with Premium` : title,
       // A locked task carries no practice session, only the way back to this plan from its locked page.

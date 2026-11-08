@@ -62,6 +62,7 @@
       <div class="coding-description-content flex-1 overflow-auto p-6 font-sm">
         <p *ngIf="showMobileDesktopGuard()" class="mobile-workspace-notice" data-testid="coding-mobile-notice">
           Read the question and solution on your phone. Use a desktop or tablet to write code and run checks.
+          <span *ngIf="rehearsalPhoneNote() as note" data-testid="rehearsal-phone-note">{{ note }}</span>
         </p>
         <!-- Description Panel -->
         <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0"
@@ -270,7 +271,9 @@
               </ng-container>
             </ng-container>
 
-            <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
+            <!-- While a rehearsal runs, the sections that coach a task (its focus, method, mistakes, explanation and test
+                 list) step aside, as the solution does; the task's own statement, requirements and notes stay. -->
+            <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta() && !rehearsalRunning()" data-testid="coding-interview-hero">
               <p class="detail-interview-hero__intent" *ngIf="interviewFocusSummary()">
                 {{ interviewFocusSummary() }}
               </p>
@@ -290,12 +293,12 @@
               </ul>
             </section>
 
-            <section class="quick-win-strip" *ngIf="quickWinShowCompact()" data-testid="quick-win-step-strip">
+            <section class="quick-win-strip" *ngIf="quickWinShowCompact() && !rehearsalRunning()" data-testid="quick-win-step-strip">
               <p class="quick-win-strip__kicker">Quick-win mode</p>
               <p class="quick-win-strip__title">Step 1 of 2: solve this question first.</p>
             </section>
 
-            <section class="quick-win-next" *ngIf="quickWinShowExpanded()" data-testid="quick-win-next-step">
+            <section class="quick-win-next" *ngIf="quickWinShowExpanded() && !rehearsalRunning()" data-testid="quick-win-next-step">
               <div class="quick-win-next__head">
                 <p class="quick-win-next__kicker">Quick-win path</p>
                 <button
@@ -339,7 +342,7 @@
               </div>
 
               <!-- Practice focus -->
-              <div *ngIf="specs.practice?.length" class="mt-4">
+              <div *ngIf="specs.practice?.length && !rehearsalRunning()" class="mt-4">
                 <h3 class="text-sm font-semibold mb-1">What you'll practice:</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let p of specs.practice"><fa-inline-code [text]="displayText(p)"></fa-inline-code></li>
@@ -382,7 +385,7 @@
               </div>
 
               <!-- Common mistakes -->
-              <div *ngIf="specs.commonMistakes?.length" class="mt-3">
+              <div *ngIf="specs.commonMistakes?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Common mistakes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let item of specs.commonMistakes"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
@@ -390,13 +393,13 @@
               </div>
 
               <!-- Interview explanation -->
-              <div *ngIf="specs.interviewExplanation" class="mt-3">
+              <div *ngIf="specs.interviewExplanation && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Interview explanation</h3>
                 <p class="text-sm opacity-90">{{ displayText(specs.interviewExplanation) }}</p>
               </div>
 
               <!-- Testing checklist -->
-              <div *ngIf="specs.testingChecklist?.length" class="mt-3">
+              <div *ngIf="specs.testingChecklist?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Testing checklist</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let item of specs.testingChecklist"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
@@ -404,7 +407,7 @@
               </div>
 
               <!-- FAQ -->
-              <div *ngIf="specs.faq?.length" class="mt-3">
+              <div *ngIf="specs.faq?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">FAQ</h3>
                 <div class="space-y-2 text-sm opacity-90">
                   <div *ngFor="let item of specs.faq">
@@ -440,7 +443,7 @@
 
             <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab.
                  A running rehearsal hides it with the solution, once the browser view is ready, so hydration matches the server. -->
-            <details *ngIf="solutionIdea() && !(workspaceAvailable() && rehearsalPhase() === 'active')" class="solution-idea mt-6" data-testid="coding-solution-idea"
+            <details *ngIf="solutionIdea() && !rehearsalRunning()" class="solution-idea mt-6" data-testid="coding-solution-idea"
               [attr.open]="solutionIdeaOpen() ? '' : null">
               <summary><h3 class="inline text-sm font-semibold">Solution idea</h3></summary>
               <div class="solution-prose prose prose-invert max-w-none text-sm opacity-90 mt-1"
@@ -948,7 +951,7 @@
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [prevHref]="prevHref()" [nextHref]="nextHref()"
-    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? 'Incidents hub')) : null"
+    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? (rehearsalRunning() ? null : 'Incidents hub'))) : null"
     [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : (planReturn()?.route ?? ['/incidents'])) : null"
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"

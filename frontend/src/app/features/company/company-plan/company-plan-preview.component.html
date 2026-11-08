@@ -64,6 +64,9 @@
           <span class="plan-row__text">
             <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
             <span class="plan-row__meta">{{ row.why }}<span class="plan-row__inline-time" data-testid="company-plan-open-task-time"> · {{ row.time }}</span></span>
+            @if (row.task.detail) {
+              <span class="plan-row__detail" data-testid="company-plan-task-detail">{{ row.task.detail }}</span>
+            }
             @if (row.task.pressure) {
               <span class="plan-row__tag">Pressure Mode</span>
             }
@@ -130,7 +133,12 @@
             <span class="plan-row__text">
               <span class="plan-row__title"><fa-inline-code [text]="row.task.title" /></span>
               <span class="plan-row__meta">{{ row.meta }}</span>
-              <span class="plan-row__why">{{ row.why }}</span>
+              @if (row.why) {
+                <span class="plan-row__why">{{ row.why }}</span>
+              }
+              @if (row.task.detail) {
+                <span class="plan-row__detail" data-testid="company-plan-task-detail">{{ row.task.detail }}</span>
+              }
               @if (viewer() !== 'premium' || row.task.pressure) {
                 <span class="plan-row__tags">
                   @if (row.locked) {

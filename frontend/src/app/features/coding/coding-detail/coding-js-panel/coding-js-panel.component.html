@@ -14,7 +14,7 @@
                 Older version
             </span>
 
-            <div *ngIf="showInterviewSetup() && !clockLabel && !locked" class="interview-setup">
+            <div *ngIf="showInterviewSetup() && !rehearsing" class="interview-setup">
                 <button
                     type="button"
                     class="compact-control-btn"
@@ -286,7 +286,7 @@
             </div>
 
             <div
-                *ngIf="topTab()==='code' && !interviewModeEnabled() && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
+                *ngIf="topTab()==='code' && !interviewModeEnabled() && !rehearsing && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
                 class="editor-assist-dock"
                 data-testid="editor-assist-dock"
             >
@@ -372,7 +372,7 @@
                     </div>
 
                     <div *ngIf="hasRunTests()" class="space-y-2">
-                        <div *ngIf="showDuckPanel()" class="assist-duck" data-testid="assist-rubber-duck">
+                        <div *ngIf="showDuckPanel() && !rehearsing" class="assist-duck" data-testid="assist-rubber-duck">
                             <div class="assist-duck__head">
                                 <strong>Rubber duck checklist</strong>
                                 <button type="button" class="assist-duck__toggle" (click)="toggleDuckPanel()">

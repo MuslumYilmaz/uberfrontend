@@ -594,6 +594,7 @@ test('a timed rehearsal is one Premium task on its round, standing for its probl
     access: 'premium',
     minutes: 40,
     members: ['js-linked', 'js-old'],
+    detail: 'Linked, then Old. On a laptop or tablet.',
   });
   // Both lists hold a coding round, so both carry the rehearsal there, as one more row: the concept questions the
   // list counts toward the largest plan stay as they were.
@@ -617,9 +618,18 @@ test('a rehearsal that opens with questions says how many of each kind, and keep
   assert.equal(task.shortAnswers, 2);
   assert.equal(task.choiceQuestions, 1);
   assert.deepEqual(task.members, ['js-linked', 'js-old']);
+  // The plan row names the questions' topics, the part a candidate fears, before the problems in their order.
+  assert.equal(task.detail, '3 JavaScript and React questions, then Linked, then Old. On a laptop or tablet.');
   const choicesOnly = build({}, withRehearsal({ quiz: { questions: quiz.questions.slice(2).concat({ ...quiz.questions[2], path: '/javascript/trivia/concept-a' }) } })).tasks['rehearsal-acme-coding'];
   assert.equal(choicesOnly.shortAnswers, undefined);
   assert.equal(choicesOnly.choiceQuestions, 2);
+  assert.equal(choicesOnly.detail, '2 multiple-choice React and JavaScript questions, then Linked, then Old. On a laptop or tablet.');
+  const shortOnly = build({}, withRehearsal({
+    order: 'free',
+    items: [{ path: '/javascript/coding/js-linked', title: 'Linked (Balanced Brackets)' }, rehearsalDefinition.items[1]],
+    quiz: { questions: quiz.questions.slice(0, 1) },
+  })).tasks['rehearsal-acme-coding'];
+  assert.equal(shortOnly.detail, '1 short JavaScript question, then Linked and Old, all open at once. On a laptop or tablet.');
   assert.throws(
     () => build({}, withRehearsal({ quiz: { ...quiz, questions: [...quiz.questions.slice(1), { question: 'D?', answer: 'D.', path: '/javascript/trivia/missing' }] } })),
     /asks about \/javascript\/trivia\/missing, which is not in the catalog/,

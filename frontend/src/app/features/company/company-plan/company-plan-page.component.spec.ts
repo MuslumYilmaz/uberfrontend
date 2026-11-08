@@ -224,6 +224,16 @@ describe('CompanyPlanPageComponent', () => {
     expect(all('company-plan-beyond')).toEqual([]);
   });
 
+  it('names on a rehearsal\'s row what it asks, in its order, and that it needs a desktop-sized screen', () => {
+    setup({ ...ELEVENLABS, companies: [{ slug: 'meta' }] });
+    const rows = all('company-plan-task').filter((row) => row.textContent?.includes('Rehearse the Meta coding round'));
+    expect(rows.length).toBe(1);
+    expect(rows[0].querySelector('[data-testid="company-plan-task-detail"]')?.textContent)
+      .toBe('Find the Corresponding Node in Twin DOM Trees, then Debounce Function. On a laptop or tablet.');
+    // Only the rehearsal carries the line.
+    expect(all('company-plan-task-detail').length).toBe(1);
+  });
+
   it('points past the plan to each company set and the whole Premium library', () => {
     setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'amazon' }] });
     const links = Array.from(all('company-plan-beyond')[0].querySelectorAll<HTMLAnchorElement>('a'));
