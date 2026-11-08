@@ -136,8 +136,8 @@
       "company": "booking-com",
       "title": "Booking.com HackerRank assessment",
       "round": "hackerrank-assessment",
-      "summary": "Public accounts of Booking.com's HackerRank test describe five items in 90 to 100 minutes: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component. This rehearsal leaves out the React component and gives the other four 45 minutes: the two CSS questions first, then both problems. The right answers and the solutions open when the clock stops.",
-      "minutes": 45,
+      "summary": "Public accounts of Booking.com's HackerRank test describe five items in 90 to 100 minutes: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component, whose logic one account says fetched data and showed it by state. This rehearsal gives all five 90 minutes: the CSS questions first, then the three problems at once, the React one a form that calls an API.",
+      "minutes": 90,
       "order": "free",
       "quiz": {
         "questions": [
@@ -167,6 +167,10 @@
         {
           "path": "/javascript/coding/js-merge-sorted-arrays",
           "title": "Merge Two Sorted Arrays"
+        },
+        {
+          "path": "/react/coding/react-contact-form-starter",
+          "title": "Contact Form (Component + HTTP)"
         }
       ]
     }

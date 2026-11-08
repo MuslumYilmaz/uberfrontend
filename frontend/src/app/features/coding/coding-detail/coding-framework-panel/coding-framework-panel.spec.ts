@@ -553,6 +553,27 @@ describe('CodingFrameworkPanelComponent', () => {
     component.ngOnDestroy();
   }));
 
+  it('runs no checks while a rehearsal keeps the task locked, and runs them again once it lets go', async () => {
+    const component = createComponent();
+    setCounterCheck(component);
+    previewBuilder.build.and.resolveTo(counterHtml());
+    const runFramework = spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+    ]);
+    const emitted: unknown[] = [];
+    component.frameworkCheckRun.subscribe((event) => emitted.push(event));
+
+    component.locked = true;
+    expect(await component.runFrameworkChecks()).toEqual([]);
+    expect(runFramework).not.toHaveBeenCalled();
+    expect(emitted).toEqual([]);
+
+    component.locked = false;
+    expect((await component.runFrameworkChecks()).length).toBe(1);
+    expect(runFramework).toHaveBeenCalledTimes(1);
+    component.ngOnDestroy();
+  });
+
   it('runs pilot framework checks and records bounded framework telemetry', async () => {
     const component = createComponent();
     setCounterCheck(component);

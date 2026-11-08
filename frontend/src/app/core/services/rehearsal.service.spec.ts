@@ -88,13 +88,16 @@ describe('RehearsalService', () => {
     localStorage.removeItem(STORAGE_KEY);
   });
 
-  it('keeps the rehearsals of JavaScript tasks and leaves out one the panel could not run', () => {
+  it('keeps the rehearsals of JavaScript and React tasks and leaves out one the panels could not run', () => {
     const service = create();
     expect(service.normalize(REHEARSAL_ENTRY)?.items.map((item) => item.questionId)).toEqual(['js-dom-twin-node', 'js-debounce']);
 
     const [first, second] = REHEARSAL_ENTRY.items;
     const react = { path: '/react/coding/react-counter', title: 'Counter' };
-    expect(service.normalize({ ...REHEARSAL_ENTRY, items: [first, react] })).toBeNull();
+    expect(service.normalize({ ...REHEARSAL_ENTRY, items: [first, react] })?.items.map((item) => item.questionId))
+      .toEqual(['js-dom-twin-node', 'react-counter']);
+    const vue = { path: '/vue/coding/vue-counter', title: 'Counter' };
+    expect(service.normalize({ ...REHEARSAL_ENTRY, items: [first, vue] })).toBeNull();
     expect(service.normalize({ ...REHEARSAL_ENTRY, items: [first, first] })).toBeNull();
     expect(service.normalize({ ...REHEARSAL_ENTRY, items: [second] })).toBeNull();
     expect(service.normalize({ ...REHEARSAL_ENTRY, minutes: 0 })).toBeNull();

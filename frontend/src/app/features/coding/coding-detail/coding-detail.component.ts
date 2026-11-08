@@ -434,7 +434,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   rehearsalOffers = signal<RehearsalDefinition[]>([]);
   rehearsalPhase = computed<RehearsalPhase | null>(() => {
     const q = this.question();
-    return q && this.rehearsals.includes(q.id) ? this.rehearsals.phase() : null;
+    // Pressure Mode owns a React task's page while it runs; the rehearsal's clock keeps going and its panel comes back.
+    return q && this.rehearsals.includes(q.id) && !this.pressureActive() ? this.rehearsals.phase() : null;
   });
   rehearsalClockLabel = computed(() =>
     this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
@@ -447,9 +448,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   rehearsalAnswering = computed(() =>
     this.workspaceAvailable() && this.rehearsalPhase() === 'active' && this.rehearsals.answering()
   );
+  /** The rehearsal keeps the task read-only: its questions are on screen, or its review is. */
+  rehearsalLocked = computed(() => this.rehearsalPhase() === 'review' || this.rehearsalAnswering());
   rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: questions first` : null));
   rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The problems open after the questions.' : null));
   readonly rehearsalHeading = rehearsalHeading;
+
+  /** The panels that keep a rehearsal's clock and record its runs serve plain JavaScript tasks and React tasks. */
+  rehearsalSupported(): boolean {
+    return this.tech === 'javascript' || this.tech === 'react';
+  }
   rehearsalAccess = computed<'pending' | 'premium' | 'locked'>(() => {
     if (this.auth.authUiState() === 'pending') return 'pending';
     return isProActive(this.auth.user()) ? 'premium' : 'locked';
@@ -868,6 +876,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.pressureActive() && q && scenario) {
       return this.pressureProgress.itemId(scenario.id, q.id);
     }
+    // While a rehearsal runs or is reviewed, its React tasks open on drafts of their own, as its JavaScript tasks do.
+    if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   }
 
@@ -978,10 +988,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       const workspace = this.workspaceAvailable();
       untracked(() => {
         this.rehearsalOffers.set([]);
-        if (!q || !this.isBrowser || this.demoMode || this.tech !== 'javascript') return;
+        if (!q || !this.isBrowser || this.demoMode || !this.rehearsalSupported()) return;
         this.rehearsals.refresh();
         if (this.rehearsals.includes(q.id)) this.rehearsals.reach(q.id);
-        // The list is read only where a rehearsal can start: a JavaScript task with the workspace open.
+        // The list is read only where a rehearsal can start: a JavaScript or React task with the workspace open.
         if (workspace) void this.loadRehearsalOffers(q);
       });
     });
@@ -2129,6 +2139,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
+    // While a rehearsal keeps the task read-only, there is nothing to submit.
+    if (this.rehearsalLocked()) return;
     const epoch = this.workspaceEpoch;
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
@@ -2146,6 +2158,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
+      this.recordRehearsalChecks(q.id, results);
       const event = {
         questionId: q.id,
         passed: results.length > 0 && results.every((result) => result.passed),
@@ -2220,8 +2233,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       await this.handlePressureFrameworkCheckRun(event);
       return;
     }
+    const q = this.question();
+    if (q && event.questionId === q.id) this.recordRehearsalChecks(q.id, event.results);
     this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
+  }
+
+  /** A React task's check run counts toward a running rehearsal, from the panel's button or the footer's. */
+  private recordRehearsalChecks(questionId: string, results: readonly TestResult[] | undefined): void {
+    const list = Array.isArray(results) ? results : [];
+    if (this.rehearsalPhase() !== 'active' || !list.length) return;
+    this.rehearsals.record(questionId, list.filter((result) => result.passed).length, list.length);
   }
 
   private async handlePressureFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {

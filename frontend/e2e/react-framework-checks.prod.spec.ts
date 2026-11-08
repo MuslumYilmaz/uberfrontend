@@ -1564,25 +1564,31 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
   });
 
-  test('Booking.com rehearsal asks two multiple-choice questions, then opens both problems, and marks the picks', async ({
+  test('Booking.com rehearsal asks two multiple-choice questions, then runs its JavaScript and React problems on one clock', async ({
     page,
     baseURL,
   }) => {
     if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
     await page.clock.install();
     await seedPremiumSession(page, baseURL);
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
 
     await page.goto('/javascript/coding/js-valid-parentheses');
     await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
     const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Booking.com HackerRank assessment' });
-    await expect(entry).toContainText('Booking.com HackerRank assessment: 2 multiple-choice questions and 2 problems in 45 minutes');
+    await expect(entry).toContainText('Booking.com HackerRank assessment: 2 multiple-choice questions and 3 problems in 90 minutes');
     await entry.getByText('What it covers').click();
-    await expect(entry).toContainText('This rehearsal leaves out the React component');
+    await expect(entry).toContainText('the React one a form that calls an API');
     await entry.getByTestId('rehearsal-start').click();
 
     // One option first: a radio group under the question.
     const panel = page.getByTestId('rehearsal-panel');
-    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(45:00|44:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(1:30:00|1:29:[0-5]\d) left$/);
     await expect(panel.getByTestId('rehearsal-questions')).toContainText('Multiple choice: question 1 of 2');
     await expect(panel.getByTestId('rehearsal-questions')).toContainText('The clock keeps running for the whole rehearsal.');
     await expect(page.getByTestId('js-concealed-note')).toHaveText('The problems open after the questions.');
@@ -1599,17 +1605,34 @@ test.describe('Framework checks against the production SSR build', () => {
     await options.nth(1).check();
     await panel.getByTestId('rehearsal-question-next').click();
 
-    // Both problems open at once, as on HackerRank.
+    // The problems open at once, as on HackerRank, the React one with them.
     await expect(panel.getByTestId('rehearsal-questions')).toHaveCount(0);
     await expect(panel.getByTestId('rehearsal-item')).toHaveText([
       /Problem 1\s*Valid Parentheses \(Balanced Brackets\)\s*Not run yet/,
       /Problem 2\s*Merge Two Sorted Arrays/,
+      /Problem 3\s*Contact Form \(Component \+ HTTP\)/,
     ]);
     await expect(page.getByTestId('js-concealed-note')).toHaveCount(0);
 
-    await page.clock.fastForward('45:00');
+    // The React problem runs in its own panel, on the same clock, and its checks count.
+    await panel.getByRole('link', { name: 'Contact Form (Component + HTTP)' }).click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-contact-form-starter$/);
+    await expect(page.getByTestId('rehearsal-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText(/^1:2\d:[0-5]\d left$/);
+    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
+    const runChecks = page.getByTestId('framework-run-checks');
+    await expect(runChecks).toBeEnabled({ timeout: 30_000 });
+    await runChecks.click();
+    await expect(page.getByTestId('framework-check-result')).toHaveCount(3, { timeout: 60_000 });
+    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 3|All 3) tests pass/);
+
+    // When the time is up, the React editor turns read-only and its checks stop.
+    await page.clock.fastForward('01:30:00');
     await expect(panel.getByTestId('rehearsal-verdict'))
-      .toHaveText('Time is up. 0 of 2 problems pass every test. You got 1 of 2 multiple-choice questions right.');
+      .toHaveText(/^Time is up\. \d of 3 problems pass every test\. You got 1 of 2 multiple-choice questions right\.$/);
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText('Rehearsal over: read-only');
+    await expect(runChecks).toBeDisabled();
+    await expect.poll(() => isReadOnly('App.tsx')).toBe(true);
     const reviewed = panel.getByTestId('rehearsal-answer-review');
     await expect(reviewed.first()).toContainText('Your answer: 222px (not right)');
     await expect(reviewed.first()).toContainText('The right answer: 178px');

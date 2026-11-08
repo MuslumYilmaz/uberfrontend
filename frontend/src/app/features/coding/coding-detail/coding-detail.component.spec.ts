@@ -3672,6 +3672,61 @@ describe('CodingDetailComponent', () => {
       expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left$/);
     });
 
+    it('runs a React task inside a rehearsal: on a draft of its own, with its checks counted until the review', async () => {
+      definition = rehearsals.normalize({
+        ...payload,
+        order: 'free',
+        items: [...payload.items, { path: '/react/coding/react-counter', title: 'Counter' }],
+      })!;
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set(premium);
+      auth.isLoggedIn.and.returnValue(true);
+      component.tech = 'react';
+      component.kind = 'coding';
+      component.question.set({
+        id: 'react-counter',
+        access: 'free',
+        difficulty: 'easy',
+        frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      } as any);
+      expect(component.rehearsalSupported()).toBeTrue();
+      const ownDraft = component.frameworkStorageKey();
+
+      rehearsals.start(definition, 'react-counter');
+      expect(component.rehearsalPhase()).toBe('active');
+      expect(component.frameworkStorageKey()).toBe(rehearsals.draftKey('react-counter'));
+      expect(component.frameworkStorageKey()).not.toBe(ownDraft);
+      await component.onFrameworkCheckRun({
+        questionId: 'react-counter',
+        passed: false,
+        results: [{ name: 'Counter renders', passed: true }, { name: 'Counter counts', passed: false }],
+      });
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 1, total: 2, runs: 1 });
+
+      // The footer's Run checks counts as the panel's does.
+      const runFrameworkChecks = jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+        { name: 'Counter renders', passed: true },
+        { name: 'Counter counts', passed: true },
+      ]);
+      (component as any).frameworkPanel = { runFrameworkChecks };
+      await component.submitCode();
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 2, total: 2, runs: 2 });
+
+      // The review keeps the draft, stops counting, and leaves the footer nothing to submit.
+      rehearsals.end();
+      expect(component.rehearsalPhase()).toBe('review');
+      expect(component.rehearsalLocked()).toBeTrue();
+      expect(component.frameworkStorageKey()).toBe(rehearsals.draftKey('react-counter'));
+      await component.onFrameworkCheckRun({ questionId: 'react-counter', passed: true, results: [{ name: 'Counter renders', passed: true }] });
+      await component.submitCode();
+      expect(runFrameworkChecks).toHaveBeenCalledTimes(1);
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 2, total: 2, runs: 2 });
+
+      component.tech = 'vue';
+      expect(component.rehearsalSupported()).toBeFalse();
+    });
+
     it('lists several rehearsals of one problem in one card, with a start for each and one way to pricing', async () => {
       const other = rehearsals.normalize({ ...payload, id: 'acme-screen', title: 'Acme screen', summary: 'Two problems in 30 minutes.', minutes: 30 })!;
       (rehearsals.forTask as jasmine.Spy).and.returnValue(of([definition, other]));

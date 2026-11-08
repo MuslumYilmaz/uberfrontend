@@ -23,8 +23,8 @@ export const REHEARSAL_LIST_ASSET = 'assets/questions/rehearsals/rehearsals.v1.j
 const STORAGE_KEY = 'fa:rehearsal:v1';
 const ORDERS: readonly RehearsalOrder[] = ['sequential', 'free'];
 const END_REASONS: readonly RehearsalEndReason[] = ['expired', 'ended'];
-// The editor panel that records runs and turns read-only serves plain JavaScript tasks.
-const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
+// The panels that record runs and turn read-only serve plain JavaScript tasks and React tasks.
+const ITEM_PATH = /^\/(javascript|react)\/(coding|debug)\/([a-z0-9-]+)$/;
 // A question links the concept page that answers it in full.
 const CONCEPT_PATH = /^\/[a-z]+\/trivia\/[a-z0-9-]+$/;
 const MAX_ANSWER = 400;
@@ -375,7 +375,7 @@ export class RehearsalService implements OnDestroy {
     const title = this.text(source?.['title']);
     const match = ITEM_PATH.exec(path);
     if (!match || !title) return null;
-    return { path, questionId: match[2], title };
+    return { path, questionId: match[3], title };
   }
 
   private quiz(value: unknown, minutes: number): RehearsalQuiz | null {

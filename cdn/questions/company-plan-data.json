@@ -2842,10 +2842,11 @@
       "route": "/javascript/coding/js-valid-parentheses",
       "kind": "rehearsal",
       "access": "premium",
-      "minutes": 45,
+      "minutes": 90,
       "members": [
         "js-valid-parentheses",
-        "js-merge-sorted-arrays"
+        "js-merge-sorted-arrays",
+        "react-contact-form-starter"
       ],
       "choiceQuestions": 2
     },

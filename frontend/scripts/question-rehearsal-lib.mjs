@@ -11,8 +11,8 @@ const QUIZ_KEYS = new Set(['minutes', 'questions']);
 const QUESTION_KEYS = new Set(['question', 'answer', 'path', 'choices', 'correct', 'pick']);
 const QUESTION_TEXT_KEYS = [['question', 160], ['answer', 240]];
 const CHOICE_MAX = 120;
-// The panel that keeps the clock, records runs and turns read-only serves plain JavaScript tasks.
-const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
+// The panels that keep the clock, record runs and turn read-only serve plain JavaScript tasks and React tasks.
+const ITEM_PATH = /^\/(javascript|react)\/(coding|debug)\/([a-z0-9-]+)$/;
 // A question links the concept page that answers it in full.
 const CONCEPT_PATH = /^\/[a-z]+\/trivia\/[a-z0-9-]+$/;
 
@@ -64,7 +64,7 @@ export function validateRehearsalList(data, tasks) {
     for (const item of items) {
       const itemPath = typeof item?.path === 'string' ? item.path : '';
       if (!ITEM_PATH.test(itemPath)) {
-        add(`An item must be a JavaScript coding or debug task path: ${itemPath || '(missing)'}`);
+        add(`An item must be a JavaScript or React coding or debug task path: ${itemPath || '(missing)'}`);
         continue;
       }
       if (paths.has(itemPath)) add(`An item is listed twice: ${itemPath}`);

@@ -186,8 +186,9 @@
             </div>
 
             <ng-container *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()">
+              <!-- A running rehearsal keeps the React panel on its own draft and clock, so Pressure Mode waits. -->
               <section
-                *ngIf="pressureSupported() && workspaceAvailable()"
+                *ngIf="pressureSupported() && workspaceAvailable() && !rehearsalPhase()"
                 class="pressure-entry"
                 data-testid="pressure-mode-entry"
               >
@@ -227,7 +228,7 @@
 
             </ng-container>
 
-            <ng-container *ngIf="!demoMode && !isFrameworkTech() && workspaceAvailable()">
+            <ng-container *ngIf="!demoMode && rehearsalSupported() && workspaceAvailable()">
               <app-rehearsal-panel *ngIf="rehearsalPhase() as phase" [session]="rehearsals.session()!" [phase]="phase"
                 [remainingMs]="rehearsals.remainingMs()" [questionId]="question()!.id"
                 (endRehearsal)="endRehearsal()" (closeReview)="closeRehearsalReview()"
@@ -886,6 +887,8 @@
         [storageKeyOverride]="frameworkStorageKey()"
         [frameworkTestsOverride]="pressureActive() ? pressureFrameworkTests() : null"
         [interviewMode]="pressureActive()"
+        [locked]="rehearsalLocked()" [lockedLabel]="rehearsalLockedLabel()"
+        [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">
@@ -915,7 +918,7 @@
           [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="jsStorageKey()"
           [solutionPanelOpen]="activePanel()===1"
           [hideRestoreBanner]="demoMode || hideRestoreBanner || !!rehearsalPhase()" [disablePersistence]="disablePersistence || demoMode"
-          [locked]="rehearsalPhase() === 'review' || rehearsalAnswering()" [lockedLabel]="rehearsalLockedLabel()"
+          [locked]="rehearsalLocked()" [lockedLabel]="rehearsalLockedLabel()"
           [concealedNote]="rehearsalConcealedNote()"
           [clockLabel]="rehearsalClockLabel()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
@@ -950,7 +953,7 @@
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"
-    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
+    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && (isCompletionPending() || rehearsalLocked())"
     [secondaryLabel]="footerSecondaryLabel()"
     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
     (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()"

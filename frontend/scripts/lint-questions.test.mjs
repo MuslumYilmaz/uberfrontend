@@ -135,11 +135,12 @@ test('the rehearsal list holds distinct rehearsals under schema version 1', () =
   assert.match(listIssues([]), /must be a JSON object/);
 });
 
-test('a rehearsal lists two to six existing JavaScript tasks under their own titles', () => {
+test('a rehearsal lists two to six existing JavaScript or React tasks under their own titles', () => {
   const [first, second] = rehearsal().items;
   assert.match(oneRehearsal({ items: [first] }), /2 to 6 tasks/);
   assert.match(oneRehearsal({ items: [first, first] }), /listed twice/);
-  assert.match(oneRehearsal({ items: [first, { path: '/react/coding/react-counter', title: 'Counter' }] }), /JavaScript coding or debug task/);
+  assert.equal(oneRehearsal({ items: [first, { path: '/react/coding/react-counter', title: 'Counter' }] }), '');
+  assert.match(oneRehearsal({ items: [first, { path: '/vue/coding/vue-counter', title: 'Counter' }] }), /JavaScript or React coding or debug task/);
   assert.match(oneRehearsal({ items: [first, { path: '/javascript/coding/js-missing', title: 'Missing' }] }), /does not exist/);
   assert.match(oneRehearsal({ items: [first, { ...second, title: 'Debounce' }] }), /must match the task: "Debounce Function"/);
 });
