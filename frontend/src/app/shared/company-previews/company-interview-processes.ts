@@ -22,12 +22,23 @@ export type InterviewProcessPractice = {
   readonly fragment?: string;
 };
 
+/**
+ * The timed rehearsal of a stage, from cdn/questions/rehearsals/rehearsals.v1.json: its title and shape, as "Meta
+ * coding round, 2 problems in 40 minutes", and the page that offers it, its first free problem when it has one, so a
+ * visitor lands on the rehearsal's card rather than a lock page. The spec keeps both in step with the list.
+ */
+export type InterviewProcessRehearsal = {
+  readonly label: string;
+  readonly path: string;
+};
+
 export type InterviewProcessStage = {
   readonly stage: string;
   readonly format: string;
   readonly appliesTo: string;
   readonly sources: readonly InterviewProcessSource[];
   readonly practice?: InterviewProcessPractice;
+  readonly rehearsal?: InterviewProcessRehearsal;
 };
 
 export type InterviewProcessVariant = {
@@ -1225,6 +1236,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: 'Software engineer to senior',
             sources: [WALMART_W7_SWE_US, WALMART_W21_KARAT, WALMART_W23_SENIOR_FE, WALMART_W6_SENIOR, WALMART_W19_SENIOR_FE],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+            rehearsal: { label: 'Walmart Karat screen, 8 short answers and 2 problems in 55 minutes', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'Coding rounds',
@@ -1357,6 +1369,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: META_ROLE,
             sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME6, META_ME7, META_ME11],
             practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+            rehearsal: { label: 'Meta coding round, 2 problems in 40 minutes', path: '/javascript/coding/js-debounce' },
           },
           {
             stage: 'Full loop: UI architecture and design',
@@ -1752,6 +1765,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: 'Junior to FE II',
             sources: [BOOKINGCOM_BK3, BOOKINGCOM_BK5, BOOKINGCOM_BK8, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
+            rehearsal: {
+              label: 'Booking.com HackerRank assessment, 2 multiple-choice questions and 3 problems in 90 minutes',
+              path: '/javascript/coding/js-valid-parentheses',
+            },
           },
           {
             stage: 'Recruiter call',
@@ -1967,6 +1984,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV7, REVOLUT_RV9, REVOLUT_RV10],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
+            rehearsal: { label: 'Revolut HackerRank assessment, 3 problems in 85 minutes', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'Live coding',
@@ -2293,6 +2311,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: AGODA_ROLE,
             sources: [AGODA_A1_BANGKOK_2026, AGODA_A4_STAFF_2025, AGODA_A5_FULL_STACK_2025, AGODA_A12_BANGALORE_2025, AGODA_INTERVIEWER_GUIDE],
             practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+            rehearsal: { label: 'Agoda coding interview, 2 problems in 45 minutes', path: '/javascript/coding/js-add-strings' },
           },
           {
             stage: 'Frontend Platform interview',

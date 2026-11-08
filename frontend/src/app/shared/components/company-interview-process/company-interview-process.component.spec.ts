@@ -159,6 +159,45 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(links.map((link) => link.getAttribute('href'))).toEqual(['/javascript/coding/js-debounce', '/companies/acme/preview#acme-values']);
   });
 
+  it('names the timed rehearsal of a round as an open link with a Premium tag, for a visitor too, with the way back', async () => {
+    const [experienced, ...rest] = FIXTURE.variants;
+    const [assessment, design] = experienced.stages;
+    const rehearsal = { label: 'Acme coding round, 2 problems in 40 minutes', path: '/javascript/coding/js-debounce' };
+    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+    const returnState = { returnToUrl: '/companies/acme/preview', returnLabel: 'Back to the Acme guide' };
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('process', { ...FIXTURE, variants: [{ ...experienced, stages: [{ ...assessment, rehearsal }, design] }, ...rest] });
+    fixture.componentRef.setInput('lockPremium', true);
+    fixture.componentRef.setInput('returnState', returnState);
+    fixture.detectChanges();
+
+    const lines = fixture.debugElement.queryAll(By.css('[data-testid="company-interview-process-rehearsal"]'));
+    expect(lines.length).toBe(1);
+    expect(lines[0].nativeElement.textContent.trim()).toMatch(/^Timed rehearsal: /);
+    expect(lines[0].query(By.css('.interview-process__tag')).nativeElement.textContent).toBe('Premium');
+    const link = lines[0].query(By.css('a'));
+    expect(link.nativeElement.textContent).toBe('Acme coding round, 2 problems in 40 minutes');
+    // The rehearsal names no Premium task, so it stays readable and followable for a visitor.
+    expect(link.nativeElement.getAttribute('href')).toBe('/javascript/coding/js-debounce');
+    expect(link.nativeElement.hasAttribute('inert')).toBeFalse();
+    expect(link.query(By.css('.premium-locked'))).toBeNull();
+    expect(link.injector.get(RouterLink).state).toEqual(returnState);
+
+    // A rehearsal that opens on a Premium page keeps its name but loses its link for a visitor, who reads no link
+    // to a Premium page by name; an account follows it.
+    const premiumStart = { label: 'Acme coding interview, 2 problems in 45 minutes', path: '/javascript/coding/js-add-strings' };
+    fixture.componentRef.setInput('process', { ...FIXTURE, variants: [{ ...experienced, stages: [{ ...assessment, rehearsal: premiumStart }, design] }, ...rest] });
+    fixture.detectChanges();
+    const plain = fixture.debugElement.query(By.css('[data-testid="company-interview-process-rehearsal"]'));
+    expect(plain.query(By.css('a'))).toBeNull();
+    expect(plain.nativeElement.textContent).toContain('Timed rehearsal: Acme coding interview, 2 problems in 45 minutes');
+    fixture.componentRef.setInput('lockPremium', false);
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-testid="company-interview-process-rehearsal"] a')).nativeElement.getAttribute('href'))
+      .toBe('/javascript/coding/js-add-strings');
+  });
+
   it('uses the title override when the company names the role', async () => {
     const host = await render({ ...FIXTURE, title: 'Acme Front End Engineer interview process' });
     expect(host.querySelector('#acme-interview-process')?.textContent?.trim()).toBe('Acme Front End Engineer interview process');

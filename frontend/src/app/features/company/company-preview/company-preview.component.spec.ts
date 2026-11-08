@@ -1449,7 +1449,9 @@ describe('CompanyPreviewComponent', () => {
       expect(fixture.componentInstance.detailLocked()).toBeFalse();
       expect(gateCard('company-process-gate')).toBeNull();
       expect(gateCard('company-sources-gate')).toBeNull();
-      expect(host().querySelector('.interview-process__tag')).toBeNull();
+      // The evidence opens: no row keeps the "Free account" tag in place of its links. (The Premium tag of the
+      // round's timed rehearsal stays.)
+      expect(Array.from(host().querySelectorAll('.interview-process__tag')).map((tag) => tag.textContent)).not.toContain('Free account');
       expect(host().querySelectorAll('.interview-process__sources a').length).toBeGreaterThan(0);
       expect(host().querySelector('.company-source-list')?.classList).not.toContain('premium-locked');
       expect(host().querySelectorAll('[data-testid="company-prompt-reported-round"] a').length).toBeGreaterThan(0);
