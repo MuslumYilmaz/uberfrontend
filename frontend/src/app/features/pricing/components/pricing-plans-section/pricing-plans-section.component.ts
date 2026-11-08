@@ -547,7 +547,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     },
     {
       label: 'Interview formats',
-      freeValue: 'Timed practice on any task you can open, and Pressure Mode on the free pilot tasks',
+      freeValue: 'Timed practice on any task you can open, and Pressure Mode on some free React, Angular and Vue tasks',
       premiumValue: 'Timed rehearsals of company rounds, the merge request review and multi-file bug squash formats, and Pressure Mode on Premium tasks',
     },
     {

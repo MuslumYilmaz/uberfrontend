@@ -153,8 +153,9 @@
   white-space: nowrap;
 }
 
+/* The no-break space keeps the dot on the line of the link before it, so no line opens with a separator. */
 .interview-process__sources li:not(:last-child)::after {
-  content: ' · ';
+  content: '\00a0· ';
   color: color-mix(in srgb, var(--uf-text-secondary) 70%, transparent);
 }
 

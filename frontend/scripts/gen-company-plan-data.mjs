@@ -21,6 +21,11 @@ const FRAMEWORK_TECHS = new Set(['react', 'angular', 'vue']);
 // A task's minutes come from the module the task page and timed practice read, so all three say the same number.
 const { practiceMinutes } = loadTsModule(path.join(sharedRoot, 'practice-minutes.ts'));
 const MINUTES_BY_KIND = { 'system-design': 45, trivia: 10, guide: 15 };
+// A guide page's reading time, as the page shows it. A series' index page and a company guide's section show none,
+// so they keep the guide default.
+const GUIDE_SERIES = { 'interview-blueprint': 'PLAYBOOK', 'system-design-blueprint': 'SYSTEM', behavioral: 'BEHAVIORAL' };
+const guideRegistry = loadTsModule(path.join(sharedRoot, 'guides', 'guide.registry.ts'));
+const GUIDE_MINUTES = new Map(Object.entries(GUIDE_SERIES).flatMap(([series, list]) => guideRegistry[list].map((guide) => [`/guides/${series}/${guide.slug}`, guide.minutes])));
 const MAX_ROUND_SOURCES = 3;
 // The largest date budget in a plan: a list has no use for more concept questions than it takes to reach it.
 const LARGEST_PLAN_BUDGET = 12;
@@ -163,7 +168,8 @@ const listed = (words) => (words.length > 1 ? `${words.slice(0, -1).join(', ')} 
 /**
  * What the rehearsal asks, in its order, for the plan row: "2 multiple-choice CSS questions, then Valid Parentheses,
  * Merge Two Sorted Arrays and Contact Form, all open at once. On a laptop or tablet." The questions name their topics,
- * the part a candidate fears; a title's bracketed gloss is left out, so the line stays short.
+ * the part a candidate fears; a title's bracketed gloss is left out, so the line stays short. The rehearsal's own
+ * note, such as why its clock is shorter than the round, comes before the device.
  */
 function rehearsalDetail(definition) {
   const names = definition.items.map((item) => item.title.replace(/\s*\([^)]*\)\s*$/, ''));
@@ -172,7 +178,7 @@ function rehearsalDetail(definition) {
   const topics = listed([...new Set(questions.map((question) => question.path.split('/')[1]))].map((tech) => TOPICS[tech] ?? tech));
   const kind = questions.every((question) => question.choices) ? 'multiple-choice ' : questions.some((question) => question.choices) ? '' : 'short ';
   const asked = questions.length ? `${questions.length} ${kind}${topics} ${questions.length === 1 ? 'question' : 'questions'}, then ` : '';
-  return `${asked}${problems}. On a laptop or tablet.`;
+  return `${asked}${problems}.${definition.planNote ? ` ${definition.planNote}` : ''} On a laptop or tablet.`;
 }
 
 function quizCounts(questions) {
@@ -190,7 +196,7 @@ function guideTask(route, label, fragment) {
     ...(fragment ? { fragment } : {}),
     kind: 'guide',
     access: 'free',
-    minutes: MINUTES_BY_KIND.guide,
+    minutes: (!fragment && GUIDE_MINUTES.get(route)) || MINUTES_BY_KIND.guide,
     companies: [],
     importance: 0,
   };
@@ -270,6 +276,12 @@ function buildCompany(slug, context) {
   const taggedTasks = [...catalog.values()].filter((task) => task.companies.includes(slug)).map(settle).filter(fitsFramework).sort(byImportance);
   const tagged = taggedTasks.filter((task) => task.kind !== 'trivia');
   const taggedConcepts = taggedTasks.filter((task) => task.kind === 'trivia');
+  // The report a guide prompt names for the task it links, so the plan's line names the same account as the guide.
+  const promptReports = new Map();
+  for (const prompt of context.prompts?.[slug] ?? []) {
+    const linked = prompt.reportUrl ? catalog.get(prompt.path) : null;
+    if (linked) promptReports.set(settle(linked).id, prompt.reportUrl);
+  }
 
   const several = table.variants.length > 1;
   const variants = table.variants.map((variant, index) => {
@@ -301,10 +313,12 @@ function buildCompany(slug, context) {
         // A guide without a reports card names the newest report it shows, on its table or in its sources list.
         const visible = showsEveryReport ? pool : pool.filter(shownOnGuide);
         const [newest] = [...(visible.length ? visible : pool)].sort(newestFirst);
-        return { entry, newest, hidden: !visible.length };
+        // The newest report orders the list; the line names the report the guide's prompt names, when it is one of them.
+        const named = (visible.length ? visible : pool).find((source) => source.url === promptReports.get(entry.task.id));
+        return { entry, newest, line: named ?? newest, hidden: !visible.length };
       })
       .sort((a, b) => newestFirst(a.newest, b.newest) || a.entry.task.id.localeCompare(b.entry.task.id));
-    for (const { entry, newest, hidden } of inList) {
+    for (const { entry, newest, line, hidden } of inList) {
       const urls = new Set(entry.sources.map((source) => source.url));
       const wanted = entry.task.kind === 'system-design' ? 'design' : 'coding';
       const citing = variant.stages.filter((stage) => stage.sources.some((source) => urls.has(source.url)));
@@ -331,7 +345,7 @@ function buildCompany(slug, context) {
         throw new Error(`[gen-company-plan-data] ${slug}/${meta.id}: ${entry.task.id} is modelled on ${newest.url}, which neither the ${slug} guide's sources nor its process table list.`);
       }
       if (hidden) add(publish(entry.task), { rounds });
-      else add(publish(entry.task), { report: { publisher: newest.publisher, date: newest.date, ...(newest.posting ? { posting: true } : {}), ...(newest.approx ? { approx: true } : {}) }, rounds });
+      else add(publish(entry.task), { report: { publisher: line.publisher, date: line.date, ...(line.posting ? { posting: true } : {}), ...(line.approx ? { approx: true } : {}) }, rounds });
     }
 
     // A linked or picked task with no report of its own is still an editor's choice for that round.

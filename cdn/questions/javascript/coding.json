@@ -6158,7 +6158,7 @@
       "iteration"
     ],
     "description": {
-      "summary": "Merge two already-sorted arrays into a single sorted array. Do not call sort on the combined output; use a two-pointer merge.",
+      "summary": "Merge two already-sorted arrays into a single sorted array. Do not call sort on the combined output; the merge should take O(n + m) time.",
       "arguments": [
         {
           "name": "a",
@@ -6803,7 +6803,7 @@
       }
     ],
     "description": {
-      "summary": "Given two identical DOM trees and a node in tree A, return the corresponding node in tree B. Traverse both trees in sync or compute a path index. Complexity: O(n) time, O(h) stack.",
+      "summary": "Given two identical DOM trees and a node in tree A, return the corresponding node in tree B. Aim for O(n) time and O(h) extra space, where h is the height of the tree.",
       "arguments": [
         {
           "name": "rootA",
@@ -6916,7 +6916,7 @@
       }
     ],
     "description": {
-      "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Use a head index or deque to keep queue operations O(1). Complexity: O(1) amortized operations.",
+      "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Every operation, dequeue included, should take O(1) amortized time.",
       "arguments": [],
       "returns": {
         "type": "Object",
@@ -7063,7 +7063,7 @@
       "meta"
     ],
     "description": {
-      "summary": "Given a 2D grid of 0/1 (0=open, 1=wall), determine if a path exists from start to end using 4-direction moves. Use BFS/DFS with visited tracking. Complexity: O(rows*cols) time, O(rows*cols) space.",
+      "summary": "Given a 2D grid of 0/1 (0=open, 1=wall), determine if a path exists from start to end using 4-direction moves. Aim for O(rows*cols) time and space.",
       "arguments": [
         {
           "name": "grid",

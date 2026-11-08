@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "57db5e9122541613240de85e7b671f146567df244b37637a75fcccf2207f0192"
+      "sha256": "4373094a486770411e3906355da068ef4d9b4df42960b10f573127af8107ee4d"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "d17ebc4d37a89a632e241b531b422a018cbcc1eb1e2bb51003e8bfdc74a05c7e"
+      "sha256": "39d85a177fa3ed0409fb81b76a99323f6e03f1661c80663d602e48bece439711"
     }
   },
-  "contentHash": "8bd016acbc907b2db4d9ebe2804835150f619ed25efd8149918438463d1c48c8",
-  "definitionHash": "a6311ffc384356ae6d3e20e23897ea3574986e8b7a932eb8b60304c965ceaee4",
+  "contentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
+  "definitionHash": "21872caf5b519c6620bbb5c379314031ad59ac650dba88734dbf9d3d2fa92792",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -26,13 +26,14 @@
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the nested-comments and contact-form source questions gained a Pressure Mode reference and the React nested-comments starter stopped rebuilding its reply input on every letter. That starter is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "8bd016acbc907b2db4d9ebe2804835150f619ed25efd8149918438463d1c48c8",
+    "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "8bd016acbc907b2db4d9ebe2804835150f619ed25efd8149918438463d1c48c8",
+  "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -287,7 +288,7 @@
       "revision": 1
     },
     {
-      "contentHash": "fd1c15fda32e75ebc6632dd515e27cb814895248ca549143c72de4721ab20110",
+      "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "revision": 1

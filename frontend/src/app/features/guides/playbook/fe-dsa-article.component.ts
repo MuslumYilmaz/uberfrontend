@@ -184,6 +184,47 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
       color: var(--uf-text-primary);
       background: color-mix(in srgb, var(--uf-surface-alt) 86%, transparent);
     }
+    /* A phone reads each row as a card, with its column's name over each cell, rather than scrolling sideways. */
+    @media (max-width: 640px) {
+      .table-wrap thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      .table-wrap table,
+      .table-wrap tbody,
+      .table-wrap tr,
+      .table-wrap td {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .table-wrap tr {
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--uf-border-subtle);
+        border-radius: 8px;
+      }
+      .table-wrap td {
+        padding: 4px 0;
+        border: 0;
+      }
+      .table-wrap td:first-child {
+        font-weight: 600;
+      }
+      .table-wrap td:not(:first-child)::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+      }
+    }
   `],
     template: `
   <fa-guide-shell
@@ -338,34 +379,34 @@ import { PUBLIC_EDITORIAL_FACTS } from '../../../core/content/public-editorial-f
           </thead>
           <tbody>
             <tr>
-              <td><strong>Arrays and strings</strong></td>
-              <td>Map, filter, reduce, slice, split, join, scan once, avoid accidental O(n^2).</td>
-              <td>Format API data, paginate lists, search text, build derived UI rows.</td>
+              <td data-label="Topic"><strong>Arrays and strings</strong></td>
+              <td data-label="You should be able to">Map, filter, reduce, slice, split, join, scan once, avoid accidental O(n^2).</td>
+              <td data-label="Real frontend tie-in">Format API data, paginate lists, search text, build derived UI rows.</td>
             </tr>
             <tr>
-              <td><strong>Map and Set</strong></td>
-              <td>Count, dedupe, group, memoize, and check membership with clear key policy.</td>
-              <td>Selected IDs, tag filters, grouped sections, analytics counts.</td>
+              <td data-label="Topic"><strong>Map and Set</strong></td>
+              <td data-label="You should be able to">Count, dedupe, group, memoize, and check membership with clear key policy.</td>
+              <td data-label="Real frontend tie-in">Selected IDs, tag filters, grouped sections, analytics counts.</td>
             </tr>
             <tr>
-              <td><strong>Stack and queue</strong></td>
-              <td>Use LIFO for history and FIFO for work queues without slow shifts.</td>
-              <td>Undo/redo, toasts, task runners, breadcrumb/back-forward flows.</td>
+              <td data-label="Topic"><strong>Stack and queue</strong></td>
+              <td data-label="You should be able to">Use LIFO for history and FIFO for work queues without slow shifts.</td>
+              <td data-label="Real frontend tie-in">Undo/redo, toasts, task runners, breadcrumb/back-forward flows.</td>
             </tr>
             <tr>
-              <td><strong>Trees and recursion</strong></td>
-              <td>Traverse nested data with DFS/BFS and name recursion depth risks.</td>
-              <td>DOM-shaped data, comments, folders, menus, nested checkboxes.</td>
+              <td data-label="Topic"><strong>Trees and recursion</strong></td>
+              <td data-label="You should be able to">Traverse nested data with DFS/BFS and name recursion depth risks.</td>
+              <td data-label="Real frontend tie-in">DOM-shaped data, comments, folders, menus, nested checkboxes.</td>
             </tr>
             <tr>
-              <td><strong>Sorting and searching</strong></td>
-              <td>Use comparators, stable tie-breakers, and binary search when data is sorted.</td>
-              <td>Data tables, ranked lists, typeahead indices, range filtering.</td>
+              <td data-label="Topic"><strong>Sorting and searching</strong></td>
+              <td data-label="You should be able to">Use comparators, stable tie-breakers, and binary search when data is sorted.</td>
+              <td data-label="Real frontend tie-in">Data tables, ranked lists, typeahead indices, range filtering.</td>
             </tr>
             <tr>
-              <td><strong>Big-O intuition</strong></td>
-              <td>Explain time and space trade-offs before optimizing.</td>
-              <td>Large lists, virtualized UIs, cached lookups, client-side filtering.</td>
+              <td data-label="Topic"><strong>Big-O intuition</strong></td>
+              <td data-label="You should be able to">Explain time and space trade-offs before optimizing.</td>
+              <td data-label="Real frontend tie-in">Large lists, virtualized UIs, cached lookups, client-side filtering.</td>
             </tr>
           </tbody>
         </table>
@@ -464,11 +505,11 @@ function touch(key, value) &#123;
             <tr><th>Time</th><th>Move</th><th>Signal</th></tr>
           </thead>
           <tbody>
-            <tr><td>0-5 min</td><td>Clarify input, output, size, duplicates, empty cases, and mutation policy.</td><td>You do not code against hidden assumptions.</td></tr>
-            <tr><td>5-12 min</td><td>State a brute force approach and its Big-O.</td><td>You can reason before optimizing.</td></tr>
-            <tr><td>12-18 min</td><td>Choose the data structure and name the trade-off.</td><td>You pick Map, Set, stack, queue, or traversal for a reason.</td></tr>
-            <tr><td>18-35 min</td><td>Implement the smallest correct version in clean JavaScript.</td><td>You ship working code under time pressure.</td></tr>
-            <tr><td>35-45 min</td><td>Dry run, test edge cases, and explain complexity.</td><td>You can verify and repair without prompting.</td></tr>
+            <tr><td data-label="Time">0-5 min</td><td data-label="Move">Clarify input, output, size, duplicates, empty cases, and mutation policy.</td><td data-label="Signal">You do not code against hidden assumptions.</td></tr>
+            <tr><td data-label="Time">5-12 min</td><td data-label="Move">State a brute force approach and its Big-O.</td><td data-label="Signal">You can reason before optimizing.</td></tr>
+            <tr><td data-label="Time">12-18 min</td><td data-label="Move">Choose the data structure and name the trade-off.</td><td data-label="Signal">You pick Map, Set, stack, queue, or traversal for a reason.</td></tr>
+            <tr><td data-label="Time">18-35 min</td><td data-label="Move">Implement the smallest correct version in clean JavaScript.</td><td data-label="Signal">You ship working code under time pressure.</td></tr>
+            <tr><td data-label="Time">35-45 min</td><td data-label="Move">Dry run, test edge cases, and explain complexity.</td><td data-label="Signal">You can verify and repair without prompting.</td></tr>
           </tbody>
         </table>
       </div>
@@ -491,9 +532,9 @@ function touch(key, value) &#123;
             <tr><th>Priority</th><th>Topics</th><th>Reason</th></tr>
           </thead>
           <tbody>
-            <tr><td><strong>Prioritize</strong></td><td>Arrays, strings, Map, Set, stacks, queues, recursion, trees, Big-O.</td><td>These appear directly in frontend UI and JavaScript coding prompts.</td></tr>
-            <tr><td><strong>Know lightly</strong></td><td>Two pointers, sliding window, intervals, binary search, simple DP memoization.</td><td>Useful for algorithm rounds, but usually not the core frontend signal.</td></tr>
-            <tr><td><strong>Skip unless required</strong></td><td>AVL/red-black trees, max-flow, segment trees, Fenwick trees, advanced graph algorithms.</td><td>Low ROI for most frontend loops unless the recruiter says DSA-heavy.</td></tr>
+            <tr><td data-label="Priority"><strong>Prioritize</strong></td><td data-label="Topics">Arrays, strings, Map, Set, stacks, queues, recursion, trees, Big-O.</td><td data-label="Reason">These appear directly in frontend UI and JavaScript coding prompts.</td></tr>
+            <tr><td data-label="Priority"><strong>Know lightly</strong></td><td data-label="Topics">Two pointers, sliding window, intervals, binary search, simple DP memoization.</td><td data-label="Reason">Useful for algorithm rounds, but usually not the core frontend signal.</td></tr>
+            <tr><td data-label="Priority"><strong>Skip unless required</strong></td><td data-label="Topics">AVL/red-black trees, max-flow, segment trees, Fenwick trees, advanced graph algorithms.</td><td data-label="Reason">Low ROI for most frontend loops unless the recruiter says DSA-heavy.</td></tr>
           </tbody>
         </table>
       </div>
@@ -507,13 +548,13 @@ function touch(key, value) &#123;
             <tr><th>Day</th><th>Focus</th><th>Target</th></tr>
           </thead>
           <tbody>
-            <tr><td><strong>Mon</strong></td><td>Arrays and reduce</td><td>Reduce, count, dedupe, and explain O(n) vs O(n^2).</td></tr>
-            <tr><td><strong>Tue</strong></td><td>Map and Set</td><td>GroupBy, frequency map, selected IDs, object vs Map trade-offs.</td></tr>
-            <tr><td><strong>Wed</strong></td><td>Stack and queue</td><td>Stack/queue implementation, undo/redo, Array.shift() O(n) trap.</td></tr>
-            <tr><td><strong>Thu</strong></td><td>Trees and recursion</td><td>DFS/BFS nested data, flatten depth, recursion depth notes.</td></tr>
-            <tr><td><strong>Fri</strong></td><td>Cache and async queues</td><td>LRU cache, concurrency-limited map, takeLatest.</td></tr>
-            <tr><td><strong>Sat</strong></td><td>Mock round</td><td>One 45-minute prompt with clarify, implement, dry run, and retro.</td></tr>
-            <tr><td><strong>Sun</strong></td><td>Review</td><td>Redo weak drills and write a short complexity note for each miss.</td></tr>
+            <tr><td data-label="Day"><strong>Mon</strong></td><td data-label="Focus">Arrays and reduce</td><td data-label="Target">Reduce, count, dedupe, and explain O(n) vs O(n^2).</td></tr>
+            <tr><td data-label="Day"><strong>Tue</strong></td><td data-label="Focus">Map and Set</td><td data-label="Target">GroupBy, frequency map, selected IDs, object vs Map trade-offs.</td></tr>
+            <tr><td data-label="Day"><strong>Wed</strong></td><td data-label="Focus">Stack and queue</td><td data-label="Target">Stack/queue implementation, undo/redo, Array.shift() O(n) trap.</td></tr>
+            <tr><td data-label="Day"><strong>Thu</strong></td><td data-label="Focus">Trees and recursion</td><td data-label="Target">DFS/BFS nested data, flatten depth, recursion depth notes.</td></tr>
+            <tr><td data-label="Day"><strong>Fri</strong></td><td data-label="Focus">Cache and async queues</td><td data-label="Target">LRU cache, concurrency-limited map, takeLatest.</td></tr>
+            <tr><td data-label="Day"><strong>Sat</strong></td><td data-label="Focus">Mock round</td><td data-label="Target">One 45-minute prompt with clarify, implement, dry run, and retro.</td></tr>
+            <tr><td data-label="Day"><strong>Sun</strong></td><td data-label="Focus">Review</td><td data-label="Target">Redo weak drills and write a short complexity note for each miss.</td></tr>
           </tbody>
         </table>
       </div>

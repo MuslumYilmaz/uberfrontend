@@ -107,7 +107,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Frontend Platform interview',
             kinds: ['coding'],
             note: '60 minutes on HackerRank: web fundamentals, a JavaScript implementation or a component and state discussion.',
-            picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking'],
+            // Prompt 5 practises the utility a Staff account's JavaScript implementation round asked for; its report is
+            // also cited on the coding hour, which would otherwise take the task as a DSA problem.
+            picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking', '/javascript/coding/js-debounce'],
           },
           {
             id: 'preliminary-call',

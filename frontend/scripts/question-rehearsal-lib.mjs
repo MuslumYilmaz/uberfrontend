@@ -5,8 +5,11 @@
 export const REHEARSAL_LIST = 'rehearsals/rehearsals.v1.json';
 
 const LIST_KEYS = new Set(['schemaVersion', 'rehearsals']);
-const KEYS = new Set(['id', 'access', 'company', 'title', 'round', 'summary', 'minutes', 'order', 'quiz', 'items']);
+const KEYS = new Set(['id', 'access', 'company', 'title', 'round', 'summary', 'planNote', 'minutes', 'order', 'quiz', 'items']);
 const TEXT_KEYS = [['company', 40], ['title', 60], ['summary', 400]];
+// A sentence the plan row adds after the problems, for what the row alone would leave unexplained, such as a clock
+// shorter than the round's.
+const PLAN_NOTE_MAX = 140;
 const QUIZ_KEYS = new Set(['minutes', 'questions']);
 const QUESTION_KEYS = new Set(['question', 'answer', 'path', 'choices', 'correct', 'pick']);
 const QUESTION_TEXT_KEYS = [['question', 160], ['answer', 240]];
@@ -52,6 +55,9 @@ export function validateRehearsalList(data, tasks) {
       if (typeof definition[key] !== 'string' || !definition[key].trim() || definition[key].length > max) {
         add(`${key} must be text of at most ${max} characters.`);
       }
+    }
+    if (definition.planNote !== undefined && (typeof definition.planNote !== 'string' || !/^[A-Z].*\.$/.test(definition.planNote) || definition.planNote.length > PLAN_NOTE_MAX)) {
+      add(`planNote must be one sentence of at most ${PLAN_NOTE_MAX} characters, from a capital letter to a full stop.`);
     }
     if (!Number.isInteger(definition.minutes) || definition.minutes < 5 || definition.minutes > 240) {
       add('minutes must be a whole number from 5 to 240.');

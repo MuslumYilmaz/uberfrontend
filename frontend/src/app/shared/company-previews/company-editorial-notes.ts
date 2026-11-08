@@ -588,10 +588,10 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'An editorial grouping for the easy algorithm items of the HackerRank test.',
         },
         {
-          label: 'Forms: validation and required fields',
-          path: '/html/coding/html-forms-validation-required',
+          label: 'The CSS box model',
+          path: '/css/trivia/css-box-model',
           access: 'free',
-          why: 'An editorial grouping for the HTML and CSS questions of the test.',
+          why: 'An editorial grouping for the HTML and CSS multiple-choice questions of the HackerRank test.',
         },
         {
           label: 'Vue autocomplete search',

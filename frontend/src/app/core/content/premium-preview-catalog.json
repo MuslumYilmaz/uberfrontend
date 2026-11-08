@@ -414,11 +414,11 @@
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },
   "javascript/coding/js-maze-path": {
-    "summary": "Find a valid route through a grid maze while respecting blocked cells and bounded movement.",
+    "summary": "Decide whether a path connects the start and end cells of a grid maze while respecting walls and bounded movement.",
     "learningOutcomes": [
       "Represent visited cells so the search cannot loop indefinitely.",
       "Explore only valid neighboring cells within the grid.",
-      "Return a complete route or a stable no-route result."
+      "Return true when the end is reachable and false when it is not."
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },

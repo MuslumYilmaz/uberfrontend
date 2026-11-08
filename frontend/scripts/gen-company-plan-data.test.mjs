@@ -5,9 +5,11 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { INLINE_COMPANY_GUIDES, buildCompanyPlanData, loadCompanyPlanSources, renderCompanyPlanData } from './gen-company-plan-data.mjs';
+import { loadTsModule } from './load-ts-module.mjs';
 
 const realSources = loadCompanyPlanSources();
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const here = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(here, '..', '..');
 
 const reportUrl = (name) => `https://www.jointaro.com/interviews/companies/acme/experiences/${name}/`;
 const tableSource = (name, date) => ({ label: `Taro ${name}`, url: reportUrl(name), kind: 'report', date });
@@ -327,6 +329,20 @@ test('a guide with a sources list must list the report a plan line names', () =>
   assert.deepEqual(planRow(listed(reportUrl('hidden'), reportUrl('old'), reportUrl('stars-newer')), 'react-star-rating').report, { publisher: 'Taro', date: '2023-03' });
 });
 
+test('a plan line names the report the guide prompt names for its task, so the plan and the guide agree', () => {
+  const stars = (named) => planRow(build({
+    processes: { acme: singleList() },
+    sources: { acme: [reportUrl('hidden'), reportUrl('old'), reportUrl('stars-newer')] },
+    prompts: { acme: [{ path: '/react/coding/react-star-rating', reportUrl: named }] },
+  }, withHidden), 'react-star-rating').report;
+  // Without a named report the newest shown one dates the line.
+  assert.deepEqual(stars(null), { publisher: 'Taro', date: '2023-03' });
+  // The prompt's own account wins when the task carries it and the guide shows it.
+  assert.deepEqual(stars(reportUrl('stars')), { publisher: 'Taro', date: '2021-02' });
+  // An account the task does not carry changes nothing.
+  assert.deepEqual(stars(reportUrl('old')), { publisher: 'Taro', date: '2023-03' });
+});
+
 test('the inline guides are the ones the preview renders without the catalog', () => {
   const service = fs.readFileSync(path.join(repoRoot, 'frontend/src/app/core/services/company-public-data.service.ts'), 'utf8');
   const literal = /LEGACY_EDITORIAL_COMPANIES = new Set\(\[([^\]]*)\]\)/.exec(service)?.[1] ?? '';
@@ -479,7 +495,7 @@ test('a report whose month the process table marks as approximate keeps the mark
   assert.equal(engineers.tasks.find((task) => task.id === 'js-old')?.report?.approx, undefined);
 });
 
-test('tasks carry real access and minutes, and a linked guide is a free 15-minute task', () => {
+test('tasks carry real access and minutes, and a linked guide is a free task with its page\'s reading time', () => {
   const { tasks } = build();
   assert.equal(tasks['js-new'].access, 'premium');
   assert.equal(tasks['js-new'].minutes, 45);
@@ -488,7 +504,15 @@ test('tasks carry real access and minutes, and a linked guide is a free 15-minut
   assert.equal(tasks['js-linked'].minutes, 30);
   assert.equal(tasks['case-a'].minutes, 45);
   assert.equal(tasks['concept-a'].minutes, 10);
+  // A series index shows no reading time, so it keeps the guide default.
   assert.deepEqual(tasks['/guides/system-design-blueprint'], { id: '/guides/system-design-blueprint', title: 'Frontend system design blueprint', route: '/guides/system-design-blueprint', kind: 'guide', access: 'free', minutes: 15 });
+  // A guide page takes the minutes its page shows, from the guide registry.
+  const process = baseProcess();
+  process.variants[0].stages[1] = { ...process.variants[0].stages[1], practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' } };
+  const { PLAYBOOK } = loadTsModule(path.join(here, '..', 'src', 'app', 'shared', 'guides', 'guide.registry.ts'));
+  const shown = PLAYBOOK.find((guide) => guide.slug === 'dsa-for-fe').minutes;
+  assert.notEqual(shown, 15);
+  assert.equal(build({ processes: { acme: process } }).tasks['/guides/interview-blueprint/dsa-for-fe'].minutes, shown);
 });
 
 test('concept questions stop at the largest budget and never leave the company framework', () => {
@@ -630,6 +654,9 @@ test('a rehearsal that opens with questions says how many of each kind, and keep
     quiz: { questions: quiz.questions.slice(0, 1) },
   })).tasks['rehearsal-acme-coding'];
   assert.equal(shortOnly.detail, '1 short JavaScript question, then Linked and Old, all open at once. On a laptop or tablet.');
+  // The rehearsal's own note, such as why its clock is shorter than the round, comes before the device.
+  const noted = build({}, withRehearsal({ planNote: 'The round runs 60 minutes; the last 15 go to questions on tests.' })).tasks['rehearsal-acme-coding'];
+  assert.equal(noted.detail, 'Linked, then Old. The round runs 60 minutes; the last 15 go to questions on tests. On a laptop or tablet.');
   assert.throws(
     () => build({}, withRehearsal({ quiz: { ...quiz, questions: [...quiz.questions.slice(1), { question: 'D?', answer: 'D.', path: '/javascript/trivia/missing' }] } })),
     /asks about \/javascript\/trivia\/missing, which is not in the catalog/,

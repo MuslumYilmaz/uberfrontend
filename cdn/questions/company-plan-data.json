@@ -188,7 +188,7 @@
       "route": "/guides/behavioral/common-questions",
       "kind": "guide",
       "access": "free",
-      "minutes": 15
+      "minutes": 18
     },
     "/guides/behavioral/evaluation-areas": {
       "id": "/guides/behavioral/evaluation-areas",
@@ -196,7 +196,7 @@
       "route": "/guides/behavioral/evaluation-areas",
       "kind": "guide",
       "access": "free",
-      "minutes": 15
+      "minutes": 14
     },
     "/guides/behavioral/stories": {
       "id": "/guides/behavioral/stories",
@@ -204,7 +204,7 @@
       "route": "/guides/behavioral/stories",
       "kind": "guide",
       "access": "free",
-      "minutes": 15
+      "minutes": 14
     },
     "/guides/interview-blueprint/dsa-for-fe": {
       "id": "/guides/interview-blueprint/dsa-for-fe",
@@ -212,7 +212,7 @@
       "route": "/guides/interview-blueprint/dsa-for-fe",
       "kind": "guide",
       "access": "free",
-      "minutes": 15
+      "minutes": 18
     },
     "/guides/system-design-blueprint": {
       "id": "/guides/system-design-blueprint",
@@ -2835,7 +2835,7 @@
         "js-add-strings",
         "js-recover-bst-swapped-nodes"
       ],
-      "detail": "Add Large Integers as Strings, then Recover a BST with Two Swapped Nodes. On a laptop or tablet."
+      "detail": "Add Large Integers as Strings, then Recover a BST with Two Swapped Nodes. The round runs 60 minutes; its last 15 go to questions on test cases and pull requests. On a laptop or tablet."
     },
     "rehearsal-booking-com-hackerrank-assessment": {
       "id": "rehearsal-booking-com-hackerrank-assessment",
@@ -3500,10 +3500,10 @@
             },
             {
               "id": "js-debounce",
-              "prompt": true,
               "rounds": [
-                "coding-interview"
-              ]
+                "frontend-platform-interview"
+              ],
+              "prompt": true
             },
             {
               "id": "react-fetch-list-states"
@@ -4285,7 +4285,7 @@
               "id": "react-star-rating",
               "report": {
                 "publisher": "LeetCode Discuss",
-                "date": "2020-07"
+                "date": "2020-03"
               },
               "rounds": [
                 "phone-screen"
@@ -5944,7 +5944,7 @@
               "id": "credit-card-application-page",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-08",
+                "date": "2024-07",
                 "approx": true
               },
               "rounds": [
@@ -7435,7 +7435,7 @@
               "id": "vue-issue-list-merge-request-review",
               "report": {
                 "publisher": "Taro",
-                "date": "2024-03",
+                "date": "2024-02",
                 "approx": true
               },
               "rounds": [
@@ -8271,7 +8271,7 @@
               "id": "ui-component-state-from-mock",
               "report": {
                 "publisher": "LeetCode Discuss",
-                "date": "2023-10"
+                "date": "2021-12"
               },
               "rounds": [
                 "technical-phone-interview",
@@ -10008,7 +10008,7 @@
               "id": "react-fetch-list-states",
               "report": {
                 "publisher": "Taro",
-                "date": "2025-05",
+                "date": "2025-04",
                 "approx": true
               },
               "rounds": [
@@ -10272,8 +10272,8 @@
             {
               "id": "notification-toast-system",
               "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-02"
+                "publisher": "Blind",
+                "date": "2021-09"
               },
               "prompt": true,
               "rounds": [
@@ -12617,6 +12617,7 @@
                 "date": "2026-05"
               },
               "rounds": [
+                "online-assessment",
                 "coding-rounds"
               ]
             },

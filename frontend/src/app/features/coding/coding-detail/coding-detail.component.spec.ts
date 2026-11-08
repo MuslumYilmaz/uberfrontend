@@ -1533,7 +1533,7 @@ describe('CodingDetailComponent', () => {
     );
 
     component.question.set({ ...question, access: 'free' });
-    expect(component.pressureAccessLabel()).toBe('Free pilot');
+    expect(component.pressureAccessLabel()).toBe('Free');
   });
 
   it('clears an intermediate pressure round without completing the normal question', async () => {

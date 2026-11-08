@@ -2061,7 +2061,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await page.getByTestId('pressure-mode-start').click();
     await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter\?mode=pressure$/);
     await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
-    await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
+    await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
     await waitForFrameworkPreview(page, '.input');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
 
@@ -2088,7 +2088,7 @@ test.describe('Framework checks against the production SSR build', () => {
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
-      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
+      await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
       await waitForFrameworkPreview(page, '.input');
 
       await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS[framework]);
@@ -2114,7 +2114,7 @@ test.describe('Framework checks against the production SSR build', () => {
 
     await page.getByTestId('pressure-mode-start').click();
     await expect(page).toHaveURL(/\/react\/coding\/react-fetch-list-states\?mode=pressure$/);
-    await expect(page.getByTestId('pressure-mode-panel')).toContainText('Free pilot');
+    await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
     await waitForFrameworkPreview(page, '.mode');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
 

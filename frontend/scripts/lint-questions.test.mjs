@@ -154,6 +154,9 @@ test('a rehearsal is Premium, with a clock, an order and known keys', () => {
   assert.match(oneRehearsal({ summary: '' }), /summary must be text/);
   assert.match(oneRehearsal({ round: 'Full loop: coding' }), /round must be the id of a round/);
   assert.match(oneRehearsal({ extra: true }), /Unknown key: extra/);
+  assert.equal(oneRehearsal({ planNote: 'The round runs 60 minutes; the last 15 go to questions on test cases.' }), '');
+  assert.match(oneRehearsal({ planNote: 'the round runs 60 minutes' }), /planNote must be one sentence/);
+  assert.match(oneRehearsal({ planNote: `${'A'.repeat(140)}.` }), /planNote must be one sentence of at most 140 characters/);
 });
 
 test('quiz questions take part of the clock, and each links an existing concept page with a sample answer', () => {

@@ -5171,7 +5171,7 @@
     "route": "/javascript/coding/js-maze-path",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Find a valid route through a grid maze while respecting blocked cells and bounded movement.",
+    "summary": "Decide whether a path connects the start and end cells of a grid maze while respecting walls and bounded movement.",
     "tags": [
       "algorithms",
       "grid",

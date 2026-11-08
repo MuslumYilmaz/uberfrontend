@@ -387,7 +387,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       && typeof q?.pressureModeAsset === 'string'
       && q.pressureModeAsset.trim().length > 0;
   });
-  pressureAccessLabel = computed(() => this.question()?.access === 'free' ? 'Free pilot' : 'Premium');
+  pressureAccessLabel = computed(() => this.question()?.access === 'free' ? 'Free' : 'Premium');
   pressureRounds = computed(() => this.pressureScenario()?.rounds || []);
   pressureCurrentRound = computed<PressureModeRound | null>(() => {
     const rounds = this.pressureRounds();

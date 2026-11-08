@@ -949,6 +949,11 @@
     word-break: normal;
   }
 
+  /* A phone always shows the copy button, so the code starts below it rather than under it. */
+  .coding-detail--reading-eligible .code-wrap .lite-code {
+    padding-top: 50px;
+  }
+
   .coding-detail--reading-eligible .ap-title,
   .coding-detail--reading-eligible .code-wrap {
     min-width: 0;

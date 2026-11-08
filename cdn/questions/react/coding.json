@@ -180,6 +180,7 @@
           "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
           "Render a `Contact Us` form with fields for name, email, and message.",
           "Make all fields required; validate the email with a basic email check.",
+          "Require the message to be at least 10 characters long, ignoring leading and trailing spaces.",
           "Disable the submit button while the form is invalid or while a request is in progress.",
           "On a valid submit, send a POST request with the form body to `https://jsonplaceholder.typicode.com/posts` using `fetch`.",
           "If the request succeeds, show the success text: `\"Your message has been sent. Thank you!\"`.",
@@ -187,7 +188,7 @@
           "Track an `isSubmitting` flag so the user cannot trigger multiple requests at the same time."
         ],
         "expectedBehavior": [
-          "Initially, the submit button is disabled until all required fields are filled and the email looks valid.",
+          "Initially, the submit button is disabled until all required fields are filled, the email looks valid and the message has at least 10 characters.",
           "If the user submits invalid data, all fields are marked as touched and inline validation error messages are shown where appropriate.",
           "On a valid submit, a POST request is sent to `https://jsonplaceholder.typicode.com/posts` and the button is disabled while `isSubmitting` is `true`.",
           "On success, `isSubmitting` becomes `false`, the message `\"Your message has been sent. Thank you!\"` is displayed, and the form may optionally be reset.",
@@ -4921,7 +4922,7 @@
     "sources": [
       {
         "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
-        "url": "https://leetcode.com/discuss/post/8288813/",
+        "url": "https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/",
         "company": "walmart",
         "publisher": "LeetCode Discuss",
         "date": "2026-05",
