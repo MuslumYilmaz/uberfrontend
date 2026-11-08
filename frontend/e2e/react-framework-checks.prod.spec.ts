@@ -1503,9 +1503,10 @@ test.describe('Framework checks against the production SSR build', () => {
       return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
     }, modelKeyPart);
 
-    // The task is in two rehearsals, Revolut's assessment and Walmart's Karat screen.
+    // The task is in three rehearsals, listed in one card: Revolut's and Booking.com's assessments, Walmart's Karat screen.
     await page.goto('/javascript/coding/js-valid-parentheses');
     await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('rehearsal-offers')).toContainText('This problem is part of 3 timed rehearsals');
     const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Walmart Karat screen' });
     await expect(entry).toContainText('Walmart Karat screen: 8 short answers and 2 problems in 55 minutes');
     await entry.getByTestId('rehearsal-start').click();
@@ -1516,13 +1517,13 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(panel.getByTestId('rehearsal-questions')).toContainText('Short answers: question 1 of 8');
     await expect(panel.getByTestId('rehearsal-question')).toHaveText('What is a closure in JavaScript?');
     await expect(panel.getByTestId('rehearsal-item')).toHaveText([
-      /Problem 1\s*Opens after the short answers/,
-      /Problem 2\s*Opens after the short answers/,
+      /Problem 1\s*Opens after the questions/,
+      /Problem 2\s*Opens after the questions/,
     ]);
     await expect(page.getByTestId('question-title')).toBeHidden();
     await expect(page.getByTestId('coding-breadcrumb')).toBeHidden();
-    await expect(page.getByTestId('js-concealed-note')).toHaveText('The first problem opens after the short answers.');
-    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left: short answers first$/);
+    await expect(page.getByTestId('js-concealed-note')).toHaveText('The problems open after the questions.');
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left: questions first$/);
     const runButton = page.getByTestId('js-run-tests');
     await expect(runButton).toBeDisabled();
     await expect.poll(() => isReadOnly(parenthesesModel)).toBe(true);
@@ -1559,6 +1560,61 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(reviewed.nth(1)).toContainText('Your answer: No answer');
     await expect(reviewed.first().getByRole('link', { name: 'Read the full answer' }))
       .toHaveAttribute('href', '/javascript/trivia/js-closures');
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+  });
+
+  test('Booking.com rehearsal asks two multiple-choice questions, then opens both problems, and marks the picks', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+
+    await page.goto('/javascript/coding/js-valid-parentheses');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Booking.com HackerRank assessment' });
+    await expect(entry).toContainText('Booking.com HackerRank assessment: 2 multiple-choice questions and 2 problems in 45 minutes');
+    await entry.getByText('What it covers').click();
+    await expect(entry).toContainText('This rehearsal leaves out the React component');
+    await entry.getByTestId('rehearsal-start').click();
+
+    // One option first: a radio group under the question.
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(45:00|44:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Multiple choice: question 1 of 2');
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('The clock keeps running for the whole rehearsal.');
+    await expect(page.getByTestId('js-concealed-note')).toHaveText('The problems open after the questions.');
+    const options = panel.getByTestId('rehearsal-choice');
+    await expect(options).toHaveCount(4);
+    await options.nth(3).check();
+    await panel.getByTestId('rehearsal-question-next').click();
+
+    // Then every right option: checkboxes.
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 2');
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Pick every option that is right.');
+    await expect(options.first()).toBeFocused();
+    await options.nth(0).check();
+    await options.nth(1).check();
+    await panel.getByTestId('rehearsal-question-next').click();
+
+    // Both problems open at once, as on HackerRank.
+    await expect(panel.getByTestId('rehearsal-questions')).toHaveCount(0);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Valid Parentheses \(Balanced Brackets\)\s*Not run yet/,
+      /Problem 2\s*Merge Two Sorted Arrays/,
+    ]);
+    await expect(page.getByTestId('js-concealed-note')).toHaveCount(0);
+
+    await page.clock.fastForward('45:00');
+    await expect(panel.getByTestId('rehearsal-verdict'))
+      .toHaveText('Time is up. 0 of 2 problems pass every test. You got 1 of 2 multiple-choice questions right.');
+    const reviewed = panel.getByTestId('rehearsal-answer-review');
+    await expect(reviewed.first()).toContainText('Your answer: 222px (not right)');
+    await expect(reviewed.first()).toContainText('The right answer: 178px');
+    await expect(reviewed.nth(1)).toContainText('(right)');
+    await expect(reviewed.nth(1)).toContainText('The right answer: position: relative; transform: translateX(0)');
     await panel.getByTestId('rehearsal-close').click();
     await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
   });

@@ -36,7 +36,7 @@ const KARAT: RehearsalDefinition = {
   id: 'walmart-karat-screen',
   title: 'Walmart Karat screen',
   minutes: 55,
-  shortAnswers: {
+  quiz: {
     minutes: 10,
     questions: [
       { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
@@ -47,6 +47,28 @@ const KARAT: RehearsalDefinition = {
 };
 const karat = (patch: Partial<RehearsalSession> = {}) =>
   session({ definition: KARAT, key: `walmart-karat-screen:${START}`, answers: ['', '', ''], ...patch });
+const BOOKING: RehearsalDefinition = {
+  ...DEFINITION,
+  id: 'booking-com-hackerrank-assessment',
+  title: 'Booking.com HackerRank assessment',
+  minutes: 45,
+  order: 'free',
+  quiz: {
+    questions: [
+      { question: 'How wide is the content box?', choices: ['178px', '200px', '222px'], correct: [0], pick: 'one', answer: 'Border-box.', path: '/css/trivia/css-box-model' },
+      {
+        question: 'Which make a containing block?',
+        choices: ['`position: relative`', '`transform`', '`display: flex`'],
+        correct: [0, 1],
+        pick: 'all',
+        answer: 'Positioned or transformed ancestors.',
+        path: '/css/trivia/css-position-relative-absolute-fixed',
+      },
+    ],
+  },
+};
+const booking = (patch: Partial<RehearsalSession> = {}) =>
+  session({ definition: BOOKING, key: `booking-com-hackerrank-assessment:${START}`, answers: ['', ''], ...patch });
 
 describe('RehearsalPanelComponent', () => {
   beforeEach(async () => {
@@ -130,14 +152,14 @@ describe('RehearsalPanelComponent', () => {
     ]);
   });
 
-  it('asks the short answers before the problems, which wait out of sight', () => {
+  it('asks the short answers before the problems, which wait out of sight', async () => {
     const fixture = render(karat(), 'active', 'js-dom-twin-node', 55 * MINUTE);
     const host = fixture.nativeElement as HTMLElement;
     const text = (id: string) => host.querySelector(`[data-testid="${id}"]`)?.textContent?.replace(/\s+/g, ' ').trim();
     expect(text('rehearsal-questions')).toContain('Short answers: question 1 of 3');
     expect(text('rehearsal-question')).toBe('What is a closure?');
-    expect(text('rehearsal-question-note')).toBe('The reports give these questions about 10 minutes. The clock keeps running for the whole screen.');
-    expect(items(host)).toEqual(['Problem 1 Opens after the short answers', 'Problem 2 Opens after the short answers']);
+    expect(text('rehearsal-question-note')).toBe('The reports give these questions about 10 minutes. The clock keeps running for the whole rehearsal.');
+    expect(items(host)).toEqual(['Problem 1 Opens after the questions', 'Problem 2 Opens after the questions']);
     expect(host.querySelector('[data-testid="rehearsal-next"]')).toBeNull();
     expect(text('rehearsal-question-next')).toBe('Next question');
 
@@ -150,9 +172,48 @@ describe('RehearsalPanelComponent', () => {
     box.value = 'It keeps its scope';
     box.dispatchEvent(new Event('input'));
     (host.querySelector('[data-testid="rehearsal-question-next"]') as HTMLButtonElement).click();
+    // Typing carries on in the next question, once it is on screen.
+    await new Promise((resolve) => setTimeout(resolve));
     expect(document.activeElement).toBe(box);
     (host.querySelector('[data-testid="rehearsal-skip"]') as HTMLButtonElement).click();
     expect(emitted).toEqual(['answer:It keeps its scope', 'next', 'skip']);
+  });
+
+  it('asks a multiple-choice question with native options: one option, or every right one', () => {
+    const fixture = render(booking(), 'active', 'js-dom-twin-node', 45 * MINUTE);
+    const host = fixture.nativeElement as HTMLElement;
+    const emitted: string[] = [];
+    fixture.componentInstance.answer.subscribe((value) => emitted.push(value));
+    expect(host.querySelector('[data-testid="rehearsal-questions"]')?.textContent).toContain('Multiple choice: question 1 of 2');
+    expect(host.querySelector('legend[data-testid="rehearsal-question"]')?.textContent?.trim()).toBe('How wide is the content box?');
+    // No time of its own in the reports: the note says only that the clock runs on.
+    expect(host.querySelector('[data-testid="rehearsal-question-note"]')?.textContent?.trim()).toBe('The clock keeps running for the whole rehearsal.');
+    const radios = Array.from(host.querySelectorAll<HTMLInputElement>('[data-testid="rehearsal-choice"]'));
+    expect(radios.map((input) => input.type)).toEqual(['radio', 'radio', 'radio']);
+    radios[2].click();
+    expect(emitted).toEqual(['2']);
+
+    fixture.componentRef.setInput('session', booking({ answering: 1, answers: ['2', '1'] }));
+    fixture.detectChanges();
+    const boxes = Array.from(host.querySelectorAll<HTMLInputElement>('[data-testid="rehearsal-choice"]'));
+    expect(boxes.map((input) => [input.type, input.checked])).toEqual([['checkbox', false], ['checkbox', true], ['checkbox', false]]);
+    expect(host.textContent).toContain('Pick every option that is right.');
+    boxes[0].click();
+    expect(emitted.at(-1)).toBe('0,1');
+    boxes[1].click();
+    expect(emitted.at(-1)).toBe('');
+  });
+
+  it('reviews a multiple-choice answer beside the right options, and counts the right ones', () => {
+    const fixture = render(booking({ endedAt: START + 45 * MINUTE, endReason: 'expired', answering: 2, answers: ['2', '0,1'] }), 'review', 'js-dom-twin-node');
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('[data-testid="rehearsal-verdict"]')?.textContent?.trim())
+      .toBe('Time is up. 0 of 2 problems pass every test. You got 1 of 2 multiple-choice questions right.');
+    const reviewed = Array.from(host.querySelectorAll<HTMLElement>('[data-testid="rehearsal-answer-review"]'));
+    expect(reviewed.map((entry) => Array.from(entry.children).map((line) => line.textContent).join(' | '))).toEqual([
+      'How wide is the content box? | Your answer: 222px (not right) | The right answer: 178px | Why: Border-box. | Read the full answer',
+      'Which make a containing block? | Your answer: position: relative; transform (right) | The right answer: position: relative; transform | Why: Positioned or transformed ancestors. | Read the full answer',
+    ]);
   });
 
   it('offers the problems after the last question, and says when the reported time has passed', () => {
@@ -162,7 +223,7 @@ describe('RehearsalPanelComponent', () => {
     expect(host.querySelector('[data-testid="rehearsal-question-next"]')?.textContent?.trim()).toBe('Move on to the problems');
     expect(host.querySelector('[data-testid="rehearsal-skip"]')).toBeNull();
     expect(host.querySelector('[data-testid="rehearsal-question-note"]')?.textContent?.trim())
-      .toBe('About 10 minutes have passed, which is when the reported screen moves on to coding.');
+      .toBe('About 10 minutes have passed, which is when the reported round moves on to the problems.');
 
     // Once the questions are done, the problems are back.
     fixture.componentRef.setInput('session', karat({ answering: 3, answers: ['Scope', '', 'Syncing'] }));
@@ -198,9 +259,12 @@ describe('RehearsalPanelComponent', () => {
     expect(reviewed[1].querySelector('code')?.textContent).toBe('box-sizing: border-box');
   });
 
-  it('names the short answers in the heading of a rehearsal that opens with them', () => {
+  it('names the questions in the heading of a rehearsal that opens with them', () => {
     expect(rehearsalHeading(DEFINITION)).toBe('Meta coding round: 2 problems in 40 minutes');
     expect(rehearsalHeading(KARAT)).toBe('Walmart Karat screen: 3 short answers and 2 problems in 55 minutes');
+    expect(rehearsalHeading(BOOKING)).toBe('Booking.com HackerRank assessment: 2 multiple-choice questions and 2 problems in 45 minutes');
+    const mixed = { ...BOOKING, quiz: { questions: [KARAT.quiz!.questions[0], BOOKING.quiz!.questions[0]] } };
+    expect(rehearsalHeading(mixed)).toBe('Booking.com HackerRank assessment: 1 short answer, 1 multiple-choice question and 2 problems in 45 minutes');
   });
 
   it('formats the clock in minutes, and with hours past one', () => {

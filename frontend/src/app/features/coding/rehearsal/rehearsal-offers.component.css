@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.rehearsal-offers {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rehearsal-offer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fa-space-3);
+  padding: var(--fa-space-3) 0;
+  border-top: 1px solid var(--fa-border-subtle);
+}
+
+.rehearsal-offer__copy {
+  min-width: 0;
+}
+
+.rehearsal-offer h3 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.rehearsal-offer details {
+  margin-top: var(--fa-space-1);
+  color: var(--fa-text-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rehearsal-offer summary {
+  cursor: pointer;
+}
+
+.rehearsal-offer details p {
+  margin: var(--fa-space-1) 0 0;
+}
+
+.rehearsal-offer button {
+  flex: none;
+}

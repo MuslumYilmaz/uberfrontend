@@ -604,20 +604,24 @@ test('a timed rehearsal is one Premium task on its round, standing for its probl
   });
 });
 
-test('a rehearsal that opens with short answers says how many, and keeps only its problems as members', () => {
-  const shortAnswers = {
+test('a rehearsal that opens with questions says how many of each kind, and keeps only its problems as members', () => {
+  const quiz = {
     minutes: 10,
     questions: [
       { question: 'A?', answer: 'A.', path: '/javascript/trivia/concept-a' },
       { question: 'B?', answer: 'B.', path: '/javascript/trivia/concept-b' },
-      { question: 'C?', answer: 'C.', path: '/react/trivia/react-concept' },
+      { question: 'C?', answer: 'C.', path: '/react/trivia/react-concept', choices: ['yes', 'no'], correct: [0], pick: 'one' },
     ],
   };
-  const task = build({}, withRehearsal({ shortAnswers })).tasks['rehearsal-acme-coding'];
-  assert.equal(task.shortAnswers, 3);
+  const task = build({}, withRehearsal({ quiz })).tasks['rehearsal-acme-coding'];
+  assert.equal(task.shortAnswers, 2);
+  assert.equal(task.choiceQuestions, 1);
   assert.deepEqual(task.members, ['js-linked', 'js-old']);
+  const choicesOnly = build({}, withRehearsal({ quiz: { questions: quiz.questions.slice(2).concat({ ...quiz.questions[2], path: '/javascript/trivia/concept-a' }) } })).tasks['rehearsal-acme-coding'];
+  assert.equal(choicesOnly.shortAnswers, undefined);
+  assert.equal(choicesOnly.choiceQuestions, 2);
   assert.throws(
-    () => build({}, withRehearsal({ shortAnswers: { ...shortAnswers, questions: [...shortAnswers.questions.slice(1), { question: 'D?', answer: 'D.', path: '/javascript/trivia/missing' }] } })),
+    () => build({}, withRehearsal({ quiz: { ...quiz, questions: [...quiz.questions.slice(1), { question: 'D?', answer: 'D.', path: '/javascript/trivia/missing' }] } })),
     /asks about \/javascript\/trivia\/missing, which is not in the catalog/,
   );
 });

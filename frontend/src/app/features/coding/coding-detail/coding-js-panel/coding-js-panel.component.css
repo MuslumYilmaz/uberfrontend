@@ -85,7 +85,7 @@ app-monaco-editor {
   z-index: 2;
 }
 
-/* A rehearsal's short answers come first: the problem's code waits behind this note, as the screen keeps it. */
+/* A rehearsal's questions come first: the problem's code waits behind this note, as the round keeps it. */
 .concealed-note {
   position: absolute;
   inset: 0;

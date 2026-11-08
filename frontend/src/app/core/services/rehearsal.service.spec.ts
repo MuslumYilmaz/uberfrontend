@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom, of } from 'rxjs';
+import { rehearsalAnswerRight, rehearsalPicked } from '../models/rehearsal.model';
 import { AnalyticsService } from './analytics.service';
 import { RehearsalService } from './rehearsal.service';
 
@@ -27,12 +28,35 @@ const KARAT_ENTRY = {
   title: 'Walmart Karat screen',
   round: 'coding-screen',
   minutes: 55,
-  shortAnswers: {
+  quiz: {
     minutes: 10,
     questions: [
       { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
       { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
       { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
+    ],
+  },
+};
+
+const BOOKING_ENTRY = {
+  ...REHEARSAL_ENTRY,
+  id: 'booking-com-hackerrank-assessment',
+  company: 'booking-com',
+  title: 'Booking.com HackerRank assessment',
+  round: 'hackerrank-assessment',
+  minutes: 45,
+  order: 'free',
+  quiz: {
+    questions: [
+      { question: 'How wide is the content box?', choices: ['178px', '200px', '222px'], correct: [0], pick: 'one', answer: 'Border-box.', path: '/css/trivia/css-box-model' },
+      {
+        question: 'Which make a containing block?',
+        choices: ['position: relative', 'transform', 'display: flex'],
+        correct: [0, 1],
+        pick: 'all',
+        answer: 'Positioned or transformed ancestors.',
+        path: '/css/trivia/css-position-relative-absolute-fixed',
+      },
     ],
   },
 };
@@ -148,20 +172,61 @@ describe('RehearsalService', () => {
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 
-  it('keeps short answers that take part of the clock and link a concept page, and drops any other', () => {
+  it('keeps questions that take part of the clock and link a concept page, and drops any other', () => {
     const service = create();
-    expect(service.normalize(KARAT_ENTRY)?.shortAnswers?.questions.map((entry) => entry.path)).toEqual([
+    expect(service.normalize(KARAT_ENTRY)?.quiz?.questions.map((entry) => entry.path)).toEqual([
       '/javascript/trivia/js-closures',
       '/css/trivia/css-box-model',
       '/react/trivia/react-useeffect-purpose',
     ]);
-    const [first, second] = KARAT_ENTRY.shortAnswers.questions;
-    const questions = (list: unknown[]) => ({ ...KARAT_ENTRY, shortAnswers: { minutes: 10, questions: list } });
-    expect(service.normalize(questions([first, second]))).toBeNull();
+    const [first, second] = KARAT_ENTRY.quiz.questions;
+    const questions = (list: unknown[]) => ({ ...KARAT_ENTRY, quiz: { minutes: 10, questions: list } });
+    expect(service.normalize(questions([first]))).toBeNull();
     expect(service.normalize(questions([first, second, { ...first, path: '/javascript/coding/js-debounce' }]))).toBeNull();
     expect(service.normalize(questions([first, second, { ...first, answer: ' ' }]))).toBeNull();
-    expect(service.normalize({ ...KARAT_ENTRY, shortAnswers: { ...KARAT_ENTRY.shortAnswers, minutes: 55 } })).toBeNull();
-    expect(service.normalize(REHEARSAL_ENTRY)?.shortAnswers).toBeUndefined();
+    expect(service.normalize({ ...KARAT_ENTRY, quiz: { ...KARAT_ENTRY.quiz, minutes: 55 } })).toBeNull();
+    expect(service.normalize(REHEARSAL_ENTRY)?.quiz).toBeUndefined();
+  });
+
+  it('keeps multiple-choice questions whose right options are among their choices, with no time of their own', () => {
+    const service = create();
+    const quiz = service.normalize(BOOKING_ENTRY)?.quiz;
+    expect(quiz?.minutes).toBeUndefined();
+    expect(quiz?.questions.map((entry) => [entry.pick, entry.correct])).toEqual([['one', [0]], ['all', [0, 1]]]);
+    const [one, all] = BOOKING_ENTRY.quiz.questions;
+    const withSecond = (second: object) => service.normalize({ ...BOOKING_ENTRY, quiz: { questions: [one, second] } });
+    expect(withSecond({ ...all, correct: [3] })).toBeNull();
+    expect(withSecond({ ...all, correct: [] })).toBeNull();
+    expect(withSecond({ ...all, pick: 'some' })).toBeNull();
+    expect(withSecond({ ...all, pick: 'one' })).toBeNull();
+    expect(withSecond({ ...all, choices: ['only one'] })).toBeNull();
+    expect(withSecond({ ...all, choices: ['same', 'same', 'other'] })).toBeNull();
+    expect(withSecond({ ...one, path: '/css/trivia/css-other' })?.quiz?.questions.length).toBe(2);
+  });
+
+  it('marks a multiple-choice answer right only when it picks exactly the right options', () => {
+    const service = create();
+    const [one, all] = service.normalize(BOOKING_ENTRY)!.quiz!.questions;
+    expect(rehearsalPicked('')).toEqual([]);
+    expect(rehearsalPicked('1,0')).toEqual([0, 1]);
+    expect(rehearsalAnswerRight(one, '0')).toBeTrue();
+    expect(rehearsalAnswerRight(one, '1')).toBeFalse();
+    expect(rehearsalAnswerRight(all, '1,0')).toBeTrue();
+    expect(rehearsalAnswerRight(all, '0')).toBeFalse();
+    expect(rehearsalAnswerRight(all, '0,1,2')).toBeFalse();
+    expect(rehearsalAnswerRight(all, '')).toBeFalse();
+
+    service.start(service.normalize(BOOKING_ENTRY)!);
+    service.answer('0');
+    service.nextQuestion();
+    service.answer('0,2');
+    service.end();
+    expect(analytics.track).toHaveBeenCalledWith('rehearsal_ended', jasmine.objectContaining({
+      rehearsal_id: 'booking-com-hackerrank-assessment',
+      short_answers: 0,
+      choice_questions: 2,
+      choice_right: 1,
+    }));
   });
 
   it('asks the short answers first and keeps each answer, then opens the problems on the same clock', () => {

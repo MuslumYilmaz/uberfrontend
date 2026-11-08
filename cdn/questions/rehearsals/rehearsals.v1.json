@@ -74,7 +74,7 @@
       "summary": "Public accounts of Walmart's Karat screen describe about ten minutes of role-focused questions with one-line answers, then 45 minutes for two easy-to-medium algorithm problems. This rehearsal asks eight frontend questions on topics Walmart's reports name, then two algorithm problems from other Walmart rounds; sample answers and solutions open when the clock stops.",
       "minutes": 55,
       "order": "sequential",
-      "shortAnswers": {
+      "quiz": {
         "minutes": 10,
         "questions": [
           {
@@ -127,6 +127,46 @@
         {
           "path": "/javascript/coding/js-stack-queue-implementation",
           "title": "Implement Stack and Queue in JavaScript"
+        }
+      ]
+    },
+    {
+      "id": "booking-com-hackerrank-assessment",
+      "access": "premium",
+      "company": "booking-com",
+      "title": "Booking.com HackerRank assessment",
+      "round": "hackerrank-assessment",
+      "summary": "Public accounts of Booking.com's HackerRank test describe five items in 90 to 100 minutes: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component. This rehearsal leaves out the React component and gives the other four 45 minutes: the two CSS questions first, then both problems. The right answers and the solutions open when the clock stops.",
+      "minutes": 45,
+      "order": "free",
+      "quiz": {
+        "questions": [
+          {
+            "question": "An element has `width: 200px`, `padding: 10px` and a 1px border, with `box-sizing: border-box`. How wide is its content box?",
+            "choices": ["178px", "180px", "200px", "222px"],
+            "correct": [0],
+            "pick": "one",
+            "answer": "With `border-box` the 200px include the padding and the border: 200px minus 20px of padding and 2px of border leaves 178px. Under the default `content-box` the content is 200px and the whole box 222px.",
+            "path": "/css/trivia/css-box-model"
+          },
+          {
+            "question": "Which of these, set on an ancestor, make it the box that an absolutely positioned child is placed against?",
+            "choices": ["`position: relative`", "`transform: translateX(0)`", "`display: flex`", "`overflow: hidden`"],
+            "correct": [0, 1],
+            "pick": "all",
+            "answer": "An absolutely positioned element is placed against its nearest ancestor with a `position` other than `static`, or with a transform, filter or contain. A flex container or `overflow: hidden` alone does not do it.",
+            "path": "/css/trivia/css-position-relative-absolute-fixed"
+          }
+        ]
+      },
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-merge-sorted-arrays",
+          "title": "Merge Two Sorted Arrays"
         }
       ]
     }

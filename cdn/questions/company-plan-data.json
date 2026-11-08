@@ -2836,6 +2836,19 @@
         "js-recover-bst-swapped-nodes"
       ]
     },
+    "rehearsal-booking-com-hackerrank-assessment": {
+      "id": "rehearsal-booking-com-hackerrank-assessment",
+      "title": "Rehearse the Booking.com HackerRank assessment",
+      "route": "/javascript/coding/js-valid-parentheses",
+      "kind": "rehearsal",
+      "access": "premium",
+      "minutes": 45,
+      "members": [
+        "js-valid-parentheses",
+        "js-merge-sorted-arrays"
+      ],
+      "choiceQuestions": 2
+    },
     "rehearsal-meta-full-loop-coding": {
       "id": "rehearsal-meta-full-loop-coding",
       "title": "Rehearse the Meta coding round",
@@ -5223,6 +5236,12 @@
             },
             {
               "id": "js-flatten-once"
+            },
+            {
+              "id": "rehearsal-booking-com-hackerrank-assessment",
+              "rounds": [
+                "hackerrank-assessment"
+              ]
             }
           ]
         }

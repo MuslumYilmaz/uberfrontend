@@ -10,9 +10,10 @@ import {
   RehearsalItemResult,
   RehearsalOrder,
   RehearsalPhase,
+  RehearsalQuestion,
+  RehearsalQuiz,
   RehearsalSession,
-  RehearsalShortAnswer,
-  RehearsalShortAnswers,
+  rehearsalAnswerRight,
 } from '../models/rehearsal.model';
 import { AnalyticsService } from './analytics.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
@@ -24,9 +25,10 @@ const ORDERS: readonly RehearsalOrder[] = ['sequential', 'free'];
 const END_REASONS: readonly RehearsalEndReason[] = ['expired', 'ended'];
 // The editor panel that records runs and turns read-only serves plain JavaScript tasks.
 const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
-// A short-answer question links the concept page that answers it in full.
+// A question links the concept page that answers it in full.
 const CONCEPT_PATH = /^\/[a-z]+\/trivia\/[a-z0-9-]+$/;
 const MAX_ANSWER = 400;
+const PICKS: readonly NonNullable<RehearsalQuestion['pick']>[] = ['one', 'all'];
 
 /**
  * Reads the rehearsal list and keeps the one running rehearsal on the device. The clock is the start time plus
@@ -54,7 +56,7 @@ export class RehearsalService implements OnDestroy {
     if (!session) return null;
     return session.endedAt !== null || this.remainingMs() === 0 ? 'review' : 'active';
   });
-  /** The short answers are on screen; the problems open after them. */
+  /** The questions are on screen; the problems open after them. */
   readonly answering = computed(() => {
     const session = this.session();
     return !!session && this.phase() === 'active' && session.answering < this.questionCount(session.definition);
@@ -127,15 +129,15 @@ export class RehearsalService implements OnDestroy {
     const order = ORDERS.find((entry) => entry === source['order']) ?? null;
     const rawItems = Array.isArray(source['items']) ? (source['items'] as unknown[]) : [];
     const items = rawItems.map((item) => this.item(item)).filter((item): item is RehearsalItem => item !== null);
-    const shortAnswers = source['shortAnswers'] === undefined ? undefined : this.shortAnswers(source['shortAnswers'], minutes);
+    const quiz = source['quiz'] === undefined ? undefined : this.quiz(source['quiz'], minutes);
 
     if (!id || !company || !title || !round || !summary || !order) return null;
     if (!Number.isInteger(minutes) || minutes < 5 || minutes > 240) return null;
     // A rehearsal with a task the panel cannot open, or the same task twice, would leave the clock without its list.
     if (items.length < 2 || items.length !== rawItems.length) return null;
     if (new Set(items.map((item) => item.questionId)).size !== items.length) return null;
-    if (shortAnswers === null) return null;
-    return { id, company, title, round, summary, minutes, order, ...(shortAnswers ? { shortAnswers } : {}), items };
+    if (quiz === null) return null;
+    return { id, company, title, round, summary, minutes, order, ...(quiz ? { quiz } : {}), items };
   }
 
   includes(questionId: string | null | undefined): boolean {
@@ -191,7 +193,7 @@ export class RehearsalService implements OnDestroy {
     if (index > session.reached) this.write({ ...session, reached: index });
   }
 
-  /** Keeps the answer to the short-answer question on screen. */
+  /** Keeps the answer to the question on screen: its text, or the indexes of the picked options. */
   answer(text: string): void {
     this.refresh();
     const session = this.session();
@@ -248,10 +250,22 @@ export class RehearsalService implements OnDestroy {
       reason: endReason,
       passed_items: passedItems,
       items: session.definition.items.length,
-      short_answers: this.questionCount(session.definition),
-      short_answers_given: session.answers.filter((answer) => answer.trim()).length,
+      ...this.quizCounts(session),
       elapsed_sec: Math.round((endedAt - session.startedAt) / 1000),
     });
+  }
+
+  /** How many questions of each kind the rehearsal asked, how many have an answer and how many picks are right. */
+  private quizCounts(session: RehearsalSession) {
+    const asked = (session.definition.quiz?.questions ?? []).map((question, index) => ({ question, answer: session.answers[index] ?? '' }));
+    const short = asked.filter(({ question }) => !question.choices);
+    const choice = asked.filter(({ question }) => !!question.choices);
+    return {
+      short_answers: short.length,
+      short_answers_given: short.filter(({ answer }) => answer.trim()).length,
+      choice_questions: choice.length,
+      choice_right: choice.filter(({ question, answer }) => rehearsalAnswerRight(question, answer)).length,
+    };
   }
 
   private deadline(session: RehearsalSession): number {
@@ -259,7 +273,7 @@ export class RehearsalService implements OnDestroy {
   }
 
   private questionCount(definition: RehearsalDefinition): number {
-    return definition.shortAnswers?.questions.length ?? 0;
+    return definition.quiz?.questions.length ?? 0;
   }
 
   private write(session: RehearsalSession | null): void {
@@ -321,7 +335,7 @@ export class RehearsalService implements OnDestroy {
     if (endedAt !== null && (!Number.isFinite(endedAt) || !endReason)) return null;
     if (!Number.isInteger(reached) || reached < 0 || reached >= definition.items.length) return null;
     const count = this.questionCount(definition);
-    // A session kept before short answers existed has none to answer.
+    // A session kept before questions existed has none to answer.
     const answering = source['answering'] === undefined ? count : Number(source['answering']);
     if (!Number.isInteger(answering) || answering < 0 || answering > count) return null;
     const storedAnswers = Array.isArray(source['answers']) ? (source['answers'] as unknown[]) : [];
@@ -364,23 +378,34 @@ export class RehearsalService implements OnDestroy {
     return { path, questionId: match[2], title };
   }
 
-  private shortAnswers(value: unknown, minutes: number): RehearsalShortAnswers | null {
+  private quiz(value: unknown, minutes: number): RehearsalQuiz | null {
     const source = this.asObject(value);
-    const budget = Number(source?.['minutes']);
     const raw = Array.isArray(source?.['questions']) ? (source['questions'] as unknown[]) : [];
-    const questions = raw.map((entry) => this.shortAnswer(entry)).filter((entry): entry is RehearsalShortAnswer => entry !== null);
+    const questions = raw.map((entry) => this.quizQuestion(entry)).filter((entry): entry is RehearsalQuestion => entry !== null);
     // The questions take part of the clock, never all of it, and each one links its full answer.
+    if (!source || questions.length < 2 || questions.length !== raw.length) return null;
+    if (source['minutes'] === undefined) return { questions };
+    const budget = Number(source['minutes']);
     if (!Number.isInteger(budget) || budget < 1 || budget >= minutes) return null;
-    if (questions.length < 3 || questions.length !== raw.length) return null;
     return { minutes: budget, questions };
   }
 
-  private shortAnswer(value: unknown): RehearsalShortAnswer | null {
+  private quizQuestion(value: unknown): RehearsalQuestion | null {
     const source = this.asObject(value);
     const question = this.text(source?.['question']);
     const answer = this.text(source?.['answer']);
     const path = this.text(source?.['path']);
-    return question && answer && CONCEPT_PATH.test(path) ? { question, answer, path } : null;
+    if (!source || !question || !answer || !CONCEPT_PATH.test(path)) return null;
+    if (source['choices'] === undefined) return { question, answer, path };
+    // A multiple-choice question offers two to six distinct options, and the right ones are among them.
+    const choices = Array.isArray(source['choices']) ? (source['choices'] as unknown[]).map((choice) => this.text(choice)) : [];
+    const correct = Array.isArray(source['correct']) ? (source['correct'] as unknown[]).map(Number) : [];
+    const pick = PICKS.find((entry) => entry === source['pick']) ?? null;
+    if (choices.length < 2 || choices.length > 6 || choices.some((choice) => !choice) || new Set(choices).size !== choices.length) return null;
+    if (!pick || !correct.length || new Set(correct).size !== correct.length) return null;
+    if (correct.some((index) => !Number.isInteger(index) || index < 0 || index >= choices.length)) return null;
+    if (pick === 'one' && correct.length !== 1) return null;
+    return { question, answer, path, choices, correct, pick };
   }
 
   private asObject(value: unknown): Record<string, unknown> | null {

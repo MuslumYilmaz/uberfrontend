@@ -21,8 +21,9 @@ export type CompanyPlanDataTask = {
   readonly minutes: number;
   /** A timed rehearsal's problems, by task id: the rehearsal stands for them, so the plan never lists them beside it. */
   readonly members?: readonly string[];
-  /** How many questions a timed rehearsal asks for one-line answers before its problems. */
+  /** How many questions a timed rehearsal asks before its problems: for one-line answers, and with set options. */
   readonly shortAnswers?: number;
+  readonly choiceQuestions?: number;
   /** The page can run it as an interview: the requirements change while the person codes. */
   readonly pressure?: true;
   readonly family?: string;
@@ -131,7 +132,7 @@ export type CompanyPlanWhy =
   | { readonly kind: 'format'; readonly framework?: CompanyPlanFramework }
   | { readonly kind: 'general' }
   /** The round's problems on one clock, as the round runs them. */
-  | { readonly kind: 'rehearsal'; readonly problems: number; readonly shortAnswers?: number };
+  | { readonly kind: 'rehearsal'; readonly problems: number; readonly shortAnswers?: number; readonly choiceQuestions?: number };
 
 export type PlannedTask = CompanyPlanDataTask & {
   readonly why: CompanyPlanWhy;
@@ -223,7 +224,12 @@ export function companyPlanDefaultList(company: CompanyPlanDataCompany): Company
 const isRunnable = (task: CompanyPlanDataTask) => task.kind === 'coding' || task.kind === 'debug' || task.kind === 'system-design';
 const whyOf = (row: CompanyPlanDataRow | null, task: CompanyPlanDataTask): CompanyPlanWhy => {
   if (task.kind === 'rehearsal') {
-    return { kind: 'rehearsal', problems: task.members?.length ?? 0, ...(task.shortAnswers ? { shortAnswers: task.shortAnswers } : {}) };
+    return {
+      kind: 'rehearsal',
+      problems: task.members?.length ?? 0,
+      ...(task.shortAnswers ? { shortAnswers: task.shortAnswers } : {}),
+      ...(task.choiceQuestions ? { choiceQuestions: task.choiceQuestions } : {}),
+    };
   }
   const unbound = row && !row.rounds?.length ? { unbound: true as const } : {};
   return row?.report ? { kind: 'report', ...row.report, ...unbound } : { kind: 'pick', ...unbound };

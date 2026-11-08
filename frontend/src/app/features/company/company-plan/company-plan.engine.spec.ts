@@ -191,10 +191,11 @@ describe('company plan engine', () => {
     expect(plan.tasks.map((entry) => entry.id)).not.toContain('tagged-a');
     expect(plan.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2 });
 
-    // A rehearsal that opens with short answers carries their count to its line.
-    const screen = { ...rehearsal, shortAnswers: 8 };
+    // A rehearsal that opens with questions carries their counts, by kind, to its line.
+    const screen = { ...rehearsal, shortAnswers: 8, choiceQuestions: 2 };
     const withQuestions = buildCompanyPlan({ ...data, tasks: { ...data.tasks, [rehearsal.id]: screen } } as CompanyPlanData, input({ when: 'later' }));
-    expect(withQuestions.tasks.find((entry) => entry.id === rehearsal.id)?.why).toEqual({ kind: 'rehearsal', problems: 2, shortAnswers: 8 });
+    expect(withQuestions.tasks.find((entry) => entry.id === rehearsal.id)?.why)
+      .toEqual({ kind: 'rehearsal', problems: 2, shortAnswers: 8, choiceQuestions: 2 });
   });
 
   it('lets a rehearsal that holds none of its round\'s practice links follow the link, as one format among several', () => {

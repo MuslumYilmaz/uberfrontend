@@ -62,7 +62,7 @@
   white-space: normal;
 }
 
-/* A rehearsal's short answers come before its problems: the panel stays, and the problem waits out of sight. */
+/* A rehearsal's questions come before its problems: the panel stays, and the problem waits out of sight. */
 .rehearsal-answering > :not(app-rehearsal-panel) {
   display: none !important;
 }

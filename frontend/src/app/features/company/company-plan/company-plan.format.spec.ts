@@ -61,9 +61,13 @@ describe('whyLineFor', () => {
     expect(whyLineFor({ kind: 'format' }, 'Extra practice')).toBe('Extra practice');
     expect(whyLineFor({ kind: 'rehearsal', problems: 2 }, 'Full loop: coding')).toBe('Timed rehearsal: 2 problems on one clock · Full loop: coding');
     expect(whyLine({ kind: 'rehearsal', problems: 3 })).toBe('Timed rehearsal: 3 problems on one clock');
-    // A Karat screen opens with questions answered in a line, and the line says so.
+    // A Karat screen opens with questions answered in a line, a HackerRank test with set options; the line says so.
     expect(whyLineFor({ kind: 'rehearsal', problems: 2, shortAnswers: 8 }, 'Coding screen'))
       .toBe('Timed rehearsal: 8 short answers and 2 problems on one clock · Coding screen');
+    expect(whyLine({ kind: 'rehearsal', problems: 2, choiceQuestions: 2 }))
+      .toBe('Timed rehearsal: 2 multiple-choice questions and 2 problems on one clock');
+    expect(whyLine({ kind: 'rehearsal', problems: 2, shortAnswers: 1, choiceQuestions: 1 }))
+      .toBe('Timed rehearsal: 1 short answer, 1 multiple-choice question and 2 problems on one clock');
     expect(whyLineFor({ kind: 'general' }, null)).toBe('General frontend practice');
     expect(whyLineFor({ kind: 'pick' }, null)).toBe('Our pick for this round');
   });

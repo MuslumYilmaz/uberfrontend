@@ -106,13 +106,22 @@ const rehearsalTasks = new Map([
   ['/css/trivia/css-box-model', { title: 'The box model' }],
   ['/react/trivia/react-useeffect-purpose', { title: 'useEffect()' }],
 ]);
-const shortAnswers = () => ({
+const quiz = () => ({
   minutes: 10,
   questions: [
     { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
     { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
     { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
   ],
+});
+const choice = (patch = {}) => ({
+  question: 'How wide is the content box?',
+  choices: ['178px', '200px', '222px'],
+  correct: [0],
+  pick: 'one',
+  answer: 'Border-box counts padding and border.',
+  path: '/css/trivia/css-box-model',
+  ...patch,
 });
 const listIssues = (list) => validateRehearsalList(list, rehearsalTasks).map((issue) => `${issue.id}: ${issue.message}`).join('\n');
 const oneRehearsal = (patch) => listIssues({ schemaVersion: 1, rehearsals: [{ ...rehearsal(), ...patch }] });
@@ -146,18 +155,35 @@ test('a rehearsal is Premium, with a clock, an order and known keys', () => {
   assert.match(oneRehearsal({ extra: true }), /Unknown key: extra/);
 });
 
-test('short answers take part of the clock, and each links an existing concept page with a sample answer', () => {
-  assert.equal(oneRehearsal({ shortAnswers: shortAnswers() }), '');
-  const [first, second, third] = shortAnswers().questions;
-  const withQuestions = (questions) => oneRehearsal({ shortAnswers: { minutes: 10, questions } });
-  assert.match(oneRehearsal({ shortAnswers: [] }), /shortAnswers must be an object/);
-  assert.match(oneRehearsal({ shortAnswers: { ...shortAnswers(), minutes: 40 } }), /less than the rehearsal's/);
-  assert.match(oneRehearsal({ shortAnswers: { ...shortAnswers(), extra: 1 } }), /Unknown key in shortAnswers: extra/);
-  assert.match(withQuestions([first, second]), /3 to 12 questions/);
+test('quiz questions take part of the clock, and each links an existing concept page with a sample answer', () => {
+  assert.equal(oneRehearsal({ quiz: quiz() }), '');
+  const [first, second, third] = quiz().questions;
+  const withQuestions = (questions) => oneRehearsal({ quiz: { minutes: 10, questions } });
+  assert.match(oneRehearsal({ quiz: [] }), /quiz must be an object/);
+  assert.match(oneRehearsal({ quiz: { ...quiz(), minutes: 40 } }), /less than the rehearsal's/);
+  assert.match(oneRehearsal({ quiz: { ...quiz(), extra: 1 } }), /Unknown key in quiz: extra/);
+  assert.match(withQuestions([first]), /2 to 12 questions/);
   assert.match(withQuestions([first, second, first]), /linked twice: \/javascript\/trivia\/js-closures/);
   assert.match(withQuestions([first, second, { ...third, path: '/javascript/coding/js-debounce' }]), /must link a concept question page/);
   assert.match(withQuestions([first, second, { ...third, path: '/javascript/trivia/js-missing' }]), /does not exist: \/javascript\/trivia\/js-missing/);
-  assert.match(withQuestions([first, second, { ...third, answer: '' }]), /short-answer answer must be text/);
-  assert.match(withQuestions([first, second, { ...third, question: 'x'.repeat(161) }]), /short-answer question must be text of at most 160/);
-  assert.match(withQuestions([first, second, { ...third, hint: 'x' }]), /Unknown key in a short-answer question: hint/);
+  assert.match(withQuestions([first, second, { ...third, answer: '' }]), /quiz answer must be text/);
+  assert.match(withQuestions([first, second, { ...third, question: 'x'.repeat(161) }]), /quiz question must be text of at most 160/);
+  assert.match(withQuestions([first, second, { ...third, hint: 'x' }]), /Unknown key in a quiz question: hint/);
+});
+
+test('a multiple-choice question names its right options among two to six distinct choices', () => {
+  const closure = quiz().questions[0];
+  const withChoice = (entry) => oneRehearsal({ quiz: { questions: [closure, entry] } });
+  // No time of their own is fine: the reports may give none.
+  assert.equal(withChoice(choice()), '');
+  assert.equal(withChoice(choice({ correct: [0, 2], pick: 'all' })), '');
+  assert.match(withChoice(choice({ correct: [0, 2] })), /exactly one right choice/);
+  assert.match(withChoice(choice({ correct: [3] })), /indexes of the right choices/);
+  assert.match(withChoice(choice({ correct: [] })), /indexes of the right choices/);
+  assert.match(withChoice(choice({ correct: [0, 0], pick: 'all' })), /lists an index twice/);
+  assert.match(withChoice(choice({ pick: 'some' })), /pick must be one or all/);
+  assert.match(withChoice(choice({ choices: ['only'] , correct: [0] })), /2 to 6 choices/);
+  assert.match(withChoice(choice({ choices: ['178px', '178px', '222px'] })), /lists a choice twice/);
+  assert.match(withChoice(choice({ choices: ['x'.repeat(121), '200px'] })), /at most 120 characters/);
+  assert.match(withChoice({ ...closure, path: '/css/trivia/css-box-model', correct: [0] }), /without choices cannot name right options/);
 });

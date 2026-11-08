@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RehearsalDefinition, RehearsalPhase, RehearsalSession, RehearsalShortAnswer } from '../../../core/models/rehearsal.model';
+import {
+  RehearsalDefinition,
+  RehearsalPhase,
+  RehearsalQuestion,
+  RehearsalSession,
+  rehearsalAnswerRight,
+  rehearsalPicked,
+} from '../../../core/models/rehearsal.model';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaFieldComponent } from '../../../shared/ui/field/fa-field.component';
 import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
@@ -15,12 +22,22 @@ export type RehearsalRow = {
   readonly status: 'passed' | 'partial' | 'not-run' | 'not-opened';
 };
 
-/** The short-answer question on screen. */
-export type RehearsalQuestion = {
+/** The question on screen, with the options its answer picked. */
+export type RehearsalQuestionOnScreen = {
   readonly index: number;
   readonly total: number;
-  readonly entry: RehearsalShortAnswer;
+  readonly entry: RehearsalQuestion;
   readonly answer: string;
+  readonly picked: readonly number[];
+};
+
+/** A question in the review: the person's answer beside a sample one, or beside the right options. */
+export type RehearsalAnswerReview = RehearsalQuestion & {
+  readonly given: string;
+  /** For a multiple-choice question: the picked options, the right ones, and whether they match. */
+  readonly pickedText?: string;
+  readonly correctText?: string;
+  readonly right?: boolean;
 };
 
 const MINUTE = 60_000;
@@ -35,11 +52,19 @@ export function formatRehearsalClock(ms: number): string {
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
 }
 
-/** "Meta coding round: 2 problems in 40 minutes", naming the short answers first when the rehearsal opens with them. */
+const count = (value: number, one: string, many: string) => `${value} ${value === 1 ? one : many}`;
+
+/** "Meta coding round: 2 problems in 40 minutes", naming the questions first when the rehearsal opens with them. */
 export function rehearsalHeading(definition: RehearsalDefinition): string {
-  const problems = `${definition.items.length} problems`;
-  const questions = definition.shortAnswers?.questions.length;
-  return `${definition.title}: ${questions ? `${questions} short answers and ${problems}` : problems} in ${definition.minutes} minutes`;
+  const questions = definition.quiz?.questions ?? [];
+  const short = questions.filter((question) => !question.choices).length;
+  const choice = questions.length - short;
+  const parts = [
+    ...(short ? [count(short, 'short answer', 'short answers')] : []),
+    ...(choice ? [count(choice, 'multiple-choice question', 'multiple-choice questions')] : []),
+    count(definition.items.length, 'problem', 'problems'),
+  ];
+  return `${definition.title}: ${parts.slice(0, -1).join(', ')}${parts.length > 1 ? ' and ' : ''}${parts.at(-1)} in ${definition.minutes} minutes`;
 }
 
 /** The clock and the task list of a running rehearsal, then its review. */
@@ -60,37 +85,49 @@ export class RehearsalPanelComponent {
   @Output() readonly answer = new EventEmitter<string>();
   @Output() readonly nextQuestion = new EventEmitter<void>();
   @Output() readonly skipToProblems = new EventEmitter<void>();
-  @ViewChild('answerBox') private answerBox?: ElementRef<HTMLTextAreaElement>;
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   clock(): string {
     return formatRehearsalClock(this.remainingMs);
   }
 
-  /** The short-answer question on screen; null once the problems are open. */
-  question(): RehearsalQuestion | null {
-    const questions = this.session.definition.shortAnswers?.questions ?? [];
+  /** The question on screen; null once the problems are open. */
+  question(): RehearsalQuestionOnScreen | null {
+    const questions = this.session.definition.quiz?.questions ?? [];
     const index = this.session.answering;
     if (this.phase !== 'active' || index >= questions.length) return null;
-    return { index, total: questions.length, entry: questions[index], answer: this.session.answers[index] ?? '' };
+    const answer = this.session.answers[index] ?? '';
+    return { index, total: questions.length, entry: questions[index], answer, picked: questions[index].choices ? rehearsalPicked(answer) : [] };
   }
 
-  /** How the short answers sit on the clock: the reports' time for them, then a nudge once it has passed. */
+  /** How the questions sit on the clock: the reports' time for them when they give one, then a nudge once it has passed. */
   questionNote(): string {
-    const { minutes, shortAnswers } = this.session.definition;
-    const budget = shortAnswers?.minutes ?? 0;
-    return minutes * MINUTE - this.remainingMs >= budget * MINUTE
-      ? `About ${budget} minutes have passed, which is when the reported screen moves on to coding.`
-      : `The reports give these questions about ${budget} minutes. The clock keeps running for the whole screen.`;
+    const { minutes, quiz } = this.session.definition;
+    if (!quiz?.minutes) return 'The clock keeps running for the whole rehearsal.';
+    return minutes * MINUTE - this.remainingMs >= quiz.minutes * MINUTE
+      ? `About ${quiz.minutes} minutes have passed, which is when the reported round moves on to the problems.`
+      : `The reports give these questions about ${quiz.minutes} minutes. The clock keeps running for the whole rehearsal.`;
   }
 
   onAnswer(event: Event): void {
     this.answer.emit((event.target as HTMLTextAreaElement).value);
   }
 
-  onNextQuestion(current: RehearsalQuestion): void {
+  /** One option replaces the pick; for every right option, each box adds or removes its own. */
+  onChoice(current: RehearsalQuestionOnScreen, index: number, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const picked = current.entry.pick === 'all'
+      ? [...current.picked.filter((entry) => entry !== index), ...(checked ? [index] : [])]
+      : [index];
+    this.answer.emit([...picked].sort((a, b) => a - b).join(','));
+  }
+
+  onNextQuestion(current: RehearsalQuestionOnScreen): void {
     this.nextQuestion.emit();
-    // The next question takes the same box, so typing carries on there.
-    if (current.index + 1 < current.total) this.answerBox?.nativeElement.focus();
+    // Typing or picking carries on in the next question, once it is on screen.
+    if (current.index + 1 < current.total) {
+      setTimeout(() => this.host.nativeElement.querySelector<HTMLElement>('[data-testid="rehearsal-answer"], [data-testid="rehearsal-choice"]')?.focus());
+    }
   }
 
   rows(): RehearsalRow[] {
@@ -117,9 +154,9 @@ export class RehearsalPanelComponent {
     });
   }
 
-  /** What a hidden problem waits for: the short answers, or the person moving on. */
+  /** What a hidden problem waits for: the questions, or the person moving on. */
   hiddenNote(): string {
-    return this.question() ? 'Opens after the short answers' : 'Opens when you move on';
+    return this.question() ? 'Opens after the questions' : 'Opens when you move on';
   }
 
   next(): RehearsalRow | null {
@@ -128,15 +165,27 @@ export class RehearsalPanelComponent {
     return index >= 0 && index < rows.length - 1 ? rows[index + 1] : null;
   }
 
-  /** Each short-answer question beside the person's answer, for the review. */
-  answerReview(): Array<RehearsalShortAnswer & { readonly given: string }> {
-    return (this.session.definition.shortAnswers?.questions ?? []).map((entry, index) => ({
-      ...entry,
-      given: (this.session.answers[index] ?? '').trim(),
-    }));
+  /** Each question beside the person's answer, for the review. */
+  answerReview(): RehearsalAnswerReview[] {
+    return (this.session.definition.quiz?.questions ?? []).map((entry, index) => {
+      const given = (this.session.answers[index] ?? '').trim();
+      if (!entry.choices) return { ...entry, given };
+      const options = entry.choices;
+      const text = (indexes: readonly number[]) => indexes.map((at) => options[at]).filter(Boolean).join('; ');
+      return {
+        ...entry,
+        given,
+        pickedText: text(rehearsalPicked(given)),
+        correctText: text([...(entry.correct ?? [])].sort((a, b) => a - b)),
+        right: rehearsalAnswerRight(entry, given),
+      };
+    });
   }
 
-  /** "Time is up." or "Ended after 27 min.", then how many tasks pass every test and how many questions have an answer. */
+  /**
+   * "Time is up." or "Ended after 27 min.", then how many tasks pass every test, how many short questions have an
+   * answer and how many multiple-choice questions are right.
+   */
   verdict(): string {
     const { definition, endReason, endedAt, startedAt, results } = this.session;
     const passed = definition.items.filter((item) => {
@@ -147,9 +196,10 @@ export class RehearsalPanelComponent {
       ? `Ended after ${Math.max(1, Math.round((endedAt - startedAt) / 60_000))} min.`
       : 'Time is up.';
     const review = this.answerReview();
-    const answered = review.length
-      ? ` You answered ${review.filter((entry) => entry.given).length} of ${review.length} short questions.`
-      : '';
-    return `${ending} ${passed} of ${definition.items.length} problems pass every test.${answered}`;
+    const short = review.filter((entry) => !entry.choices);
+    const choice = review.filter((entry) => !!entry.choices);
+    const answered = short.length ? ` You answered ${short.filter((entry) => entry.given).length} of ${short.length} short questions.` : '';
+    const right = choice.length ? ` You got ${choice.filter((entry) => entry.right).length} of ${choice.length} multiple-choice questions right.` : '';
+    return `${ending} ${passed} of ${definition.items.length} problems pass every test.${answered}${right}`;
   }
 }

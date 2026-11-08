@@ -89,6 +89,7 @@ import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review
 import { RehearsalService } from '../../../core/services/rehearsal.service';
 import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
 import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading } from '../rehearsal/rehearsal-panel.component';
+import { RehearsalOffersComponent } from '../rehearsal/rehearsal-offers.component';
 import {
   AuthPromptContext,
   LoginRequiredDialogComponent,
@@ -180,6 +181,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         LoginRequiredDialogComponent,
         ReviewModePanelComponent,
         RehearsalPanelComponent,
+        RehearsalOffersComponent,
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
@@ -438,15 +440,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
   );
   /**
-   * The rehearsal's short answers are on screen, in the panel: the problem waits behind them, as it does in the
-   * screen, so its description and code are out of sight and its editor read-only. Only once the browser view is
-   * ready, as the panel itself, so hydration matches the server.
+   * The rehearsal's questions are on screen, in the panel: the problem waits behind them, as it does in the round,
+   * so its description and code are out of sight and its editor read-only. Only once the browser view is ready, as
+   * the panel itself, so hydration matches the server.
    */
   rehearsalAnswering = computed(() =>
     this.workspaceAvailable() && this.rehearsalPhase() === 'active' && this.rehearsals.answering()
   );
-  rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: short answers first` : null));
-  rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The first problem opens after the short answers.' : null));
+  rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: questions first` : null));
+  rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The problems open after the questions.' : null));
   readonly rehearsalHeading = rehearsalHeading;
   rehearsalAccess = computed<'pending' | 'premium' | 'locked'>(() => {
     if (this.auth.authUiState() === 'pending') return 'pending';

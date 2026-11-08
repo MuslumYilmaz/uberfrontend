@@ -60,10 +60,16 @@ export function whyLine(why: CompanyPlanWhy): string {
       return why.framework ? `Extra ${frameworkLabel(why.framework)} practice` : 'Extra practice';
     case 'general':
       return 'General frontend practice';
-    case 'rehearsal':
-      return why.shortAnswers
-        ? `Timed rehearsal: ${why.shortAnswers} short answers and ${why.problems} problems on one clock`
-        : `Timed rehearsal: ${why.problems} problems on one clock`;
+    case 'rehearsal': {
+      // "8 short answers and 2 problems", "2 multiple-choice questions and 2 problems".
+      const count = (value: number, one: string, many: string) => `${value} ${value === 1 ? one : many}`;
+      const parts = [
+        ...(why.shortAnswers ? [count(why.shortAnswers, 'short answer', 'short answers')] : []),
+        ...(why.choiceQuestions ? [count(why.choiceQuestions, 'multiple-choice question', 'multiple-choice questions')] : []),
+        count(why.problems, 'problem', 'problems'),
+      ];
+      return `Timed rehearsal: ${parts.slice(0, -1).join(', ')}${parts.length > 1 ? ' and ' : ''}${parts.at(-1)} on one clock`;
+    }
     default:
       // A pick the reports tie to no round sits where the plan has room, so it claims no round.
       return why.unbound ? 'Our pick for this plan' : 'Our pick for this round';

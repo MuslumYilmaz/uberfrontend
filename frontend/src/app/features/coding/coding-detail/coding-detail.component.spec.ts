@@ -3629,13 +3629,13 @@ describe('CodingDetailComponent', () => {
       expect(rehearsals.session()?.reached).toBe(0);
     });
 
-    it('keeps the problem out of sight and its editor read-only while the short answers run', async () => {
+    it('keeps the problem out of sight and its editor read-only while the questions run', async () => {
       definition = rehearsals.normalize({
         ...payload,
         id: 'walmart-karat-screen',
         title: 'Walmart Karat screen',
         minutes: 55,
-        shortAnswers: {
+        quiz: {
           minutes: 10,
           questions: [
             { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
@@ -3656,9 +3656,9 @@ describe('CodingDetailComponent', () => {
       expect(find('rehearsal-question')?.textContent?.trim()).toBe('What is a closure?');
       expect(rendered()).toEqual(['app-rehearsal-panel']);
       expect(jsPanel().locked).toBeTrue();
-      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left: short answers first$/);
+      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left: questions first$/);
       // The starter code would give the problem away: it waits behind a note, out of reach of the keyboard too.
-      expect(find('js-concealed-note')?.textContent?.trim()).toBe('The first problem opens after the short answers.');
+      expect(find('js-concealed-note')?.textContent?.trim()).toBe('The problems open after the questions.');
       expect(find('js-code-editor')?.hasAttribute('inert')).toBeTrue();
 
       find('rehearsal-skip')!.click();
@@ -3670,6 +3670,34 @@ describe('CodingDetailComponent', () => {
       expect(description.querySelector('[data-testid="question-title"]')!.getClientRects().length).toBeGreaterThan(0);
       expect(jsPanel().locked).toBeFalse();
       expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left$/);
+    });
+
+    it('lists several rehearsals of one problem in one card, with a start for each and one way to pricing', async () => {
+      const other = rehearsals.normalize({ ...payload, id: 'acme-screen', title: 'Acme screen', summary: 'Two problems in 30 minutes.', minutes: 30 })!;
+      (rehearsals.forTask as jasmine.Spy).and.returnValue(of([definition, other]));
+      const member = await render(twin, premium);
+      const host = member.fixture.nativeElement as HTMLElement;
+      expect(host.querySelectorAll('[data-testid="rehearsal-offers"]').length).toBe(1);
+      expect(member.find('rehearsal-offers')?.textContent).toContain('This problem is part of 2 timed rehearsals');
+      const rows = Array.from(host.querySelectorAll<HTMLElement>('[data-testid="rehearsal-entry"]'));
+      expect(rows.map((row) => row.querySelector('h3')?.textContent?.trim())).toEqual([
+        'Meta coding round: 2 problems in 40 minutes',
+        'Acme screen: 2 problems in 30 minutes',
+      ]);
+      // Each summary is a click away, so the description stays in view.
+      expect(rows[1].querySelector('details summary')?.textContent?.trim()).toBe('What it covers');
+      expect(rows[1].querySelector('details p')?.textContent?.trim()).toBe('Two problems in 30 minutes.');
+      const start = rows[1].querySelector<HTMLButtonElement>('[data-testid="rehearsal-start"]')!;
+      expect(start.getAttribute('aria-label')).toBe('Start the Acme screen rehearsal');
+      start.click();
+      expect(rehearsals.session()?.definition.id).toBe('acme-screen');
+      rehearsals.close();
+      member.fixture.destroy();
+
+      const visitor = await render(twin, null);
+      const visitorHost = visitor.fixture.nativeElement as HTMLElement;
+      expect(visitorHost.querySelectorAll('[data-testid="rehearsal-start"]').length).toBe(0);
+      expect(visitorHost.querySelectorAll('[data-testid="rehearsal-pricing"]').length).toBe(1);
     });
   });
 

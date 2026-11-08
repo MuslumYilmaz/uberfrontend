@@ -5,14 +5,15 @@
 export const REHEARSAL_LIST = 'rehearsals/rehearsals.v1.json';
 
 const LIST_KEYS = new Set(['schemaVersion', 'rehearsals']);
-const KEYS = new Set(['id', 'access', 'company', 'title', 'round', 'summary', 'minutes', 'order', 'shortAnswers', 'items']);
+const KEYS = new Set(['id', 'access', 'company', 'title', 'round', 'summary', 'minutes', 'order', 'quiz', 'items']);
 const TEXT_KEYS = [['company', 40], ['title', 60], ['summary', 400]];
-const SHORT_ANSWER_KEYS = new Set(['minutes', 'questions']);
-const QUESTION_KEYS = new Set(['question', 'answer', 'path']);
+const QUIZ_KEYS = new Set(['minutes', 'questions']);
+const QUESTION_KEYS = new Set(['question', 'answer', 'path', 'choices', 'correct', 'pick']);
 const QUESTION_TEXT_KEYS = [['question', 160], ['answer', 240]];
+const CHOICE_MAX = 120;
 // The panel that keeps the clock, records runs and turns read-only serves plain JavaScript tasks.
 const ITEM_PATH = /^\/javascript\/(coding|debug)\/([a-z0-9-]+)$/;
-// A short-answer question links the concept page that answers it in full.
+// A question links the concept page that answers it in full.
 const CONCEPT_PATH = /^\/[a-z]+\/trivia\/[a-z0-9-]+$/;
 
 /**
@@ -72,44 +73,69 @@ export function validateRehearsalList(data, tasks) {
       if (!task) add(`An item does not exist in the question bank: ${itemPath}`);
       else if (item.title !== task.title) add(`The title of ${itemPath} must match the task: "${task.title}"`);
     }
-    if (definition.shortAnswers !== undefined) validateShortAnswers(definition, tasks, add);
+    if (definition.quiz !== undefined) validateQuiz(definition, tasks, add);
   }
   return issues;
 }
 
-// Questions answered in a line before the problems open: part of the clock, never all of it, each with a sample
-// answer for the review and the concept page that answers it in full.
-function validateShortAnswers(definition, tasks, add) {
-  const block = definition.shortAnswers;
-  if (!block || typeof block !== 'object' || Array.isArray(block)) {
-    add('shortAnswers must be an object with minutes and questions.');
+// Questions answered before the problems open, in a line or by picking from set options: part of the clock, never
+// all of it, each with a sample answer (or why the right options are right) and the concept page that answers it in
+// full.
+function validateQuiz(definition, tasks, add) {
+  const quiz = definition.quiz;
+  if (!quiz || typeof quiz !== 'object' || Array.isArray(quiz)) {
+    add('quiz must be an object with questions.');
     return;
   }
-  for (const key of Object.keys(block)) if (!SHORT_ANSWER_KEYS.has(key)) add(`Unknown key in shortAnswers: ${key}`);
-  if (!Number.isInteger(block.minutes) || block.minutes < 1 || !(block.minutes < definition.minutes)) {
-    add("shortAnswers.minutes must be a whole number of minutes, less than the rehearsal's.");
+  for (const key of Object.keys(quiz)) if (!QUIZ_KEYS.has(key)) add(`Unknown key in quiz: ${key}`);
+  if (quiz.minutes !== undefined && (!Number.isInteger(quiz.minutes) || quiz.minutes < 1 || !(quiz.minutes < definition.minutes))) {
+    add("quiz.minutes must be a whole number of minutes, less than the rehearsal's.");
   }
-  const questions = Array.isArray(block.questions) ? block.questions : [];
-  if (questions.length < 3 || questions.length > 12) add('shortAnswers.questions must list 3 to 12 questions.');
+  const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
+  if (questions.length < 2 || questions.length > 12) add('quiz.questions must list 2 to 12 questions.');
   const paths = new Set();
   for (const entry of questions) {
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
-      add('A short-answer question must be a JSON object.');
+      add('A quiz question must be a JSON object.');
       continue;
     }
-    for (const key of Object.keys(entry)) if (!QUESTION_KEYS.has(key)) add(`Unknown key in a short-answer question: ${key}`);
+    for (const key of Object.keys(entry)) if (!QUESTION_KEYS.has(key)) add(`Unknown key in a quiz question: ${key}`);
     for (const [key, max] of QUESTION_TEXT_KEYS) {
       if (typeof entry[key] !== 'string' || !entry[key].trim() || entry[key].length > max) {
-        add(`A short-answer ${key} must be text of at most ${max} characters.`);
+        add(`A quiz ${key} must be text of at most ${max} characters.`);
       }
     }
+    validateChoices(entry, add);
     const conceptPath = typeof entry.path === 'string' ? entry.path : '';
     if (!CONCEPT_PATH.test(conceptPath)) {
-      add(`A short-answer question must link a concept question page: ${conceptPath || '(missing)'}`);
+      add(`A quiz question must link a concept question page: ${conceptPath || '(missing)'}`);
       continue;
     }
     if (paths.has(conceptPath)) add(`A concept question is linked twice: ${conceptPath}`);
     paths.add(conceptPath);
-    if (!tasks.has(conceptPath)) add(`A short-answer question links a page that does not exist: ${conceptPath}`);
+    if (!tasks.has(conceptPath)) add(`A quiz question links a page that does not exist: ${conceptPath}`);
   }
+}
+
+// A multiple-choice question offers two to six distinct options and names the right ones: one when it asks for one
+// option, any number when it asks for every right one, as HackerRank's multiple-select questions do.
+function validateChoices(entry, add) {
+  const hasChoices = entry.choices !== undefined;
+  if (!hasChoices) {
+    if (entry.correct !== undefined || entry.pick !== undefined) add('A quiz question without choices cannot name right options or a pick.');
+    return;
+  }
+  const choices = Array.isArray(entry.choices) ? entry.choices : [];
+  if (choices.length < 2 || choices.length > 6) add('A multiple-choice question must offer 2 to 6 choices.');
+  if (choices.some((choice) => typeof choice !== 'string' || !choice.trim() || choice.length > CHOICE_MAX)) {
+    add(`Each choice must be text of at most ${CHOICE_MAX} characters.`);
+  }
+  if (new Set(choices).size !== choices.length) add('A multiple-choice question lists a choice twice.');
+  if (entry.pick !== 'one' && entry.pick !== 'all') add('pick must be one or all.');
+  const correct = Array.isArray(entry.correct) ? entry.correct : [];
+  if (!correct.length || correct.some((index) => !Number.isInteger(index) || index < 0 || index >= choices.length)) {
+    add('correct must list the indexes of the right choices.');
+  }
+  if (new Set(correct).size !== correct.length) add('correct lists an index twice.');
+  if (entry.pick === 'one' && correct.length !== 1) add('A question that asks for one option must name exactly one right choice.');
 }

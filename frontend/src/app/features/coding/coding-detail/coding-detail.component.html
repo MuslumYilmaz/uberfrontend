@@ -235,17 +235,32 @@
                 (skipToProblems)="rehearsals.skipToProblems()"></app-rehearsal-panel>
 
               <ng-container *ngIf="!rehearsalPhase()">
-                <section *ngFor="let offer of rehearsalOffers()" class="pressure-entry" data-testid="rehearsal-entry">
+                <section *ngIf="rehearsalOffers().length === 1" class="pressure-entry" data-testid="rehearsal-entry">
                   <div>
                     <p class="pressure-entry__eyebrow">Timed rehearsal · Premium</p>
-                    <h2>{{ rehearsalHeading(offer) }}</h2>
-                    <p>{{ offer.summary }}</p>
+                    <h2>{{ rehearsalHeading(rehearsalOffers()[0]) }}</h2>
+                    <p>{{ rehearsalOffers()[0].summary }}</p>
                     <p *ngIf="otherRehearsalTitle() as other">Starting it ends the {{ other }} rehearsal you have running.</p>
                   </div>
                   <button *ngIf="rehearsalAccess() === 'premium'" type="button" faButton variant="primary"
-                    data-testid="rehearsal-start" (click)="startRehearsal(offer)">
+                    data-testid="rehearsal-start" (click)="startRehearsal(rehearsalOffers()[0])">
                     Start the rehearsal
                   </button>
+                  <button *ngIf="rehearsalAccess() === 'locked'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-pricing" (click)="goToPricing('coding_rehearsal')">
+                    View pricing
+                  </button>
+                </section>
+
+                <!-- A problem in several rehearsals lists them in one card, so its description stays in view. -->
+                <section *ngIf="rehearsalOffers().length > 1" class="pressure-entry" data-testid="rehearsal-offers">
+                  <div>
+                    <p class="pressure-entry__eyebrow">Timed rehearsals · Premium</p>
+                    <h2>This problem is part of {{ rehearsalOffers().length }} timed rehearsals</h2>
+                    <p *ngIf="otherRehearsalTitle() as other">Starting one ends the {{ other }} rehearsal you have running.</p>
+                  </div>
+                  <app-rehearsal-offers [offers]="rehearsalOffers()" [canStart]="rehearsalAccess() === 'premium'"
+                    (start)="startRehearsal($event)"></app-rehearsal-offers>
                   <button *ngIf="rehearsalAccess() === 'locked'" type="button" faButton variant="primary"
                     data-testid="rehearsal-pricing" (click)="goToPricing('coding_rehearsal')">
                     View pricing
