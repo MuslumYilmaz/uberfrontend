@@ -2,8 +2,8 @@
   <section class="drill" [attr.id]="id('start')" [attr.aria-labelledby]="id('title')" data-testid="behavioral-drill">
     <h3 class="drill__title" [attr.id]="id('title')">Practise one question</h3>
     <p class="drill__intro">
-      Pick a question and tell one story in its parts, then check it before you say it out loud. What you write stays
-      on this device.
+      Pick a question, write your answer, then check it before you say it out loud. What you write stays on this
+      device.
     </p>
     @if (note()) {
       <p class="drill__note">{{ note() }}</p>
@@ -39,19 +39,21 @@
     <ng-content select="[drillGate]"></ng-content>
 
     @if (question(); as current) {
-      <fieldset class="drill__group drill__shapes">
-        <legend class="drill__legend">Tell it as</legend>
-        <label class="drill__choice">
-          <input type="radio" [name]="id('shape')" value="star" [checked]="shape() === 'star'" (change)="setShape('star')"
-            data-testid="behavioral-drill-shape-star" />
-          <span><strong>STAR</strong>: situation, task, action, result</span>
-        </label>
-        <label class="drill__choice">
-          <input type="radio" [name]="id('shape')" value="car" [checked]="shape() === 'car'" (change)="setShape('car')"
-            data-testid="behavioral-drill-shape-car" />
-          <span><strong>CAR</strong>: context, action, result</span>
-        </label>
-      </fieldset>
+      @if (!isView()) {
+        <fieldset class="drill__group drill__shapes">
+          <legend class="drill__legend">Tell it as</legend>
+          <label class="drill__choice">
+            <input type="radio" [name]="id('shape')" value="star" [checked]="shape() === 'star'" (change)="setShape('star')"
+              data-testid="behavioral-drill-shape-star" />
+            <span><strong>STAR</strong>: situation, task, action, result</span>
+          </label>
+          <label class="drill__choice">
+            <input type="radio" [name]="id('shape')" value="car" [checked]="shape() === 'car'" (change)="setShape('car')"
+              data-testid="behavioral-drill-shape-car" />
+            <span><strong>CAR</strong>: context, action, result</span>
+          </label>
+        </fieldset>
+      }
 
       <p class="drill__asked" data-testid="behavioral-drill-asked">
         <span class="drill__asked-label">Your question</span> {{ current.text }}

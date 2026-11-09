@@ -866,6 +866,8 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Apple Frontend Interview Questions and Process',
     headings: [
       'A screen, then a team loop of four to seven rounds',
+      'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
+      'Practise one question',
       'Rehearse the screen, then the coding loop',
       'Common questions about Apple frontend interviews',
     ],
@@ -3915,6 +3917,10 @@ test.describe('seo-ssr', () => {
       'What Netflix publishes—and what you still need to confirm',
       'Three product contexts for practicing transferable frontend judgment',
       'Six Netflix frontend interview practice questions',
+      // The culture decoder and its drill render on the server, with the questions a visitor cannot pick yet.
+      'Netflix culture interview for frontend engineers: what the memo asks for and what was asked',
+      'Practise one question',
+      'Tell me about a tough decision you had to make quickly when circumstances changed.',
       'Scope Continue Watching before drawing architecture boxes',
       'A 7-day Netflix frontend interview preparation plan',
       'Common Netflix frontend interview preparation questions',

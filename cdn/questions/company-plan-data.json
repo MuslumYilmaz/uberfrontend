@@ -156,6 +156,15 @@
       "access": "free",
       "minutes": 15
     },
+    "/companies/apple/preview#apple-round-team-conversations": {
+      "id": "/companies/apple/preview#apple-round-team-conversations",
+      "title": "Apple team conversation questions and story drill",
+      "route": "/companies/apple/preview",
+      "fragment": "apple-round-team-conversations",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/companies/google/preview#google-round-googleyness": {
       "id": "/companies/google/preview#google-round-googleyness",
       "title": "Googleyness questions and story drill",
@@ -170,6 +179,15 @@
       "title": "Behavioural questions and story drill",
       "route": "/companies/meta/preview",
       "fragment": "meta-round-behavioural",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/companies/netflix/preview#netflix-round-culture": {
+      "id": "/companies/netflix/preview#netflix-round-culture",
+      "title": "Netflix culture questions and story drill",
+      "route": "/companies/netflix/preview",
+      "fragment": "netflix-round-culture",
       "kind": "guide",
       "access": "free",
       "minutes": 15
@@ -4827,13 +4845,13 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-20",
-      "sourceCount": 11,
+      "sourceCount": 12,
       "promptCount": 0,
       "variants": [
         {
           "id": "main",
           "title": "Frontend roles (the loop varies by team)",
-          "sourceCount": 11,
+          "sourceCount": 12,
           "newestReport": "2026-06",
           "rounds": [
             {
@@ -4897,7 +4915,7 @@
                   "date": "2025-02"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "technical-screen",
@@ -4955,7 +4973,7 @@
                   "date": "2025-02"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             }
           ],
           "tasks": [
@@ -4969,6 +4987,13 @@
                 "technical-screen"
               ],
               "lead": true
+            },
+            {
+              "id": "/companies/apple/preview#apple-round-team-conversations",
+              "lead": true,
+              "rounds": [
+                "hiring-manager-conversation"
+              ]
             },
             {
               "id": "react-todo-list",
@@ -9402,7 +9427,7 @@
       "framework": "javascript",
       "mixed": true,
       "checkedAt": "2026-10-22",
-      "sourceCount": 13,
+      "sourceCount": 14,
       "promptCount": 6,
       "variants": [
         {
@@ -9411,7 +9436,7 @@
           "from": "experienced engineers",
           "ask": "Interviewing as an experienced engineer?",
           "default": true,
-          "sourceCount": 6,
+          "sourceCount": 7,
           "newestReport": "2025-12",
           "rounds": [
             {
@@ -9533,12 +9558,23 @@
                 },
                 {
                   "label": "Taro (approx.)",
+                  "date": "2020-11"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2020-10"
                 }
               ]
             }
           ],
           "tasks": [
+            {
+              "id": "/companies/netflix/preview#netflix-round-culture",
+              "lead": true,
+              "rounds": [
+                "hiring-manager-conversation"
+              ]
+            },
             {
               "id": "js-promise-combinators-all-allsettled-race-any",
               "lead": true,

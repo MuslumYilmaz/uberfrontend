@@ -65,6 +65,7 @@ import {
   NETFLIX_PREVIEW_TITLE,
   NETFLIX_PREVIEW_TRUST_NOTE,
   NETFLIX_RESOURCE_LINKS,
+  NETFLIX_CULTURE_SPOTLIGHT,
   NETFLIX_ROLE_LENSES,
   NETFLIX_SOURCES,
   NETFLIX_WALKTHROUGH_STEPS,
@@ -379,6 +380,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly netflixFaqs = NETFLIX_PREVIEW_FAQS;
   readonly netflixResourceLinks = NETFLIX_RESOURCE_LINKS;
   readonly netflixSources = NETFLIX_SOURCES;
+  readonly netflixCulture = NETFLIX_CULTURE_SPOTLIGHT;
   data: CompanyPreviewResolved = {
     slug: '',
     mode: 'catalog',

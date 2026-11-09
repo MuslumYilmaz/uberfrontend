@@ -1,4 +1,4 @@
-import type { AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
+import type { AuthoredRoundSpotlight, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 
 export type NetflixPracticePrompt = {
   readonly id: string;
@@ -413,3 +413,62 @@ export const NETFLIX_SOURCES: readonly AuthoredSource[] = [
     kind: 'report',
   },
 ];
+
+/**
+ * The culture interviews, decoded on the guide; the process table's hiring-manager row links here. The memo
+ * (jobs.netflix.com/culture) and the new grad and internship pages were read on 2026-11-09. Those pages are written
+ * for early-career hires, so the section says so wherever it quotes them; the experienced-hire evidence is the
+ * accounts on the table's hiring-manager and onsite rows.
+ */
+export const NETFLIX_CULTURE_SPOTLIGHT: AuthoredRoundSpotlight = {
+  id: 'culture',
+  kicker: 'Round decoder',
+  title: 'Netflix culture interview for frontend engineers: what the memo asks for and what was asked',
+  lede: [
+    'Netflix frontend loops spend whole interviews on behaviour and fit with the culture memo: a 2020 account had a long behavioural interview with a UI manager and two more in the onsite, and a 2024 recruiter plan for an L4 Web UI role lists two behavioural rounds. Netflix\'s own pages for new graduates and interns say you may be asked which parts of the memo resonate most with you, or not.',
+    'The memo names four principles (the Dream Team, people over process, uncomfortably exciting, great and always better) and eight values: selflessness, judgment, candor, creativity, courage, inclusion, curiosity and resilience.',
+  ],
+  facts: [
+    {
+      label: 'Where it comes',
+      value: 'A long behavioural interview with a UI manager before the take-home, then two behavioural interviews in the onsite (2020); half a day of behavioural interviews with senior leadership and product, ending with a senior manager (another 2020 account); two behavioural rounds in a 2024 recruiter plan. Netflix-tagged commenters say each team runs its own loop.',
+    },
+    {
+      label: 'What the memo asks for',
+      value: 'Selflessness: what is best for Netflix over yourself or your team. Judgment: long-term solutions and wise decisions despite ambiguity, with data informing intuition. Candor: giving and receiving feedback, and admitting mistakes openly. Creativity: new ideas, pursued persistently. Courage: risking failure or challenging the status quo. Inclusion: counteracting your biases so everyone can do their best work. Curiosity: learning fast, as interested in others\' ideas as your own. Resilience: adapting quickly and making tough decisions without long delay.',
+    },
+    {
+      label: 'What Netflix tells early-career candidates',
+      value: 'Its new grad and internship pages say interviewers evaluate technical, role-specific and behavioural skills, that you may be asked which parts of the memo resonate most with you, or not, and that interviewers want to see qualities such as curiosity, candor and resilience. They recommend four or five examples ready in the STAR shape. The pages are written for new graduates and interns, not for experienced hires.',
+    },
+    {
+      label: 'Asked in frontend accounts',
+      value: 'To convince your teammates of something they were originally against, from a senior manager who "drilled deep into every sentence" (Taro, 2020); a thorough conversation about the memo, which the candidate advises studying and putting in your own words (Taro, 2020).',
+    },
+    {
+      label: 'Sources',
+      value: 'Netflix\'s culture memo and new grad page, listed under Sources below, its internship page, and frontend accounts on Taro and Blind from 2020 to 2024 on the hiring-manager and onsite rows of the process table.',
+    },
+  ],
+  practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+  processLink: { label: 'See the hiring-manager row in the reported process', fragment: 'netflix-interview-process-1-stage-hiring-manager-conversation' },
+  // The early-career pages' question, the 2020 account's, then one per memo value or practice, written from its text.
+  drill: {
+    note: 'The first question is the one Netflix\'s early-career pages say to expect, the second comes from a 2020 account, and the rest are written from the values and practices in the memo.',
+    questions: [
+      { id: 'memo', text: 'Which parts of the culture memo resonate most with you, and which do not?', source: 'Netflix\'s new grad and internship pages', kind: 'view' },
+      { id: 'convince', text: 'Tell me about a time you had to convince your teammates of something they were originally against.', source: 'Taro, 2020' },
+      { id: 'disagree-then-commit', text: 'Tell me about a decision you argued against and then committed to.', source: 'The memo: disagree then commit' },
+      { id: 'judgment', text: 'Tell me about a decision you made despite ambiguity, and the data that informed it.', source: 'The memo: judgment' },
+      { id: 'candor', text: 'Tell me about feedback you gave a colleague, or a mistake you admitted openly.', source: 'The memo: candor' },
+      { id: 'courage', text: 'Tell me about a time you challenged the status quo at the risk of failing.', source: 'The memo: courage' },
+      { id: 'selflessness', text: 'Tell me about a time you put what was best for the company ahead of your own team.', source: 'The memo: selflessness' },
+      { id: 'resilience', text: 'Tell me about a tough decision you had to make quickly when circumstances changed.', source: 'The memo: resilience' },
+    ],
+    checks: [
+      'I have read the memo and can say which parts resonate with me, and which do not.',
+      'It shows the value the question asks about, in what I did.',
+      'Four or five STAR examples are ready, as Netflix\'s early-career pages recommend.',
+    ],
+  },
+};

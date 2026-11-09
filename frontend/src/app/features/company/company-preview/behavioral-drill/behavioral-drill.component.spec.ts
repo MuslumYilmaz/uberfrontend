@@ -1,9 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AMAZON_COMPANY_PREVIEW } from '../../../../shared/company-previews/amazon-preview-content';
 import { BehavioralDrill } from '../../../../shared/company-previews/authored-company-preview.model';
+import { COMPANY_EDITORIAL_NOTES } from '../../../../shared/company-previews/company-editorial-notes';
 import { META_COMPANY_PREVIEW } from '../../../../shared/company-previews/meta-preview-content';
 import { GOOGLE_GOOGLEYNESS_SPOTLIGHT } from '../google-preview-content';
-import { BEHAVIORAL_DRILL_CHECKS, BehavioralDrillComponent, behavioralDrillKey, readBehavioralDrill } from './behavioral-drill.component';
+import { NETFLIX_CULTURE_SPOTLIGHT } from '../netflix-preview-content';
+import {
+  BEHAVIORAL_DRILL_CHECKS,
+  BEHAVIORAL_DRILL_VIEW_CHECKS,
+  BehavioralDrillComponent,
+  behavioralDrillKey,
+  readBehavioralDrill,
+} from './behavioral-drill.component';
 
 const DRILL: BehavioralDrill = {
   questions: [
@@ -136,11 +144,40 @@ describe('BehavioralDrillComponent', () => {
     expect(readBehavioralDrill(COMPANY)?.stories['disagreement']?.situation).toBe('Two teams wanted the same release slot.');
   });
 
+  it('asks for a view in one field, without the STAR or CAR shapes and with the checks for a view', async () => {
+    fixture = TestBed.createComponent(BehavioralDrillComponent);
+    fixture.componentRef.setInput('drill', {
+      ...DRILL,
+      questions: [{ id: 'memo', text: 'Which parts of the memo resonate with you?', source: 'Netflix', kind: 'view' }, ...DRILL.questions],
+    });
+    fixture.componentRef.setInput('company', COMPANY);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(Array.from(host().querySelectorAll('textarea')).map((field) => field.getAttribute('data-testid'))).toEqual(['behavioral-drill-answer']);
+    expect(el('behavioral-drill-shape-star')).toBeNull();
+    expect(Array.from(host().querySelectorAll('.drill__checks li')).map((item) => item.textContent?.trim()))
+      .toEqual([...BEHAVIORAL_DRILL_VIEW_CHECKS, 'I can name the principle it shows.']);
+    // Only the length reads back: a view has no actions or result to weigh.
+    type('behavioral-drill-answer', 'Candor, because we fixed a broken release process after I said so in a review.');
+    expect(Array.from(host().querySelectorAll('[data-testid="behavioral-drill-notes"] li')).map((item) => item.textContent))
+      .toEqual(['About 15 words: about half a minute out loud.']);
+    expect(readBehavioralDrill(COMPANY)?.stories['memo']?.answer).toBe('Candor, because we fixed a broken release process after I said so in a review.');
+
+    // A story question in the same drill keeps its parts and shapes.
+    choose('behavioral-drill-question-disagreement');
+    expect(el('behavioral-drill-shape-star')).not.toBeNull();
+    expect(host().querySelectorAll('textarea').length).toBe(4);
+  });
+
   it('gives each guide\'s drill unique ids, a source for every question and its own checks', () => {
     const drills = {
       amazon: AMAZON_COMPANY_PREVIEW.roundSpotlights?.find((round) => round.drill)?.drill,
       google: GOOGLE_GOOGLEYNESS_SPOTLIGHT.drill,
       meta: META_COMPANY_PREVIEW.roundSpotlights?.find((round) => round.drill)?.drill,
+      netflix: NETFLIX_CULTURE_SPOTLIGHT.drill,
+      apple: COMPANY_EDITORIAL_NOTES['apple']?.roundSpotlights?.find((round) => round.drill)?.drill,
     };
     for (const [company, drill] of Object.entries(drills)) {
       expect(drill).withContext(company).toBeDefined();
@@ -152,6 +189,9 @@ describe('BehavioralDrillComponent', () => {
         expect(question.source.trim()).withContext(`${company} ${question.id}`).not.toBe('');
       }
       expect(drill!.checks.length).withContext(company).toBeGreaterThanOrEqual(2);
+      // Most questions ask for a story; a view is the exception.
+      const views = drill!.questions.filter((question) => question.kind === 'view').length;
+      expect(views).withContext(company).toBeLessThan(drill!.questions.length / 2 + 1);
     }
   });
 });

@@ -1477,8 +1477,9 @@ describe('CompanyPreviewComponent', () => {
       expect(amazon.querySelector('.premium-locked')).toBeNull();
       expect(gateCard('company-drill-gate')).toBeNull();
 
-      for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['google', 'google-round-googleyness']]) {
-        await createComponent(slug);
+      // Meta's decoder is authored, Google's and Netflix's are their own layouts, Apple's comes from its editorial notes.
+      for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['google', 'google-round-googleyness'], ['netflix', 'netflix-round-culture'], ['apple', 'apple-round-team-conversations']]) {
+        await createComponent(slug, undefined, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
         const section = drill(round) as HTMLElement;
         const total = section.querySelectorAll('.drill__questions input').length;
         expect(pickable(section)).withContext(slug).toBe(1);

@@ -4,7 +4,7 @@ import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.compon
 import { FaFieldComponent } from '../../../../shared/ui/field/fa-field.component';
 
 export type BehavioralDrillShape = 'star' | 'car';
-type Part = 'situation' | 'task' | 'context' | 'action' | 'result';
+type Part = 'situation' | 'task' | 'context' | 'action' | 'result' | 'answer';
 type Story = Partial<Record<Part, string>> & { readonly checked?: readonly number[] };
 
 /** What the reader wrote for one company: the question last picked, the shape, and a story per question. */
@@ -14,7 +14,7 @@ export type BehavioralDrillDraft = {
   readonly stories: Readonly<Record<string, Story>>;
 };
 
-const PART_KEYS: readonly Part[] = ['situation', 'task', 'context', 'action', 'result'];
+const PART_KEYS: readonly Part[] = ['situation', 'task', 'context', 'action', 'result', 'answer'];
 const ACTION_HINT = 'What you did, step by step, in the first person.';
 const RESULT_HINT = 'What changed, with a number if there is one, and what you learned.';
 const PARTS: Readonly<Record<BehavioralDrillShape, readonly { key: Part; label: string; hint: string }[]>> = {
@@ -31,12 +31,24 @@ const PARTS: Readonly<Record<BehavioralDrillShape, readonly { key: Part; label: 
   ],
 };
 
+// A view or a reason has no situation to tell; its answer leads with the view and backs it with examples.
+const VIEW_PARTS: readonly { key: Part; label: string; hint: string }[] = [
+  { key: 'answer', label: 'Your answer', hint: 'Your view in a sentence, then two reasons, each with an example from your own work.' },
+];
+
 /** The checks every story gets, before the company's own. */
 export const BEHAVIORAL_DRILL_CHECKS: readonly string[] = [
   'It is one situation, and it answers the question asked.',
   'The actions say what I did; “we” only where the team acted.',
   'The result says what changed, and what I learned.',
   'I can answer “what would you do differently?”',
+];
+
+/** The checks every view or reason gets, before the company's own. */
+export const BEHAVIORAL_DRILL_VIEW_CHECKS: readonly string[] = [
+  'The first sentence answers the question.',
+  'Each reason comes with an example from my own work.',
+  'It names something specific to this company or team.',
 ];
 
 // A relaxed speaking pace, so the estimate errs long.
@@ -75,8 +87,8 @@ const minutesLabel = (minutes: number) => {
 
 /**
  * A behavioural question practised in writing: pick one of the company's questions, tell one story in the STAR or
- * CAR parts, read what the text itself shows (length, "we" against "I", a number in the result), then tick the
- * checks. On a gated guide a visitor without an account practises the first question; the page projects its free
+ * CAR parts (or, for a question that asks for a view, answer in one field), read what the text itself shows (length,
+ * "we" against "I", a number in the result), then tick the checks. On a gated guide a visitor without an account practises the first question; the page projects its free
  * account card under the list ([drillGate]). The draft stays on this device and is read once the page is in the
  * browser, so the server HTML and the first render match.
  */
@@ -106,7 +118,6 @@ export class BehavioralDrillComponent {
   private readonly stories = signal<Readonly<Record<string, Story>>>({});
 
   readonly questions = computed(() => this.drillSignal()?.questions ?? []);
-  readonly checks = computed(() => [...BEHAVIORAL_DRILL_CHECKS, ...(this.drillSignal()?.checks ?? [])]);
   readonly note = computed(() => this.drillSignal()?.note ?? '');
 
   /** The picked question while it is open to this reader, otherwise the first one. */
@@ -116,7 +127,13 @@ export class BehavioralDrillComponent {
     return questions[index >= 0 && !this.locked(index) ? index : 0] ?? null;
   });
 
-  readonly parts = computed(() => PARTS[this.shape()]);
+  /** A view or a reason is answered in one field; a story in the parts of the shape picked. */
+  readonly isView = computed(() => this.question()?.kind === 'view');
+  readonly parts = computed(() => (this.isView() ? VIEW_PARTS : PARTS[this.shape()]));
+  readonly checks = computed(() => [
+    ...(this.isView() ? BEHAVIORAL_DRILL_VIEW_CHECKS : BEHAVIORAL_DRILL_CHECKS),
+    ...(this.drillSignal()?.checks ?? []),
+  ]);
   readonly story = computed<Story>(() => this.stories()[this.question()?.id ?? ''] ?? {});
 
   /** What the text itself shows, for the reader to weigh; nothing here is a score. */

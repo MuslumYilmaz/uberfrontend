@@ -258,6 +258,8 @@ const APPLE_AP8 = report('Blind', 'https://www.teamblind.com/post/my-apple-inter
 const APPLE_AP9 = report('Taro (approx.)', `${APPLE_TARO}/front-end-engineer-united-states-august-1-2021-no-offer-negative-2d79a1e7/`, '2021-08');
 const APPLE_ICT3_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/6579616/', '2025-03');
 const APPLE_FULLSTACK_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8354843/', '2026-06');
+// Read 2026-11-09 for the team conversation decoder: the hiring manager's topics and a director round on culture fit.
+const APPLE_AP10 = report('Taro (approx.)', `${APPLE_TARO}/senior-frontend-developer-hyderabad-july-1-2024-no-offer-neutral-ac6e61a6/`, '2024-07');
 const APPLE_ROLE = 'Frontend roles; varies by team';
 
 // Uber, Stripe, ByteDance/TikTok and Booking.com.
@@ -688,6 +690,12 @@ const NETFLIX_NF8_SENIOR_FE_2021 = report(
   'Taro (approx.)',
   `${NETFLIX_TARO}/senior-frontend-engineer-san-jose-ca-august-1-2021-no-offer-negative-5771c678/`,
   '2021-08',
+);
+// Read 2026-11-09 for the culture decoder: a half day of behavioural interviews and the question the final round asked.
+const NETFLIX_NF9_SENIOR_UI_2020 = report(
+  'Taro (approx.)',
+  `${NETFLIX_TARO}/senior-ui-developer-united-states-november-1-2020-no-offer-positive-285dbb68/`,
+  '2020-11',
 );
 
 // ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
@@ -1506,7 +1514,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Hiring manager conversation',
             format: 'Before the screen, or as the screen itself.',
             appliesTo: 'Some teams',
-            sources: [APPLE_AP7, APPLE_AP9, APPLE_ICT3_2025, APPLE_FULLSTACK_2026],
+            sources: [APPLE_AP7, APPLE_AP9, APPLE_AP10, APPLE_ICT3_2025, APPLE_FULLSTACK_2026],
+            practice: { label: 'Apple team conversation questions and story drill', path: '/companies/apple/preview', fragment: 'apple-round-team-conversations' },
           },
           {
             stage: 'Technical screen',
@@ -1519,7 +1528,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Team loop',
             format: 'Four to seven interviews of 30–45 minutes, mostly JavaScript, React and CSS coding and concepts; some teams add behavioural or cross-functional interviews.',
             appliesTo: APPLE_ROLE,
-            sources: [APPLE_AP2, APPLE_AP3, APPLE_AP4, APPLE_AP7, APPLE_AP8, APPLE_ICT3_2025],
+            sources: [APPLE_AP2, APPLE_AP3, APPLE_AP4, APPLE_AP7, APPLE_AP8, APPLE_AP10, APPLE_ICT3_2025],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
         ],
@@ -2587,7 +2596,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Netflix publishes a process only for new graduates and interns: a take-home assessment, then two or about two to three rounds. Accounts for experienced frontend and UI roles from 2020 to 2025 describe recruiter and hiring-manager conversations, a live JavaScript screen or a take-home, and an onsite of about four interviews; Netflix-tagged commenters say each team runs its own loop.',
     caveat:
-      'Thin evidence: one complete 2020 loop, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
+      'Thin evidence: two complete 2020 loops, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
     checkedAt: '2026-10-22',
     variants: [
       {
@@ -2607,6 +2616,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A long behavioural interview with a UI manager before the take-home in the 2020 account; a Netflix-tagged commenter in 2024 expects a manager screen before any technical round. A 2021 senior account describes only a confrontational talk with the would-be manager.',
             appliesTo: 'Most loops',
             sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF8_SENIOR_FE_2021],
+            practice: { label: 'Netflix culture questions and story drill', path: '/companies/netflix/preview', fragment: 'netflix-round-culture' },
           },
           {
             stage: 'Technical screen',
@@ -2625,9 +2635,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Onsite',
             format:
-              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; a 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
+              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; another 2020 account had half a day of technical interviews and half a day of behavioural ones with senior leadership and product. A 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
             appliesTo: 'All candidates',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF5_PLAN_2024],
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF5_PLAN_2024],
           },
         ],
       },

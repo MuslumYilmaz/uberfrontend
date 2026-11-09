@@ -942,7 +942,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
     },
-    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Four of the nine frontend accounts behind this page describe both a screen and a team loop of mostly frontend coding; the rest describe one stage, and all differ on what the team decides.'],
+    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Five of the ten frontend accounts behind this page describe both a screen and a team loop, mostly of frontend coding; the rest describe one stage, and all differ on what the team decides.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A screen, then a team loop of four to seven rounds',
@@ -962,10 +962,49 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'Loop composition differs by team: four coding rounds with no behavioural and no system design round in one 2025 account, one behavioural round in another, two cross-functional interviews in a third.',
         },
         {
-          text: 'One account ended with a director meeting after the loop.',
+          text: 'Two accounts ended with a director: a meeting after the loop in 2025, and a round on behaviour and culture fit in 2024.',
         },
       ],
     },
+    // The hiring manager row of the process table links here. Apple publishes nothing on these interviews, so every
+    // fact and question comes from the accounts on that row and the team loop row (read 2026-11-09).
+    roundSpotlights: [
+      {
+        id: 'team-conversations',
+        kicker: 'Round decoder',
+        title: 'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
+        lede: [
+          'Apple publishes no interview process and its frontend loops differ by team, but most accounts include conversations beside the coding: a hiring manager conversation before or as the screen, behavioural or cross-functional interviews in some team loops, and a director at the end of a few.',
+          'They are conversations about your own work and your reasons for the move: past projects and responsibilities, why you are changing jobs, why Apple, and the team and product you would join.',
+        ],
+        facts: [
+          { label: 'Hiring manager conversation', value: 'Before the screen, or as the screen itself. In a 2024 senior account it covered past experience, the projects worked on, behavioural questions, the reasons for changing jobs and the motivation to join Apple (Taro, 2024).' },
+          { label: 'In the team loop', value: 'Two cross-functional interviews and a joint hiring manager and senior manager interview among five (Taro, 2025); a behaviour round about what you work on, your roles and responsibilities, then the team and product (Medium, 2022). One 2025 senior loop had four coding rounds and none of these.' },
+          { label: 'The director', value: 'A director of engineering round on behavioural questions and culture fit closed a 2024 senior loop (Taro, 2024); a 2025 account ended with a meeting with the director (Taro, 2025).' },
+          { label: 'What Apple publishes', value: 'Nothing on these interviews: the Apple careers site has general interview tips, linked in the official pages table, and no description of the rounds.' },
+          { label: 'Sources', value: 'Public frontend accounts from 2022 to 2025, on the hiring manager and team loop rows of the process table.' },
+        ],
+        practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+        processLink: { label: 'See the hiring manager row in the reported process', fragment: 'apple-interview-process-1-stage-hiring-manager-conversation' },
+        // One question per topic the accounts name.
+        drill: {
+          note: 'Apple publishes no questions for these interviews; each question here is a topic an account names, asked as one question.',
+          questions: [
+            { id: 'project', text: 'Walk me through a project you worked on: what you built and what you were responsible for.', source: 'Medium, 2022' },
+            { id: 'why-change', text: 'Why are you looking to change jobs?', source: 'Taro, 2024', kind: 'view' },
+            { id: 'why-apple', text: 'Why do you want to join Apple?', source: 'Taro, 2024', kind: 'view' },
+            { id: 'team-and-product', text: 'What interests you about this team and its product?', source: 'Medium, 2022', kind: 'view' },
+            { id: 'cross-functional', text: 'Tell me about working closely with a designer or a product manager.', source: 'Taro, 2025: cross-functional interviews' },
+            { id: 'accessibility', text: 'Tell me about accessibility work you have done.', source: 'Medium, 2022' },
+          ],
+          checks: [
+            'I can say why this team and its product, not only why Apple.',
+            'My reasons for changing jobs fit in two sentences.',
+            'I can walk through my role on each project on my résumé.',
+          ],
+        },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the screen, then the coding loop',
@@ -1013,7 +1052,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
         {
           question: 'Is there a system design round?',
-          answer: 'Not in the frontend-titled accounts. One 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
+          answer: 'Rarely in the frontend-titled accounts: the onsite technical round of a 2024 senior account included frontend system design questions, and one 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
         },
         {
           question: 'Is the loop the same for every team?',

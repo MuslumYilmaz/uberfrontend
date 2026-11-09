@@ -543,6 +543,34 @@
       </div>
     </section>
 
+    <!-- The culture interviews decoded on the page, the section the process table's hiring-manager row links to. -->
+    <section
+      class="company-guide-section company-round-spotlight"
+      [attr.aria-labelledby]="'netflix-round-' + netflixCulture.id"
+      data-testid="company-round-spotlight">
+      <div class="company-guide-section__head">
+        <p class="preview-kicker">{{ netflixCulture.kicker }}</p>
+        <h2 [attr.id]="'netflix-round-' + netflixCulture.id">{{ netflixCulture.title }}</h2>
+        <p *ngFor="let paragraph of netflixCulture.lede">{{ paragraph }}</p>
+      </div>
+      <dl class="company-round-facts">
+        <ng-container *ngFor="let fact of netflixCulture.facts; let i = index">
+          <dt>{{ fact.label }}</dt>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+        </ng-container>
+      </dl>
+      <app-behavioral-drill *ngIf="netflixCulture.drill as drill" [drill]="drill" company="netflix"
+        [openQuestions]="drillOpen(drill.questions.length)">
+        <div drillGate *ngIf="drillGate(drill.questions.length) as gate">
+          <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: gate }"></ng-container>
+        </div>
+      </app-behavioral-drill>
+      <p class="company-round-links" *ngIf="netflixCulture.practiceLink?.path || netflixCulture.processLink">
+        <a *ngIf="netflixCulture.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path" [state]="returnState">{{ netflixCulture.practiceLink!.label }}</a>
+        <a *ngIf="netflixCulture.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
+      </p>
+    </section>
+
     <section class="company-guide-section company-guide-section--intro" aria-labelledby="netflix-study-first">
       <div>
         <p class="preview-kicker">Study priorities</p>

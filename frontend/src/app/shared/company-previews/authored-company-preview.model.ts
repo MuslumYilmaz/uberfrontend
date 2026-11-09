@@ -57,6 +57,8 @@ export type BehavioralDrillQuestion = {
   readonly text: string;
   /** Where it comes from, as the decoder's facts name it: "Amazon's interview loop page", "Seattle, 2019". */
   readonly source: string;
+  /** A question that asks for a view or a reason, not one past situation: one answer field, without STAR or CAR. */
+  readonly kind?: 'view';
 };
 
 /** The practice under a behavioural round decoder: pick a question, tell one story in its parts, check it. */
