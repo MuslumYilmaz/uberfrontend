@@ -89,6 +89,9 @@ export const CODING_PRESSURE_MODE_UNLOCK =
 /** Added to a coding task's unlock line when the task opens as a merge request review. */
 export const CODING_REVIEW_MODE_UNLOCK =
   'It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.';
+// A plain JavaScript task's review is a find case; the content checks hold the two formats to their techs.
+export const CODING_FIND_CASE_UNLOCK =
+  'It opens as a case: work an example by hand, mark the lines that are wrong and say why without running the code, then compare with a sample answer and fix it.';
 
 export const SYSTEM_DESIGN_PREMIUM_UNLOCK_DESCRIPTION =
   'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
@@ -649,7 +652,7 @@ export const buildLockedPreviewForCoding = (
     unlockDescription: [
       unlock,
       ...(q.pressureModeAsset ? [CODING_PRESSURE_MODE_UNLOCK] : []),
-      ...(q.reviewModeAsset ? [CODING_REVIEW_MODE_UNLOCK] : []),
+      ...(q.reviewModeAsset ? [ctx.technology === 'javascript' ? CODING_FIND_CASE_UNLOCK : CODING_REVIEW_MODE_UNLOCK] : []),
     ].join(' '),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),

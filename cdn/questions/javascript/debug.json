@@ -341,5 +341,79 @@
                 "note": "One account, written in Spanish as advice, describes four onsite rounds of 45 to 60 minutes that cover bug fixing, deployment, testing and CI/CD."
             }
         ]
+    },
+    {
+        "id": "js-debug-intern-budget-summary",
+        "title": "Case: Find the Bug in an Intern's Budget Summary",
+        "seo": {
+            "h1IntentLabel": "Find the bug in an intern's budget summary"
+        },
+        "difficulty": "intermediate",
+        "importance": 3,
+        "updatedAt": "2026-11-09",
+        "tags": [
+            "debugging",
+            "numbers",
+            "testing"
+        ],
+        "description": {
+            "text": "Capital One's Power Day case, as a 2024 senior account describes it: find the bug in a budgeting program written by an intern without coding the fix. This page runs the case in that order. Start it to work an example by hand, mark the lines you would change and say why while the code stays read-only, then compare with a sample answer. After that the workspace runs, and its tests check your fix.\n\nThe function behind the household dashboard summarizes one month. It turns each expense into a monthly amount: a monthly one as it is, a weekly one 52 times a year, a yearly one once. It rounds each monthly amount to cents and adds them up by category. It reports what was spent, what is left of the income and the savings rate as a whole percentage of the income, which is 0 for a month without income. And it flags every category whose monthly total goes over its limit, a limit of 0 included."
+        },
+        "starterCode": "// Monthly budget summary for the household dashboard.\n// Written by our summer intern; a few users say the numbers look off.\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totals = {};\n  for (let i = 0; i < expenses.length; i++) {\n    const { category, amount, frequency } = expenses[i];\n    let monthly = amount;\n    if (frequency === 'weekly') monthly = amount * 4;\n    if (frequency === 'yearly') monthly = amount / 12;\n    totals[category] = (totals[category] || 0) + monthly;\n  }\n\n  let spent = 0;\n  const overLimit = [];\n  for (const category in totals) {\n    spent += totals[category];\n    if (limits[category] && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remaining = monthlyIncome - spent;\n  const savingsRate = Math.round((remaining / monthlyIncome) * 100);\n  return { totals, spent, remaining, savingsRate, overLimit };\n}\n",
+        "tests": "import summarizeBudget from './summarizeBudget';\n\nconst expenses = [\n  { category: 'rent', amount: 1500, frequency: 'monthly' },\n  { category: 'groceries', amount: 100, frequency: 'weekly' },\n  { category: 'insurance', amount: 600, frequency: 'yearly' },\n];\n\ndescribe('summarizeBudget', () => {\n  test('turns a weekly expense into 52 weeks over 12 months, in cents', () => {\n    expect(summarizeBudget(4000, expenses, {}).totals.groceries).toBe(433.33);\n  });\n\n  test('adds the month up into what was spent, what is left and the savings rate', () => {\n    const summary = summarizeBudget(4000, expenses, {});\n    expect(summary.totals).toEqual({ rent: 1500, groceries: 433.33, insurance: 50 });\n    expect(summary.spent).toBe(1983.33);\n    expect(summary.remaining).toBe(2016.67);\n    expect(summary.savingsRate).toBe(50);\n  });\n\n  test('flags a category over its limit, a limit of zero included', () => {\n    const gifts = { category: 'gifts', amount: 20, frequency: 'monthly' };\n    const summary = summarizeBudget(4000, [...expenses, gifts], { groceries: 400, gifts: 0, rent: 1500 });\n    expect(summary.overLimit.slice().sort()).toEqual(['gifts', 'groceries']);\n  });\n\n  test('reports a savings rate of 0 for a month without income', () => {\n    expect(summarizeBudget(0, expenses, {}).savingsRate).toBe(0);\n  });\n});\n",
+        "solution": "// Monthly budget summary for the household dashboard.\n// A weekly expense happens 52 times a year, money adds up in whole cents, a limit of 0 counts,\n// and a month without income saves nothing.\nconst WEEKS_PER_YEAR = 52;\nconst MONTHS_PER_YEAR = 12;\n\nfunction monthlyCents(amount, frequency) {\n  const cents = amount * 100;\n  if (frequency === 'weekly') return Math.round((cents * WEEKS_PER_YEAR) / MONTHS_PER_YEAR);\n  if (frequency === 'yearly') return Math.round(cents / MONTHS_PER_YEAR);\n  return Math.round(cents);\n}\n\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totalCents = {};\n  for (const { category, amount, frequency } of expenses) {\n    totalCents[category] = (totalCents[category] || 0) + monthlyCents(amount, frequency);\n  }\n\n  let spentCents = 0;\n  const totals = {};\n  const overLimit = [];\n  for (const category of Object.keys(totalCents)) {\n    spentCents += totalCents[category];\n    totals[category] = totalCents[category] / 100;\n    if (limits[category] !== undefined && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remainingCents = Math.round(monthlyIncome * 100) - spentCents;\n  const remaining = remainingCents / 100;\n  const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;\n  return { totals, spent: spentCents / 100, remaining, savingsRate, overLimit };\n}\n",
+        "solutionBlock": {
+            "overview": "Work the example first: $100 of groceries a week is 100 × 52 / 12 = $433.33 a month, and the function says $400. Line 8 counts four weeks in every month, so each weekly cost is about 8% too low and the dashboard shows more money left than there is. The smallest fix is amount * 52 / 12, and the worked example is the test that would have caught it. Three more lines break the stated rules in rarer cases: amounts are never rounded to cents, a limit of 0 is never checked, and a month without income divides by zero.",
+            "approaches": [
+                {
+                    "title": "Fix: monthly amounts in cents, every limit checked, no division by zero",
+                    "prose": "Convert each expense to whole cents per month: weekly ones as cents × 52 / 12, yearly ones as cents / 12, each rounded once. Totals, spending and what is left then add up exactly, and converting back to dollars at the end shows the same cents the dashboard prints. Check a category whenever it has a limit, so a limit of 0 counts, and return a savings rate of 0 when there is no income instead of dividing by it.",
+                    "codeJs": "// Monthly budget summary for the household dashboard.\n// A weekly expense happens 52 times a year, money adds up in whole cents, a limit of 0 counts,\n// and a month without income saves nothing.\nconst WEEKS_PER_YEAR = 52;\nconst MONTHS_PER_YEAR = 12;\n\nfunction monthlyCents(amount, frequency) {\n  const cents = amount * 100;\n  if (frequency === 'weekly') return Math.round((cents * WEEKS_PER_YEAR) / MONTHS_PER_YEAR);\n  if (frequency === 'yearly') return Math.round(cents / MONTHS_PER_YEAR);\n  return Math.round(cents);\n}\n\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totalCents = {};\n  for (const { category, amount, frequency } of expenses) {\n    totalCents[category] = (totalCents[category] || 0) + monthlyCents(amount, frequency);\n  }\n\n  let spentCents = 0;\n  const totals = {};\n  const overLimit = [];\n  for (const category of Object.keys(totalCents)) {\n    spentCents += totalCents[category];\n    totals[category] = totalCents[category] / 100;\n    if (limits[category] !== undefined && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remainingCents = Math.round(monthlyIncome * 100) - spentCents;\n  const remaining = remainingCents / 100;\n  const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;\n  return { totals, spent: spentCents / 100, remaining, savingsRate, overLimit };\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Reading the code before working an example: amount * 4 looks like \"four weeks a month\" and reads as right.",
+                    "Rewriting the whole function in the case instead of naming the one line, the input that breaks it and the smallest fix.",
+                    "Fixing the weekly rate and leaving the result unrounded: 433.3333 is not the $433.33 the dashboard shows.",
+                    "Treating a limit of 0 as no limit: limits[category] && … is false for 0."
+                ],
+                "techniques": [
+                    "Restate the rule, then work one example by hand before you read a line of code.",
+                    "Trace the function with the example values and write each variable down as it changes.",
+                    "Name the bug as a line, an input that triggers it and the wrong output it produces.",
+                    "Propose the smallest fix and one test that would have caught it, then mention the rarer risks briefly."
+                ]
+            }
+        },
+        "access": "premium",
+        "previewSample": {
+            "label": "From the case brief",
+            "quote": "A few users say the numbers look off.",
+            "note": "A summer intern wrote the monthly budget summary behind a household dashboard. Work one example by hand, then find the bug and explain the fix without running the code."
+        },
+        "premiumPreview": {
+            "summary": "An intern's monthly budget summary looks off to a few users: work one example by hand, then find the bug and explain the smallest fix without running the code, as Capital One's case round asks.",
+            "learningOutcomes": [
+                "Turn a business rule into a worked example before reading the code.",
+                "Name a bug as a line, an input that triggers it and the wrong output.",
+                "Keep money in whole cents and check limits and edge cases a quick read misses."
+            ],
+            "unlockDescription": "Premium unlocks the intern's full code, every finding with its smallest fix, and the tests that check yours."
+        },
+        "companies": [
+            "capital-one"
+        ],
+        "sources": [
+            {
+                "label": "Taro: Capital One senior frontend engineer Power Day, 2024",
+                "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+                "company": "capital-one",
+                "publisher": "Taro",
+                "date": "2024-07",
+                "note": "A re-hosted review without an offer. Its Power Day case was a budgeting program written by an intern, read to find the bug without coding the fix. This case practises that format; the code, the bugs and the tests are ours."
+            }
+        ],
+        "reviewModeAsset": "assets/questions/review-modes/intern-budget-case.v1.json"
     }
 ]

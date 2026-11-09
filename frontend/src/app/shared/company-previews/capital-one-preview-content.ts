@@ -212,8 +212,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Rewriting the whole function instead of finding the one defect, or guessing without tracing an example.',
-        resourceLabel: 'Fix a defaults bug in a teammate helper (free)',
-        resourcePath: '/javascript/debug/js-debug-nullish-defaults',
+        resourceLabel: "Work the intern's budget case: find the bug without coding the fix",
+        resourcePath: '/javascript/debug/js-debug-intern-budget-summary',
         reportedRound: { label: CAPITALONE_CARD_DESIGN_2024_LABEL, url: CAPITALONE_CARD_DESIGN_2024_URL },
       },
       {

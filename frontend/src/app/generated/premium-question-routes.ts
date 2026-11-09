@@ -78,6 +78,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/javascript/coding/js-unique-array",
   "/javascript/coding/js-valid-anagram",
   "/javascript/debug/js-debug-bug-squash-invoices",
+  "/javascript/debug/js-debug-intern-budget-summary",
   "/javascript/trivia/js-web-fundamentals-hour-hotel-booking",
   "/react/coding/react-accordion-faq",
   "/react/coding/react-battery-site-layout",

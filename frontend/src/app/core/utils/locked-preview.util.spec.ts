@@ -85,10 +85,16 @@ describe('locked preview builder', () => {
     expect(buildLockedPreviewForCoding({ ...q, previewSample: { label: 'A comment', quote: ' ' } }, { candidates, tech: 'javascript', kind: 'coding' })?.sample).toBeUndefined();
     expect(preview.sample).toBeUndefined();
 
-    // So does a task that opens as a merge request review.
-    const withReview = buildLockedPreviewForCoding({ ...q, reviewModeAsset: 'assets/questions/review-modes/sum.v1.json' }, { candidates, tech: 'javascript', kind: 'coding' });
+    // So does a framework task that opens as a merge request review, and a plain JavaScript task that opens as a case.
+    // The page's tech decides: the question the detail page passes carries no technology of its own.
+    const withAsset = { ...q, technology: undefined, reviewModeAsset: 'assets/questions/review-modes/sum.v1.json' };
+    const withReview = buildLockedPreviewForCoding(withAsset, { candidates, tech: 'vue', kind: 'coding' });
     expect(withReview?.unlockDescription).toBe(
       'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.',
+    );
+    const withCase = buildLockedPreviewForCoding(withAsset, { candidates, tech: 'javascript', kind: 'coding' });
+    expect(withCase?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a case: work an example by hand, mark the lines that are wrong and say why without running the code, then compare with a sample answer and fix it.',
     );
   });
 

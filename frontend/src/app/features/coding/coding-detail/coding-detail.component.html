@@ -29,7 +29,7 @@
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
           [disabled]="solutionLocked()"
-          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : rehearsalPhase() === 'active' ? 'Solution locked until the rehearsal ends' : 'Solution'">
+          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : rehearsalPhase() === 'active' ? 'Solution locked until the rehearsal ends' : findLocked() ? 'Solution locked until you compare' : 'Solution'">
           <app-fa-glyph class="fa-btn__icon" [icon]="solutionLocked() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
         </button>
       </div>
@@ -48,7 +48,7 @@
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
             [disabled]="solutionLocked()"
             (click)="onSolutionTabClick()">
-            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : rehearsalPhase() === 'active' ? 'Solution locked' : 'Solution' }}
+            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : rehearsalPhase() === 'active' || findLocked() ? 'Solution locked' : 'Solution' }}
           </button>
         </div>
 
@@ -69,7 +69,8 @@
           [class.rehearsal-answering]="rehearsalAnswering()">
           <ng-template #reviewOrDescription>
             <app-review-mode-panel *ngIf="reviewOpen() && reviewScenario() as scenario; else normalDescriptionContent"
-              [scenario]="scenario" [questionId]="question()!.id" (exit)="exitReviewMode()"></app-review-mode-panel>
+              [scenario]="scenario" [questionId]="question()!.id" (exit)="exitReviewMode()"
+              (phaseChange)="reviewPhase.set($event)"></app-review-mode-panel>
           </ng-template>
           <ng-container *ngIf="pressureActive(); else reviewOrDescription">
             <div *ngIf="pressureScenario() as scenario" class="pressure-mode" data-testid="pressure-mode-panel">
@@ -185,6 +186,22 @@
               By {{ authorLabel(question()) }}
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
+
+            <!-- A find case on a plain JavaScript task: the bug named in writing before the workspace runs. -->
+            <section *ngIf="!demoMode && tech === 'javascript' && reviewSupported() && workspaceAvailable() && !reviewOpen()"
+              class="pressure-entry" data-testid="review-mode-entry">
+              <div>
+                <p class="pressure-entry__eyebrow">Case interview format</p>
+                <h2>Find the bug without coding the fix</h2>
+                <p>
+                  Read the code, work an example by hand, mark the lines you would change and say why, then compare
+                  with a sample answer. The workspace runs once you have compared.
+                </p>
+              </div>
+              <button type="button" faButton variant="primary" data-testid="review-mode-start" (click)="startReviewMode()">
+                Start the case
+              </button>
+            </section>
 
             <ng-container *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()">
               <!-- A running rehearsal keeps the React panel on its own draft and clock, so Pressure Mode waits. -->
@@ -892,7 +909,7 @@
         [storageKeyOverride]="frameworkStorageKey()"
         [frameworkTestsOverride]="pressureActive() ? pressureFrameworkTests() : null"
         [interviewMode]="pressureActive()"
-        [locked]="rehearsalLocked()" [lockedLabel]="rehearsalLockedLabel()"
+        [locked]="rehearsalLocked() || findLocked()" [lockedLabel]="findLocked() ? 'Find the bug first: the code runs after the comparison' : rehearsalLockedLabel()"
         [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
@@ -923,7 +940,7 @@
           [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="jsStorageKey()"
           [solutionPanelOpen]="activePanel()===1"
           [hideRestoreBanner]="demoMode || hideRestoreBanner || !!rehearsalPhase()" [disablePersistence]="disablePersistence || demoMode"
-          [locked]="rehearsalLocked()" [lockedLabel]="rehearsalLockedLabel()"
+          [locked]="rehearsalLocked() || findLocked()" [lockedLabel]="findLocked() ? 'Find the bug first: the code runs after the comparison' : rehearsalLockedLabel()"
           [concealedNote]="rehearsalConcealedNote()"
           [clockLabel]="rehearsalClockLabel()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
@@ -958,7 +975,7 @@
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"
-    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && (isCompletionPending() || rehearsalLocked())"
+    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && (isCompletionPending() || rehearsalLocked() || findLocked())"
     [secondaryLabel]="footerSecondaryLabel()"
     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
     (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()"

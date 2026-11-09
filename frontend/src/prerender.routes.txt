@@ -335,6 +335,7 @@
 /javascript/coding/js-validate-username
 /javascript/debug/js-debug-async-race
 /javascript/debug/js-debug-bug-squash-invoices
+/javascript/debug/js-debug-intern-budget-summary
 /javascript/debug/js-debug-lost-this-binding
 /javascript/debug/js-debug-missing-return-map-filter
 /javascript/debug/js-debug-mutating-input

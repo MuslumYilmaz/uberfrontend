@@ -84,7 +84,7 @@ import { PreviewBuilderService } from '../../../core/services/preview-builder.se
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
 import { ReviewModeService } from '../../../core/services/review-mode.service';
-import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
+import type { ReviewModePhase, ReviewModeScenario, ReviewModeTech } from '../../../core/models/review-mode.model';
 import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
 import { RehearsalService } from '../../../core/services/rehearsal.service';
 import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
@@ -424,8 +424,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   reviewOpen = signal(false);
   reviewSupported = computed(() => {
     const q = this.question();
-    return this.kind === 'coding' && this.isFrameworkTech() && typeof q?.reviewModeAsset === 'string' && q.reviewModeAsset.trim().length > 0;
+    if (typeof q?.reviewModeAsset !== 'string' || !q.reviewModeAsset.trim()) return false;
+    // A merge request review opens on a framework coding task; a find case opens on a plain JavaScript task too.
+    return this.isFrameworkTech() ? this.kind === 'coding' : this.tech === 'javascript';
   });
+  /** The step the review is on, as its panel reports it; a find case keeps the workspace read-only on the first. */
+  reviewPhase = signal<ReviewModePhase>('review');
+  /** A find case asks for the bug without running the code, so the workspace and the solution wait for the comparison. */
+  findLocked = computed(() => this.reviewOpen() && this.reviewScenario()?.format === 'find' && this.reviewPhase() === 'review');
   private reviewLoadSeq = 0;
   private reviewPreviousAsideRatio: number | null = null;
 
@@ -477,7 +483,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   });
-  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active');
+  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active' || this.findLocked());
   private rehearsalLoadSeq = 0;
 
   // Practice session
@@ -2149,8 +2155,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
-    // While a rehearsal keeps the task read-only, there is nothing to submit.
-    if (this.rehearsalLocked()) return;
+    // While a rehearsal or a find case keeps the task read-only, there is nothing to submit.
+    if (this.rehearsalLocked() || this.findLocked()) return;
     const epoch = this.workspaceEpoch;
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
@@ -2557,10 +2563,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const scenario = await firstValueFrom(this.reviewModes.load(String(q.reviewModeAsset || '')));
     // A later task or a second click wins; a scenario for another task never opens here.
     if (loadSeq !== this.reviewLoadSeq || this.question()?.id !== q.id) return;
-    if (!scenario || scenario.supportedQuestions[this.tech as 'react' | 'angular' | 'vue'] !== q.id) return;
+    if (!scenario || scenario.supportedQuestions[this.tech as ReviewModeTech] !== q.id) return;
     // On a phone the workspace is closed, so a draft left open waits for a wider screen.
     if (this.showMobileDesktopGuard()) return;
     this.reviewScenario.set(scenario);
+    // The panel opens on the step its draft left, and reports each move after that.
+    this.reviewPhase.set(readReviewDraft(q.id)?.phase ?? 'review');
     this.reviewOpen.set(true);
     // The diff needs room to read; the workspace keeps the rest.
     if (this.reviewPreviousAsideRatio === null) this.reviewPreviousAsideRatio = this.horizontalRatio();

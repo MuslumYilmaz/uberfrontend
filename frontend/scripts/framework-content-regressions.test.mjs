@@ -6671,7 +6671,14 @@ for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/review-mode
   assert.ok(scenario.sessionMinutes > 0, `${label}: needs a session length`);
   const files = scenario.mergeRequest.files;
   assert.equal(new Set(files.map((entry) => entry.path)).size, files.length, `${label}: file paths must be unique`);
-  for (const entry of files) assert.notEqual(entry.before, entry.after, `${label}: ${entry.path} must change`);
+  // A merge request changes its files; a find case reads its code as it is and asks for an example worked by hand.
+  const format = scenario.format ?? 'review';
+  assert.ok(format === 'review' || format === 'find', `${label}: the format must be review or find`);
+  for (const entry of files) {
+    if (format === 'find') assert.ok(!entry.before, `${label}: a find case reads ${entry.path} as it is, with no file before it`);
+    else assert.notEqual(entry.before, entry.after, `${label}: ${entry.path} must change`);
+  }
+  if (format === 'find') assert.ok(scenario.workedExample?.prompt && scenario.workedExample?.answer, `${label}: a find case asks for a worked example and shows one`);
   for (const comment of scenario.sampleReview.comments) {
     const entry = files.find((candidate) => candidate.path === comment.path);
     assert.ok(entry, `${label}: "${comment.title}" points at ${comment.path}, which the request does not change`);
@@ -6686,6 +6693,7 @@ for (const framework of PRESSURE_FRAMEWORKS) {
     if (!question.reviewModeAsset) continue;
     const scenario = reviewScenarios.get(question.reviewModeAsset);
     assert.ok(scenario, `${question.id}: reviewModeAsset ${question.reviewModeAsset} is not a review file`);
+    assert.equal(scenario.format ?? 'review', 'review', `${question.id}: a framework task's review is a merge request`);
     assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its review must list it for ${framework}`);
     assert.equal(scenario.access, question.access, `${question.id}: the review and the task share their access`);
     const starter = json(`cdn/${question.sdk.asset.replace(/^assets\//, '')}`);
@@ -6694,6 +6702,24 @@ for (const framework of PRESSURE_FRAMEWORKS) {
     }
     const checked = scenario.sampleReview.comments.filter((comment) => comment.checked).length;
     assert.equal(checked, (question.frameworkTests ?? []).length, `${question.id}: one check per comment marked as checked in the workspace`);
+  }
+}
+
+// A find case opens on a plain JavaScript task: it reads the task's starter code, the lock page names it as a case,
+// and each finding marked as checked has a test of its own.
+for (const kind of ['coding', 'debug']) {
+  for (const question of json(`cdn/questions/javascript/${kind}.json`)) {
+    if (!question.reviewModeAsset) continue;
+    const scenario = reviewScenarios.get(question.reviewModeAsset);
+    assert.ok(scenario, `${question.id}: reviewModeAsset ${question.reviewModeAsset} is not a review file`);
+    assert.equal(scenario.format, 'find', `${question.id}: a plain JavaScript task's review is a find case`);
+    assert.equal(scenario.supportedQuestions.javascript, question.id, `${question.id}: its case must list it for javascript`);
+    assert.equal(scenario.access, question.access, `${question.id}: the case and the task share their access`);
+    assert.equal(scenario.mergeRequest.files.length, 1, `${question.id}: a find case reads the task's one file`);
+    assert.equal(scenario.mergeRequest.files[0].after, question.starterCode, `${question.id}: the case reads the task's starter code`);
+    const tests = (question.tests.match(/\btest\(/g) ?? []).length;
+    const checked = scenario.sampleReview.comments.filter((comment) => comment.checked).length;
+    assert.ok(checked >= 1 && checked <= tests, `${question.id}: each finding marked as checked needs a test (${checked} checked, ${tests} tests)`);
   }
 }
 

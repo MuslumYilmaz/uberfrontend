@@ -3430,6 +3430,25 @@
     "assetRef": "questions/javascript/coding.json#js-capitalize-words"
   },
   {
+    "id": "js-debug-intern-budget-summary",
+    "family": "question",
+    "title": "Case: Find the Bug in an Intern's Budget Summary",
+    "route": "/javascript/debug/js-debug-intern-budget-summary",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "An intern's monthly budget summary looks off to a few users: work one example by hand, then find the bug and explain the smallest fix without running the code, as Capital One's case round asks.",
+    "tags": [
+      "debugging",
+      "numbers",
+      "testing"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-09",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-intern-budget-summary"
+  },
+  {
     "id": "js-palindrome-check",
     "family": "question",
     "title": "Check if a String Is a Palindrome",

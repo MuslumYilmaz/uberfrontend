@@ -420,6 +420,10 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   'capital-one': {
+    // The 2024 account behind the case task is cited on most Power Day stages; the task practises the case.
+    reportRounds: {
+      'js-debug-intern-budget-summary': ['power-day-case'],
+    },
     variants: [
       {
         id: 'senior',

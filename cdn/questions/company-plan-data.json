@@ -1258,6 +1258,19 @@
         "js"
       ]
     },
+    "js-debug-intern-budget-summary": {
+      "id": "js-debug-intern-budget-summary",
+      "title": "Case: Find the Bug in an Intern's Budget Summary",
+      "route": "/javascript/debug/js-debug-intern-budget-summary",
+      "kind": "debug",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "debug",
+        "js"
+      ]
+    },
     "js-debug-mutating-input": {
       "id": "js-debug-mutating-input",
       "title": "Stop mutating caller data in `unique`",
@@ -5967,15 +5980,13 @@
               "prompt": true
             },
             {
-              "id": "js-debug-nullish-defaults",
+              "id": "js-debug-intern-budget-summary",
               "report": {
                 "publisher": "Taro",
                 "date": "2024-07",
                 "approx": true
               },
               "rounds": [
-                "online-assessment",
-                "power-day-frontend-technical",
                 "power-day-case"
               ],
               "lead": true,
@@ -5994,6 +6005,19 @@
                 "power-day-case"
               ],
               "lead": true
+            },
+            {
+              "id": "js-debug-nullish-defaults",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-07",
+                "approx": true
+              },
+              "rounds": [
+                "online-assessment",
+                "power-day-frontend-technical",
+                "power-day-case"
+              ]
             },
             {
               "id": "multi-step-form-autosave",
@@ -6133,6 +6157,9 @@
             },
             {
               "id": "js-debug-nullish-defaults"
+            },
+            {
+              "id": "js-debug-intern-budget-summary"
             },
             {
               "id": "credit-card-application-page"

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-08T21:01:12.169Z",
+  "generatedAt": "2026-11-09T05:12:37.649Z",
   "entries": [
     {
       "tech": "angular",
@@ -1410,6 +1410,12 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-bug-squash-invoices",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-intern-budget-summary",
       "file": "javascript/debug.json"
     },
     {

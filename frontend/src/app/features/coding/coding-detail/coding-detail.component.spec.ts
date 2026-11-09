@@ -3383,6 +3383,7 @@ describe('CodingDetailComponent', () => {
       id: 'issue-label-filter-review-v1',
       title: 'Issue list label filter review',
       access: 'premium',
+      format: 'review',
       sessionMinutes: 90,
       supportedQuestions: { vue: reviewQuestion.id },
       mergeRequest: {
@@ -3478,6 +3479,94 @@ describe('CodingDetailComponent', () => {
       load.and.returnValue(of({ ...reviewScenario, supportedQuestions: { vue: 'vue-other-task' } }));
       await open(reviewQuestion);
       expect(component.reviewOpen()).toBeFalse();
+    });
+  });
+
+  describe('find case', () => {
+    const caseQuestion = {
+      id: 'js-debug-budget-case',
+      title: 'Case: Find the Bug in a Budget Summary',
+      description: { text: 'Find the bug without coding the fix.' },
+      technology: 'javascript',
+      access: 'premium',
+      difficulty: 'intermediate',
+      tags: ['debugging'],
+      importance: 3,
+      starterCode: 'export default function monthly(weekly) {\n  return weekly * 4;\n}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+      reviewModeAsset: 'assets/questions/review-modes/budget-case.v1.json',
+    } as any;
+    const findScenario: ReviewModeScenario = {
+      schemaVersion: '1.0.0',
+      id: 'budget-case',
+      title: 'Budget case',
+      access: 'premium',
+      format: 'find',
+      sessionMinutes: 45,
+      supportedQuestions: { javascript: caseQuestion.id },
+      workedExample: { prompt: 'Work $100 a week by hand.', answer: '$433.33 a month.' },
+      mergeRequest: {
+        title: 'Find the bug in the budget summary',
+        description: 'Find it without running the code.',
+        issue: { title: 'What it should do', requirements: ['A weekly expense happens 52 times a year.'] },
+        files: [{ path: 'monthly.js', before: '', after: caseQuestion.starterCode }],
+      },
+      sampleReview: {
+        summary: 'Line 2 counts four weeks a month.',
+        comments: [{ path: 'monthly.js', line: 2, severity: 'blocker', title: 'Four weeks a month', body: 'Use 52 / 12.', checked: true }],
+      },
+    };
+
+    beforeEach(() => {
+      localStorage.removeItem(reviewDraftKey(caseQuestion.id));
+      spyOn(TestBed.inject(ReviewModeService), 'load').and.returnValue(of(findScenario));
+      // The JS panel announces a resize after loading a task; the page then measures a laptop-wide window.
+      spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    });
+
+    afterEach(() => localStorage.removeItem(reviewDraftKey(caseQuestion.id)));
+
+    it('opens on a plain JavaScript task and keeps the workspace and the solution shut until the comparison', async () => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+      auth.isLoggedIn.and.returnValue(true);
+      questionService.loadQuestions.and.returnValue(of([caseQuestion]));
+      component.questionId = caseQuestion.id;
+      component.questionTech = 'javascript';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'javascript';
+      component.kind = 'debug';
+      component.question.set(caseQuestion);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      const find = (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+      const jsPanel = () => fixture.debugElement.query(By.directive(CodingJsPanelComponent)).componentInstance as CodingJsPanelComponent;
+
+      expect(find('review-mode-entry')?.textContent).toContain('Find the bug without coding the fix');
+      expect(component.findLocked()).toBeFalse();
+      find('review-mode-start')!.click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(find('review-mode-panel')?.textContent).toContain('Case: find the bug');
+      expect(component.findLocked()).toBeTrue();
+      expect(jsPanel().locked).toBeTrue();
+      expect(jsPanel().lockedLabel).toBe('Find the bug first: the code runs after the comparison');
+      expect(component.solutionLocked()).toBeTrue();
+
+      find('review-mode-compare')!.click();
+      fixture.detectChanges();
+      expect(component.findLocked()).toBeFalse();
+      expect(jsPanel().locked).toBeFalse();
+      expect(component.solutionLocked()).toBeFalse();
     });
   });
 

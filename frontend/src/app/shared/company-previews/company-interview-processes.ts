@@ -2977,7 +2977,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A business scenario read through code: find the bug in a budgeting program written by an intern without coding the fix, work example cost calculations and fix a faulty algorithm, or refactor badly written code.',
             appliesTo: 'All candidates',
             sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
-            practice: { label: 'Fix a defaults bug', path: '/javascript/debug/js-debug-nullish-defaults' },
+            practice: { label: "Find the bug in an intern's budget summary", path: '/javascript/debug/js-debug-intern-budget-summary' },
           },
           {
             stage: 'Power Day: behavioral',

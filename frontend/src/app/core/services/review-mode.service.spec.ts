@@ -62,6 +62,30 @@ describe('ReviewModeService', () => {
     expect(service.normalize({ ...REVIEW_PAYLOAD, reviewMinutes: 'an hour' })).toBeNull();
   });
 
+  it('keeps a find case on a plain JavaScript task: code read as it is, and an example worked by hand', () => {
+    const find = {
+      ...REVIEW_PAYLOAD,
+      format: 'find',
+      supportedQuestions: { javascript: 'js-debug-budget' },
+      workedExample: { prompt: 'Work $100 a week by hand.', answer: '$433.33 a month.' },
+      mergeRequest: { ...REVIEW_PAYLOAD.mergeRequest, files: [{ path: 'budget.js', after: 'const weekly = 100;\nconst monthly = weekly * 4;\n' }] },
+      sampleReview: {
+        summary: 'Line 2 counts four weeks a month.',
+        comments: [{ path: 'budget.js', line: 2, severity: 'blocker', title: 'Four weeks a month', body: 'Use 52 / 12.', checked: true }],
+      },
+    };
+    const scenario = service.normalize(find);
+    expect(scenario?.format).toBe('find');
+    expect(scenario?.supportedQuestions).toEqual({ javascript: 'js-debug-budget' });
+    expect(scenario?.mergeRequest.files).toEqual([{ path: 'budget.js', before: '', after: 'const weekly = 100;\nconst monthly = weekly * 4;\n' }]);
+    expect(scenario?.workedExample).toEqual({ prompt: 'Work $100 a week by hand.', answer: '$433.33 a month.' });
+    expect(service.normalize(REVIEW_PAYLOAD)?.format).toBe('review');
+    // A find case reads its code as it is; a file before it, half an example or an unknown format would render half a case.
+    expect(service.normalize({ ...find, mergeRequest: { ...find.mergeRequest, files: [{ path: 'budget.js', before: 'x', after: 'y' }] } })).toBeNull();
+    expect(service.normalize({ ...find, workedExample: { prompt: 'Work it by hand.' } })).toBeNull();
+    expect(service.normalize({ ...find, format: 'quiz' })).toBeNull();
+  });
+
   it('only loads files from the review-mode folder', async () => {
     expect(await firstValueFrom(service.load('assets/questions/pressure-modes/counter.v1.json'))).toBeNull();
   });

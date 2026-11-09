@@ -18,7 +18,7 @@ import {
   ReviewModeScenario,
   ReviewModeSeverity,
 } from '../../../core/models/review-mode.model';
-import { DiffGap, DiffRow, diffLines, diffStats, foldUnchanged } from '../../../core/utils/line-diff.util';
+import { DiffGap, DiffRow, diffLines, diffStats, foldUnchanged, linesOf } from '../../../core/utils/line-diff.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaFieldComponent } from '../../../shared/ui/field/fa-field.component';
 
@@ -29,6 +29,24 @@ const SEVERITY_LABELS: Readonly<Record<ReviewModeSeverity, string>> = {
   minor: 'Should fix',
   nit: 'Nit',
 };
+// A find case has one bug to name and the risks worth a sentence.
+const FIND_SEVERITY_LABELS: Readonly<Record<ReviewModeSeverity, string>> = {
+  blocker: 'The bug',
+  major: 'Also wrong',
+  minor: 'A risk',
+  nit: 'Style',
+};
+
+/** A marked line of a find case: its key in the draft, where it sits and what the reader wrote. */
+type Finding = {
+  readonly key: string;
+  readonly path: string;
+  readonly line: number;
+  readonly code: string;
+  readonly text: string;
+};
+
+const findingKey = (path: string, line: number) => `${path}#L${line}`;
 
 export function reviewDraftKey(questionId: string): string {
   return `fa:review-mode:v1:${questionId}`;
@@ -49,6 +67,7 @@ export function readReviewDraft(questionId: string): ReviewModeDraft | null {
       phase,
       comments: Object.fromEntries(Object.entries(comments).filter(([, text]) => typeof text === 'string')) as Record<string, string>,
       summary: typeof value.summary === 'string' ? value.summary : '',
+      example: typeof value.example === 'string' ? value.example : '',
     };
   } catch {
     return null;
@@ -72,7 +91,9 @@ type FileView = {
 
 /**
  * The merge request review: read the request and its diff, comment in writing, implement the top fixes in the
- * workspace beside it, then compare with a sample review. The draft stays on this device.
+ * workspace beside it, then compare with a sample review. A find case reads code instead: work an example by hand,
+ * mark the lines that are wrong and say why, compare with a sample answer, and only then fix it. The draft stays on
+ * this device.
  */
 @Component({
   selector: 'app-review-mode-panel',
@@ -87,10 +108,13 @@ export class ReviewModePanelComponent implements OnChanges {
   @Input({ required: true }) questionId!: string;
   /** The reader left the review; the page shows the task's description again. */
   @Output() readonly exit = new EventEmitter<void>();
+  /** The reader moved to another step; a find case keeps the workspace read-only until the comparison. */
+  @Output() readonly phaseChange = new EventEmitter<ReviewModePhase>();
 
   readonly phase = signal<ReviewModePhase>('review');
   readonly comments = signal<Readonly<Record<string, string>>>({});
   readonly summary = signal('');
+  readonly example = signal('');
   private readonly startedAt = signal(Date.now());
   /** The interview's clock, from the moment the written review was handed in. */
   private readonly interviewStartedAt = signal<number | null>(null);
@@ -115,6 +139,20 @@ export class ReviewModePanelComponent implements OnChanges {
   readonly ownComments = computed(() => this.files()
     .map((file) => ({ path: file.path, text: (this.comments()[file.path] ?? '').trim() }))
     .filter((entry) => entry.text));
+
+  readonly isFind = computed(() => this.scenarioSignal()?.format === 'find');
+
+  /** A find case's code, line by line, as it reads with no change around it. */
+  readonly codeFiles = computed(() => (this.scenarioSignal()?.mergeRequest.files ?? [])
+    .map((file) => ({ path: file.path, lines: linesOf(file.after) })));
+
+  /** The marked lines, in the order the code reads, with what the reader wrote about each. */
+  readonly findings = computed<readonly Finding[]>(() => this.codeFiles().flatMap((file) => file.lines
+    .map((code, index) => ({ key: findingKey(file.path, index + 1), path: file.path, line: index + 1, code: code.trim() }))
+    .filter((entry) => entry.key in this.comments())
+    .map((entry) => ({ ...entry, text: this.comments()[entry.key] ?? '' }))));
+
+  readonly writtenFindings = computed(() => this.findings().filter((finding) => finding.text.trim()));
 
   readonly timerLabel = computed(() => {
     const scenario = this.scenarioSignal();
@@ -142,6 +180,7 @@ export class ReviewModePanelComponent implements OnChanges {
     this.phase.set(draft?.phase ?? 'review');
     this.comments.set(draft?.comments ?? {});
     this.summary.set(draft?.summary ?? '');
+    this.example.set(draft?.example ?? '');
     // A review started again keeps its comments and starts new clocks, the interview's too when it reopens there.
     this.startedAt.set(draft?.open ? draft.startedAt : Date.now());
     this.interviewStartedAt.set(draft?.open
@@ -159,7 +198,34 @@ export class ReviewModePanelComponent implements OnChanges {
   }
 
   severityLabel(severity: ReviewModeSeverity): string {
-    return SEVERITY_LABELS[severity];
+    return (this.isFind() ? FIND_SEVERITY_LABELS : SEVERITY_LABELS)[severity];
+  }
+
+  marked(path: string, line: number): boolean {
+    return findingKey(path, line) in this.comments();
+  }
+
+  /** Marking a line opens a finding on it; unmarking it drops what was written there. */
+  toggleLine(path: string, line: number): void {
+    const key = findingKey(path, line);
+    this.comments.update((current) => {
+      if (!(key in current)) return { ...current, [key]: '' };
+      const rest: Record<string, string> = { ...current };
+      delete rest[key];
+      return rest;
+    });
+    this.save();
+  }
+
+  setFinding(key: string, event: Event): void {
+    const value = (event.target as HTMLTextAreaElement).value;
+    this.comments.update((current) => ({ ...current, [key]: value }));
+    this.save();
+  }
+
+  setExample(event: Event): void {
+    this.example.set((event.target as HTMLTextAreaElement).value);
+    this.save();
   }
 
   marker(row: DiffRow): string {
@@ -196,6 +262,7 @@ export class ReviewModePanelComponent implements OnChanges {
     this.phase.set(phase);
     this.now.set(Date.now());
     this.save();
+    this.phaseChange.emit(phase);
   }
 
   leave(): void {
@@ -213,6 +280,7 @@ export class ReviewModePanelComponent implements OnChanges {
       phase: this.phase(),
       comments: this.comments(),
       summary: this.summary(),
+      example: this.example(),
     });
   }
 }

@@ -5,15 +5,16 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import {
   ReviewModeComment,
   ReviewModeFile,
-  ReviewModeFramework,
+  ReviewModeFormat,
   ReviewModeScenario,
   ReviewModeSeverity,
+  ReviewModeTech,
 } from '../models/review-mode.model';
 import { normalizeAssetPath } from '../utils/asset-url.util';
 import { linesOf } from '../utils/line-diff.util';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
-const FRAMEWORKS: readonly ReviewModeFramework[] = ['react', 'angular', 'vue'];
+const TECHS: readonly ReviewModeTech[] = ['react', 'angular', 'vue', 'javascript'];
 const SEVERITIES: readonly ReviewModeSeverity[] = ['blocker', 'major', 'minor', 'nit'];
 
 /** Loads a merge request review scenario and drops one that would render half a review. */
@@ -52,21 +53,29 @@ export class ReviewModeService {
     const id = this.text(source['id']);
     const title = this.text(source['title']);
     const access = source['access'] === 'premium' ? 'premium' : source['access'] === 'free' ? 'free' : null;
+    const format: ReviewModeFormat | null = source['format'] === undefined || source['format'] === 'review'
+      ? 'review'
+      : source['format'] === 'find' ? 'find' : null;
     const sessionMinutes = Number(source['sessionMinutes']);
     const reviewMinutes = source['reviewMinutes'] === undefined ? null : Number(source['reviewMinutes']);
-    const supportedQuestions = this.frameworkMap(source['supportedQuestions']);
+    const supportedQuestions = this.techMap(source['supportedQuestions']);
     const request = this.record(source['mergeRequest']);
     const issue = this.record(request?.['issue']);
-    const files = Array.isArray(request?.['files'])
-      ? (request['files'] as unknown[]).map((file) => this.file(file)).filter((file): file is ReviewModeFile => file !== null)
+    const files = Array.isArray(request?.['files']) && format
+      ? (request['files'] as unknown[]).map((file) => this.file(file, format)).filter((file): file is ReviewModeFile => file !== null)
       : [];
+    // A find case asks for a calculation by hand before the code; both halves or neither.
+    const example = this.record(source['workedExample']);
+    const examplePrompt = this.text(example?.['prompt']);
+    const exampleAnswer = this.text(example?.['answer']);
     const sample = this.record(source['sampleReview']);
     const paths = new Set(files.map((file) => file.path));
     const comments = Array.isArray(sample?.['comments'])
       ? (sample['comments'] as unknown[]).map((comment) => this.comment(comment)).filter((comment): comment is ReviewModeComment => comment !== null)
       : [];
 
-    if (!schemaVersion || !id || !title || !access || !supportedQuestions) return null;
+    if (!schemaVersion || !id || !title || !access || !format || !supportedQuestions) return null;
+    if (example && (!examplePrompt || !exampleAnswer)) return null;
     if (!Number.isFinite(sessionMinutes) || sessionMinutes <= 0) return null;
     if (reviewMinutes !== null && (!Number.isInteger(reviewMinutes) || reviewMinutes <= 0)) return null;
     if (!request || !issue || !files.length || paths.size !== files.length) return null;
@@ -85,20 +94,24 @@ export class ReviewModeService {
       id,
       title,
       access,
+      format,
       sessionMinutes,
       ...(reviewMinutes !== null ? { reviewMinutes } : {}),
       supportedQuestions,
+      ...(example ? { workedExample: { prompt: examplePrompt, answer: exampleAnswer } } : {}),
       mergeRequest: { title: requestTitle, description, issue: { title: issueTitle, requirements }, files },
       sampleReview: { summary, comments },
     };
   }
 
-  private file(value: unknown): ReviewModeFile | null {
+  /** A merge request's file must change; a find case's file is read as it is, with no file before it. */
+  private file(value: unknown, format: ReviewModeFormat): ReviewModeFile | null {
     const source = this.record(value);
     const path = this.text(source?.['path']);
-    const before = typeof source?.['before'] === 'string' ? (source['before'] as string) : null;
+    const before = typeof source?.['before'] === 'string' ? (source['before'] as string) : format === 'find' ? '' : null;
     const after = typeof source?.['after'] === 'string' ? (source['after'] as string) : null;
-    if (!path || before === null || !after || before === after) return null;
+    if (!path || before === null || !after) return null;
+    if (format === 'review' ? before === after : before !== '') return null;
     return { path, before, after };
   }
 
@@ -113,13 +126,13 @@ export class ReviewModeService {
     return { path, line, severity, title, body, checked: source?.['checked'] === true };
   }
 
-  private frameworkMap(value: unknown): Partial<Record<ReviewModeFramework, string>> | null {
+  private techMap(value: unknown): Partial<Record<ReviewModeTech, string>> | null {
     const source = this.record(value);
     if (!source) return null;
-    const out: Partial<Record<ReviewModeFramework, string>> = {};
-    for (const framework of FRAMEWORKS) {
-      const id = this.text(source[framework]);
-      if (id) out[framework] = id;
+    const out: Partial<Record<ReviewModeTech, string>> = {};
+    for (const tech of TECHS) {
+      const id = this.text(source[tech]);
+      if (id) out[tech] = id;
     }
     return Object.keys(out).length ? out : null;
   }

@@ -7,6 +7,7 @@ const SCENARIO: ReviewModeScenario = {
   id: 'issues-review-v1',
   title: 'Issue list review',
   access: 'premium',
+  format: 'review',
   sessionMinutes: 90,
   supportedQuestions: { vue: 'vue-issue-list-review' },
   mergeRequest: {
@@ -28,6 +29,29 @@ const SCENARIO: ReviewModeScenario = {
   },
 };
 const QUESTION_ID = 'vue-issue-list-review';
+const FIND: ReviewModeScenario = {
+  schemaVersion: '1.0.0',
+  id: 'budget-case',
+  title: 'Budget case',
+  access: 'premium',
+  format: 'find',
+  sessionMinutes: 45,
+  supportedQuestions: { javascript: 'js-debug-budget' },
+  workedExample: { prompt: 'Work $100 a week by hand.', answer: '$433.33 a month.' },
+  mergeRequest: {
+    title: 'Find the bug in the budget',
+    description: 'Find it without running the code.',
+    issue: { title: 'What it should do', requirements: ['A weekly expense happens 52 times a year.'] },
+    files: [{ path: 'budget.js', before: '', after: 'const weekly = 100;\nconst monthly = weekly * 4;\nexport default monthly;\n' }],
+  },
+  sampleReview: {
+    summary: 'Line 2 counts four weeks a month.',
+    comments: [
+      { path: 'budget.js', line: 3, severity: 'minor', title: 'Not rounded', body: 'Round to cents.', checked: false },
+      { path: 'budget.js', line: 2, severity: 'blocker', title: 'Four weeks a month', body: 'Use 52 / 12.', checked: true },
+    ],
+  },
+};
 
 describe('ReviewModePanelComponent', () => {
   let fixture: ComponentFixture<ReviewModePanelComponent>;
@@ -111,6 +135,51 @@ describe('ReviewModePanelComponent', () => {
     expect(Array.from(sample.querySelectorAll('.review-mode__comment-title')).map((title) => title.textContent))
       .toEqual(['Loads on every click', 'No heading', 'Empty test']);
     expect(sample.textContent).toContain('Checked in the workspace');
+  });
+
+  it('runs a find case: an example by hand, a reason for each marked line, then the sample answer and the fix', () => {
+    localStorage.removeItem(reviewDraftKey('js-debug-budget'));
+    fixture = TestBed.createComponent(ReviewModePanelComponent);
+    fixture.componentRef.setInput('scenario', FIND);
+    fixture.componentRef.setInput('questionId', 'js-debug-budget');
+    fixture.detectChanges();
+    host = fixture.nativeElement as HTMLElement;
+    const phases: string[] = [];
+    fixture.componentInstance.phaseChange.subscribe((phase) => phases.push(phase));
+
+    expect(host.textContent).toContain('Case: find the bug');
+    expect(host.textContent).toContain('A weekly expense happens 52 times a year.');
+    // The code reads as it is, numbered, with no diff around it.
+    expect(host.querySelectorAll('.review-mode__row--added, .review-mode__row--removed, .review-mode__row--gap').length).toBe(0);
+    expect(host.querySelector('[data-testid="review-mode-findings"]')?.textContent).toContain('Mark a line number');
+    type('review-mode-example', '100 × 52 / 12 = 433.33');
+
+    // Marking a line opens a finding on it; unmarking drops it.
+    click('review-mode-mark-0-3');
+    expect(host.querySelector('[data-testid="review-mode-finding-3"]')).not.toBeNull();
+    click('review-mode-mark-0-3');
+    expect(host.querySelector('[data-testid="review-mode-finding-3"]')).toBeNull();
+    click('review-mode-mark-0-2');
+    expect(host.querySelector('[data-testid="review-mode-mark-0-2"]')?.getAttribute('aria-pressed')).toBe('true');
+    type('review-mode-finding-2', 'Four weeks a month; use 52 / 12.');
+    type('review-mode-summary', 'Line 2 undercounts every weekly cost.');
+    const draft = readReviewDraft('js-debug-budget');
+    expect(draft?.comments).toEqual({ 'budget.js#L2': 'Four weeks a month; use 52 / 12.' });
+    expect(draft?.example).toBe('100 × 52 / 12 = 433.33');
+
+    click('review-mode-compare');
+    const sample = host.querySelector('[data-testid="review-mode-sample"]') as HTMLElement;
+    // The bug first, then the risks, under the case's own labels.
+    expect(Array.from(sample.querySelectorAll('.review-mode__severity')).map((label) => label.textContent)).toEqual(['The bug', 'A risk']);
+    expect(sample.querySelector('[data-testid="review-mode-sample-example"]')?.textContent).toBe('$433.33 a month.');
+    expect(sample.textContent).toContain('budget.js:2');
+    expect(sample.textContent).toContain('Four weeks a month; use 52 / 12.');
+    expect(sample.textContent).toContain('100 × 52 / 12 = 433.33');
+
+    click('review-mode-start-fixes');
+    expect(host.textContent).toContain('The code runs now');
+    expect(phases).toEqual(['compare', 'fix']);
+    localStorage.removeItem(reviewDraftKey('js-debug-budget'));
   });
 
   it('restores a draft, and leaving keeps the comments for the next start', () => {

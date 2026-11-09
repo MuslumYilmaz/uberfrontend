@@ -204,6 +204,42 @@
   color: var(--uf-status-danger-text);
 }
 
+/* A find case: each line number marks its line, and a marked line keeps its colour while the reader writes. */
+.review-mode__mark {
+  min-width: 32px;
+  min-height: 24px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: var(--uf-radius-8);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  cursor: pointer;
+}
+
+.review-mode__mark:hover,
+.review-mode__mark:focus-visible {
+  border-color: var(--fa-border-strong);
+  color: var(--fa-text);
+}
+
+.review-mode__mark[aria-pressed='true'] {
+  border-color: var(--uf-status-warn-border);
+  color: var(--uf-status-warn-text);
+  font-weight: 600;
+}
+
+.review-mode__row--marked {
+  background: var(--uf-status-warn-bg);
+}
+
+.review-mode__findings {
+  display: grid;
+  gap: var(--fa-space-2);
+}
+
 .review-mode__row--gap td {
   padding: 4px 12px;
   color: var(--fa-text-subtle);
