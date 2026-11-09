@@ -1032,7 +1032,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           label: 'Remove Duplicates',
           path: '/javascript/coding/js-unique-array',
           access: 'premium',
-          why: 'Reported as concatenating two arrays and finding the unique elements.',
+          why: 'Reported in a 2019 account as concatenating two arrays and finding the unique elements.',
         },
         {
           label: 'Stack and queue, with a min stack',

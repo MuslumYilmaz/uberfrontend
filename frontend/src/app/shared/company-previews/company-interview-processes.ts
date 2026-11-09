@@ -1280,7 +1280,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2019 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
+      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot for junior to mid-level roles on some US teams: an approved AI assistant in a code comprehension round, and a technical design discussion about a past project in the Googleyness round. Confirm the loop with your recruiter.',
     checkedAt: '2026-11-06',
     variants: [
       {

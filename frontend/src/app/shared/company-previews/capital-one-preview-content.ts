@@ -237,7 +237,9 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Making the code shorter and cleverer instead of clearer, or changing behaviour without saying so.',
         resourceLabel: 'Rewrite a helper that mutates its input (free)',
         resourcePath: '/javascript/debug/js-debug-mutating-input',
-        reportedRound: { label: CAPITALONE_LEAD_CASE_2022_LABEL, url: CAPITALONE_LEAD_CASE_2022_URL },
+        // The senior account the default list cites names "badly written code"; the 2022 lead account asks the same
+        // ("read some code, tell me what it does, and improve it") and stays in the sources.
+        reportedRound: { label: CAPITALONE_ANGULAR_2023_LABEL, url: CAPITALONE_ANGULAR_2023_URL },
       },
     ],
   },

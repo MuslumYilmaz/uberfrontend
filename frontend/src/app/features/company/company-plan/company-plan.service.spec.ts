@@ -197,6 +197,24 @@ describe('CompanyPlanService', () => {
       requests[0].flush({ companyPlan: saved(ELEVENLABS) });
     });
 
+    it('keeps the saved plan when a /me sent before the write answers after it', () => {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(ELEVENLABS));
+      const service = setup();
+      logIn(user('a'));
+      http.expectOne(PLAN_URL).flush({ companyPlan: saved(ELEVENLABS) });
+      expect(service.saved()).toEqual(saved(ELEVENLABS));
+
+      // The sign-in's own /me left before the write and comes back after it, still without a plan.
+      logIn(user('a'));
+      expect(service.saved()).toEqual(saved(ELEVENLABS));
+      expect(service.answers()).toEqual(saved(ELEVENLABS));
+      http.expectNone(PLAN_URL);
+
+      // Another account starts clean.
+      logIn(user('b'));
+      expect(service.saved()).toBeNull();
+    });
+
     it('never overwrites a plan already on the account', () => {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(AGODA));
       const service = setup();

@@ -356,7 +356,7 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
     },
     {
       label: 'A 2026 pilot',
-      value: 'May 2026 press reports describe a pilot for some US teams hiring early- and mid-career engineers in which the round also includes a technical design conversation about a past project; ask your recruiter whether it applies to you.',
+      value: 'The May 2026 pilot for junior to mid-level roles on some US teams, the one the time-sensitive note describes, adds a technical design discussion about a past project to this round, beside an AI-assisted code comprehension round; ask your recruiter whether it applies to you.',
     },
     {
       label: 'Sources',

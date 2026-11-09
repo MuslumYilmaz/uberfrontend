@@ -70,7 +70,7 @@
       </div>
       @if (notes().length) {
         <ul class="drill__notes" data-testid="behavioral-drill-notes">
-          @for (line of notes(); track line) {
+          @for (line of notes(); track $index) {
             <li>{{ line }}</li>
           }
         </ul>
@@ -79,7 +79,7 @@
       <fieldset class="drill__group">
         <legend class="drill__legend">Before you say it out loud</legend>
         <ul class="drill__checks">
-          @for (check of checks(); track check; let i = $index) {
+          @for (check of checks(); track $index; let i = $index) {
             <li>
               <label class="drill__choice">
                 <input type="checkbox" [checked]="checked(i)" (change)="toggleCheck(i)" [attr.data-testid]="'behavioral-drill-check-' + i" />

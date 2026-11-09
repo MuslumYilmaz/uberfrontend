@@ -70,6 +70,11 @@ export class CompanyPlanService {
   private writeSequence = 0;
   private syncing = false;
   private marksInFlight = 0;
+  /**
+   * The last plan the server returned to this browser for the current account. A /me sent before that write and
+   * answered after it carries no plan, and must not undo the write (it did once the first save after a sign-in).
+   */
+  private serverPlan: SavedCompanyPlan | null = null;
   private data$: Observable<CompanyPlanData | null> | null = null;
 
   /** Answers not on an account yet: a guest's, or a save that failed. */
@@ -191,14 +196,15 @@ export class CompanyPlanService {
       this.accountGeneration += 1;
       this.syncing = false;
       this.marksInFlight = 0;
+      this.serverPlan = null;
       this.syncFailedState.set(false);
       // A draft left by one account must not reach the next one on this browser.
       if (hadAccount) this.setDraft(null);
       this.savedState.set(null);
     }
     if (!user) return;
-    // A refreshed /me must not undo a mark the server has not answered yet.
-    if (this.marksInFlight === 0) this.savedState.set(user.companyPlan ?? null);
+    // A refreshed /me must not undo a mark the server has not answered yet, nor a write it answered after /me left.
+    if (this.marksInFlight === 0) this.savedState.set(user.companyPlan ?? this.serverPlan ?? null);
     this.syncDraft();
   }
 
@@ -257,6 +263,7 @@ export class CompanyPlanService {
   }
 
   private applyPlan(plan: SavedCompanyPlan): void {
+    this.serverPlan = plan;
     this.savedState.set(plan);
     this.auth.user.update((user) => (user ? { ...user, companyPlan: plan } : user));
   }
