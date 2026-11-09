@@ -82,6 +82,9 @@ async function capture(page: Page, name: string) {
     mask: [
       page.locator('.monaco-editor .cursors-layer'), page.locator('[role="timer"]'),
       page.locator('.results-hero > div > p:not(.eyebrow)'),
+      // The home hero's words take turns on a timer; one CI capture caught a later word despite reduced motion.
+      // The window is as wide as the longest word, so the mask covers the same box whichever word shows.
+      page.locator('.fa-rotating-words__window'),
     ],
   });
   if (process.env.UI_VISUAL_GALLERY_DIR) {
