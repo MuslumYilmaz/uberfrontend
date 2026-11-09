@@ -239,7 +239,7 @@ export const GOOGLE_PREP_SEQUENCE: readonly GooglePrepDay[] = [
   },
   {
     day: 'Day 7',
-    focus: 'Run a timed mock, revisit missed edge cases, and practice explaining decisions before implementation details.',
+    focus: 'Run a timed mock, revisit missed edge cases, practice explaining decisions before implementation details, and answer two Googleyness questions in the drill above.',
     artifact: 'A mock-interview scorecard, recording or notes, and a final edge-case checklist.',
   },
 ];
@@ -326,7 +326,7 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
   kicker: 'Round decoder',
   title: 'Google Googleyness interview for front-end engineers: what it is and what was asked',
   lede: [
-    'Front-end loops at Google include one Googleyness interview beside the coding and design rounds: about 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership and which is rated on the same Hire scale as the coding rounds.',
+    'Front-end loops at Google include one Googleyness interview beside the coding rounds and, at L5 and above, a design round: about 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership and which is rated on the same Hire scale as the coding rounds.',
     'Google\'s current interview tips no longer use the word, but they describe the same questions, "Tell me about a time when…" and "How would you approach this situation…?", and ask for specific examples rather than habits.',
   ],
   facts: [
@@ -370,18 +370,19 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
     note: 'Google\'s examples come from its interview tips and its re:Work guide; the rest are what the accounts report, the last two from general software engineer loops.',
     questions: [
       { id: 'comfort-zone', text: 'How do you push yourself to grow outside your comfort zone?', source: 'Google\'s interview tips' },
-      { id: 'conflict', text: 'How would you address a conflict with someone you work with?', source: 'Google\'s interview tips' },
+      { id: 'conflict', text: 'How would you address a conflict with someone you work with?', source: 'Google\'s interview tips', kind: 'approach' },
       { id: 'collaboration', text: 'Tell me about a time you drove collaboration.', source: 'Google\'s interview tips' },
       { id: 'team-impact', text: 'Tell me about a time your behavior had a positive impact on your team.', source: 'Google\'s re:Work guide' },
+      { id: 'current-project', text: 'Walk me through your current project and your role in it.', source: 'Medium, April 2026' },
       { id: 'unclear-requirements', text: 'Tell me about joining a project with unclear requirements.', source: 'Medium, April 2026' },
       { id: 'tight-deadline', text: 'Tell me about a time you worked under a tight deadline. What would you do differently?', source: 'Medium, April 2026' },
-      { id: 'credit', text: 'A teammate takes the credit for shared work. What do you do?', source: 'LeetCode, 2024 and 2025' },
-      { id: 'every-task-p0', text: 'Every task is marked P0. What do you do?', source: 'LeetCode, 2024 and 2025' },
+      { id: 'credit', text: 'A teammate takes the credit for shared work. What do you do?', source: 'LeetCode, 2024 and 2025', kind: 'approach' },
+      { id: 'every-task-p0', text: 'Every task is marked P0. What do you do?', source: 'LeetCode, 2024 and 2025', kind: 'approach' },
     ],
     checks: [
       'It is a specific time, not a habit.',
       'It shows how I worked with others or helped the team.',
-      'For a “How would you…” question: my approach first, then a time I did it.',
+      'I can say how the team responded, a follow-up a 2026 account reports.',
     ],
   },
 };

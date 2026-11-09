@@ -1473,9 +1473,10 @@ describe('CompanyPreviewComponent', () => {
       // Amazon is outside the gate: every question is open and no card asks for an account.
       await createComponent('amazon');
       const amazon = drill('amazon-round-leadership-principles') as HTMLElement;
-      expect(pickable(amazon)).toBe(9);
+      expect(pickable(amazon)).toBe(11);
       expect(amazon.querySelector('.premium-locked')).toBeNull();
       expect(gateCard('company-drill-gate')).toBeNull();
+      expect(host().querySelectorAll('[data-testid="company-round-fact-tag"]').length).toBe(0);
 
       // Meta's decoder is authored, Google's and Netflix's are their own layouts, Apple's comes from its editorial notes.
       for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['google', 'google-round-googleyness'], ['netflix', 'netflix-round-culture'], ['apple', 'apple-round-team-conversations']]) {
@@ -1488,14 +1489,19 @@ describe('CompanyPreviewComponent', () => {
         const card = section.querySelector('[data-testid="company-drill-gate"]') as HTMLElement;
         expect(card.querySelector('.company-prompt-gate__title')?.textContent).withContext(slug).toBe(`The other ${total - 1} questions open with a free account`);
         expect(card.querySelector('a')?.getAttribute('href')).withContext(slug).toMatch(/^\/auth\/signup\?redirectTo=/);
+        // The decoder's blurred facts say what opens them, as the drill's questions do.
+        const decoder = host().querySelector(`[aria-labelledby="${round}"]`) as HTMLElement;
+        const facts = decoder.querySelectorAll('.company-round-facts dd').length;
+        expect(decoder.querySelectorAll('[data-testid="company-round-fact-tag"]').length).withContext(slug).toBe(facts - 1);
       }
 
       user.set(FREE_ACCOUNT);
       await createComponent('meta');
       const open = drill('meta-round-behavioural') as HTMLElement;
-      expect(pickable(open)).toBe(8);
+      expect(pickable(open)).toBe(9);
       expect(open.querySelector('.premium-locked')).toBeNull();
       expect(gateCard('company-drill-gate')).toBeNull();
+      expect(host().querySelectorAll('[data-testid="company-round-fact-tag"]').length).toBe(0);
     });
 
     it('opens everything for a member and leaves a guide outside the gate as it was', async () => {

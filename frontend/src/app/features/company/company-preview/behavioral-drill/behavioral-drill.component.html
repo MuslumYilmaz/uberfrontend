@@ -39,7 +39,7 @@
     <ng-content select="[drillGate]"></ng-content>
 
     @if (question(); as current) {
-      @if (!isView()) {
+      @if (kind() === 'story') {
         <fieldset class="drill__group drill__shapes">
           <legend class="drill__legend">Tell it as</legend>
           <label class="drill__choice">
@@ -62,7 +62,7 @@
         @for (part of parts(); track part.key) {
           <fa-field [label]="part.label" [hint]="part.hint">
             <span class="fa-input drill__input">
-              <textarea rows="3" [value]="story()[part.key] ?? ''" (input)="setPart(part.key, $event)"
+              <textarea #field rows="3" [value]="story()[part.key] ?? ''" (input)="setPart(part.key, $event)"
                 [attr.data-testid]="'behavioral-drill-' + part.key"></textarea>
             </span>
           </fa-field>

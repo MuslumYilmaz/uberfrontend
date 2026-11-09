@@ -1,10 +1,23 @@
-import { ChangeDetectionStrategy, Component, Input, afterNextRender, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Injector,
+  Input,
+  QueryList,
+  ViewChildren,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { BehavioralDrill, BehavioralDrillQuestion } from '../../../../shared/company-previews/authored-company-preview.model';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { FaFieldComponent } from '../../../../shared/ui/field/fa-field.component';
 
 export type BehavioralDrillShape = 'star' | 'car';
-type Part = 'situation' | 'task' | 'context' | 'action' | 'result' | 'answer';
+type Part = 'situation' | 'task' | 'context' | 'action' | 'result' | 'answer' | 'approach' | 'example';
 type Story = Partial<Record<Part, string>> & { readonly checked?: readonly number[] };
 
 /** What the reader wrote for one company: the question last picked, the shape, and a story per question. */
@@ -14,7 +27,7 @@ export type BehavioralDrillDraft = {
   readonly stories: Readonly<Record<string, Story>>;
 };
 
-const PART_KEYS: readonly Part[] = ['situation', 'task', 'context', 'action', 'result', 'answer'];
+const PART_KEYS: readonly Part[] = ['situation', 'task', 'context', 'action', 'result', 'answer', 'approach', 'example'];
 const ACTION_HINT = 'What you did, step by step, in the first person.';
 const RESULT_HINT = 'What changed, with a number if there is one, and what you learned.';
 const PARTS: Readonly<Record<BehavioralDrillShape, readonly { key: Part; label: string; hint: string }[]>> = {
@@ -36,6 +49,12 @@ const VIEW_PARTS: readonly { key: Part; label: string; hint: string }[] = [
   { key: 'answer', label: 'Your answer', hint: 'Your view in a sentence, then two reasons, each with an example from your own work.' },
 ];
 
+// "How would you…" asks for an approach first, then a time it was done.
+const APPROACH_PARTS: readonly { key: Part; label: string; hint: string }[] = [
+  { key: 'approach', label: 'Your approach', hint: 'What you would do, in order, and why.' },
+  { key: 'example', label: 'A time you did it', hint: 'One real situation: what you did, in the first person, and what changed.' },
+];
+
 /** The checks every story gets, before the company's own. */
 export const BEHAVIORAL_DRILL_CHECKS: readonly string[] = [
   'It is one situation, and it answers the question asked.',
@@ -51,8 +70,32 @@ export const BEHAVIORAL_DRILL_VIEW_CHECKS: readonly string[] = [
   'It names something specific to this company or team.',
 ];
 
+/** The checks every "How would you…" answer gets, before the company's own. */
+export const BEHAVIORAL_DRILL_APPROACH_CHECKS: readonly string[] = [
+  'My approach comes first, in the order I would act.',
+  'The example is a real time I did it, with what I did and what changed.',
+  'I can answer “what would you do differently?”',
+];
+
 // A relaxed speaking pace, so the estimate errs long.
 const WORDS_PER_MINUTE = 130;
+
+/**
+ * How long an answer lasts out loud, against the length we suggest: a story or an approach in a minute and a half to
+ * three, a view in two at most. Interviewers ask follow-up questions, so the details can wait for them.
+ */
+function lengthNote(words: number, kind: 'story' | 'view' | 'approach'): string {
+  const minutes = Math.max(0.5, Math.round((words / WORDS_PER_MINUTE) * 2) / 2);
+  const spoken = `About ${words} ${words === 1 ? 'word' : 'words'}: about ${minutesLabel(minutes)} out loud`;
+  if (kind === 'view') {
+    return minutes > 2
+      ? `${spoken}, more than the two minutes we suggest for a view: keep the reasons that matter most.`
+      : `${spoken}, inside the two minutes we suggest for a view.`;
+  }
+  if (minutes > 3) return `${spoken}, more than the three minutes we suggest: keep some details for the follow-up questions.`;
+  if (minutes < 1.5) return `${spoken}, under the minute and a half we suggest: say what you did and what changed.`;
+  return `${spoken}, inside the one and a half to three minutes we suggest.`;
+}
 
 export function behavioralDrillKey(company: string): string {
   return `fa:behavioral-drill:v1:${company}`;
@@ -77,6 +120,12 @@ export function readBehavioralDrill(company: string): BehavioralDrillDraft | nul
   }
 }
 
+/** A textarea as tall as its text, and never shorter than the rows it was given. */
+function fit(field: HTMLTextAreaElement): void {
+  field.style.height = 'auto';
+  field.style.height = `${field.scrollHeight}px`;
+}
+
 const times = (count: number) => (count === 0 ? 'not at all' : count === 1 ? 'once' : `${count} times`);
 const minutesLabel = (minutes: number) => {
   if (minutes <= 0.5) return 'half a minute';
@@ -87,10 +136,11 @@ const minutesLabel = (minutes: number) => {
 
 /**
  * A behavioural question practised in writing: pick one of the company's questions, tell one story in the STAR or
- * CAR parts (or, for a question that asks for a view, answer in one field), read what the text itself shows (length,
- * "we" against "I", a number in the result), then tick the checks. On a gated guide a visitor without an account practises the first question; the page projects its free
- * account card under the list ([drillGate]). The draft stays on this device and is read once the page is in the
- * browser, so the server HTML and the first render match.
+ * CAR parts (a view in one field, a "How would you…" as an approach and a time it was done), read what the text
+ * itself shows (length against the length we suggest, "we" against "I", a number in the result), then tick the checks.
+ * On a gated guide a visitor without an account practises the first question; the page projects its free account card
+ * under the list ([drillGate]). The draft stays on this device and is read once the page is in the browser, so the
+ * server HTML and the first render match.
  */
 @Component({
   selector: 'app-behavioral-drill',
@@ -127,13 +177,18 @@ export class BehavioralDrillComponent {
     return questions[index >= 0 && !this.locked(index) ? index : 0] ?? null;
   });
 
-  /** A view or a reason is answered in one field; a story in the parts of the shape picked. */
-  readonly isView = computed(() => this.question()?.kind === 'view');
-  readonly parts = computed(() => (this.isView() ? VIEW_PARTS : PARTS[this.shape()]));
-  readonly checks = computed(() => [
-    ...(this.isView() ? BEHAVIORAL_DRILL_VIEW_CHECKS : BEHAVIORAL_DRILL_CHECKS),
-    ...(this.drillSignal()?.checks ?? []),
-  ]);
+  /** A story is told in the parts of the shape picked; a view in one field; a "How would you…" as an approach and an example. */
+  readonly kind = computed(() => this.question()?.kind ?? 'story');
+  readonly parts = computed(() => {
+    const kind = this.kind();
+    return kind === 'view' ? VIEW_PARTS : kind === 'approach' ? APPROACH_PARTS : PARTS[this.shape()];
+  });
+  readonly checks = computed(() => {
+    const drill = this.drillSignal();
+    const kind = this.kind();
+    if (kind === 'view') return [...BEHAVIORAL_DRILL_VIEW_CHECKS, ...(drill?.viewChecks ?? drill?.checks ?? [])];
+    return [...(kind === 'approach' ? BEHAVIORAL_DRILL_APPROACH_CHECKS : BEHAVIORAL_DRILL_CHECKS), ...(drill?.checks ?? [])];
+  });
   readonly story = computed<Story>(() => this.stories()[this.question()?.id ?? ''] ?? {});
 
   /** What the text itself shows, for the reader to weigh; nothing here is a score. */
@@ -141,17 +196,21 @@ export class BehavioralDrillComponent {
     const story = this.story();
     const words = this.parts().map((part) => story[part.key] ?? '').join(' ').split(/\s+/).filter(Boolean).length;
     if (!words) return [];
-    const notes = [`About ${words} ${words === 1 ? 'word' : 'words'}: about ${minutesLabel(Math.max(0.5, Math.round((words / WORDS_PER_MINUTE) * 2) / 2))} out loud.`];
-    const action = story.action ?? '';
+    const notes = [lengthNote(words, this.kind())];
+    // What the person did sits in the actions of a story and in the example of an approach.
+    const action = story.action ?? story.example ?? '';
     const we = (action.match(/\b(we|our|us)\b/gi) ?? []).length;
     const me = (action.match(/\bI\b|\b(my|me)\b/g) ?? []).length;
-    if (we >= 2 && we > me) notes.push(`The actions say “we” ${times(we)} and “I” ${times(me)}: say what you did.`);
+    if (we >= 2 && we > me) notes.push(`The ${story.action ? 'actions say' : 'example says'} “we” ${times(we)} and “I” ${times(me)}: say what you did.`);
     const result = (story.result ?? '').trim();
     if (result.split(/\s+/).length >= 4 && !/\d/.test(result)) {
       notes.push('The result has no number yet: a time saved, a count or a percentage makes it concrete.');
     }
     return notes;
   });
+
+  @ViewChildren('field') private readonly fields?: QueryList<ElementRef<HTMLTextAreaElement>>;
+  private readonly injector = inject(Injector);
 
   constructor() {
     afterNextRender(() => {
@@ -160,6 +219,12 @@ export class BehavioralDrillComponent {
       this.picked.set(draft.question);
       this.shape.set(draft.shape);
       this.stories.set(draft.stories);
+    });
+    // Each part grows with its text, so a story reads in one view: after a restore, a switch and every keystroke.
+    effect(() => {
+      this.story();
+      this.parts();
+      afterNextRender(() => this.fields?.forEach((field) => fit(field.nativeElement)), { injector: this.injector });
     });
   }
 

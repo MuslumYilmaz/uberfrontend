@@ -430,8 +430,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
   /** The step the review is on, as its panel reports it; a find case keeps the workspace read-only on the first. */
   reviewPhase = signal<ReviewModePhase>('review');
+  /** A find case is open: it keeps its own clock, so timed practice is not offered beside it. */
+  findCaseOpen = computed(() => this.reviewOpen() && this.reviewScenario()?.format === 'find');
   /** A find case asks for the bug without running the code, so the workspace and the solution wait for the comparison. */
-  findLocked = computed(() => this.reviewOpen() && this.reviewScenario()?.format === 'find' && this.reviewPhase() === 'review');
+  findLocked = computed(() => this.findCaseOpen() && this.reviewPhase() === 'review');
+  /** While the case is read, its tests would name the bugs, so the workspace waits behind a note; the code is in the case. */
+  findConcealedNote = computed(() => (this.findLocked() ? 'Read the code in the case. The workspace and its tests open after you compare with the sample answer.' : null));
   private reviewLoadSeq = 0;
   private reviewPreviousAsideRatio: number | null = null;
 

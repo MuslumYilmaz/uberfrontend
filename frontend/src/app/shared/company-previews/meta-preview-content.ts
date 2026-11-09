@@ -34,7 +34,7 @@ export const META_PREVIEW_DESCRIPTION =
   'Prepare for a Meta front end engineer interview with 7 practice prompts: map from scratch, clearAllTimeout, memoization, DOM traversal, autocomplete design.';
 export const META_PREVIEW_CANONICAL_PATH = '/companies/meta/preview';
 export const META_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on Meta\'s own hiring pages, not leaked, confirmed or official Meta questions. Self-reported screens and loops from 2021 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on Meta\'s own hiring pages, not leaked, confirmed or official Meta questions. Self-reported screens and loops from 2020 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
 
 export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'meta',
@@ -91,7 +91,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       processLink: { label: 'See the behavioural row in the reported process', fragment: 'meta-interview-process-1-stage-full-loop-behavioural' },
       // One question per signal of the guide, written from its description, then the two topics a 2025 account names.
       drill: {
-        note: 'The first six questions are written from the signals in Meta\'s guide; the last two follow what a 2025 account reports.',
+        note: 'Six questions are written from the signals in Meta\'s guide, two follow what a 2025 account reports, and the last is the guide\'s own question about what you care about in tech.',
         questions: [
           { id: 'disagreement', text: 'Tell me about a disagreement with a colleague or a manager. How did you resolve it?', source: 'Meta\'s guide: resolving conflict' },
           { id: 'criticism', text: 'Tell me about criticism you received and what you changed after it.', source: 'Meta\'s guide: growing continuously' },
@@ -101,6 +101,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           { id: 'audience', text: 'Tell me about adapting how you explained your work to a cross-functional partner.', source: 'Meta\'s guide: communicating effectively' },
           { id: 'debugging', text: 'Tell me about a hard bug you debugged.', source: 'Taro, 2025' },
           { id: 'ui-challenge', text: 'Tell me about a UI challenge in a past project.', source: 'Taro, 2025' },
+          { id: 'impact', text: 'What are you passionate about in tech, and what impact do you want to make?', source: 'Meta\'s guide', kind: 'view' },
         ],
         checks: [
           'It shows the signal the question asks about.',
@@ -325,7 +326,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { day: 'Day 4', focus: 'DOM traversals: the twin node, collecting by predicate in both orders, and a store keyed by elements.', artifact: 'Three traversals that pass on a real DOM.' },
       { day: 'Day 5', focus: 'Data structures in JavaScript: stack, queue with constant-time dequeue, linked list insertion, tree checks.', artifact: 'Four structures with stated complexity.' },
       { day: 'Day 6', focus: 'Component design: autocomplete and typeahead with debouncing, cancellation, caching and keyboard access.', artifact: 'A one-page component design with its states and failure cases.' },
-      { day: 'Day 7', focus: 'Mock screen in the interview tool: two problems in fifty minutes, written from memory, then a review of what you could not finish.', artifact: 'A list of the questions you will ask the recruiter about rounds, tools and the AI assistant rules.' },
+      { day: 'Day 7', focus: 'Mock screen in the interview tool: two problems in fifty minutes, written from memory, then a review of what you could not finish; and two stories in the behavioural drill above, for two of the five signals.', artifact: 'A list of the questions you will ask the recruiter about rounds, tools and the AI assistant rules.' },
     ],
   },
   faqs: {

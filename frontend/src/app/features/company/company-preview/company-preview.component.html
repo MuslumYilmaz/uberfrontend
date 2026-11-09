@@ -306,7 +306,7 @@
       <dl class="company-round-facts">
         <ng-container *ngFor="let fact of googleGoogleyness.facts; let i = index">
           <dt>{{ fact.label }}</dt>
-          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span><span *ngIf="detailLocked() && i > 0" class="company-link__tag" data-testid="company-round-fact-tag">Free account</span></dd>
         </ng-container>
       </dl>
       <app-behavioral-drill *ngIf="googleGoogleyness.drill as drill" [drill]="drill" company="google"
@@ -556,7 +556,7 @@
       <dl class="company-round-facts">
         <ng-container *ngFor="let fact of netflixCulture.facts; let i = index">
           <dt>{{ fact.label }}</dt>
-          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span><span *ngIf="detailLocked() && i > 0" class="company-link__tag" data-testid="company-round-fact-tag">Free account</span></dd>
         </ng-container>
       </dl>
       <app-behavioral-drill *ngIf="netflixCulture.drill as drill" [drill]="drill" company="netflix"
@@ -847,7 +847,7 @@
       <dl class="company-round-facts">
         <ng-container *ngFor="let fact of round.facts; let i = index">
           <dt>{{ fact.label }}</dt>
-          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span><span *ngIf="detailLocked() && i > 0" class="company-link__tag" data-testid="company-round-fact-tag">Free account</span></dd>
         </ng-container>
       </dl>
       <app-behavioral-drill *ngIf="round.drill as drill" [drill]="drill" [company]="slug"
@@ -1083,7 +1083,7 @@
       <dl class="company-round-facts">
         <ng-container *ngFor="let fact of round.facts; let i = index">
           <dt>{{ fact.label }}</dt>
-          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
+          <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span><span *ngIf="detailLocked() && i > 0" class="company-link__tag" data-testid="company-round-fact-tag">Free account</span></dd>
         </ng-container>
       </dl>
       <app-behavioral-drill *ngIf="round.drill as drill" [drill]="drill" [company]="slug"

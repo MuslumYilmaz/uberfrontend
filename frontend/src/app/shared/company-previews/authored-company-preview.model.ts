@@ -57,8 +57,11 @@ export type BehavioralDrillQuestion = {
   readonly text: string;
   /** Where it comes from, as the decoder's facts name it: "Amazon's interview loop page", "Seattle, 2019". */
   readonly source: string;
-  /** A question that asks for a view or a reason, not one past situation: one answer field, without STAR or CAR. */
-  readonly kind?: 'view';
+  /**
+   * Not a story: a view or a reason is answered in one field; a "How would you…" (approach) asks for the approach,
+   * then a time it was done. Neither offers STAR or CAR.
+   */
+  readonly kind?: 'view' | 'approach';
 };
 
 /** The practice under a behavioural round decoder: pick a question, tell one story in its parts, check it. */
@@ -69,6 +72,8 @@ export type BehavioralDrill = {
   readonly note?: string;
   /** This company's checks, after the ones every story gets. */
   readonly checks: readonly string[];
+  /** The company's checks that fit a view question, when not all of `checks` do. */
+  readonly viewChecks?: readonly string[];
 };
 
 /** One named interview round decoded in the searcher's own words: what it is, how long, on which tool, what was reported. */

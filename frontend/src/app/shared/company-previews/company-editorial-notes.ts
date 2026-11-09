@@ -942,7 +942,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
     },
-    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Five of the ten frontend accounts behind this page describe both a screen and a team loop, mostly of frontend coding; the rest describe one stage, and all differ on what the team decides.'],
+    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Of the twelve public accounts behind this page, ten are for frontend roles; five of those describe both a screen and a team loop, mostly of frontend coding, the rest describe one stage, and all differ on what the team decides.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A screen, then a team loop of four to seven rounds',
@@ -1029,7 +1029,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
         },
         {
-          label: 'Unique array',
+          label: 'Remove Duplicates',
           path: '/javascript/coding/js-unique-array',
           access: 'premium',
           why: 'Reported as concatenating two arrays and finding the unique elements.',

@@ -109,6 +109,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() concealedNote: string | null = null;
   /** A running rehearsal's clock; it takes the place of timed practice. */
   @Input() clockLabel: string | null = null;
+  /** The page keeps its own clock, as an open case does, so timed practice is not offered beside it. */
+  @Input() timedPracticeHidden = false;
   /** A rehearsal holds the task as the round would, as timed practice does: no hints beside the code, and no failure explained. */
   get rehearsing(): boolean {
     return !!this.clockLabel || this.locked;

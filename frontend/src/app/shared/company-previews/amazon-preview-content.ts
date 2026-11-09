@@ -90,7 +90,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         'Amazon publishes example questions, and front end accounts from 2019 to 2025 report the same few patterns: a decision between options or without all the data, a disagreement, a deadline, a failure or negative feedback, a customer you went out of your way for, and work beyond your role.',
       ],
       facts: [
-        { label: 'Where they come', value: 'Two or three at the start of each loop interview in most accounts; the hiring manager round is often all principles, and in some loops the bar raiser round is too. Phone screens vary: two 2020 screens had no behavioural questions, and a 2025 new-graduate screen spent more than 40 minutes on them.' },
+        { label: 'Where they come', value: 'Two or three at the start of each loop interview in most accounts; the hiring manager round is often all principles, and in some loops the bar raiser round is too. Phone screens vary: a 2020 screen had no behavioural questions, and a 2025 new-graduate screen spent more than 40 minutes on them.' },
         { label: 'Amazon\'s own examples', value: 'The interview loop page asks about "a problem with multiple possible solutions", a time you took a risk, made a mistake or failed, a project you led, and how you used data to decide. The principles video on the FEE page adds a decision between two technology choices and a decision without all the data.' },
         { label: 'Decisions and ambiguity', value: 'A time you "jumped into a problem and had no idea what was going on", and a time with too few requirements (Seattle, 2020); starting to deliver with few requirements (Medium, 2021); a calculated risk, and short-term against long-term costs (New York, 2020).' },
         { label: 'Conflict and backbone', value: 'A disagreement with a coworker (Seattle, 2019); a conflict with a peer (New York, 2019); disagreement at work (Medium, 2025); something you did without telling your manager, and why (Hyderabad, 2025).' },
@@ -103,7 +103,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       processLink: { label: 'See the Leadership Principles row in the reported process', fragment: 'amazon-interview-process-1-stage-loop-leadership-principles' },
       // The facts above, one question each: Amazon's own examples first, then the accounts.
       drill: {
-        note: 'Each question is one of Amazon\'s own examples or one an account reports, asked as one past situation.',
+        note: 'Each question is one of Amazon\'s own examples or one an account reports; the last is a hypothetical, as the 2025 account asked it.',
         questions: [
           { id: 'multiple-solutions', text: 'Tell me about a problem with multiple possible solutions.', source: 'Amazon\'s interview loop page' },
           { id: 'mistake', text: 'Tell me about a time you made a mistake or failed.', source: 'Amazon\'s interview loop page' },
@@ -114,6 +114,8 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           { id: 'customer', text: 'Tell me about a time you went out of your way to help a customer urgently. What did you do to make sure it never happened again?', source: 'Vancouver, 2021' },
           { id: 'few-requirements', text: 'Tell me about a time you started to deliver with few requirements.', source: 'Medium, 2021' },
           { id: 'beyond-required', text: 'Tell me about something you did beyond what was required.', source: 'Seattle, 2020' },
+          { id: 'without-telling-manager', text: 'Tell me about something you did without telling your manager, and why.', source: 'Hyderabad, 2025' },
+          { id: 'fifteen-days', text: 'You have 15 days for two or three months of work. What do you do?', source: 'Hyderabad, 2025', kind: 'approach' },
         ],
         checks: [
           'I can name the Leadership Principle it shows.',

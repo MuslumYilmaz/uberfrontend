@@ -6,6 +6,7 @@ import { META_COMPANY_PREVIEW } from '../../../../shared/company-previews/meta-p
 import { GOOGLE_GOOGLEYNESS_SPOTLIGHT } from '../google-preview-content';
 import { NETFLIX_CULTURE_SPOTLIGHT } from '../netflix-preview-content';
 import {
+  BEHAVIORAL_DRILL_APPROACH_CHECKS,
   BEHAVIORAL_DRILL_CHECKS,
   BEHAVIORAL_DRILL_VIEW_CHECKS,
   BehavioralDrillComponent,
@@ -103,13 +104,39 @@ describe('BehavioralDrillComponent', () => {
     type('behavioral-drill-result', 'The release went out on time and the team was happy.');
     const notes = () => Array.from(host().querySelectorAll('[data-testid="behavioral-drill-notes"] li')).map((item) => item.textContent);
     expect(notes()).toEqual([
-      'About 24 words: about half a minute out loud.',
+      'About 24 words: about half a minute out loud, under the minute and a half we suggest: say what you did and what changed.',
       'The actions say “we” 3 times and “I” not at all: say what you did.',
       'The result has no number yet: a time saved, a count or a percentage makes it concrete.',
     ]);
     type('behavioral-drill-action', 'I split the work into three reviews and I asked our lead to approve it.');
     type('behavioral-drill-result', 'The release went out 2 days early.');
-    expect(notes()).toEqual(['About 22 words: about half a minute out loud.']);
+    expect(notes()).toEqual(['About 22 words: about half a minute out loud, under the minute and a half we suggest: say what you did and what changed.']);
+    // Two minutes of story sits inside the length we suggest; four minutes is more than it.
+    type('behavioral-drill-situation', Array(240).fill('word').join(' '));
+    expect(notes()[0]).toBe('About 262 words: about 2 minutes out loud, inside the one and a half to three minutes we suggest.');
+    type('behavioral-drill-situation', Array(500).fill('word').join(' '));
+    expect(notes()[0]).toBe('About 522 words: about 4 minutes out loud, more than the three minutes we suggest: keep some details for the follow-up questions.');
+  });
+
+  it('asks a "How would you…" question as an approach, then a time it was done', async () => {
+    fixture = TestBed.createComponent(BehavioralDrillComponent);
+    fixture.componentRef.setInput('drill', {
+      ...DRILL,
+      questions: [{ id: 'credit', text: 'A teammate takes the credit for shared work. What do you do?', source: 'LeetCode', kind: 'approach' }, ...DRILL.questions],
+    });
+    fixture.componentRef.setInput('company', COMPANY);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(Array.from(host().querySelectorAll('textarea')).map((field) => field.getAttribute('data-testid'))).toEqual(['behavioral-drill-approach', 'behavioral-drill-example']);
+    expect(el('behavioral-drill-shape-star')).toBeNull();
+    expect(Array.from(host().querySelectorAll('.drill__checks li')).map((item) => item.textContent?.trim()))
+      .toEqual([...BEHAVIORAL_DRILL_APPROACH_CHECKS, 'I can name the principle it shows.']);
+    // The example is where "we" and "I" are counted.
+    type('behavioral-drill-example', 'We talked, we agreed and our manager split the credit.');
+    expect(Array.from(host().querySelectorAll('[data-testid="behavioral-drill-notes"] li')).map((item) => item.textContent))
+      .toContain('The example says “we” 3 times and “I” not at all: say what you did.');
   });
 
   it('keeps the questions after the open ones under the blur and out of reach, and falls back to the first', async () => {
@@ -162,7 +189,7 @@ describe('BehavioralDrillComponent', () => {
     // Only the length reads back: a view has no actions or result to weigh.
     type('behavioral-drill-answer', 'Candor, because we fixed a broken release process after I said so in a review.');
     expect(Array.from(host().querySelectorAll('[data-testid="behavioral-drill-notes"] li')).map((item) => item.textContent))
-      .toEqual(['About 15 words: about half a minute out loud.']);
+      .toEqual(['About 15 words: about half a minute out loud, inside the two minutes we suggest for a view.']);
     expect(readBehavioralDrill(COMPANY)?.stories['memo']?.answer).toBe('Candor, because we fixed a broken release process after I said so in a review.');
 
     // A story question in the same drill keeps its parts and shapes.

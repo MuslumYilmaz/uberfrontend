@@ -288,7 +288,7 @@ export const NETFLIX_PREP_SEQUENCE: readonly NetflixPrepDay[] = [
   {
     day: 'Day 7',
     focus:
-      'Run a timed mock combining one coding prompt, one system-design prompt, and one consequential-decision story.',
+      'Run a timed mock combining one coding prompt, one system-design prompt, and one consequential-decision story, written first in the culture drill above.',
     artifact: 'A scored recording or review sheet with three concrete improvements for the next mock.',
   },
 ];
@@ -425,7 +425,7 @@ export const NETFLIX_CULTURE_SPOTLIGHT: AuthoredRoundSpotlight = {
   kicker: 'Round decoder',
   title: 'Netflix culture interview for frontend engineers: what the memo asks for and what was asked',
   lede: [
-    'Netflix frontend loops spend whole interviews on behaviour and fit with the culture memo: a 2020 account had a long behavioural interview with a UI manager and two more in the onsite, and a 2024 recruiter plan for an L4 Web UI role lists two behavioural rounds. Netflix\'s own pages for new graduates and interns say you may be asked which parts of the memo resonate most with you, or not.',
+    'Netflix frontend loops spend whole interviews on behaviour and fit with the culture memo: a 2020 account had a long behavioural interview with a UI manager and two more in the onsite, and a 2024 recruiter plan for an L4 Web UI role lists two behavioural rounds. Netflix\'s own pages for new graduates and interns say you may be asked which parts of the memo resonate most with you and which do not.',
     'The memo names four principles (the Dream Team, people over process, uncomfortably exciting, great and always better) and eight values: selflessness, judgment, candor, creativity, courage, inclusion, curiosity and resilience.',
   ],
   facts: [
@@ -439,7 +439,7 @@ export const NETFLIX_CULTURE_SPOTLIGHT: AuthoredRoundSpotlight = {
     },
     {
       label: 'What Netflix tells early-career candidates',
-      value: 'Its new grad and internship pages say interviewers evaluate technical, role-specific and behavioural skills, that you may be asked which parts of the memo resonate most with you, or not, and that interviewers want to see qualities such as curiosity, candor and resilience. They recommend four or five examples ready in the STAR shape. The pages are written for new graduates and interns, not for experienced hires.',
+      value: 'Its new grad and internship pages say interviewers evaluate technical, role-specific and behavioural skills, that you may be asked which parts of the memo resonate most with you and which do not, and that interviewers want to see qualities such as curiosity, candor and resilience. They recommend four or five examples ready in the STAR shape. The pages are written for new graduates and interns, not for experienced hires.',
     },
     {
       label: 'Asked in frontend accounts',
@@ -452,12 +452,12 @@ export const NETFLIX_CULTURE_SPOTLIGHT: AuthoredRoundSpotlight = {
   ],
   practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
   processLink: { label: 'See the hiring-manager row in the reported process', fragment: 'netflix-interview-process-1-stage-hiring-manager-conversation' },
-  // The early-career pages' question, the 2020 account's, then one per memo value or practice, written from its text.
+  // The 2020 account's question, the early-career pages' one, then one per memo value or practice, written from its text.
   drill: {
-    note: 'The first question is the one Netflix\'s early-career pages say to expect, the second comes from a 2020 account, and the rest are written from the values and practices in the memo.',
+    note: 'The first question comes from a 2020 account of an experienced loop, the second is the one Netflix\'s pages for new graduates and interns say to expect, and the rest are written from the values and practices in the memo.',
     questions: [
-      { id: 'memo', text: 'Which parts of the culture memo resonate most with you, and which do not?', source: 'Netflix\'s new grad and internship pages', kind: 'view' },
       { id: 'convince', text: 'Tell me about a time you had to convince your teammates of something they were originally against.', source: 'Taro, 2020' },
+      { id: 'memo', text: 'Which parts of the culture memo resonate most with you, and which do not?', source: 'Netflix\'s new grad and internship pages', kind: 'view' },
       { id: 'disagree-then-commit', text: 'Tell me about a decision you argued against and then committed to.', source: 'The memo: disagree then commit' },
       { id: 'judgment', text: 'Tell me about a decision you made despite ambiguity, and the data that informed it.', source: 'The memo: judgment' },
       { id: 'candor', text: 'Tell me about feedback you gave a colleague, or a mistake you admitted openly.', source: 'The memo: candor' },
@@ -465,6 +465,7 @@ export const NETFLIX_CULTURE_SPOTLIGHT: AuthoredRoundSpotlight = {
       { id: 'selflessness', text: 'Tell me about a time you put what was best for the company ahead of your own team.', source: 'The memo: selflessness' },
       { id: 'resilience', text: 'Tell me about a tough decision you had to make quickly when circumstances changed.', source: 'The memo: resilience' },
     ],
+    viewChecks: ['I have read the memo and can say which parts resonate with me, and which do not.'],
     checks: [
       'I have read the memo and can say which parts resonate with me, and which do not.',
       'It shows the value the question asks about, in what I did.',

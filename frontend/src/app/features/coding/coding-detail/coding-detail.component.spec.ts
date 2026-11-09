@@ -3561,12 +3561,17 @@ describe('CodingDetailComponent', () => {
       expect(jsPanel().locked).toBeTrue();
       expect(jsPanel().lockedLabel).toBe('Find the bug first: the code runs after the comparison');
       expect(component.solutionLocked()).toBeTrue();
+      // The test names would give the bugs away, so the workspace waits behind a note; the case keeps its own clock.
+      expect(find('js-concealed-note')?.textContent).toContain('The workspace and its tests open after you compare');
+      expect(jsPanel().timedPracticeHidden).toBeTrue();
 
       find('review-mode-compare')!.click();
       fixture.detectChanges();
       expect(component.findLocked()).toBeFalse();
       expect(jsPanel().locked).toBeFalse();
       expect(component.solutionLocked()).toBeFalse();
+      expect(find('js-concealed-note')).toBeNull();
+      expect(jsPanel().timedPracticeHidden).toBeTrue();
     });
   });
 

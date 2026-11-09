@@ -444,7 +444,7 @@ test.describe('company plan from a company guide', () => {
     await drill.scrollIntoViewIfNeeded();
     await expect(drill.getByTestId('behavioral-drill-question-disagreement')).toBeChecked();
     await expect(drill.getByTestId('behavioral-drill-question-criticism')).toBeDisabled();
-    await expect(drill.getByTestId('company-drill-gate')).toContainText('The other 7 questions open with a free account');
+    await expect(drill.getByTestId('company-drill-gate')).toContainText('The other 8 questions open with a free account');
 
     await drill.getByTestId('behavioral-drill-situation').fill('Design and I disagreed on the checkout error states a week before launch.');
     await drill.getByTestId('behavioral-drill-action').fill('We met, we listed the cases and our designer drew them.');
