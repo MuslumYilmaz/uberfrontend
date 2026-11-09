@@ -9,7 +9,6 @@ import { IncidentService } from '../../core/services/incident.service';
 import { PUBLIC_EDITORIAL_FACTS } from '../../core/content/public-editorial-facts';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
-import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
 import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
@@ -45,13 +44,6 @@ describe('ShowcasePageComponent', () => {
         { provide: HttpClient, useValue: http },
         { provide: AnalyticsService, useValue: analytics },
         { provide: BillingCheckoutService, useValue: billingCheckout },
-        {
-          provide: ExperimentService,
-          useValue: {
-            variant: jasmine.createSpy('variant').and.returnValue('control'),
-            expose: jasmine.createSpy('expose'),
-          },
-        },
         {
           provide: QuestionService,
           useValue: {
@@ -95,47 +87,24 @@ describe('ShowcasePageComponent', () => {
     fixture.detectChanges();
   });
 
-  it('uses the 30-day guided plan as the hero primary CTA and keeps the prep guide secondary', () => {
+  it('sets the practice card beside the heading and the interview panel under both, with no other hero links', () => {
+    const comesBefore = (left: HTMLElement, right: HTMLElement) =>
+      Boolean(left.compareDocumentPosition(right) & Node.DOCUMENT_POSITION_FOLLOWING);
     const page: HTMLElement = fixture.nativeElement;
-    const primaryCta = page.querySelector('[data-testid="showcase-hero-primary-cta"]') as HTMLAnchorElement;
-    const secondaryCta = page.querySelector('[data-testid="showcase-hero-secondary-cta"]') as HTMLAnchorElement;
-    const helper = page.querySelector('[data-testid="showcase-hero-helper"]') as HTMLElement;
-    const conversionLinks = Array.from(page.querySelectorAll('.hero-conversion-links a')) as HTMLAnchorElement[];
+    const hero = page.querySelector('[data-showcase-landmark="hero"]') as HTMLElement;
+    const heading = hero.querySelector('[data-testid="showcase-hero-title"]') as HTMLElement;
+    const card = hero.querySelector('.hero-grid app-showcase-practice-card') as HTMLElement;
+    const panel = hero.querySelector('app-showcase-interview-panel') as HTMLElement;
 
-    expect(primaryCta.textContent?.trim()).toBe('Start 30-day plan');
-    expect(primaryCta.getAttribute('href') || '').toContain('/tracks/foundations-30d/preview');
-    expect(secondaryCta.textContent?.trim()).toBe('View prep guide');
-    expect(secondaryCta.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
-    expect(helper.textContent).toContain('Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.');
-    expect(conversionLinks.map((link) => (link.textContent || '').trim())).toEqual([
-      'Create a free account',
-      'Compare Premium plans',
-    ]);
-    expect(conversionLinks[1].getAttribute('href')).toBe('/pricing');
-
-    primaryCta.click();
-
-    expect(analytics.track).toHaveBeenCalledWith(
-      'lp_primary_cta_clicked',
-      jasmine.objectContaining({
-        src: 'lp_hero',
-        destination: 'foundations_30d_preview',
-        route: '/tracks/foundations-30d/preview',
-        start_path_variant: 'guided_plan_first',
-      }),
+    expect(comesBefore(heading, card)).toBeTrue();
+    expect(comesBefore(card, panel)).toBeTrue();
+    expect(panel.closest('.hero-grid')).toBeNull();
+    // The card and the panel carry the hero's links; the copy beside them has none.
+    expect(hero.querySelectorAll('.hero-copy a').length).toBe(0);
+    expect(hero.querySelector('.lede')?.textContent?.trim()).toBe(
+      'Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.',
     );
-
-    secondaryCta.click();
-
-    expect(analytics.track).toHaveBeenCalledWith(
-      'lp_secondary_cta_clicked',
-      jasmine.objectContaining({
-        src: 'lp_hero',
-        destination: 'interview_blueprint',
-        route: '/guides/interview-blueprint/intro',
-        start_path_variant: 'guided_plan_first',
-      }),
-    );
+    expect(analytics.track).toHaveBeenCalledWith('lp_viewed', { src: 'direct', page: 'showcase' });
   });
 
   it('renders the prerender sprint defaults first and follows the backend checkout config afterwards', async () => {
@@ -317,9 +286,8 @@ describe('ShowcasePageComponent', () => {
     expect(page.querySelectorAll('h1').length).toBe(1);
   });
 
-  it('removes the floating chip cloud, keeps the hero proof static on first render, and reinforces the next-step path below the fold', () => {
+  it('removes the floating chip cloud and reinforces the next-step path below the fold', () => {
     const page: HTMLElement = fixture.nativeElement;
-    const component = fixture.componentInstance;
     const pageText = page.textContent || '';
     const startPath = page.querySelector('[data-testid="showcase-start-path"]') as HTMLElement;
     const libraryCta = Array.from(page.querySelectorAll('a')).find((link) =>
@@ -327,14 +295,12 @@ describe('ShowcasePageComponent', () => {
     ) as HTMLAnchorElement | undefined;
 
     expect(page.querySelector('.chip-cloud')).toBeNull();
-    expect(component.activeFlowIndex).toBe(0);
     expect(startPath.textContent).toContain('30-day guided plan');
     expect(startPath.textContent).toContain('Essential 60');
     expect(startPath.textContent).toContain('machine coding');
     expect(startPath.textContent).toContain('Question Library');
     expect(startPath.textContent).toContain('final-round coverage');
     expect(startPath.textContent).toContain('New to interviews? Read the prep guide first.');
-    expect(pageText).toContain('Start with a guided frontend interview study plan');
     expect(pageText.toLowerCase()).not.toContain('prep graph');
     expect(pageText.toLowerCase()).not.toContain('company-flavored');
     expect(pageText.toLowerCase()).not.toContain('your own prompts');

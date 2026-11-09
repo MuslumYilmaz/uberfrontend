@@ -119,13 +119,32 @@ function companyExpectations(questionsDir, slugs) {
     { kind: 'system-design', limit: 2, items: load(path.join(questionsDir, 'system-design', 'index.json')) },
   ];
   const families = buildFrameworkFamilyByIdMap(fs.readFileSync(path.join(frontendRoot, 'src/app/shared/framework-families.ts'), 'utf8'));
-  const counts = collectCompanyCounts(Object.fromEntries(lists.map(({ kind, items }) => [kind === 'system-design' ? 'system' : kind, items])), families);
+  const counts = collectCompanyCounts({
+    ...Object.fromEntries(lists.map(({ kind, items }) => [kind === 'system-design' ? 'system' : kind, items])),
+    // Debugging tasks count, though the page shows no sample card for them (company-public-data.service.ts).
+    debug: TECHS.flatMap((tech) => load(path.join(questionsDir, tech, 'debug.json'))),
+  }, families);
   const samples = new Map(slugs.map((slug) => {
-    const matches = lists.map((list) => ({ ...list, items: list.items.filter((q) => (q.companies || []).some((company) => String(company).trim().toLowerCase() === slug)) }));
+    const matches = lists.map((list) => {
+      const items = list.items.filter((q) => (q.companies || []).some((company) => String(company).trim().toLowerCase() === slug));
+      // The page shows one coding card per exercise (company-public-data.service.ts), so the sample is read the same way.
+      return { ...list, items: list.kind === 'coding' ? oneCardPerExercise(items, families) : items };
+    });
     const keys = new Set(matches.flatMap(({ kind, items }) => items.map((q) => `${kind}:${q.tech || 'none'}:${q.id}`)));
     return [slug, { count: Math.min(8, keys.size), requiredIds: new Set(matches.flatMap(({ limit, items }) => items.slice(0, limit).map((q) => q.id))) }];
   }));
   return { counts, samples };
+}
+/** Keeps the first of each framework family in list order; a task with no counterparts always stays. */
+function oneCardPerExercise(items, families) {
+  const seen = new Set();
+  return items.filter((q) => {
+    const family = families.get(String(q.id ?? ''));
+    if (!family) return true;
+    if (seen.has(family)) return false;
+    seen.add(family);
+    return true;
+  });
 }
 function increment(map, target, source) {
   if (!map.has(target)) map.set(target, new Set());
@@ -242,12 +261,16 @@ export function auditBuild({ buildDir, canonicalBase = 'https://frontendatlas.co
     const sampleIds = new Set([...ids].filter((id) => id.startsWith('company-preview-question-')).map((id) => id.slice('company-preview-question-'.length)));
     const expected = expectedSamples.get(slug) ?? { count: 0, requiredIds: new Set() };
     const missing = sorted([...expected.requiredIds].filter((id) => !sampleIds.has(id)));
-    const buckets = pages.get(route)?.companyCounts.match(/Coding (\d+)\s*·\s*Concepts (\d+)\s*·\s*System (\d+)/);
-    const actualCounts = buckets ? { coding: Number(buckets[1]), trivia: Number(buckets[2]), system: Number(buckets[3]), all: pages.get(route).companyTotal } : null;
+    // A kind the set does not hold is left off the chip, so each count is read on its own.
+    const chip = pages.get(route)?.companyCounts ?? '';
+    const readCount = (label) => Number(chip.match(new RegExp(`\\b${label} (\\d+)`))?.[1] ?? 0);
+    const actualCounts = /\b(?:Coding|Debugging|Concepts|System) \d+/.test(chip)
+      ? { coding: readCount('Coding'), debug: readCount('Debugging'), trivia: readCount('Concepts'), system: readCount('System'), all: pages.get(route).companyTotal }
+      : null;
     companyCoverage.push({ route, expectedSamples: expected.count, actualSamples: sampleIds.size, missing, expectedCounts: counts, actualCounts });
     if (sampleIds.size !== expected.count || missing.length) failures.add(`Company preview missing or unexpected initial-HTML samples: ${route} (expected=${expected.count}, actual=${sampleIds.size}, missing=${missing.join(', ')})`);
     if (!actualCounts) failures.add(`Company preview missing initial-HTML counts: ${route}`);
-    else if (!counts || ['all', 'coding', 'trivia', 'system'].some((kind) => actualCounts[kind] !== counts[kind]))
+    else if (!counts || ['all', 'coding', 'trivia', 'system', 'debug'].some((kind) => actualCounts[kind] !== (counts[kind] ?? 0)))
       failures.add(`Company preview count mismatch: ${route} (expected=${JSON.stringify(counts)}, actual=${JSON.stringify(actualCounts)})`);
   }
   const depths = [...sitemap].map((route) => ({ route, depth: distances.get(route) ?? null, incomingSources: incoming.get(route)?.size || 0,

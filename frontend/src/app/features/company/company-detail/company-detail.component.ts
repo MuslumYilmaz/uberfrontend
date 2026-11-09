@@ -1,14 +1,16 @@
 // src/app/features/company/company-detail/company-detail.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editorial-facts';
 import { companyBrandFor } from '../../../shared/company-branding';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
-import { collectCompanyCounts, CompanyCountBucket } from '../../../shared/company-counts.util';
+import { collectCompanyCounts, CompanyCountBucket, emptyCompanyCounts } from '../../../shared/company-counts.util';
 
 @Component({
     selector: 'app-company-detail',
@@ -24,14 +26,23 @@ export class CompanyDetailComponent {
     this.slug,
     this.qs.loadAllQuestionSummaries('coding', { transferState: false }),
     this.qs.loadAllQuestionSummaries('trivia', { transferState: false }),
-    this.qs.loadSystemDesign({ transferState: false })
+    this.qs.loadSystemDesign({ transferState: false }),
+    this.qs.loadAllDebugSummaries({ transferState: false }),
   ]).pipe(
-    map(([slug, coding, trivia, system]) => {
-      const counts = collectCompanyCounts({ coding, trivia, system });
-      const bucket: CompanyCountBucket = counts[slug] ?? { all: 0, coding: 0, trivia: 0, system: 0 };
+    map(([slug, coding, trivia, system, debug]) => {
+      const counts = collectCompanyCounts({ coding, trivia, system, debug });
+      const bucket: CompanyCountBucket = counts[slug] ?? emptyCompanyCounts();
       return bucket;
     })
   );
+
+  private readonly auth = inject(AuthService);
+  private readonly currentSlug = toSignal(this.slug, { initialValue: '' });
+  /** The member's plan covers this company, so the page offers the way back to it. */
+  readonly planCovers = computed(() => {
+    const slug = this.currentSlug();
+    return Boolean(slug && this.auth.user()?.companyPlan?.companies.some((company) => company.slug === slug));
+  });
 
   constructor(private route: ActivatedRoute, private qs: QuestionService) { }
 

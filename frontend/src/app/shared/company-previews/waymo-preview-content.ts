@@ -9,13 +9,13 @@ const WAYMO_REPORT_URL =
   'https://prachub.com/interview-experiences/waymo-senior-frontend-engineer-interview-experience-rejected-30-minutes-after-pushing-on-the-process';
 const WAYMO_REPORT_LABEL = 'Public report: Waymo senior frontend engineer loop, May 2026';
 
-export const WAYMO_PREVIEW_TITLE = 'Waymo Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const WAYMO_PREVIEW_TITLE = 'Waymo Frontend Interview Questions: 6 Prompts + Prep Guide';
 export const WAYMO_PREVIEW_H1 = 'Waymo Frontend Interview Questions';
 export const WAYMO_PREVIEW_DESCRIPTION =
-  'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.';
+  'Prepare for a Waymo frontend interview with 6 prompts modelled on a public 2026 report: tree filter and UI, Angular debugging, Promises, AI chat, autocomplete.';
 export const WAYMO_PREVIEW_CANONICAL_PATH = '/companies/waymo/preview';
 export const WAYMO_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Waymo questions. One or two reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Waymo questions. A handful of reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
 
 export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'waymo',
@@ -28,16 +28,16 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Waymo prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by one public account of a 2026 senior frontend loop: a tree filter rendered as UI, an Angular screen fixed from user bug reports, a TypeScript Promise problem, the frontend of an AI chat application, and an autocomplete search bar with debounce.',
+      'Prepare with six practice prompts shaped by a public account of a 2026 senior frontend loop: a tree filter and the UI that renders it, an Angular screen fixed from user bug reports, a TypeScript Promise problem, the frontend of an AI chat application, and an autocomplete search bar with debounce.',
     caveat:
       'This guide uses a public, self-reported interview account to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Waymo team.',
-    chips: ['5 practice prompts', 'TypeScript, Angular, AI chat system design', 'Full practice set requires Premium'],
+    chips: ['6 practice prompts', 'TypeScript, Angular, AI chat system design', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not Waymo trivia',
     paragraphs: [
-      'The reported loop rewards engineers who state a contract before writing code: what a filter removes, which state owns a list, what happens to a reply when the user presses Stop. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The reported loop rewards engineers who state a contract before writing code: what a filter removes, which state owns a list, what happens to a reply when the user presses Stop. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Treat the report as a shape, not a script. The phone screen rendered a filtered tree as UI; the onsite mixed debugging, a Promise exercise, system design and an autocomplete build. Practice those shapes in your own stack first, then once in Angular, because the candidate says the job description asked for production-level Angular proficiency.',
     ],
   },
@@ -45,8 +45,8 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the report establishes, and what you still need to confirm',
     paragraphs: [
-      'One self-reported senior loop on PracHub (Simulation team, May 2026; curated and edited by PracHub) describes the rounds this guide is modelled on. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
-      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content.',
+      'A single senior loop on PracHub (Simulation team, May 2026; curated and edited by PracHub) describes the rounds this guide is modelled on; {reports} public accounts inform the guide and its process table in all, each listed under Sources. It establishes that those round types were asked once; it does not establish exact wording, the current format, or that every team interviews the same way. A second senior onsite account exists on 1point3acres but is locked, so it only confirms that more than one account exists.',
+      'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. Waymo publishes roles and teams on its careers site; use that for context, not as evidence of interview content. The process table above draws on more reports: four from 2022 to 2026.',
     ],
   },
   roleLenses: {
@@ -73,10 +73,10 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   prompts: {
     kicker: 'Representative practice prompts',
-    title: 'Five Waymo frontend interview practice questions',
+    title: 'Six Waymo frontend interview practice questions',
     intro:
       'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Each prompt links to the public report it is modelled on and to a runnable practice page.',
-    itemListName: 'Five Waymo frontend interview practice prompts',
+    itemListName: 'Six Waymo frontend interview practice prompts',
     items: [
       {
         id: 'tree-filter-render',
@@ -100,6 +100,30 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Filtering children after rendering, which keeps the grandchildren of a pruned node alive, or letting an empty term prune the whole tree because every string includes the empty string.',
         resourceLabel: 'Practice the tree filter with tests',
         resourcePath: '/javascript/coding/js-filter-tree-render-indented',
+        reportedRound: { label: WAYMO_REPORT_LABEL, url: WAYMO_REPORT_URL },
+      },
+      {
+        id: 'tree-filter-ui',
+        title: 'Build a UI for the filtered tree',
+        statement:
+          'The reported phone screen went from the filter to a UI for the filtered tree and gives no more detail. Practice the likely shape: a search box drives the filter, the surviving nodes render as a nested tree whose folders open and close, and the screen says so when nothing survives.',
+        whatThisMeasures:
+          'Deriving view state from a source tree and a term, stable node identity, open state kept apart from the filter, semantic nested lists or a tree role, and an honest empty state.',
+        clarifyFirst: [
+          'Ask whether the UI should be a framework component or plain DOM, and whether keyboard navigation and selection are in scope.',
+          'Ask what happens to open folders when the term changes, and what the screen shows when the filter removes the root.',
+        ],
+        strongAnswer: [
+          'Keep the source tree and the term as the only inputs and derive the visible tree on every change; a stored filtered copy goes stale.',
+          'Key every node by a stable id or path and keep open folders in a set of those keys, so typing and clearing a term never loses what the user opened.',
+          'Render recursively as nested ul and li elements with a button per folder that carries aria-expanded; use the tree, treeitem and group roles only when arrow-key navigation is in scope.',
+          'Handle clicks with one listener on the root that reads the node key from the event target, and name the trade-off: fewer listeners, but every click has to find its node.',
+          'Test a term that removes a subtree, a cleared term that restores the open folders, a matching root that shows the empty state, and a deep tree.',
+        ],
+        commonMiss:
+          'Keying rows by index or storing the filtered tree in state, so a new term opens the wrong folders or clearing it cannot bring the removed nodes back.',
+        resourceLabel: 'Build the file explorer tree in React (Premium)',
+        resourcePath: '/react/coding/react-file-explorer',
         reportedRound: { label: WAYMO_REPORT_LABEL, url: WAYMO_REPORT_URL },
       },
       {
@@ -229,7 +253,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'A 7-day Waymo frontend interview preparation plan',
     intro: 'Every day ends with code, a test, a design artifact, or a question you can use in the real process.',
     days: [
-      { day: 'Day 1', focus: 'Tree traversal: recursive and stack-based walks, prune at visit time, render text and nested lists.', artifact: 'The tree filter passing all eight tests in both forms.' },
+      { day: 'Day 1', focus: 'Tree traversal and its UI: recursive and stack-based walks, prune at visit time, then nested lists with open folders kept by node id.', artifact: 'The tree filter passing all eight tests in both forms, and a nested-list UI over it.' },
       { day: 'Day 2', focus: 'Derived state: lists computed from a source, flags assigned rather than toggled, duplicate handlers.', artifact: 'A written root cause for each of the three fleet-board reports.' },
       { day: 'Day 3', focus: 'Promises in TypeScript: deferred, Promise.all ordering, first settlement wins, microtask timing.', artifact: 'A typed Promise.all with tests for order and fail-fast.' },
       { day: 'Day 4', focus: 'AI chat frontend: identities for sends and streams, Stop versus abort, resume rules.', artifact: 'A one-page state and recovery diagram for the composer and active turn.' },
@@ -303,7 +327,7 @@ export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Waymo practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the Angular debugging exercise, the Promise.all implementation and the broader company-tagged editorial set.',
+      'Premium unlocks the React file explorer tree, the Angular debugging exercise, the Promise.all implementation and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Waymo practice set',
     src: 'company_preview_waymo',
   },

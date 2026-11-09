@@ -165,6 +165,29 @@ const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
   'angular-todo-list-starter',
 ] as const;
 
+const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 'vue-autocomplete-search'].map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'autocomplete-dropdown-stays-closed',
+    questionId,
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['selects option', 'outside click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'autocomplete-dropdown-stays-closed',
+      title: 'A pick or an outside click must close the dropdown for good',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Filling the input with the picked city looks like a new query, so a debounced search can reopen the dropdown after it closed.',
+      ),
+      actions: [
+        'Mark the picked value, then skip opening the dropdown when the search stream or watcher sees that same value.',
+        'Clear the mark on the next real input event so typing still opens the dropdown.',
+        'Listen for mousedown on the document and close only when the target is outside the component.',
+      ],
+      confidence: 0.82,
+    }),
+  }),
+);
+
 const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
   (questionId): QuestionHintRule => ({
     ruleId: 'angular-modern-template-compile',
@@ -204,6 +227,7 @@ const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.
 
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
+  ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',
     questionId: 'react-fetch-list-states',
@@ -284,6 +308,173 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Keep one status union: loading, success with `items` and `total`, and error with a message.',
         'Render the rows and the count line only on success with `total > 0`, and the empty state only when `total === 0`.',
         'Read the count from `total`; the page shows at most five items.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-debug-transcript-sync-root-causes',
+    questionId: 'react-debug-transcript-sync',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['filters the transcript', 'pause stops', 'double speed', 'previous language', 'position line']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-transcript-sync-root-causes',
+      title: 'Check what each effect captures, cleans up and depends on',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one cause: the rate captured by the interval, the interval that is never cleared, the filter effect that depends on the lines only, or the transcript response that is never cancelled.',
+      ),
+      actions: [
+        'List `rate` and the line count among the clock effect\'s dependencies and return a cleanup that calls `clearInterval`.',
+        'Replace the filter effect and its state with `useMemo` over `[lines, query]`.',
+        'Flip a `cancelled` flag in the transcript effect cleanup and return early in the `.then` when it is set.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-files-table-select-all-selection',
+    questionId: 'react-files-table-select-all',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['select all covers', 'deselection on another page', 'select all follows', 'download enables']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-files-table-select-all-selection',
+      title: 'Store the selection as a mode plus exceptions keyed by file id',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Select all has to cover files on pages that were never rendered, and an untick on page two has to survive paging. A set of the current page ids can do neither; a mode of all with a set of unticked ids can.',
+      ),
+      actions: [
+        'Hold `{ mode: \'none\' | \'all\', exceptions: Set<string> }` and toggle one id in the exceptions per row click.',
+        'Treat a file as selected when it is available and the mode and the exceptions agree; count only matching available files.',
+        'Derive the header state from that count, set `aria-checked="mixed"` in markup and `indeterminate` in an effect.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-files-table-select-all-default',
+    questionId: 'react-files-table-select-all',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-files-table-select-all-default',
+      title: 'Derive the visible rows from the filter, the sort and the page',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The first page, the sort and the empty line all read one derived list: filter by name, sort by name or size, then slice the page.',
+      ),
+      actions: [
+        'Compute the matching rows with `useMemo` over the filter and the sort key, and reset the page to one when the filter changes.',
+        'Sort by `localeCompare` on names or by `sizeKb`, and press the matching sort button with `aria-pressed`.',
+        'Render an `.empty` line instead of the table when nothing matches, and disable `.download` without a selection.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-listing-booking-widget-quote',
+    questionId: 'react-listing-booking-widget',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['three-night stay', 'nightly fee', 'on or before check-in', 'overlap a booking']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-listing-booking-widget-quote',
+      title: 'Derive one quote from the dates and the guests',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The nightly line, the total, the date error, the booked message and Book now all describe one stay. Compute it once from the two dates and the guest count, and every check that reads them agrees.',
+      ),
+      actions: [
+        'Count nights in whole UTC days: parse the ISO date parts with `Date.UTC`, subtract and divide by a day.',
+        'Price a night at `nightlyPrice + Math.max(0, guests - includedGuests) * extraGuestFee`, and add the cleaning fee once to the total.',
+        'Return invalid when the nights are not positive and booked when `checkIn < range.to && range.from < checkOut` for a range; show no total and disable `.book` in both cases.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-listing-booking-widget-default',
+    questionId: 'react-listing-booking-widget',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-listing-booking-widget-default',
+      title: 'Confirm in a dialog that takes focus and gives it back',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The dialog checks read the summary, the focused element and the booked message: Book now opens the dialog, focus moves in, and closing it puts focus back on Book now.',
+      ),
+      actions: [
+        'Render `role="dialog"` with `aria-modal="true"` and a title, and focus `.confirm` in an effect when it opens.',
+        'Close on Escape from the dialog `onKeyDown` and on Cancel, then focus `.book` again.',
+        'Confirm closes the dialog, shows `.booked-message` with the dates and disables `.book`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-debug-transcript-sync-default',
+    questionId: 'react-debug-transcript-sync',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-debug-transcript-sync-default',
+      title: 'Drive the highlight, the time and the position line from one position state',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The highlighted line, the time and the position line should all read the same clamped position, and the clock should be the only thing that moves it.',
+      ),
+      actions: [
+        'Clamp the position to the number of lines in the updater and derive `finished` from it.',
+        'Stop playing when `finished` turns true, so the cleanup clears the interval.',
+        'Render `Line {activeIndex + 1} of {total}` from the same index the highlight uses.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-autocomplete-engine-latest-query',
+    questionId: 'js-autocomplete-engine',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['waits for the debounce', 'older query', 'cache without a new request', 'cancel clears', 'below minLength']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-autocomplete-engine-latest-query',
+      title: 'Let only the latest query reach the callback',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Each failing check maps to one guard: the debounce that restarts on every update, the request id that outdates a slow response, the cache answered before the wait, or the cancel that clears both.',
+      ),
+      actions: [
+        'In `update`, clear the pending timer and bump a request id before anything else; keep the normalised text as the latest query.',
+        'Take a fresh id when the debounce fires and compare it, with the latest query, in both promise handlers before emitting.',
+        'Answer short queries with `idle` and cached queries with `ready` before starting a timer.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-autocomplete-engine-default',
+    questionId: 'js-autocomplete-engine',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-autocomplete-engine-default',
+      title: 'Rank deterministically and keep one state shape',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every emission carries query, status, items and message; the ranking decides the order and the cap, and a rejection becomes the error state.',
+      ),
+      actions: [
+        'Split matches into prefix and substring buckets, sort each with `localeCompare`, drop duplicates by lower-cased name, then cap at `maxResults`.',
+        'Emit `error` with the rejection message and an empty list; the next `update` clears it.',
+        'Store ranked results in the cache keyed by the normalised query and evict the oldest entry past `cacheSize`.',
       ],
       confidence: 0.72,
     }),
@@ -808,6 +999,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-longest-substring-without-repeating-window',
+    questionId: 'js-longest-substring-without-repeating',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['never before the current start', 'not a subsequence', 'linear time', 'not a string']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-longest-substring-without-repeating-window',
+      title: 'Slide a window that never holds a repeat',
+      why: buildProgressAwareWhy(snapshot, 'A substring is contiguous, so the answer is the widest window with no repeated character. Restarting the scan at every repeat is correct but quadratic, and long input runs out of time.'),
+      actions: [
+        'Keep `start`, the first index of the window, and the last index of each character in a `Map`.',
+        'When `s[i]` was last seen at or after `start`, move `start` to that index plus one; an index before `start` must not move it back ("abba").',
+        'Measure `i - start + 1` at every step, and throw a `TypeError` before the loop for input that is not a string.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'js-color-contrast-ratio-formula',
     questionId: 'js-color-contrast-ratio',
     priority: 100,
@@ -1134,6 +1344,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Throw a `TypeError` before the loop when the input is not a string.',
         'Treat the empty string as valid: nothing was opened, so nothing is left open.',
         'Avoid recursion; thousands of nested brackets must still work.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-longest-substring-without-repeating-default',
+    questionId: 'js-longest-substring-without-repeating',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-longest-substring-without-repeating-default',
+      title: 'One pass, one window, measured at every step',
+      why: buildProgressAwareWhy(snapshot, 'Each character enters the window once and the start only moves forward, so one loop over the string is enough, even for 100,000 characters.'),
+      actions: [
+        'Return `0` for the empty string: no character, no window.',
+        'Count a space or a symbol like any other character.',
+        'Avoid nested loops that restart at every index; a long string without repeats makes them quadratic.',
       ],
       confidence: 0.72,
     }),

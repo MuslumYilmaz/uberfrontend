@@ -31,6 +31,20 @@ List unwanted referrals**, add only the entries that do not already exist:
 
 This setting is not retroactive.
 
+## Lemon Squeezy Integration
+
+The application never sends `purchase` or `add_payment_info`; Lemon Squeezy
+does. In the Lemon Squeezy dashboard, open **Design** and check that the
+**Google Analytics** toggle is on and that its Measurement ID equals
+`gaMeasurementId` in `frontend/src/environments/environment.prod.ts`. The
+checkout opens as an overlay on this site; for an overlay, Lemon Squeezy's
+documentation asks for the GA tag on the embedding page, which the application
+loads once the session qualifies.
+
+Lemon Squeezy's `purchase` carries no `src`, so it cannot tell which page or
+company a buyer came from. Use `checkout_verified`, which carries the
+checkout's `src`, for attribution, and `purchase` for totals.
+
 ## Decision-Session Qualification
 
 The application emits `decision_session_qualified` at most once per loaded app
@@ -86,9 +100,43 @@ dimension whose dimension name and event parameter are exactly the same.
 | `provider` | Event | `provider` |
 | `qualification_method` | Event | `qualification_method` |
 | `qualification_version` | Event | `qualification_version` |
+| `target_path` | Event | `target_path` |
+| `companies` | Event | `companies` |
+| `from` | Event | `from` |
+| `step` | Event | `step` |
+| `when` | Event | `when` |
+| `level` | Event | `level` |
+| `passed_count` | Event | `passed_count` |
+| `framework` | Event | `framework` |
+| `viewer` | Event | `viewer` |
+| `company_query` | Event | `company_query` |
 
-Do not register `question_id` as a custom dimension. It is intentionally kept
-out because of its high cardinality.
+Do not register `question_id` or `task` as a custom dimension. They are
+intentionally kept out because of their high cardinality.
+
+`target_path` is the destination of a followed link: the path of an internal
+page, or the origin of another site. `company_guide_link_clicked` sends it
+beside `surface`, which names the part of the guide the link sits in, and
+`trivia_internal_link_clicked` sends it for internal links. Custom dimensions
+are not retroactive, so create it before the release that ships the event.
+A click on a guide's free-account card arrives as `surface=account_gate`.
+
+The company plan events (`company_plan_*`) carry the rest of the rows above:
+
+| Parameter | Value |
+| --- | --- |
+| `companies` | Company slugs of the plan, comma-separated in the order chosen |
+| `from` | Where the form started: `guide` or `home`; on resumed and task events, `companies` or `sidebar` |
+| `step` | The form step just completed |
+| `when` | `tomorrow`, `this-week`, `next-week`, `few-weeks`, or `later` |
+| `level` | `junior`, `mid`, `senior`, or `staff` |
+| `passed_count` | How many rounds the person said they had already passed |
+| `framework` | `react`, `angular`, or `vue` when chosen, otherwise `reports` |
+| `viewer` | `guest`, `free`, or `premium` at the time of the event |
+| `company_query` | A company typed into the form that has no guide yet, cleaned of anything personal |
+
+If GA4 refuses one of these names as reserved, give the dimension a `plan_`
+prefix and keep the event parameter unchanged.
 
 ## Key Events
 
@@ -107,9 +155,9 @@ Do not mark prompt views, CTA clicks, `begin_checkout`, or
 Create one exploration named **Activation and conversion baseline v3**. Create
 a session segment named **Qualified decision sessions v1** that includes
 sessions containing `decision_session_qualified` with
-`qualification_version` exactly matching `v1`, and apply it to the four product
-decision tabs below. Do not add the qualification event as the first funnel
-step because it may occur before or after the first product event.
+`qualification_version` exactly matching `v1`, and apply it to the product
+decision tabs below (all but tab 5). Do not add the qualification event as the
+first funnel step because it may occur before or after the first product event.
 
 For tabs 1-4, select **Funnel exploration**, use a **closed funnel**, and leave
 steps as indirectly followed by so unrelated events between steps do not break
@@ -127,6 +175,11 @@ the funnel.
    - `outcome` matches `passed` OR `manual`
 4. `challenge_completion_saved`
    - `event_name` exactly matches `challenge_completion_saved`
+
+The landing page (`/`, also served at `/showcase`) embeds a JavaScript task in
+demo mode, and its views and runs emit these same events. To read challenge
+pages only, add to every step a condition that page path does not exactly
+match `/` or `/showcase`.
 
 ### Tab 2: Auth acquisition
 
@@ -185,6 +238,51 @@ browser, and device category. Keep this tab diagnostic: it preserves crawl and
 automation visibility and must not be presented as a human-only conversion
 rate.
 
+### Tab 6: Company guide to purchase
+
+A **Funnel exploration**, closed, steps indirectly followed by, with the
+qualified-session segment:
+
+1. Guide view
+   - `event_name` exactly matches `page_view`
+   - page path matches regex `^/companies/[^/]+/preview$`
+2. Plan form from a guide
+   - `event_name` exactly matches `company_plan_form_started`
+   - `from` exactly matches `guide`
+3. Plan preview
+   - `event_name` exactly matches `company_plan_preview_viewed`
+4. Plan built
+   - `event_name` exactly matches `company_plan_build_clicked`
+5. Pricing from a plan
+   - `event_name` exactly matches `pricing_viewed`
+   - `src` begins with `company_plan_`
+6. Checkout from a plan
+   - `event_name` exactly matches `checkout_opened`
+   - `src` begins with `company_plan_`
+7. Verified purchase from a plan
+   - `event_name` exactly matches `checkout_verified`
+   - `src` begins with `company_plan_`
+
+For one company, add to step 1 a page path of exactly
+`/companies/<slug>/preview`, to steps 2-4 `companies` containing the slug, and
+to steps 5-7 a `src` of exactly `company_plan_<slug>`, with hyphens in the slug
+written as underscores. A plan for several companies sends the first company's
+`src` to pricing. A Premium member's build opens the plan, not pricing, so the
+funnel ends at step 4 for them. Break step 4 down by `passed_count`,
+`framework`, or `level` to compare plans.
+
+### Tab 7: Company sources
+
+A **Free form** tab, with the qualified-session segment, for every way a
+company page leads to pricing, plan or no plan:
+
+- Rows: `src`, filtered to values beginning with `company_`.
+  `company_plan_<slug>` came through a plan; `company_preview_<slug>` came from
+  a guide's own pricing link.
+- Columns: event name, filtered to `pricing_viewed`,
+  `pricing_plan_cta_clicked`, `checkout_opened`, and `checkout_verified`.
+- Values: total users.
+
 ## Production Validation
 
 After deployment, verify the following in Realtime or DebugView before starting
@@ -207,25 +305,33 @@ the baseline:
    authentication.
 5. A failed guest attempt emits `challenge_attempt_result` with
    `outcome=failed` and does not emit `auth_prompt`.
-6. Password and OAuth flows use `auth_submit_failed.failure_reason` only from
+6. The **Run tests** button of a JavaScript task emits
+   `challenge_attempt_started` and `challenge_attempt_result` with
+   `action_type=run_tests`, and neither `auth_prompt` nor the onboarding
+   prompt. Submit runs the tests the same way, so `action_type` does not tell
+   the two apart; `challenge_completion_saved` marks a submit that saved.
+   Before the release that ships this, Run tests emitted nothing, so attempt
+   counts from earlier periods hold submits only.
+7. Password and OAuth flows use `auth_submit_failed.failure_reason` only from
    the approved category list and never send email, username, password, token,
    credential, authorization, or secret fields.
-7. Opening a hosted checkout emits `checkout_opened` and then
+8. Opening a hosted checkout emits `checkout_opened` and then
    `begin_checkout`. A blocked popup emits `checkout_launch_failed` with
    `launch_mode=blocked`, offers the same-tab recovery action, and emits neither
    successful-open event until that action actually navigates.
-8. `add_payment_info` is owned by the Lemon Squeezy checkout integration. The
+9. `add_payment_info` is owned by the Lemon Squeezy checkout integration. The
    frontend must not synthesize it; validate the provider event in GA4
    DebugView before reading the funnel.
-9. `purchase` is owned exclusively by Lemon Squeezy's native GA4 integration.
-   The frontend success page must never emit it. For a verified paid live
-   order, validate exactly one event per `transaction_id`, with `currency`,
-   `value`, `tax`, and `items`; exclude test-mode orders from production
-   reporting. The backend webhook remains the entitlement and revenue source
-   of truth.
-10. Entitlement application emits `checkout_verified`, including when verified
-   order metadata arrives after the entitlement event.
-11. Early queued events and page views retain their original event/page order.
+10. `purchase` is owned exclusively by Lemon Squeezy's native GA4 integration
+    (see **Lemon Squeezy Integration** above). The frontend success page must
+    never emit it. For a verified paid live order, validate exactly one event
+    per `transaction_id`, with `currency`, `value`, and `tax` (Lemon Squeezy's
+    documentation does not mention `items`); exclude test-mode orders from
+    production reporting. The backend webhook remains the entitlement and
+    revenue source of truth.
+11. Entitlement application emits `checkout_verified`, including when verified
+    order metadata arrives after the entitlement event.
+12. Early queued events and page views retain their original event/page order.
     `page_path` and `page_location` use the canonical pathname only, so query
     strings and hashes do not split a route into separate report rows.
 
@@ -253,6 +359,23 @@ thresholds. Choose the next change from the first material drop-off:
 | Auth action to completion | Password form or OAuth flow |
 | Pricing view to plan CTA | Pricing value proposition |
 | Checkout start to purchase | Hosted checkout flow |
+
+### Company plan release exception
+
+The company plan release changes pricing and navigation before these checks
+could be read: `/pricing` shows a waiting plan and a plan-specific first
+feature line on the plan cards, the header gains a **Your plan** link for
+people with a saved plan, and `/companies` starts the plan flow. The rule
+above is suspended for this release only. The same release makes a Run tests
+click count as a challenge attempt (validation item 6), so attempt rates on
+either side of the deployment are not comparable either.
+
+- Pushed to `dev`: 2026-11-03.
+- Production deployment: pending the `dev` to `main` merge. Record its
+  timestamp and Europe/Istanbul date here.
+
+Read the periods before and after the production deployment separately, as in
+the deployment boundary above. Do not compare a window that spans it.
 
 Report raw and qualified-session rates side by side. Raw all-session conversion
 is bot/crawler-contaminated and often behaves like a lower bound; qualified

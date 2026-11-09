@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "issue-label-filter-review-v1",
+  "title": "Issue list label filter review",
+  "access": "premium",
+  "sessionMinutes": 90,
+  "reviewMinutes": 60,
+  "supportedQuestions": {
+    "vue": "vue-issue-list-merge-request-review"
+  },
+  "mergeRequest": {
+    "title": "Add label filters to the issue list",
+    "description": "Adds a filter bar above the issue list, with one filter per label plus All, and a count of open issues in the header. The new behaviour has unit tests in App.spec.js.",
+    "issue": {
+      "title": "Filter issues by label",
+      "requirements": [
+        "Show one filter per label, plus All.",
+        "Selecting a label shows the open issues with that label, without loading the list again.",
+        "Show how many open issues match the selected label, as \"1 open issue\" or \"2 open issues\".",
+        "Cover the filter with unit tests."
+      ]
+    },
+    "files": [
+      {
+        "path": "src/App.vue",
+        "before": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <header class=\"page-header\">\n        <h1 class=\"title\">Issues</h1>\n      </header>\n\n      <p v-if=\"loading\" class=\"issues-state\">Loading issues…</p>\n      <p v-else-if=\"error\" class=\"issues-state issues-error\" role=\"alert\">{{ error }}</p>\n      <ul v-else class=\"issues\">\n        <li v-for=\"issue in openIssues\" :key=\"issue.id\" class=\"issue\">\n          <span class=\"issue-title\">{{ issue.title }}</span>\n          <span class=\"issue-meta\">#{{ issue.id }} · opened by {{ issue.author }}</span>\n          <span class=\"issue-labels\">\n            <span v-for=\"label in issue.labels\" :key=\"label\" class=\"issue-label\">{{ label }}</span>\n          </span>\n        </li>\n      </ul>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { computed, onMounted, ref } from 'vue';\n\n// Stand-in for GET /api/issues, kept in this file so the preview can run it.\nconst ISSUES = [\n  { id: 101, title: 'Dark mode resets after sign-in', state: 'opened', labels: ['bug'], author: 'amara' },\n  { id: 102, title: 'Export the board as CSV', state: 'opened', labels: ['feature'], author: 'jun' },\n  { id: 103, title: 'Search ignores accented letters', state: 'opened', labels: ['bug'], author: 'lena' },\n  { id: 104, title: 'Document the webhook retry policy', state: 'opened', labels: ['docs'], author: 'omar' },\n  { id: 105, title: 'Keyboard shortcut to assign yourself', state: 'opened', labels: ['feature'], author: 'priya' },\n  { id: 106, title: 'Crash when a label name has an emoji', state: 'closed', labels: ['bug'], author: 'tomas' },\n  { id: 107, title: 'Typo on the rate limit page', state: 'closed', labels: ['docs'], author: 'mei' },\n];\n\nfunction fetchIssues() {\n  return new Promise((resolve) => {\n    setTimeout(() => resolve(ISSUES.map((issue) => ({ ...issue, labels: [...issue.labels] }))), 600);\n  });\n}\n\nconst issues = ref([]);\nconst loading = ref(false);\nconst error = ref('');\n\nconst openIssues = computed(() => issues.value.filter((issue) => issue.state === 'opened'));\n\nasync function loadIssues() {\n  loading.value = true;\n  error.value = '';\n  try {\n    issues.value = await fetchIssues();\n  } catch {\n    error.value = 'The issues did not load.';\n  } finally {\n    loading.value = false;\n  }\n}\n\nonMounted(loadIssues);\n</script>\n",
+        "after": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <header class=\"page-header\">\n        <h1 class=\"title\">Issues</h1>\n        <p class=\"issue-count\">{{ openCount }} open issues</p>\n      </header>\n\n      <div class=\"toolbar\">\n        <h3 class=\"toolbar-title\">Filter by label</h3>\n        <span\n          v-for=\"label in LABELS\"\n          class=\"label-filter\"\n          :class=\"{ active: label === selectedLabel }\"\n          @click=\"selectLabel(label)\"\n        >\n          {{ label }}\n        </span>\n      </div>\n\n      <p v-if=\"loading\" class=\"issues-state\">Loading issues…</p>\n      <p v-else-if=\"error\" class=\"issues-state issues-error\" role=\"alert\">{{ error }}</p>\n      <ul v-else class=\"issues\">\n        <div v-for=\"issue in visibleIssues\" :key=\"issue.id\" class=\"issue\">\n          <span class=\"issue-title\">{{ issue.title }}</span>\n          <span class=\"issue-meta\">#{{ issue.id }} · opened by {{ issue.author }}</span>\n          <span class=\"issue-labels\">\n            <span v-for=\"label in issue.labels\" :key=\"label\" class=\"issue-label\">{{ label }}</span>\n          </span>\n        </div>\n      </ul>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { computed, onMounted, ref, watch } from 'vue';\n\n// Stand-in for GET /api/issues, kept in this file so the preview can run it.\nconst ISSUES = [\n  { id: 101, title: 'Dark mode resets after sign-in', state: 'opened', labels: ['bug'], author: 'amara' },\n  { id: 102, title: 'Export the board as CSV', state: 'opened', labels: ['feature'], author: 'jun' },\n  { id: 103, title: 'Search ignores accented letters', state: 'opened', labels: ['bug'], author: 'lena' },\n  { id: 104, title: 'Document the webhook retry policy', state: 'opened', labels: ['docs'], author: 'omar' },\n  { id: 105, title: 'Keyboard shortcut to assign yourself', state: 'opened', labels: ['feature'], author: 'priya' },\n  { id: 106, title: 'Crash when a label name has an emoji', state: 'closed', labels: ['bug'], author: 'tomas' },\n  { id: 107, title: 'Typo on the rate limit page', state: 'closed', labels: ['docs'], author: 'mei' },\n];\n\nfunction fetchIssues() {\n  return new Promise((resolve) => {\n    setTimeout(() => resolve(ISSUES.map((issue) => ({ ...issue, labels: [...issue.labels] }))), 600);\n  });\n}\n\nconst LABELS = ['All', 'bug', 'feature', 'docs'];\n\nconst issues = ref([]);\nconst loading = ref(false);\nconst error = ref('');\nconst selectedLabel = ref('All');\n\nconst openCount = computed(() => issues.value.filter((issue) => issue.state === 'opened').length);\n\nconst visibleIssues = computed(() =>\n  issues.value.filter(\n    (issue) => issue.state === 'opened' && (selectedLabel.value === 'All' || issue.labels.includes(selectedLabel.value)),\n  ),\n);\n\nasync function loadIssues() {\n  loading.value = true;\n  error.value = '';\n  const data = await fetchIssues();\n  console.log('issues', data);\n  issues.value = data;\n  loading.value = false;\n}\n\nfunction selectLabel(label) {\n  selectedLabel.value = label;\n}\n\nwatch(selectedLabel, loadIssues, { immediate: true });\nonMounted(loadIssues);\n</script>\n"
+      },
+      {
+        "path": "src/App.css",
+        "before": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  padding: 24px 16px;\n  box-sizing: border-box;\n  background: #0a0a0a;\n  color: #e5e7eb;\n}\n\n.card {\n  max-width: 720px;\n  margin: 0 auto;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n}\n\n.page-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n.title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n}\n\n.issues-state {\n  margin: 0;\n  color: #9ca3af;\n}\n\n.issues-error {\n  color: #fca5a5;\n}\n\n.issues {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n\n.issue {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  padding: 12px 0;\n  border-bottom: 1px solid #1f2937;\n}\n\n.issue:last-child {\n  border-bottom: none;\n}\n\n.issue-title {\n  font-weight: 600;\n}\n\n.issue-meta {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.issue-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n}\n\n.issue-label {\n  font-size: 12px;\n  padding: 2px 8px;\n  border-radius: 999px;\n  background: rgba(163,230,53,.12);\n  color: #d9f99d;\n}\n",
+        "after": ":root {\n  color-scheme: dark;\n}\n\nhtml,body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  padding: 24px 16px;\n  box-sizing: border-box;\n  background: #0a0a0a;\n  color: #e5e7eb;\n}\n\n.card {\n  max-width: 720px;\n  margin: 0 auto;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n}\n\n.page-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n.title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n}\n\n.issue-count {\n  margin: 0;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.toolbar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  white-space: nowrap;\n}\n\n.toolbar-title {\n  margin: 0 8px 0 0;\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.label-filter {\n  padding: 4px 12px;\n  border: 1px solid #374151;\n  border-radius: 999px;\n  cursor: pointer;\n}\n\n.label-filter.active {\n  border-color: #a3e635;\n  color: #a3e635;\n}\n\n.issues-state {\n  margin: 0;\n  color: #9ca3af;\n}\n\n.issues-error {\n  color: #fca5a5;\n}\n\n.issues {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n\n.issue {\n  display: grid;\n  grid-template-columns: 320px 180px 140px;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 0;\n  border-bottom: 1px solid #1f2937;\n}\n\n.issue:last-child {\n  border-bottom: none;\n}\n\n.issue-title {\n  font-weight: 600;\n}\n\n.issue-meta {\n  font-size: 12px;\n  color: #9ca3af;\n}\n\n.issue-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n}\n\n.issue-label {\n  font-size: 12px;\n  padding: 2px 8px;\n  border-radius: 999px;\n  background: rgba(163,230,53,.12);\n  color: #d9f99d;\n}\n"
+      },
+      {
+        "path": "src/App.spec.js",
+        "before": "",
+        "after": "import { mount } from '@vue/test-utils';\nimport App from './App.vue';\n\ndescribe('App', () => {\n  it('renders the open issues', () => {\n    const wrapper = mount(App);\n\n    setTimeout(() => {\n      expect(wrapper.findAll('.issue')).toHaveLength(5);\n    }, 1000);\n  });\n\n  it('filters by label', async () => {\n    const wrapper = mount(App);\n\n    await wrapper.findAll('.label-filter')[1].trigger('click');\n\n    expect(wrapper.vm.selectedLabel).toBe('bug');\n  });\n});\n"
+      }
+    ]
+  },
+  "sampleReview": {
+    "summary": "Request changes. One thing blocks the merge: every label click loads the whole list again, and the page loads it twice on start, which the issue rules out and which blanks the list on each click. Must fix before merging: the count ignores the filter, the filters cannot be used from a keyboard, a failed request now leaves the page loading forever, the new grid overflows a phone, and the first spec cannot fail. Keep visibleIssues: filtering the loaded list in a computed is the right shape, so the main fix is deleting the watch.",
+    "comments": [
+      {
+        "path": "src/App.vue",
+        "line": 84,
+        "snippet": "watch(selectedLabel, loadIssues, { immediate: true });",
+        "severity": "blocker",
+        "title": "Every label click loads the list again",
+        "body": "The watch runs loadIssues on every label change, and immediate: true runs it on start next to onMounted, so the page sends two requests on load and one per click, and the list blanks to Loading issues… each time. The issue asks for filtering without a reload, and visibleIssues already filters the loaded issues: delete the watch and keep onMounted(loadIssues). If the server ever has to filter, send the label with the request and ignore a response for a label that is no longer selected.",
+        "checked": true
+      },
+      {
+        "path": "src/App.vue",
+        "line": 63,
+        "snippet": "const openCount = computed(",
+        "severity": "major",
+        "title": "The count ignores the selected label",
+        "body": "openCount counts every open issue, so the header says 5 open issues while the bug filter shows 2, and a single match would read 1 open issues. Count visibleIssues instead and choose issue or issues from the number.",
+        "checked": true
+      },
+      {
+        "path": "src/App.vue",
+        "line": 12,
+        "snippet": "v-for=\"label in LABELS\"",
+        "severity": "major",
+        "title": "The filters are spans, so a keyboard cannot use them",
+        "body": "A span with a click handler cannot take focus or be pressed with Enter or Space, and nothing tells a screen reader which filter is on: the active class only changes the colour. Use <button type=\"button\"> with :aria-pressed, and add the :key this v-for is missing. The h3 above them also skips a heading level; a plain label for the group is enough.",
+        "checked": true
+      },
+      {
+        "path": "src/App.vue",
+        "line": 24,
+        "snippet": "<div v-for=\"issue in visibleIssues\"",
+        "severity": "minor",
+        "title": "A ul can only hold li elements",
+        "body": "The change swapped the li for a div inside the ul. Browsers still draw it, but the HTML is invalid and screen readers stop announcing a list of five items. Keep the li from main.",
+        "checked": true
+      },
+      {
+        "path": "src/App.vue",
+        "line": 74,
+        "snippet": "const data = await fetchIssues();",
+        "severity": "major",
+        "title": "A failed request now leaves the page loading",
+        "body": "main wrapped the request in try, catch and finally. Without them, a rejected request leaves loading true forever, never shows the error and ends as an unhandled rejection. Put them back, and give the error state a Try again button while you are there."
+      },
+      {
+        "path": "src/App.vue",
+        "line": 75,
+        "snippet": "console.log('issues', data);",
+        "severity": "nit",
+        "title": "Debug logging left in",
+        "body": "Remove the console.log before merging."
+      },
+      {
+        "path": "src/App.css",
+        "line": 95,
+        "snippet": "grid-template-columns: 320px 180px 140px;",
+        "severity": "major",
+        "title": "Fixed columns overflow a phone",
+        "body": "Three fixed columns need about 664px, so on a 360px phone every row scrolls sideways and long titles cannot wrap. Give the title minmax(0, 1fr) and drop to one column on narrow screens. Check it in the preview at 360px: the checks here do not measure layout."
+      },
+      {
+        "path": "src/App.css",
+        "line": 57,
+        "snippet": "white-space: nowrap;",
+        "severity": "minor",
+        "title": "The filter bar cannot wrap",
+        "body": "With nowrap and no flex-wrap, the four filters and their heading run past the card on a phone. Let the bar wrap."
+      },
+      {
+        "path": "src/App.spec.js",
+        "line": 8,
+        "snippet": "setTimeout(() => {",
+        "severity": "major",
+        "title": "This test passes without checking anything",
+        "body": "The assertion sits in a setTimeout that fires after the test has returned, so Jest reports a pass even if no issue renders. Make the test async, use fake timers or mock the request, await flushPromises() and then assert on what renders."
+      },
+      {
+        "path": "src/App.spec.js",
+        "line": 18,
+        "snippet": "expect(wrapper.vm.selectedLabel).toBe('bug');",
+        "severity": "minor",
+        "title": "The filter test reads internal state",
+        "body": "Checking selectedLabel passes even when the list is wrong or reloads. After the click, assert on the rendered titles and the count, and that the loading text does not come back: that is the regression this change introduced."
+      }
+    ]
+  }
+}

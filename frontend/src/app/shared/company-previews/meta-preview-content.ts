@@ -34,7 +34,7 @@ export const META_PREVIEW_DESCRIPTION =
   'Prepare for a Meta front end engineer interview with 7 practice prompts: map from scratch, clearAllTimeout, memoization, DOM traversal, autocomplete design.';
 export const META_PREVIEW_CANONICAL_PATH = '/companies/meta/preview';
 export const META_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on Meta\'s own hiring pages, not leaked, confirmed or official Meta questions. Self-reported screens and loops from 2021 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on Meta\'s own hiring pages, not leaked, confirmed or official Meta questions. Self-reported screens and loops from 2020 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
 
 export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'meta',
@@ -47,7 +47,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Meta prep guide',
     subtitle:
-      'Prepare with seven practice prompts shaped by Meta\'s own hiring pages and seven public interview accounts from 2021 to 2025: implementing map from scratch, your own clearAllTimeout, a memoize helper, the matching node in a twin DOM tree, a DOM traversal that collects nodes, a stack and a queue in JavaScript, and the front-end design of an autocomplete component.',
+      'Prepare with seven practice prompts shaped by Meta\'s own hiring pages and public interview accounts from 2021 to 2025: implementing map from scratch, your own clearAllTimeout, a memoize helper, the matching node in a twin DOM tree, a DOM traversal that collects nodes, a stack and a queue in JavaScript, and the front-end design of an autocomplete component.',
     caveat:
       'This guide uses public, self-reported interview accounts and Meta\'s published hiring pages to create realistic constraints. It does not claim access to private interview material. Most accounts describe the initial screen rather than a full loop, so the loop shape comes from Meta\'s pages, not from the reports.',
     chips: ['7 practice prompts', 'Vanilla JavaScript, DOM, async, component design', 'Full practice set requires Premium'],
@@ -57,17 +57,60 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Meta trivia',
     paragraphs: [
       'Meta\'s front end track is its own thing. Every public account describes plain JavaScript rather than framework tasks: most describe built-ins such as map, timer and memoization utilities, DOM traversals and a store keyed by elements, and two recent screens asked data-structure questions. Meta\'s page for the initial Front End Engineer interview describes a 60-minute conversation with an engineer that assesses technical and behavioural skills, with a downloadable guide written by its front end engineers. Its hiring process page adds that many technical interviews now run in CoderPad with a built-in AI assistant that candidates are expected to use, and that outside AI tools are not authorised.',
-      'Two lessons repeat. The screens are short and move fast: the March 2022 account ran out of time on a DOM store, and the April 2025 screen ended with two unfinished problems, so practise writing utilities from memory rather than describing them. And the design round is about a component, not a product: the March 2022 Blind account prepared to design the front end of Facebook or Instagram and was asked for an autocomplete instead. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Two lessons repeat. The screens are short and move fast: the March 2022 account ran out of time on a DOM store, and the April 2025 screen ended with two unfinished problems, so practise writing utilities from memory rather than describing them. And the design round is about a component, not a product: the March 2022 Blind account prepared to design the front end of Facebook or Instagram and was asked for an autocomplete instead. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the official pages and the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Meta\'s pages establish the shape: a recruiter conversation, an initial screening and a full loop, with sample tasks described as writing code, solving algorithms or creating a case study; a 60-minute initial Front End Engineer interview; a practice session in the interview tool through the Career Profile; and an AI-native coding interview in CoderPad that offers Claude, ChatGPT, Gemini and Meta\'s models, with design interviews in the same tool using Mermaid markdown. Seven self-reported accounts add the exercises. A December 2021 intern account reports a recruiter screen on closures, stacks, queues, arrow functions and this, then a coding round that asked to implement map from scratch and to traverse up a DOM tree and replicate the traversal on a similar tree. A January 2022 intern account with an offer reports a recruiter chat on closures and var, let and const, then two technical video calls whose questions matched BigFrontend, including your own clearAllTimeout. A March 2022 Medium account reports a first technical interview with a DOM store class keyed by elements and a memoization problem, neither finished in fifty minutes.',
-      'A June 2024 account reports a first round on how to implement a stack or a queue in JavaScript. An April 2025 screen reports inserting a node into a circular linked list and a tree check on children sums, with no time to finish. An October 2021 Blind list from a candidate who interviewed at several companies records the Facebook screen as flattening an array, a timeout clearer and a map class, the onsite as HTML, CSS and JavaScript plus a DOM traversal that collects nodes, and a typeahead component as the design prompt. A March 2022 Blind account from an L5 candidate describes two DOM-traversal-style coding rounds, a behavioural round and a design round that asked for a specific component such as an autocomplete, failed after preparing product-level designs. Together they establish that these exercise types occurred; they do not establish exact wording, the current format, or how many rounds a given level gets. Confirm the round count, the tool, the AI assistant rules and the design scope with the recruiter.',
+      'Meta\'s pages establish the shape: a recruiter conversation, an initial screening and a full loop, with sample tasks described as writing code, solving algorithms or creating a case study; a 60-minute initial Front End Engineer interview; a practice session in the interview tool through the Career Profile; and an AI-native coding interview in CoderPad that offers Claude, ChatGPT, Gemini and Meta\'s models, with design interviews in the same tool using Mermaid markdown. {reports} self-reported accounts, each listed under Sources, add the exercises. A December 2021 intern account reports a recruiter screen on closures, stacks, queues, arrow functions and this, then a coding round that asked to implement map from scratch and to traverse up a DOM tree and replicate the traversal on a similar tree. A January 2022 intern account with an offer reports a recruiter chat on closures and var, let and const, then two technical video calls whose questions matched BigFrontend, including your own clearAllTimeout. A March 2022 Medium account reports a first technical interview with a DOM store class keyed by elements and a memoization problem, neither finished in fifty minutes.',
+      'A June 2024 account reports a first round on how to implement a stack or a queue in JavaScript. An April 2025 screen reports inserting a node into a circular linked list and a tree check on children sums, with no time to finish. An October 2021 Blind list from a candidate who interviewed at several companies records the Facebook screen as flattening an array, a timeout clearer and a map class, the onsite as HTML, CSS and JavaScript plus a DOM traversal that collects nodes, and a typeahead component as the design prompt. A March 2022 Blind account from an L5 candidate describes two DOM-traversal-style coding rounds, a behavioural round and a design round that asked for a specific component such as an autocomplete, failed after preparing product-level designs. Together they establish that these exercise types occurred; they do not establish exact wording, the current format, or how many rounds a given level gets. Confirm the round count, the tool, the AI assistant rules and the design scope with the recruiter. The process table above draws on more reports: thirteen from 2020 to 2025.',
     ],
   },
+  // The behavioural row of the process table links here. Meta's Front End interview guide (a PDF downloaded from the
+  // full loop prep page, read 2026-11-09) describes the round; the accounts are the ones that row cites.
+  roundSpotlights: [
+    {
+      id: 'behavioural',
+      kicker: 'Round decoder',
+      title: 'Meta behavioural interview for front end engineers: the five signals and what was asked',
+      lede: [
+        'Meta\'s front end full loop includes one behavioural interview beside the coding and design rounds. Meta\'s Front End interview guide describes a 45-minute session about your background, what you care about in tech and the impact you want to make, held to see whether you will thrive in a "fast-paced and highly unstructured environment".',
+        'The guide names the five signals it assesses: resolving conflict, growing continuously, embracing ambiguity, driving results and communicating effectively. Front end accounts add what came up in practice: previous projects, debugging stories and past UI challenges.',
+      ],
+      facts: [
+        { label: 'Where it comes', value: 'One 45-minute interview among the 4 to 6 of the full loop, in Meta\'s guide. A 2020 account had one behavioural interview among four 45-minute interviews, a 2021 E4 (IC4) onsite had two, and a 2025 account with an offer had a final round that mixed light HTML and CSS coding with behavioural questions.' },
+        { label: 'The five signals', value: 'Resolving conflict: disagreements with colleagues or managers, how you resolved them, and empathy for very different views. Growing continuously: seeking ways to learn, and taking criticism as a chance to improve. Embracing ambiguity: deciding while information is missing, and pivoting when priorities shift. Driving results: pushing yourself and others to deliver against goals despite roadblocks. Communicating effectively: with your team and with cross-functional partners, adapted to the audience.' },
+        { label: 'What you may be asked', value: 'Meta\'s guide lists the details of past and current projects, specific examples of what you did and its impact, what you learned from a past situation, and what you like about your role or about being a developer.' },
+        { label: 'Asked in front end accounts', value: 'Debugging stories and past UI challenges (Taro, 2025, with an offer); conflict resolution and how it shaped the way the candidate handles project work, in a round the account does not name (Taro, November 2024, with an offer); previous experiences, in a round the candidate found easier for that reason (Taro, 2020). A 2022 Blind candidate for a senior role (posted as L5) was told the behavioural interview went well and the design round did not.' },
+        { label: 'How Meta says to prepare', value: 'Review your résumé and outline two or three major projects to discuss in depth; be honest about projects that did not go well, which the guide says is not counted against you; organise each answer as the situation, your task, your actions and a measurable result; and give concrete examples, since the interviewer steers a theoretical answer back to a concrete one.' },
+        { label: 'Sources', value: 'Meta\'s Front End interview guide, downloadable from its full loop preparation page, and front end accounts on Taro and Blind from 2020 to 2025; all are on the behavioural row of the process table.' },
+      ],
+      practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+      processLink: { label: 'See the behavioural row in the reported process', fragment: 'meta-interview-process-1-stage-full-loop-behavioural' },
+      // One question per signal of the guide, written from its description, then the two topics a 2025 account names.
+      drill: {
+        note: 'Six questions are written from the signals in Meta\'s guide, two follow what a 2025 account reports, and the last is the guide\'s own question about what you care about in tech.',
+        questions: [
+          { id: 'disagreement', text: 'Tell me about a disagreement with a colleague or a manager. How did you resolve it?', source: 'Meta\'s guide: resolving conflict' },
+          { id: 'criticism', text: 'Tell me about criticism you received and what you changed after it.', source: 'Meta\'s guide: growing continuously' },
+          { id: 'pivot', text: 'Tell me about a time you had to pivot away from a project because priorities shifted.', source: 'Meta\'s guide: embracing ambiguity' },
+          { id: 'missing-information', text: 'Tell me about a decision you made while information was missing.', source: 'Meta\'s guide: embracing ambiguity' },
+          { id: 'roadblock', text: 'Tell me about a goal you reached despite a roadblock.', source: 'Meta\'s guide: driving results' },
+          { id: 'audience', text: 'Tell me about adapting how you explained your work to a cross-functional partner.', source: 'Meta\'s guide: communicating effectively' },
+          { id: 'debugging', text: 'Tell me about a hard bug you debugged.', source: 'Taro, 2025' },
+          { id: 'ui-challenge', text: 'Tell me about a UI challenge in a past project.', source: 'Taro, 2025' },
+          { id: 'impact', text: 'What are you passionate about in tech, and what impact do you want to make?', source: 'Meta\'s guide', kind: 'view' },
+        ],
+        checks: [
+          'It shows the signal the question asks about.',
+          'It is a concrete example, not a theory: the interviewer asks for one.',
+          'I have two or three major projects outlined to discuss in depth.',
+        ],
+      },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two skill areas for practising transferable frontend judgment',
@@ -283,7 +326,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { day: 'Day 4', focus: 'DOM traversals: the twin node, collecting by predicate in both orders, and a store keyed by elements.', artifact: 'Three traversals that pass on a real DOM.' },
       { day: 'Day 5', focus: 'Data structures in JavaScript: stack, queue with constant-time dequeue, linked list insertion, tree checks.', artifact: 'Four structures with stated complexity.' },
       { day: 'Day 6', focus: 'Component design: autocomplete and typeahead with debouncing, cancellation, caching and keyboard access.', artifact: 'A one-page component design with its states and failure cases.' },
-      { day: 'Day 7', focus: 'Mock screen in the interview tool: two problems in fifty minutes, written from memory, then a review of what you could not finish.', artifact: 'A list of the questions you will ask the recruiter about rounds, tools and the AI assistant rules.' },
+      { day: 'Day 7', focus: 'Mock screen in the interview tool: two problems in fifty minutes, written from memory, then a review of what you could not finish; and two stories in the behavioural drill above, for two of the five signals.', artifact: 'A list of the questions you will ask the recruiter about rounds, tools and the AI assistant rules.' },
     ],
   },
   faqs: {
@@ -333,7 +376,7 @@ export const META_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Meta practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the map, timer manager, memoization, twin DOM node, DOM find and stack and queue drills, the real-time search case and the broader company-tagged editorial set.',
+      'Premium unlocks the map, timer manager, memoization, twin DOM node, DOM find and stack and queue drills, the real-time search case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Meta practice set',
     src: 'company_preview_meta',
   },

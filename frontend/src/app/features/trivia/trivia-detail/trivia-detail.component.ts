@@ -24,6 +24,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
+import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
@@ -69,6 +70,7 @@ import { ReactStaleClosureCaseFilesComponent } from './react-stale-closure-case-
 import { CssStickyDebuggingLabComponent } from './css-sticky-debugging-lab/css-sticky-debugging-lab.component';
 import { AngularChangeDetectionVisualizerComponent } from './angular-change-detection-visualizer/angular-change-detection-visualizer.component';
 import { RxjsOverlapPlaygroundComponent } from './rxjs-overlap-playground/rxjs-overlap-playground.component';
+import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -621,6 +623,7 @@ function buildTagRegex(tag: string): RegExp {
         FooterComponent, GithubStarCtaComponent, SiteFooterComponent,
         LockedPreviewComponent,
         FaButtonComponent,
+        InlineCodeComponent,
         PrismHighlightDirective,
         SafeHtmlPipe,
         FaGlyphComponent,
@@ -706,6 +709,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   returnTo: any[] | null = null;
   private returnToUrl: string | null = null;
   private returnLabel = signal<string | null>(null);
+  planReturn = signal<CompanyPlanReturnLink | null>(null);
   locked = computed(() => {
     const q = this.question();
     const user = this.auth.user();
@@ -1194,6 +1198,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.returnTo = s?.returnTo ?? null;
     this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
     this.returnLabel.set(s?.returnLabel ?? null);
+    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
     this.refreshSidebarQuestions();
   }
 
@@ -1255,7 +1260,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resetIncidentPrompt();
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.refreshLockedPersonalization();
-    this.setLoadState(found);
+    this.setLoadState(found, id);
     if (found && isQuestionLockedForTier(found, this.auth.user())) {
       this.experiments.expose(
         'premium_gate_copy_v1',
@@ -1302,13 +1307,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return false;
   }
 
-  private setLoadState(found: Question | null) {
+  private setLoadState(found: Question | null, id: string) {
     if (found) {
       this.loadState.set('loaded');
       return;
     }
     if (this.isBrowser && this.dataLoaded) {
       this.loadState.set('notFound');
+      // Only a loaded list without this id proves the address is wrong; an empty list is a failed load.
+      if (this.questionsList.length && !this.questionsList.some((q) => q.id === id)) {
+        // replaceUrl so Back returns to the last valid page instead of the bad URL
+        this.router.navigateByUrl('/404', { state: { missing: this.router.url }, replaceUrl: true }).catch(() => void 0);
+      }
       return;
     }
     this.loadState.set('loading');
@@ -2634,7 +2644,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // ================== Markdown -> HTML with a tiny HTML whitelist ==================
   // 2) Full, corrected md()
-  md(src: unknown): string {
+  md(src: unknown, options: { tableCell?: boolean } = {}): string {
     let raw = typeof src === 'string'
       ? src
       : (src && (src as any).toString ? (src as any).toString() : '');
@@ -2678,6 +2688,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
+    // Protect inline code first, so a tag named inside it stays visible text instead of
+    // becoming a real element. An escaped <a> inside <code> must also stay code, not a
+    // crawlable outbound link.
+    const inlineCodeTokens: string[] = [];
+    const protectInlineCode = (codeHtml: string): string => {
+      const token = `__INLINE_CODE_${inlineCodeTokens.length}__`;
+      inlineCodeTokens.push(codeHtml);
+      return token;
+    };
+    html = html
+      .replace(/&lt;code&gt;([\s\S]*?)&lt;\/code&gt;/g, (_m: string, inner: string) => protectInlineCode(`<code>${inner}</code>`))
+      .replace(/`([^`]+)`/g, (_m: string, inner: string) => protectInlineCode(`<code class="inline-code">${inner}</code>`));
+
     // Protect standalone HTML tag mentions so they stay visible as text.
     const literalTagTokens: string[] = [];
     const looksLikeInlineTagMention = (suffix: string): boolean =>
@@ -2695,8 +2718,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
         let shouldLiteralize = false;
 
-        if (tag === 'br') {
-          shouldLiteralize = mentionByContext;
+        if (options.tableCell && /^(?:h[1-6]|table|thead|tbody|tr|th|td|blockquote)$/.test(tag)) {
+          shouldLiteralize = true;
+        } else if (tag === 'br') {
+          // A real break can sit right before a word ("<br>For example"); a mention has a space or punctuation after it.
+          shouldLiteralize = mentionByContext && /^(?:[ \t]|[,.;:)\]?!])/.test(after);
         } else if (isClosing) {
           const openRe = new RegExp(`&lt;${tag}&gt;`, 'i');
           shouldLiteralize = !openRe.test(before);
@@ -2738,20 +2764,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       (m: string) => `<code>${m}</code>`
     );
 
-    // Protect literal inline-code HTML before link conversion. Some legacy
-    // examples contain an escaped <a> inside <code>; it must stay code, not
-    // become a crawlable outbound link.
-    const inlineCodeTokens: string[] = [];
-    html = html.replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, (codeHtml: string) => {
-      const token = `__INLINE_CODE_${inlineCodeTokens.length}__`;
-      inlineCodeTokens.push(codeHtml);
-      return token;
-    });
+    // Step 4b wrapped bare tag names in <code>; they stay out of link conversion too.
+    html = html.replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, (codeHtml: string) => protectInlineCode(codeHtml));
 
-    // Inline backticks + **bold**
+    // Links + **bold**
     html = this.renderRawAnchorLinks(html);
     html = this.renderMarkdownLinks(html);
-    html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
     // Allow <pre class="md-pre">…</pre> explicitly present in JSON
@@ -2760,14 +2778,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       (_m: any, inner: string) => `<pre class="md-pre">${inner}</pre>`
     );
 
-    // Headings
-    html = html
-      .replace(/^###\s?(.*)$/gm, '<h4 class="md-h md-h4">$1</h4>')
-      .replace(/^##\s?(.*)$/gm, '<h3 class="md-h md-h3">$1</h3>')
-      .replace(/^#\s?(.*)$/gm, '<h2 class="md-h md-h2">$1</h2>');
+    // Headings need a space after the marker, so a line like "#header" stays a selector.
+    if (!options.tableCell) {
+      html = html
+        .replace(/^###[ \t]+(.*)$/gm, '<h4 class="md-h md-h4">$1</h4>')
+        .replace(/^##[ \t]+(.*)$/gm, '<h3 class="md-h md-h3">$1</h3>')
+        .replace(/^#[ \t]+(.*)$/gm, '<h2 class="md-h md-h2">$1</h2>');
+    }
 
-    // Lists
-    html = this.renderMarkdownLists(html);
+    // Lists. A single-line table cell is one value: "1. Reproduce" keeps its number, "* or inherited" its star.
+    if (!options.tableCell || text.includes('\n')) {
+      html = this.renderMarkdownLists(html);
+    }
 
     // Blockquotes (already whitelisted above too)
     html = html.replace(/^\>\s?(.*)$/gm, '<blockquote class="md-quote">$1</blockquote>');
@@ -2797,6 +2819,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     return html;
+  }
+
+  mdCell(src: unknown): string {
+    return this.md(src, { tableCell: true });
   }
 
   private renderMarkdownLinks(source: string): string {

@@ -1439,7 +1439,7 @@
     ],
     "updatedAt": "2026-04-09",
     "seo": {
-      "title": "React one-way data flow in production: state ownership, multi-writer bugs, and debug clarity",
+      "title": "React one-way data flow: state ownership and multi-writer bugs",
       "description": "React one-way data flow keeps state ownership clear, prevents multi-writer bugs, and makes production debugging and concurrent rendering safer."
     },
     "incidentCard": {
@@ -1899,7 +1899,9 @@
     "id": "react-keys-in-lists",
     "title": "What is the significance of keys in lists in React?",
     "technology": "react",
-    "companies": ["shopee"],
+    "companies": [
+      "shopee"
+    ],
     "difficulty": "intermediate",
     "importance": 5,
     "description": "Keys are React's identity contract for list items. Use stable keys to prevent reordered rows, lost input state, random remounts, and production bugs where React preserves the wrong component.",
@@ -3133,7 +3135,9 @@
     "id": "react-higher-order-components",
     "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
-    "companies": ["jpmorgan"],
+    "companies": [
+      "jpmorgan"
+    ],
     "difficulty": "intermediate",
     "importance": 2,
     "description": "Explain higher-order components as a legacy React reuse pattern, with focus on wrapper debugging, prop collisions, display names, typing friction, and when hooks are simpler.",
@@ -3303,7 +3307,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Higher-order components in React: legacy reuse, prop-collision pitfalls, and when not to use them",
+      "title": "Higher-order components in React: legacy reuse and prop collisions",
       "description": "HOCs still matter in legacy React and library APIs, but the practical angle is wrapper debugging, prop collisions, typing friction, and when hooks are simpler."
     },
     "incidentCard": {
@@ -3939,7 +3943,7 @@
     ],
     "updatedAt": "2026-04-04",
     "seo": {
-      "title": "Concurrent rendering in React: scheduling, interruptible work, and responsiveness pitfalls",
+      "title": "Concurrent rendering in React: scheduling and interruptible work",
       "description": "Concurrent rendering is about scheduling and interruptible work, not true parallelism. The key production question is when to split urgent and non-urgent updates."
     },
     "incidentCard": {
@@ -4236,7 +4240,10 @@
     "id": "react-useref-vs-usestate",
     "title": "Why doesn't changing a ref re-render? useRef vs useState",
     "technology": "react",
-    "companies": ["jpmorgan", "xai"],
+    "companies": [
+      "jpmorgan",
+      "xai"
+    ],
     "difficulty": "intermediate",
     "importance": 4,
     "description": "Explain why a ref update never shows on screen: React does not watch .current, while setState schedules a render. Covers when state is the right tool (anything the UI shows), when refs are (DOM nodes, timers, latest values in stale closures), and the bug of storing render-driving data in a ref.",
@@ -5571,7 +5578,7 @@
     ],
     "updatedAt": "2026-04-19",
     "seo": {
-      "title": "How to choose React Hooks: useState vs useReducer, useRef vs state, and effect trade-offs",
+      "title": "How to choose React Hooks: useState vs useReducer, useRef vs state",
       "description": "A strong React Hooks answer is a decision matrix, not a hook list. Learn when to use useState, useReducer, useEffect, useRef, memoization hooks, and transitions."
     },
     "incidentCard": {
@@ -6213,6 +6220,368 @@
       ],
       "correctOptionId": "stale-chunk-after-deploy",
       "rereadPrompt": "Close. Re-read why the chunk request fails only for users who loaded the app before the deploy: their old bundle asks for hashed files that no longer exist."
+    }
+  },
+  {
+    "id": "react-take-home-table-review-questions",
+    "title": "How do you defend and extend a downloadable-files table in a take-home review?",
+    "technology": "react",
+    "companies": [
+      "crowdstrike"
+    ],
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Two reviewers open your take-home table and ask what you would change, how you would add filtering and sorting, whether the component should be generalized, when to load each file's status, how it copes with thousands of rows, and what happens when someone selects all, moves to another page and deselects a few rows. This guide answers each question the way a reviewer scores it: name the trade-off you made, say what you would change first, and extend the code without rewriting it. Selection is modeled as a mode plus exceptions keyed by a stable file id, so select all never needs every id loaded. Filter and sort state lives in one place, and a filter change clears the selection on purpose. File status loads with the list, on demand or by polling, depending on how often it changes, and thousands of rows page or virtualize without the selection depending on what is rendered.",
+    "interviewFocus": {
+      "summary": "The take-home review checks whether you own your design: name the change you would make, keep the selection correct across pages, filters and sorts, and say what the download request carries for thousands of files.",
+      "tests": [
+        "Why select all is a mode plus exceptions keyed by file id",
+        "What happens when someone selects all, pages and unticks a few",
+        "When to load each file status, and what a row shows meanwhile"
+      ]
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The review as the account describes it</strong><br><br>The fullest United States CrowdStrike account, from a 2025 engineering-manager loop, names the take-home: a table with a few rows of downloadable files and their details, built from a screenshot. A follow-up with two engineers then asked what you would change about your design and how you would add filtering and sorting, and the account lists further review questions: should the component be generalized, when would you load each file's status, how does it cope with thousands of entries, and what happens when someone selects all, moves to another page and deselects a few. Other accounts confirm a take-home and a review of it without naming the questions. None of them is a trick. Each one checks whether you own a decision you made, can name its cost, and can extend the code in front of them without starting over. The table gives the reviewer-ready answer for each; the sections after it give the reasoning you would say out loud and the code you would point at."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Reviewer question",
+            "A reviewer-ready answer",
+            "The follow-up they ask next"
+          ],
+          "rows": [
+            [
+              "What would you change?",
+              "Name one or two changes with the reason before they ask: move the selection to a mode plus exceptions, key rows by a stable id, add the tests you skipped",
+              "Why did you not do it in the take-home? Answer with the time box, not an excuse"
+            ],
+            [
+              "How would you add filtering and sorting?",
+              "Keep filter and sort in one place, derive the visible rows from them, key the selection by id so a sort never moves it, and decide on purpose whether a filter change clears the selection",
+              "Client or server? If the server filters, select all becomes a query the server understands"
+            ],
+            [
+              "Should the component be generalized?",
+              "Only what a second use needs: column definitions, a row id and a cell renderer, not a setting for every case",
+              "What is the first thing you would refuse to add?"
+            ],
+            [
+              "When do you load each file's status?",
+              "With the list when it is cheap and stable; on demand for the visible rows when it is slow; by polling or push when it changes while the page is open",
+              "What does the row show while the status is unknown?"
+            ],
+            [
+              "How does it cope with thousands of rows?",
+              "Page on the server or virtualize the rows, keep the selection independent of what is rendered, and compute the header state from counts rather than from the rendered rows",
+              "What does select all mean when only one page is loaded?"
+            ],
+            [
+              "Select all, page, deselect a few?",
+              "Mode all plus an exception set: paging shows every row checked except the exceptions, the count is total minus exceptions, and the header turns mixed as soon as one exception exists",
+              "What does the download request send: ids, or the mode and the exceptions?"
+            ]
+          ],
+          "caption": "The six review questions, each with the answer a reviewer is scoring and the follow-up behind it",
+          "stackOnMobile": true
+        },
+        {
+          "type": "text",
+          "text": "<strong>What you would change first</strong><br><br>Open with a change, not a defense. Reviewers remember the candidate who said \"I kept the selected ids for the current page and I would replace that with a mode plus exceptions, because select all across pages loses selections otherwise\" more than the one who explained every line. Pick the change with the largest effect on correctness, then one on quality (a stable row id, tests for the edge cases, a loading state for the status column), and say why each was out of scope in the time box. If the build was four hours, the trade-off was real; a reviewer who hears it stated plainly stops looking for it."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// Selection as a mode plus exceptions: select all never needs every id in memory,\n// and a deselection on another page is just one more exception.\nconst EMPTY = { mode: 'none', exceptions: new Set() };\n\nfunction isSelected(selection, file) {\n  if (!file.available) return false;\n  return selection.mode === 'all'\n    ? !selection.exceptions.has(file.id)\n    : selection.exceptions.has(file.id);\n}\n\nfunction toggleRow(selection, file) {\n  const exceptions = new Set(selection.exceptions);\n  if (exceptions.has(file.id)) exceptions.delete(file.id);\n  else exceptions.add(file.id);\n  return { mode: selection.mode, exceptions };\n}\n\nfunction toggleAll(selection, headerState) {\n  // Unchecked or mixed: select every matching, available file, as a native checkbox does when clicked.\n  // Checked: clear everything.\n  return headerState === 'all' ? EMPTY : { mode: 'all', exceptions: new Set() };\n}\n\nfunction selectedCount(selection, selectableCount) {\n  return selection.mode === 'all'\n    ? selectableCount - selection.exceptions.size\n    : selection.exceptions.size;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Filtering and sorting without breaking the selection</strong><br><br>Filter text and sort key belong in one place, the URL or one state object, and the visible rows are derived from them with <code>useMemo</code>: filter first, then sort, then slice the page. Because the selection is keyed by file id, a sort cannot move a selection to another file and a page change cannot lose it. The decision reviewers want to hear is what a filter change does to the selection. Keeping it means a hidden selected row is still downloaded, which surprises people; clearing it is simpler and matches most file managers. Say which you chose and why, and reset the page to one on every filter change so an empty page never appears. If the server filters and sorts, select all can no longer be computed in the browser: it becomes a request that carries the filter and the exceptions, and the server resolves the ids."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const matching = useMemo(() => {\n  const q = filter.trim().toLowerCase();\n  const rows = q ? FILES.filter((file) => file.name.toLowerCase().includes(q)) : FILES;\n  return [...rows].sort((a, b) =>\n    sortKey === 'name' ? a.name.localeCompare(b.name) : a.sizeKb - b.sizeKb\n  );\n}, [filter, sortKey]);\n\nconst pageCount = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));\nconst currentPage = Math.min(page, pageCount);\nconst visible = matching.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);\n\nfunction changeFilter(value) {\n  setFilter(value);\n  setPage(1); // never show an empty page after narrowing\n  setSelection(EMPTY); // on purpose: a hidden selection must not be downloaded\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Generalize only what a second use needs</strong><br><br>The question is a trap in both directions. A component with a prop for every case is harder to use than the one you shipped; a component that only renders files cannot be reused for alerts or hosts. The middle is small: an array of column definitions (key, header, a cell renderer, whether it sorts), a function that returns the stable row id, and the selection model as a hook that any table can call. Everything else, the file-specific status cell, the download button, the availability rule, stays in the files table that uses the generic one. Name the first thing you would refuse to add, such as nested rows or inline editing, until a second screen asks for it."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When to load each file's status</strong><br><br>Give three options and the rule that picks one. Load the status with the list when the backend can join it cheaply and it changes rarely; the table renders once and the column is never blank. Load it on demand for the visible rows, with an <code>IntersectionObserver</code> or on page change, when the status comes from a slower service, and cache it by file id so paging back does not refetch. Poll or subscribe when a file can become available while the page is open, because a reviewer will ask what happens to a row that was unavailable a minute ago. Whatever the choice, the row needs an explicit unknown state, a disabled checkbox while the status is unknown, and the rule that an unavailable file can never be selected, even by select all."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Thousands of rows</strong><br><br>Say the two tools and when each applies. Server-side paging keeps the browser holding one page; the selection model already works because it never needed every id, and the header state comes from counts: the server's total matching count minus the exceptions. Virtualization keeps every row in memory but renders only the visible ones, which fits a few thousand client-side rows with instant filtering; the selection must not live in the rendered row components, because they are unmounted as the user scrolls. In both cases the download request sends the mode and the exceptions, not a list of thousands of ids, and the header checkbox shows mixed from the count alone. The miss reviewers see most is select all implemented as a loop over the rendered rows, which selects one page and calls it all."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Walk through select all, page, deselect</strong><br><br>Trace it with the model in hand. The user checks the header on page one of three: the mode becomes all with no exceptions, every available row shows checked, and the count reads the number of available files. They move to page two and uncheck one row: that id joins the exceptions, the count drops by one, and the header turns mixed with <code>aria-checked=\"mixed\"</code> and the <code>indeterminate</code> property set from an effect, because React cannot set it from markup. Back on page one every row is still checked, because none of them is an exception. Checking the header from the mixed state selects every matching file again, which is what a native checkbox does when it is clicked in that state; clearing instead is also defensible, as long as you say which one you chose. An unavailable file never appears in the count, because availability is checked before the mode."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common misses</strong><br><br>Defending every line instead of naming a change. Selection stored as the visible page's ids, so paging loses it. Sorting that moves a selection to another file because rows are keyed by index. A filter change that silently keeps a hidden selection in the download. Generalizing with a prop for every case, or refusing to generalize at all. A status column with no unknown state. Select all implemented as a loop over the rendered rows. Proposing a rewrite when the reviewer asked for an extension."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"The first thing I would change is the selection: I kept ids for the current page, and I would move to a mode plus exceptions keyed by file id, so select all works across pages and a deselection on page two is one exception. Filter and sort live in one state object, the rows are derived from it, and a filter change clears the selection on purpose. I would generalize the columns and the row id, nothing else. Status loads with the list if it is cheap, otherwise on demand for the visible rows with a cache by id. For thousands of rows I would page on the server, keep the header state from counts, and send the mode and the exceptions in the download request.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Lead with the change you would make, keep selection as a mode plus exceptions keyed by a stable id, derive rows from one filter and sort state and decide what a filter change does to the selection, generalize the column definitions and the row id only, load status by how often it changes, and make thousands of rows a paging or virtualization question in which the selection never depends on what is rendered."
+        }
+      ]
+    },
+    "access": "premium",
+    "premiumPreview": {
+      "summary": "Two reviewers open your take-home table and ask six questions, and the answers that score are the ones that name a change, a trade-off and an extension that keeps the code you shipped.",
+      "learningOutcomes": [
+        "Open the review with the change you would make and the reason it was out of scope.",
+        "Model selection as a mode plus exceptions keyed by a stable file id.",
+        "Add filtering and sorting without moving or losing a selection.",
+        "Choose when to load each file's status by how often it changes.",
+        "Make thousands of rows a paging or virtualization question with the header state from counts."
+      ],
+      "unlockDescription": "Premium unlocks the six reviewer-ready answers with their follow-ups, the selection model and derived-rows code, and the select-all-then-deselect walkthrough."
+    },
+    "type": "trivia",
+    "tags": [
+      "accessibility",
+      "pagination",
+      "react",
+      "state-management",
+      "testing",
+      "virtualization"
+    ],
+    "publishedAt": "2026-11-05",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "Take-Home Table Review: Defend and Extend Your Component",
+      "description": "Six take-home review questions for a React files table: what to change, filtering and sorting, generalizing, file status, thousands of rows and select all across pages."
+    },
+    "incidentCard": {
+      "title": "Lost Selection After Paging Root Cause Check",
+      "scenario": "In the review a reviewer checks select all on page one of three, moves to page two, unchecks one row, and returns to page one, where every row is now unchecked and the count reads 0. The table keeps the selected ids in state and rebuilds that state from the rows it renders whenever the page changes. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "indeterminate-reset",
+          "label": "The header checkbox's indeterminate property was never set, so React reset every row's checked state on the next render."
+        },
+        {
+          "id": "page-scoped-selection",
+          "label": "The selection was scoped to the visible page and rebuilt from the rendered rows on each page change, so paging replaced the set; store a mode plus exceptions keyed by file id instead."
+        },
+        {
+          "id": "filter-effect-clears",
+          "label": "A filter effect cleared the selection because the page number was in its dependency array."
+        }
+      ],
+      "correctOptionId": "page-scoped-selection",
+      "rereadPrompt": "Close. Re-read what the table does on a page change: it rebuilds the selection from the rows it renders, so a state that only ever knows the current page cannot remember the other two."
+    }
+  },
+  {
+    "id": "react-phone-screen-search-bar-rehearsal",
+    "title": "How do you rehearse a one-hour React screen with JS questions, a search bar and a LeetCode easy?",
+    "technology": "react",
+    "companies": [
+      "tesla"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "A one-hour React screen can pack three things into the hour: short JavaScript questions, a small component built live and an easy algorithm. Public Tesla frontend accounts describe that shape: a 2025 account had basic JavaScript questions and a search bar in a live React session, and a 2022 account had React questions about a take-home and a LeetCode easy. This guide rehearses each part: two-sentence answers to common JavaScript questions, a search bar with empty, loading and stale-response handling, and an easy problem narrated from brute force to one pass. It is a FrontendAtlas practice plan, not a list of the company's questions.",
+    "interviewFocus": {
+      "summary": "A one-hour screen rewards short, exact answers and a working component over breadth: answer each JavaScript question in two sentences with one example, build the search bar with its empty and stale states, and narrate the easy problem from brute force to the one-pass answer.",
+      "tests": [
+        "Scope, closures, this and the event loop, each in two sentences",
+        "A search bar that keeps only the newest query's results",
+        "Two sum narrated from brute force to a one-pass Map"
+      ]
+    },
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The screen as the accounts describe it</strong><br><br>Public Tesla frontend accounts describe a one-hour phone or video screen after the online assessment. In a 2025 account it was a live React session with basic JavaScript questions and a search bar to implement. In a 2022 account it was React questions about the candidate's take-home plus a LeetCode easy, and a 2021 account mentions JavaScript, HTML and React questions with a data structures question. None of them says how the hour was split or which questions came up, so rehearse all three parts and keep every answer short enough to leave time for the build."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Part",
+            "What to show",
+            "Time to aim for"
+          ],
+          "rows": [
+            [
+              "JavaScript questions",
+              "A two-sentence answer with one example, then stop and let them ask the follow-up",
+              "10 to 15 minutes"
+            ],
+            [
+              "Search bar",
+              "A controlled input, results derived from the query, an empty state, then debounce and stale responses if it fetches",
+              "25 to 30 minutes"
+            ],
+            [
+              "LeetCode easy",
+              "The brute force out loud, the faster idea, the code, its complexity and two edge cases",
+              "10 to 15 minutes"
+            ],
+            [
+              "Your questions",
+              "One question about the team's stack and one about the next round",
+              "5 minutes"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "text": "<strong>JavaScript questions, two sentences each</strong><br><br>The accounts do not list the questions, so rehearse the ones a basic JavaScript round tends to cover. Answer the question asked, give one example and stop: a long answer to a short question is the most common way to lose the time the build needs. The table gives the answer and the follow-up that usually comes next."
+        },
+        {
+          "type": "list",
+          "stackOnMobile": true,
+          "columns": [
+            "Question",
+            "A two-sentence answer",
+            "The follow-up to expect"
+          ],
+          "rows": [
+            [
+              "var, let and const",
+              "var is function-scoped and hoisted as undefined; let and const are block-scoped and sit in the temporal dead zone until their declaration runs. const stops reassignment, not changes to the object it holds.",
+              "Why does for (var i = 0; i < 3; i++) setTimeout(() => console.log(i)) print 3 three times?"
+            ],
+            [
+              "Closures",
+              "A function keeps access to the variables of the scope it was created in, even after that scope has returned. That is how a counter keeps private state and how a debounce keeps its timer.",
+              "Write a counter or a once() helper with a closure."
+            ],
+            [
+              "this",
+              "this is set by how a function is called: the object before the dot, the value it was bound to, or undefined for a plain call in strict mode. Arrow functions have no this of their own and use the enclosing one.",
+              "Why does a method passed as a callback lose this, and how do bind or an arrow fix it?"
+            ],
+            [
+              "== and ===",
+              "=== compares without type conversion; == converts types first, so 0 == '' is true. Use === except for the deliberate x == null check, which matches null and undefined.",
+              "Why is 0 == '' true but null == 0 false?"
+            ],
+            [
+              "The event loop",
+              "Synchronous code runs to the end first; then every queued microtask, such as a promise callback, runs before the next task, such as a setTimeout callback. That is why a resolved promise logs before a zero-delay timeout.",
+              "Predict the order of a short log with a timeout, a promise and a plain log."
+            ],
+            [
+              "Promises and async/await",
+              "An async function always returns a promise, and await pauses only that function until the promise settles. A rejection surfaces at the await, so wrap it in try/catch or attach a catch.",
+              "When do you use Promise.all, and what happens when one promise rejects?"
+            ],
+            [
+              "Event delegation",
+              "Events bubble from the target up through its ancestors, so one listener on a parent can handle clicks on many children by reading event.target. It saves listeners and covers children added later.",
+              "How do you find the clicked item when the click lands on an icon inside it?"
+            ],
+            [
+              "Debounce and throttle",
+              "Debounce waits until calls stop for a set time, then runs once; throttle runs at most once per interval. A search box wants debounce, a scroll handler usually throttle.",
+              "Write debounce from scratch."
+            ]
+          ]
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('a');\nsetTimeout(() => console.log('b'), 0);\nPromise.resolve().then(() => console.log('c'));\nconsole.log('d');\n// a, d, c, b: synchronous code first, then microtasks (c), then the timer task (b)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The search bar, in three passes</strong><br><br>Clarify first: does it filter a local list or call an API, is the match case-insensitive, and what does an empty query show? Then build it in three passes. First, a controlled input and results derived from the query, never copied into state, with a visible empty state and the result count. Second, if the results come from an API, wait about 300 ms after typing stops and keep only the newest query's response, because responses can arrive out of order. Third, accessibility: a label on the input and the status in a polite live region. Arrow-key navigation and a listbox are follow-ups for when they ask for suggestions."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function SearchBar({ search }) {\n  const [query, setQuery] = useState('');\n  const [state, setState] = useState({ status: 'idle', results: [] });\n\n  useEffect(() => {\n    const q = query.trim();\n    if (!q) {\n      setState({ status: 'idle', results: [] });\n      return undefined;\n    }\n    const controller = new AbortController();\n    const timer = setTimeout(() => {\n      setState((previous) => ({ ...previous, status: 'loading' }));\n      search(q, controller.signal)\n        .then((results) => {\n          if (!controller.signal.aborted) setState({ status: 'done', results });\n        })\n        .catch(() => {\n          if (!controller.signal.aborted) setState({ status: 'error', results: [] });\n        });\n    }, 300);\n    // A newer query clears the older timer and aborts its request, so only the newest results land.\n    return () => {\n      clearTimeout(timer);\n      controller.abort();\n    };\n  }, [query, search]);\n\n  const count = state.results.length;\n  return (\n    <div className=\"search\">\n      <label htmlFor=\"search-input\">Search</label>\n      <input id=\"search-input\" type=\"search\" value={query} onChange={(event) => setQuery(event.target.value)} />\n      <p aria-live=\"polite\">\n        {state.status === 'loading' && 'Searching'}\n        {state.status === 'error' && 'Search failed. Try again.'}\n        {state.status === 'done' && (count ? `${count} result${count === 1 ? '' : 's'}` : 'No results')}\n      </p>\n      <ul>\n        {state.results.map((item) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The LeetCode easy, narrated</strong><br><br>Easy problems tend to be array, string or hash map problems: two sum, valid anagram, valid parentheses, the first unique character. The code is short, so the signal is the narration. Say the brute force and its cost, name the data structure that removes the inner loop, write it, give the time and space, and run two edge cases out loud: an empty input and a repeated value. In JavaScript, reach for a Map or a Set when the keys are not strings, and do not sort when one pass with a Map is enough."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Brute force checks every pair: O(n^2). One pass with a Map of seen values is O(n) time and O(n) space.\nfunction twoSum(nums, target) {\n  const seen = new Map(); // value -> index\n  for (let i = 0; i < nums.length; i += 1) {\n    const need = target - nums[i];\n    if (seen.has(need)) return [seen.get(need), i];\n    seen.set(nums[i], i);\n  }\n  return []; // say what you return when no pair exists\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>React questions about your take-home</strong><br><br>When the screen follows a take-home, the React questions are about your code. Prepare three sentences: the state you chose and why it lives where it does, the one thing you would change with more time, and how you would test the part most likely to break. Open the project before the call so you can find a component when they ask about it."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common misses</strong><br><br>Long answers to short questions, so the build starts with ten minutes left. A search bar that copies filtered results into state and drifts from the query. Debounce presented as the fix for out-of-order responses, while an older response can still overwrite a newer query. No empty or error state. The easy problem coded in silence, then a guessed complexity. A sort where one pass with a Map is enough."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"I will answer each question in a sentence or two and stop, so we keep time for the build. For the search bar I derive the results from the query and show an empty state, and if it fetches I wait for a pause and keep only the newest query's response. For the algorithm I start with the brute force, then use a Map for one pass and state the time and space.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Rehearse the hour in its parts with a timer: two-sentence JavaScript answers with one example each, a search bar with derived results and empty, loading and stale-response handling, and an easy problem narrated from brute force to a one-pass Map with its complexity and edge cases."
+        }
+      ]
+    },
+    "access": "premium",
+    "premiumPreview": {
+      "summary": "Rehearse a one-hour React screen in its parts: two-sentence answers to common JavaScript questions, a search bar with empty and stale states, and an easy problem narrated from brute force to one pass.",
+      "learningOutcomes": [
+        "Answer scope, closures, this, equality and the event loop in two sentences with one example.",
+        "Build a search bar whose results are derived from the query, with empty, loading and error states.",
+        "Keep only the newest query's response with a pause before the request and an abort on every new query.",
+        "Narrate an easy problem from brute force to a one-pass Map with its complexity and edge cases."
+      ],
+      "unlockDescription": "Premium unlocks the timed plan for the hour, the two-sentence answers with their follow-ups, the search bar code and the narrated easy problem."
+    },
+    "type": "trivia",
+    "tags": [
+      "react",
+      "javascript",
+      "closures",
+      "event-loop",
+      "debounce",
+      "hash-map",
+      "search",
+      "accessibility"
+    ],
+    "publishedAt": "2026-11-06",
+    "updatedAt": "2026-11-06",
+    "seo": {
+      "title": "React Phone Screen Rehearsal: JS Questions and a Search Bar",
+      "description": "Rehearse a one-hour React screen: two-sentence answers to common JavaScript questions, a search bar with stale-response handling and a LeetCode easy."
+    },
+    "incidentCard": {
+      "title": "Old Results After a Pause Root Cause Check",
+      "scenario": "In the screen you type \"tes\", pause, then finish \"tesla\". Both requests start. The list shows the results for \"tesla\", then switches to the results for \"tes\" and stays there. Each response sets the results when it arrives. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "debounce-too-short",
+          "label": "The 300 ms delay is too short, so the request for \"tes\" should never have started."
+        },
+        {
+          "id": "batched-updates",
+          "label": "React batched the two state updates and kept the first one it received."
+        },
+        {
+          "id": "stale-response-wins",
+          "label": "The slower \"tes\" response arrived after the \"tesla\" one and overwrote it; abort the older request or ignore any response that is not for the newest query."
+        }
+      ],
+      "correctOptionId": "stale-response-wins",
+      "rereadPrompt": "Close. Re-read the order of events: both requests were sent, and nothing stops the slower, older one from setting the results when it finally arrives."
     }
   }
 ]

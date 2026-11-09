@@ -23,7 +23,7 @@ describe('company public resolvers', () => {
     const service = jasmine.createSpyObj<CompanyPublicDataService>('CompanyPublicDataService', ['loadIndex', 'loadPreview']);
     service.loadIndex.and.returnValue(index);
     service.loadPreview.and.callFake((slug) => of({
-      slug, mode: 'catalog', counts: { all: 0, coding: 0, trivia: 0, system: 0 }, samples: [],
+      slug, mode: 'catalog', counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 }, samples: [],
     }));
     TestBed.configureTestingModule({ providers: [
       { provide: CompanyPublicDataService, useValue: service },

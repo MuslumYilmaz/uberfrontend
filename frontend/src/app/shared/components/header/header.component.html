@@ -49,6 +49,15 @@
       >
         Interview Questions
       </a>
+      <a
+        *ngIf="hasPlan()"
+        class="fah-navlink fah-navlink--plan"
+        data-testid="header-company-plan"
+        routerLink="/companies/plan"
+        routerLinkActive="fah-navlink--active"
+      >
+        Your plan
+      </a>
     </div>
 
     <div class="fah-right" (click)="$event.stopPropagation()">

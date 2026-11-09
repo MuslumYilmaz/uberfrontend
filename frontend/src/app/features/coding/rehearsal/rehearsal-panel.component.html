@@ -1,0 +1,134 @@
+<section class="rehearsal" data-testid="rehearsal-panel" [attr.data-phase]="phase">
+  <header class="rehearsal__header">
+    <div class="rehearsal__header-copy">
+      <p class="rehearsal__eyebrow">Timed rehearsal</p>
+      <h2>{{ session.definition.title }}</h2>
+    </div>
+    @if (phase === 'active') {
+      <p class="rehearsal__clock" role="timer" data-testid="rehearsal-clock">{{ clock() }} left</p>
+    }
+  </header>
+
+  @if (phase === 'review') {
+    <p class="rehearsal__verdict" data-testid="rehearsal-verdict">{{ verdict() }}</p>
+  }
+  <!-- Always present, so a screen reader hears the review open once; the ticking clock stays out of it. -->
+  <p class="sr-only" role="status" data-testid="rehearsal-announcement">{{ phase === 'review' ? verdict() : '' }}</p>
+
+  @if (question(); as current) {
+    <div class="rehearsal__questions" data-testid="rehearsal-questions">
+      @if (current.entry.choices; as choices) {
+        <p class="rehearsal__part">Multiple choice: question {{ current.index + 1 }} of {{ current.total }}</p>
+        <!-- Native radios and checkboxes, so the arrow keys and screen readers work as they do everywhere. Keyed by
+             the question, so each question's options start fresh rather than keep the last one's ticks. -->
+        @for (asked of [current]; track asked.index) {
+          <fieldset class="rehearsal__choices">
+            <legend class="rehearsal__question" data-testid="rehearsal-question">
+              <fa-inline-code [text]="asked.entry.question"></fa-inline-code>
+            </legend>
+            @for (choice of choices; track $index; let i = $index) {
+              <label class="rehearsal__choice" [class.is-picked]="asked.picked.includes(i)">
+                <input [type]="asked.entry.pick === 'all' ? 'checkbox' : 'radio'" [name]="'rehearsal-choice-' + asked.index"
+                  [checked]="asked.picked.includes(i)" (change)="onChoice(asked, i, $event)" data-testid="rehearsal-choice" />
+                <fa-inline-code [text]="choice"></fa-inline-code>
+              </label>
+            }
+          </fieldset>
+        }
+        <p class="rehearsal__note">{{ current.entry.pick === 'all' ? 'Pick every option that is right.' : 'Pick one option.' }}</p>
+      } @else {
+        <p class="rehearsal__part">Short answers: question {{ current.index + 1 }} of {{ current.total }}</p>
+        <p class="rehearsal__question" id="rehearsal-question-text" data-testid="rehearsal-question">
+          <fa-inline-code [text]="current.entry.question"></fa-inline-code>
+        </p>
+        <fa-field label="Your answer" hint="A line or two, as you would say it.">
+          <span class="fa-input rehearsal__input">
+            <textarea rows="2" maxlength="400" [value]="current.answer" (input)="onAnswer($event)"
+              aria-describedby="rehearsal-question-text" data-testid="rehearsal-answer"></textarea>
+          </span>
+        </fa-field>
+      }
+      <p class="rehearsal__note" data-testid="rehearsal-question-note">{{ questionNote() }}</p>
+    </div>
+  }
+
+  <ol class="rehearsal__items" aria-label="Problems in this rehearsal">
+    @for (row of rows(); track row.path; let i = $index) {
+      <li class="rehearsal__item" [class.is-current]="row.current" [attr.data-status]="row.status"
+        data-testid="rehearsal-item">
+        <span class="rehearsal__item-label">Problem {{ i + 1 }}</span>
+        <span class="rehearsal__item-title">
+          @if (!row.visible) {
+            <span class="rehearsal__hidden">{{ hiddenNote() }}</span>
+          } @else if (row.current) {
+            <span aria-current="step">{{ row.title }}</span>
+          } @else {
+            <a [routerLink]="row.path">{{ row.title }}</a>
+          }
+        </span>
+        @if (row.result) {
+          <span class="rehearsal__result">{{ row.result }}</span>
+        }
+      </li>
+    }
+  </ol>
+
+  @if (phase === 'review' && answerReview().length) {
+    <section class="rehearsal__answers" aria-labelledby="rehearsal-answers-title" data-testid="rehearsal-answers">
+      <h3 id="rehearsal-answers-title">Questions</h3>
+      <ol class="rehearsal__answer-list">
+        @for (entry of answerReview(); track entry.path) {
+          <li class="rehearsal__answer-review" data-testid="rehearsal-answer-review">
+            <p class="rehearsal__question"><fa-inline-code [text]="entry.question"></fa-inline-code></p>
+            <!-- The spaces sit inside the labels: Angular drops a text node that holds only a space. -->
+            @if (entry.choices) {
+              <p>
+                <span class="rehearsal__label">Your answer: </span><fa-inline-code [text]="entry.pickedText || 'No answer'"></fa-inline-code>
+                @if (entry.given) {
+                  <span class="rehearsal__mark" [attr.data-right]="entry.right">{{ entry.right ? ' (right)' : ' (not right)' }}</span>
+                }
+              </p>
+              <p><span class="rehearsal__label">The right answer: </span><fa-inline-code [text]="entry.correctText ?? ''"></fa-inline-code></p>
+              <p><span class="rehearsal__label">Why: </span><fa-inline-code [text]="entry.answer"></fa-inline-code></p>
+            } @else {
+              <p><span class="rehearsal__label">Your answer:</span> {{ entry.given || 'No answer' }}</p>
+              <p><span class="rehearsal__label">A sample answer: </span><fa-inline-code [text]="entry.answer"></fa-inline-code></p>
+            }
+            <a [routerLink]="entry.path">Read the full answer</a>
+          </li>
+        }
+      </ol>
+    </section>
+  }
+
+  @if (phase === 'active') {
+    <div class="rehearsal__actions">
+      @if (question(); as current) {
+        <button faButton variant="primary" type="button" data-testid="rehearsal-question-next"
+          (click)="onNextQuestion(current)">
+          {{ current.index + 1 < current.total ? 'Next question' : 'Move on to the problems' }}
+        </button>
+        @if (current.index + 1 < current.total) {
+          <button faButton variant="ghost" type="button" data-testid="rehearsal-skip" (click)="skipToProblems.emit()">
+            Move on to the problems
+          </button>
+        }
+      } @else if (next(); as following) {
+        <a faButton variant="primary" [routerLink]="following.path" data-testid="rehearsal-next">Next problem</a>
+      }
+      <button faButton variant="ghost" type="button" data-testid="rehearsal-end" (click)="endRehearsal.emit()">
+        End the rehearsal
+      </button>
+    </div>
+  } @else {
+    <p class="rehearsal__note">
+      The editors stay read-only while this review is open, and the solutions are open. Closing the review brings back
+      your own drafts of these problems.
+    </p>
+    <div class="rehearsal__actions">
+      <button faButton variant="primary" type="button" data-testid="rehearsal-close" (click)="closeReview.emit()">
+        Close the review
+      </button>
+    </div>
+  }
+</section>

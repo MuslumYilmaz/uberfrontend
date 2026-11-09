@@ -101,7 +101,6 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
           /^\/guides\/system-design(?:\/.*)?$/,
           /^\/guides\/system-design-blueprint(?:\/.*)?$/,
           /^\/guides\/behavioral(?:\/.*)?$/,
-          /^\/companies(?:\/.*)?$/,
         ],
       };
   }

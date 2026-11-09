@@ -44,7 +44,7 @@ const criticalRouteContracts = [
     ],
     bodyTerms: [
       'frontend interview preparation platform',
-      'Start 30-day plan',
+      'Follow the 30-day plan',
       '30-day guided plan',
       'Machine Coding',
       'Choose your focus',

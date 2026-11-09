@@ -1,0 +1,503 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "input-output-two-way-pressure-v1",
+  "family": "input-output-two-way",
+  "title": "Reusable Counter Control Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "angular": "angular-input-output-two-way"
+  },
+  "rounds": [
+    {
+      "id": "parent-owns-the-value",
+      "title": "The parent owns the value",
+      "interviewerPrompt": "Build the child as a controlled component. It shows what the parent gives it and asks the parent to change, instead of keeping its own copy.",
+      "constraints": [
+        "Use `[(value)]` in the parent. The child receives `value` as an input and reports changes through `valueChange`.",
+        "The `+` button adds 1 and the `−` button removes 1. The value never goes below 0, and `−` is disabled at 0.",
+        "Do the same for `liked`: the parent owns it and uses `[(liked)]`. The Like button says `Like` or `Liked`.",
+        "Keep the starter classes `stat`, `panel` and `v`, and the button labels `increment`, `decrement` and `like`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-control-owner",
+          "name": "Round 1 · The parent and child always show the same value",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "0",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "0"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"decrement\"]",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "2",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"decrement\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "1",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"like\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "true",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-label=\"like\"]",
+              "text": "Liked"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"like\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "false",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-label=\"like\"]",
+              "text": "Like"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "changes-from-the-parent",
+      "title": "Changes from the parent",
+      "interviewerPrompt": "The parent now changes the value on its own. The child must follow, and it must report only what the user did.",
+      "constraints": [
+        "Add two parent buttons: `Set to 10` with the class `set-ten`, and `Reset` with the class `reset-value`. The child shows the new value right away.",
+        "Add a `max` input to the child and pass `[max]=\"5\"`. The `+` button is disabled at max and above it.",
+        "If the value is above `max`, show `Above limit` in an element with the class `range-warning`. Do not change the value, because the parent owns it.",
+        "Count `valueChange` events in the parent and show the number in an element with the class `emit-count`. The `+` and `−` buttons add 1. `Set to 10` and `Reset` add nothing."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-control-parent-changes",
+          "name": "Round 2 · The child follows the parent and reports only user actions",
+          "steps": [
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".set-ten"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "10",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "10"
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".range-warning",
+              "text": "Above limit"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"increment\"]",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"decrement\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "9",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "2"
+            },
+            {
+              "type": "click",
+              "selector": ".reset-value"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "0",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "0"
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "2"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".range-warning",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "5",
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"increment\"]",
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "work-inside-a-form",
+      "title": "Work inside a form",
+      "interviewerPrompt": "Another team wants to use this control inside a reactive form, without writing `[(value)]`.",
+      "constraints": [
+        "Make the child a form control by implementing `ControlValueAccessor` and providing `NG_VALUE_ACCESSOR`. The first child with `[(value)]` keeps working as before.",
+        "Add a second child after the first with `[formControl]=\"quantity\"`, where `quantity` starts at 3. Show its value in an element with the class `form-value`.",
+        "Show whether the control was touched, as `true` or `false`, in an element with the class `form-touched`. The first click on `+` or `−` marks it as touched.",
+        "Add a parent button with the class `reset-control` that calls `quantity.setValue(0)`, and one with the class `disable-control` that calls `quantity.disable()`. A disabled control disables `+` and `−`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-control-form",
+          "name": "Round 3 · The same control works in a reactive form",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "3",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-value",
+              "text": "3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-touched",
+              "text": "false"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"increment\"]",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "4",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-value",
+              "text": "4"
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-touched",
+              "text": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "0",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reset-control"
+            },
+            {
+              "type": "expectText",
+              "selector": ".panel .v",
+              "text": "0",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-value",
+              "text": "0"
+            },
+            {
+              "type": "click",
+              "selector": ".disable-control"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"increment\"]",
+              "disabled": true,
+              "index": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"decrement\"]",
+              "disabled": true,
+              "index": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-and-names",
+      "title": "Keyboard and names",
+      "interviewerPrompt": "Finish with keyboard and screen reader support, so the control works without a mouse and each copy has its own name.",
+      "constraints": [
+        "Add a `label` input. Pass `Tickets` to the first child and `Quantity` to the second.",
+        "On the element with the class `v` inside the panel, set `role=\"spinbutton\"`, `tabindex=\"0\"`, `aria-label`, `aria-valuenow` and `aria-valuemin`. Set `aria-valuemax` when `max` is set.",
+        "`ArrowUp` and `ArrowDown` on that element change the value the same way the buttons do, and they respect the same limits.",
+        "A disabled control ignores the keyboard too."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-control-keyboard",
+          "name": "Round 4 · The keyboard follows the same rules as the buttons",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "role",
+              "expected": "spinbutton",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "tabindex",
+              "expected": "0",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-label",
+              "expected": "Tickets",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-valuenow",
+              "expected": "0",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-valuemin",
+              "expected": "0",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-valuemax",
+              "expected": "5",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".panel .v",
+              "key": "ArrowUp",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "1",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-valuenow",
+              "expected": "1",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "1"
+            },
+            {
+              "type": "key",
+              "selector": ".panel .v",
+              "key": "ArrowDown",
+              "index": 0
+            },
+            {
+              "type": "key",
+              "selector": ".panel .v",
+              "key": "ArrowDown",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".stat .v",
+              "text": "0",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".emit-count",
+              "text": "2"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-label",
+              "expected": "Quantity",
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".panel .v",
+              "attribute": "aria-valuenow",
+              "expected": "3",
+              "index": 1
+            },
+            {
+              "type": "key",
+              "selector": ".panel .v",
+              "key": "ArrowUp",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-value",
+              "text": "4"
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-touched",
+              "text": "true"
+            },
+            {
+              "type": "click",
+              "selector": ".disable-control"
+            },
+            {
+              "type": "key",
+              "selector": ".panel .v",
+              "key": "ArrowUp",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".form-value",
+              "text": "4"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You built a control other teams can reuse",
+    "summary": "You started with a parent and a child, and ended with one control that works with two-way binding, inside a reactive form and from the keyboard. The interview signal is keeping one owner for the value, whichever way it is used.",
+    "takeaways": [
+      "The parent owns the value. The child shows it and asks for changes.",
+      "Report only what the user did, or parent updates turn into feedback loops.",
+      "`ControlValueAccessor` is what lets a custom component join a form.",
+      "Send buttons and keys through one method, so every limit applies to both."
+    ],
+    "frameworkNotes": {
+      "angular": "A `value` input with a `valueChange` output is what makes `[(value)]` work, and `model()` gives the same contract with signals. Do not change an input from inside the child, and do not emit during change detection."
+    }
+  },
+  "solutionAssets": {
+    "angular": "assets/sb/angular/solution/angular-input-output-two-way-pressure-solution.v1.json"
+  }
+}

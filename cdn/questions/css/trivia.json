@@ -231,7 +231,7 @@
     "importance": 3,
     "description": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
     "seo": {
-      "title": "CSS font-family in production: font stacks, fallback pitfalls, and cross-device readability",
+      "title": "CSS font-family: font stacks, fallback pitfalls, and readability",
       "description": "font-family is really about fallback strategy, glyph coverage, and avoiding production typography bugs when preferred fonts fail."
     },
     "answer": {
@@ -1454,7 +1454,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "display:flex in production: axis mental model, child constraints, and layout pitfalls",
+      "title": "display:flex in production: axis model, child constraints, pitfalls",
       "description": "Flexbox is powerful, but the common mistakes are misunderstanding axes, direct-child behavior, shrinking, and overflow under real content."
     },
     "incidentCard": {
@@ -1575,7 +1575,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "CSS z-index debugging: stacking contexts, layering bugs, and why bigger numbers fail",
+      "title": "CSS z-index debugging: stacking contexts and why bigger numbers fail",
       "description": "z-index only works inside the right stacking context. The real debug skill is spotting which ancestor created the layer boundary."
     },
     "incidentCard": {
@@ -1807,7 +1807,7 @@
     ],
     "updatedAt": "2026-04-05",
     "seo": {
-      "title": "CSS float and clear in legacy layouts: wrap behavior, clearfix pitfalls, and when not to use them",
+      "title": "CSS float and clear: wrap behavior, clearfix, when not to use them",
       "description": "float and clear still appear in production legacy CSS. The practical issues are collapsed parents, odd wrapping, and knowing when flexbox or grid should replace them."
     },
     "incidentCard": {

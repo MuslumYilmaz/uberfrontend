@@ -323,6 +323,15 @@
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },
+  "javascript/coding/js-longest-substring-without-repeating": {
+    "summary": "Return the length of the longest run of consecutive characters in which no character repeats, in one pass over the string.",
+    "learningOutcomes": [
+      "Keep a window of characters with no repeat as the scan moves on.",
+      "Move the window's start past an earlier copy, never backwards.",
+      "Count spaces and symbols, and handle empty and very long input."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
   "javascript/coding/js-merge-sorted-arrays": {
     "summary": "Merge two sorted arrays into one sorted result without sorting the combined output.",
     "learningOutcomes": [
@@ -414,11 +423,11 @@
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },
   "javascript/coding/js-maze-path": {
-    "summary": "Find a valid route through a grid maze while respecting blocked cells and bounded movement.",
+    "summary": "Decide whether a path connects the start and end cells of a grid maze while respecting walls and bounded movement.",
     "learningOutcomes": [
       "Represent visited cells so the search cannot loop indefinitely.",
       "Explore only valid neighboring cells within the grid.",
-      "Return a complete route or a stable no-route result."
+      "Return true when the end is reachable and false when it is not."
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },

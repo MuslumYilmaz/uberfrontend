@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "3be9ad63bc7d42a0f4536b769a485dceb75a120161b9678dafa19291367c0df2"
+      "sha256": "4373094a486770411e3906355da068ef4d9b4df42960b10f573127af8107ee4d"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "9c8851a506579483641709e8988933c45b35ad852f54ce8c1e8d4e368e95611d"
+      "sha256": "39d85a177fa3ed0409fb81b76a99323f6e03f1661c80663d602e48bece439711"
     }
   },
-  "contentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
-  "definitionHash": "a994a816b873e7c7cf7254417e7a82140f375425e0fd11082d639d0b5126e8d1",
+  "contentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
+  "definitionHash": "21872caf5b519c6620bbb5c379314031ad59ac650dba88734dbf9d3d2fa92792",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -22,13 +22,18 @@
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the js-concurrency-map-limit, js-group-by, react-debounced-search and react-pagination-table source questions gained company tags and public source lists. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-15 source-pin maintenance: registryContentHash refreshed after the public source lists on the pinned source questions gained a company field. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-10-17 source-pin maintenance: registryContentHash refreshed after the js-debounce, js-group-by, js-once, js-unique-array, react-contact-form-starter, react-debounced-search and react-shopping-cart source questions gained company tags and public source lists for the European company pages. Public variant content is unchanged apart from contentHash; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval."
+      "2026-10-22 source-pin maintenance: registryContentHash refreshed after the js-unique-array, js-debounce and react-debounced-search source questions had Taro cities and placeholder months removed from their public source labels. Public variant content is unchanged apart from that label text; no new approval.",
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the nested-comments and contact-form source questions gained a Pressure Mode reference and the React nested-comments starter stopped rebuilding its reply input on every letter. That starter is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
+    "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "3a29dcbcebbc6905e8b1f6a8a5a235e3ad58255a8caef42952a6c009591b8dce",
+  "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -67,13 +72,13 @@
       "revision": 1
     },
     {
-      "contentHash": "22605ebdb734033a820a7d8be6916bb691a02efa6750df095d1b999bf9a7ab96",
+      "contentHash": "654765839d01289e96b3077699702c70a277daa0470ff4d1407509846ec62ff1",
       "enabled": true,
       "id": "int-code-angular-mid-multi-step-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "84118ae8cbd1cce6204a3388544fd10b2f7ac50d61aa5fdb9478fe1258472f23",
+      "contentHash": "41cec26d76848ee9eddbc23aa9dfd4fa951e6ccb87991b0b8df7efdd566c8b44",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "revision": 1
@@ -103,7 +108,7 @@
       "revision": 1
     },
     {
-      "contentHash": "7d1d298b8b3226918aa6016fa0c848b39f42bee1cb2fb1d96053959ad753f96b",
+      "contentHash": "07574fa4e7d39f8ee8ca58f4489249175708acf7690297c58120c5781c5d9e9e",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "revision": 1
@@ -115,13 +120,13 @@
       "revision": 1
     },
     {
-      "contentHash": "ad7053bcc1d4390d866052f4a8451ff95554d8395b77102cbd0434e42b66d316",
+      "contentHash": "bbdeeb3ca06aa3961b20c48abc1ab22be51cd6e03da0757c18c6e1153f9c0870",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "revision": 1
     },
     {
-      "contentHash": "bd529822fa9573af9320418361a48114ef09de629e9a5fbe09e52308f78b0455",
+      "contentHash": "bf076a14611003511894b29d9216d8919c79ab95ed9f1db5338c8644140c591e",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "revision": 1
@@ -247,13 +252,13 @@
       "revision": 1
     },
     {
-      "contentHash": "1b4fd9d66cf3d6d6ad3e36971a6e0b60467b031fe27d8d0082dfae38515405fc",
+      "contentHash": "34adde6b1f3d7a2953981a4c233306534b2db7461cf752e804cc3a70eab3616b",
       "enabled": true,
       "id": "int-code-react-mid-multi-step-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "9052154fd5f82bc14b24a623f0b026717ded8021aea3c0323e8be23fb4d99122",
+      "contentHash": "fb5b766311f41d2fe44a96e38a4d0c03f2fffc6178366450704bb612d144be29",
       "enabled": true,
       "id": "int-code-react-mid-nested-checkboxes-v1",
       "revision": 1
@@ -283,7 +288,7 @@
       "revision": 1
     },
     {
-      "contentHash": "e48855a40953a640219a9b267bf77b90c0f33ce4ad83e3c4ea665e0bea61bac9",
+      "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "revision": 1
@@ -295,13 +300,13 @@
       "revision": 1
     },
     {
-      "contentHash": "d28d48e34869935679e5361d8f10131f6fe509fe25c35deaa3f7dce7297f2cc1",
+      "contentHash": "4a0d154eb6e36fda74134e092b388f48ace439fb3819e9693ea19b91fd6ba0e1",
       "enabled": true,
       "id": "int-code-react-senior-nested-comments-v1",
       "revision": 1
     },
     {
-      "contentHash": "8217d15cf01e71357c86c4ba04102d5fdc64ab11b8bce652ee1417ad25a46421",
+      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "revision": 1
@@ -337,13 +342,13 @@
       "revision": 1
     },
     {
-      "contentHash": "95585f9b27f994c78e35d121c8e6ba3b5dc3f448b2e470116d0fc0abc582b0af",
+      "contentHash": "c19e0b8c590a8c8341af87417f0a6475928457bf515ccbc2490fbc544c02d2de",
       "enabled": true,
       "id": "int-code-vue-mid-multi-step-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "84316b60221181903c3accc25ca754d68329e648a0b420f6fc3f5c12c9d39896",
+      "contentHash": "2a61348b980558c00ea034e0bfcc95f7585a7afc6ecc5dab1483e5abc5af917b",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "revision": 1
@@ -373,7 +378,7 @@
       "revision": 1
     },
     {
-      "contentHash": "2ce356333cbbc1f0e9f8a5419a3679e100a193a56a2c7becea0557366f23218b",
+      "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
       "enabled": true,
       "id": "int-code-vue-senior-contact-form-v1",
       "revision": 1
@@ -385,13 +390,13 @@
       "revision": 1
     },
     {
-      "contentHash": "12d95fd90633a3f3f13a54bba4ec058fbefc8bd34048c3aeb0527ef84d97cab5",
+      "contentHash": "38506ea7971d3ca1a1eef5518551661b55ccecfb9f079d1321e3ed155e8df284",
       "enabled": true,
       "id": "int-code-vue-senior-nested-comments-v1",
       "revision": 1
     },
     {
-      "contentHash": "a194dcdd79f03241e9db8fb95cff276b2f1a1f1c2b14eb4b07bf88dc269d0cc3",
+      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "revision": 1

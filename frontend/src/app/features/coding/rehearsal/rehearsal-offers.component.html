@@ -1,0 +1,19 @@
+<ul class="rehearsal-offers">
+  @for (offer of offers; track offer.id) {
+    <li class="rehearsal-offer" data-testid="rehearsal-entry">
+      <div class="rehearsal-offer__copy">
+        <h3>{{ heading(offer) }}</h3>
+        <details>
+          <summary>What it covers</summary>
+          <p>{{ offer.summary }}</p>
+        </details>
+      </div>
+      @if (canStart) {
+        <button type="button" faButton variant="primary" size="sm" [attr.aria-label]="'Start the ' + offer.title + ' rehearsal'"
+          data-testid="rehearsal-start" (click)="start.emit(offer)">
+          Start
+        </button>
+      }
+    </li>
+  }
+</ul>

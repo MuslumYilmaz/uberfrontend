@@ -241,5 +241,179 @@
             "note": "The merge request in this account was a small Vue app with an API call; the candidate cached the data in the component and cut unnecessary API calls. This debug drill practises stopping duplicate requests, not the reported app."
           }
         ]
+    },
+    {
+        "id": "js-debug-bug-squash-invoices",
+        "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
+        "difficulty": "hard",
+        "importance": 4,
+        "updatedAt": "2026-11-07",
+        "tags": [
+            "debugging",
+            "modules",
+            "numbers",
+            "immutability",
+            "async",
+            "promises",
+            "error-handling",
+            "testing"
+        ],
+        "description": {
+            "text": "You joined the team that owns a small invoicing library: five files under `src/` you have not seen before. Support forwarded four reports. A $19.99 notebook is billed as $19.98. A $5.00 coupon wipes out the whole invoice. After an invoice is built, the cart it came from lists its items in a different order. And after a timeout, the payment service logged two charges for one invoice. Use the file tabs above the editor to read the code, find the cause of each report, and fix it without renaming an exported function or changing its arguments; the tests show what correct looks like. Accounts of the Stripe frontend onsite describe a bug squash round of this shape: finding and fixing bugs in a project you have not seen before."
+        },
+        "starterCode": "// @file src/currency.js\n/**\n * Amounts move through this library in minor units: cents for USD and EUR, whole yen for JPY.\n * The exponent is how many decimal places a currency's major unit has.\n */\nexport const CURRENCIES = {\n  usd: { exponent: 2, symbol: '$' },\n  eur: { exponent: 2, symbol: '€' },\n  jpy: { exponent: 0, symbol: '¥' },\n};\n\nfunction currencyOf(code) {\n  const currency = CURRENCIES[code];\n  if (!currency) throw new Error(`Unsupported currency: ${code}`);\n  return currency;\n}\n\n/** Converts an amount a customer typed, like 19.99, into minor units. */\nexport function toMinorUnits(amount, code) {\n  const { exponent } = currencyOf(code);\n  return Math.floor(amount * 10 ** exponent);\n}\n\n/** Formats minor units for display: 1999 in USD reads \"$19.99\". */\nexport function formatAmount(minor, code) {\n  const { exponent, symbol } = currencyOf(code);\n  return `${symbol}${(minor / 10 ** exponent).toFixed(exponent)}`;\n}\n\n// @file src/line-items.js\n/** A line item is { name, unitAmount, quantity }, with unitAmount in minor units. */\n\nexport function lineTotal(item) {\n  return item.unitAmount * item.quantity;\n}\n\nexport function subtotal(items) {\n  return items.reduce((sum, item) => sum + lineTotal(item), 0);\n}\n\n/** The lines an invoice lists, largest first, so the biggest charge reads first. */\nexport function linesByAmount(items) {\n  return items.sort((a, b) => lineTotal(b) - lineTotal(a));\n}\n\n// @file src/ids.js\nlet sequence = 0;\n\n/**\n * A new id on every call, such as \"inv_mh4k2x_1\". An idempotency key is an id too: the API treats requests\n * that share a key as one request, so a caller creates the key once and sends it on every attempt.\n */\nexport function createId(prefix) {\n  sequence += 1;\n  return `${prefix}_${Date.now().toString(36)}_${sequence}`;\n}\n\n// @file src/invoice.js\nimport { formatAmount, toMinorUnits } from './currency.js';\nimport { createId } from './ids.js';\nimport { lineTotal, linesByAmount, subtotal } from './line-items.js';\n\n/**\n * Builds an invoice from line items. A coupon is { percentOff } from 0 to 100, or { amountOff } in minor units\n * of the invoice currency.\n */\nexport function buildInvoice({ items, currency, coupon = null }) {\n  const amount = subtotal(items);\n  const discount = discountFor(coupon, amount, currency);\n  const total = Math.max(0, amount - discount);\n  return {\n    id: createId('inv'),\n    currency,\n    lines: linesByAmount(items).map((item) => ({\n      name: item.name,\n      quantity: item.quantity,\n      amount: lineTotal(item),\n    })),\n    subtotal: amount,\n    discount,\n    total,\n    formattedTotal: formatAmount(total, currency),\n  };\n}\n\nfunction discountFor(coupon, amount, currency) {\n  if (!coupon) return 0;\n  if (coupon.percentOff) return Math.round((amount * coupon.percentOff) / 100);\n  return Math.min(amount, toMinorUnits(coupon.amountOff, currency));\n}\n\n// @file src/payments.js\nimport { createId } from './ids.js';\n\n// Network trouble is worth another try; a declined card or a bad request is not.\nconst RETRYABLE = new Set(['timeout', 'network_error', 'rate_limited']);\n\n/**\n * Charges an invoice through the API client and retries the failures worth retrying. The client's createCharge\n * resolves to the charge, or rejects with an error that has a code.\n */\nexport async function payInvoice(client, invoice, { retries = 2 } = {}) {\n  for (let attempt = 0; ; attempt += 1) {\n    try {\n      return await client.createCharge({\n        amount: invoice.total,\n        currency: invoice.currency,\n        invoiceId: invoice.id,\n        idempotencyKey: createId('pay'),\n      });\n    } catch (error) {\n      if (!RETRYABLE.has(error?.code) || attempt >= retries) throw error;\n    }\n  }\n}\n",
+        "tests": "import { formatAmount, toMinorUnits } from './src/currency.js';\nimport { buildInvoice } from './src/invoice.js';\nimport { payInvoice } from './src/payments.js';\n\nconst cart = () => [\n  { name: 'Pen', unitAmount: 250, quantity: 4 },\n  { name: 'Notebook', unitAmount: 1999, quantity: 1 },\n];\n\ndescribe('currency', () => {\n  test('converts a typed amount to minor units without losing a cent', () => {\n    expect(toMinorUnits(19.99, 'usd')).toBe(1999);\n    expect(toMinorUnits(0.29, 'eur')).toBe(29);\n  });\n\n  test('keeps zero-decimal currencies whole', () => {\n    expect(toMinorUnits(500, 'jpy')).toBe(500);\n    expect(formatAmount(500, 'jpy')).toBe('¥500');\n  });\n});\n\ndescribe('invoice', () => {\n  test('takes an amount-off coupon in minor units', () => {\n    const invoice = buildInvoice({ items: cart(), currency: 'usd', coupon: { amountOff: 500 } });\n    expect(invoice.subtotal).toBe(2999);\n    expect(invoice.discount).toBe(500);\n    expect(invoice.total).toBe(2499);\n    expect(invoice.formattedTotal).toBe('$24.99');\n  });\n\n  test('lists lines largest first without reordering the cart it was given', () => {\n    const items = cart();\n    const invoice = buildInvoice({ items, currency: 'usd' });\n    expect(invoice.lines.map((line) => line.name)).toEqual(['Notebook', 'Pen']);\n    expect(items.map((item) => item.name)).toEqual(['Pen', 'Notebook']);\n  });\n});\n\ndescribe('payments', () => {\n  // The first attempt fails with the given code and the next one succeeds; every request is recorded.\n  const flakyClient = (code) => {\n    const requests = [];\n    return {\n      requests,\n      async createCharge(request) {\n        requests.push(request);\n        if (requests.length === 1) throw Object.assign(new Error(code), { code });\n        return { id: 'charge_1', status: 'succeeded', amount: request.amount };\n      },\n    };\n  };\n\n  test('retries a timeout with the same idempotency key', async () => {\n    const client = flakyClient('timeout');\n    const charge = await payInvoice(client, buildInvoice({ items: cart(), currency: 'usd' }));\n    expect(charge.status).toBe('succeeded');\n    expect(client.requests.length).toBe(2);\n    expect(client.requests[1].idempotencyKey).toBe(client.requests[0].idempotencyKey);\n  });\n\n  test('does not retry a declined card', async () => {\n    const client = flakyClient('card_declined');\n    await expect(payInvoice(client, buildInvoice({ items: cart(), currency: 'usd' }))).rejects.toThrow('card_declined');\n    expect(client.requests.length).toBe(1);\n  });\n});\n",
+        "solution": "// @file src/currency.js\n/**\n * Amounts move through this library in minor units: cents for USD and EUR, whole yen for JPY.\n * The exponent is how many decimal places a currency's major unit has.\n */\nexport const CURRENCIES = {\n  usd: { exponent: 2, symbol: '$' },\n  eur: { exponent: 2, symbol: '€' },\n  jpy: { exponent: 0, symbol: '¥' },\n};\n\nfunction currencyOf(code) {\n  const currency = CURRENCIES[code];\n  if (!currency) throw new Error(`Unsupported currency: ${code}`);\n  return currency;\n}\n\n/** Converts an amount a customer typed, like 19.99, into minor units. */\nexport function toMinorUnits(amount, code) {\n  const { exponent } = currencyOf(code);\n  // 19.99 * 100 is 1998.9999999999998 in floating point, so round to the nearest minor unit, never down.\n  return Math.round(amount * 10 ** exponent);\n}\n\n/** Formats minor units for display: 1999 in USD reads \"$19.99\". */\nexport function formatAmount(minor, code) {\n  const { exponent, symbol } = currencyOf(code);\n  return `${symbol}${(minor / 10 ** exponent).toFixed(exponent)}`;\n}\n\n// @file src/line-items.js\n/** A line item is { name, unitAmount, quantity }, with unitAmount in minor units. */\n\nexport function lineTotal(item) {\n  return item.unitAmount * item.quantity;\n}\n\nexport function subtotal(items) {\n  return items.reduce((sum, item) => sum + lineTotal(item), 0);\n}\n\n/** The lines an invoice lists, largest first, so the biggest charge reads first. */\nexport function linesByAmount(items) {\n  // sort() reorders the array it is called on, which here is the caller's cart; sort a copy.\n  return [...items].sort((a, b) => lineTotal(b) - lineTotal(a));\n}\n\n// @file src/ids.js\nlet sequence = 0;\n\n/**\n * A new id on every call, such as \"inv_mh4k2x_1\". An idempotency key is an id too: the API treats requests\n * that share a key as one request, so a caller creates the key once and sends it on every attempt.\n */\nexport function createId(prefix) {\n  sequence += 1;\n  return `${prefix}_${Date.now().toString(36)}_${sequence}`;\n}\n\n// @file src/invoice.js\nimport { formatAmount } from './currency.js';\nimport { createId } from './ids.js';\nimport { lineTotal, linesByAmount, subtotal } from './line-items.js';\n\n/**\n * Builds an invoice from line items. A coupon is { percentOff } from 0 to 100, or { amountOff } in minor units\n * of the invoice currency.\n */\nexport function buildInvoice({ items, currency, coupon = null }) {\n  const amount = subtotal(items);\n  const discount = discountFor(coupon, amount);\n  const total = Math.max(0, amount - discount);\n  return {\n    id: createId('inv'),\n    currency,\n    lines: linesByAmount(items).map((item) => ({\n      name: item.name,\n      quantity: item.quantity,\n      amount: lineTotal(item),\n    })),\n    subtotal: amount,\n    discount,\n    total,\n    formattedTotal: formatAmount(total, currency),\n  };\n}\n\nfunction discountFor(coupon, amount) {\n  if (!coupon) return 0;\n  if (coupon.percentOff) return Math.round((amount * coupon.percentOff) / 100);\n  // amountOff is already in minor units; converting it again made a 500-cent coupon worth 50,000.\n  return Math.min(amount, coupon.amountOff ?? 0);\n}\n\n// @file src/payments.js\nimport { createId } from './ids.js';\n\n// Network trouble is worth another try; a declined card or a bad request is not.\nconst RETRYABLE = new Set(['timeout', 'network_error', 'rate_limited']);\n\n/**\n * Charges an invoice through the API client and retries the failures worth retrying. The client's createCharge\n * resolves to the charge, or rejects with an error that has a code.\n */\nexport async function payInvoice(client, invoice, { retries = 2 } = {}) {\n  // One key for every attempt: a retry after a timeout must not become a second charge.\n  const idempotencyKey = createId('pay');\n  for (let attempt = 0; ; attempt += 1) {\n    try {\n      return await client.createCharge({\n        amount: invoice.total,\n        currency: invoice.currency,\n        invoiceId: invoice.id,\n        idempotencyKey,\n      });\n    } catch (error) {\n      if (!RETRYABLE.has(error?.code) || attempt >= retries) throw error;\n    }\n  }\n}\n",
+        "solutionBlock": {
+            "overview": "Each report traces to one file, and no fix renames an exported function or changes its arguments. Follow each symptom down its call path: the $19.98 bill runs through `toMinorUnits`, the vanished invoice through `discountFor`, the reordered cart through `linesByAmount`, and the double charge through `payInvoice`. The doc comments state the contracts the bugs break: amounts are minor units, and one idempotency key covers every attempt at a payment.",
+            "approaches": [
+                {
+                    "title": "Follow each report to its cause",
+                    "prose": "1. **The lost cent** (`src/currency.js`): `19.99 * 100` is `1998.9999999999998` in floating point, and `Math.floor` drops it to 1998. Round to the nearest minor unit with `Math.round`; the yen test guards against hard-coding 100.\n2. **The vanishing invoice** (`src/invoice.js`): `amountOff` is already in minor units, as the comment above `buildInvoice` says, but `discountFor` converts it again, so a 500-cent coupon is worth 50,000 and the total clamps to 0. Use `amountOff` as it is.\n3. **The reordered cart** (`src/line-items.js`): `items.sort()` sorts the caller's array in place, so building an invoice reorders the cart. Sort a copy with `[...items].sort(...)`.\n4. **The double charge** (`src/payments.js`): `createId('pay')` runs inside the retry loop, so each attempt sends a new idempotency key and the API cannot tell a retry from a new charge. Create the key once, before the loop. The declined-card test guards the other half: a decline is an answer, not a network failure, so it is not retried.\n\nIn the interview, say which report you take first and why, reproduce it with the failing test before you change code, and keep each fix in the one file that causes it.",
+                    "codeJs": "// @file src/currency.js\n/**\n * Amounts move through this library in minor units: cents for USD and EUR, whole yen for JPY.\n * The exponent is how many decimal places a currency's major unit has.\n */\nexport const CURRENCIES = {\n  usd: { exponent: 2, symbol: '$' },\n  eur: { exponent: 2, symbol: '€' },\n  jpy: { exponent: 0, symbol: '¥' },\n};\n\nfunction currencyOf(code) {\n  const currency = CURRENCIES[code];\n  if (!currency) throw new Error(`Unsupported currency: ${code}`);\n  return currency;\n}\n\n/** Converts an amount a customer typed, like 19.99, into minor units. */\nexport function toMinorUnits(amount, code) {\n  const { exponent } = currencyOf(code);\n  // 19.99 * 100 is 1998.9999999999998 in floating point, so round to the nearest minor unit, never down.\n  return Math.round(amount * 10 ** exponent);\n}\n\n/** Formats minor units for display: 1999 in USD reads \"$19.99\". */\nexport function formatAmount(minor, code) {\n  const { exponent, symbol } = currencyOf(code);\n  return `${symbol}${(minor / 10 ** exponent).toFixed(exponent)}`;\n}\n\n// @file src/line-items.js\n/** A line item is { name, unitAmount, quantity }, with unitAmount in minor units. */\n\nexport function lineTotal(item) {\n  return item.unitAmount * item.quantity;\n}\n\nexport function subtotal(items) {\n  return items.reduce((sum, item) => sum + lineTotal(item), 0);\n}\n\n/** The lines an invoice lists, largest first, so the biggest charge reads first. */\nexport function linesByAmount(items) {\n  // sort() reorders the array it is called on, which here is the caller's cart; sort a copy.\n  return [...items].sort((a, b) => lineTotal(b) - lineTotal(a));\n}\n\n// @file src/ids.js\nlet sequence = 0;\n\n/**\n * A new id on every call, such as \"inv_mh4k2x_1\". An idempotency key is an id too: the API treats requests\n * that share a key as one request, so a caller creates the key once and sends it on every attempt.\n */\nexport function createId(prefix) {\n  sequence += 1;\n  return `${prefix}_${Date.now().toString(36)}_${sequence}`;\n}\n\n// @file src/invoice.js\nimport { formatAmount } from './currency.js';\nimport { createId } from './ids.js';\nimport { lineTotal, linesByAmount, subtotal } from './line-items.js';\n\n/**\n * Builds an invoice from line items. A coupon is { percentOff } from 0 to 100, or { amountOff } in minor units\n * of the invoice currency.\n */\nexport function buildInvoice({ items, currency, coupon = null }) {\n  const amount = subtotal(items);\n  const discount = discountFor(coupon, amount);\n  const total = Math.max(0, amount - discount);\n  return {\n    id: createId('inv'),\n    currency,\n    lines: linesByAmount(items).map((item) => ({\n      name: item.name,\n      quantity: item.quantity,\n      amount: lineTotal(item),\n    })),\n    subtotal: amount,\n    discount,\n    total,\n    formattedTotal: formatAmount(total, currency),\n  };\n}\n\nfunction discountFor(coupon, amount) {\n  if (!coupon) return 0;\n  if (coupon.percentOff) return Math.round((amount * coupon.percentOff) / 100);\n  // amountOff is already in minor units; converting it again made a 500-cent coupon worth 50,000.\n  return Math.min(amount, coupon.amountOff ?? 0);\n}\n\n// @file src/payments.js\nimport { createId } from './ids.js';\n\n// Network trouble is worth another try; a declined card or a bad request is not.\nconst RETRYABLE = new Set(['timeout', 'network_error', 'rate_limited']);\n\n/**\n * Charges an invoice through the API client and retries the failures worth retrying. The client's createCharge\n * resolves to the charge, or rejects with an error that has a code.\n */\nexport async function payInvoice(client, invoice, { retries = 2 } = {}) {\n  // One key for every attempt: a retry after a timeout must not become a second charge.\n  const idempotencyKey = createId('pay');\n  for (let attempt = 0; ; attempt += 1) {\n    try {\n      return await client.createCharge({\n        amount: invoice.total,\n        currency: invoice.currency,\n        invoiceId: invoice.id,\n        idempotencyKey,\n      });\n    } catch (error) {\n      if (!RETRYABLE.has(error?.code) || attempt >= retries) throw error;\n    }\n  }\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Rounding money only for display, after a lost cent is already in the total.",
+                    "Dividing the coupon by 100 in `buildInvoice` instead of removing the second conversion.",
+                    "Copying the cart in `buildInvoice` and leaving `linesByAmount` to reorder its next caller's array.",
+                    "Retrying every error: retrying a declined card changes nothing and hides the decline."
+                ],
+                "techniques": [
+                    "Work from the symptom to the call path to the contract before you touch code.",
+                    "Keep money in integer minor units and convert once, where it enters.",
+                    "Sort a copy, or use `toSorted()`, on data you do not own.",
+                    "Create one idempotency key per operation and send it on every retry."
+                ]
+            }
+        },
+        "access": "premium",
+        "previewSample": {
+            "label": "One of the four reports from support",
+            "quote": "A $5.00 coupon wipes out the whole invoice.",
+            "note": "The repo is five small files you have not seen before: currency, line items, ids, invoice and payments. Six tests show what correct looks like."
+        },
+        "premiumPreview": {
+            "summary": "Five files you have not seen and four bug reports from support: find the cause of each in a small invoicing repo, fix it without changing the public functions, and make the tests pass.",
+            "learningOutcomes": [
+                "Turn a support report into the line of code that causes it.",
+                "Keep money exact in minor units, from the amount a customer types to the invoice total.",
+                "Protect data a function does not own.",
+                "Make retries safe in a payments client, idempotency keys included."
+            ],
+            "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+        },
+        "companies": [
+            "stripe"
+        ],
+        "sources": [
+            {
+                "label": "Taro: Stripe frontend engineer interview, Barcelona, 2023",
+                "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-engineer-barcelona-october-1-2023-no-offer-neutral-ceb407e7/",
+                "company": "stripe",
+                "publisher": "Taro",
+                "date": "2023-10",
+                "note": "One self-reported account lists the onsite stages, among them \"Bug finding within an unknown project\" and an integration of two provided tools. This task practises the bug finding in a small JavaScript repo; the code, the bugs and the tests are ours."
+            },
+            {
+                "label": "Taro: Stripe front end developer interview, India, 2022",
+                "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/front-end-developer-india-november-15-2022-no-offer-positive-f4ea85cd/",
+                "company": "stripe",
+                "publisher": "Taro",
+                "date": "2022-11",
+                "note": "One self-reported account says \"The bug bash and integration rounds were the hardest\" of the loop."
+            },
+            {
+                "label": "Blind: Stripe frontend onsite rounds, 2024",
+                "url": "https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a",
+                "company": "stripe",
+                "publisher": "Blind",
+                "date": "2024-11",
+                "note": "A post lists the onsite rounds a recruiter shared, with the bug squash second; a commenter got a hiring manager interview in its place."
+            },
+            {
+                "label": "Taro: Stripe frontend developer interview, Barcelona, 2025",
+                "url": "https://www.jointaro.com/interviews/companies/stripe/experiences/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/",
+                "company": "stripe",
+                "publisher": "Taro",
+                "date": "2025-03",
+                "note": "One account, written in Spanish as advice, describes four onsite rounds of 45 to 60 minutes that cover bug fixing, deployment, testing and CI/CD."
+            }
+        ]
+    },
+    {
+        "id": "js-debug-intern-budget-summary",
+        "title": "Case: Find the Bug in an Intern's Budget Summary",
+        "seo": {
+            "h1IntentLabel": "Find the bug in an intern's budget summary"
+        },
+        "difficulty": "intermediate",
+        "importance": 3,
+        "updatedAt": "2026-11-09",
+        "tags": [
+            "debugging",
+            "numbers",
+            "testing"
+        ],
+        "description": {
+            "text": "Capital One's Power Day case, as a 2024 senior account describes it: find the bug in a budgeting program written by an intern without coding the fix. This page runs the case in that order. Start it to work an example by hand, mark the lines you would change and say why while the code stays read-only, then compare with a sample answer. After that the workspace runs, and its tests check your fix.\n\nThe function behind the household dashboard summarizes one month. It turns each expense into a monthly amount: a monthly one as it is, a weekly one 52 times a year, a yearly one once. It rounds each monthly amount to cents and adds them up by category. It reports what was spent, what is left of the income and the savings rate as a whole percentage of the income, which is 0 for a month without income. And it flags every category whose monthly total goes over its limit, a limit of 0 included."
+        },
+        "starterCode": "// Monthly budget summary for the household dashboard.\n// Written by our summer intern; a few users say the numbers look off.\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totals = {};\n  for (let i = 0; i < expenses.length; i++) {\n    const { category, amount, frequency } = expenses[i];\n    let monthly = amount;\n    if (frequency === 'weekly') monthly = amount * 4;\n    if (frequency === 'yearly') monthly = amount / 12;\n    totals[category] = (totals[category] || 0) + monthly;\n  }\n\n  let spent = 0;\n  const overLimit = [];\n  for (const category in totals) {\n    spent += totals[category];\n    if (limits[category] && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remaining = monthlyIncome - spent;\n  const savingsRate = Math.round((remaining / monthlyIncome) * 100);\n  return { totals, spent, remaining, savingsRate, overLimit };\n}\n",
+        "tests": "import summarizeBudget from './summarizeBudget';\n\nconst expenses = [\n  { category: 'rent', amount: 1500, frequency: 'monthly' },\n  { category: 'groceries', amount: 100, frequency: 'weekly' },\n  { category: 'insurance', amount: 600, frequency: 'yearly' },\n];\n\ndescribe('summarizeBudget', () => {\n  test('turns a weekly expense into 52 weeks over 12 months, in cents', () => {\n    expect(summarizeBudget(4000, expenses, {}).totals.groceries).toBe(433.33);\n  });\n\n  test('adds the month up into what was spent, what is left and the savings rate', () => {\n    const summary = summarizeBudget(4000, expenses, {});\n    expect(summary.totals).toEqual({ rent: 1500, groceries: 433.33, insurance: 50 });\n    expect(summary.spent).toBe(1983.33);\n    expect(summary.remaining).toBe(2016.67);\n    expect(summary.savingsRate).toBe(50);\n  });\n\n  test('flags a category over its limit, a limit of zero included', () => {\n    const gifts = { category: 'gifts', amount: 20, frequency: 'monthly' };\n    const summary = summarizeBudget(4000, [...expenses, gifts], { groceries: 400, gifts: 0, rent: 1500 });\n    expect(summary.overLimit.slice().sort()).toEqual(['gifts', 'groceries']);\n  });\n\n  test('reports a savings rate of 0 for a month without income', () => {\n    expect(summarizeBudget(0, expenses, {}).savingsRate).toBe(0);\n  });\n});\n",
+        "solution": "// Monthly budget summary for the household dashboard.\n// A weekly expense happens 52 times a year, money adds up in whole cents, a limit of 0 counts,\n// and a month without income saves nothing.\nconst WEEKS_PER_YEAR = 52;\nconst MONTHS_PER_YEAR = 12;\n\nfunction monthlyCents(amount, frequency) {\n  const cents = amount * 100;\n  if (frequency === 'weekly') return Math.round((cents * WEEKS_PER_YEAR) / MONTHS_PER_YEAR);\n  if (frequency === 'yearly') return Math.round(cents / MONTHS_PER_YEAR);\n  return Math.round(cents);\n}\n\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totalCents = {};\n  for (const { category, amount, frequency } of expenses) {\n    totalCents[category] = (totalCents[category] || 0) + monthlyCents(amount, frequency);\n  }\n\n  let spentCents = 0;\n  const totals = {};\n  const overLimit = [];\n  for (const category of Object.keys(totalCents)) {\n    spentCents += totalCents[category];\n    totals[category] = totalCents[category] / 100;\n    if (limits[category] !== undefined && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remainingCents = Math.round(monthlyIncome * 100) - spentCents;\n  const remaining = remainingCents / 100;\n  const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;\n  return { totals, spent: spentCents / 100, remaining, savingsRate, overLimit };\n}\n",
+        "solutionBlock": {
+            "overview": "Work the example first: $100 of groceries a week is 100 × 52 / 12 = $433.33 a month, and the function says $400. Line 8 counts four weeks in every month, so each weekly cost is about 8% too low and the dashboard shows more money left than there is. The fix is amount * 52 / 12 with each monthly amount rounded to cents, which line 10 never does: 100 × 52 / 12 is 433.333…, and the worked example, the test that would have caught both, needs exactly $433.33. Two more lines break stated rules: a limit of 0 is never checked (line 17), and a month without income divides by zero (line 23).",
+            "approaches": [
+                {
+                    "title": "Fix: monthly amounts in cents, every limit checked, no division by zero",
+                    "prose": "Convert each expense to whole cents per month: weekly ones as cents × 52 / 12, yearly ones as cents / 12, each rounded once. Totals, spending and what is left then add up exactly, and converting back to dollars at the end shows the same cents the dashboard prints. Check a category whenever it has a limit, so a limit of 0 counts, and return a savings rate of 0 when there is no income instead of dividing by it.",
+                    "codeJs": "// Monthly budget summary for the household dashboard.\n// A weekly expense happens 52 times a year, money adds up in whole cents, a limit of 0 counts,\n// and a month without income saves nothing.\nconst WEEKS_PER_YEAR = 52;\nconst MONTHS_PER_YEAR = 12;\n\nfunction monthlyCents(amount, frequency) {\n  const cents = amount * 100;\n  if (frequency === 'weekly') return Math.round((cents * WEEKS_PER_YEAR) / MONTHS_PER_YEAR);\n  if (frequency === 'yearly') return Math.round(cents / MONTHS_PER_YEAR);\n  return Math.round(cents);\n}\n\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totalCents = {};\n  for (const { category, amount, frequency } of expenses) {\n    totalCents[category] = (totalCents[category] || 0) + monthlyCents(amount, frequency);\n  }\n\n  let spentCents = 0;\n  const totals = {};\n  const overLimit = [];\n  for (const category of Object.keys(totalCents)) {\n    spentCents += totalCents[category];\n    totals[category] = totalCents[category] / 100;\n    if (limits[category] !== undefined && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remainingCents = Math.round(monthlyIncome * 100) - spentCents;\n  const remaining = remainingCents / 100;\n  const savingsRate = monthlyIncome > 0 ? Math.round((remaining / monthlyIncome) * 100) : 0;\n  return { totals, spent: spentCents / 100, remaining, savingsRate, overLimit };\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Reading the code before working an example: amount * 4 looks like \"four weeks a month\" and reads as right.",
+                    "Rewriting the whole function in the case instead of naming the one line, the input that breaks it and the smallest fix.",
+                    "Fixing the weekly rate and leaving the result unrounded: 433.3333 is not the $433.33 the dashboard shows.",
+                    "Treating a limit of 0 as no limit: limits[category] && … is false for 0."
+                ],
+                "techniques": [
+                    "Restate the rule, then work one example by hand before you read a line of code.",
+                    "Trace the function with the example values and write each variable down as it changes.",
+                    "Name the bug as a line, an input that triggers it and the wrong output it produces.",
+                    "Propose the smallest fix and one test that would have caught it, then mention the rarer risks briefly."
+                ]
+            }
+        },
+        "access": "premium",
+        "previewSample": {
+            "label": "From the case brief",
+            "quote": "A few users say the numbers look off.",
+            "note": "A summer intern wrote the monthly budget summary behind a household dashboard. Work one example by hand, then find the bug and explain the fix without running the code."
+        },
+        "premiumPreview": {
+            "summary": "An intern's monthly budget summary looks off to a few users: work one example by hand, then find the bug and explain the smallest fix without running the code, as Capital One's case round asks.",
+            "learningOutcomes": [
+                "Turn a business rule into a worked example before reading the code.",
+                "Name a bug as a line, an input that triggers it and the wrong output.",
+                "Keep money in whole cents and check limits and edge cases a quick read misses."
+            ],
+            "unlockDescription": "Premium unlocks the intern's full code, every finding with its smallest fix, and the tests that check yours."
+        },
+        "companies": [
+            "capital-one"
+        ],
+        "sources": [
+            {
+                "label": "Taro: Capital One senior frontend engineer Power Day, 2024",
+                "url": "https://www.jointaro.com/interviews/companies/capital-one/experiences/senior-frontend-engineer-washington-dc-july-1-2024-no-offer-neutral-3e4968d4/",
+                "company": "capital-one",
+                "publisher": "Taro",
+                "date": "2024-07",
+                "note": "A re-hosted review without an offer. Its Power Day case was a budgeting program written by an intern, read to find the bug without coding the fix. This case practises that format; the code, the bugs and the tests are ours."
+            }
+        ],
+        "reviewModeAsset": "assets/questions/review-modes/intern-budget-case.v1.json"
     }
 ]

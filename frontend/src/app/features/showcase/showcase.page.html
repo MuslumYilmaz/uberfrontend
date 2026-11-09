@@ -1,100 +1,48 @@
 <section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title" data-load="stats" data-showcase-landmark="hero">
-  <div class="ambient ambient-a"></div>
-  <div class="ambient ambient-b"></div>
-  <div class="shell hero-grid">
+  <div class="hero-decor" aria-hidden="true">
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+  </div>
+  <div class="shell hero-shell">
+    <div class="hero-grid">
       <div class="hero-copy">
-      <p class="eyebrow">Frontend interview preparation platform</p>
-      <h1 id="showcase-hero-title" data-testid="showcase-hero-title">{{ heroHeadline }}</h1>
-      <p class="lede">
-        {{ heroLede }}
-      </p>
-      <div class="proof-row" aria-label="Platform proof points">
-        <span class="proof-chip">
-          <span class="proof-chip__mark" aria-hidden="true">
-            <app-showcase-icon name="stack" [size]="12"></app-showcase-icon>
+        <p class="eyebrow">Frontend interview preparation platform</p>
+        <h1 id="showcase-hero-title" data-testid="showcase-hero-title">{{ heroHeadline }}</h1>
+        <p class="lede">
+          {{ heroLede }}
+        </p>
+        <div class="proof-row" aria-label="Platform proof points">
+          <span class="proof-chip">
+            <span class="proof-chip__mark" aria-hidden="true">
+              <app-showcase-icon name="stack" [size]="12"></app-showcase-icon>
+            </span>
+            {{ heroQuestionCount | number }}+ questions
           </span>
-          {{ heroQuestionCount | number }}+ questions
-        </span>
-        <span class="proof-chip">
-          <span class="proof-chip__mark" aria-hidden="true">
-            <app-showcase-icon name="editor" [size]="12"></app-showcase-icon>
+          <span class="proof-chip">
+            <span class="proof-chip__mark" aria-hidden="true">
+              <app-showcase-icon name="editor" [size]="12"></app-showcase-icon>
+            </span>
+            Real workflow
           </span>
-          Real workflow
-        </span>
-        <span class="proof-chip">
-          <span class="proof-chip__mark" aria-hidden="true">
-            <app-showcase-icon name="checks" [size]="12"></app-showcase-icon>
+          <span class="proof-chip">
+            <span class="proof-chip__mark" aria-hidden="true">
+              <app-showcase-icon name="checks" [size]="12"></app-showcase-icon>
+            </span>
+            Fast feedback
           </span>
-          Fast feedback
-        </span>
-        <span class="proof-chip">
-          <span class="proof-chip__mark" aria-hidden="true">
-            <app-showcase-icon name="review" [size]="12"></app-showcase-icon>
+          <span class="proof-chip">
+            <span class="proof-chip__mark" aria-hidden="true">
+              <app-showcase-icon name="review" [size]="12"></app-showcase-icon>
+            </span>
+            Official-source checks
           </span>
-          Official-source checks
-        </span>
-      </div>
-      <div class="hero-actions">
-        <a
-          class="sk-btn sk-btn-primary"
-          routerLink="/tracks/foundations-30d/preview"
-          data-testid="showcase-hero-primary-cta"
-          (click)="onHeroPrimaryClick()"
-          aria-label="Start the 30-day frontend interview preparation roadmap">
-          {{ heroPrimaryCtaLabel }}
-        </a>
-        <a
-          class="sk-btn sk-btn-ghost"
-          routerLink="/guides/interview-blueprint/intro"
-          data-testid="showcase-hero-secondary-cta"
-          aria-label="View the frontend interview preparation guide"
-          (click)="onHeroSecondaryClick()"
-        >
-          View prep guide
-        </a>
-      </div>
-      <nav class="hero-conversion-links" aria-label="Account and pricing">
-        <a
-          routerLink="/auth/signup"
-          [queryParams]="{ src: 'showcase_hero' }"
-          (click)="onHeroSignupClick()">
-          Create a free account
-        </a>
-        <a routerLink="/pricing" (click)="onHeroPricingClick()">
-          Compare Premium plans
-        </a>
-      </nav>
-      <p class="hero-helper" data-testid="showcase-hero-helper">Want a smaller first rep? Essential 60 is the compact practice block after the plan preview.</p>
-    </div>
-
-    <div class="hero-proof" aria-label="Product workflow overview">
-      <div class="proof-card glass">
-        <div class="proof-top">
-          <div class="window-dots" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="live-pill neutral"><span class="dot"></span>Practice loop</div>
-        </div>
-
-        <div class="flow-panel" aria-label="Product workflow overview">
-          <div class="flow-step" *ngFor="let step of heroFlowSteps; let i = index"
-            [class.active]="i === activeFlowIndex" [attr.data-status]="step.status">
-            <div class="flow-icon" aria-hidden="true">
-              <app-showcase-icon [name]="step.icon" [size]="18"></app-showcase-icon>
-            </div>
-            <div class="flow-meta">
-              <div class="flow-title">{{ step.title }}</div>
-              <div class="flow-sub">{{ step.subtitle }}</div>
-            </div>
-            <div class="flow-indicator" aria-hidden="true">
-              <span class="indicator-bar"></span>
-              <span class="indicator-dot"></span>
-            </div>
-          </div>
-          <p class="flow-caption">Build, verify, explain. The full interactive playground is below.</p>
         </div>
       </div>
+
+      <app-showcase-practice-card></app-showcase-practice-card>
     </div>
+
+    <app-showcase-interview-panel class="hero-interview"></app-showcase-interview-panel>
   </div>
 </section>
 
@@ -198,7 +146,7 @@
 
 
     <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden || showMobileCodingGuard"
-      aria-label="Open the live editor for this demo question" data-testid="showcase-demo-open-live">
+      data-testid="showcase-demo-open-live">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -312,7 +260,7 @@
 
       <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
         data-testid="showcase-trivia-open"
-        [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' interview question'">
+        [attr.aria-label]="'Open full interview question: ' + activeTriviaTab.label">
         <span class="dot" aria-hidden="true"></span>
         <span class="text">Open full interview question →</span>
         <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -386,7 +334,7 @@
           </div>
         </div>
 
-        <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open the full debug scenario">
+        <a class="reasoning-link" [routerLink]="incidentPreview.route" aria-label="Open simulator: full debug scenario">
           Open simulator
           <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
@@ -416,7 +364,7 @@
           </div>
         </div>
 
-        <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open the full tradeoff battle">
+        <a class="reasoning-link" [routerLink]="tradeoffPreview.route" aria-label="Open battle: full tradeoff battle">
           Open battle
           <span class="inline-arrow" aria-hidden="true">→</span>
         </a>
@@ -498,7 +446,7 @@
         </p>
       </div>
 
-      <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Browse the full Question Library">
+      <a class="sk-btn sk-btn-ghost" routerLink="/coding">
         Browse Full Question Library <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -566,7 +514,7 @@
         </p>
         <p class="company-disclaimer" data-testid="company-practice-disclaimer">{{ companyPracticeDisclaimer }}</p>
       </div>
-      <a class="sk-btn sk-btn-ghost company-browse-link" routerLink="/companies" aria-label="Open Company Prep">
+      <a class="sk-btn sk-btn-ghost company-browse-link" routerLink="/companies">
         Browse companies <span class="inline-arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -735,7 +683,7 @@
       </div>
     </article>
 
-    <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV Linter tool">
+    <a class="demo-banner" routerLink="/tools/cv" role="button" aria-label="Open the CV polish tool: CV Linter">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Open the CV polish tool →</span>
       <span class="demo-banner__arrow" aria-hidden="true">→</span>
@@ -743,7 +691,7 @@
   </div>
 </section>
 
-<app-conversion-sticky-cta surface="showcase"></app-conversion-sticky-cta>
+<app-conversion-sticky-cta></app-conversion-sticky-cta>
 
 <section class="section reveal" aria-labelledby="questions-support-title" data-testid="showcase-landmark-support" data-showcase-landmark="support">
   <div class="shell showcase-landmark-head">
@@ -772,7 +720,7 @@
     </ng-template>
 
     <div class="faq-cta">
-      <a class="sk-btn sk-btn-ghost tiny" routerLink="/guides/interview-blueprint/intro" aria-label="View the frontend interview preparation guide">
+      <a class="sk-btn sk-btn-ghost tiny" routerLink="/guides/interview-blueprint/intro" aria-label="View prep guide: frontend interview preparation">
         View prep guide
       </a>
     </div>

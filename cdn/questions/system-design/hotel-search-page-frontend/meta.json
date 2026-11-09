@@ -1,0 +1,131 @@
+{
+  "id": "hotel-search-page-frontend",
+  "title": "Design a Hotel Search Page Frontend for Several Teams",
+  "description": "Design a hotel search page frontend built by several teams: URL-owned search state, independently deployed units behind a thin shell, a results fetch that ignores late replies, and telemetry that points a regression at one deploy.",
+  "tags": [
+    "accessibility",
+    "api-calls",
+    "architecture",
+    "caching",
+    "cdn",
+    "frontend-architecture",
+    "performance",
+    "routing",
+    "search",
+    "state-management"
+  ],
+  "companies": [
+    "agoda"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interfaces",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-11-05",
+  "seo": {
+    "title": "Hotel Search Page Frontend System Design",
+    "description": "Design a hotel search page frontend: URL-owned search state, team-owned units behind one shell, late replies ignored, and vitals per unit build."
+  },
+  "premiumPreview": {
+    "summary": "Design a hotel search page frontend where the URL owns the search, several teams deploy their units behind one shell, and a regression is traced to one deploy.",
+    "learningOutcomes": [
+      "Split the page by ownership into a shell and three units with a typed contract.",
+      "Keep the search and the filters in the URL and derive every unit from it.",
+      "Ignore a late reply for a superseded query and cache prices with a short lifetime.",
+      "Trace a regression to one unit build with vitals and funnel events."
+    ],
+    "unlockDescription": "Premium unlocks the worked example of a filter change during a slow fetch, the typed unit contracts, the search API semantics and the release playbook."
+  },
+  "editorial": {
+    "draftSource": "content-drafts/system-design/hotel-search-page-frontend.md",
+    "primaryKeyword": "hotel search page frontend system design",
+    "searchIntent": "Prepare a frontend system design answer for a hotel search page built by several teams.",
+    "readerPromise": "The reader can explain URL-owned search state, team-owned units behind a shell contract, late replies that never render, cache lifetimes from the CDN to the browser and per-build telemetry for a hotel search page.",
+    "uniqueAngle": "Follow one filter change through a slow results fetch, a shared link, a release by another team and a price change, with the URL owning the search and each team owning its deploy.",
+    "factCheckedAt": "2026-11-05",
+    "reviewedBy": "FrontendAtlas editorial",
+    "companyEvidence": [
+      {
+        "company": "agoda",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://leetcode.com/discuss/post/8459009/",
+        "sourceTitle": "Agoda senior frontend engineer loop, Bangkok, July 2026 (LeetCode)",
+        "checkedAt": "2026-11-05"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "label": "LeetCode: Agoda senior frontend engineer loop, Bangkok, July 2026",
+      "url": "https://leetcode.com/discuss/post/8459009/",
+      "company": "agoda",
+      "publisher": "LeetCode",
+      "date": "2026-07",
+      "note": "A self-reported Bangkok loop whose architecture hour asked for a hotel search page frontend for a million users and several teams, with follow-ups on micro-frontends, state placement, testing and monitoring. This case practises that shape; the wording and the numbers are ours."
+    }
+  ],
+  "contentSchemaVersion": 2,
+  "practice": {
+    "targetLevel": "senior",
+    "timeboxMinutes": 20,
+    "candidatePrompt": "Design the frontend of a hotel search page. Date, city and guest inputs sit on top, filters on the left and result cards on the right. A million people a day use it, and several teams ship parts of it on their own schedules. Decide where the search state lives and how the page splits into deployable units. Say what the CDN and the browser cache, and how a regression is traced to one deploy.",
+    "constraints": [
+      "The URL is the source of truth.",
+      "Each team deploys its unit on its own schedule.",
+      "Prices change every few minutes."
+    ],
+    "expectedDecisions": [
+      "Split the page by ownership into a shell and three units with a typed contract between them.",
+      "Keep the inputs and the filters in the URL, derive each unit from it, and ignore replies for superseded queries.",
+      "Cache assets and HTML by version and prices briefly, and stamp every metric and funnel event with the unit build that produced it."
+    ],
+    "prerequisites": [
+      "URL and history APIs",
+      "HTTP caching headers",
+      "Core Web Vitals"
+    ],
+    "coreSkills": [
+      "Ownership boundaries",
+      "URL-owned state",
+      "Stale reply handling",
+      "Release observability"
+    ],
+    "guidedMock": false,
+    "evaluationSpine": {
+      "mustCover": [
+        "The URL owns the search and the filters.",
+        "Units deploy independently behind a shell contract."
+      ],
+      "strongSignals": [
+        "A late reply for an old query never overwrites current results.",
+        "Every metric and event names the unit build that produced it."
+      ],
+      "expertStretch": "Edge composition with per-unit rendering budgets.",
+      "redFlag": "Each unit keeps its own copy of the filters."
+    }
+  }
+}

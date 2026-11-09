@@ -1,4 +1,4 @@
-import { PremiumPreviewContent, Question } from '../models/question.model';
+import { PremiumPreviewContent, Question, QuestionPreviewSample } from '../models/question.model';
 import type { IncidentListItem } from '../models/incident.model';
 import type { TradeoffBattleListItem } from '../models/tradeoff-battle.model';
 
@@ -18,6 +18,8 @@ export type LockedPreviewLink = {
 
 export type LockedPreviewData = {
   what: string;
+  /** One quote from the task, so the format can be judged before paying. */
+  sample?: QuestionPreviewSample;
   unlockDescription: string;
   keyDecisions?: string[];
   rubric?: string[];
@@ -65,7 +67,7 @@ export type CodingLockedPreviewQuestion = Pick<
   'id' | 'title' | 'description' | 'tags' | 'difficulty' | 'premiumPreview' | 'starterCode' | 'code'
 > & {
   starterCodeTs?: string;
-} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance'>>;
+} & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset' | 'reviewModeAsset' | 'previewSample'>>;
 
 type TriviaContext = BuildContext & {
   technology?: string;
@@ -79,6 +81,17 @@ const DEFAULT_TECH = 'frontend';
 
 export const CODING_PREMIUM_UNLOCK_DESCRIPTION =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
+
+/** Added to a coding task's unlock line when the task has an Interview Pressure Mode, as its plan row's chip says. */
+export const CODING_PRESSURE_MODE_UNLOCK =
+  'It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.';
+
+/** Added to a coding task's unlock line when the task opens as a merge request review. */
+export const CODING_REVIEW_MODE_UNLOCK =
+  'It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.';
+// A plain JavaScript task's review is a find case; the content checks hold the two formats to their techs.
+export const CODING_FIND_CASE_UNLOCK =
+  'It opens as a case: work an example by hand, mark the lines that are wrong and say why without running the code, then compare with a sample answer and fix it.';
 
 export const SYSTEM_DESIGN_PREMIUM_UNLOCK_DESCRIPTION =
   'Premium unlocks the full architecture walkthrough, evaluation rubric, trade-offs, and failure-mode analysis.';
@@ -631,9 +644,16 @@ export const buildLockedPreviewForCoding = (
   const learningGoals = buildLearningGoals(ctx, publicOutcomeCandidates);
   if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
 
+  const unlock = preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION;
+  const sample = previewSampleOf(q.previewSample);
   return {
     what,
-    unlockDescription: preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION,
+    ...(sample ? { sample } : {}),
+    unlockDescription: [
+      unlock,
+      ...(q.pressureModeAsset ? [CODING_PRESSURE_MODE_UNLOCK] : []),
+      ...(q.reviewModeAsset ? [ctx.technology === 'javascript' ? CODING_FIND_CASE_UNLOCK : CODING_REVIEW_MODE_UNLOCK] : []),
+    ].join(' '),
     keyDecisions: buildKeyDecisions(ctx),
     rubric: buildRubric(ctx),
     unlockBullets: buildUnlockBullets(ctx),
@@ -643,6 +663,15 @@ export const buildLockedPreviewForCoding = (
     pitfalls: buildPitfalls(ctx),
     related: buildRelatedLinks(opts.candidates, ctx.tags, 'coding', opts.tech, q.id, 6),
   };
+};
+
+/** The authored sample as the lock page shows it; an incomplete one shows nothing rather than half a quote. */
+const previewSampleOf = (sample: QuestionPreviewSample | undefined): QuestionPreviewSample | null => {
+  const label = normalizeText(sample?.label ?? '');
+  const quote = normalizeText(sample?.quote ?? '');
+  const note = normalizeText(sample?.note ?? '');
+  if (!label || !quote) return null;
+  return { label, quote, ...(note ? { note } : {}) };
 };
 
 export const buildLockedPreviewForTrivia = (

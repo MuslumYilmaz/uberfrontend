@@ -199,15 +199,15 @@ const correctedRouteCases: ReadonlyArray<{
     path: '/angular/coding/angular-snake-game',
     expected: ['at most one valid perpendicular turn per tick', 'full board'],
   },
+  // The React and Vue members of the snake family are free like the Angular one since 2026-11-05, so their pages
+  // carry the corrected one-turn buffer and the full-board win in the open requirements.
   {
     path: '/react/coding/react-snake-game',
-    expected: ['React Snake Game', 'Support keyboard controls, food spawning, score updates'],
-    forbidden: ['Buffer at most one valid perpendicular turn per tick'],
+    expected: ['React Snake Game', 'at most one valid perpendicular turn per tick', 'full board'],
   },
   {
     path: '/vue/coding/vue-snake-game',
-    expected: ['Vue Snake Game', 'Support keyboard controls, food spawning, score updates'],
-    forbidden: ['Buffer at most one valid perpendicular turn per tick'],
+    expected: ['Vue Snake Game', 'at most one valid perpendicular turn per tick', 'full board'],
   },
   {
     path: '/javascript/coding/js-implement-new',

@@ -23,6 +23,8 @@ describe('makeVuePreviewHtml', () => {
     });
 
     expect(html).toContain('<component :is="FaqItem"');
-    expect(html).toContain('return { FaqItem, faqItems, isItemOpen };');
+    for (const name of ['FaqItem', 'faqItems', 'isItemOpen']) {
+      expect(html).toContain(`typeof ${name} !== 'undefined' ? { ${name} } : {}`);
+    }
   });
 });

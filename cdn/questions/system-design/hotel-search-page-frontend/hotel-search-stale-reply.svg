@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="460" viewBox="0 0 960 460" role="img" aria-labelledby="title desc">
+  <title id="title">Hotel search late reply timeline</title>
+  <desc id="desc">Query q_41 is sent for the pool filter. The traveller adds the breakfast filter, so q_41 is aborted and q_42 is sent with a new query id. The q_41 reply still arrives and is ignored because its query id is superseded. The q_42 reply renders 38 cards and updates the facet counts.</desc>
+  <rect width="960" height="460" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">Only the reply for the current queryId renders</text>
+  <g font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#172033">
+    <text x="48" y="130">Results unit</text>
+    <text x="48" y="250">Search gateway</text>
+    <text x="48" y="370">Search backend</text>
+  </g>
+  <g stroke="#c5cedd" stroke-width="2" stroke-dasharray="8 8">
+    <path d="M200 120H920"/>
+    <path d="M200 240H920"/>
+    <path d="M200 360H920"/>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="210" y="96" width="150" height="48" rx="12"/>
+    <rect x="400" y="96" width="170" height="48" rx="12"/>
+    <rect x="760" y="96" width="150" height="48" rx="12"/>
+    <rect x="210" y="216" width="150" height="48" rx="12"/>
+    <rect x="400" y="216" width="170" height="48" rx="12"/>
+    <rect x="600" y="216" width="140" height="48" rx="12" stroke="#c2410c"/>
+    <rect x="760" y="216" width="150" height="48" rx="12"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#172033" text-anchor="middle">
+    <text x="285" y="116" font-weight="700">URL: pool</text>
+    <text x="285" y="134" fill="#526078">query q_41</text>
+    <text x="485" y="116" font-weight="700">URL: pool, breakfast</text>
+    <text x="485" y="134" fill="#526078">query q_42</text>
+    <text x="835" y="116" font-weight="700">38 cards render</text>
+    <text x="835" y="134" fill="#526078">facets update</text>
+    <text x="285" y="236" font-weight="700">send q_41</text>
+    <text x="285" y="254" fill="#526078">AbortController a</text>
+    <text x="485" y="236" font-weight="700">abort a, send q_42</text>
+    <text x="485" y="254" fill="#526078">AbortController b</text>
+    <text x="670" y="236" font-weight="700" fill="#c2410c">q_41 reply</text>
+    <text x="670" y="254" fill="#c2410c">ignored: superseded</text>
+    <text x="835" y="236" font-weight="700">q_42 reply</text>
+    <text x="835" y="254" fill="#526078">queryId matches</text>
+  </g>
+  <g stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M285 144V216" stroke="#315ee8"/>
+    <path d="m275 204 10 12 10-12" stroke="#315ee8"/>
+    <path d="M485 144V216" stroke="#315ee8"/>
+    <path d="m475 204 10 12 10-12" stroke="#315ee8"/>
+    <path d="M300 264 330 360" stroke="#7950b8"/>
+    <path d="m318 350 12 10 4-15" stroke="#7950b8"/>
+    <path d="M500 264 530 360" stroke="#7950b8"/>
+    <path d="m518 350 12 10 4-15" stroke="#7950b8"/>
+    <path d="M640 360 660 264" stroke="#c2410c" stroke-dasharray="6 6"/>
+    <path d="M840 360 835 264" stroke="#268455"/>
+    <path d="m826 276 9-12 10 12" stroke="#268455"/>
+    <path d="M835 216V144" stroke="#268455"/>
+    <path d="m825 156 10-12 10 12" stroke="#268455"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526078">
+    <text x="340" y="320">request a</text>
+    <text x="540" y="320">request b</text>
+    <text x="580" y="400">late reply for a</text>
+    <text x="780" y="400">reply for b</text>
+  </g>
+  <text x="48" y="430" font-family="Arial, sans-serif" font-size="14" fill="#526078">A reply is rendered only when its queryId equals the one the URL produced last; everything older is ignored.</text>
+</svg>

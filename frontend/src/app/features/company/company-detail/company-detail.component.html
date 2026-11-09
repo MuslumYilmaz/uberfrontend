@@ -8,6 +8,13 @@
             <div class="fa-meta-text">
                 FrontendAtlas editorial practice organized under the {{ label | async }} label.
             </div>
+            <p class="company-header__links" data-testid="company-detail-links">
+                <a [routerLink]="['/companies', slug | async, 'preview']">Read the {{ label | async }} guide</a>
+                <ng-container *ngIf="planCovers()">
+                    <span aria-hidden="true">·</span>
+                    <a routerLink="/companies/plan">Back to my plan</a>
+                </ng-container>
+            </p>
         </div>
     </div>
 
@@ -16,7 +23,7 @@
             {{ promptCountLabel((counts$ | async)?.all) }}
         </span>
         <span class="fa-chip fa-chip--label">
-            Coding: {{ (counts$ | async)?.coding }} • Concepts: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
+            Coding: {{ (counts$ | async)?.coding }}{{ (counts$ | async)?.debug ? ' • Debugging: ' + (counts$ | async)?.debug : '' }} • Concepts: {{ (counts$ | async)?.trivia }} • System: {{ (counts$ | async)?.system }}
         </span>
     </div>
 </div>

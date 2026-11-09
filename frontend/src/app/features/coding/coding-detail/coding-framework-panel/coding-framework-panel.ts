@@ -79,6 +79,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() suppressAttemptRecording = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
+  /** A rehearsal's review, or its questions: the editor turns read-only and the checks stop running. */
+  @Input() locked = false;
+  /** Why the editor is read-only, when it is not the review. */
+  @Input() lockedLabel: string | null = null;
+  /** A running rehearsal's clock. */
+  @Input() clockLabel: string | null = null;
+  /** A rehearsal's questions come first: the code and the preview stay out of sight behind this note. */
+  @Input() concealedNote: string | null = null;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
   @Output() filesChanged = new EventEmitter<Record<string, string>>();
@@ -924,7 +932,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     const activeTech = this.tech;
     const checks = this.frameworkChecks();
-    if (!q || !this.isBrowser || !this.isFrameworkTech() || !checks.length) {
+    if (!q || !this.isBrowser || !this.isFrameworkTech() || !checks.length || this.locked) {
       return [];
     }
 

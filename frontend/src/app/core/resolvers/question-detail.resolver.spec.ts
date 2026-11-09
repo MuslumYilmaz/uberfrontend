@@ -88,6 +88,74 @@ describe('normalizeSystemDesignDetail', () => {
   });
 });
 
+describe('triviaDetailResolver transfer state', () => {
+  const answer = { blocks: [{ type: 'text', text: 'The answer a visitor without Premium must not receive.' }] };
+  const freeTrivia = {
+    id: 'js-free-trivia',
+    title: 'Free trivia',
+    type: 'trivia',
+    technology: 'javascript',
+    access: 'free',
+    difficulty: 'easy',
+    tags: ['javascript'],
+    importance: 3,
+    answer,
+  } as unknown as Question;
+  const premiumTrivia = { ...freeTrivia, id: 'js-premium-trivia', access: 'premium' } as Question;
+  const stateKey = (id: string) => makeStateKey<QuestionDetailResolved>(`question-detail:javascript:trivia:${id}`);
+
+  function configure(platformId: 'server' | 'browser') {
+    const questionService = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadQuestions']);
+    questionService.loadQuestions.and.returnValue(of([freeTrivia, premiumTrivia]));
+    TestBed.configureTestingModule({
+      providers: [
+        TransferState,
+        { provide: PLATFORM_ID, useValue: platformId },
+        { provide: QuestionService, useValue: questionService },
+        { provide: ASSET_READER, useValue: jasmine.createSpyObj<AssetReader>('AssetReader', ['readJson']) },
+      ],
+    });
+    return { questionService, transferState: TestBed.inject(TransferState) };
+  }
+
+  function resolve(id: string) {
+    const route = {
+      parent: { paramMap: convertToParamMap({ tech: 'javascript' }) },
+      paramMap: convertToParamMap({ id }),
+    } as any;
+    return firstValueFrom(TestBed.runInInjectionContext(() => triviaDetailResolver(route, {} as any)) as Observable<QuestionDetailResolved>);
+  }
+
+  afterEach(() => TestBed.resetTestingModule());
+
+  it('transfers a free question with its answer so the browser skips the bank', async () => {
+    const { transferState } = configure('server');
+
+    const result = await resolve(freeTrivia.id);
+
+    expect(result.question?.answer as unknown).toEqual(answer);
+    expect(transferState.get(stateKey(freeTrivia.id), null)?.question?.answer as unknown).toEqual(answer);
+  });
+
+  it('keeps a Premium question out of the transfer state, so the prerendered HTML carries no answer', async () => {
+    const { transferState } = configure('server');
+
+    const result = await resolve(premiumTrivia.id);
+
+    expect(result.question?.access).toBe('premium');
+    expect(transferState.toJson()).toBe('{}');
+  });
+
+  it('loads a Premium question from the bank in the browser, where the entitlement decides the view', async () => {
+    const { questionService } = configure('browser');
+
+    const result = await resolve(premiumTrivia.id);
+
+    expect(questionService.loadQuestions).toHaveBeenCalledOnceWith('javascript', 'trivia', { transferState: false });
+    expect(result.question?.answer as unknown).toEqual(answer);
+  });
+});
+
 describe('codingDetailResolver solution snapshots', () => {
   const assetPath = 'assets/sb/react/solution/react-free-solution.v2.json';
   const freeQuestion = {

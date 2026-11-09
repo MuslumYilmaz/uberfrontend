@@ -7,7 +7,7 @@
           <a class="incident-hero__back" [routerLink]="['/incidents']">← Back to incidents</a>
           <p class="incident-hero__eyebrow">{{ techLabel(scenario.meta.tech) }} incident</p>
           <h1>{{ scenario.meta.title }}</h1>
-          <p class="incident-hero__summary">{{ scenario.meta.summary }}</p>
+          <p class="incident-hero__summary"><fa-inline-code [text]="scenario.meta.summary"></fa-inline-code></p>
           <div class="incident-hero__chips">
             <span class="incident-chip">{{ scenario.meta.difficulty | titlecase }}</span>
             <span class="incident-chip">{{ scenario.meta.estimatedMinutes }} min</span>
@@ -25,7 +25,7 @@
         <div class="incident-signal-grid">
           <article class="incident-signal-card" *ngFor="let signal of scenario.meta.signals; let index = index; trackBy: trackByString">
             <span class="incident-signal-card__index">{{ index + 1 < 10 ? '0' + (index + 1) : index + 1 }}</span>
-            <p>{{ signal }}</p>
+            <p><fa-inline-code [text]="signal"></fa-inline-code></p>
           </article>
         </div>
       </section>
@@ -81,15 +81,15 @@
         <div class="incident-overview-grid">
           <article class="incident-context-block incident-context-block--symptom">
             <h3>Symptom</h3>
-            <p>{{ scenario.context.symptom }}</p>
+            <p><fa-inline-code [text]="scenario.context.symptom"></fa-inline-code></p>
           </article>
           <article class="incident-context-block incident-context-block--impact">
             <h3>User impact</h3>
-            <p>{{ scenario.context.userImpact }}</p>
+            <p><fa-inline-code [text]="scenario.context.userImpact"></fa-inline-code></p>
           </article>
           <article class="incident-context-block incident-context-block--environment">
             <h3>Environment</h3>
-            <p>{{ scenario.context.environment }}</p>
+            <p><fa-inline-code [text]="scenario.context.environment"></fa-inline-code></p>
           </article>
         </div>
 
@@ -108,7 +108,7 @@
             </div>
             <pre *ngIf="card.type === 'snippet'; else textEvidence"><code>{{ card.body }}</code></pre>
             <ng-template #textEvidence>
-              <p>{{ card.body }}</p>
+              <p><fa-inline-code [text]="card.body"></fa-inline-code></p>
             </ng-template>
           </article>
         </div>
@@ -119,12 +119,12 @@
         <div class="incident-stage-card__header">
           <div>
             <p class="incident-stage-card__eyebrow">{{ stage.title }}</p>
-            <h2 [attr.id]="'incident-stage-prompt-' + stage.id">{{ stage.prompt }}</h2>
+            <h2 [attr.id]="'incident-stage-prompt-' + stage.id"><fa-inline-code [text]="stage.prompt"></fa-inline-code></h2>
           </div>
           <span class="incident-stage-card__badge">Scored</span>
         </div>
 
-        <p class="incident-stage-card__helper" *ngIf="stage.helperText">{{ stage.helperText }}</p>
+        <p class="incident-stage-card__helper" *ngIf="stage.helperText"><fa-inline-code [text]="stage.helperText"></fa-inline-code></p>
 
         <div
           class="incident-options"
@@ -144,7 +144,7 @@
             (click)="activateOption(stage, option.id)"
             (keydown)="onSingleSelectKeydown($event, stage, option.id)">
             <span class="incident-option__marker" aria-hidden="true"></span>
-            <span class="incident-option__copy">{{ option.label }}</span>
+            <span class="incident-option__copy"><fa-inline-code [text]="option.label"></fa-inline-code></span>
           </button>
         </div>
 
@@ -165,7 +165,7 @@
             (click)="activateOption(stage, option.id)"
             (keydown)="onOptionKeydown($event, stage, option.id)">
             <span class="incident-option__marker" aria-hidden="true"></span>
-            <span class="incident-option__copy">{{ option.label }}</span>
+            <span class="incident-option__copy"><fa-inline-code [text]="option.label"></fa-inline-code></span>
           </button>
         </div>
 
@@ -174,9 +174,9 @@
             <li class="incident-priority__item" *ngFor="let candidateId of priorityOrder(stage); let index = index">
               <div class="incident-priority__rank">#{{ index + 1 }}</div>
               <div class="incident-priority__copy">
-                <div class="incident-priority__title">{{ candidateLabel(stage, candidateId) }}</div>
+                <div class="incident-priority__title"><fa-inline-code [text]="candidateLabel(stage, candidateId)"></fa-inline-code></div>
                 <div class="incident-priority__desc" *ngIf="candidateDescription(stage, candidateId)">
-                  {{ candidateDescription(stage, candidateId) }}
+                  <fa-inline-code [text]="candidateDescription(stage, candidateId)"></fa-inline-code>
                 </div>
               </div>
               <div class="incident-priority__controls">
@@ -213,8 +213,8 @@
           <div class="incident-feedback__body" *ngIf="stage.type !== 'priority-order'">
             <article class="incident-feedback__entry" *ngFor="let item of stage.options"
               [hidden]="!isOptionSelected(stage.id, item.id)">
-              <div class="incident-feedback__entry-title">{{ item.label }}</div>
-              <p>{{ item.feedback }}</p>
+              <div class="incident-feedback__entry-title"><fa-inline-code [text]="item.label"></fa-inline-code></div>
+              <p><fa-inline-code [text]="item.feedback"></fa-inline-code></p>
             </article>
           </div>
 
@@ -224,8 +224,8 @@
               <div class="incident-feedback__entry-title" *ngIf="stageResults()[stage.id]?.priorityFeedback?.[index] as slot">
                 Slot {{ slot.slot }}: {{ slot.matched ? 'matched' : 'review this step' }}
               </div>
-              <p>Expected: {{ candidateLabel(stage, expectedId) }}</p>
-              <p *ngIf="stageResults()[stage.id]?.priorityFeedback?.[index] as slot">Chosen: {{ slot.actualLabel || 'None' }}</p>
+              <p>Expected: <fa-inline-code [text]="candidateLabel(stage, expectedId)"></fa-inline-code></p>
+              <p *ngIf="stageResults()[stage.id]?.priorityFeedback?.[index] as slot">Chosen: <fa-inline-code [text]="slot.actualLabel || 'None'"></fa-inline-code></p>
             </article>
           </div>
         </div>
@@ -244,8 +244,8 @@
 
         <div class="incident-score-band" *ngFor="let band of scenario.debrief.scoreBands"
           [hidden]="!allStagesSubmitted() || scoreBand() !== band">
-          <h3>{{ band.label }}</h3>
-          <p>{{ band.summary }}</p>
+          <h3><fa-inline-code [text]="band.label"></fa-inline-code></h3>
+          <p><fa-inline-code [text]="band.summary"></fa-inline-code></p>
         </div>
 
         <div class="incident-debrief-grid">
@@ -257,7 +257,7 @@
             <ol class="incident-runbook">
               <li class="incident-runbook__item" *ngFor="let item of scenario.debrief.idealRunbook; let index = index; trackBy: trackByString">
                 <span class="incident-runbook__index">{{ index + 1 }}</span>
-                <div class="incident-runbook__text">{{ item }}</div>
+                <div class="incident-runbook__text"><fa-inline-code [text]="item"></fa-inline-code></div>
               </li>
             </ol>
           </article>
@@ -267,7 +267,7 @@
               <p class="incident-debrief-card__eyebrow">Reflection</p>
               <h3>Reflection note</h3>
             </div>
-            <p *ngIf="scenario.debrief.optionalReflectionPrompt">{{ scenario.debrief.optionalReflectionPrompt }}</p>
+            <p *ngIf="scenario.debrief.optionalReflectionPrompt"><fa-inline-code [text]="scenario.debrief.optionalReflectionPrompt"></fa-inline-code></p>
             <textarea
               [ngModel]="reflectionNote()"
               (ngModelChange)="onReflectionChange($event)"
@@ -283,18 +283,18 @@
           <article class="incident-teaching-block" *ngFor="let block of scenario.debrief.teachingBlocks">
             <ng-container [ngSwitch]="block.type">
               <div *ngSwitchCase="'text'">
-                <p>{{ $any(block).text }}</p>
+                <p><fa-inline-code [text]="$any(block).text"></fa-inline-code></p>
               </div>
 
               <div *ngSwitchCase="'callout'" class="incident-callout" [attr.data-variant]="$any(block).variant || 'info'">
                 <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
-                <p>{{ $any(block).text }}</p>
+                <p><fa-inline-code [text]="$any(block).text"></fa-inline-code></p>
               </div>
 
               <div *ngSwitchCase="'checklist'" class="incident-checklist-card">
                 <h3 *ngIf="$any(block).title">{{ $any(block).title }}</h3>
                 <ul class="incident-checklist">
-                  <li *ngFor="let item of $any(block).items; trackBy: trackByString">{{ item }}</li>
+                  <li *ngFor="let item of $any(block).items; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
                 </ul>
               </div>
 
@@ -306,7 +306,7 @@
                 <ol class="incident-steps">
                   <li class="incident-steps__item" *ngFor="let item of $any(block).items; let index = index; trackBy: trackByString">
                     <span class="incident-steps__index">{{ index + 1 }}</span>
-                    <div class="incident-steps__text">{{ item }}</div>
+                    <div class="incident-steps__text"><fa-inline-code [text]="item"></fa-inline-code></div>
                   </li>
                 </ol>
               </div>

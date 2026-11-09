@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 212, cssSources: 277, changedAssets: 0, changedCssSources: 0 },
+    { assets: 253, cssSources: 319, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -725,6 +725,1222 @@ function assertDebouncedSearchPressureMode() {
     angularPreviewBuilder,
     /esm\.sh\/rxjs/,
     'Angular preview must not fan RxJS out through esm.sh submodule requests'
+  );
+}
+
+// Rules are the only brief a candidate sees before a check runs, so every class or id
+// a check looks for must be in the starter or named by the rules revealed so far.
+function assertPressureContractIsNamed(scenario, starterSources, label) {
+  const revealedRules = [];
+  for (const round of scenario.rounds) {
+    revealedRules.push(...round.constraints);
+    const rulesSoFar = revealedRules.join('\n');
+    const selectors = (round.frameworkTests ?? []).flatMap((test) =>
+      test.steps.map((step) => step.selector).filter(Boolean)
+    );
+    for (const selector of selectors) {
+      const withoutAttributes = selector.replace(/\[[^\]]*\]/g, '');
+      for (const [, token] of withoutAttributes.matchAll(/[.#]([a-zA-Z][\w-]*)/g)) {
+        const named = new RegExp(`(^|[^\\w-])${token}([^\\w-]|$)`);
+        for (const [framework, source] of Object.entries(starterSources)) {
+          assert.ok(
+            named.test(rulesSoFar) || named.test(source),
+            `${label}: round ${round.id} checks ${selector}, but ${token} is in neither the ${framework} starter nor the rules so far`
+          );
+        }
+      }
+    }
+  }
+}
+
+function assertAutocompletePressureMode() {
+  const expectedQuestions = {
+    react: {
+      id: 'react-autocomplete-search-starter',
+      access: 'free',
+      starter: 'assets/sb/react/question/react-autocomplete-search.v2.json',
+      solution: 'assets/sb/react/solution/react-autocomplete-search-solution.v2.json',
+    },
+    angular: {
+      id: 'angular-autocomplete-search-starter',
+      // Free like its React and Vue family members since 2026-11-05: one family, one access level.
+      access: 'free',
+      starter: 'assets/sb/angular/question/angular-autocomplete-search.v2.json',
+      solution: 'assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json',
+    },
+    vue: {
+      id: 'vue-autocomplete-search',
+      access: 'free',
+      starter: 'assets/sb/vue/question/vue-autocomplete-search.v1.json',
+      solution: 'assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json',
+    },
+  };
+  const starterSources = {};
+
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: Autocomplete question must exist`);
+    assert.equal(question.access, expected.access, `${framework}: Autocomplete access changed`);
+    assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal Autocomplete starter changed`);
+    assert.equal(question.solutionAsset, expected.solution, `${framework}: normal Autocomplete solution changed`);
+    assert.equal(
+      question.pressureModeAsset,
+      'assets/questions/pressure-modes/autocomplete-search.v1.json',
+      `${framework}: Autocomplete must reference the shared pressure scenario`
+    );
+    starterSources[framework] = Object.values(
+      normalizedAssetFiles(
+        json(`cdn/${expected.starter.replace(/^assets\//, '')}`),
+        `${framework}:autocomplete-starter`
+      )
+    ).join('\n');
+
+    if (framework !== 'react') {
+      assert.deepEqual(
+        question.frameworkTests.map((test) => test.id),
+        ['autocomplete-selects-option', 'autocomplete-outside-click-closes'],
+        `${framework}: normal Autocomplete checks must cover the pick and the outside click`
+      );
+      const pickSteps = question.frameworkTests.find(
+        (test) => test.id === 'autocomplete-selects-option'
+      )?.steps;
+      assert.deepEqual(
+        pickSteps?.slice(-2),
+        [
+          { type: 'wait', durationMs: 500 },
+          { type: 'expectCount', selector: '.list', count: 0 },
+        ],
+        `${framework}: the normal check must prove that a pick does not reopen the list`
+      );
+    }
+  }
+
+  const scenario = json('cdn/questions/pressure-modes/autocomplete-search.v1.json');
+  assert.equal(scenario.id, 'autocomplete-search-pressure-v1');
+  assert.equal(scenario.family, 'autocomplete-search');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(
+      Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id])
+    )
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-search', 'keyboard-selection', 'instant-repeat-searches', 'accessibility-and-cleanup']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-autocomplete-core',
+      'pressure-autocomplete-keyboard',
+      'pressure-autocomplete-repeat',
+      'pressure-autocomplete-aria',
+      'pressure-autocomplete-cleanup',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Autocomplete');
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  assert.deepEqual(
+    checksById['pressure-autocomplete-core'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [80, 80, 190],
+    'Core search must sample after an unrestarted first search would land but before the final wait ends'
+  );
+
+  const keyboardSteps = checksById['pressure-autocomplete-keyboard'].steps;
+  const enterIndex = keyboardSteps.findIndex((step) => step.key === 'Enter');
+  assert.deepEqual(
+    keyboardSteps.slice(enterIndex + 2, enterIndex + 5),
+    [
+      { type: 'expectCount', selector: '.list', count: 0 },
+      { type: 'wait', durationMs: 600 },
+      { type: 'expectCount', selector: '.list', count: 0 },
+    ],
+    'A pick must be proven closed both at once and after the debounce window'
+  );
+
+  const repeatSteps = checksById['pressure-autocomplete-repeat'].steps;
+  const repeatedSearch = repeatSteps.findIndex(
+    (step) => step.type === 'setValue' && step.value === ' SAN '
+  );
+  assert.deepEqual(
+    repeatSteps[repeatedSearch + 1],
+    { type: 'expectCount', selector: '.option', count: 3 },
+    'A repeated search must show results with no waiting step in between'
+  );
+  assert.deepEqual(
+    repeatSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [270, 400],
+    'The late-result check must start while the older search is running and outlast it'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-autocomplete-cleanup'].steps.map((step) => step.type),
+    ['setValue', 'wait', 'setValue', 'unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must cover a running search and a pending wait together, plus the document listener'
+  );
+
+  const solutionMarkers = {
+    react: [/AbortController/, /cacheRef/, /pickedQueryRef/, /result-status/, /aria-activedescendant/],
+    angular: [/implements OnDestroy/, /switchMap/, /searchKey\$\.next\(''\)/, /result-status/, /aria-activedescendant/],
+    vue: [/AbortController/, /pickedQuery/, /onBeforeUnmount/, /result-status/, /aria-activedescendant/],
+  };
+  for (const framework of Object.keys(expectedQuestions)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-autocomplete-search-pressure-solution.v1.json`,
+      `${framework}: invalid Autocomplete pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:autocomplete-pressure-solution`);
+    const files = normalizedAssetFiles(json(`cdn/${relative}`), `${framework}:autocomplete-pressure-solution`);
+    const source = Object.entries(files)
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of solutionMarkers[framework]) {
+      assert.match(source, marker, `${framework}: Autocomplete pressure solution is missing ${marker}`);
+    }
+  }
+}
+
+function assertTeamListPressureMode() {
+  const question = json('cdn/questions/react/coding.json').find(
+    (entry) => entry.id === 'react-fetch-list-states'
+  );
+  assert.ok(question, 'Team List question must exist');
+  assert.equal(question.access, 'free', 'Team List pressure entry must stay free');
+  assert.equal(question.sdk?.asset, 'assets/sb/react/question/react-fetch-list-states.v1.json');
+  assert.equal(question.solutionAsset, 'assets/sb/react/solution/react-fetch-list-states-solution.v1.json');
+  assert.deepEqual(
+    (question.frameworkTests ?? []).map((test) => test.id),
+    [
+      'fetch-list-initial-load',
+      'fetch-list-empty-state',
+      'fetch-list-loading-state',
+      'fetch-list-error-retry',
+    ],
+    'Normal Team List checks must stay unchanged'
+  );
+  assert.equal(question.pressureModeAsset, 'assets/questions/pressure-modes/fetch-list-states.v1.json');
+
+  const scenario = json('cdn/questions/pressure-modes/fetch-list-states.v1.json');
+  assert.equal(scenario.id, 'fetch-list-states-pressure-v1');
+  assert.equal(scenario.family, 'fetch-list-states');
+  assert.equal(scenario.access, 'free');
+  assert.equal(scenario.estimatedMinutes, 45);
+  for (const map of [scenario.supportedQuestions, scenario.solutionAssets, scenario.debrief.frameworkNotes]) {
+    assert.deepEqual(Object.keys(map), ['react'], 'Team List only exists in React, and every framework map must agree');
+  }
+  assert.equal(scenario.supportedQuestions.react, 'react-fetch-list-states');
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['request-states', 'refresh-keeps-list', 'newest-request-wins', 'real-cancellation']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-team-list-states',
+      'pressure-team-list-refresh',
+      'pressure-team-list-latest',
+      'pressure-team-list-announce',
+      'pressure-team-list-cleanup',
+    ]
+  );
+  const starter = normalizedAssetFiles(
+    json('cdn/sb/react/question/react-fetch-list-states.v1.json'),
+    'react:team-list-starter'
+  );
+  assertPressureContractIsNamed(scenario, { react: Object.values(starter).join('\n') }, 'Team List');
+  assert.match(
+    starter['src/App.tsx'],
+    /window\.setTimeout\([\s\S]*?\}, 400\);/,
+    'Team List timing windows assume the 400 ms fake API'
+  );
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const refreshSteps = checksById['pressure-team-list-refresh'].steps;
+  const refreshClick = refreshSteps.findIndex((step) => step.selector === '.refresh');
+  assert.deepEqual(
+    refreshSteps[refreshClick + 1],
+    { type: 'expectCount', selector: '.user-row', count: 6 },
+    'A refresh must prove the rows stay on screen as soon as it starts'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-team-list-latest'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [100, 250, 100, 250],
+    'The race checks must sample after the older 400 ms response lands and before the newer one does'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-team-list-cleanup'].steps.map((step) => step.type),
+    ['setValue', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the component while a request is running'
+  );
+
+  const reference = scenario.solutionAssets.react;
+  assert.equal(reference, 'assets/sb/react/solution/react-fetch-list-states-pressure-solution.v1.json');
+  const relative = reference.replace(/^assets\//, '');
+  assertMirror(relative, 'react:team-list-pressure-solution');
+  const source = normalizedAssetFiles(json(`cdn/${relative}`), 'react:team-list-pressure-solution')['src/App.tsx'];
+  for (const marker of [/AbortController/, /AbortSignal/, /isAbortError/, /aria-busy/, /aria-live/, /refreshError/]) {
+    assert.match(source, marker, `Team List pressure solution is missing ${marker}`);
+  }
+}
+
+function assertSharedPressureEntries(expectedQuestions, assetPath, label) {
+  const starterSources = {};
+  for (const [framework, expected] of Object.entries(expectedQuestions)) {
+    const question = json(`cdn/questions/${framework}/coding.json`).find(
+      (entry) => entry.id === expected.id
+    );
+    assert.ok(question, `${framework}: ${label} question must exist`);
+    assert.equal(question.access, 'premium', `${framework}: ${label} pressure entry must stay premium`);
+    assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal ${label} starter changed`);
+    assert.equal(question.solutionAsset, expected.solution, `${framework}: normal ${label} solution changed`);
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((test) => test.id),
+      expected.checks,
+      `${framework}: normal ${label} checks must stay unchanged`
+    );
+    assert.equal(question.pressureModeAsset, assetPath, `${framework}: ${label} must reference the shared scenario`);
+    starterSources[framework] = Object.values(
+      normalizedAssetFiles(json(`cdn/${expected.starter.replace(/^assets\//, '')}`), `${framework}:${label}-starter`)
+    ).join('\n');
+  }
+  return starterSources;
+}
+
+function assertPressureSolutions(scenario, solutionMarkers, slug, label) {
+  for (const [framework, markers] of Object.entries(solutionMarkers)) {
+    const reference = scenario.solutionAssets?.[framework];
+    assert.equal(
+      reference,
+      `assets/sb/${framework}/solution/${framework}-${slug}-pressure-solution.v1.json`,
+      `${framework}: invalid ${label} pressure solution reference`
+    );
+    const relative = reference.replace(/^assets\//, '');
+    assertMirror(relative, `${framework}:${slug}-pressure-solution`);
+    const source = Object.entries(normalizedAssetFiles(json(`cdn/${relative}`), `${framework}:${slug}-pressure-solution`))
+      .filter(([file]) => file.startsWith('src/'))
+      .map(([file, code]) => `${file}\n${code}`)
+      .join('\n');
+    for (const marker of markers) {
+      assert.match(source, marker, `${framework}: ${label} pressure solution is missing ${marker}`);
+    }
+  }
+}
+
+function assertNestedCommentsPressureMode() {
+  const normalCheck = ['comments-add-root-reply'];
+  const expectedQuestions = {
+    react: {
+      id: 'react-nested-comments',
+      starter: 'assets/sb/react/question/react-nested-comments.v1.json',
+      solution: 'assets/sb/react/solution/react-nested-comments-solution.v1.json',
+      checks: normalCheck,
+    },
+    angular: {
+      id: 'angular-nested-comments',
+      starter: 'assets/sb/angular/question/angular-nested-comments.v2.json',
+      solution: 'assets/sb/angular/solution/angular-nested-comments-solution.v2.json',
+      checks: normalCheck,
+    },
+    vue: {
+      id: 'vue-nested-comments',
+      starter: 'assets/sb/vue/question/vue-nested-comments.v1.json',
+      solution: 'assets/sb/vue/solution/vue-nested-comments-solution.v1.json',
+      checks: normalCheck,
+    },
+  };
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    'assets/questions/pressure-modes/nested-comments.v1.json',
+    'Nested Comments'
+  );
+
+  // A component created during render gets a new identity, which rebuilds the reply input on every letter.
+  for (const reference of [expectedQuestions.react.starter, expectedQuestions.react.solution]) {
+    const app = normalizedAssetFiles(json(`cdn/${reference.replace(/^assets\//, '')}`), reference)['src/App.tsx'];
+    assert.doesNotMatch(app, /useMemo/, `${reference}: the tree must not be a component created inside App`);
+    assert.match(app, /const renderTree = /, `${reference}: the tree must render through a plain function`);
+  }
+
+  const scenario = json('cdn/questions/pressure-modes/nested-comments.v1.json');
+  assert.equal(scenario.id, 'nested-comments-pressure-v1');
+  assert.equal(scenario.family, 'nested-comments');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['core-thread', 'keyboard-flow', 'hide-threads', 'safe-delete']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-comments-core',
+      'pressure-comments-keyboard',
+      'pressure-comments-hide',
+      'pressure-comments-delete',
+      'pressure-comments-announce',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Nested Comments');
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const keyboardSteps = checksById['pressure-comments-keyboard'].steps;
+  const firstDraft = keyboardSteps.findIndex((step) => step.type === 'setValue' && step.value === 'Draft one');
+  assert.deepEqual(
+    keyboardSteps[firstDraft + 1],
+    { type: 'expectFocused', selector: '.reply input' },
+    'Typing a reply must prove the input keeps focus'
+  );
+
+  const hideSteps = checksById['pressure-comments-hide'].steps;
+  const firstShow = hideSteps.findIndex(
+    (step, index) => step.type === 'expectCount' && step.selector === '.node' && step.count === 3 && index > 3
+      && hideSteps[index - 1].selector === '.toggle-replies'
+  );
+  assert.deepEqual(
+    hideSteps[firstShow + 1],
+    { type: 'expectCount', selector: '.reply', count: 0 },
+    'A hidden thread must really close its reply box, not only take it off the page'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/const renderTree = /, /deleteFromTree/, /containsComment/, /thread-status/],
+      angular: [/deleteFromTree/, /containsComment/, /detectChanges/, /thread-status/],
+      vue: [/deleteFromTree/, /containsComment/, /nextTick/, /thread-status/],
+    },
+    'nested-comments',
+    'Nested Comments'
+  );
+}
+
+function assertContactFormPressureMode() {
+  const normalChecks = ['contact-form-validation', 'contact-form-submit-success', 'contact-form-submit-error'];
+  const expectedQuestions = {
+    react: {
+      id: 'react-contact-form-starter',
+      starter: 'assets/sb/react/question/react-contact-form.v1.json',
+      solution: 'assets/sb/react/solution/react-contact-form-solution.v1.json',
+      checks: normalChecks,
+    },
+    angular: {
+      id: 'angular-contact-form-starter',
+      starter: 'assets/sb/angular/question/angular-contact-form.v2.json',
+      solution: 'assets/sb/angular/solution/angular-contact-form-solution.v2.json',
+      checks: normalChecks,
+    },
+    vue: {
+      id: 'vue-contact-form-starter',
+      starter: 'assets/sb/vue/question/vue-contact-form.v1.json',
+      solution: 'assets/sb/vue/solution/vue-contact-form-solution.v1.json',
+      checks: normalChecks,
+    },
+  };
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    'assets/questions/pressure-modes/contact-form.v1.json',
+    'Contact Form'
+  );
+
+  const scenario = json('cdn/questions/pressure-modes/contact-form.v1.json');
+  assert.equal(scenario.id, 'contact-form-pressure-v1');
+  assert.equal(scenario.family, 'contact-form');
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  assert.deepEqual(
+    scenario.rounds.map((round) => round.id),
+    ['validation', 'one-request', 'failure-recovery', 'slow-server-and-accessibility']
+  );
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(
+    checks.map((test) => test.id),
+    [
+      'pressure-contact-validation',
+      'pressure-contact-send',
+      'pressure-contact-failure',
+      'pressure-contact-time-limit',
+      'pressure-contact-accessibility',
+    ]
+  );
+  assertPressureContractIsNamed(scenario, starterSources, 'Contact Form');
+  for (const check of checks) {
+    assert.equal(check.steps[0].type, 'mockHttp', `${check.id}: Angular installs its HttpClient double from the first step`);
+  }
+  const checksById = Object.fromEntries(checks.map((test) => [test.id, test]));
+
+  const sendSteps = checksById['pressure-contact-send'].steps;
+  const firstSubmit = sendSteps.findIndex((step) => step.type === 'submit');
+  assert.equal(sendSteps[firstSubmit + 1].type, 'submit', 'The send check must submit twice in a row');
+  assert.ok(
+    sendSteps.some((step) => step.bodyContains === '"name":"Jane Doe"' && step.count === 1),
+    'The send check must prove one request with trimmed values'
+  );
+
+  assert.ok(
+    checksById['pressure-contact-failure'].steps.some((step) => step.type === 'mockHttp' && step.status === 500),
+    'The failure check must cover an HTTP error, which fetch does not reject on'
+  );
+
+  const limitSteps = checksById['pressure-contact-time-limit'].steps;
+  assert.equal(limitSteps[0].durationMs, 3000, 'The late answer must arrive after the 2 second limit');
+  assert.deepEqual(
+    limitSteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [1500, 1200],
+    'The limit check must sample before the limit and again after the late answer'
+  );
+
+  const accessibilitySteps = checksById['pressure-contact-accessibility'].steps;
+  assert.ok(
+    accessibilitySteps[0].durationMs >= 2000,
+    'The removal check must run while the request is still open, or finishing it would clear the timers anyway'
+  );
+  assert.deepEqual(
+    accessibilitySteps.slice(-3).map((step) => step.type),
+    ['submit', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the component right after sending'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/AbortController/, /response\.ok/, /aria-invalid/, /aria-describedby/, /role="alert"/],
+      angular: [/implements OnDestroy/, /timeout\(/, /unsubscribe/, /requiredText/, /aria-invalid/, /role="alert"/],
+      vue: [/AbortController/, /response\.ok/, /onUnmounted/, /aria-invalid/, /role="alert"/],
+    },
+    'contact-form',
+    'Contact Form'
+  );
+}
+
+function assertPremiumPressureScenario({ family, expectedQuestions, roundIds, checkIds, label }) {
+  const starterSources = assertSharedPressureEntries(
+    expectedQuestions,
+    `assets/questions/pressure-modes/${family}.v1.json`,
+    label
+  );
+  const scenario = json(`cdn/questions/pressure-modes/${family}.v1.json`);
+  assert.equal(scenario.id, `${family}-pressure-v1`);
+  assert.equal(scenario.family, family);
+  assert.equal(scenario.access, 'premium');
+  assert.equal(scenario.estimatedMinutes, 45);
+  assert.deepEqual(
+    scenario.supportedQuestions,
+    Object.fromEntries(Object.entries(expectedQuestions).map(([framework, expected]) => [framework, expected.id]))
+  );
+  for (const map of [scenario.solutionAssets, scenario.debrief.frameworkNotes]) {
+    assert.deepEqual(Object.keys(map), Object.keys(expectedQuestions), `${label}: every framework map must agree`);
+  }
+  assert.deepEqual(scenario.rounds.map((round) => round.id), roundIds);
+  const checks = scenario.rounds.flatMap((round) => round.frameworkTests ?? []);
+  assert.deepEqual(checks.map((test) => test.id), checkIds);
+  assertPressureContractIsNamed(scenario, starterSources, label);
+  return { scenario, checksById: Object.fromEntries(checks.map((test) => [test.id, test])) };
+}
+
+function assertChatStreamingPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'chat-streaming-ui',
+    label: 'Chat Streaming',
+    expectedQuestions: {
+      react: {
+        id: 'react-chat-streaming-ui',
+        starter: 'assets/sb/react/question/react-chat-streaming-ui.v1.json',
+        solution: 'assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['stream-the-answer', 'stop-keeps-the-text', 'failure-and-retry', 'announcements-and-cleanup'],
+    checkIds: [
+      'pressure-chat-stream',
+      'pressure-chat-stop',
+      'pressure-chat-retry',
+      'pressure-chat-announce',
+      'pressure-chat-cleanup',
+    ],
+  });
+
+  const stopSteps = checksById['pressure-chat-stop'].steps;
+  const quietPeriod = stopSteps.findIndex((step) => step.type === 'wait');
+  assert.deepEqual(
+    stopSteps[quietPeriod + 1],
+    {
+      type: 'expectNoText',
+      selector: '.message--assistant .message-bubble',
+      text: 'reply.',
+      match: 'contains',
+    },
+    'Stop must be sampled after more words would have arrived, or a running stream passes'
+  );
+
+  const retrySteps = checksById['pressure-chat-retry'].steps;
+  const retryClick = retrySteps.findIndex((step) => step.selector === '.retry-response' && step.type === 'click');
+  assert.ok(
+    retrySteps.slice(retryClick).some((step) => step.selector === '.message--assistant' && step.count === 1),
+    'Retry must stay in the same message'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-chat-cleanup'].steps.slice(-3).map((step) => step.type),
+    ['wait', 'unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must remove the chat while a stream is running'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/cancelRef/, /aria-busy/, /chat-status/, /retry-response/] },
+    'chat-streaming-ui',
+    'Chat Streaming'
+  );
+}
+
+function assertUseEffectOncePressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'use-effect-once',
+    label: 'useEffect Once',
+    expectedQuestions: {
+      react: {
+        id: 'react-use-effect-once',
+        starter: 'assets/sb/react/question/react-use-effect-once.v1.json',
+        solution: 'assets/sb/react/solution/react-use-effect-once-solution.v1.json',
+        checks: ['effect-steady-state', 'effect-dependency-change', 'effect-unmount-cleanup'],
+      },
+    },
+    roundIds: ['one-connection', 'prove-the-order', 'connecting-takes-time', 'settings-without-reconnecting'],
+    checkIds: [
+      'pressure-effect-one-connection',
+      'pressure-effect-order',
+      'pressure-effect-slow-connect',
+      'pressure-effect-mute',
+      'pressure-effect-cleanup',
+    ],
+  });
+
+  // The preview has no StrictMode, so a ref that skips the effect only shows up in the connection status.
+  const roomChange = json('cdn/questions/react/coding.json')
+    .find((entry) => entry.id === 'react-use-effect-once')
+    .frameworkTests.find((test) => test.id === 'effect-dependency-change');
+  assert.ok(
+    roomChange.steps.some((step) => step.selector === '.connection-status' && step.text === 'Connected to design'),
+    'The normal room change check must prove the connection moved to the new room'
+  );
+  assert.ok(
+    checksById['pressure-effect-one-connection'].steps.some(
+      (step) => step.selector === '.connection-status' && step.text === 'Connected to design'
+    ),
+    'The first round must prove the connection moved to the new room'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-effect-slow-connect'].steps
+      .filter((step) => step.type === 'wait')
+      .map((step) => step.durationMs),
+    [100, 450, 400],
+    'The slow connection windows assume connect() takes 300 ms'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-effect-cleanup'].steps.slice(-2).map((step) => step.type),
+    ['unmountPreview', 'expectNoPreviewLeaks'],
+    'Cleanup must remove the component while the panel is connected'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/clearTimeout/, /event-log/, /mute-button/, /useRef/] },
+    'use-effect-once',
+    'useEffect Once'
+  );
+}
+
+function assertDebugDoubleRenderPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'debug-double-render',
+    label: 'Debug Double Render',
+    expectedQuestions: {
+      react: {
+        id: 'react-debug-double-render',
+        starter: 'assets/sb/react/question/react-debug-double-render.v1.json',
+        solution: 'assets/sb/react/solution/react-debug-double-render-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['one-click-one-render', 'do-not-copy-props', 'typing-leaves-the-badge-alone', 'many-updates-one-render'],
+    checkIds: [
+      'pressure-render-one-click',
+      'pressure-render-badge',
+      'pressure-render-note',
+      'pressure-render-updates',
+      'pressure-render-sum',
+    ],
+  });
+
+  const noteSteps = checksById['pressure-render-note'].steps;
+  const firstNote = noteSteps.findIndex((step) => step.type === 'setValue');
+  assert.ok(
+    noteSteps.slice(firstNote, firstNote + 4).some(
+      (step) => step.selector === '[data-testid="badge-renders"]' && step.text === '2'
+    ),
+    'Typing a note must prove the badge did not render'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/React\.memo/, /useCallback/, /useMemo/, /setCount\(\(c\) => c \+ 1\)/] },
+    'debug-double-render',
+    'Debug Double Render'
+  );
+}
+
+function assertTwoWayControlPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'input-output-two-way',
+    label: 'Two-way Control',
+    expectedQuestions: {
+      angular: {
+        id: 'angular-input-output-two-way',
+        starter: 'assets/sb/angular/question/angular-input-output-two-way.v2.json',
+        solution: 'assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json',
+        checks: [],
+      },
+    },
+    roundIds: ['parent-owns-the-value', 'changes-from-the-parent', 'work-inside-a-form', 'keyboard-and-names'],
+    checkIds: [
+      'pressure-control-owner',
+      'pressure-control-parent-changes',
+      'pressure-control-form',
+      'pressure-control-keyboard',
+    ],
+  });
+
+  // The normal description once asked for a text input that the starter and solution never had.
+  const description = JSON.stringify(
+    json('cdn/questions/angular/coding.json').find((entry) => entry.id === 'angular-input-output-two-way').description
+  );
+  assert.doesNotMatch(description, /Typing in the child input|user edits input/);
+  assert.match(description, /Pressing \+ or −/);
+
+  const parentChangeSteps = checksById['pressure-control-parent-changes'].steps;
+  const setToTen = parentChangeSteps.findIndex((step) => step.selector === '.set-ten');
+  assert.ok(
+    parentChangeSteps.slice(setToTen, setToTen + 4).some((step) => step.selector === '.emit-count' && step.text === '1'),
+    'A change from the parent must prove the child reported nothing'
+  );
+
+  const keyboardSteps = checksById['pressure-control-keyboard'].steps;
+  const lastArrowDown = keyboardSteps.findLastIndex((step) => step.key === 'ArrowDown');
+  assert.deepEqual(
+    keyboardSteps.slice(lastArrowDown + 1, lastArrowDown + 3).map((step) => step.text),
+    ['0', '2'],
+    'ArrowDown at zero must keep the value and report nothing'
+  );
+
+  const panelRule = scenario.rounds[3].constraints.find((rule) => rule.includes('spinbutton'));
+  assert.match(panelRule, /class `v` inside the panel/, 'The buttons must not sit inside the spinbutton');
+
+  assertPressureSolutions(
+    scenario,
+    {
+      angular: [/NG_VALUE_ACCESSOR/, /writeValue/, /setDisabledState/, /registerOnTouched/, /role="spinbutton"/, /formControl/],
+    },
+    'input-output-two-way',
+    'Two-way Control'
+  );
+}
+
+function assertMultiStepFormPressureMode() {
+  const normalChecks = ['multi-step-form-advances'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'multi-step-form',
+    label: 'Multi-step Signup',
+    expectedQuestions: {
+      react: {
+        id: 'react-multi-step-signup',
+        starter: 'assets/sb/react/question/react-multi-step-form.v1.json',
+        solution: 'assets/sb/react/solution/react-multi-step-form-solution.v1.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-multi-step-form-starter',
+        starter: 'assets/sb/angular/question/angular-multi-step-form.v2.json',
+        solution: 'assets/sb/angular/solution/angular-multi-step-form-solution.v2.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-multi-step-form',
+        starter: 'assets/sb/vue/question/vue-multi-step-form.v1.json',
+        solution: 'assets/sb/vue/solution/vue-multi-step-form-solution.v1.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['valid-navigation', 'edit-from-summary', 'company-step', 'finish-and-focus'],
+    checkIds: [
+      'pressure-signup-navigation',
+      'pressure-signup-edit',
+      'pressure-signup-company',
+      'pressure-signup-finish',
+      'pressure-signup-focus',
+    ],
+  });
+
+  const navigationSteps = checksById['pressure-signup-navigation'].steps;
+  assert.ok(
+    navigationSteps.some((step) => step.type === 'setValue' && step.value === '   '),
+    'A name made of spaces must be rejected, which Validators.required alone does not do'
+  );
+  assert.ok(
+    navigationSteps.some((step) => step.type === 'expectDisabled' && step.index === 1 && step.disabled === false),
+    'Next must stay enabled while the step is invalid'
+  );
+
+  const editSteps = checksById['pressure-signup-edit'].steps;
+  assert.equal(
+    editSteps.at(-3).text,
+    'Next',
+    'After returning from an edit, the same button must walk the steps as usual'
+  );
+
+  const finishSteps = checksById['pressure-signup-finish'].steps;
+  const restart = finishSteps.findIndex((step) => step.selector === '.restart');
+  assert.ok(
+    finishSteps.slice(restart).some((step) => step.selector === '.is-company:checked' && step.count === 0),
+    'Start over must clear the company checkbox'
+  );
+  assert.equal(
+    finishSteps.at(-2).type,
+    'expectValue',
+    'Start over must prove a later step was emptied too, not only the first'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/STEP_FIELDS/, /tabIndex=\{-1\}/, /aria-invalid/, /aria-live="polite"/, /restartRef/],
+      angular: [/requiredText/, /detectChanges/, /formGroupName="company"/, /aria-invalid/, /form\.reset\(\)/],
+      vue: [/nextTick/, /computed<StepId\[\]>/, /aria-invalid/, /emptyForm/],
+    },
+    'multi-step-form',
+    'Multi-step Signup'
+  );
+}
+
+function assertNestedCheckboxesPressureMode() {
+  const normalChecks = ['nested-checkbox-parent-sync'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'nested-checkboxes',
+    label: 'Checkbox Tree',
+    expectedQuestions: {
+      react: {
+        id: 'react-nested-checkboxes',
+        starter: 'assets/sb/react/question/react-nested-checkboxes.v1.json',
+        solution: 'assets/sb/react/solution/react-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-nested-checkboxes',
+        starter: 'assets/sb/angular/question/angular-nested-checkboxes.v1.json',
+        solution: 'assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-nested-checkboxes',
+        starter: 'assets/sb/vue/question/vue-nested-checkboxes.v1.json',
+        solution: 'assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['parent-child-sync', 'deep-tree', 'locked-items', 'selection-summary'],
+    checkIds: [
+      'pressure-tree-sync',
+      'pressure-tree-depth',
+      'pressure-tree-locked',
+      'pressure-tree-summary',
+      'pressure-tree-order',
+    ],
+  });
+
+  // The starter comment once told candidates the parent should never become indeterminate.
+  const vueStarter = normalizedAssetFiles(
+    json('cdn/sb/vue/question/vue-nested-checkboxes.v1.json'),
+    'vue:checkbox-tree-starter'
+  )['src/App.vue'];
+  assert.doesNotMatch(vueStarter, /NOT auto-change/);
+  assert.match(vueStarter, /checked, unchecked or indeterminate/);
+
+  const allSteps = Object.values(checksById).flatMap((check) => check.steps);
+  assert.ok(
+    allSteps.some((step) => step.selector === '[data-id="parent"]:indeterminate'),
+    'A half-selected parent must be measured through the native indeterminate state'
+  );
+  assert.ok(
+    allSteps.every((step) => !`${step.selector ?? ''}${step.attribute ?? ''}`.includes('aria-checked')),
+    'A native checkbox must not be checked through aria-checked'
+  );
+
+  const lockedSteps = checksById['pressure-tree-locked'].steps;
+  const parentClicks = lockedSteps.flatMap((step, index) => (step.selector === '[data-id="parent"]' && step.type === 'click' ? [index] : []));
+  assert.equal(parentClicks.length, 2, 'The parent must be pressed on and off, so it can never get stuck');
+  assert.deepEqual(
+    lockedSteps.slice(-1),
+    [{ type: 'expectCount', selector: '[data-id="child-5"]:checked', count: 1 }],
+    'A locked item must keep its value through both clicks'
+  );
+
+  const orderSteps = checksById['pressure-tree-order'].steps;
+  const clicks = orderSteps.filter((step) => step.type === 'click').slice(0, 2).map((step) => step.selector);
+  assert.deepEqual(
+    clicks,
+    ['[data-id="child-3"]', '[data-id="child-1-1"]'],
+    'The clicks must go against tree order, or a click-ordered list passes'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/\.indeterminate = /, /unlockedLeavesOf/, /const renderNode|function renderNode/],
+      angular: [/\[indeterminate\]/, /ngTemplateOutlet/, /unlockedLeavesOf/],
+      vue: [/:indeterminate/, /rowsOf/, /unlockedLeavesOf/],
+    },
+    'nested-checkboxes',
+    'Checkbox Tree'
+  );
+}
+
+function assertImageSliderPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'image-slider',
+    label: 'Image Carousel',
+    expectedQuestions: {
+      react: {
+        id: 'react-image-slider',
+        starter: 'assets/sb/react/question/react-image-slider.v1.json',
+        solution: 'assets/sb/react/solution/react-image-slider-solution.v1.json',
+        checks: [],
+      },
+      angular: {
+        id: 'angular-image-slider-starter',
+        starter: 'assets/sb/angular/question/angular-image-slider.v2.json',
+        solution: 'assets/sb/angular/solution/angular-image-slider-solution.v2.json',
+        checks: [],
+      },
+      vue: {
+        id: 'vue-image-slider',
+        starter: 'assets/sb/vue/question/vue-image-slider.v1.json',
+        solution: 'assets/sb/vue/solution/vue-image-slider-solution.v1.json',
+        checks: [],
+      },
+    },
+    roundIds: ['one-current-slide', 'autoplay', 'keyboard-and-screen-readers', 'slides-can-disappear'],
+    checkIds: [
+      'pressure-slider-current',
+      'pressure-slider-autoplay',
+      'pressure-slider-keyboard',
+      'pressure-slider-remove',
+      'pressure-slider-cleanup',
+    ],
+  });
+
+  const selectors = Object.values(checksById).flatMap((check) => check.steps.map((step) => step.selector ?? ''));
+  assert.ok(
+    selectors.every((selector) => !/dot--active|\.active/.test(selector)),
+    'The active dot class differs by framework, so a check must read aria-current instead'
+  );
+  // The preview's error overlay holds an empty .meta element too, so a bare selector always finds one.
+  assert.ok(
+    selectors.filter((selector) => selector.includes('.meta')).every((selector) => selector === '.section .meta'),
+    'Every .meta check must stay inside the slider'
+  );
+
+  const autoplaySteps = checksById['pressure-slider-autoplay'].steps;
+  assert.deepEqual(
+    autoplaySteps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [1200, 500, 700],
+    'The restart window must sample after the old timer would fire and before the restarted one does'
+  );
+  const quietWait = autoplaySteps.findLastIndex((step) => step.type === 'wait');
+  assert.equal(
+    autoplaySteps[quietWait - 1].text,
+    autoplaySteps[quietWait + 1].text,
+    'The slide the user picked must still be there after the old timer would have fired'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-slider-cleanup'].steps.map((step) => step.type),
+    ['click', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the slider while it is playing'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/aria-roledescription/, /% totalSlides/, /empty-state/, /aria-current/],
+      angular: [/ngOnDestroy/, /restartTimer/, /empty-state/, /aria-current/],
+      vue: [/onUnmounted/, /watch\(\[isPlaying, currentIndex, totalSlides\]/, /empty-state/, /aria-current/],
+    },
+    'image-slider',
+    'Image Carousel'
+  );
+}
+
+function assertFileExplorerPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'file-explorer',
+    label: 'File Explorer',
+    expectedQuestions: {
+      react: {
+        id: 'react-file-explorer',
+        starter: 'assets/sb/react/question/react-file-explorer.v1.json',
+        solution: 'assets/sb/react/solution/react-file-explorer-solution.v1.json',
+        checks: [
+          'explorer-sorts-folders-first',
+          'explorer-folder-toggles',
+          'explorer-empty-folder',
+          'explorer-selects-one-file',
+          'explorer-arrow-navigation',
+          'explorer-right-left',
+          'explorer-enter-activates',
+          'explorer-collapse-all-tab-stop',
+        ],
+      },
+    },
+    roundIds: ['folders-and-files', 'keyboard', 'load-when-opened', 'rename'],
+    checkIds: [
+      'pressure-explorer-tree',
+      'pressure-explorer-keyboard',
+      'pressure-explorer-load',
+      'pressure-explorer-rename',
+      'pressure-explorer-paths',
+    ],
+  });
+
+  // The normal empty folder check looks for .empty, so the question has to say so.
+  const question = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-file-explorer');
+  assert.match(JSON.stringify(question.description.specs.requirements), /Empty folder` in an element with the class `empty`/);
+  const starter = normalizedAssetFiles(
+    json('cdn/sb/react/question/react-file-explorer.v1.json'),
+    'react:file-explorer-starter'
+  )['src/App.tsx'];
+  assert.match(starter, /in an element with the class empty/);
+
+  // Step 3 makes folders load late and makes public fail, and earlier checks keep running after it.
+  for (const id of ['pressure-explorer-tree', 'pressure-explorer-keyboard']) {
+    const steps = checksById[id].steps;
+    assert.ok(
+      steps.some((step) => step.type === 'waitForCount' && step.selector === '[data-path^="src/"]'),
+      `${id}: must wait for the children of an opened folder`
+    );
+    assert.ok(
+      !steps.some(
+        (step) =>
+          step.selector === '[data-path="public"] > .row'
+          || (step.selector === '[data-path="public"]' && ['ArrowRight', 'Enter'].includes(step.key))
+      ),
+      `${id}: must not open public, which fails on purpose in a later step`
+    );
+  }
+
+  const loadSteps = checksById['pressure-explorer-load'].steps;
+  const keyWhileLoading = loadSteps.findIndex((step) => step.key === 'ArrowRight');
+  assert.deepEqual(
+    loadSteps[keyWhileLoading + 1],
+    { type: 'expectFocused', selector: '[data-path="src"]' },
+    'ArrowRight on a loading folder must prove focus stays put'
+  );
+
+  const renameSteps = checksById['pressure-explorer-rename'].steps;
+  const keyInInput = renameSteps.findIndex((step) => step.key === 'ArrowDown');
+  assert.deepEqual(
+    renameSteps[keyInInput + 1],
+    { type: 'expectFocused', selector: '.rename-input' },
+    'A key pressed in the input must prove the tree did not move'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    { react: [/fetchChildren/, /closest\('\.rename-input/, /focusAfterRender/, /aria-busy/] },
+    'file-explorer',
+    'File Explorer'
+  );
+}
+
+function assertLikeButtonPressureMode() {
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'like-button',
+    label: 'Like Button',
+    expectedQuestions: {
+      react: {
+        id: 'react-like-button',
+        starter: 'assets/sb/react/question/react-like-button.v1.json',
+        solution: 'assets/sb/react/solution/react-like-button-solution.v2.json',
+        checks: [],
+      },
+      angular: {
+        id: 'angular-like-button',
+        starter: 'assets/sb/angular/question/angular-like-button.v2.json',
+        solution: 'assets/sb/angular/solution/angular-like-button-solution.v2.json',
+        checks: [],
+      },
+      vue: {
+        id: 'vue-like-button',
+        starter: 'assets/sb/vue/question/vue-like-button.v2.json',
+        solution: 'assets/sb/vue/solution/vue-like-button-solution.v2.json',
+        checks: [],
+      },
+    },
+    roundIds: ['update-first', 'server-says-no', 'fast-clicks', 'say-what-happened'],
+    checkIds: [
+      'pressure-like-instant',
+      'pressure-like-failure',
+      'pressure-like-fast-clicks',
+      'pressure-like-status',
+      'pressure-like-cleanup',
+    ],
+  });
+
+  // React runs updaters twice in StrictMode, so a nested setCount would change the count twice.
+  const normalSolution = normalizedAssetFiles(
+    json('cdn/sb/react/solution/react-like-button-solution.v2.json'),
+    'react:like-button-solution'
+  )['src/App.tsx'];
+  assert.doesNotMatch(normalSolution, /setLiked\(\(/, 'The official solution must keep state updaters pure');
+  assert.match(normalSolution, /setCount\(\(prevCount\)/);
+
+  const allSteps = Object.values(checksById).flatMap((check) => check.steps);
+  assert.ok(
+    allSteps.every((step) => step.type !== 'mockHttp'),
+    'fetch is off in live previews, so the candidate must be able to try this with the fake saveLike'
+  );
+
+  const fastSteps = checksById['pressure-like-fast-clicks'].steps;
+  assert.deepEqual(
+    fastSteps.filter((step) => step.selector === '.request-count').map((step) => step.text),
+    ['0', '1', '2', '2', '3', '4', '5'],
+    'Fast clicks must prove exactly how many saves reach the server'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-like-status'].steps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+    [700, 450, 850],
+    'The status windows must sample after an old timer would clear a newer message'
+  );
+
+  assert.deepEqual(
+    checksById['pressure-like-cleanup'].steps.map((step) => step.type),
+    ['click', 'wait', 'unmountPreview', 'expectNoPreviewTimers'],
+    'Cleanup must remove the button during a save'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/accepted/, /saveLike/, /messageTimer/, /role="alert"/],
+      angular: [/accepted/, /saveLike/, /ngOnDestroy/, /role="alert"/],
+      vue: [/accepted/, /saveLike/, /onUnmounted/, /role="alert"/],
+    },
+    'like-button',
+    'Like Button'
+  );
+}
+
+function assertTransferListPressureMode() {
+  const normalChecks = ['transfer-move-item'];
+  const { scenario, checksById } = assertPremiumPressureScenario({
+    family: 'transfer-list',
+    label: 'Transfer List',
+    expectedQuestions: {
+      react: {
+        id: 'react-transfer-list',
+        starter: 'assets/sb/react/question/react-transfer-list.v2.json',
+        solution: 'assets/sb/react/solution/react-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+      angular: {
+        id: 'angular-transfer-list',
+        starter: 'assets/sb/angular/question/angular-transfer-list.v2.json',
+        solution: 'assets/sb/angular/solution/angular-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+      vue: {
+        id: 'vue-transfer-list',
+        starter: 'assets/sb/vue/question/vue-transfer-list.v2.json',
+        solution: 'assets/sb/vue/solution/vue-transfer-list-solution.v2.json',
+        checks: normalChecks,
+      },
+    },
+    roundIds: ['move-between-lists', 'select-many', 'search-inside-a-list', 'undo-and-announce'],
+    checkIds: [
+      'pressure-transfer-move',
+      'pressure-transfer-select-all',
+      'pressure-transfer-search',
+      'pressure-transfer-undo',
+      'pressure-transfer-announce',
+    ],
+  });
+
+  assert.deepEqual(
+    checksById['pressure-transfer-move'].steps.filter((step) => step.type === 'click').slice(0, 2).map((step) => step.index),
+    [2, 1],
+    'The clicks must go against list order, or moving in click order passes'
+  );
+
+  const selectAllSteps = checksById['pressure-transfer-select-all'].steps;
+  const emptied = selectAllSteps.findIndex((step) => step.text === '0 of 0 selected');
+  assert.ok(emptied > 0, 'The select all check must empty a list');
+  assert.deepEqual(
+    selectAllSteps.slice(emptied + 1, emptied + 3).map((step) => step.selector),
+    ['.listCard:first-child .select-all', '.listCard:first-child .select-all:checked'],
+    'An empty list must not count as all selected'
+  );
+
+  assert.ok(
+    checksById['pressure-transfer-search'].steps.some(
+      (step) => step.selector === '.listCard:first-child .row:first-child input:checked' && step.count === 1
+    ),
+    'A hidden selected item must stay selected after a move'
+  );
+
+  const undoSteps = checksById['pressure-transfer-undo'].steps;
+  const firstUndo = undoSteps.findIndex((step) => step.type === 'click' && step.selector === '.undo-move');
+  assert.ok(
+    undoSteps.slice(firstUndo).some(
+      (step) => step.selector === '.listCard:last-child .row' && step.text === 'Xenon' && step.index === 0
+    ),
+    'Undo must return an item to its old position, not to the end of the list'
+  );
+
+  assertPressureSolutions(
+    scenario,
+    {
+      react: [/history/, /indeterminate/, /titles\.current/, /transfer-status/],
+      angular: [/\[indeterminate\]/, /history/, /nativeElement\.focus/, /transfer-status/],
+      vue: [/:indeterminate/, /history/, /topTitle\.value\?\.focus/, /transfer-status/],
+    },
+    'transfer-list',
+    'Transfer List'
   );
 }
 
@@ -4529,6 +5745,20 @@ assertTicTacToePressureMode();
 assertChessboardClickHighlightPressureMode();
 assertDynamicCounterButtonsPressureMode();
 assertPaginationTablePressureMode();
+assertAutocompletePressureMode();
+assertTeamListPressureMode();
+assertNestedCommentsPressureMode();
+assertContactFormPressureMode();
+assertChatStreamingPressureMode();
+assertUseEffectOncePressureMode();
+assertDebugDoubleRenderPressureMode();
+assertTwoWayControlPressureMode();
+assertMultiStepFormPressureMode();
+assertNestedCheckboxesPressureMode();
+assertImageSliderPressureMode();
+assertFileExplorerPressureMode();
+assertLikeButtonPressureMode();
+assertTransferListPressureMode();
 
 const angularCodingQuestions = json('cdn/questions/angular/coding.json');
 const nestedCheckboxStarter = json('cdn/sb/angular/question/angular-nested-checkboxes.v1.json');
@@ -4939,6 +6169,105 @@ for (const node of apiMisuseVariant.nodes) {
   assert.ok(apiMisuseLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: API misuse anchor range must contain its snippet`);
 }
 
+// ElevenLabs live technical round (2026-11-05): a debug item whose starter keeps four causes and whose solutions,
+// pressure scenario and decision graph stay in step with each other.
+const transcriptQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-debug-transcript-sync');
+assert.ok(transcriptQuestion);
+assert.equal(transcriptQuestion.access, 'premium');
+assert.deepEqual(transcriptQuestion.companies, ['elevenlabs']);
+assert.equal(transcriptQuestion.pressureModeAsset, 'assets/questions/pressure-modes/transcript-sync.v1.json');
+assert.equal(transcriptQuestion.decisionGraphAsset, 'assets/questions/react/decision-graphs/react-debug-transcript-sync.v1.json');
+const transcriptStarter = json('cdn/sb/react/question/react-debug-transcript-sync.v1.json').files['src/App.tsx'];
+const transcriptSolution = json('cdn/sb/react/solution/react-debug-transcript-sync-solution.v1.json').files['src/App.tsx'];
+const transcriptPressureSolution = json('cdn/sb/react/solution/react-debug-transcript-sync-pressure-solution.v1.json').files['src/App.tsx'];
+assert.match(transcriptStarter, /\}, \[playing\]\);/, 'the starter keeps the clock effect without the rate dependency');
+assert.doesNotMatch(transcriptStarter, /clearInterval/, 'the starter keeps the missing cleanup');
+assert.match(transcriptStarter, /\}, \[lines\]\);/, 'the starter keeps the filter effect that ignores the query');
+assert.doesNotMatch(transcriptStarter, /cancelled/, 'the starter keeps the unguarded transcript request');
+assert.doesNotMatch(transcriptStarter, /className="position"/, 'the starter leaves the position line to the candidate');
+for (const [name, source] of [['solution', transcriptSolution], ['pressure solution', transcriptPressureSolution]]) {
+  assert.match(source, /window\.clearInterval\(timer\);/, `${name} clears the interval`);
+  assert.match(source, /useMemo\(\(\) => \{/, `${name} derives the filter`);
+  assert.match(source, /cancelled = true;/, `${name} cancels a stale transcript request`);
+  assert.match(source, /className="position"/, `${name} renders the position line`);
+}
+assert.match(transcriptSolution, /\}, \[playing, rate, total\]\);/);
+assert.match(transcriptPressureSolution, /\}, \[playing, rate, total, loop\]\);/);
+assert.match(transcriptPressureSolution, /className="back"/);
+assert.match(transcriptPressureSolution, /aria-pressed=\{loop\}/);
+const transcriptPressure = json('cdn/questions/pressure-modes/transcript-sync.v1.json');
+assert.equal(transcriptPressure.supportedQuestions.react, 'react-debug-transcript-sync');
+assert.equal(transcriptPressure.rounds.length, 4);
+assert.ok(transcriptPressure.rounds.every((round) => Array.isArray(round.frameworkTests) && round.frameworkTests.length > 0));
+const transcriptGraph = json('cdn/questions/react/decision-graphs/react-debug-transcript-sync.v1.json');
+const transcriptVariant = transcriptGraph.variants.approach1;
+assert.equal(transcriptGraph.questionId, 'react-debug-transcript-sync');
+assert.equal(transcriptVariant.code, transcriptSolution, 'transcript decision graph must mirror the solution App.tsx');
+assert.equal(transcriptQuestion.solutionBlock.approaches[0].codeJs, transcriptSolution, 'the approach code must mirror the solution App.tsx');
+const transcriptLines = transcriptVariant.code.split('\n');
+for (const node of transcriptVariant.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= transcriptLines.length, `${node.id}: invalid transcript anchor range`);
+  assert.ok(transcriptLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: transcript anchor range must contain its snippet`);
+}
+
+const filesTableQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-files-table-select-all');
+assert.ok(filesTableQuestion);
+assert.equal(filesTableQuestion.access, 'premium');
+assert.deepEqual(filesTableQuestion.companies, ['crowdstrike']);
+assert.equal(filesTableQuestion.pressureModeAsset, 'assets/questions/pressure-modes/files-table.v1.json');
+const filesTableStarter = json('cdn/sb/react/question/react-files-table-select-all.v1.json').files['src/App.tsx'];
+const filesTableSolution = json('cdn/sb/react/solution/react-files-table-select-all-solution.v1.json').files['src/App.tsx'];
+const filesTablePressureSolution = json('cdn/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json').files['src/App.tsx'];
+assert.doesNotMatch(filesTableStarter, /exceptions: new Set|\.indeterminate =|useMemo\(/, 'the starter leaves the selection model, the mixed header and the derived rows to the candidate');
+for (const [name, source] of [['solution', filesTableSolution], ['pressure solution', filesTablePressureSolution]]) {
+  assert.match(source, /mode: 'none' \| 'all';\n\s+exceptions: Set<string>;/, `${name} stores the selection as a mode plus exceptions`);
+  assert.match(source, /headerRef\.current\.indeterminate = headerState === 'some';/, `${name} sets the mixed state in an effect`);
+  assert.match(source, /aria-checked=\{headerState === 'some' \? 'mixed' : headerState === 'all'\}/, `${name} exposes the mixed state to assistive technology`);
+  assert.doesNotMatch(source, /new Set\(matching\.map|new Set\(FILES\.map|selectedIds/, `${name} must never list every id on select all`);
+}
+assert.match(filesTablePressureSolution, /className="load-full"/);
+assert.match(filesTablePressureSolution, /className="download-summary"/);
+assert.match(filesTablePressureSolution, /length: 2400/);
+const filesTableGraph = json('cdn/questions/react/decision-graphs/react-files-table-select-all.v1.json');
+assert.equal(filesTableGraph.variants.approach1.code, filesTableSolution, 'files table decision graph must mirror the solution App.tsx');
+assert.equal(filesTableQuestion.solutionBlock.approaches[0].codeJs, filesTableSolution, 'the files table approach code must mirror the solution App.tsx');
+const filesTableLines = filesTableSolution.split('\n');
+for (const node of filesTableGraph.variants.approach1.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= filesTableLines.length, `${node.id}: invalid files table anchor range`);
+  assert.ok(filesTableLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: files table anchor range must contain its snippet`);
+}
+
+const bookingWidgetQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-listing-booking-widget');
+assert.ok(bookingWidgetQuestion);
+assert.equal(bookingWidgetQuestion.access, 'premium');
+assert.deepEqual(bookingWidgetQuestion.companies, ['airbnb']);
+assert.equal(bookingWidgetQuestion.pressureModeAsset, 'assets/questions/pressure-modes/booking-widget.v1.json');
+const bookingWidgetStarter = json('cdn/sb/react/question/react-listing-booking-widget.v1.json').files['src/App.tsx'];
+const bookingWidgetSolution = json('cdn/sb/react/solution/react-listing-booking-widget-solution.v1.json').files['src/App.tsx'];
+const bookingWidgetPressureSolution = json('cdn/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json').files['src/App.tsx'];
+assert.doesNotMatch(bookingWidgetStarter, /useMemo|Date\.UTC|role="dialog"|range\.from < checkOut/, 'the starter leaves the quote, the night count, the overlap check and the dialog to the candidate');
+for (const [name, source] of [['solution', bookingWidgetSolution], ['pressure solution', bookingWidgetPressureSolution]]) {
+  assert.match(source, /const quote = useMemo<Quote>\(\(\) => \{/, `${name} derives one quote`);
+  assert.match(source, /Date\.UTC\(/, `${name} counts nights in UTC days`);
+  assert.match(source, /checkIn < range\.to && range\.from < checkOut/, `${name} checks booked dates as half-open ranges`);
+  assert.match(source, /Math\.max\(0, guests - LISTING\.includedGuests\) \* LISTING\.extraGuestFee/, `${name} prices extra guests per night`);
+  assert.match(source, /role="dialog"\n\s+aria-modal="true"/, `${name} confirms in a modal dialog`);
+  assert.doesNotMatch(source, /new Date\(check(In|Out)\)/, `${name} must not parse a date input as local time`);
+}
+assert.match(bookingWidgetPressureSolution, /className="currency"/);
+assert.match(bookingWidgetPressureSolution, /stay: convert\(quote\.nightly\) \* quote\.nights/, 'the pressure solution converts the nightly price once, so the lines add up');
+const bookingWidgetGraph = json('cdn/questions/react/decision-graphs/react-listing-booking-widget.v1.json');
+assert.equal(bookingWidgetGraph.variants.approach1.code, bookingWidgetSolution, 'booking widget decision graph must mirror the solution App.tsx');
+assert.equal(bookingWidgetQuestion.solutionBlock.approaches[0].codeJs, bookingWidgetSolution, 'the booking widget approach code must mirror the solution App.tsx');
+const bookingWidgetLines = bookingWidgetSolution.split('\n');
+for (const node of bookingWidgetGraph.variants.approach1.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= bookingWidgetLines.length, `${node.id}: invalid booking widget anchor range`);
+  assert.ok(bookingWidgetLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: booking widget anchor range must contain its snippet`);
+}
+
 const selectQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-select-compound-api');
 assert.ok(selectQuestion);
 assert.equal(selectQuestion.access, 'premium');
@@ -5269,6 +6598,144 @@ for (const node of vanillaPortVariant.nodes) {
   assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= vanillaPortLines.length, `${node.id}: invalid vanilla dropdown anchor range`);
   assert.ok(vanillaPortLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: vanilla dropdown anchor range must contain its snippet`);
 }
+
+// Every Pressure Mode scenario must pass the checks PressureModeService.normalize applies. The service drops a
+// scenario that fails any of them, so a broken file means the mode silently never opens on its task.
+const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
+  'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
+  'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks']);
+const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
+const pressureScenarios = new Map();
+for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {
+  const label = `pressure scenario ${file}`;
+  const scenario = json(`cdn/questions/pressure-modes/${file}`);
+  for (const field of ['schemaVersion', 'id', 'family', 'title']) {
+    assert.ok(typeof scenario[field] === 'string' && scenario[field].trim(), `${label}: missing ${field}`);
+  }
+  assert.ok(['premium', 'free'].includes(scenario.access), `${label}: access must be premium or free`);
+  assert.ok(Number(scenario.estimatedMinutes) > 0, `${label}: estimatedMinutes must be positive`);
+  const frameworksOf = (map, name) => {
+    assert.ok(map && typeof map === 'object' && !Array.isArray(map), `${label}: ${name} must be an object`);
+    for (const [key, value] of Object.entries(map)) {
+      assert.ok(PRESSURE_FRAMEWORKS.includes(key), `${label}: ${name} names an unknown framework ${key}`);
+      assert.ok(typeof value === 'string' && value.trim(), `${label}: ${name}.${key} must be text`);
+    }
+    return Object.keys(map).sort().join(',');
+  };
+  const supported = frameworksOf(scenario.supportedQuestions, 'supportedQuestions');
+  assert.ok(supported, `${label}: supportedQuestions is empty`);
+  assert.equal(frameworksOf(scenario.solutionAssets, 'solutionAssets'), supported, `${label}: solutionAssets must cover the supported frameworks`);
+  for (const [framework, asset] of Object.entries(scenario.solutionAssets)) {
+    assert.match(asset, new RegExp(`^assets/sb/${framework}/solution/[a-z0-9.-]+\\.json$`, 'i'), `${label}: ${framework} solution asset path`);
+    assertMirror(asset.replace(/^assets\//, ''), `${label}:${framework}`);
+  }
+  const debrief = scenario.debrief ?? {};
+  assert.ok(debrief.title && debrief.summary && Array.isArray(debrief.takeaways) && debrief.takeaways.length, `${label}: debrief needs a title, a summary and takeaways`);
+  assert.equal(frameworksOf(debrief.frameworkNotes, 'debrief.frameworkNotes'), supported, `${label}: debrief notes must cover the supported frameworks`);
+  assert.ok(Array.isArray(scenario.rounds) && scenario.rounds.length >= 1 && scenario.rounds.length <= 6, `${label}: one to six rounds`);
+  assert.equal(new Set(scenario.rounds.map((round) => round.id)).size, scenario.rounds.length, `${label}: round ids must be unique`);
+  let pressureChecks = 0;
+  for (const round of scenario.rounds) {
+    assert.ok(round.id && round.title && round.interviewerPrompt, `${label}: round ${round.id} needs an id, a title and a prompt`);
+    assert.ok(Array.isArray(round.constraints) && round.constraints.length, `${label}: round ${round.id} needs constraints`);
+    assert.ok(Array.isArray(round.frameworkTests) && round.frameworkTests.length, `${label}: round ${round.id} needs checks`);
+    for (const test of round.frameworkTests) {
+      assert.ok(Array.isArray(test.steps) && test.steps.length, `${label}: ${test.id} has no steps`);
+      for (const step of test.steps) {
+        assert.ok(PRESSURE_STEP_TYPES.has(step.type ?? step.action), `${label}: ${test.id} uses an unknown step type ${step.type ?? step.action}`);
+      }
+    }
+    pressureChecks += round.frameworkTests.length;
+  }
+  assert.ok(pressureChecks >= 1 && pressureChecks <= 6, `${label}: ${pressureChecks} checks, the runner takes one to six`);
+  pressureScenarios.set(`assets/questions/pressure-modes/${file}`, scenario);
+}
+for (const framework of PRESSURE_FRAMEWORKS) {
+  for (const question of json(`cdn/questions/${framework}/coding.json`)) {
+    if (!question.pressureModeAsset) continue;
+    const scenario = pressureScenarios.get(question.pressureModeAsset);
+    assert.ok(scenario, `${question.id}: pressureModeAsset ${question.pressureModeAsset} is not a scenario file`);
+    assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its scenario must list it for ${framework}`);
+  }
+}
+
+// A merge request review opens the workspace on the change under review, so every sample comment must sit on the
+// line it quotes in both, and each comment marked as checked has its check.
+const REVIEW_SEVERITIES = new Set(['blocker', 'major', 'minor', 'nit']);
+const reviewScenarios = new Map();
+for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/review-modes'))) {
+  const label = `review mode ${file}`;
+  assert.match(file, /^[a-z0-9.-]+\.json$/, `${label}: the service only loads lowercase .json names`);
+  const scenario = json(`cdn/questions/review-modes/${file}`);
+  assert.ok(scenario.sessionMinutes > 0, `${label}: needs a session length`);
+  const files = scenario.mergeRequest.files;
+  assert.equal(new Set(files.map((entry) => entry.path)).size, files.length, `${label}: file paths must be unique`);
+  // A merge request changes its files; a find case reads its code as it is and asks for an example worked by hand.
+  const format = scenario.format ?? 'review';
+  assert.ok(format === 'review' || format === 'find', `${label}: the format must be review or find`);
+  for (const entry of files) {
+    if (format === 'find') assert.ok(!entry.before, `${label}: a find case reads ${entry.path} as it is, with no file before it`);
+    else assert.notEqual(entry.before, entry.after, `${label}: ${entry.path} must change`);
+  }
+  if (format === 'find') assert.ok(scenario.workedExample?.prompt && scenario.workedExample?.answer, `${label}: a find case asks for a worked example and shows one`);
+  for (const comment of scenario.sampleReview.comments) {
+    const entry = files.find((candidate) => candidate.path === comment.path);
+    assert.ok(entry, `${label}: "${comment.title}" points at ${comment.path}, which the request does not change`);
+    assert.ok(REVIEW_SEVERITIES.has(comment.severity), `${label}: "${comment.title}" has an unknown severity`);
+    const line = entry.after.split('\n')[comment.line - 1];
+    assert.ok(comment.snippet && line?.includes(comment.snippet), `${label}: "${comment.title}" must sit on the line it quotes (${comment.path}:${comment.line})`);
+  }
+  reviewScenarios.set(`assets/questions/review-modes/${file}`, scenario);
+}
+for (const framework of PRESSURE_FRAMEWORKS) {
+  for (const question of json(`cdn/questions/${framework}/coding.json`)) {
+    if (!question.reviewModeAsset) continue;
+    const scenario = reviewScenarios.get(question.reviewModeAsset);
+    assert.ok(scenario, `${question.id}: reviewModeAsset ${question.reviewModeAsset} is not a review file`);
+    assert.equal(scenario.format ?? 'review', 'review', `${question.id}: a framework task's review is a merge request`);
+    assert.equal(scenario.supportedQuestions[framework], question.id, `${question.id}: its review must list it for ${framework}`);
+    assert.equal(scenario.access, question.access, `${question.id}: the review and the task share their access`);
+    const starter = json(`cdn/${question.sdk.asset.replace(/^assets\//, '')}`);
+    for (const entry of scenario.mergeRequest.files) {
+      assert.equal(fileCode(starter, entry.path), entry.after, `${question.id}: the starter's ${entry.path} must be the change under review`);
+    }
+    const checked = scenario.sampleReview.comments.filter((comment) => comment.checked).length;
+    assert.equal(checked, (question.frameworkTests ?? []).length, `${question.id}: one check per comment marked as checked in the workspace`);
+  }
+}
+
+// A find case opens on a plain JavaScript task: it reads the task's starter code, the lock page names it as a case,
+// and each finding marked as checked has a test of its own.
+for (const kind of ['coding', 'debug']) {
+  for (const question of json(`cdn/questions/javascript/${kind}.json`)) {
+    if (!question.reviewModeAsset) continue;
+    const scenario = reviewScenarios.get(question.reviewModeAsset);
+    assert.ok(scenario, `${question.id}: reviewModeAsset ${question.reviewModeAsset} is not a review file`);
+    assert.equal(scenario.format, 'find', `${question.id}: a plain JavaScript task's review is a find case`);
+    assert.equal(scenario.supportedQuestions.javascript, question.id, `${question.id}: its case must list it for javascript`);
+    assert.equal(scenario.access, question.access, `${question.id}: the case and the task share their access`);
+    assert.equal(scenario.mergeRequest.files.length, 1, `${question.id}: a find case reads the task's one file`);
+    assert.equal(scenario.mergeRequest.files[0].after, question.starterCode, `${question.id}: the case reads the task's starter code`);
+    const tests = (question.tests.match(/\btest\(/g) ?? []).length;
+    const checked = scenario.sampleReview.comments.filter((comment) => comment.checked).length;
+    assert.ok(checked >= 1 && checked <= tests, `${question.id}: each finding marked as checked needs a test (${checked} checked, ${tests} tests)`);
+  }
+}
+
+const reviewQuestion = json('cdn/questions/vue/coding.json').find((entry) => entry.id === 'vue-issue-list-merge-request-review');
+assert.ok(reviewQuestion);
+assert.equal(reviewQuestion.access, 'premium');
+assert.deepEqual(reviewQuestion.companies, ['gitlab']);
+const reviewStarter = fileCode(json('cdn/sb/vue/question/vue-issue-list-merge-request-review.v1.json'), 'src/App.vue');
+const reviewSolution = fileCode(json('cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json'), 'src/App.vue');
+assert.match(reviewStarter, /watch\(selectedLabel, loadIssues, \{ immediate: true \}\);\nonMounted\(loadIssues\);/, 'the change under review reloads on every label and twice on start');
+assert.doesNotMatch(reviewSolution, /\bwatch\(/, 'the solution filters the loaded issues instead of watching the label');
+assert.match(reviewSolution, /onMounted\(loadIssues\);/);
+assert.match(reviewSolution, /<button\n\s+v-for="label in LABELS"\n\s+:key="label"\n\s+type="button"/, 'the solution filters are keyed buttons');
+assert.match(reviewSolution, /<li v-for="issue in visibleIssues"/);
+assert.match(reviewSolution, /\} finally \{\n\s+loading\.value = false;/, 'the solution resets loading after a failed request');
+assert.doesNotMatch(reviewSolution, /console\.log/);
 
 console.log('Framework content regressions: PASS');
 console.log('Legacy RIGHT -> UP -> LEFT reproduction: pending direction became LEFT');

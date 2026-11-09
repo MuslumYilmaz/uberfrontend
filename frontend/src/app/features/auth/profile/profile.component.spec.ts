@@ -197,6 +197,20 @@ describe('ProfileComponent', () => {
     return nextFixture;
   }
 
+  it('links to the company plan only for someone who has one', () => {
+    fixture = createComponent();
+    expect(fixture.nativeElement.querySelector('[data-testid="profile-company-plan"]')).toBeNull();
+
+    userSig.update((user) => ({
+      ...user,
+      companyPlan: { companies: [{ slug: 'elevenlabs' }], level: 'senior', when: 'later', createdAt: '2026-11-02T10:00:00.000Z', passedRounds: [], markedDone: [] },
+    }));
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('[data-testid="profile-company-plan"]') as HTMLAnchorElement;
+    expect(link.textContent).toContain('Your plan');
+    expect(link.getAttribute('href')).toBe('/companies/plan');
+  });
+
   it('hides legacy coupon data and routes old coupon bookmarks to billing', () => {
     userSig.update((user) => ({
       ...user,

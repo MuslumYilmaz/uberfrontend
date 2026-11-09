@@ -937,6 +937,7 @@ const pick = (u) => {
         coupons: u.coupons,
         lastLoginAt: u.lastLoginAt,
         solvedQuestionIds: u.solvedQuestionIds || [],
+        companyPlan: u.companyPlan || null,
     };
 };
 

@@ -42,6 +42,34 @@ describe('SignupComponent', () => {
     fixture.detectChanges();
   });
 
+  it('names the company plan the person came from, and stays quiet for any other way in', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.querySelector('[data-testid="signup-plan-note"]')).toBeNull();
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [SignupComponent],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: auth },
+        { provide: AnalyticsService, useValue: analytics },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: convertToParamMap({ redirectTo: '/companies/preview?companies=agoda,meta&when=next-week&level=mid' }),
+            },
+          },
+        },
+      ],
+    });
+    const planFixture = TestBed.createComponent(SignupComponent);
+    planFixture.detectChanges();
+    const note = (planFixture.nativeElement as HTMLElement).querySelector('[data-testid="signup-plan-note"]');
+    expect(note?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Your Agoda and Meta plan will be saved to this account.');
+    expect(planFixture.componentInstance.redirectTo).toBe('/companies/preview?companies=agoda,meta&when=next-week&level=mid');
+  });
+
   it('shows one passive legal disclosure that covers OAuth and email signup', () => {
     const host = fixture.nativeElement as HTMLElement;
     const disclosure = host.querySelector('[data-testid="signup-legal-disclosure"]') as HTMLElement | null;

@@ -18,6 +18,20 @@ export type InterviewProcessSource = {
 export type InterviewProcessPractice = {
   readonly label: string;
   readonly path: string;
+  /** A section of the page at `path`, for a round the company's own guide answers, such as a behavioural round. */
+  readonly fragment?: string;
+  /** The section holds a behavioural drill: something to practise, so a plan offers it beside the tasks that run. */
+  readonly drill?: true;
+};
+
+/**
+ * The timed rehearsal of a stage, from cdn/questions/rehearsals/rehearsals.v1.json: its title and shape, as "Meta
+ * coding round, 2 problems in 40 minutes", and the page that offers it, its first free problem when it has one, so a
+ * visitor lands on the rehearsal's card rather than a lock page. The spec keeps both in step with the list.
+ */
+export type InterviewProcessRehearsal = {
+  readonly label: string;
+  readonly path: string;
 };
 
 export type InterviewProcessStage = {
@@ -26,6 +40,7 @@ export type InterviewProcessStage = {
   readonly appliesTo: string;
   readonly sources: readonly InterviewProcessSource[];
   readonly practice?: InterviewProcessPractice;
+  readonly rehearsal?: InterviewProcessRehearsal;
 };
 
 export type InterviewProcessVariant = {
@@ -65,6 +80,14 @@ const AMAZON_PHONE_NO_LP_2020 = amazonReport(678045, '2020-06');
 const AMAZON_ONSITE_2021 = amazonReport(1503301, '2021-10');
 const AMAZON_VANCOUVER_2022 = amazonReport(1984996, '2022-04');
 const AMAZON_SEATTLE_2024 = amazonReport(5934170, '2024-10');
+const AMAZON_INTERVIEW_LOOP: InterviewProcessSource = {
+  label: 'Amazon interview loop page',
+  url: 'https://www.amazon.jobs/content/en/how-we-hire/interview-loop',
+  kind: 'official',
+  date: '2026-11',
+};
+const AMAZON_HM_2019 = amazonReport(336727, '2019-07');
+const AMAZON_FEE_I_2025 = amazonReport(6968134, '2025-07');
 const AMAZON_BLIND_2022 = report(
   'Blind',
   'https://www.teamblind.com/post/amazon-frontend-fee-i-oa-phone-screen-loop-interview-2022-qqdjoknw',
@@ -155,10 +178,41 @@ const GOOGLE_GO5 = report(
   'https://www.jointaro.com/interviews/companies/google/experiences/front-end-developer-germany-june-23-2024-no-offer-positive-f76226db/',
   '2024-06',
 );
-const GOOGLE_GO6 = report('Medium (preview)', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
-const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/1274542/', '2021-06');
+const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
+// The question bank cites this post at its current address; one spelling keeps the task on the rounds that cite it.
+const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/post/1274542/', '2021-06');
 const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
 const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
+// Read in the browser on 2026-11-06: a Sunnyvale front end onsite of five rounds, three of them JavaScript (combining
+// callback results, a delayed-run API, a sequential queue), one app design and one algorithm; no phone screen.
+const GOOGLE_ONSITE_2019 = report('LeetCode', 'https://leetcode.com/discuss/post/342364/', '2019-07');
+// The Googleyness interview. Google's current pages no longer use the word; its interview tips describe the same
+// behavioural and hypothetical questions, and the archived 2020 interview page names it as one of four areas.
+// LeetCode posts were read through the GraphQL endpoint (post bodies, not comments).
+const GOOGLE_INTERVIEW_TIPS: InterviewProcessSource = {
+  label: 'Google: Interview tips',
+  url: 'https://www.google.com/about/careers/applications/interview-tips/',
+  kind: 'official',
+  date: '2026-11',
+};
+const GOOGLE_REWORK_STRUCTURED: InterviewProcessSource = {
+  label: 'Google re:Work: structured interviewing',
+  url: 'https://rework.withgoogle.com/intl/en/guides/a-guide-to-structured-interviewing-for-better-hiring-practices',
+  kind: 'official',
+  date: '2026-11',
+};
+const GOOGLE_INTERVIEW_2020: InterviewProcessSource = {
+  label: 'Google interview page (2020 archive)',
+  url: 'https://web.archive.org/web/20200504185427/https://careers.google.com/how-we-hire/interview/',
+  kind: 'official',
+  date: '2020-05',
+};
+const GOOGLE_GL_NEW_GRAD_2024 = report('LeetCode', 'https://leetcode.com/discuss/post/6022505/', '2024-10');
+const GOOGLE_GL_ML_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7093123/google-gl-googleyness-round-swe-iii-ml-b-0fe9/', '2025-08');
+const GOOGLE_GL_L4_US_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/7571793/', '2026-02');
+const GOOGLE_GL_L3_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8543506/', '2026-09');
+const GOOGLE_GL_L4_2024 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/5584385/', '2024-08');
+const GOOGLE_GL_L4_BLR_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8319665/', '2026-06');
 
 const META_HIRING = official('Meta: Hiring process', 'https://www.metacareers.com/hiring-process/');
 const META_FEE_INITIAL = official('Meta: FEE initial interview prep', 'https://www.metacareers.com/FEE-prep-initial/');
@@ -170,12 +224,14 @@ const META_ME2B = report('Taro', `${META_TARO}/front-end-engineer-intern-united-
 const META_ME3 = report('Medium', 'https://medium.com/@stylus07/meta-interview-experience-cdf53eea63f3', '2022-03');
 const META_ME4 = report('Blind', 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi', '2022-03');
 const META_ME5 = report('Blind', 'https://www.teamblind.com/post/Frontend-interview-experience-CPR8odiD', '2021-10');
-const META_ME6 = report('Blind', 'https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob', '2021-10');
+const META_ME6 = report('Blind (question list)', 'https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob', '2021-10');
 const META_ME7 = report('Taro (approx.)', `${META_TARO}/front-end-developer-new-york-ny-november-1-2020-no-offer-positive-b0918a8e/`, '2020-11');
 const META_ME8 = report('Blind', 'https://www.teamblind.com/post/meta-front-end-phone-interview-beroc46d', '2023-06');
 const META_ME9 = report('Taro', `${META_TARO}/front-end-developer-san-francisco-ca-march-6-2024-no-offer-positive-609eb715/`, '2024-03');
 const META_ME10 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-new-york-ny-april-1-2025-no-offer-positive-ae322f20/`, '2025-04');
 const META_ME11 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-menlo-park-ca-june-1-2025-accepted-offer-positive-143f4163/`, '2025-06');
+// Read 2026-11-09 for the behavioural decoder: the account names no round, only the question.
+const META_ME12 = report('Taro', `${META_TARO}/frontend-engineer-menlo-park-ca-november-25-2024-accepted-offer-positive-f6a8939b/`, '2024-11');
 const META_ROLE = 'FEE, IC4 to IC6';
 
 const MICROSOFT_HIRING_TIPS = official('Microsoft: Hiring tips', 'https://careers.microsoft.com/v2/global/en/hiring-tips');
@@ -204,6 +260,8 @@ const APPLE_AP8 = report('Blind', 'https://www.teamblind.com/post/my-apple-inter
 const APPLE_AP9 = report('Taro (approx.)', `${APPLE_TARO}/front-end-engineer-united-states-august-1-2021-no-offer-negative-2d79a1e7/`, '2021-08');
 const APPLE_ICT3_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/6579616/', '2025-03');
 const APPLE_FULLSTACK_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8354843/', '2026-06');
+// Read 2026-11-09 for the team conversation decoder: the hiring manager's topics and a director round on culture fit.
+const APPLE_AP10 = report('Taro (approx.)', `${APPLE_TARO}/senior-frontend-developer-hyderabad-july-1-2024-no-offer-neutral-ac6e61a6/`, '2024-07');
 const APPLE_ROLE = 'Frontend roles; varies by team';
 
 // Uber, Stripe, ByteDance/TikTok and Booking.com.
@@ -240,6 +298,7 @@ const STRIPE_ST5 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-developer-b
 const STRIPE_ST6_PLAN = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11');
 const STRIPE_ST7 = report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07');
 const STRIPE_ST8 = report('Taro', `${STRIPE_TARO}/frontend-developer-canada-september-19-2025-no-offer-positive-caea53c0/`, '2025-09');
+const STRIPE_ST9 = report('LeetCode Discuss', 'https://leetcode.com/discuss/post/5883632/', '2024-10');
 const STRIPE_ROLE = 'Frontend engineers';
 
 const BYTEDANCE_CAMPUS = official('ByteDance: Early careers interview tips', 'https://jobs.bytedance.com/en/campus/interview-tips');
@@ -634,6 +693,12 @@ const NETFLIX_NF8_SENIOR_FE_2021 = report(
   `${NETFLIX_TARO}/senior-frontend-engineer-san-jose-ca-august-1-2021-no-offer-negative-5771c678/`,
   '2021-08',
 );
+// Read 2026-11-09 for the culture decoder: a half day of behavioural interviews and the question the final round asked.
+const NETFLIX_NF9_SENIOR_UI_2020 = report(
+  'Taro (approx.)',
+  `${NETFLIX_TARO}/senior-ui-developer-united-states-november-1-2020-no-offer-positive-285dbb68/`,
+  '2020-11',
+);
 
 // ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
 // so their dates are the interview months the pages implied when read.
@@ -858,14 +923,72 @@ const CROWDSTRIKE_TB_SWE_INTERN_2025 = report(
   '2025-01',
 );
 
+// Airbnb's careers FAQ gives only the general shape, so the stages come from public accounts. Taro reports are
+// Glassdoor re-hosts and those dated the 1st of a month carry placeholder dates. Some accounts carry a general
+// software engineer title but describe a frontend loop.
+const AIRBNB_TARO = 'https://www.jointaro.com/interviews/companies/airbnb/experiences';
+const AIRBNB_AB1_FE_2022 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/front-end-engineer-san-francisco-ca-june-1-2022-declined-offer-negative-afab47f0/`,
+  '2022-06',
+);
+const AIRBNB_AB2_POSTER_2024 = report('Blind', 'https://www.teamblind.com/post/airbnb-frontend-interview-fyzmjrb5', '2024-02');
+const AIRBNB_AB2_COMMENT_2024 = report('Blind comment', 'https://www.teamblind.com/post/airbnb-frontend-interview-fyzmjrb5', '2024-05');
+const AIRBNB_AB3_COMMENT_2022 = report('Blind comment', 'https://www.teamblind.com/post/Airbnb-front-end-interview-L5-gkNsa6jg', '2022-02');
+const AIRBNB_AB4_COMMENT_2022 = report('Blind comment', 'https://www.teamblind.com/post/Airbnb-Frontend-Engineer-Interview-H7oqkCqu', '2022-04');
+const AIRBNB_AB6_FE_2021 = report(
+  'Blind',
+  'https://www.teamblind.com/post/Went-through-Frontend-Interviews-recently-here-are-the-kinda-questions-they-ask-dbyQb3ob',
+  '2021-10',
+);
+const AIRBNB_AB7_SCREEN_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7110255/', '2025-08');
+const AIRBNB_AB8_SWE_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/software-engineer-united-states-december-1-2024-no-offer-negative-4a03cdeb/`,
+  '2024-12',
+);
+const AIRBNB_AB9_FE_2025 = report('Taro', `${AIRBNB_TARO}/front-end-engineer-united-states-may-5-2025-no-offer-negative-f31948ca/`, '2025-05');
+const AIRBNB_AB10_STAFF_FE_2025 = report(
+  'Taro',
+  `${AIRBNB_TARO}/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/`,
+  '2025-02',
+);
+const AIRBNB_AB11_FE_2024 = report('Taro', `${AIRBNB_TARO}/front-end-developer-mexico-december-6-2024-no-offer-neutral-f0413553/`, '2024-12');
+const AIRBNB_AB12_FE_2024 = report('Blind', 'https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm', '2024-10');
+const AIRBNB_AB13_SWE_2025 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/software-engineer-united-states-september-1-2025-no-offer-negative-8231f149/`,
+  '2025-09',
+);
+const AIRBNB_AB14_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-united-states-december-1-2024-no-offer-negative-1f4f28c4/`,
+  '2024-12',
+);
+const AIRBNB_AB15_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-united-states-june-1-2024-no-offer-neutral-1ca3bb85/`,
+  '2024-06',
+);
+const AIRBNB_AB16_SENIOR_2024 = report(
+  'Taro (approx.)',
+  `${AIRBNB_TARO}/senior-software-engineer-new-york-ny-july-1-2024-no-offer-negative-4d27b9bc/`,
+  '2024-07',
+);
+const AIRBNB_AB17_FULLSTACK_2025 = report(
+  'PracHub (curated)',
+  'https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite',
+  '2025-08',
+);
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
     summary:
-      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews.',
+      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews, and accounts from 2019 and 2025 add the Leadership Principles questions.',
     caveat:
       'Each account describes one loop. Some added a bar raiser or a hiring-manager round, one 2020 phone screen had no behavioural questions, and one 2024 loop asked backend rather than frontend design. Confirm the format with your recruiter.',
-    checkedAt: '2026-10-20',
+    checkedAt: '2026-11-06',
     variants: [
       {
         title: 'Front End Engineer, experienced hires',
@@ -905,10 +1028,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Loop: Leadership Principles',
             format:
-              'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager.',
+              'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager, which is often all behavioural.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            sources: [AMAZON_FEE_PREP, AMAZON_INTERVIEW_LOOP, AMAZON_HM_2019, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022, AMAZON_FEE_I_2025],
+            practice: { label: 'Leadership Principles questions and story drill', path: '/companies/amazon/preview', fragment: 'amazon-round-leadership-principles', drill: true },
           },
         ],
       },
@@ -921,18 +1044,21 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'One round of two interviews, each about 45 to 60 minutes, mixing technical and behavioural questions.',
             appliesTo: 'Interns',
             sources: [AMAZON_STUDENT_PREP],
+            practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
           {
             stage: 'New graduate first round',
             format: 'One interview with an Amazonian, about 45 to 60 minutes.',
             appliesTo: 'Full-time new graduates',
             sources: [AMAZON_STUDENT_PREP],
+            practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
           },
           {
             stage: 'New graduate final stage',
             format: 'Three to four interviews of 45 to 60 minutes each, coded in LiveCode.',
             appliesTo: 'Full-time new graduates',
             sources: [AMAZON_STUDENT_PREP],
+            practice: { label: 'Implement the new operator', path: '/javascript/coding/js-implement-new' },
           },
         ],
       },
@@ -968,7 +1094,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A one-hour phone or video interview. Accounts mention React questions about a take-home assessment plus a LeetCode easy problem, and a live React session with basic JavaScript questions and a search bar.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T5_FE_2022, TESLA_T2_FE_2021, TESLA_B2_TAKE_HOME, TESLA_T1_FE_2025],
-            practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+            practice: { label: 'The one-hour screen, rehearsed', path: '/react/trivia/react-phone-screen-search-bar-rehearsal' },
           },
           {
             stage: 'Final loop: frontend coding',
@@ -1122,6 +1248,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: 'Software engineer to senior',
             sources: [WALMART_W7_SWE_US, WALMART_W21_KARAT, WALMART_W23_SENIOR_FE, WALMART_W6_SENIOR, WALMART_W19_SENIOR_FE],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+            rehearsal: { label: 'Walmart Karat screen, 8 short answers and 2 problems in 55 minutes', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'Coding rounds',
@@ -1151,10 +1278,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   google: {
     summary:
-      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2021 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
+      'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2019 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies; one 2026 account, read as a preview only, had none. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot that allows an approved assistant in one round for some US teams. Confirm the loop with your recruiter.',
-    checkedAt: '2026-10-20',
+      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot for junior to mid-level roles on some US teams: an approved AI assistant in a code comprehension round, and a technical design discussion about a past project in the Googleyness round. Confirm the loop with your recruiter.',
+    checkedAt: '2026-11-06',
     variants: [
       {
         title: 'Software engineers in front-end roles',
@@ -1180,10 +1307,32 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Interview loop',
-            format: 'Four or five interviews by video or onsite: algorithm coding, usually one JavaScript or frontend round (more in one account), and a Googleyness interview.',
+            format: 'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round (more in two accounts), plus the Googleyness interview in its own row below.',
             appliesTo: 'All candidates',
-            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8],
+            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8, GOOGLE_ONSITE_2019],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
+          },
+          {
+            stage: 'Googleyness interview',
+            format:
+              'About 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership; in three 2026 accounts it sat in a first, virtual stage with one technical round, before the onsite coding, and one early-career loop added 15 minutes of it to a technical interview.',
+            appliesTo: 'All candidates',
+            sources: [
+              GOOGLE_INTERVIEW_TIPS,
+              GOOGLE_REWORK_STRUCTURED,
+              GOOGLE_INTERVIEW_2020,
+              GOOGLE_GO8,
+              GOOGLE_GO1,
+              GOOGLE_GO7,
+              GOOGLE_GO6,
+              GOOGLE_GL_NEW_GRAD_2024,
+              GOOGLE_GL_ML_2025,
+              GOOGLE_GL_L4_US_2026,
+              GOOGLE_GL_L3_2026,
+              GOOGLE_GL_L4_2024,
+              GOOGLE_GL_L4_BLR_2026,
+            ],
+            practice: { label: 'Googleyness questions and story drill', path: '/companies/google/preview', fragment: 'google-round-googleyness', drill: true },
           },
           {
             stage: 'System design',
@@ -1232,6 +1381,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: META_ROLE,
             sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME6, META_ME7, META_ME11],
             practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+            rehearsal: { label: 'Meta coding round, 2 problems in 40 minutes', path: '/javascript/coding/js-debounce' },
           },
           {
             stage: 'Full loop: UI architecture and design',
@@ -1244,8 +1394,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Full loop: behavioural',
             format: 'A 45-minute session.',
             appliesTo: META_ROLE,
-            sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME7, META_ME11],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME7, META_ME11, META_ME12],
+            practice: { label: 'Behavioural questions and story drill', path: '/companies/meta/preview', fragment: 'meta-round-behavioural', drill: true },
           },
         ],
       },
@@ -1366,7 +1516,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Hiring manager conversation',
             format: 'Before the screen, or as the screen itself.',
             appliesTo: 'Some teams',
-            sources: [APPLE_AP7, APPLE_AP9, APPLE_ICT3_2025, APPLE_FULLSTACK_2026],
+            sources: [APPLE_AP7, APPLE_AP9, APPLE_AP10, APPLE_ICT3_2025, APPLE_FULLSTACK_2026],
+            practice: { label: 'Apple team conversation questions and story drill', path: '/companies/apple/preview', fragment: 'apple-round-team-conversations', drill: true },
           },
           {
             stage: 'Technical screen',
@@ -1379,7 +1530,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Team loop',
             format: 'Four to seven interviews of 30–45 minutes, mostly JavaScript, React and CSS coding and concepts; some teams add behavioural or cross-functional interviews.',
             appliesTo: APPLE_ROLE,
-            sources: [APPLE_AP2, APPLE_AP3, APPLE_AP4, APPLE_AP7, APPLE_AP8, APPLE_ICT3_2025],
+            sources: [APPLE_AP2, APPLE_AP3, APPLE_AP4, APPLE_AP7, APPLE_AP8, APPLE_AP10, APPLE_ICT3_2025],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
         ],
@@ -1468,7 +1619,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Technical screen',
             format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component; one screen was a three-part exercise.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8],
+            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8, STRIPE_ST9],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
@@ -1476,19 +1627,22 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'Find and fix bugs in an unfamiliar codebase.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST5, STRIPE_ST6_PLAN],
-            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+            practice: { label: 'Bug squash an unfamiliar invoicing repo', path: '/javascript/debug/js-debug-bug-squash-invoices' },
           },
           {
             stage: 'Onsite: integration',
             format: 'Combine provided tools or APIs into a working feature.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST6_PLAN],
+            // Each onsite row gets its own practice, so the plan can fill all three rounds instead of one.
+            practice: { label: 'Fetch JSON with a timeout and abort', path: '/javascript/coding/js-fetch-json-timeout' },
           },
           {
             stage: 'Onsite: programming exercise',
             format: 'A coding exercise.',
             appliesTo: STRIPE_ROLE,
             sources: [STRIPE_ST1, STRIPE_ST6_PLAN],
+            practice: { label: 'Parse a query string', path: '/javascript/coding/js-querystring-parse-1' },
           },
           {
             stage: 'Onsite: frontend design',
@@ -1624,6 +1778,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: 'Junior to FE II',
             sources: [BOOKINGCOM_BK3, BOOKINGCOM_BK5, BOOKINGCOM_BK8, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
+            rehearsal: {
+              label: 'Booking.com HackerRank assessment, 2 multiple-choice questions and 3 problems in 90 minutes',
+              path: '/javascript/coding/js-valid-parentheses',
+            },
           },
           {
             stage: 'Recruiter call',
@@ -1636,7 +1794,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'One or two rounds of about 60 minutes with two engineers: build a component in plain JavaScript or React, such as an autocomplete or a tooltip, follow a design spec with API data, or add a feature to a prepared app.',
             appliesTo: 'Frontend roles',
             sources: [BOOKINGCOM_BK1, BOOKINGCOM_BK2, BOOKINGCOM_BK5, BOOKINGCOM_BK6, BOOKINGCOM_BK7, BOOKINGCOM_BK9, BOOKINGCOM_BK10, BOOKINGCOM_BK11],
-            practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+            practice: { label: 'Autocomplete engine in plain JavaScript', path: '/javascript/coding/js-autocomplete-engine' },
           },
           {
             stage: 'Fit interview',
@@ -1839,6 +1997,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV7, REVOLUT_RV9, REVOLUT_RV10],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
+            rehearsal: { label: 'Revolut HackerRank assessment, 3 problems in 85 minutes', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'Live coding',
@@ -1866,6 +2025,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'An interview on how you work and make decisions; listed in recent plans, with no first-hand account since 2022.',
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_BAR_RAISER, REVOLUT_RV1, REVOLUT_RV15_PLAN],
+            // The guide's own Bar Raiser section, so the team-fit round keeps the behavioural guide in the plan.
+            practice: { label: 'What the Bar Raiser covers', path: '/companies/revolut/preview', fragment: 'revolut-round-bar-raiser' },
           },
         ],
       },
@@ -1873,7 +2034,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   spotify: {
     summary:
-      'Spotify\'s hiring page describes a recruiter interview, a second interview with one or two team members and a final round with several team members. Web engineer accounts from 2022 to 2025, mostly from the US and Canada, describe a technical screen and a final round with a plain HTML, CSS and JavaScript build, algorithms, system design and a values interview.',
+      'Spotify\'s hiring page describes a recruiter interview, a second interview with one or two team members and a final round with several team members. Web engineer accounts from 2021 to 2025, mostly from the US and Canada, describe a technical screen and a final round with a plain HTML, CSS and JavaScript build, algorithms, system design and a values interview.',
     caveat:
       'The detailed accounts are from the US and Canada; evidence from Europe is limited to full-stack accounts. One hired candidate had no debugging round.',
     checkedAt: '2026-10-20',
@@ -1986,7 +2147,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: '45 minutes.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA2],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            // The hiring-manager round takes the general behavioural guide; this one gets its own page.
+            practice: { label: 'Common behavioral questions', path: '/guides/behavioral/common-questions' },
           },
         ],
       },
@@ -2002,7 +2164,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     variants: [
       {
         title: 'Frontend engineers, London and Bay Area, from postings 2025-03 to 2026-02 and one London account',
-        note: 'Thin evidence: one public frontend account read in full. Stages marked "postings only" rest on the closed postings alone.',
+        note: 'Thin evidence: one public frontend account. Stages marked "postings only" rest on the closed postings alone.',
         stages: [
           {
             stage: 'Application review',
@@ -2071,7 +2233,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   jpmorgan: {
     summary:
-      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2021 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
+      'JPMorgan Chase\'s How we hire page says the interview process will differ for each position and that candidates meet several people in multiple rounds, and JPMorgan Chase-badged employees on Blind describe decentralised, team-run loops. Frontend accounts from 2017 to 2026 in the UK, the US and India describe a recruiter screen, a one-hour React and JavaScript conversation often split between two interviewers, 30 to 90 minutes of live coding, and a hiring-manager or leadership round. The online-assessment and super-day rows come from generic software-engineer accounts that Software Engineer II and III requisitions probably share.',
     caveat:
       'No standard loop exists: the format depends on the line of business and the team, so the order and count of stages vary between accounts, and most accounts describe two to four of these stages rather than all of them. The super-day shape rests on generic software-engineer accounts, and no frontend-titled report confirms it. Several frontend accounts are one to three lines long and some dates are approximate; one candidate met an interviewer assigned to a back-end role, and another heard nothing after a cleared round.',
     checkedAt: '2026-10-21',
@@ -2136,7 +2298,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Agoda\'s interview-process page describes a HackerRank online test as the coding assessment and four rounds: Coding, Platform, System Design and Agoda Culture Fit, with a decision typically within two weeks of the last round. Front-end accounts from Bangkok relocation loops in 2025 and 2026 describe a recruiter prep call, a 60-minute coding interview, a Frontend Platform interview and an architecture interview, all on HackerRank about a week apart, a preliminary call in which the level is set, a culture-fit conversation with an engineering manager, and the manager presenting the offer.',
     caveat:
-      'The careers pages could only be read from archive captures. The Platform round\'s content varies by interviewer: a pure question-and-answer hour, a JavaScript implementation or an architecture discussion. Rejections after clearing the technical rounds are reported, over headcount or without a managerial round. Gurgaon loops differ by team; Manila and Bangalore rest on too little to state a loop. On 2026-10-21 the front-end postings were Staff, Lead and Manager level, all Bangkok-based with relocation.',
+      'The Platform round\'s content varies by interviewer: a pure question-and-answer hour, a JavaScript implementation or an architecture discussion. Rejections after clearing the technical rounds are reported, over headcount or without a managerial round. Gurgaon loops differ by team; Manila and Bangalore rest on too little to state a loop. On 2026-10-21 the front-end postings were Staff, Lead and Manager level, all Bangkok-based with relocation.',
     checkedAt: '2026-10-21',
     variants: [
       {
@@ -2162,6 +2324,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             appliesTo: AGODA_ROLE,
             sources: [AGODA_A1_BANGKOK_2026, AGODA_A4_STAFF_2025, AGODA_A5_FULL_STACK_2025, AGODA_A12_BANGALORE_2025, AGODA_INTERVIEWER_GUIDE],
             practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+            rehearsal: { label: 'Agoda coding interview, 2 problems in 45 minutes', path: '/javascript/coding/js-add-strings' },
           },
           {
             stage: 'Frontend Platform interview',
@@ -2435,7 +2598,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Netflix publishes a process only for new graduates and interns: a take-home assessment, then two or about two to three rounds. Accounts for experienced frontend and UI roles from 2020 to 2025 describe recruiter and hiring-manager conversations, a live JavaScript screen or a take-home, and an onsite of about four interviews; Netflix-tagged commenters say each team runs its own loop.',
     caveat:
-      'Thin evidence: one complete 2020 loop, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
+      'Thin evidence: two complete 2020 loops, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
     checkedAt: '2026-10-22',
     variants: [
       {
@@ -2455,6 +2618,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A long behavioural interview with a UI manager before the take-home in the 2020 account; a Netflix-tagged commenter in 2024 expects a manager screen before any technical round. A 2021 senior account describes only a confrontational talk with the would-be manager.',
             appliesTo: 'Most loops',
             sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF8_SENIOR_FE_2021],
+            practice: { label: 'Netflix culture questions and story drill', path: '/companies/netflix/preview', fragment: 'netflix-round-culture', drill: true },
           },
           {
             stage: 'Technical screen',
@@ -2473,9 +2637,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Onsite',
             format:
-              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; a 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
+              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; another 2020 account had half a day of technical interviews and half a day of behavioural ones with senior leadership and product. A 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
             appliesTo: 'All candidates',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF5_PLAN_2024],
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF5_PLAN_2024],
           },
         ],
       },
@@ -2719,7 +2883,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A self-contained merge request on a small application arrives at least 72 hours before the call; up to an hour of review, finished a day ahead. Reports name Vue, HTML, CSS, Haml and Jest unit tests.',
             appliesTo: 'Frontend engineers',
             sources: [GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL3_FE_2024, GITLAB_GL4_FE_2024, GITLAB_GL10_FE_2021, GITLAB_GL16_FE_2020],
-            practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
+            practice: { label: 'Review a Vue merge request', path: '/vue/coding/vue-issue-list-merge-request-review' },
           },
           {
             stage: 'Technical interview',
@@ -2740,6 +2904,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: '60 minutes with a Director of Engineering on past experience and values, with a few technical questions in some accounts.',
             appliesTo: 'All candidates',
             sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019],
+            // The behavioural round takes the general guide; past experience calls for prepared stories.
+            practice: { label: 'Crafting STAR stories', path: '/guides/behavioral/stories' },
           },
           {
             stage: 'References and offer',
@@ -2809,7 +2975,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'A conversational design of a credit card application page and its confirmation page, with a whiteboard for notes, or the structure of a web app or single-page application from requirements: components, routing, data flow and API calls.',
             appliesTo: 'Frontend engineers',
             sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
-            practice: { label: 'Multi-step form with autosave', path: '/system-design/multi-step-form-autosave' },
+            practice: { label: 'Credit card application page case', path: '/system-design/credit-card-application-page' },
           },
           {
             stage: 'Power Day: frontend technical',
@@ -2823,9 +2989,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Power Day: case',
             format:
               'A business scenario read through code: find the bug in a budgeting program written by an intern without coding the fix, work example cost calculations and fix a faulty algorithm, or refactor badly written code.',
-            appliesTo: 'All candidates',
+            appliesTo: 'Most loops; not every position',
             sources: [CAPITALONE_AI_ML_GUIDE, CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO6_FRONTEND_2022],
-            practice: { label: 'Fix a defaults bug', path: '/javascript/debug/js-debug-nullish-defaults' },
+            practice: { label: "Find the bug in an intern's budget summary", path: '/javascript/debug/js-debug-intern-budget-summary' },
           },
           {
             stage: 'Power Day: behavioral',
@@ -2952,13 +3118,15 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               CROWDSTRIKE_CS12_SENIOR_FE_2022,
               CROWDSTRIKE_CS16_UI_2022,
             ],
-            practice: { label: 'Component state from a mock', path: '/system-design/ui-component-state-from-mock' },
+            practice: { label: 'Take-home review questions, answered', path: '/react/trivia/react-take-home-table-review-questions' },
           },
           {
             stage: 'Closing round',
             format: 'A culture interview with someone outside engineering, a collaboration panel, or an informational talk with the hiring manager about the team.',
             appliesTo: 'Some candidates',
             sources: [CROWDSTRIKE_CS1_EM_FE_2025, CROWDSTRIKE_CS6_SENIOR_2024, CROWDSTRIKE_CS16_UI_2022],
+            // The hiring-manager round takes the general behavioural guide; a culture round is scored on its signals.
+            practice: { label: 'Behavioral interview scorecard', path: '/guides/behavioral/evaluation-areas' },
           },
           {
             stage: 'Result',
@@ -3050,6 +3218,85 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'The intern met a second team for a casual behavioral interview two weeks later and received an offer the next day.',
             appliesTo: 'Some candidates',
             sources: [CROWDSTRIKE_CS11_UI_INTERN_2023],
+          },
+        ],
+      },
+    ],
+  },
+  airbnb: {
+    summary:
+      'Airbnb\'s careers FAQ says the process depends on the position and that candidates meet several people on the team. Frontend accounts from 2024 and 2025 describe a recruiter call and a technical screen, then UI and JavaScript coding, frontend system design and a past-project deep dive.',
+    caveat:
+      'Accounts disagree on algorithms: one reports none, two report a LeetCode-hard problem in 2025. Most list tasks without naming the round, so the rows group them by type and do not give an order. Some accounts carry a general software engineer title but describe frontend rounds, and none of the frontend accounts cited is from 2026.',
+    checkedAt: '2026-11-02',
+    variants: [
+      {
+        title: 'Frontend engineers, mostly 2024 to 2025',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: 'One account describes a short call about experience. Two received prep material, and one of them was told to expect frontend concepts and best practices.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB9_FE_2025, AIRBNB_AB13_SWE_2025],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'Content varies by account: a UI component or a store-style design question, tests that must pass, a 60-minute booking widget with product discussion in a full-stack account, or a LeetCode-hard problem despite frontend prep material. One interviewer said questions would keep coming until time ran out.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB9_FE_2025, AIRBNB_AB17_FULLSTACK_2025, AIRBNB_AB7_SCREEN_2025, AIRBNB_AB12_FE_2024, AIRBNB_AB2_POSTER_2024],
+            practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+          },
+          {
+            stage: 'Coding: UI or React',
+            format: 'Build UI: a styled card game, a photo gallery with live updates and timeouts, a star rating, a React component, or a DOM or React task.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB8_SWE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB15_SENIOR_2024, AIRBNB_AB1_FE_2022],
+            practice: { label: 'React star rating', path: '/react/coding/react-star-rating' },
+          },
+          {
+            stage: 'Coding: JavaScript',
+            format:
+              'Currying, callbacks, async, closures and prototypes in one account, vanilla JavaScript in another and a class that stores a data object in a third. A commenter who cleared the loop names the event loop and closures.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB8_SWE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB16_SENIOR_2024, AIRBNB_AB2_COMMENT_2024],
+            practice: { label: 'Explain closures', path: '/javascript/trivia/js-closures' },
+          },
+          {
+            stage: 'Frontend system design',
+            format:
+              'Design a frontend app or component: state, data, APIs, trade-offs and optimisations. Two accounts report a chat app, one of them going into WebSockets and online and offline flows. One account says its question matched neither the job nor the prep packet.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB13_SWE_2025, AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB11_FE_2024, AIRBNB_AB12_FE_2024, AIRBNB_AB1_FE_2022],
+            practice: { label: 'Real-time messaging inbox case', path: '/system-design/messaging-inbox-frontend' },
+          },
+          {
+            stage: 'Experience deep dive',
+            format: 'An experience round on a past project in depth, in one account a project the candidate led.',
+            appliesTo: 'Frontend engineers',
+            sources: [AIRBNB_AB10_STAFF_FE_2025, AIRBNB_AB12_FE_2024, AIRBNB_AB4_COMMENT_2022, AIRBNB_AB3_COMMENT_2022],
+            practice: { label: 'Behavioural stories', path: '/guides/behavioral/stories' },
+          },
+          {
+            stage: 'Core values or behavioural',
+            format: 'A core values interview in one account, behavioural questions in others.',
+            appliesTo: 'Some loops',
+            sources: [AIRBNB_AB11_FE_2024, AIRBNB_AB14_SENIOR_2024, AIRBNB_AB4_COMMENT_2022],
+            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+          },
+          {
+            stage: 'Algorithms',
+            format:
+              'Accounts disagree. One reports no algorithms and one not much. Reports from 2021 and 2022 name one array or LeetCode-medium problem. Two from 2025 report a LeetCode-hard problem, one in the technical screen and one as a 45-minute coding round.',
+            appliesTo: 'Some loops',
+            sources: [AIRBNB_AB13_SWE_2025, AIRBNB_AB9_FE_2025, AIRBNB_AB11_FE_2024, AIRBNB_AB4_COMMENT_2022, AIRBNB_AB3_COMMENT_2022, AIRBNB_AB6_FE_2021],
+            practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+          },
+          {
+            stage: 'Team matching',
+            format: 'Conversations with hiring managers after the interviews. This candidate then heard nothing from the recruiter for months.',
+            appliesTo: 'The one account',
+            sources: [AIRBNB_AB14_SENIOR_2024],
           },
         ],
       },

@@ -17,8 +17,12 @@
         (dismiss)="dismissRestoreBanner()">
     </app-restore-banner>
 
+    <div *ngIf="concealedNote" class="concealed-note" data-testid="framework-concealed-note">
+        <p>{{ concealedNote }}</p>
+    </div>
+
     <!-- File Drawer -->
-    <div class="file-drawer" [class.open]="showFileDrawer()">
+    <div class="file-drawer" [class.open]="showFileDrawer()" [attr.inert]="concealedNote ? '' : null">
         <div class="backdrop" (click)="closeFiles()"></div>
         <div class="panel">
                 <div class="panel-header">
@@ -67,7 +71,7 @@
     </div>
 
     <!-- 2-col layout: editor + preview -->
-    <div class="flex-1 flex min-h-0 framework-layout">
+    <div class="flex-1 flex min-h-0 framework-layout" [attr.inert]="concealedNote ? '' : null">
         <!-- LEFT: Editor -->
         <div class="min-w-0 min-h-0 flex flex-col" data-testid="framework-editor-column"
             [style.flex]="frameworkEditorFlex()">
@@ -85,11 +89,12 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <span *ngIf="clockLabel || locked" class="rehearsal-pill" data-testid="framework-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
                     <span *ngIf="viewingSolution()" class="text-[11px] text-yellow-300">Solution loaded</span>
                     <button *ngIf="frameworkChecks().length" type="button"
                         class="text-xs px-3 py-1.5 rounded border border-emerald-300/40 text-emerald-100 hover:bg-emerald-300/10 disabled:opacity-60"
                         data-testid="framework-run-checks"
-                        [disabled]="frameworkChecksRunning()"
+                        [disabled]="frameworkChecksRunning() || locked"
                         (click)="runFrameworkChecks()">
                         {{ frameworkChecksRunning() ? 'Running checks' : 'Run checks' }}
                     </button>
@@ -104,7 +109,7 @@
             <section class="min-w-0 min-h-0 flex-1 flex editor-shell">
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
                     <app-monaco-editor #frameworkEditor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
-                        [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
+                        [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions" [readOnly]="locked"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
@@ -124,6 +129,7 @@
                         data-testid="framework-code-editor"
                         aria-label="Framework code editor fallback"
                         spellcheck="false"
+                        [readOnly]="locked"
                         [value]="editorContent()"
                         (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
                 </ng-template>

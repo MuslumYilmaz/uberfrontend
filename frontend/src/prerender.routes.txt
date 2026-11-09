@@ -246,6 +246,7 @@
 /javascript/coding/js-array-prototype-reduce
 /javascript/coding/js-array-sort
 /javascript/coding/js-arrays-equal
+/javascript/coding/js-autocomplete-engine
 /javascript/coding/js-build-tree-from-flat-list
 /javascript/coding/js-capitalize-words
 /javascript/coding/js-color-contrast-ratio
@@ -287,6 +288,7 @@
 /javascript/coding/js-is-object-empty
 /javascript/coding/js-json-stringify
 /javascript/coding/js-lodash-get
+/javascript/coding/js-longest-substring-without-repeating
 /javascript/coding/js-max-char
 /javascript/coding/js-maze-path
 /javascript/coding/js-measure-duration
@@ -332,6 +334,8 @@
 /javascript/coding/js-valid-parentheses
 /javascript/coding/js-validate-username
 /javascript/debug/js-debug-async-race
+/javascript/debug/js-debug-bug-squash-invoices
+/javascript/debug/js-debug-intern-budget-summary
 /javascript/debug/js-debug-lost-this-binding
 /javascript/debug/js-debug-missing-return-map-filter
 /javascript/debug/js-debug-mutating-input
@@ -411,6 +415,7 @@
 /javascript/trivia/js-undefined-vs-not-defined
 /javascript/trivia/js-use-strict-describe
 /javascript/trivia/js-var-hoisting-shadowing-output
+/javascript/trivia/js-web-fundamentals-hour-hotel-booking
 /javascript/trivia/js-web-workers-basics
 /javascript/trivia/js-why-eval-function-considered-dangerous
 /javascript/trivia/js-xss-dom-sinks
@@ -439,14 +444,17 @@
 /react/coding/react-debounced-search
 /react/coding/react-debug-api-misuse
 /react/coding/react-debug-double-render
+/react/coding/react-debug-transcript-sync
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table
 /react/coding/react-fetch-list-states
 /react/coding/react-file-explorer
+/react/coding/react-files-table-select-all
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider
 /react/coding/react-implement-usememo-context
 /react/coding/react-like-button
+/react/coding/react-listing-booking-widget
 /react/coding/react-multi-step-signup
 /react/coding/react-nested-checkboxes
 /react/coding/react-nested-comments
@@ -485,6 +493,7 @@
 /react/trivia/react-lifting-state-up
 /react/trivia/react-mixing-state-and-props-responsibilities
 /react/trivia/react-one-way-data-flow
+/react/trivia/react-phone-screen-search-bar-rehearsal
 /react/trivia/react-portals
 /react/trivia/react-pure-function-of-props-and-state
 /react/trivia/react-render-nothing-return-value
@@ -494,6 +503,7 @@
 /react/trivia/react-stale-state-closures
 /react/trivia/react-state-management-redux
 /react/trivia/react-strictmode-double-invoke-effects
+/react/trivia/react-take-home-table-review-questions
 /react/trivia/react-useeffect-purpose
 /react/trivia/react-useeffect-vs-uselayouteffect
 /react/trivia/react-usememo-vs-usecallback
@@ -510,10 +520,12 @@
 /system-design/ai-ux-considerations
 /system-design/car-rental-booking-frontend
 /system-design/component-design-system-architecture
+/system-design/credit-card-application-page
 /system-design/cross-device-preferences-sync
 /system-design/dashboard-widgets-draggable-resizable
 /system-design/endless-short-video-feed
 /system-design/flashcard-language-trainer
+/system-design/hotel-search-page-frontend
 /system-design/image-upload-preview
 /system-design/infinite-scroll-list
 /system-design/live-chart-high-frequency-updates
@@ -578,6 +590,7 @@
 /vue/coding/vue-dynamic-table
 /vue/coding/vue-filterable-user-list
 /vue/coding/vue-image-slider
+/vue/coding/vue-issue-list-merge-request-review
 /vue/coding/vue-like-button
 /vue/coding/vue-multi-step-form
 /vue/coding/vue-nested-checkboxes

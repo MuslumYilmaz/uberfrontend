@@ -38,7 +38,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public ServiceNow prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2021 to 2025: polyfills for built-in methods with their edge cases, closures and console output prediction, a tiny virtual DOM renderer, the components and data flow of a notification panel or autocomplete, and fundamentals such as Map versus Object explained without a framework.',
+      'Prepare with five practice prompts shaped by public frontend accounts from 2021 to 2026: polyfills for built-in methods with their edge cases, closures and console output prediction, a tiny virtual DOM renderer, the components and data flow of a notification panel or autocomplete, and fundamentals such as Map versus Object explained without a framework.',
     caveat:
       'This guide uses public, self-reported interview accounts to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every ServiceNow team.',
     chips: ['5 practice prompts', 'Vanilla JavaScript first', 'Full practice set requires Premium'],
@@ -47,7 +47,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not ServiceNow trivia',
     paragraphs: [
-      'The public accounts agree on one thing above all: the JavaScript rounds test fundamentals rather than a framework. A 2021 reply from an employee says the company has its own framework, so knowing how the language works matters more than React or Angular; a 2025 UI engineer describes two consecutive rounds of closures, polyfills and output prediction before the hiring manager asked about Map versus Object. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The public accounts agree on one thing above all: the JavaScript rounds test fundamentals rather than a framework. A 2021 reply from an employee says the company has its own framework, so knowing how the language works matters more than React or Angular; a 2025 UI engineer describes two consecutive rounds of closures, polyfills and output prediction before the hiring manager asked about Map versus Object. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Round shapes vary by team and year. A 2022 Amsterdam candidate described a competency-based hiring manager round and, per the recruiter, two-hour and one-hour technical sessions to follow; a 2025 IC2 candidate listed a 45-minute behavioural and code-along session and a 90-minute panel on algorithms and system design, with the hardest problems described as medium string and stack questions. Practise fundamentals until they are automatic and keep a design vocabulary for the data-flow round.',
     ],
   },
@@ -56,7 +56,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
       'One self-reported 2025 loop on Medium for a software engineer (UI) role informs most prompts: a screening call; a JavaScript and React fundamentals round with closures, promises, a map polyfill and console output prediction; a deeper JavaScript round with increment and decrement functions inside loops and polyfills of built-in methods with edge cases; and a hiring manager round on Map versus Object, how Map works internally and when to choose it. Blind threads add a 2021 staff phone screen where a reply lists implementing a virtual DOM, implementing built-in prototype methods and a round on UI design and data flow; a 2021 senior phone screen where an employee advises JavaScript fundamentals over frameworks; a 2022 Amsterdam loop with a competency-based manager round and two technical sessions; and a 2025 IC2 loop with a behavioural code-along and a panel on algorithms and system design.',
-      'A 2026 LeetCode Discuss report for a senior frontend developer appears in public search previews with a nested comments design, an autocomplete with debouncing, loading and empty states, a notification panel design, a question about rendering one hundred thousand messages, and two medium algorithm problems. Its full text could not be read by our tools, so this guide uses only what the previews show. Together the accounts establish that these round types occurred between 2021 and 2025, with locations, where stated, in India, the Netherlands and the United States; they do not establish exact wording, the current format, or how every team interviews. Confirm the round structure, the coding environment and whether a system design round is included with the recruiter. ServiceNow publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
+      'A 2026 LeetCode Discuss report for a senior frontend developer appears in public search previews with a nested comments design, an autocomplete with debouncing, loading and empty states, a notification panel design, a question about rendering one hundred thousand messages, and two medium algorithm problems; this guide uses only what those previews show. Together the accounts establish that these round types occurred between 2021 and 2026, with locations, where stated, in India, the Netherlands and the United States; they do not establish exact wording, the current format, or how every team interviews. Confirm the round structure, the coding environment and whether a system design round is included with the recruiter. ServiceNow publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
   roleLenses: {
@@ -267,7 +267,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: SERVICENOW_BLIND_SENIOR_2021_LABEL, url: SERVICENOW_BLIND_SENIOR_2021_URL, note: 'A candidate asking about a frontend-leaning senior phone screen. Replies tagged as employees advise JavaScript fundamentals over React or Angular because of an in-house framework, plus problem-solving questions; no exact questions are reported.', kind: 'report' },
       { label: 'Public thread: ServiceNow rounds for a front-end focused engineer, Amsterdam, October 2022', url: SERVICENOW_BLIND_AMS_2022_URL, note: 'A mid-level candidate describing a recruiter call and a competency-based hiring manager round, with two technical sessions still to come per the recruiter; one commenter says ServiceNow uses HackerRank, and replies mention design patterns and medium algorithms. The outcome is not reported.', kind: 'report' },
       { label: SERVICENOW_BLIND_IC2_2025_LABEL, url: SERVICENOW_BLIND_IC2_2025_URL, note: 'A candidate listing a 45-minute behavioural and code-along round and a 90-minute panel on algorithms and system design for a UI platform team. One reply describes the hardest problems as medium string and stack questions.', kind: 'report' },
-      { label: 'LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026', url: SERVICENOW_LEETCODE_2026_URL, note: 'Public search previews list a nested comments design, an autocomplete with loading and empty states, a notification panel design, rendering one hundred thousand messages and two medium algorithm problems. The full report could not be read by our tools, so nothing else from it is used.', kind: 'report' },
+      { label: 'LeetCode Discuss: ServiceNow senior frontend developer interview experience, February 2026', url: SERVICENOW_LEETCODE_2026_URL, note: 'Public search previews list a nested comments design, an autocomplete with loading and empty states, a notification panel design, rendering one hundred thousand messages and two medium algorithm problems; nothing else from the report is used.', kind: 'report' },
       { label: 'ServiceNow careers', url: 'https://careers.servicenow.com/', note: 'Official roles and teams for product context only, not evidence of interview content or format.', kind: 'official' },
     ],
   },
@@ -275,7 +275,7 @@ export const SERVICENOW_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full ServiceNow practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the map polyfill, the DOM renderer and the broader company-tagged editorial set.',
+      'Premium unlocks the map polyfill, the DOM renderer and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full ServiceNow practice set',
     src: 'company_preview_servicenow',
   },

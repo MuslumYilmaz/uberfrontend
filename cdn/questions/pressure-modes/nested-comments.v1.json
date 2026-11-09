@@ -1,0 +1,770 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "nested-comments-pressure-v1",
+  "family": "nested-comments",
+  "title": "Nested Comments Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-nested-comments",
+    "angular": "angular-nested-comments",
+    "vue": "vue-nested-comments"
+  },
+  "rounds": [
+    {
+      "id": "core-thread",
+      "title": "Replies go under the right comment",
+      "interviewerPrompt": "Build the thread first. A reply must end up under the comment it answers, at any depth, and only one reply box can be open at a time.",
+      "constraints": [
+        "Keep the starter comment and the starter classes, such as `node` for each comment, `text` for its text and `reply` for the reply box. A reply's `node` sits inside its parent's `node`.",
+        "New top-level comments go to the top of the list. Ignore comments that are empty or only spaces, and clear the box after adding.",
+        "Add the class `reply-button` to every Reply button. Clicking it opens a reply box under that comment and closes any other reply box.",
+        "Post adds the reply after that comment's existing replies and closes the box. Cancel closes the box and adds nothing."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-comments-core",
+          "name": "Round 1 · Replies land under the right comment, at any depth",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".composer textarea",
+              "value": "   "
+            },
+            {
+              "type": "click",
+              "selector": ".composer button"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".composer textarea",
+              "value": "Second thread"
+            },
+            {
+              "type": "click",
+              "selector": ".composer button"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 2
+            },
+            {
+              "type": "expectValue",
+              "selector": ".composer textarea",
+              "value": ""
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Second thread",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node .node",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Reply A",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 2
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A1"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node .node .node",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Reply A1",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply B"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Reply B",
+              "index": 4
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Discard me"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions .ghost"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-flow",
+      "title": "Keep the user's place while replying",
+      "interviewerPrompt": "Now make replying work from the keyboard. The user should never lose their place or the text they typed.",
+      "constraints": [
+        "Clicking Reply moves focus to the reply input, and focus stays there while the user types.",
+        "`Enter` posts the reply and `Escape` cancels it. An empty reply is ignored and the box stays open.",
+        "After posting or cancelling, focus returns to the Reply button of that comment.",
+        "Each comment keeps its own draft. Opening another comment's reply box and coming back brings the text back. Posting or cancelling clears that draft.",
+        "Give each Reply button and reply input an `aria-label` that names the comment, such as `Reply to First comment`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-comments-keyboard",
+          "name": "Round 2 · Focus and drafts survive the reply flow",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".composer textarea",
+              "value": "Other thread"
+            },
+            {
+              "type": "click",
+              "selector": ".composer button"
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".reply input"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".reply-button",
+              "attribute": "aria-label",
+              "expected": "Reply to First comment",
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".reply input",
+              "attribute": "aria-label",
+              "expected": "Reply to First comment"
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Draft one"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".reply input"
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": ".reply input",
+              "value": ""
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Draft two"
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "expectValue",
+              "selector": ".reply input",
+              "value": "Draft one"
+            },
+            {
+              "type": "key",
+              "selector": ".reply input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "expectValue",
+              "selector": ".reply input",
+              "value": ""
+            },
+            {
+              "type": "key",
+              "selector": ".reply input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 2
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Posted reply"
+            },
+            {
+              "type": "key",
+              "selector": ".reply input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Posted reply",
+              "index": 2
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": ".reply input",
+              "value": "Draft two"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hide-threads",
+      "title": "Hide long threads",
+      "interviewerPrompt": "Threads can get long. Let the user hide a comment's replies and still see how many are hidden.",
+      "constraints": [
+        "A comment with replies shows a button with the class `toggle-replies` and an accurate `aria-expanded`. It says `Hide replies (3)` or `Show replies (3)`. A comment with no replies has no such button.",
+        "The number counts every reply below the comment at all depths, not only its direct replies.",
+        "Hiding removes that comment's replies from the page. Each comment remembers its own state, even when a parent is hidden and shown again.",
+        "Hiding a thread that contains the open reply box closes the box.",
+        "Posting a reply shows that comment's replies, so the user can see what they just posted. The numbers on all its parents update too."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-comments-hide",
+          "name": "Round 3 · Hidden threads keep correct counts and state",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A1"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".toggle-replies",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Hide replies (2)",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Hide replies (1)",
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".toggle-replies",
+              "attribute": "aria-expanded",
+              "expected": "true",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".toggle-replies",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Show replies (2)",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".toggle-replies",
+              "attribute": "aria-expanded",
+              "expected": "false",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".toggle-replies",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".toggle-replies",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Show replies (1)",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".toggle-replies",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".toggle-replies",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Show replies (1)",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A2"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Hide replies (3)",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".toggle-replies",
+              "text": "Hide replies (2)",
+              "index": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "safe-delete",
+      "title": "Delete without breaking the thread",
+      "interviewerPrompt": "Add delete. Removing a comment must not silently remove other people's replies, and screen reader users must know what changed.",
+      "constraints": [
+        "Every comment has a Delete button with the class `delete-comment`. A comment with no replies is removed completely.",
+        "A comment with replies stays as a placeholder: its text becomes `[deleted]`, it loses its Reply and Delete buttons, and its replies stay.",
+        "When the last reply under a placeholder is removed, remove the placeholder too, and keep going up the tree.",
+        "After a delete, move focus to the comment box. If the deleted comment had the open reply box, close it.",
+        "Always keep one element with the class `thread-status` and `aria-live=\"polite\"` on the page. It says `Reply added` or `Comment deleted`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-comments-delete",
+          "name": "Round 4 · Deleting keeps replies and removes empty placeholders",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A1"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".delete-comment",
+              "count": 3
+            },
+            {
+              "type": "click",
+              "selector": ".delete-comment",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "[deleted]",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "Reply A1",
+              "index": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".delete-comment",
+              "count": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply-button",
+              "count": 2
+            },
+            {
+              "type": "click",
+              "selector": ".delete-comment",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".text",
+              "text": "First comment",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".toggle-replies",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".composer textarea",
+              "value": "Leaf thread"
+            },
+            {
+              "type": "click",
+              "selector": ".composer button"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 2
+            },
+            {
+              "type": "click",
+              "selector": ".delete-comment",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "id": "pressure-comments-announce",
+          "name": "Round 4 · Focus and status explain what changed",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".thread-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".reply input",
+              "value": "Reply A"
+            },
+            {
+              "type": "click",
+              "selector": ".replyActions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".thread-status",
+              "text": "Reply added"
+            },
+            {
+              "type": "click",
+              "selector": ".reply-button",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".delete-comment",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".reply",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".node",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".thread-status",
+              "text": "Comment deleted"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".composer textarea"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the thread correct as it grew",
+    "summary": "You grew a simple reply form into a real thread: focus stays in place, hidden threads count correctly, and delete keeps other people's replies. The interview signal is treating the tree as data and updating it the same way at any depth.",
+    "takeaways": [
+      "Walk the tree with one recursive helper instead of writing special cases for each depth.",
+      "Derive reply counts from the tree so they can never go out of date.",
+      "Keep drafts and hidden threads by comment id, not by position.",
+      "After a comment is removed, decide where focus goes, because the focused button no longer exists."
+    ],
+    "frameworkNotes": {
+      "react": "Render the tree with a plain recursive function or a component defined outside App. A component created inside App gets a new identity on every render, so React rebuilds the inputs and the user loses focus after every letter.",
+      "angular": "A recursive `ng-template` with `track comment.id` keeps each row stable, and running change detection before focusing makes sure the target element exists.",
+      "vue": "A recursive component keeps each row stable by key, and `nextTick` moves focus after the DOM updates."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-nested-comments-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-nested-comments-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-nested-comments-pressure-solution.v1.json"
+  }
+}

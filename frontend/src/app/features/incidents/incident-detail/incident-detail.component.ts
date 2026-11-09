@@ -32,6 +32,7 @@ import { buildLockedPreviewForIncident, LockedPreviewData } from '../../../core/
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { frameworkFromTech, freeChallengeForFramework } from '../../../core/utils/onboarding-personalization.util';
 import { isProActive } from '../../../core/utils/entitlements.util';
+import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 
 type FeedbackStatus = 'correct' | 'partial' | 'review';
 type LockedPath = {
@@ -50,7 +51,7 @@ function updatedLabel(value: string | null | undefined): string | null {
 
 @Component({
     selector: 'app-incident-detail',
-    imports: [CommonModule, FormsModule, RouterModule, LockedPreviewComponent],
+    imports: [CommonModule, FormsModule, RouterModule, InlineCodeComponent, LockedPreviewComponent],
     templateUrl: './incident-detail.component.html',
     styleUrls: ['./incident-detail.component.css']
 })

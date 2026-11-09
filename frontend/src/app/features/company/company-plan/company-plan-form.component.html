@@ -1,0 +1,239 @@
+<section class="plan-hero" aria-labelledby="company-plan-heading" data-testid="company-plan-form">
+  <div class="plan-hero__form">
+    @if (step() === 1 && resume(); as plan) {
+      <aside class="plan-resume" aria-label="Your plan" data-testid="company-plan-resume">
+        <div class="plan-resume__text">
+          <p class="plan-resume__title">{{ plan.title }}</p>
+          <p class="plan-resume__line">{{ plan.line }}</p>
+          @if (plan.draft; as draft) {
+            <a class="plan-resume__draft" data-testid="company-plan-resume-draft" routerLink="/companies/preview" [queryParams]="draft.params" (click)="resumed('started')">Use the {{ draft.names }} plan you started instead</a>
+          }
+        </div>
+        <a faButton variant="primary" size="lg" data-testid="company-plan-resume-open" [routerLink]="plan.link" (click)="resumed('saved')">Open my plan <span aria-hidden="true">→</span></a>
+      </aside>
+    }
+    <h1 id="company-plan-heading" class="plan-hero__heading">{{ heading() }}</h1>
+
+    <ol class="plan-steps" aria-label="Plan steps">
+      @for (item of steps(); track item.number) {
+        <li class="plan-steps__item">
+          <button
+            type="button"
+            class="plan-step"
+            [class.plan-step--current]="item.current"
+            [class.plan-step--done]="item.done"
+            [disabled]="!item.reachable"
+            [attr.aria-current]="item.current ? 'step' : null"
+            [attr.aria-label]="item.aria"
+            (click)="goToStep(item.number)">
+            <span class="plan-step__dot" aria-hidden="true">{{ item.done ? '✓' : item.number }}</span>
+            <span class="plan-step__label">{{ item.label }}</span>
+          </button>
+          @if (item.number < 4) {
+            <span class="plan-steps__line" [class.plan-steps__line--done]="item.done" aria-hidden="true"></span>
+          }
+        </li>
+      }
+    </ol>
+
+    @if (step() === 1) {
+      <div class="plan-question">
+        <div class="plan-slot" (mouseenter)="hovering.set(true)" (mouseleave)="hovering.set(false)" (keydown.escape)="closePicker()">
+          <h2 class="plan-sentence">I'm interviewing at</h2>
+          <button
+            #slotButton
+            type="button"
+            class="plan-slot__button"
+            [attr.aria-expanded]="open()"
+            [attr.aria-label]="slotAria()"
+            data-testid="company-plan-slot"
+            (click)="toggleOpen()">
+            @if (chosen()) {
+              <span class="plan-slot__answer">{{ companyLabel() }}</span>
+            } @else {
+              <fa-rotating-words [words]="wheelNames" [paused]="wheelPaused()" [(index)]="wheelIndex"></fa-rotating-words>
+            }
+            <svg class="plan-slot__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+
+          @if (open()) {
+            <div class="plan-picker" data-testid="company-plan-picker">
+              <label class="plan-picker__label" for="company-plan-search">Search companies, up to 3</label>
+              <input
+                #companySearch
+                id="company-plan-search"
+                class="plan-picker__input"
+                type="search"
+                autocomplete="off"
+                placeholder="Try Stripe or Vercel"
+                [value]="query()"
+                (input)="query.set($any($event.target).value)" />
+
+              <div class="plan-picker__options">
+                @for (option of options(); track option.slug) {
+                  <button
+                    type="button"
+                    class="plan-option"
+                    [class.plan-option--selected]="option.selected"
+                    [attr.aria-pressed]="option.selected"
+                    [attr.data-testid]="'company-plan-option-' + option.slug"
+                    (click)="pickCompany(option.slug)">
+                    <app-company-logo-mark class="plan-option__logo" [company]="option.slug" [decorative]="true"></app-company-logo-mark>
+                    <span class="plan-option__text">
+                      <span class="plan-option__name">{{ option.name }}</span>
+                      @if (option.signature) {
+                        <span class="plan-option__signature">{{ option.signature }}</span>
+                      }
+                    </span>
+                    <span class="plan-option__check" aria-hidden="true">{{ option.selected ? '✓' : '' }}</span>
+                  </button>
+                }
+              </div>
+
+              @if (notFound()) {
+                <button type="button" class="plan-option plan-option--custom" data-testid="company-plan-custom" (click)="useCustom()">
+                  <span class="plan-option__text">
+                    <span class="plan-option__name">Continue with {{ query().trim() }}</span>
+                    <span class="plan-option__hint">We have not mapped it yet. You get the general plan, and we count your search.</span>
+                  </span>
+                </button>
+              }
+
+              <button faButton type="button" variant="neutral" class="plan-picker__done" (click)="closePicker()">Done</button>
+            </div>
+          }
+        </div>
+
+        <div class="plan-actions">
+          <button faButton type="button" variant="primary" size="lg" data-testid="company-plan-continue" (click)="continueFromCompany()">Continue</button>
+          <button type="button" class="plan-link" data-testid="company-plan-no-company" (click)="noCompany()">I don't have a company yet</button>
+        </div>
+        <p class="plan-footnote">Takes three clicks, or four if you have started.{{ signedIn() ? '' : ' No account needed.' }}</p>
+      </div>
+    }
+
+    @if (step() === 2) {
+      <div class="plan-question">
+        <h2 class="plan-question__title">{{ whenQuestion() }}</h2>
+        <div class="plan-choices">
+          @for (option of whenOptions; track option.id) {
+            <button
+              type="button"
+              class="plan-choice"
+              [class.plan-choice--selected]="option.id === when()"
+              [attr.aria-pressed]="option.id === when()"
+              [attr.data-testid]="'company-plan-when-' + option.id"
+              (click)="pickWhen(option.id)">
+              <span class="plan-choice__label">{{ option.label }}</span>
+              <span class="plan-choice__sub">{{ option.sub }}</span>
+            </button>
+          }
+        </div>
+        <button type="button" class="plan-back" (click)="back()">← Back</button>
+      </div>
+    }
+
+    @if (step() === 3) {
+      <div class="plan-question">
+        <h2 class="plan-question__title">What level is the role?</h2>
+        <div class="plan-choices">
+          @for (option of levelOptions; track option.id) {
+            <button
+              type="button"
+              class="plan-choice"
+              [class.plan-choice--selected]="option.id === level()"
+              [attr.aria-pressed]="option.id === level()"
+              [attr.data-testid]="'company-plan-level-' + option.id"
+              (click)="pickLevel(option.id)">
+              <span class="plan-choice__label">{{ option.label }}</span>
+              <span class="plan-choice__sub">{{ option.sub }}</span>
+            </button>
+          }
+        </div>
+        @if (studentOffers().length) {
+          <button
+            type="button"
+            class="plan-toggle"
+            [class.plan-toggle--on]="student()"
+            [attr.aria-pressed]="student()"
+            data-testid="company-plan-student"
+            (click)="toggleStudent()">
+            <span class="plan-toggle__mark" aria-hidden="true">{{ student() ? '✓' : '' }}</span>
+            <span class="plan-toggle__text">
+              <span class="plan-toggle__label">I'm a student or new graduate</span>
+              <span class="plan-toggle__sub">{{ studentOffersLine() }}</span>
+            </span>
+          </button>
+        }
+        <button type="button" class="plan-back" (click)="back()">← Back</button>
+      </div>
+    }
+
+    @if (step() === 4) {
+      <div class="plan-question" data-testid="company-plan-next-step">
+        <h2 class="plan-question__title">{{ nextQuestion() }}</h2>
+        <p class="plan-question__hint">{{ nextHint() }}</p>
+        @for (group of roundChoices(); track group.slug) {
+          <div class="plan-choice-group">
+            @if (roundChoices().length > 1) {
+              <p class="plan-choice-group__name">{{ group.name }}{{ group.unordered ? ': mark the rounds behind you' : '' }}</p>
+            }
+            <div class="plan-choices plan-choices--compact">
+              @for (round of group.rounds; track round.id) {
+                <button
+                  type="button"
+                  class="plan-choice"
+                  [class.plan-choice--selected]="group.unordered ? group.behind.includes(round.id) : round.id === group.next"
+                  [attr.aria-pressed]="group.unordered ? group.behind.includes(round.id) : round.id === group.next"
+                  [attr.data-testid]="'company-plan-next-' + group.slug + '-' + round.id"
+                  (click)="pickNext(group.slug, round.id)">
+                  <span class="plan-choice__label">{{ round.name }}</span>
+                  @if (round.note) {
+                    <span class="plan-choice__sub">{{ round.note }}</span>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+        <div class="plan-actions">
+          <button faButton type="button" variant="primary" size="lg" data-testid="company-plan-see-plan" (click)="seePlan()">See my plan <span aria-hidden="true">→</span></button>
+          <button type="button" class="plan-back" (click)="back()">← Back</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <aside class="plan-card" aria-label="Your plan so far" data-testid="company-plan-card">
+    <p class="plan-card__eyebrow">Your plan so far</p>
+
+    @for (card of cards(); track card.slug) {
+      <div class="plan-card__company">
+        <p class="plan-card__name">{{ card.name }}</p>
+        <p class="plan-card__meta">{{ card.meta }}</p>
+        <ul class="plan-rounds">
+          @for (round of card.rounds; track round.id) {
+            <li class="plan-rounds__item" [class.plan-rounds__item--practice]="round.practice" [class.plan-rounds__item--passed]="round.passed">{{ round.name }}@if (round.passed) {<span class="plan-rounds__passed"> passed</span>}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (generalCard(); as general) {
+      <div class="plan-card__company">
+        <p class="plan-card__name">{{ general.title }}</p>
+        <p class="plan-card__body">{{ general.body }}</p>
+      </div>
+    } @else if (!cards().length) {
+      <p class="plan-card__body">Pick a company to see the rounds candidates reported.</p>
+    }
+
+    @if (answerLines().length) {
+      <ul class="plan-answers">
+        @for (line of answerLines(); track line.label) {
+          <li><strong>{{ line.label }}:</strong> {{ line.text }}</li>
+        }
+      </ul>
+    }
+  </aside>
+</section>

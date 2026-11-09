@@ -1,0 +1,407 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "use-effect-once-pressure-v1",
+  "family": "use-effect-once",
+  "title": "Effect Lifecycle Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-use-effect-once"
+  },
+  "rounds": [
+    {
+      "id": "one-connection",
+      "title": "One connection at a time",
+      "interviewerPrompt": "Connect the panel to its room. There must be exactly one live connection while the panel is open, and none when it is closed.",
+      "constraints": [
+        "Create the connection inside `useEffect`, call `connect()`, and return a cleanup that calls `disconnect()` on that same connection.",
+        "`Re-render` must not reconnect. `Switch room` must close the old connection before opening the new one.",
+        "`Toggle panel` closes the connection. Opening it again connects again.",
+        "Do not use a ref or a flag to skip the effect. A correct effect survives being run, cleaned up and run again.",
+        "Keep the starter classes: `active-count`, `connection-status`, `room-value`, `rerender-button`, `room-button` and `mount-button`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-effect-one-connection",
+          "name": "Round 1 · One connection stays live through renders, room changes and reopening",
+          "steps": [
+            {
+              "type": "waitForText",
+              "selector": ".active-count",
+              "text": "1",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "click",
+              "selector": ".rerender-button"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".render-count",
+              "text": "1",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".room-button"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".room-value",
+              "text": "design",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "waitForText",
+              "selector": ".connection-status",
+              "text": "Connected to design",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "1"
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".active-count",
+              "text": "0",
+              "timeoutMs": 1000
+            },
+            {
+              "type": "expectText",
+              "selector": ".connection-status",
+              "text": "Unmounted"
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".active-count",
+              "text": "1",
+              "timeoutMs": 1000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prove-the-order",
+      "title": "Prove the order",
+      "interviewerPrompt": "The count looks right, but the order matters too. Show every connect and disconnect so the sequence can be checked.",
+      "constraints": [
+        "Add a list with the class `event-log` in `App`, so it stays when the panel closes. Add one `li` per event, oldest first.",
+        "Write `Connected to general` when a connection opens and `Disconnected from general` when it closes.",
+        "Switching rooms must show the disconnect before the next connect.",
+        "`Re-render` must add nothing to the list."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-effect-order",
+          "name": "Round 2 · The event list proves cleanup runs before the next setup",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".event-log li",
+              "count": 1,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Connected to general",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".rerender-button"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "expectCount",
+              "selector": ".event-log li",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".room-button"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".event-log li",
+              "count": 3,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Disconnected from general",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Connected to design",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".event-log li",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Disconnected from design",
+              "index": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "connecting-takes-time",
+      "title": "Connecting takes time",
+      "interviewerPrompt": "Real connections are not instant. Make `connect()` take 300 ms, and make sure a connection that is no longer wanted never goes live.",
+      "constraints": [
+        "Change `createConnection` so `connect()` waits 300 ms before the connection counts as active. Until then the status says `Connecting to general`.",
+        "Calling `disconnect()` during those 300 ms cancels the wait. That attempt never becomes active and adds nothing to the event list.",
+        "Switching rooms quickly must end with one active connection, to the last room only.",
+        "Closing the panel while connecting must leave zero active connections."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-effect-slow-connect",
+          "name": "Round 3 · A connection that is no longer wanted never goes live",
+          "steps": [
+            {
+              "type": "waitForText",
+              "selector": ".connection-status",
+              "text": "Connected to general",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".room-button"
+            },
+            {
+              "type": "expectText",
+              "selector": ".connection-status",
+              "text": "Connecting to design"
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "0"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "click",
+              "selector": ".room-button"
+            },
+            {
+              "type": "expectText",
+              "selector": ".connection-status",
+              "text": "Connecting to general"
+            },
+            {
+              "type": "wait",
+              "durationMs": 450
+            },
+            {
+              "type": "expectText",
+              "selector": ".connection-status",
+              "text": "Connected to general"
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "1"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".event-log li",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Disconnected from general",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".event-log li",
+              "text": "Connected to general",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".room-button"
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "0"
+            },
+            {
+              "type": "wait",
+              "durationMs": 400
+            },
+            {
+              "type": "expectText",
+              "selector": ".active-count",
+              "text": "0"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".event-log li",
+              "count": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings-without-reconnecting",
+      "title": "New settings without reconnecting",
+      "interviewerPrompt": "Once connected, the room sends a message every 200 ms. A setting can change at any time, and changing it must not drop the connection.",
+      "constraints": [
+        "While connected, add 1 every 200 ms to a count shown in an element with the class `message-count`. Keep the count inside `ConnectionPanel`, so it starts from 0 each time the panel opens.",
+        "Add a Mute button with the class `mute-button` in `App`. While muted, messages do not count.",
+        "Muting works at once and does not reconnect, so the event list does not grow.",
+        "Closing the panel or removing the component stops every timer."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-effect-mute",
+          "name": "Round 4 · Muting works at once without reconnecting",
+          "steps": [
+            {
+              "type": "waitForText",
+              "selector": ".connection-status",
+              "text": "Connected to general",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "click",
+              "selector": ".mute-button"
+            },
+            {
+              "type": "wait",
+              "durationMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".message-count",
+              "text": "0"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".event-log li",
+              "count": 3
+            },
+            {
+              "type": "click",
+              "selector": ".mute-button"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".message-count",
+              "text": "1",
+              "timeoutMs": 600
+            },
+            {
+              "type": "expectCount",
+              "selector": ".event-log li",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "id": "pressure-effect-cleanup",
+          "name": "Round 4 · Closing or removing the panel stops every timer",
+          "steps": [
+            {
+              "type": "waitForText",
+              "selector": ".connection-status",
+              "text": "Connected to general",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "wait",
+              "durationMs": 50
+            },
+            {
+              "type": "expectNoPreviewLeaks"
+            },
+            {
+              "type": "click",
+              "selector": ".mount-button"
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewLeaks"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept every connection accounted for",
+    "summary": "You treated the effect as a connection that opens and closes, not as code that runs once. Order, slow connections and changing settings all stayed correct. The interview signal is knowing what belongs in the dependency list and what only needs the latest value.",
+    "takeaways": [
+      "Each setup owns one cleanup, and that cleanup undoes exactly what the setup did.",
+      "A correct effect survives being run, cleaned up and run again. Skipping it with a flag hides the bug.",
+      "Cancel slow work in the cleanup, or it comes back after you stopped wanting it.",
+      "A value that should not restart the effect belongs in a ref, not in the dependency list."
+    ],
+    "frameworkNotes": {
+      "react": "`StrictMode` runs setup, cleanup and setup again in development to expose missing cleanup. Reading the latest value through a ref keeps the connection open while the setting changes."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-use-effect-once-pressure-solution.v1.json"
+  }
+}

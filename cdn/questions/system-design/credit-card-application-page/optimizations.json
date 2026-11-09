@@ -1,0 +1,136 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Card application failure playbook",
+      "columns": [
+        "Failure",
+        "Detection",
+        "Response"
+      ],
+      "rows": [
+        [
+          "Double click on Submit",
+          "The submit phase is already submitting",
+          "Ignore the second click; one request leaves"
+        ],
+        [
+          "A slow reply or a timeout",
+          "A client timer that aborts the request",
+          "Keep every field and offer a retry with the same key"
+        ],
+        [
+          "The session expires mid-form",
+          "401 from the gateway",
+          "Sign in again in a dialog, keep the fields in memory, resubmit with the same key"
+        ],
+        [
+          "The service rejects fields",
+          "400 with FieldError entries",
+          "Map errors by name, focus the summary, use a new key for the corrected submit"
+        ],
+        [
+          "The decision is pending",
+          "Status pending-review",
+          "Show what happens next, poll, and say the page can be closed"
+        ],
+        [
+          "Identity needs checking",
+          "Status verify-identity",
+          "Open the verification step and come back to the same applicationId"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "When the decision is pending"
+    },
+    {
+      "type": "text",
+      "text": "A pending decision is where most designs submit twice: a refresh, a second tab or Back. With the confirmation built as a read, each is another read of the same record."
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: a pending decision and a refresh",
+      "steps": [
+        {
+          "title": "The reply says pending review",
+          "text": "The service returns application a_19 with status pending-review. The shell replaces the history entry with the status route and announces the status in the live region."
+        },
+        {
+          "title": "The applicant refreshes",
+          "text": "The status route reads a_19 again and posts nothing. The fields are gone from memory, which is fine: the confirmation shows only the masked values in the record."
+        },
+        {
+          "title": "A second tab opens the same route",
+          "text": "It reads the same record. There is no form on that route, so a second application cannot start from it."
+        },
+        {
+          "title": "Polling backs off",
+          "text": "The page polls with growing intervals, pauses while the tab is hidden and reads once when the applicant comes back."
+        },
+        {
+          "title": "The decision lands",
+          "text": "Status becomes approved with a creditLimit. The live region announces it, the screen lists the next steps, and Telemetry records outcome_shown with the elapsed time and no values."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/credit-card-application-page/card-application-outcomes.svg",
+      "alt": "State diagram from editing to submitting, then to field errors, a failed submit with a retry, or the status route with approved, declined, pending review and verify identity outcomes.",
+      "caption": "Outcome states: a retry keeps the key, field errors start a new attempt, and every decision is read on the status route.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: Editing leads to submitting. Submitting can end in field errors, which return to editing with a new key; in a failed submit, which retries with the same key; or in the status route. On the status route the record shows approved, declined, pending review or verify identity, and pending review and verify identity later turn into approved or declined."
+    },
+    {
+      "type": "heading",
+      "text": "Tests that protect applicants"
+    },
+    {
+      "type": "checklist",
+      "title": "Card application tests that protect applicants",
+      "items": [
+        "Double-click Submit during a slow reply; assert one request and one application.",
+        "Time out the first submit and retry; assert the same applicationId comes back.",
+        "Refresh the confirmation and open it in a second tab; assert no POST is sent.",
+        "Search logs, URLs, analytics payloads and both browser storages after a submit; assert no Social Security number, date of birth or income appears.",
+        "Run keyboard and screen-reader passes over the error summary, the field errors and the decision announcement."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "These tests guard the two promises an applicant cannot check alone: one application per attempt, and no sensitive value outside the form."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "IETF Idempotency-Key header draft",
+          "href": "https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/",
+          "description": "Replays, conflicts and a key reused with a different body."
+        },
+        {
+          "label": "MDN History.replaceState",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState",
+          "description": "Swapping the submit entry for the status route."
+        },
+        {
+          "label": "MDN autocomplete attribute",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete",
+          "description": "Tokens that let the browser fill identity and address fields."
+        },
+        {
+          "label": "WCAG 2.2 Understanding Error Identification",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html",
+          "description": "Identifying and describing input errors in text."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

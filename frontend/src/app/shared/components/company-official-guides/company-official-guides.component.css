@@ -55,6 +55,7 @@
 
 .official-guides__table th {
   border-top: 0;
+  white-space: nowrap;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.03em;

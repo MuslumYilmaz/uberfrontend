@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { countPremiumPractices } from './gen-showcase-stats.mjs';
+import { collectCompanyCounts, countPremiumPractices } from './gen-showcase-stats.mjs';
 import { cdnPracticeRegistryPath, cdnQuestionShowcaseStatsPath } from './content-paths.mjs';
 
 test('counts unique premium routes across every practice type and framework', () => {
@@ -23,4 +23,15 @@ test('published premium metadata agrees with the canonical registry', async () =
   const registry = JSON.parse(await readFile(cdnPracticeRegistryPath, 'utf8'));
   const stats = JSON.parse(await readFile(cdnQuestionShowcaseStatsPath, 'utf8'));
   assert.equal(stats.premiumPracticeCount, countPremiumPractices(registry));
+});
+
+test('a company set counts its debugging tasks as their own kind, in the total too', () => {
+  const counts = collectCompanyCounts({
+    coding: [{ id: 'js-a', companies: ['stripe'] }],
+    trivia: [{ id: 'concept-a', companies: ['stripe', 'acme'] }],
+    system: [],
+    debug: [{ id: 'js-debug-a', companies: ['stripe'] }, { id: 'js-debug-b', companies: ['Stripe'] }],
+  }, new Map());
+  assert.deepEqual(counts.stripe, { all: 4, coding: 1, trivia: 1, system: 0, debug: 2 });
+  assert.deepEqual(counts.acme, { all: 1, coding: 0, trivia: 1, system: 0, debug: 0 });
 });

@@ -62,6 +62,11 @@
   white-space: normal;
 }
 
+/* A rehearsal's questions come before its problems: the panel stays, and the problem waits out of sight. */
+.rehearsal-answering > :not(app-rehearsal-panel) {
+  display: none !important;
+}
+
 .pressure-mode {
   display: grid;
   gap: 16px;
@@ -197,6 +202,7 @@
 .pressure-mode__constraint ul,
 .pressure-debrief ul {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 7px;
   margin: 12px 0 0;
   padding-left: 18px;
@@ -943,6 +949,11 @@
     word-break: normal;
   }
 
+  /* A phone always shows the copy button, so the code starts below it rather than under it. */
+  .coding-detail--reading-eligible .code-wrap .lite-code {
+    padding-top: 50px;
+  }
+
   .coding-detail--reading-eligible .ap-title,
   .coding-detail--reading-eligible .code-wrap {
     min-width: 0;
@@ -1182,6 +1193,15 @@
   font-size: 12px;
   color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
   font-weight: 600;
+}
+.locked-phone{
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.locked-actions a{
+  text-decoration: none;
 }
 .locked-preview{
   text-align: left;

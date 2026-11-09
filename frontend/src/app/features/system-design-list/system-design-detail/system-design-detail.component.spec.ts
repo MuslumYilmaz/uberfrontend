@@ -191,6 +191,26 @@ describe('SystemDesignDetailComponent', () => {
     expect(component.prevHref).toBeNull();
   });
 
+  it('leads back to the company plan from a walkthrough opened there, and to the incidents hub otherwise', () => {
+    const state = window.history.state;
+    const footerLeft = (returnState: unknown) => {
+      window.history.replaceState(returnState, '');
+      const fixture = TestBed.createComponent(SystemDesignDetailComponent);
+      fixture.componentInstance.q.set({ id: 'free-a', title: 'Free A', access: 'free' } as any);
+      fixture.detectChanges();
+      return fixture.nativeElement.querySelector('[data-testid="footer-left"]') as HTMLAnchorElement;
+    };
+
+    const fromPlan = footerLeft({ returnToUrl: '/companies/plan', returnLabel: 'Back to plan' });
+    expect(fromPlan.textContent).toContain('Back to plan');
+    expect(fromPlan.getAttribute('href')).toBe('/companies/plan');
+
+    const fromList = footerLeft({ returnToUrl: '/coding?tech=javascript', returnLabel: 'Back to questions' });
+    expect(fromList.textContent).toContain('Incidents hub');
+    expect(fromList.getAttribute('href')).toBe('/incidents');
+    window.history.replaceState(state, '');
+  });
+
   it('opens bug report flow from system design detail action', () => {
     const fixture = TestBed.createComponent(SystemDesignDetailComponent);
     const component = fixture.componentInstance;

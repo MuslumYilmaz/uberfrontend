@@ -50,6 +50,32 @@ export type AuthoredRoundSpotlightFact = {
   readonly value: string;
 };
 
+/** A question of a behavioural drill, in the words of the source it names. */
+export type BehavioralDrillQuestion = {
+  /** Unique within its drill; the reader's story for it is saved on the device under this id. */
+  readonly id: string;
+  readonly text: string;
+  /** Where it comes from, as the decoder's facts name it: "Amazon's interview loop page", "Seattle, 2019". */
+  readonly source: string;
+  /**
+   * Not a story: a view or a reason is answered in one field; a "How would you…" (approach) asks for the approach,
+   * then a time it was done. Neither offers STAR or CAR.
+   */
+  readonly kind?: 'view' | 'approach';
+};
+
+/** The practice under a behavioural round decoder: pick a question, tell one story in its parts, check it. */
+export type BehavioralDrill = {
+  /** Open in order: on a gated guide a visitor without an account practises the first one. */
+  readonly questions: readonly BehavioralDrillQuestion[];
+  /** How the questions were written, when that is not plain from their sources. */
+  readonly note?: string;
+  /** This company's checks, after the ones every story gets. */
+  readonly checks: readonly string[];
+  /** The company's checks that fit a view question, when not all of `checks` do. */
+  readonly viewChecks?: readonly string[];
+};
+
 /** One named interview round decoded in the searcher's own words: what it is, how long, on which tool, what was reported. */
 export type AuthoredRoundSpotlight = {
   /** Heading id suffix; the rendered heading id is `<slug>-round-<id>`. */
@@ -63,6 +89,8 @@ export type AuthoredRoundSpotlight = {
   readonly practiceLink?: { readonly label: string; readonly fragment?: string; readonly path?: string };
   /** The reported-process row for this round, by its row id. */
   readonly processLink?: { readonly label: string; readonly fragment: string };
+  /** A behavioural round's drill, shown under its facts. */
+  readonly drill?: BehavioralDrill;
 };
 
 export type AuthoredResourceLink = {

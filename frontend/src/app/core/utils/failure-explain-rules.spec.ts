@@ -23,6 +23,24 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('@for');
   });
 
+  it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
+    for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
+      const hint = buildFailureHint({
+        questionId,
+        errorLine: '.list expected 0 matches but found 1',
+        firstFailName: 'Autocomplete selects option',
+        passCount: 1,
+        totalCount: 2,
+        failCount: 1,
+        failedTests: [
+          { name: 'Autocomplete selects option', errorLine: '.list expected 0 matches but found 1' },
+        ],
+      });
+
+      expect(hint.ruleId).toBe('autocomplete-dropdown-stays-closed');
+    }
+  });
+
   it('returns question-specific hint for sleep promise contract failures', () => {
     const hint = buildFailureHint({
       questionId: 'js-sleep',

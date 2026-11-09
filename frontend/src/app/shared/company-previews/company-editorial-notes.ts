@@ -381,6 +381,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           },
         },
         {
+          text: 'The one-hour screen took different shapes: basic JavaScript questions and a search bar in a live React session in a 2025 account, React questions about a take-home and a LeetCode easy in a 2022 one.',
+          link: {
+            label: 'See the technical screen',
+            fragment: 'tesla-interview-process-1-stage-technical-screen',
+          },
+        },
+        {
           text: 'Frontend coding is mostly React; one 2024 loop ran an Angular round followed by a TypeScript and JavaScript round.',
         },
         {
@@ -434,10 +441,28 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'Reported as fetching photos and rendering them with a theme context.',
         },
         {
+          label: 'React autocomplete search',
+          path: '/react/coding/react-autocomplete-search-starter',
+          access: 'free',
+          why: 'A search bar build for the live React session in a 2025 screen.',
+        },
+        {
+          label: 'Valid parentheses',
+          path: '/javascript/coding/js-valid-parentheses',
+          access: 'free',
+          why: 'A LeetCode easy of the kind a 2022 screen paired with React questions.',
+        },
+        {
           label: 'Shallow clone',
           path: '/javascript/coding/js-shallow-clone',
           access: 'free',
           why: 'Copy semantics came up in a published round-one file.',
+        },
+        {
+          label: 'The one-hour screen, rehearsed',
+          path: '/react/trivia/react-phone-screen-search-bar-rehearsal',
+          access: 'premium',
+          why: 'The screen in its parts: two-sentence JavaScript answers, the search bar with stale responses, and an easy problem narrated.',
         },
         {
           label: 'Deep clone',
@@ -563,10 +588,22 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'An editorial grouping for the easy algorithm items of the HackerRank test.',
         },
         {
-          label: 'Forms: validation and required fields',
-          path: '/html/coding/html-forms-validation-required',
+          label: 'The CSS box model',
+          path: '/css/trivia/css-box-model',
           access: 'free',
-          why: 'An editorial grouping for the HTML and CSS questions of the test.',
+          why: 'An editorial grouping for the HTML and CSS multiple-choice questions of the HackerRank test.',
+        },
+        {
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'free',
+          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
+        },
+        {
+          label: 'Autocomplete engine in plain JavaScript',
+          path: '/javascript/coding/js-autocomplete-engine',
+          access: 'premium',
+          why: 'The typeahead logic the coding rounds discuss: debounce, a stale-response guard and a cache, tested without a page.',
         },
         {
           label: 'Throttle',
@@ -579,12 +616,6 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           path: '/react/coding/react-debounced-search',
           access: 'premium',
           why: 'A practice version of the component fed by API data to a design spec.',
-        },
-        {
-          label: 'Vue autocomplete search',
-          path: '/vue/coding/vue-autocomplete-search',
-          access: 'premium',
-          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
         },
         {
           label: 'Real-time search with debounce and cache',
@@ -773,6 +804,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'An editorial grouping for the JavaScript fundamentals a screen can touch.',
         },
         {
+          label: 'Bug squash an unfamiliar invoicing repo',
+          path: '/javascript/debug/js-debug-bug-squash-invoices',
+          access: 'premium',
+          why: 'Five files you have not seen and four bug reports, the shape of the bug squash round.',
+        },
+        {
           label: 'Group by',
           path: '/javascript/coding/js-group-by',
           access: 'premium',
@@ -905,7 +942,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       kicker: 'Public preview and process notes',
       subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
     },
-    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Four of the nine frontend accounts behind this page describe both a screen and a team loop of mostly frontend coding; the rest describe one stage, and all differ on what the team decides.'],
+    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Of the twelve public accounts behind this page, ten are for frontend roles; five of those describe both a screen and a team loop, mostly of frontend coding, the rest describe one stage, and all differ on what the team decides.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A screen, then a team loop of four to seven rounds',
@@ -925,10 +962,49 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'Loop composition differs by team: four coding rounds with no behavioural and no system design round in one 2025 account, one behavioural round in another, two cross-functional interviews in a third.',
         },
         {
-          text: 'One account ended with a director meeting after the loop.',
+          text: 'Two accounts ended with a director: a meeting after the loop in 2025, and a round on behaviour and culture fit in 2024.',
         },
       ],
     },
+    // The hiring manager row of the process table links here. Apple publishes nothing on these interviews, so every
+    // fact and question comes from the accounts on that row and the team loop row (read 2026-11-09).
+    roundSpotlights: [
+      {
+        id: 'team-conversations',
+        kicker: 'Round decoder',
+        title: 'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
+        lede: [
+          'Apple publishes no interview process and its frontend loops differ by team, but most accounts include conversations beside the coding: a hiring manager conversation before or as the screen, behavioural or cross-functional interviews in some team loops, and a director at the end of a few.',
+          'They are conversations about your own work and your reasons for the move: past projects and responsibilities, why you are changing jobs, why Apple, and the team and product you would join.',
+        ],
+        facts: [
+          { label: 'Hiring manager conversation', value: 'Before the screen, or as the screen itself. In a 2024 senior account it covered past experience, the projects worked on, behavioural questions, the reasons for changing jobs and the motivation to join Apple (Taro, 2024).' },
+          { label: 'In the team loop', value: 'Two cross-functional interviews and a joint hiring manager and senior manager interview among five (Taro, 2025); a behaviour round about what you work on, your roles and responsibilities, then the team and product (Medium, 2022). One 2025 senior loop had four coding rounds and none of these.' },
+          { label: 'The director', value: 'A director of engineering round on behavioural questions and culture fit closed a 2024 senior loop (Taro, 2024); a 2025 account ended with a meeting with the director (Taro, 2025).' },
+          { label: 'What Apple publishes', value: 'Nothing on these interviews: the Apple careers site has general interview tips, linked in the official pages table, and no description of the rounds.' },
+          { label: 'Sources', value: 'Public frontend accounts from 2022 to 2025, on the hiring manager and team loop rows of the process table.' },
+        ],
+        practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+        processLink: { label: 'See the hiring manager row in the reported process', fragment: 'apple-interview-process-1-stage-hiring-manager-conversation' },
+        // One question per topic the accounts name.
+        drill: {
+          note: 'Apple publishes no questions for these interviews; each question here is a topic an account names, asked as one question.',
+          questions: [
+            { id: 'project', text: 'Walk me through a project you worked on: what you built and what you were responsible for.', source: 'Medium, 2022' },
+            { id: 'why-change', text: 'Why are you looking to change jobs?', source: 'Taro, 2024', kind: 'view' },
+            { id: 'why-apple', text: 'Why do you want to join Apple?', source: 'Taro, 2024', kind: 'view' },
+            { id: 'team-and-product', text: 'What interests you about this team and its product?', source: 'Medium, 2022', kind: 'view' },
+            { id: 'cross-functional', text: 'Tell me about working closely with a designer or a product manager.', source: 'Taro, 2025: cross-functional interviews' },
+            { id: 'accessibility', text: 'Tell me about accessibility work you have done.', source: 'Medium, 2022' },
+          ],
+          checks: [
+            'I can say why this team and its product, not only why Apple.',
+            'My reasons for changing jobs fit in two sentences.',
+            'I can walk through my role on each project on my résumé.',
+          ],
+        },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the screen, then the coding loop',
@@ -947,22 +1023,22 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           why: 'A nested-tabs-from-a-flat-list task described in a 2025 account.',
         },
         {
-          label: 'Unique array',
+          label: 'Vue autocomplete search',
+          path: '/vue/coding/vue-autocomplete-search',
+          access: 'free',
+          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
+        },
+        {
+          label: 'Remove Duplicates',
           path: '/javascript/coding/js-unique-array',
           access: 'premium',
-          why: 'Reported as concatenating two arrays and finding the unique elements.',
+          why: 'Reported in a 2019 account as concatenating two arrays and finding the unique elements.',
         },
         {
           label: 'Stack and queue, with a min stack',
           path: '/javascript/coding/js-stack-queue-implementation',
           access: 'premium',
           why: 'Reported as a min stack.',
-        },
-        {
-          label: 'Vue autocomplete search',
-          path: '/vue/coding/vue-autocomplete-search',
-          access: 'premium',
-          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
         },
       ],
     },
@@ -976,7 +1052,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         },
         {
           question: 'Is there a system design round?',
-          answer: 'Not in the frontend-titled accounts. One 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
+          answer: 'Rarely in the frontend-titled accounts: the onsite technical round of a 2024 senior account included frontend system design questions, and one 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
         },
         {
           question: 'Is the loop the same for every team?',
@@ -990,16 +1066,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'airbnb',
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
-    description: 'How two public Airbnb frontend accounts and the official careers FAQ describe the loop: a screen with passing tests, React UI coding and architecture questions.',
+    description: 'How public Airbnb frontend accounts and the official careers FAQ describe the loop: a technical screen, UI and JavaScript coding, and frontend system design.',
     hero: {
       kicker: 'Public preview',
-      subtitle: 'One coding component in three frameworks and two concept items grouped under Airbnb, plus the official careers FAQ and what two public frontend accounts describe.',
+      subtitle: 'Two coding components, one of them in three frameworks, a system design case and two concept items grouped under Airbnb, plus the official careers FAQ and a sourced table of what public frontend accounts describe.',
     },
-    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Two public frontend accounts from 2022 and 2024 and a few Blind threads describe a technical screen where the tests must pass, UI coding in React or plain HTML, CSS and JavaScript, one algorithm question and one architecture question. They are too few for a stage-by-stage table, so this page summarises them without one.'],
+    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Public frontend accounts fill in the rest: the table below lists what they report, with a link to each one.'],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'An editorial practice grouping',
-      intro: 'The chips input is an editorial grouping with no Airbnb account behind it. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop.',
+      title: 'The booking widget screen and the chat design',
+      intro: 'Free items first, then the premium set. The booking widget and the messaging inbox are practice versions modelled on reported rounds, not leaked questions: a 2025 full-stack account describes the booking widget screen, and two accounts report a chat app design. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop. The chips input is an editorial grouping with no Airbnb account behind it.',
       steps: [
         {
           label: 'Closures',
@@ -1012,6 +1088,18 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           path: '/javascript/trivia/js-event-loop',
           access: 'free',
           why: 'A staple of JavaScript concept rounds.',
+        },
+        {
+          label: 'Listing booking widget in React',
+          path: '/react/coding/react-listing-booking-widget',
+          access: 'premium',
+          why: 'The 40-minute build of the reported screen: price a stay from dates and guests, grey out booked dates and confirm in a dialog.',
+        },
+        {
+          label: 'Real-time messaging inbox',
+          path: '/system-design/messaging-inbox-frontend',
+          access: 'premium',
+          why: 'A design-level practice version of the chat app round: WebSocket reconnects, offline sends and message order.',
         },
         {
           label: 'Chips input with autocomplete in React',
@@ -1038,8 +1126,12 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       title: 'Common questions about this Airbnb page',
       items: [
         {
-          question: 'Why is this page short?',
-          answer: 'Only two full first-person Airbnb frontend accounts and a few Blind comment threads are readable, so this page summarises them without a stage table. It grows as more accounts can be read in full.',
+          question: 'Do Airbnb frontend interviews include algorithm questions?',
+          answer: 'Accounts disagree. One from 2024 reports no algorithms, while two from 2025 report a LeetCode-hard problem, one in the technical screen and one as a 45-minute coding round. Ask your recruiter which rounds your loop has.',
+        },
+        {
+          question: 'How current are these reports?',
+          answer: 'The newest frontend account cited here is from about September 2025, so confirm the current format with your recruiter.',
         },
         {
           question: 'Does Airbnb publish interview guidance?',

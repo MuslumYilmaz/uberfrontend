@@ -72,6 +72,13 @@ export type StructuredSolution = {
   codeTs?: string;
 };
 
+export type QuestionPreviewSample = {
+  /** What the quote is, such as "A comment from the sample review". */
+  label: string;
+  quote: string;
+  note?: string;
+};
+
 export type QuestionSeo = {
   title?: string;
   description?: string;
@@ -199,6 +206,10 @@ export interface Question {
   decisionGraphAsset?: string;
   decisionGraphKey?: string;
   pressureModeAsset?: string;
+  /** A merge request to review before the fixes, as in GitLab's technical interview (see review-mode.model.ts). */
+  reviewModeAsset?: string;
+  /** One short quote from a Premium task, shown on its lock page so a visitor can judge the format before paying. */
+  previewSample?: QuestionPreviewSample;
   incidentCard?: TriviaIncidentCard;
 }
 

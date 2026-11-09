@@ -1,0 +1,51 @@
+<div
+  class="practice-card"
+  data-testid="showcase-practice-card"
+  (mouseenter)="hovering.set(true)"
+  (mouseleave)="hovering.set(false)"
+  (focusin)="focused.set(true)"
+  (focusout)="focused.set(false)">
+  <h2 class="practice-card__label">What are you preparing for?</h2>
+
+  <div class="practice-slot" (keydown.escape)="close()">
+    <p class="practice-slot__sentence">I want to prepare for</p>
+    <button
+      #slotButton
+      type="button"
+      class="practice-slot__button"
+      data-testid="showcase-practice-slot"
+      [attr.aria-expanded]="open()"
+      [attr.aria-label]="'Choose what to prepare for. Now: ' + topic().label"
+      (click)="toggle()">
+      <fa-rotating-words [words]="labels" [paused]="paused()" [(index)]="index"></fa-rotating-words>
+      <svg class="practice-slot__chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+    </button>
+
+    @if (open()) {
+      <div class="practice-menu" data-testid="showcase-practice-menu">
+        @for (option of topics; track option.label) {
+          <a class="practice-option" [routerLink]="option.path" [queryParams]="option.query" (click)="started(option, 'topic_menu')">
+            <span class="practice-option__name">{{ option.label }}</span>
+            <span class="practice-option__sub">{{ option.sub }}</span>
+          </a>
+        }
+      </div>
+    }
+  </div>
+
+  <p class="practice-card__note">Pick a topic and start solving in your browser. No account needed.</p>
+  <div class="practice-card__actions">
+    <a
+      faButton
+      variant="ghost"
+      size="lg"
+      class="practice-card__start"
+      data-testid="showcase-practice-start"
+      [routerLink]="topic().path"
+      [queryParams]="topic().query"
+      (click)="started(topic(), 'practice_card')">
+      Start practicing
+    </a>
+    <a class="practice-card__plan" data-testid="showcase-practice-plan" [routerLink]="planPath" (click)="planClicked()">Not sure? Follow the 30-day plan</a>
+  </div>
+</div>

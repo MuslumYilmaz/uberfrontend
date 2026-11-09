@@ -1,0 +1,896 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "file-explorer-pressure-v1",
+  "family": "file-explorer",
+  "title": "File Explorer Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-file-explorer"
+  },
+  "rounds": [
+    {
+      "id": "folders-and-files",
+      "title": "Folders and files",
+      "interviewerPrompt": "Build the tree first. It should read like a file explorer: folders on top, and one selected file at a time.",
+      "constraints": [
+        "Render `FILES` with `role=\"tree\"` on the list and `role=\"treeitem\"` on every node. Give each node `aria-level` and a `data-path` with its full path, such as `src/components/Button.tsx`.",
+        "Sort every level: folders first, then files, both by name ignoring case.",
+        "Folders start closed. Clicking a folder's `row` opens or closes it and updates `aria-expanded`. An open folder shows its children inside `role=\"group\"`, and an empty one shows `Empty folder` in an element with the class `empty`.",
+        "Clicking a file's `row` selects it. That file has `aria-selected=\"true\"`, the others have `aria-selected=\"false\"`, and `selection` shows `Selected: src/App.tsx`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-explorer-tree",
+          "name": "Round 1 · The tree sorts, opens and selects",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": "[role=\"tree\"]",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[role=\"treeitem\"]",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "public",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "src",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "package.json",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "README.md",
+              "index": 3
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-level",
+              "expected": "1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"package.json\"]",
+              "attribute": "aria-expanded",
+              "expected": false
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "components",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "styles",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "App.tsx",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "index.tsx",
+              "index": 3
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/App.tsx\"]",
+              "attribute": "aria-level",
+              "expected": "2"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/styles\"] > .row"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/styles\"]",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "waitForText",
+              "selector": "[data-path=\"src/styles\"] .empty",
+              "text": "Empty folder",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Nothing selected"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/App.tsx\"] > .row"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Selected: src/App.tsx"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/App.tsx\"]",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"package.json\"] > .row"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Selected: package.json"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"package.json\"]",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/App.tsx\"]",
+              "attribute": "aria-selected",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "interviewerPrompt": "Now make it work without a mouse, the way a real tree does.",
+      "constraints": [
+        "Exactly one item has `tabindex=\"0\"`, and it follows focus. The others have `tabindex=\"-1\"`.",
+        "`ArrowDown` and `ArrowUp` move through the visible items. `Home` and `End` go to the first and last visible item.",
+        "`ArrowRight` opens a closed folder and moves into an open one. `ArrowLeft` closes an open folder and moves to the parent of anything else.",
+        "`Enter` opens or closes a folder, and selects a file.",
+        "Collapse all closes every folder. If the focused item disappears, its closest visible parent gets `tabindex=\"0\"`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-explorer-keyboard",
+          "name": "Round 2 · One tab stop follows the keyboard",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"public\"]",
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"public\"]",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src\"]"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"public\"]",
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "End"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"README.md\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"README.md\"]",
+              "key": "ArrowUp"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"package.json\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"package.json\"]",
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"public\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src\"]"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src/components\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src/components\"]",
+              "key": "ArrowLeft"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "ArrowLeft"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "Enter"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src/App.tsx\"]",
+              "key": "Enter"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Selected: src/App.tsx"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/components\"] > .row"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/components/\"]",
+              "count": 2,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/components/Tree.tsx\"] > .row"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/components/Tree.tsx\"]",
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "click",
+              "selector": ".collapse-all"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[role=\"treeitem\"][tabindex=\"0\"]",
+              "count": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "tabindex",
+              "expected": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "load-when-opened",
+      "title": "Folders load when opened",
+      "interviewerPrompt": "Real projects are too big to load at once. Folders now load their contents the first time they open.",
+      "constraints": [
+        "Add `fetchChildren(folderId)`. It waits 300 ms, then resolves with that folder's children from `FILES`. The top level still appears straight away.",
+        "The first time a folder opens, show `Loading…` in an element with the class `loading` inside it. Set `aria-busy=\"true\"` on that item, and `aria-busy=\"false\"` when it finishes.",
+        "Opening it again shows its children at once, without `Loading…`.",
+        "The first call for `public` fails on purpose. Show `Could not load this folder.` in an element with the class `load-error` inside it, with a Retry button with the class `retry-load`. Retry loads it again, and this time it works.",
+        "`ArrowRight` on a folder that is still loading stays where it is. A folder closed during its load stays closed when the answer arrives."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-explorer-load",
+          "name": "Round 3 · Folders load once, fail visibly and never reopen themselves",
+          "steps": [
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] .loading",
+              "text": "Loading…"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-busy",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src\"]",
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src\"]"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".loading",
+              "count": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".loading",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"public\"] > .row"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"public\"] .loading",
+              "text": "Loading…"
+            },
+            {
+              "type": "waitForText",
+              "selector": "[data-path=\"public\"] .load-error",
+              "text": "Could not load this folder.",
+              "match": "contains",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"public\"]",
+              "attribute": "aria-busy",
+              "expected": "false"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"public/\"]",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"public\"] .retry-load"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"public\"] .loading",
+              "text": "Loading…"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".load-error",
+              "count": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"public/\"]",
+              "count": 2,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"public\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "favicon.ico",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"public\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "index.html",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/components\"] > .row"
+            },
+            {
+              "type": "click",
+              "selector": ".collapse-all"
+            },
+            {
+              "type": "wait",
+              "durationMs": 400
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src\"]",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/components\"]",
+              "attribute": "aria-expanded",
+              "expected": "false"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rename",
+      "title": "Rename",
+      "interviewerPrompt": "Let people rename files and folders. A new name changes more than one line on the screen.",
+      "constraints": [
+        "`F2` on an item replaces its `name` with an input with the class `rename-input`, filled with the current name, and moves focus to it.",
+        "`Enter` saves and `Escape` cancels. Both close the input and return focus to that item.",
+        "Keys pressed in the input must not move the tree.",
+        "A name that is empty or already used in the same folder is refused: the input stays open and `This name is not available.` appears in an element with the class `rename-error` and `role=\"alert\"`.",
+        "After saving, the level sorts again and every `data-path` below the item updates. If the selected file's path changed, `selection` shows the new path."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-explorer-rename",
+          "name": "Round 4 · Renaming works from the keyboard",
+          "steps": [
+            {
+              "type": "key",
+              "selector": "[data-path=\"package.json\"]",
+              "key": "F2"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 1
+            },
+            {
+              "type": "expectValue",
+              "selector": ".rename-input",
+              "value": "package.json"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".rename-input"
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "ArrowDown"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".rename-input"
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Home"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".rename-input"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".rename-input",
+              "value": "README.md"
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".rename-error",
+              "text": "This name is not available."
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".rename-error",
+              "attribute": "role",
+              "expected": "alert"
+            },
+            {
+              "type": "setValue",
+              "selector": ".rename-input",
+              "value": "   "
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".rename-error",
+              "text": "This name is not available."
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Escape"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"package.json\"] > .row .name",
+              "text": "package.json"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"package.json\"]"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"package.json\"]",
+              "key": "F2"
+            },
+            {
+              "type": "setValue",
+              "selector": ".rename-input",
+              "value": "zebra.json"
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path=\"package.json\"]",
+              "count": 0
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"zebra.json\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "README.md",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": "[aria-level=\"1\"] > .row .name",
+              "text": "zebra.json",
+              "index": 3
+            }
+          ]
+        },
+        {
+          "id": "pressure-explorer-paths",
+          "name": "Round 4 · A new folder name changes every path below it",
+          "steps": [
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/\"]",
+              "count": 4,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/components\"] > .row"
+            },
+            {
+              "type": "waitForCount",
+              "selector": "[data-path^=\"src/components/\"]",
+              "count": 2,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src/components/Button.tsx\"] > .row"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Selected: src/components/Button.tsx"
+            },
+            {
+              "type": "key",
+              "selector": "[data-path=\"src/components\"]",
+              "key": "F2"
+            },
+            {
+              "type": "setValue",
+              "selector": ".rename-input",
+              "value": "widgets"
+            },
+            {
+              "type": "key",
+              "selector": ".rename-input",
+              "key": "Enter"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".rename-input",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection",
+              "text": "Selected: src/widgets/Button.tsx"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "[data-path=\"src/widgets/Button.tsx\"]",
+              "attribute": "aria-selected",
+              "expected": "true"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path=\"src/widgets/Tree.tsx\"]",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path^=\"src/components\"]",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "styles",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "widgets",
+              "index": 1
+            },
+            {
+              "type": "expectFocused",
+              "selector": "[data-path=\"src/widgets\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "click",
+              "selector": "[data-path=\"src\"] > .row"
+            },
+            {
+              "type": "expectText",
+              "selector": "[data-path=\"src\"] > [role=\"group\"] > [role=\"treeitem\"] > .row .name",
+              "text": "widgets",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-path=\"src/widgets/Tree.tsx\"]",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You turned a static tree into a working file explorer",
+    "summary": "You started with a sorted tree and added a keyboard path, folders that load on demand and renames that reach every path below them. The interview signal is keeping data, focus and loading state separate, so one change does not quietly break the others.",
+    "takeaways": [
+      "Derive a flat list of visible items, and let the keyboard read only that list.",
+      "Keep loading state per folder, and remember successful results.",
+      "Store ids, not paths. A path is calculated, so a rename can never leave an old one behind.",
+      "Keep one key handler on the tree, and ignore keys that come from an input inside it."
+    ],
+    "frameworkNotes": {
+      "react": "Keep the loaded folders, open ids and selection in separate state, and calculate paths during render. Focus after a rename needs an effect, because the item may have moved."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-file-explorer-pressure-solution.v1.json"
+  }
+}

@@ -57,6 +57,11 @@ type ProfileShelfBadge = DashboardAchievement & {
           <li><i class="pi pi-id-card"></i> <span>ID: {{ user()!._id | slice:0:8 }}</span></li>
           <li><i class="pi pi-calendar"></i> <span>Joined: {{ user()!.createdAt | date:'dd.MM.yyyy' }}</span></li>
         </ul>
+
+        <a *ngIf="user()!.companyPlan" class="profile-plan" routerLink="/companies/plan" data-testid="profile-company-plan">
+          <i class="pi pi-compass" aria-hidden="true"></i>
+          <span>Your plan</span>
+        </a>
       </aside>
 
       <!-- Main -->

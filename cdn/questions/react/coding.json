@@ -180,6 +180,7 @@
           "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
           "Render a `Contact Us` form with fields for name, email, and message.",
           "Make all fields required; validate the email with a basic email check.",
+          "Require the message to be at least 10 characters long, ignoring leading and trailing spaces.",
           "Disable the submit button while the form is invalid or while a request is in progress.",
           "On a valid submit, send a POST request with the form body to `https://jsonplaceholder.typicode.com/posts` using `fetch`.",
           "If the request succeeds, show the success text: `\"Your message has been sent. Thank you!\"`.",
@@ -187,7 +188,7 @@
           "Track an `isSubmitting` flag so the user cannot trigger multiple requests at the same time."
         ],
         "expectedBehavior": [
-          "Initially, the submit button is disabled until all required fields are filled and the email looks valid.",
+          "Initially, the submit button is disabled until all required fields are filled, the email looks valid and the message has at least 10 characters.",
           "If the user submits invalid data, all fields are marked as touched and inline validation error messages are shown where appropriate.",
           "On a valid submit, a POST request is sent to `https://jsonplaceholder.typicode.com/posts` and the button is disabled while `isSubmitting` is `true`.",
           "On success, `isSubmitting` becomes `false`, the message `\"Your message has been sent. Thank you!\"` is displayed, and the form may optionally be reset.",
@@ -248,6 +249,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-contact-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/contact-form.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
     "companies": [
       "netflix",
@@ -617,6 +619,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v1:ui:react:react-image-slider"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/image-slider.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-image-slider-solution.v1.json",
     "companies": [
       "amazon",
@@ -631,14 +634,6 @@
         "publisher": "LeetCode Discuss",
         "date": "2020-04",
         "note": "One Amazon front end engineer II phone screen asked to implement a carousel component, with follow-ups on state management. This slider is a practice version of that shape, not the reported wording."
-      },
-      {
-        "label": "Blind: Spotify web engineer interview thread, October 2021",
-        "url": "https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7",
-        "company": "spotify",
-        "publisher": "Blind",
-        "date": "2021-10",
-        "note": "One thread quotes a recruiter: the practical round applies HTML, CSS and JavaScript; the candidate gave an image carousel as their own example. This React slider is a practice version of that round shape, not a reported task; the reported round was framework-free."
       }
     ],
     "access": "premium",
@@ -1330,6 +1325,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-multi-step-signup"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/multi-step-form.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -1963,6 +1959,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-nested-checkboxes"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-nested-checkboxes-solution.v1.json",
     "companies": [],
     "access": "premium",
@@ -2209,6 +2206,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v3:ui:react:react-autocomplete-search-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/autocomplete-search.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-autocomplete-search-solution.v2.json",
     "access": "free",
     "companies": [
@@ -2704,8 +2702,8 @@
             "timeoutMs": 1000
           },
           {
-          "type": "pointerDown",
-          "selector": ".option"
+            "type": "pointerDown",
+            "selector": ".option"
           },
           {
             "type": "expectValue",
@@ -2903,6 +2901,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-transfer-list"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-transfer-list-solution.v2.json",
     "companies": [
       "meta"
@@ -2925,7 +2924,7 @@
           },
           {
             "type": "click",
-          "selector": ".layout .listCard:nth-child(1) .row input"
+            "selector": ".layout .listCard:nth-child(1) .row input"
           },
           {
             "type": "click",
@@ -2934,8 +2933,8 @@
           },
           {
             "type": "waitForCount",
-          "selector": ".layout .listCard:last-child .row",
-          "count": 4
+            "selector": ".layout .listCard:last-child .row",
+            "count": 4
           }
         ]
       }
@@ -3116,6 +3115,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:react:react-use-effect-once"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/use-effect-once.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-use-effect-once-solution.v1.json",
     "companies": [
       "netflix"
@@ -3169,6 +3169,11 @@
             "type": "waitForText",
             "selector": ".room-value",
             "text": "design"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".connection-status",
+            "text": "Connected to design"
           },
           {
             "type": "expectText",
@@ -3283,6 +3288,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-like-button"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/like-button.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-like-button-solution.v2.json",
     "companies": [
       "amazon",
@@ -3473,19 +3479,20 @@
       "approaches": [
         {
           "title": "Single component + recursive renderer + single active reply state",
-          "prose": "1) Store comments in a `CommentNode[]` state.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Render a recursive `Tree` component that maps nodes and renders children with increased depth.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background."
+          "prose": "1) Store comments in a `CommentNode[]` state.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Render the tree with a plain recursive function that maps nodes and renders children with increased depth.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background."
         }
       ],
       "notes": {
         "pitfalls": [
           "Opening multiple reply inputs (having per-node local reply state).",
           "Mutating state incorrectly when adding replies (losing children references).",
-          "Forgetting to apply readable text colors; default styles may render text too dark on dark backgrounds."
+          "Forgetting to apply readable text colors; default styles may render text too dark on dark backgrounds.",
+          "Creating the tree component inside `App` or `useMemo`: it gets a new identity, so React rebuilds the reply input and it loses focus after every letter."
         ],
         "techniques": [
           "DFS search in a tree (`findById`).",
           "Single active reply input via `activeReplyId`.",
-          "Recursive React component for tree rendering."
+          "Recursive rendering with a plain function, so inputs keep their identity and focus."
         ]
       }
     },
@@ -3494,6 +3501,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v1:ui:react:react-nested-comments"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-nested-comments-solution.v1.json",
     "companies": [
       "google",
@@ -3514,8 +3522,8 @@
         "url": "https://leetcode.com/discuss/post/7711064/",
         "company": "servicenow",
         "publisher": "LeetCode Discuss",
-        "date": "2026-03",
-        "note": "Public search previews of this report list a nested comments design in a senior frontend loop. The full report could not be read by our tools, so only that listing is used. This component practises the shape, not the reported wording."
+        "date": "2026-02",
+        "note": "Public search previews of this report list a nested comments design in a senior frontend loop; nothing else from the report is used. This component practises the shape, not the reported wording."
       },
       {
         "label": "Blind: ServiceNow phone screen for a staff engineer, frontend-leaning, September 2021",
@@ -3707,6 +3715,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-debug-double-render"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/debug-double-render.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-debug-double-render-solution.v1.json",
     "companies": [
       "netflix",
@@ -3794,6 +3803,7 @@
       "asset": "assets/sb/react/question/react-chat-streaming-ui.v1.json",
       "openFile": "/src/App.tsx"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/chat-streaming-ui.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json",
     "companies": [
       "openai",
@@ -3932,7 +3942,7 @@
         "steps": [
           {
             "type": "setValue",
-          "selector": ".chip-input input",
+            "selector": ".chip-input input",
             "value": "Alice"
           },
           {
@@ -3942,8 +3952,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".suggestion"
+            "type": "mouseDown",
+            "selector": ".suggestion"
           },
           {
             "type": "waitForCount",
@@ -4127,7 +4137,7 @@
       "amazon",
       "microsoft"
     ],
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-07-14",
     "seo": {
       "title": "Build Snake Game in React",
@@ -4575,6 +4585,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-fetch-list-states"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/fetch-list-states.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-fetch-list-states-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-fetch-list-states.v1.json",
     "companies": [
@@ -4911,7 +4922,7 @@
     "sources": [
       {
         "label": "LeetCode Discuss: Walmart frontend engineer interview invitation, May 2026",
-        "url": "https://leetcode.com/discuss/post/8288813/",
+        "url": "https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/",
         "company": "walmart",
         "publisher": "LeetCode Discuss",
         "date": "2026-05",
@@ -5999,7 +6010,7 @@
           "Work in `src/App.tsx`. Keep `FILES` and the `FileNode` type as they are; a node with a `children` array is a folder, even when the array is empty.",
           "Render the tree with `role=\"tree\"` on the list and `role=\"treeitem\"` on every node, with `aria-level` and a `data-path` holding the slash-separated path, for example `src/components/Button.tsx`.",
           "Sort every level: folders first, then files, both by name ignoring case.",
-          "Folders start closed. Clicking a folder's `.row` toggles it and its `aria-expanded`; an open folder renders its children inside `role=\"group\"`, and an empty one shows `Empty folder`. Files have no `aria-expanded`.",
+          "Folders start closed. Clicking a folder's `.row` toggles it and its `aria-expanded`; an open folder renders its children inside `role=\"group\"`, and an empty one shows `Empty folder` in an element with the class `empty`. Files have no `aria-expanded`.",
           "Clicking a file's `.row` selects it: that file gets `aria-selected=\"true\"`, every other file `aria-selected=\"false\"`, and `.selection` shows `Selected: <path>`.",
           "Exactly one treeitem has `tabIndex` 0 and it follows focus. ArrowDown, ArrowUp, Home and End move focus through the visible items; ArrowRight opens a closed folder or moves into an open one; ArrowLeft closes an open folder or moves to the parent; Enter toggles a folder or selects a file.",
           "Collapse all closes every folder; if the active item disappears, its nearest visible ancestor takes the tab stop."
@@ -6441,6 +6452,7 @@
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-file-explorer"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/file-explorer.v1.json",
     "solutionAsset": "assets/sb/react/solution/react-file-explorer-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-file-explorer.v1.json",
     "companies": [
@@ -7641,6 +7653,1177 @@
     "seo": {
       "title": "Vanilla JS Dropdown Class, Then Port It to React",
       "description": "Write a keyboard-accessible dropdown as a plain JavaScript class, then port it to React with one shared reducer. Both versions pass the same checks."
+    }
+  },
+  {
+    "id": "react-debug-transcript-sync",
+    "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "closure",
+      "timers",
+      "async"
+    ],
+    "description": {
+      "summary": "Debug a React dubbing review player whose transcript highlight lags behind the audio, then add one small feature. Four reviewer reports arrived: \"Switching to 2× does nothing.\" \"Pause keeps the highlight moving.\" \"Typing in the search box changes nothing.\" \"After switching to Spanish and back, the English transcript is replaced by Spanish a moment later.\" Find the root cause of each report in src/App.tsx, fix all four, and add the position line the review team asked for. Public interview reports describe this round at ElevenLabs: a live technical round of pair work with an engineer on a practical problem (2026) and debugging a small React app with the interviewer (2025). Concepts: react, debugging, effects, closures, timers, async.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `loadTranscript`, the transcripts and `TICK_MS` as given.",
+          "While playing, advance the position by `rate` lines on every tick, and let a rate change take effect from the next tick.",
+          "Pause stops the clock; Play after Pause continues from the same position with one timer.",
+          "Filter the lines by the search text as the user types, from the transcript and the query, with no effect copying the result into state.",
+          "A transcript that arrives for a language the user has already left must never reach the screen.",
+          "Feature: render `<span className=\"position\">Line X of Y</span>` under the search box, where X is the highlighted line and Y the number of lines.",
+          "Keep the class names `.play`, `.rate-1x`, `.rate-2x`, `.time`, `.lang-en`, `.lang-es`, `.status`, `.search`, `.line` and `.line--active`."
+        ],
+        "expectedBehavior": [
+          "On first render the status reads `Loading English…`, then eight `.line` items appear with the first one highlighted and the status `English transcript`.",
+          "Typing `mix` leaves three lines, the first of them `The first voice sample mixes two speakers.`",
+          "Play, wait a second, Pause, wait another second: the time reads `2.0 s` and stays there.",
+          "Play at 2×: the status reads `Finished` after four ticks, half the time 1× needs.",
+          "Spanish then English in quick succession ends with the English transcript on screen, even after the slow Spanish response arrives.",
+          "After one second of playing, the position line reads `Line 3 of 8`."
+        ],
+        "implementationNotes": [
+          "Return a cleanup from the clock effect that clears the interval, and list `rate` among its dependencies so a rate change restarts the timer.",
+          "Compute the filtered lines with `useMemo` over `[lines, query]` instead of an effect that writes state.",
+          "Use a `cancelled` flag in the transcript effect cleanup so only the latest request can set the lines.",
+          "Clamp the position to the number of lines, derive `finished` from it, and stop playing when it is reached."
+        ],
+        "techFocus": [
+          "Stale closures in interval callbacks",
+          "Effect cleanup for timers",
+          "Deriving values instead of syncing state with effects",
+          "Late responses and request ordering",
+          "A small feature on top of a fix"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "transcript-sync-first-line",
+        "name": "Loads the English transcript and highlights its first line",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".line--active",
+            "text": "Welcome to the dubbing review",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "English transcript",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-search-now",
+        "name": "Typing filters the transcript at once",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".search",
+            "value": "mix"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".line",
+            "index": 0,
+            "text": "mixes two speakers",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-pause-stops",
+        "name": "Pause stops the clock",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".time",
+            "text": "2.0 s",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-double-speed",
+        "name": "Double speed reaches the end twice as fast",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "click",
+            "selector": ".rate-2x"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Finished",
+            "match": "contains",
+            "timeoutMs": 2300
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-latest-language",
+        "name": "A slow transcript for the previous language never replaces the newer one",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".lang-es"
+          },
+          {
+            "type": "click",
+            "selector": ".lang-en"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "English transcript",
+            "match": "contains",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectText",
+            "selector": ".line",
+            "index": 0,
+            "text": "Welcome to the dubbing review",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transcript-sync-position-line",
+        "name": "The position line follows the highlight",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".line",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".play"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".position",
+            "text": "Line 3 of 8",
+            "match": "equals"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-debug-transcript-sync.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-debug-transcript-sync"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/transcript-sync.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-debug-transcript-sync-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-debug-transcript-sync.v1.json",
+    "companies": [
+      "elevenlabs"
+    ],
+    "sources": [
+      {
+        "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview account, July 2026",
+        "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
+        "company": "elevenlabs",
+        "publisher": "Aced",
+        "date": "2026-07",
+        "note": "The account describes a live technical round of pair work with an engineer on a practical problem. This item practises that round as a debugging session on a small React app."
+      },
+      {
+        "label": "Aced: ElevenLabs frontend engineer interview account, November 2025",
+        "url": "https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72",
+        "company": "elevenlabs",
+        "publisher": "Aced",
+        "date": "2025-11",
+        "note": "The account describes debugging a small React app with the interviewer. The bugs here, a stale closure, a missing cleanup, a filter that never reruns and a late response that overwrites a newer one, are the kinds the ElevenLabs guide lists for that round."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Debug a dubbing review player whose transcript highlight lags behind the audio, then add a position line. Each of four reviewer reports points to a different mistake in how the component runs its clock, filters its lines and loads a transcript.",
+      "learningOutcomes": [
+        "Trace a control that does nothing back to a stale closure in an interval callback.",
+        "Stop a timer with an effect cleanup instead of a flag.",
+        "Replace an effect that syncs state with a value derived during render.",
+        "Keep a late response for an old selection from overwriting a newer one."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Root causes, one per report:\n\n1. The clock effect depends on `[playing]` only, so its interval callback keeps the rate it captured when playback started; 2× changes the state and nothing else.\n2. The same effect returns no cleanup, so Pause leaves the old interval running and the next Play adds a second one.\n3. The filter lives in an effect that depends on `[lines]`, so typing never reruns it.\n4. The transcript effect applies whichever response arrives, so the slow Spanish transcript replaces the English one that was already on screen.\n\nThe fix lists `rate` and the line count as dependencies of the clock effect, clears the interval in its cleanup, clamps the position at the end and stops playing there; derives the filtered lines with `useMemo` over the lines and the query; and flips a `cancelled` flag in the transcript effect cleanup so only the latest request can set the lines. The new position line reads the same active index as the highlight.\n\n**Test cases**\n- The English transcript loads with its first line highlighted.\n- `mix` leaves three lines at once.\n- Play, Pause: the time stays at `2.0 s`.\n- 2× reaches `Finished` in half the time.\n- Spanish then English keeps English on screen after the slow response.\n- The position line reads `Line 3 of 8` after a second of playing.",
+      "approaches": [
+        {
+          "title": "Clean up the clock, derive the filter and guard the transcript request",
+          "prose": "Start from the reports, not the code: each one maps to one line.\n\n1. Give the clock effect the dependencies it reads, `[playing, rate, total]`, and return a cleanup that clears the interval. A rate change now restarts the timer with the new rate, Pause clears it, and a second Play cannot stack a second timer.\n2. Clamp the position in the updater, `Math.min(current + rate, total)`, derive `finished` from it, and stop playing when it is reached; the cleanup does the rest.\n3. Delete the filter effect and its state. `useMemo` over `[lines, query]` returns the filtered lines in the same render as the keystroke.\n4. Declare `let cancelled = false` in the transcript effect, return early in the `.then` when it is set, and flip it in the cleanup. The slow Spanish response now lands after the user left Spanish and is ignored.\n5. Render `Line {activeIndex + 1} of {total}` from the same `activeIndex` the highlight uses.\n\nSay what each edit does as you make it: the interviewer is listening for the cause (a captured value, a missing cleanup, an effect that syncs state, an unguarded response), not for the symptom.",
+          "codeJs": "import React, { useEffect, useMemo, useState } from 'react';\nimport './App.css';\n\nexport interface Line {\n  id: number;\n  text: string;\n}\n\nexport type Language = 'en' | 'es';\nexport type Rate = 1 | 2;\n\n/** Each transcript line plays for one second of audio; the clock ticks every 400 ms of real time. */\nexport const TICK_MS = 400;\n\nconst TRANSCRIPTS: Record<Language, Line[]> = {\n  en: [\n    { id: 1, text: 'Welcome to the dubbing review for episode four.' },\n    { id: 2, text: 'The first voice sample mixes two speakers.' },\n    { id: 3, text: 'Mark the lines where the timing drifts.' },\n    { id: 4, text: 'The mix engineer joins after the break.' },\n    { id: 5, text: 'Keep the pauses where the original pauses.' },\n    { id: 6, text: 'Approve the take or request a new render.' },\n    { id: 7, text: 'Export the approved mix to the project.' },\n    { id: 8, text: 'Thanks, that is the end of the review.' }\n  ],\n  es: [\n    { id: 1, text: 'Bienvenidos a la revisión del doblaje del episodio cuatro.' },\n    { id: 2, text: 'La primera muestra de voz mezcla dos hablantes.' },\n    { id: 3, text: 'Marquen las líneas donde el tiempo se desvía.' },\n    { id: 4, text: 'El ingeniero de mezcla se une después de la pausa.' },\n    { id: 5, text: 'Mantengan las pausas donde pausa el original.' },\n    { id: 6, text: 'Aprueben la toma o pidan un nuevo render.' },\n    { id: 7, text: 'Exporten la mezcla aprobada al proyecto.' },\n    { id: 8, text: 'Gracias, ese es el final de la revisión.' }\n  ]\n};\n\n// Fake transcript service. Treat it as given: the bugs are in App below.\n// - Spanish answers slowly (700ms) and English quickly (150ms), so switching\n//   there and back quickly produces responses that arrive out of order\nexport function loadTranscript(language: Language): Promise<Line[]> {\n  const delay = language === 'es' ? 700 : 150;\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(TRANSCRIPTS[language]), delay);\n  });\n}\n\nexport const LANGUAGE_NAMES: Record<Language, string> = { en: 'English', es: 'Spanish' };\n\nexport default function App() {\n  const [language, setLanguage] = useState<Language>('en');\n  const [lines, setLines] = useState<Line[]>([]);\n  const [query, setQuery] = useState('');\n  const [playing, setPlaying] = useState(false);\n  const [rate, setRate] = useState<Rate>(1);\n  const [position, setPosition] = useState(0);\n  const total = lines.length;\n  const finished = total > 0 && position >= total;\n\n  useEffect(() => {\n    let cancelled = false;\n    setLines([]);\n    loadTranscript(language).then((loaded) => {\n      if (cancelled) return;\n      setLines(loaded);\n      setPosition(0);\n    });\n    return () => {\n      cancelled = true;\n    };\n  }, [language]);\n\n  const filtered = useMemo(() => {\n    const q = query.trim().toLowerCase();\n    return q ? lines.filter((line) => line.text.toLowerCase().includes(q)) : lines;\n  }, [lines, query]);\n\n  useEffect(() => {\n    if (!playing) return;\n    const timer = window.setInterval(() => {\n      setPosition((current) => Math.min(current + rate, total));\n    }, TICK_MS);\n    return () => {\n      window.clearInterval(timer);\n    };\n  }, [playing, rate, total]);\n\n  useEffect(() => {\n    if (finished) setPlaying(false);\n  }, [finished]);\n\n  const activeIndex = Math.min(position, total - 1);\n  const active = lines[activeIndex];\n  const status = total === 0\n    ? `Loading ${LANGUAGE_NAMES[language]}…`\n    : finished\n      ? 'Finished'\n      : `${LANGUAGE_NAMES[language]} transcript`;\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Dubbing Review Player (Solution)</h1>\n          <p className=\"subtitle\">The clock follows the rate, pause stops it, the search filters at once and the latest language wins.</p>\n        </header>\n\n        <div className=\"controls\">\n          <button type=\"button\" className=\"play\" onClick={() => setPlaying((value) => !value)}>\n            {playing ? 'Pause' : 'Play'}\n          </button>\n          <button\n            type=\"button\"\n            className={`rate rate-1x${rate === 1 ? ' rate--active' : ''}`}\n            onClick={() => setRate(1)}\n          >\n            1×\n          </button>\n          <button\n            type=\"button\"\n            className={`rate rate-2x${rate === 2 ? ' rate--active' : ''}`}\n            onClick={() => setRate(2)}\n          >\n            2×\n          </button>\n          <span className=\"time\">{position.toFixed(1)} s</span>\n        </div>\n\n        <div className=\"controls\">\n          <button type=\"button\" className=\"lang lang-en\" onClick={() => setLanguage('en')}>English</button>\n          <button type=\"button\" className=\"lang lang-es\" onClick={() => setLanguage('es')}>Spanish</button>\n          <span className=\"status\">{status}</span>\n        </div>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"transcript-search\">Search the transcript</label>\n          <input\n            id=\"transcript-search\"\n            className=\"search\"\n            type=\"search\"\n            value={query}\n            placeholder=\"Try mix, pause or render\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setQuery(event.target.value)}\n          />\n        </div>\n\n        {total > 0 && (\n          <span className=\"position\">Line {activeIndex + 1} of {total}</span>\n        )}\n\n        <ol className=\"lines\">\n          {filtered.map((line) => (\n            <li key={line.id} className={`line${active && active.id === line.id ? ' line--active' : ''}`}>\n              {line.text}\n            </li>\n          ))}\n        </ol>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "Debug a React Transcript Player That Lags Behind",
+      "description": "Fix four bugs in a React dubbing review player: a stale clock closure, a missing cleanup, a filter that never reruns and a late transcript that wins."
+    }
+  },
+  {
+    "id": "react-files-table-select-all",
+    "title": "Downloadable Files Table: Select All Across Pages",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "state-management",
+      "pagination",
+      "tables",
+      "accessibility",
+      "performance"
+    ],
+    "description": {
+      "summary": "Build a table of downloadable files from a sensor export with a filter, a sort and a select all that stays correct across pages. A public 2025 interview account describes a CrowdStrike take-home of this shape: a table with a few rows of downloadable files and their details, built from a screenshot, then a review with two engineers on filtering and sorting, thousands of entries and what happens when someone selects all, moves to another page and deselects a few. This is a FrontendAtlas practice version, not the company's brief. Concepts: react, state management, pagination, tables, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `FILES` and `PAGE_SIZE` as given.",
+          "Filter the rows by a case-insensitive name match and sort them by name or by size; a filter change returns to page one.",
+          "Store the selection as a mode plus exceptions keyed by file id, so select all covers every matching available file on every page without listing ids, and a row unticked on another page stays unticked.",
+          "The header checkbox is checked when every matching available file is selected, mixed (`aria-checked=\"mixed\"` and the `indeterminate` property) when some are, and unchecked when none are; checking it from the mixed state selects all.",
+          "Unavailable files show `Not available yet` and cannot be selected.",
+          "Show `N selected` in `.selection-count`, enable `.download` only with a selection, show an `.empty` line when nothing matches, and clear the selection when the filter changes.",
+          "Keep the class names `.row`, `.row--selected`, `.name`, `.size`, `.status--unavailable`, `.select-all`, `.select-row`, `.filter`, `.sort-name`, `.sort-size`, `.prev`, `.next`, `.page`, `.selection-count`, `.download` and `.empty`."
+        ],
+        "expectedBehavior": [
+          "The first page shows eight rows sorted by name, starting with `agent-config-2026-10.json`, and `Page 1 of 3`.",
+          "Select all reads `22 selected`; page two shows seven ticked rows and one unavailable file whose checkbox is disabled.",
+          "Unticking a row on page two reads `21 selected` and turns the header mixed; page one still shows eight ticked rows.",
+          "Filtering by `report` leaves six rows on one page, and select all then reads `6 selected`.",
+          "Sort by size puts `api-keys-rotation.log` (8 KB) first; Sort by name restores the name order.",
+          "A filter with no match shows `No files match` and disables Download."
+        ],
+        "implementationNotes": [
+          "Hold `{ mode: 'none' | 'all', exceptions: Set<string> }`; a file is selected when it is available and its id is in the exceptions for mode none, or missing from them for mode all.",
+          "Derive the matching rows with `useMemo` over the filter and the sort, then slice the current page.",
+          "Count the selected files among the matching available ones, and derive the header state from that count.",
+          "Set the header checkbox `indeterminate` property in an effect; React cannot set it from markup."
+        ],
+        "techFocus": [
+          "Selection models that scale past one page",
+          "Derived state for filtering, sorting and paging",
+          "Mixed checkbox state and its accessibility",
+          "Stable row identity",
+          "Take-home review follow-ups"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "files-table-first-page",
+        "name": "Shows eight rows of the first page sorted by name",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "agent-config-2026-10.json",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 1,
+            "text": "api-keys-rotation.log",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".page",
+            "text": "Page 1 of 3",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-select-all-across-pages",
+        "name": "Select all covers every available file that matches, across pages",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "22 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".select-all",
+            "attribute": "aria-checked",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 7
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".select-row",
+            "index": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--unavailable",
+            "text": "Not available yet",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-deselect-on-another-page",
+        "name": "A deselection on another page is kept and the header turns mixed",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "21 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".select-all",
+            "attribute": "aria-checked",
+            "expected": "mixed"
+          },
+          {
+            "type": "click",
+            "selector": ".prev"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 1 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 8
+          },
+          {
+            "type": "click",
+            "selector": ".next"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".page",
+            "text": "Page 2 of 3",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "id": "files-table-filter-select-all",
+        "name": "The filter narrows the table and select all follows it",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "report"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".page",
+            "text": "Page 1 of 1",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "selector": ".select-all"
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "6 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row--selected",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "id": "files-table-sort-by-size",
+        "name": "Sort by size puts the smallest file first",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".sort-size"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "api-keys-rotation.log",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".size",
+            "index": 0,
+            "text": "8 KB",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".sort-size",
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "click",
+            "selector": ".sort-name"
+          },
+          {
+            "type": "expectText",
+            "selector": ".name",
+            "index": 0,
+            "text": "agent-config-2026-10.json",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "files-table-empty-filter",
+        "name": "No match shows an empty line and nothing to download",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "setValue",
+            "selector": ".filter",
+            "value": "zzz"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No files match",
+            "match": "contains",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download"
+          }
+        ]
+      },
+      {
+        "id": "files-table-download-enables",
+        "name": "Download enables with a selection and disables when it is cleared",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 8,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "1 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download",
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "selector": ".select-row",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".selection-count",
+            "text": "0 selected",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".download"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-files-table-select-all.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-files-table-select-all"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/files-table.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-files-table-select-all-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-files-table-select-all.v1.json",
+    "companies": [
+      "crowdstrike"
+    ],
+    "sources": [
+      {
+        "label": "Taro: CrowdStrike engineering manager (frontend) interview account, September 2025",
+        "url": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
+        "company": "crowdstrike",
+        "publisher": "Taro",
+        "date": "2025-09",
+        "note": "The account describes a take-home table of downloadable files and their details built from a screenshot, then a review on filtering and sorting, the component, file status, thousands of entries and select all across pages. The data, wording and tests are ours."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Build a downloadable-files table whose select all stays correct across pages, filters and sorts. The selection model is the part a take-home review probes: a mode plus exceptions keyed by file id.",
+      "learningOutcomes": [
+        "Model the selection as a mode plus exceptions so select all never lists ids.",
+        "Keep a row unticked on another page unticked, with a mixed header.",
+        "Derive filtered, sorted and paged rows without copying them into state.",
+        "Keep unavailable files out of every selection and count."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "The selection is the whole exercise. Store it as `{ mode, exceptions }` keyed by file id: select all sets the mode to all with no exceptions, a tick or an untick toggles one id in the exceptions, and a file counts as selected when it is available and the mode and the exceptions agree. Paging, filtering and sorting are a slice of one derived list, so none of them can move or lose a tick.\n\nThe header state comes from counts over the matching available files: all, none or mixed. Mixed sets `aria-checked=\"mixed\"` in markup and the `indeterminate` property in an effect, because React cannot render that property. A filter change clears the selection and returns to page one, so a hidden file never reaches the download; say that decision out loud in the review.\n\n**Test cases**\n- The first page shows eight rows sorted by name.\n- Select all reads `22 selected` and page two shows seven ticked rows.\n- An untick on page two reads `21 selected`, turns the header mixed and leaves page one ticked.\n- A filter narrows to six rows and select all follows it.\n- Sort by size puts the smallest file first.\n- A filter with no match shows an empty line and disables Download.",
+      "approaches": [
+        {
+          "title": "Mode plus exceptions over one derived list",
+          "prose": "Build it in the order a reviewer will question it.\n\n1. Derive `matching` with `useMemo` over the filter and the sort, compute the page count, clamp the page, and slice the visible rows.\n2. Hold the selection as `{ mode: 'none' | 'all', exceptions: Set<string> }`. A file is selected when it is available and either the mode is all and its id is not an exception, or the mode is none and its id is.\n3. Count the selected files among the matching available ones, and derive the header state from that count; set `indeterminate` in an effect and `aria-checked=\"mixed\"` in markup.\n4. Select all from none or mixed sets the mode to all; from all it clears. A row toggles its own id in the exceptions.\n5. A filter change clears the selection and returns to page one; the download button reads the same count.\n\nIn the review, the same model answers the follow-ups: thousands of rows change nothing, because the selection never listed ids, and the download request sends the mode and the exceptions.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface FileRow {\n  id: string;\n  name: string;\n  sizeKb: number;\n  available: boolean;\n}\n\nexport const PAGE_SIZE = 8;\n\n/** Twenty-four files from a sensor export, two of them not yet available for download. */\nexport const FILES: FileRow[] = [\n  { id: 'f01', name: 'agent-config-2026-10.json', sizeKb: 12, available: true },\n  { id: 'f02', name: 'detections-report-q3.pdf', sizeKb: 2048, available: true },\n  { id: 'f03', name: 'host-inventory.csv', sizeKb: 640, available: true },\n  { id: 'f04', name: 'incident-timeline.xlsx', sizeKb: 300, available: true },\n  { id: 'f05', name: 'ioc-feed-latest.json', sizeKb: 96, available: false },\n  { id: 'f06', name: 'kernel-telemetry-sample.bin', sizeKb: 8192, available: true },\n  { id: 'f07', name: 'login-anomalies-report.pdf', sizeKb: 1536, available: true },\n  { id: 'f08', name: 'network-flows-day1.csv', sizeKb: 4096, available: true },\n  { id: 'f09', name: 'network-flows-day2.csv', sizeKb: 4100, available: true },\n  { id: 'f10', name: 'policy-audit-report.pdf', sizeKb: 720, available: true },\n  { id: 'f11', name: 'quarantine-log.txt', sizeKb: 48, available: true },\n  { id: 'f12', name: 'release-notes-7.12.md', sizeKb: 20, available: true },\n  { id: 'f13', name: 'sensor-crash-dump.dmp', sizeKb: 16384, available: false },\n  { id: 'f14', name: 'sensor-health-report.pdf', sizeKb: 880, available: true },\n  { id: 'f15', name: 'threat-graph-export.json', sizeKb: 2560, available: true },\n  { id: 'f16', name: 'user-sessions.csv', sizeKb: 512, available: true },\n  { id: 'f17', name: 'vuln-scan-results.xml', sizeKb: 1024, available: true },\n  { id: 'f18', name: 'weekly-summary-report.pdf', sizeKb: 400, available: true },\n  { id: 'f19', name: 'api-keys-rotation.log', sizeKb: 8, available: true },\n  { id: 'f20', name: 'cloud-posture-report.pdf', sizeKb: 1900, available: true },\n  { id: 'f21', name: 'dns-queries.csv', sizeKb: 3072, available: true },\n  { id: 'f22', name: 'endpoint-baseline.json', sizeKb: 256, available: true },\n  { id: 'f23', name: 'firewall-rules.yaml', sizeKb: 64, available: true },\n  { id: 'f24', name: 'malware-samples-index.csv', sizeKb: 128, available: true }\n];\n\ntype SortKey = 'name' | 'size';\n\n/** Selection as a mode plus exceptions, so select all never needs every id in memory. */\ninterface Selection {\n  mode: 'none' | 'all';\n  exceptions: Set<string>;\n}\n\nfunction formatSize(sizeKb: number): string {\n  return sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;\n}\n\nexport default function App() {\n  const [filter, setFilter] = useState('');\n  const [sortKey, setSortKey] = useState<SortKey>('name');\n  const [page, setPage] = useState(1);\n  const [selection, setSelection] = useState<Selection>({ mode: 'none', exceptions: new Set() });\n  const headerRef = useRef<HTMLInputElement>(null);\n\n  const matching = useMemo(() => {\n    const q = filter.trim().toLowerCase();\n    const rows = q ? FILES.filter((file) => file.name.toLowerCase().includes(q)) : FILES;\n    return [...rows].sort((a, b) => (sortKey === 'name' ? a.name.localeCompare(b.name) : a.sizeKb - b.sizeKb));\n  }, [filter, sortKey]);\n\n  const pageCount = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));\n  const currentPage = Math.min(page, pageCount);\n  const visible = matching.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);\n  const selectable = matching.filter((file) => file.available);\n\n  const isSelected = (file: FileRow) =>\n    file.available && (selection.mode === 'all' ? !selection.exceptions.has(file.id) : selection.exceptions.has(file.id));\n  const selectedCount = selectable.filter(isSelected).length;\n  const headerState: 'none' | 'some' | 'all' =\n    selectedCount === 0 ? 'none' : selectedCount === selectable.length ? 'all' : 'some';\n\n  useEffect(() => {\n    if (headerRef.current) headerRef.current.indeterminate = headerState === 'some';\n  }, [headerState]);\n\n  const toggleAll = () => {\n    setSelection(headerState === 'all' ? { mode: 'none', exceptions: new Set() } : { mode: 'all', exceptions: new Set() });\n  };\n\n  const toggleRow = (file: FileRow) => {\n    setSelection((current) => {\n      const exceptions = new Set(current.exceptions);\n      if (exceptions.has(file.id)) exceptions.delete(file.id);\n      else exceptions.add(file.id);\n      return { mode: current.mode, exceptions };\n    });\n  };\n\n  const changeFilter = (value: string) => {\n    setFilter(value);\n    setPage(1);\n    setSelection({ mode: 'none', exceptions: new Set() });\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Downloadable Files (Solution)</h1>\n          <p className=\"subtitle\">Select all follows the filter and survives paging, sorting and a few deselections.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"file-filter\">Filter by name</label>\n          <input\n            id=\"file-filter\"\n            className=\"filter\"\n            type=\"search\"\n            value={filter}\n            placeholder=\"Try report, csv or flows\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => changeFilter(event.target.value)}\n          />\n          <button type=\"button\" className=\"sort-name\" aria-pressed={sortKey === 'name'} onClick={() => setSortKey('name')}>\n            Sort by name\n          </button>\n          <button type=\"button\" className=\"sort-size\" aria-pressed={sortKey === 'size'} onClick={() => setSortKey('size')}>\n            Sort by size\n          </button>\n        </div>\n\n        <div className=\"summary\">\n          <span className=\"selection-count\">{selectedCount} selected</span>\n          <button type=\"button\" className=\"download\" disabled={selectedCount === 0}>\n            Download selected\n          </button>\n        </div>\n\n        {matching.length === 0 ? (\n          <p className=\"empty\">No files match &quot;{filter}&quot;.</p>\n        ) : (\n          <div className=\"table-scroll\">\n            <table className=\"files\">\n              <caption className=\"caption\">Files matching the filter, page {currentPage} of {pageCount}</caption>\n              <thead>\n                <tr>\n                  <th scope=\"col\" className=\"col-select\">\n                    <input\n                      ref={headerRef}\n                      type=\"checkbox\"\n                      className=\"select-all\"\n                      aria-label=\"Select all matching files\"\n                      aria-checked={headerState === 'some' ? 'mixed' : headerState === 'all'}\n                      checked={headerState === 'all'}\n                      onChange={toggleAll}\n                    />\n                  </th>\n                  <th scope=\"col\">Name</th>\n                  <th scope=\"col\">Size</th>\n                  <th scope=\"col\">Status</th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((file) => (\n                  <tr key={file.id} className={`row${isSelected(file) ? ' row--selected' : ''}`}>\n                    <td>\n                      <input\n                        type=\"checkbox\"\n                        className=\"select-row\"\n                        aria-label={`Select ${file.name}`}\n                        checked={isSelected(file)}\n                        disabled={!file.available}\n                        onChange={() => toggleRow(file)}\n                      />\n                    </td>\n                    <td className=\"name\">{file.name}</td>\n                    <td className=\"size\">{formatSize(file.sizeKb)}</td>\n                    <td className={`status${file.available ? '' : ' status--unavailable'}`}>\n                      {file.available ? 'Available' : 'Not available yet'}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n\n        <div className=\"pager\">\n          <button type=\"button\" className=\"prev\" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>\n            Previous\n          </button>\n          <span className=\"page\">Page {currentPage} of {pageCount}</span>\n          <button type=\"button\" className=\"next\" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>\n            Next\n          </button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "React Files Table: Select All Across Pages",
+      "description": "Build a React table of downloadable files with a filter, a sort and a select all that survives paging, using a mode plus exceptions keyed by file id."
+    }
+  },
+  {
+    "id": "react-listing-booking-widget",
+    "title": "Listing Booking Widget: Dates, Guests and Total Price",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "forms",
+      "derived-state",
+      "date-time",
+      "dialog",
+      "accessibility",
+      "focus",
+      "intl"
+    ],
+    "description": {
+      "summary": "Build a booking widget for one listing: it prices a stay from check-in and check-out dates and the number of adults and children, greys out Book now when the dates are booked, and confirms in an accessible dialog. A curated 2025 account describes an Airbnb full-stack phone screen of this shape: 40 minutes of live coding on a small booking widget, then 20 minutes of product discussion. This is a FrontendAtlas practice version, not the company's prompt. Concepts: react, forms, derived state, dates, dialogs, accessibility.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`; treat `LISTING` and `RATES` as given.",
+          "From the two date inputs, count the nights and show the nightly line (`$180 x 3 nights`) with its amount, the cleaning fee and the total; without both dates there is no total.",
+          "The nightly price covers two guests; each guest after that, adult or child, adds `$25` a night. Adults start at one and never go below it, children start at zero, and both plus buttons are disabled at four guests.",
+          "A check-out on or before check-in shows `Check-out must be after check-in`; a stay that overlaps a range in `LISTING.booked` shows `Those dates are booked`. In both cases there is no total and Book now is disabled.",
+          "Book now opens a dialog with `role=\"dialog\"`, `aria-modal=\"true\"` and a title, summarizing the dates, nights, guests and total; focus moves to Confirm booking, and Escape or Cancel closes it and returns focus to Book now.",
+          "Confirm booking closes the dialog, shows `Booked: Lakeside cabin, Dec 10 to Dec 13` and disables Book now.",
+          "Keep the class names `.check-in`, `.check-out`, `.adults-minus`, `.adults-plus`, `.adults-count`, `.children-minus`, `.children-plus`, `.children-count`, `.price-line`, `.price-amount`, `.cleaning-fee`, `.total`, `.date-error`, `.availability`, `.book`, `.confirm-dialog`, `.confirm-summary`, `.confirm`, `.cancel` and `.booked-message`."
+        ],
+        "expectedBehavior": [
+          "Book now is disabled until both dates are picked.",
+          "December 10 to 13 for one adult reads `$180 x 3 nights`, `$540`, a `$60` cleaning fee and a `$600` total.",
+          "Three adults and one child read `$230 x 3 nights` and a `$750` total, and both plus buttons are disabled.",
+          "December 23 to 26 reads `Those dates are booked`; December 27 to 29 is free and totals `$420`.",
+          "The dialog reads `Dec 10 to Dec 13 · 3 nights · 1 guest · $600` with focus on Confirm booking.",
+          "Escape closes the dialog and focus returns to Book now."
+        ],
+        "implementationNotes": [
+          "Derive one quote with `useMemo` over the dates and the guest count: empty, invalid, booked or ready with the nights and amounts.",
+          "Count nights as whole UTC days: parse the ISO date parts with `Date.UTC` and subtract.",
+          "Treat booked ranges as half-open: a stay overlaps when it starts before the range ends and ends after it starts.",
+          "Format amounts with `Intl.NumberFormat` in the listing currency with no fraction digits, and move focus with refs in an effect."
+        ],
+        "techFocus": [
+          "Derived state for a price breakdown",
+          "Date arithmetic without time zone drift",
+          "Range overlap checks",
+          "Accessible dialogs and focus return",
+          "Product follow-ups: currencies and request counts"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "booking-widget-price-stay",
+        "name": "Prices a three-night stay from the two dates",
+        "steps": [
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-line",
+            "text": "$180 x 3 nights",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-amount",
+            "text": "$540",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cleaning-fee",
+            "text": "$60",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$600",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-extra-guests",
+        "name": "Each guest after two adds a nightly fee, up to four guests",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".adults-minus"
+          },
+          {
+            "type": "click",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "click",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "click",
+            "selector": ".children-plus"
+          },
+          {
+            "type": "expectText",
+            "selector": ".adults-count",
+            "text": "3",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".children-count",
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".price-line",
+            "text": "$230 x 3 nights",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$750",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".adults-plus"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".children-plus"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-invalid-dates",
+        "name": "A check-out on or before check-in shows an error and no total",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "expectText",
+            "selector": ".date-error",
+            "text": "Check-out must be after check-in",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".total",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-booked-dates",
+        "name": "Dates that overlap a booking grey out Book now",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-23"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-26"
+          },
+          {
+            "type": "expectText",
+            "selector": ".availability",
+            "text": "Those dates are booked",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".total",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-27"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-29"
+          },
+          {
+            "type": "expectText",
+            "selector": ".total",
+            "text": "$420",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-dialog-opens",
+        "name": "Book now opens a dialog that says what is booked",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".confirm-dialog",
+            "attribute": "role",
+            "expected": "dialog"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".confirm-dialog",
+            "attribute": "aria-modal",
+            "expected": "true"
+          },
+          {
+            "type": "expectText",
+            "selector": ".confirm-summary",
+            "text": "Dec 10 to Dec 13 · 3 nights · 1 guest · $600",
+            "match": "equals"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".confirm"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-dialog-closes",
+        "name": "Escape and Cancel close the dialog and return focus to Book now",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "selector": ".confirm-dialog",
+            "key": "Escape"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".book"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".cancel"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".book"
+          }
+        ]
+      },
+      {
+        "id": "booking-widget-confirm",
+        "name": "Confirm books the stay",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".check-in",
+            "value": "2026-12-10"
+          },
+          {
+            "type": "setValue",
+            "selector": ".check-out",
+            "value": "2026-12-13"
+          },
+          {
+            "type": "click",
+            "selector": ".book"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".confirm-dialog",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".confirm"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".confirm-dialog",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".booked-message",
+            "text": "Booked: Lakeside cabin, Dec 10 to Dec 13",
+            "match": "equals"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".book"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-listing-booking-widget.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-listing-booking-widget"
+    },
+    "pressureModeAsset": "assets/questions/pressure-modes/booking-widget.v1.json",
+    "solutionAsset": "assets/sb/react/solution/react-listing-booking-widget-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-listing-booking-widget.v1.json",
+    "companies": [
+      "airbnb"
+    ],
+    "sources": [
+      {
+        "label": "PracHub: Airbnb full-stack phone screen, August 2025",
+        "url": "https://prachub.com/interview-experiences/airbnb-software-engineer-interview-experience-full-stack-phone-screen-lands-an-onsite-invite",
+        "company": "airbnb",
+        "publisher": "PracHub",
+        "date": "2025-08",
+        "note": "A curated account of a 60-minute screen: 40 minutes building a listing booking widget that prices a stay from dates and adults and children, greys out the button when booked and confirms in a dialog, then product follow-ups. Data, wording and tests are ours."
+      }
+    ],
+    "premiumPreview": {
+      "summary": "Build a listing booking widget that prices a stay from two dates and a guest count, greys out Book now on booked dates and confirms in an accessible dialog. The review signal is one derived quote that every line and the button read.",
+      "learningOutcomes": [
+        "Derive the nights, the price lines and the total from one quote.",
+        "Count nights in UTC days and check booked dates as half-open ranges.",
+        "Cap adults and children together and price extra guests per night.",
+        "Confirm in a dialog that takes focus, closes on Escape and returns focus."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Everything on the widget reads one quote derived from the two dates and the guest count. The quote is empty until both dates exist, invalid when check-out is not after check-in, booked when the stay overlaps a booking, and otherwise ready with the nights, the nightly price, the stay and the total. The lines, the total and Book now all read it, so they can never disagree.\n\nNights are whole UTC days, so a clock change cannot turn three nights into 2.96, and booked ranges are half-open, so a check-out on the morning a booking starts is fine. The confirmation is a dialog that takes focus, closes on Escape or Cancel and returns focus to Book now.\n\n**Test cases**\n- Book now is disabled until both dates are picked.\n- Three nights for one adult total $600.\n- Four guests pay $230 a night and the plus buttons disable.\n- A check-out before check-in shows an error and no total.\n- An overlap with a booking greys out Book now; a stay that starts on the booking's last morning is free.\n- The dialog takes focus, closes on Escape and returns focus.\n- Confirm shows the booked message.",
+      "approaches": [
+        {
+          "title": "One derived quote, half-open ranges and a focused dialog",
+          "prose": "Build it in the order the interviewer will follow up.\n\n1. Derive `quote` with `useMemo` over the dates and `adults + children`: empty without both dates, invalid when the nights are not positive, booked when a range overlaps, else ready.\n2. Count nights with a `toDay` helper over `Date.UTC`, and compare ISO strings for the overlap: `checkIn < range.to && range.from < checkOut`.\n3. Put the extra guest fee in the nightly price, and give both counters one cap: `guests < LISTING.maxGuests`.\n4. Enable Book now only for a ready quote, and show the reason when it is not: the date error or the booked message.\n5. Open the dialog, move focus to Confirm booking in an effect, close on Escape or Cancel and return focus to Book now.\n\nIn the product follow-ups, the same quote answers most questions: a currency picker changes one formatter and converts the rounded nightly price once, so the lines still add up; fewer requests come from fetching a month of availability at a time and pricing on the client; an offline cache keeps the last availability with the time it was fetched and says so; and payment details never go into that cache.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface BookedRange {\n  /** The first booked night, as an ISO date. */\n  from: string;\n  /** The check-out day after the last booked night, so a range is half-open. */\n  to: string;\n}\n\nexport interface Listing {\n  name: string;\n  currency: string;\n  nightlyPrice: number;\n  cleaningFee: number;\n  includedGuests: number;\n  extraGuestFee: number;\n  maxGuests: number;\n  booked: BookedRange[];\n}\n\n/** One listing; every price is in whole units of its currency. */\nexport const LISTING: Listing = {\n  name: 'Lakeside cabin',\n  currency: 'USD',\n  nightlyPrice: 180,\n  cleaningFee: 60,\n  includedGuests: 2,\n  extraGuestFee: 25,\n  maxGuests: 4,\n  booked: [{ from: '2026-12-24', to: '2026-12-27' }],\n};\n\n/** Exchange rates from the listing currency, for the currency follow-up. */\nexport const RATES: Record<string, number> = { USD: 1, EUR: 0.92 };\n\nconst DAY_MS = 86_400_000;\nconst ISO_DATE = /^\\d{4}-\\d{2}-\\d{2}$/;\n\n/** Whole days since the epoch in UTC, so a stay never gains or loses a night across a clock change. */\nconst toDay = (iso: string) => Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))) / DAY_MS;\n\nconst money = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: LISTING.currency,\n  minimumFractionDigits: 0,\n  maximumFractionDigits: 0,\n});\nconst shortDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });\nconst showDate = (iso: string) => shortDate.format(new Date(`${iso}T00:00:00Z`));\nconst plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;\n\ntype Quote =\n  | { kind: 'empty' }\n  | { kind: 'invalid'; message: string }\n  | { kind: 'booked'; message: string }\n  | { kind: 'ready'; nights: number; nightly: number; stay: number; total: number };\n\ninterface CounterProps {\n  name: string;\n  className: string;\n  value: number;\n  min: number;\n  canAdd: boolean;\n  onChange: (value: number) => void;\n}\n\nfunction Counter({ name, className, value, min, canAdd, onChange }: CounterProps) {\n  const noun = name.toLowerCase();\n  return (\n    <div className={`counter ${className}`}>\n      <span className=\"counter-name\">{name}</span>\n      <button type=\"button\" className={`step ${className}-minus`} aria-label={`Remove one from ${noun}`} disabled={value <= min} onClick={() => onChange(value - 1)}>\n        -\n      </button>\n      <output className={`${className}-count`} aria-live=\"polite\">{value}</output>\n      <button type=\"button\" className={`step ${className}-plus`} aria-label={`Add one to ${noun}`} disabled={!canAdd} onClick={() => onChange(value + 1)}>\n        +\n      </button>\n    </div>\n  );\n}\n\nexport default function App() {\n  const [checkIn, setCheckIn] = useState('');\n  const [checkOut, setCheckOut] = useState('');\n  const [adults, setAdults] = useState(1);\n  const [children, setChildren] = useState(0);\n  const [confirming, setConfirming] = useState(false);\n  const [bookedMessage, setBookedMessage] = useState('');\n  const bookRef = useRef<HTMLButtonElement>(null);\n  const confirmRef = useRef<HTMLButtonElement>(null);\n  const messageRef = useRef<HTMLParagraphElement>(null);\n  const guests = adults + children;\n\n  // One derived quote: every line, the total and the button read it, so they can never disagree.\n  const quote = useMemo<Quote>(() => {\n    if (!ISO_DATE.test(checkIn) || !ISO_DATE.test(checkOut)) return { kind: 'empty' };\n    const nights = toDay(checkOut) - toDay(checkIn);\n    if (nights <= 0) return { kind: 'invalid', message: 'Check-out must be after check-in' };\n    // Half-open ranges: a stay that checks out on the day a booking starts does not overlap it.\n    if (LISTING.booked.some((range) => checkIn < range.to && range.from < checkOut)) {\n      return { kind: 'booked', message: 'Those dates are booked' };\n    }\n    const nightly = LISTING.nightlyPrice + Math.max(0, guests - LISTING.includedGuests) * LISTING.extraGuestFee;\n    const stay = nightly * nights;\n    return { kind: 'ready', nights, nightly, stay, total: stay + LISTING.cleaningFee };\n  }, [checkIn, checkOut, guests]);\n\n  const canBook = quote.kind === 'ready' && !bookedMessage;\n\n  useEffect(() => {\n    if (confirming) confirmRef.current?.focus();\n  }, [confirming]);\n\n  useEffect(() => {\n    if (bookedMessage) messageRef.current?.focus();\n  }, [bookedMessage]);\n\n  const closeDialog = () => {\n    setConfirming(false);\n    bookRef.current?.focus();\n  };\n\n  const confirmBooking = () => {\n    if (quote.kind !== 'ready') return;\n    setConfirming(false);\n    setBookedMessage(`Booked: ${LISTING.name}, ${showDate(checkIn)} to ${showDate(checkOut)}`);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\" aria-labelledby=\"listing-title\">\n        <header className=\"header\">\n          <h1 id=\"listing-title\" className=\"title\">{LISTING.name}</h1>\n          <p className=\"subtitle\">\n            {money.format(LISTING.nightlyPrice)} a night for {LISTING.includedGuests} guests · up to {LISTING.maxGuests} guests\n          </p>\n        </header>\n\n        <div className=\"dates\">\n          <label className=\"field\">\n            <span className=\"label\">Check-in</span>\n            <input className=\"check-in\" type=\"date\" value={checkIn} onChange={(event) => setCheckIn(event.target.value)} />\n          </label>\n          <label className=\"field\">\n            <span className=\"label\">Check-out</span>\n            <input className=\"check-out\" type=\"date\" value={checkOut} onChange={(event) => setCheckOut(event.target.value)} />\n          </label>\n        </div>\n\n        <fieldset className=\"guests\">\n          <legend className=\"label\">Guests</legend>\n          <Counter name=\"Adults\" className=\"adults\" value={adults} min={1} canAdd={guests < LISTING.maxGuests} onChange={setAdults} />\n          <Counter name=\"Children\" className=\"children\" value={children} min={0} canAdd={guests < LISTING.maxGuests} onChange={setChildren} />\n        </fieldset>\n\n        {quote.kind === 'invalid' && <p className=\"date-error\" role=\"alert\">{quote.message}</p>}\n        {quote.kind === 'booked' && <p className=\"availability\" role=\"status\">{quote.message}</p>}\n        {quote.kind === 'ready' && (\n          <dl className=\"breakdown\">\n            <div className=\"line\">\n              <dt className=\"price-line\">{money.format(quote.nightly)} x {plural(quote.nights, 'night')}</dt>\n              <dd className=\"price-amount\">{money.format(quote.stay)}</dd>\n            </div>\n            <div className=\"line\">\n              <dt>Cleaning fee</dt>\n              <dd className=\"cleaning-fee\">{money.format(LISTING.cleaningFee)}</dd>\n            </div>\n            <div className=\"line line--total\">\n              <dt>Total</dt>\n              <dd className=\"total\">{money.format(quote.total)}</dd>\n            </div>\n          </dl>\n        )}\n\n        <button ref={bookRef} type=\"button\" className=\"book\" disabled={!canBook} onClick={() => setConfirming(true)}>\n          Book now\n        </button>\n        {bookedMessage && (\n          <p ref={messageRef} className=\"booked-message\" role=\"status\" tabIndex={-1}>\n            {bookedMessage}\n          </p>\n        )}\n\n        {confirming && quote.kind === 'ready' && (\n          <div className=\"backdrop\">\n            <div\n              className=\"confirm-dialog\"\n              role=\"dialog\"\n              aria-modal=\"true\"\n              aria-labelledby=\"confirm-title\"\n              onKeyDown={(event) => {\n                if (event.key === 'Escape') closeDialog();\n              }}\n            >\n              <h2 id=\"confirm-title\" className=\"dialog-title\">Confirm your stay</h2>\n              <p className=\"confirm-summary\">\n                {showDate(checkIn)} to {showDate(checkOut)} · {plural(quote.nights, 'night')} · {plural(guests, 'guest')} · {money.format(quote.total)}\n              </p>\n              <div className=\"dialog-actions\">\n                <button type=\"button\" className=\"cancel\" onClick={closeDialog}>\n                  Cancel\n                </button>\n                <button ref={confirmRef} type=\"button\" className=\"confirm\" onClick={confirmBooking}>\n                  Confirm booking\n                </button>\n              </div>\n            </div>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-06",
+    "seo": {
+      "title": "React Booking Widget: Dates, Guests and Total Price",
+      "description": "Build a React listing booking widget that prices a stay from dates and guests, greys out booked dates and confirms in an accessible dialog."
     }
   }
 ]

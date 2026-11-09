@@ -13,6 +13,9 @@ const CANONICAL_BASE = (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://fronte
 
 const CODING_UNLOCK =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
+// A coding task with an Interview Pressure Mode says so after the usual line.
+const CODING_PRESSURE_UNLOCK =
+  `${CODING_UNLOCK} It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.`;
 const COMPANY_PRACTICE_DISCLAIMER =
   'Editorial practice groupings, not verified official interview questions or endorsements.';
 const COVERAGE_REFERENCE_DISCLAIMER =
@@ -67,7 +70,7 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
     path: '/react/coding/react-contact-form-starter',
     h1: 'Contact Form (Component + HTTP)',
-    unlock: CODING_UNLOCK,
+    unlock: CODING_PRESSURE_UNLOCK,
     requiredPracticeCopy: ['controlled React fields', 'validation feedback', 'duplicate submissions', 'success, and error states'],
   },
   {
@@ -98,7 +101,7 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
     path: '/react/coding/react-use-effect-once',
     h1: 'StrictMode-safe Effect Setup and Cleanup',
-    unlock: CODING_UNLOCK,
+    unlock: CODING_PRESSURE_UNLOCK,
     requiredPracticeCopy: ['effect setup', 'reactive dependency', 'StrictMode', 'room dependency', 'unmounts'],
   },
   {

@@ -41,6 +41,40 @@
   z-index: 2;
 }
 
+/* A rehearsal's questions come first: the code and the preview wait behind this note, as the round keeps them. */
+.concealed-note {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--uf-text-secondary);
+  background: var(--uf-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.concealed-note p {
+  max-width: 36ch;
+  margin: 0;
+}
+
+/* A running rehearsal's clock, or why the editor is read-only. */
+.rehearsal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 999px;
+  color: var(--uf-text-primary);
+  background: color-mix(in srgb, var(--uf-accent) 14%, transparent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 /* Drawer overlay lives inside the panel container (which is relative) */
 .file-drawer {
   position: absolute;

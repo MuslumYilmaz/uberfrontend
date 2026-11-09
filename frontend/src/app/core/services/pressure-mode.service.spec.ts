@@ -44,16 +44,56 @@ describe('PressureModeService', () => {
     expect(service.normalize(payload)).toBeNull();
   });
 
-  it('rejects incomplete framework mappings and unsafe solution assets', () => {
-    const missingFramework = validScenario();
-    delete (missingFramework.supportedQuestions as any).vue;
-    expect(service.normalize(missingFramework)).toBeNull();
+  it('accepts a single-framework scenario when every framework map agrees', () => {
+    const scenario = service.normalize(singleFrameworkScenario());
 
+    expect(scenario?.supportedQuestions).toEqual({ react: 'react-counter' });
+    expect(scenario?.solutionAssets).toEqual({
+      react: 'assets/sb/react/solution/react-counter-pressure-solution.v1.json',
+    });
+    expect(scenario?.debrief.frameworkNotes).toEqual({ react: 'React note.' });
+  });
+
+  it('rejects framework maps that disagree or support no framework', () => {
+    const missingSolution = validScenario();
+    delete (missingSolution.solutionAssets as any).vue;
+    expect(service.normalize(missingSolution)).toBeNull();
+
+    const missingNote = validScenario();
+    delete (missingNote.debrief.frameworkNotes as any).vue;
+    expect(service.normalize(missingNote)).toBeNull();
+
+    const extraSolution = singleFrameworkScenario();
+    extraSolution.solutionAssets.vue = 'assets/sb/vue/solution/vue-counter-pressure-solution.v1.json';
+    expect(service.normalize(extraSolution)).toBeNull();
+
+    const blankQuestion = validScenario();
+    blankQuestion.supportedQuestions.vue = '  ';
+    expect(service.normalize(blankQuestion)).toBeNull();
+
+    const noFrameworks = singleFrameworkScenario();
+    noFrameworks.supportedQuestions = {};
+    noFrameworks.solutionAssets = {};
+    noFrameworks.debrief.frameworkNotes = {};
+    expect(service.normalize(noFrameworks)).toBeNull();
+  });
+
+  it('rejects unsafe solution assets', () => {
     const unsafeAsset = validScenario();
     unsafeAsset.solutionAssets.react = 'https://example.com/solution.json';
     expect(service.normalize(unsafeAsset)).toBeNull();
   });
 });
+
+function singleFrameworkScenario(): any {
+  const scenario = validScenario();
+  for (const framework of ['angular', 'vue']) {
+    delete scenario.supportedQuestions[framework];
+    delete scenario.solutionAssets[framework];
+    delete scenario.debrief.frameworkNotes[framework];
+  }
+  return scenario;
+}
 
 function validScenario(): any {
   const check = (id: string) => ({

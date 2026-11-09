@@ -52,9 +52,11 @@ type Row = Question & {
   __kind: QuestionKind;
   companies?: string[];
   __sd?: boolean;
+  /** A debugging task in a company's coding set: it opens on its own route, /<tech>/debug/<id>. */
+  __debug?: boolean;
 };
 
-type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
+type PracticeItem = { tech: Tech; kind: QuestionKind | 'debug'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
 // ---------- Formats categories ----------
 type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
@@ -455,14 +457,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
           // --------- COMPANY ----------
           if (this.source === 'company') {
 
-            // 1) ALL company questions (coding + trivia + system)
+            // 1) ALL company questions (coding, debugging, trivia, system)
             if (this.kind === 'all') {
-              return forkJoin<[Row[], Row[], Row[]]>([
+              return forkJoin<[Row[], Row[], Row[], Row[]]>([
                 this.qs.loadAllQuestionSummaries('coding', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
+                this.companyDebugRows$(),
                 this.qs.loadAllQuestionSummaries('trivia', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
@@ -470,17 +473,22 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 ),
                 this.loadSystemDesignRows$()
               ]).pipe(
-                map(([coding, trivia, system]) => [...coding, ...trivia, ...system]),
+                map(([coding, debug, trivia, system]) => [...coding, ...debug, ...trivia, ...system]),
                 startWith<Row[] | null>(null)
               );
             }
 
-            // 2) CODING
+            // 2) CODING, with the debugging tasks the company's rounds ask for (a bug squash is code to fix)
             if (this.kind === 'coding') {
-              return this.qs.loadAllQuestionSummaries('coding', { transferState: false }).pipe(
-                map(list =>
-                  list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
+              return forkJoin<[Row[], Row[]]>([
+                this.qs.loadAllQuestionSummaries('coding', { transferState: false }).pipe(
+                  map(list =>
+                    list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
+                  )
                 ),
+                this.companyDebugRows$(),
+              ]).pipe(
+                map(([coding, debug]) => [...coding, ...debug]),
                 startWith<Row[] | null>(null)
               );
             }
@@ -1633,6 +1641,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // ---------- helpers used by template ----------
   questionRowKindLabel(q: Row): string {
     if (q.__sd) return 'System design';
+    if (q.__debug) return 'Debugging';
     if (q.questionFormat === 'output') return 'Output';
     return q.__kind === 'trivia' ? 'Concept' : 'Coding';
   }
@@ -1710,14 +1719,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     const tech = (q as any).tech ?? this.tech ?? 'javascript';
     if (q.__kind === 'trivia') return ['/', tech, 'trivia', q.id];
-    // 🔻 debug branch kaldırıldı
+    if (q.__debug) return ['/', tech, 'debug', q.id];
     return ['/', tech, 'coding', q.id];
   }
 
   stateForNav(list: Row[], current: Row, companySlug: string | null) {
     const items: PracticeItem[] = list.map((r) => ({
       tech: (r.tech ?? this.tech ?? 'javascript') as Tech,
-      kind: r.__kind,
+      kind: r.__debug ? 'debug' : r.__kind,
       id: r.id,
     }));
     const index = Math.max(0, list.findIndex((r) => r.id === current.id));
@@ -1928,6 +1937,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     this.saveFiltersTo(this.getActiveViewKey());
+  }
+
+  /** A company's debugging tasks, such as Stripe's bug squash: counted and listed with its coding tasks. */
+  private companyDebugRows$(): Observable<Row[]> {
+    return this.qs.loadAllDebugSummaries({ transferState: false }).pipe(
+      map((list) => list.map<Row>((q) => ({ ...q, __kind: 'coding', __debug: true, tech: q.tech }))),
+    );
   }
 
   private loadSystemDesignRows$(): Observable<Row[]> {

@@ -408,6 +408,9 @@
 .price{font-size:28px;font-weight:800;margin:2px 0 2px;color:var(--uf-text-primary)}
 .price span{font-size:12px;font-weight:600;color:color-mix(in srgb,var(--uf-text-secondary) 80%,transparent);margin-left:6px}
 .billing-note{font-size:12px;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent);margin:0 0 4px}
+.price-local{font-size:12px;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent);margin:0 0 4px}
+.pr-local-note{margin:10px 0 0;font-size:12px;line-height:1.5;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent)}
+.pr-local-note a{color:inherit;text-decoration:underline}
 .plan-savings{
   width:max-content;
   margin:0;
@@ -1115,6 +1118,8 @@
   .pr-wrap--full .pr-grid--v2 .plan-summary{min-height:0}
 }
 @media (max-width:640px){
+  /* The recommended plan leads on phones. CSS keeps one DOM order, so prerendered cards do not swap on hydration. */
+  .pr-grid--v2 .pr-rec{order:-1}
   .pr-wrap--full{margin-top:12px}
   .pr-wrap--full .pr-hero h1{font-size:32px}
   .pr-hero__lede{font-size:15px}
@@ -1175,6 +1180,8 @@
   line-height:1.4;
 }
 .pr-regional-line i{color:var(--uf-accent);font-size:13px;flex:0 0 auto}
+.pr-regional-line--kicker{margin:0 0 10px;padding:0;border:0;border-radius:0;background:none;color:var(--uf-accent);line-height:1.35;align-items:flex-start}
+.pr-regional-line--kicker i{margin-top:2px}
 .price-list-row{
   display:flex;
   flex-wrap:wrap;
@@ -1194,4 +1201,6 @@
 }
 .price-off{color:var(--uf-accent);font-weight:800}
 .pr-wrap--full .price-list-row{font-size:15px}
+.pr-wrap--full .price-local{font-size:13px}
+.lifetime-offer__action .price-local{margin:2px 0 8px}
 .lifetime-offer__action .price-list-row{margin:0 0 2px}

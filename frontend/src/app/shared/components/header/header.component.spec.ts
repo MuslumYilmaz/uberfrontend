@@ -19,6 +19,7 @@ describe('HeaderComponent', () => {
     isPro?: boolean;
     role?: 'user' | 'admin';
     authUiState?: 'pending' | 'authenticated' | 'signed_out';
+    companyPlan?: unknown;
   }): Promise<ComponentFixture<HeaderComponent>> {
     const isLoggedIn = options?.isLoggedIn ?? true;
     const isPro = options?.isPro ?? false;
@@ -33,6 +34,7 @@ describe('HeaderComponent', () => {
           email: 'header@example.com',
           role,
           accessTier: isPro ? 'premium' : 'free',
+          ...(options?.companyPlan ? { companyPlan: options.companyPlan } : {}),
         }
         : null,
     );
@@ -238,6 +240,21 @@ describe('HeaderComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="header-profile-button"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('[data-testid="header-mobile-profile-button"]')).toBeTruthy();
     expect((fixture.nativeElement.querySelector('.fah-cta')?.textContent || '')).toContain('Upgrade');
+  });
+
+  it('leaves "Your plan" out for someone without a company plan', async () => {
+    const fixture = await createComponent({ isLoggedIn: true });
+    expect(query(fixture, 'header-company-plan')).toBeNull();
+  });
+
+  it('shows "Your plan" to someone with a company plan, leading to the plan route', async () => {
+    const fixture = await createComponent({
+      isLoggedIn: true,
+      companyPlan: { companies: [{ slug: 'elevenlabs' }], level: 'senior', when: 'later', createdAt: '2026-11-02T10:00:00.000Z', passedRounds: [], markedDone: [] },
+    });
+    const link = query<HTMLAnchorElement>(fixture, 'header-company-plan');
+    expect(link.textContent?.trim()).toBe('Your plan');
+    expect(link.getAttribute('href')).toBe('/companies/plan');
   });
 
   it('routes guest header CTA to the prep guide instead of pricing', async () => {
@@ -484,6 +501,9 @@ describe('HeaderComponent', () => {
 
     const continueAction = query<HTMLAnchorElement>(fixture, 'header-study-continue');
     expect(continueAction.getAttribute('href') || '').toContain('/guides/interview-blueprint/intro');
+    // A first-time guest has nothing to continue.
+    expect(continueAction.textContent).toContain('Not sure where to start?');
+    expect(continueAction.textContent).not.toContain('Continue where I left off');
 
     query<HTMLAnchorElement>(fixture, 'header-study-interview_blueprint').click();
     expect(analytics.track).toHaveBeenCalledWith(

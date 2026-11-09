@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Hotel search ownership flow</title>
+  <desc id="desc">The URL holds the city, dates, guests and filters. The shell parses it into a query and mounts the inputs, results and filters units through a contract. The results unit asks the search gateway, which sends the query to the search backend with a query id. Ranked cards, prices and facet counts come back through the gateway, and every unit reports events to the telemetry client.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">The URL owns the search; each team owns its unit</text>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="160" y="104">Shell</text>
+    <text x="480" y="104">Team-owned units</text>
+    <text x="810" y="104">Gateway and backend</text>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="40" y="130" width="240" height="70" rx="14"/>
+    <rect x="40" y="250" width="240" height="70" rx="14"/>
+    <rect x="40" y="370" width="240" height="70" rx="14"/>
+    <rect x="360" y="130" width="240" height="70" rx="14"/>
+    <rect x="360" y="250" width="240" height="70" rx="14"/>
+    <rect x="360" y="370" width="240" height="70" rx="14"/>
+    <rect x="700" y="250" width="220" height="70" rx="14"/>
+    <rect x="700" y="370" width="220" height="70" rx="14"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="58" y="160" font-size="16" font-weight="700">URL query string</text>
+    <text x="58" y="184" font-size="13" fill="#526078">city, dates, guests, filters</text>
+    <text x="58" y="280" font-size="16" font-weight="700">Router and manifest</text>
+    <text x="58" y="304" font-size="13" fill="#526078">SearchQuery, unit buildIds</text>
+    <text x="58" y="400" font-size="16" font-weight="700">Telemetry client</text>
+    <text x="58" y="424" font-size="13" fill="#526078">unit + buildId on every event</text>
+    <text x="378" y="160" font-size="16" font-weight="700">Inputs unit</text>
+    <text x="378" y="184" font-size="13" fill="#526078">city, dates, guests before commit</text>
+    <text x="378" y="280" font-size="16" font-weight="700">Results unit</text>
+    <text x="378" y="304" font-size="13" fill="#526078">current queryId, cards</text>
+    <text x="378" y="400" font-size="16" font-weight="700">Filters unit</text>
+    <text x="378" y="424" font-size="13" fill="#526078">facet counts from the reply</text>
+    <text x="718" y="280" font-size="16" font-weight="700">Search gateway</text>
+    <text x="718" y="304" font-size="13" fill="#526078">one AbortController per query</text>
+    <text x="718" y="400" font-size="16" font-weight="700">Search backend</text>
+    <text x="718" y="424" font-size="13" fill="#526078">ranking and prices, a black box</text>
+  </g>
+  <g stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 200V250" stroke="#315ee8"/>
+    <path d="m150 238 10 12 10-12" stroke="#315ee8"/>
+    <path d="M280 270 360 175" stroke="#315ee8"/>
+    <path d="m345 178 15-3-6-13" stroke="#315ee8"/>
+    <path d="M280 285H360" stroke="#315ee8"/>
+    <path d="m348 275 12 10-12 10" stroke="#315ee8"/>
+    <path d="M280 300 360 395" stroke="#315ee8"/>
+    <path d="m345 392 15 3-6 13" stroke="#315ee8"/>
+    <path d="M600 274H700" stroke="#7950b8"/>
+    <path d="m688 264 12 10-12 10" stroke="#7950b8"/>
+    <path d="M700 298H600" stroke="#268455"/>
+    <path d="m612 288-12 10 12 10" stroke="#268455"/>
+    <path d="M790 320V370" stroke="#7950b8"/>
+    <path d="m780 358 10 12 10-12" stroke="#7950b8"/>
+    <path d="M830 370V320" stroke="#268455"/>
+    <path d="m820 332 10-12 10 12" stroke="#268455"/>
+    <path d="M360 420H280" stroke="#268455" stroke-dasharray="6 6"/>
+    <path d="m292 410-12 10 12 10" stroke="#268455"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526078" text-anchor="middle">
+    <text x="190" y="232">parse</text>
+    <text x="320" y="270">mount</text>
+    <text x="650" y="264">search(queryId)</text>
+    <text x="650" y="318">cards, facets</text>
+    <text x="320" y="412">events</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="13" fill="#526078">
+    <text x="772" y="350" text-anchor="end">query</text>
+    <text x="848" y="350">ranked page</text>
+  </g>
+  <text x="48" y="500" font-family="Arial, sans-serif" font-size="14" fill="#526078">Inputs, results and filters derive from the URL; ranking and prices come back through the gateway with a queryId.</text>
+</svg>

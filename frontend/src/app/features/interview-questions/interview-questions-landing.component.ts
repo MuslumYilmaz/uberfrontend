@@ -17,6 +17,7 @@ import { Tech } from '../../core/models/user.model';
 import { PUBLIC_QUESTION_NAVIGATION, PublicQuestionNavigationItem } from '../../generated/public-question-navigation';
 import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/components/prep-roadmap/prep-roadmap.component';
 import { stripInlineMarkup } from '../../shared/ui/inline-code/inline-code.component';
+import { normalizeEditorialPlainText } from '../../core/utils/locked-preview.util';
 import { StripInlineMarkupPipe } from '../../shared/ui/inline-code/strip-inline-markup.pipe';
 
 type InterviewQuestionsLandingConfig = {
@@ -6527,11 +6528,7 @@ export class InterviewQuestionsLandingComponent implements OnInit {
   }
 
   private cleanText(value: string): string {
-    return String(value || '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    return normalizeEditorialPlainText(value);
   }
 
   private updateSchema(): void {

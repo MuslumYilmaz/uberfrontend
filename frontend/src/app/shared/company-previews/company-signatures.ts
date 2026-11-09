@@ -1,0 +1,36 @@
+/**
+ * The round the company directory names beside each company, in words from its process table. It is small and
+ * apart from the plan data because the directory draws it in prerendered HTML.
+ */
+export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
+  agoda: 'Frontend Platform interview',
+  airbnb: 'UI coding round',
+  amazon: 'Leadership Principles',
+  anduril: 'Onsite',
+  apple: 'Team loop',
+  'booking-com': 'Fit interview',
+  bytedance: 'Hiring manager round',
+  'capital-one': 'Power Day',
+  crowdstrike: 'Take-home review',
+  datadog: 'React live coding',
+  elevenlabs: '90-minute assessment',
+  gitlab: 'Merge request review',
+  google: 'Hiring committee',
+  intuit: 'Craft demonstration',
+  jpmorgan: 'Super day',
+  meta: 'UI architecture and design',
+  microsoft: 'Machine coding',
+  netflix: 'Take-home',
+  openai: 'Agentic coding option',
+  revolut: 'Bar Raiser',
+  servicenow: 'Design or machine coding',
+  shopee: 'CS-fundamentals round',
+  spotify: 'Web practical',
+  stripe: 'Bug squash',
+  tesla: 'Frontend system design',
+  uber: 'Frontend specialization',
+  walmart: 'JavaScript and React round',
+  waymo: 'Virtual onsite',
+  xai: 'React coding interview',
+  zalando: 'Take-home review',
+};

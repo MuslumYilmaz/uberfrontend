@@ -42,6 +42,20 @@
   overflow-wrap: anywhere;
 }
 
+.locked-preview-rich__quote {
+  margin: 0 0 8px 0;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--uf-accent);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--uf-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.locked-preview-rich__quote:last-child {
+  margin-bottom: 0;
+}
+
 .locked-preview-rich__list {
   margin: 0;
   padding-left: 18px;

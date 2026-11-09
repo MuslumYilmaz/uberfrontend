@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked-preview.util';
+import { StripInlineMarkupPipe } from '../../ui/inline-code/strip-inline-markup.pipe';
 
 @Component({
     selector: 'app-locked-preview',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, StripInlineMarkupPipe],
     template: `
     <div class="locked-preview-rich" data-testid="premium-preview-rich">
       <section class="locked-preview-rich__section">
@@ -27,12 +28,19 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
         <div class="locked-preview-rich__cta"><ng-content select="[lockedPreviewCta]"></ng-content></div>
       </section>
 
+      <!-- After the action: above it, a long sample pushes the action off a laptop's first screen. -->
+      <section class="locked-preview-rich__section" *ngIf="data.sample as sample" data-testid="premium-preview-sample">
+        <h2 class="locked-preview-rich__title">{{ sample.label }}</h2>
+        <blockquote class="locked-preview-rich__quote">{{ sample.quote }}</blockquote>
+        <p class="locked-preview-rich__text" *ngIf="sample.note">{{ sample.note }}</p>
+      </section>
+
       <section class="locked-preview-rich__section locked-preview-rich__section--secondary" *ngIf="freeRelated().length">
         <h2 class="locked-preview-rich__title">Free related practice</h2>
         <ul class="locked-preview-rich__links">
           <li *ngFor="let item of freeRelated()">
             <a [routerLink]="item.to">
-              <span>{{ item.title }}</span>
+              <span>{{ item.title | stripInlineMarkup }}</span>
               <span class="locked-preview-rich__pill locked-preview-rich__pill--free">Free</span>
             </a>
           </li>

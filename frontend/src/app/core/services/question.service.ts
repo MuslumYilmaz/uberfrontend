@@ -16,6 +16,8 @@ import {
   SystemDesignSectionReference,
 } from '../models/system-design.model';
 import { Tech } from '../models/user.model';
+import type { CompanyCountBucket } from '../../shared/company-counts.util';
+import { DEBUG_BANK_TECHS } from '../../shared/question-banks';
 import { ASSET_READER, AssetReader } from './asset-reader';
 import { QuestionPersistenceService } from './question-persistence.service';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
@@ -41,7 +43,7 @@ export type MixedQuestionListItem = QuestionListItem & { tech: Tech };
 export type ShowcaseStatsPayload = {
   totalQuestions: number;
   premiumPracticeCount?: number | null;
-  companyCounts: Record<string, { all: number; coding: number; trivia: number; system: number }>;
+  companyCounts: Record<string, CompanyCountBucket>;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -154,6 +156,17 @@ export class QuestionService {
     return forkJoin(
       TECHS.map((t) =>
         this.loadQuestionSummaries(t, kind, options).pipe(
+          map((list) => list.map((q) => ({ ...q, tech: t } as MixedQuestionListItem))),
+        ),
+      ),
+    ).pipe(map((buckets) => buckets.flat()));
+  }
+
+  /** Every debugging task as list-safe summaries; only the technologies with a debugging bank are asked. */
+  loadAllDebugSummaries(options: LoadQuestionsOptions = { transferState: false }): Observable<MixedQuestionListItem[]> {
+    return forkJoin(
+      DEBUG_BANK_TECHS.map((t) =>
+        this.loadQuestionSummaries(t, 'debug', options).pipe(
           map((list) => list.map((q) => ({ ...q, tech: t } as MixedQuestionListItem))),
         ),
       ),
@@ -742,10 +755,11 @@ export class QuestionService {
       const coding = this.safePositiveInt(bucket['coding']);
       const trivia = this.safePositiveInt(bucket['trivia']);
       const system = this.safePositiveInt(bucket['system']);
+      const debug = this.safePositiveInt(bucket['debug']);
       const allRaw = this.safePositiveInt(bucket['all']);
-      const all = allRaw || coding + trivia + system;
+      const all = allRaw || coding + trivia + system + debug;
 
-      companyCounts[slug] = { all, coding, trivia, system };
+      companyCounts[slug] = { all, coding, trivia, system, debug };
     }
 
     const premiumPracticeCount = resolvePremiumPracticeCount(source['premiumPracticeCount'], SHOWCASE_STATS.premiumPracticeCount);

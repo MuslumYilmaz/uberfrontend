@@ -81,6 +81,7 @@ export function collectCompanyCounts(lists, frameworkFamilyById) {
         coding: new Set(),
         trivia: new Set(),
         system: new Set(),
+        debug: new Set(),
       });
     }
     return buckets.get(slug);
@@ -101,6 +102,8 @@ export function collectCompanyCounts(lists, frameworkFamilyById) {
   for (const q of lists.coding) add('coding', q);
   for (const q of lists.trivia) add('trivia', q);
   for (const q of lists.system) add('system', q);
+  // A company's debugging tasks, such as a bug squash round's, count as their own kind (company-counts.util.ts).
+  for (const q of lists.debug ?? []) add('debug', q);
 
   const out = {};
   for (const slug of [...buckets.keys()].sort()) {
@@ -108,11 +111,13 @@ export function collectCompanyCounts(lists, frameworkFamilyById) {
     const coding = bucket.coding.size;
     const trivia = bucket.trivia.size;
     const system = bucket.system.size;
+    const debug = bucket.debug.size;
     out[slug] = {
-      all: coding + trivia + system,
+      all: coding + trivia + system + debug,
       coding,
       trivia,
       system,
+      debug,
     };
   }
 
@@ -152,6 +157,7 @@ async function main() {
     coding: [],
     trivia: [],
     system: [],
+    debug: [],
     incident: [],
     tradeoffBattle: [],
   };
@@ -162,6 +168,8 @@ async function main() {
       const list = await readJsonArray(filePath);
       allLists[kind].push(...list);
     }
+    // Only the company counts read the debugging banks; the site's question total stays as it was.
+    allLists.debug.push(...await readJsonArray(path.join(QUESTION_ASSETS_DIR, tech, 'debug.json')));
   }
 
   const systemList = await readJsonArray(

@@ -14,7 +14,7 @@
                 Older version
             </span>
 
-            <div *ngIf="showInterviewSetup()" class="interview-setup">
+            <div *ngIf="showInterviewSetup() && !rehearsing && !timedPracticeHidden" class="interview-setup">
                 <button
                     type="button"
                     class="compact-control-btn"
@@ -51,11 +51,11 @@
                 Timed practice active
             </span>
 
-            <div class="lang-compact">
+            <div class="lang-compact" *ngIf="!bundleFiles()">
                 <app-fa-glyph class="lang-compact__icon" icon="pi pi-code" aria-hidden="true"></app-fa-glyph>
                 <div class="lang-wrap">
                     <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
-                        aria-label="Editor language">
+                        [disabled]="locked" aria-label="Editor language">
                         <option value="js">JavaScript</option>
                         <option value="ts">TypeScript</option>
                     </select>
@@ -75,12 +75,12 @@
     </app-restore-banner>
 
     <!-- Draft update banner (versioned drafts) -->
-    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
+    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion() && !locked"
         [isVisible]="true" mode="updated" [otherDrafts]="availableOlderDrafts()"
         (openVersion)="openOlderDraft($event)" (copyVersion)="copyDraftIntoLatest($event)" (dismiss)="dismissDraftUpdateBanner()">
     </app-draft-update-banner>
 
-    <app-draft-update-banner *ngIf="isViewingOlderVersion()"
+    <app-draft-update-banner *ngIf="isViewingOlderVersion() && !locked"
         [isVisible]="true" mode="older"
         (switchToCurrent)="backToLatestDraft()" (copyVersion)="copyActiveDraftIntoLatest()">
     </app-draft-update-banner>
@@ -91,10 +91,19 @@
         <!-- TOP: code/tests editor area with adjustable height -->
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
-            <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
+            <div #codeEditorShell class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor"
+                [attr.inert]="concealedNote ? '' : null">
+                <!-- A multi-file task: one tab per file; the editor below shows the open one. -->
+                <div *ngIf="bundleFiles() as files" class="file-tabs" role="group" aria-label="Files" data-testid="js-file-tabs">
+                    <button *ngFor="let file of files" type="button" class="file-tab" data-testid="js-file-tab"
+                        [attr.aria-pressed]="file.path === activeBundleFile()?.path" (click)="selectBundleFile(file.path)">
+                        {{ file.path }}
+                    </button>
+                </div>
+                <div class="code-editor-area" [class.file-tabs-offset]="!!bundleFiles()">
                 <ng-container *ngIf="useMonaco(); else liteCodeEditor">
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
-                        [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        [code]="editorCode()" [language]="jsLang()==='ts' ? 'typescript':'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
                         (lineClick)="onCodeEditorLineClick($event)"
                         (loadFailed)="onEditorLoadFailed()">
@@ -104,7 +113,7 @@
                         class="editor-fill lite-overlay"
                         [testId]="'js-code-editor-lite'"
                         [ariaLabel]="'Code editor preview'"
-                        [code]="editorContent()"
+                        [code]="editorCode()"
                         [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-container>
@@ -115,7 +124,8 @@
                         data-testid="js-code-editor"
                         aria-label="Code editor fallback"
                         spellcheck="false"
-                        [value]="editorContent()"
+                        [readOnly]="locked"
+                        [value]="editorCode()"
                         (input)="onCodeChange($any($event.target).value)"></textarea>
                 </ng-template>
                 <ng-template #liteCodeSnapshot>
@@ -123,17 +133,19 @@
                         class="editor-fill"
                         [testId]="'js-code-editor'"
                         [ariaLabel]="'Code editor preview'"
-                        [code]="editorContent()"
+                        [code]="editorCode()"
                         [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
+                </div>
             </div>
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
-            <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
+            <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'"
+                [attr.inert]="concealedNote ? '' : null">
                 <ng-container *ngIf="useMonaco(); else liteTestsEditor">
                     <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
-                        [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                        [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
@@ -153,6 +165,7 @@
                         data-testid="js-tests-editor"
                         aria-label="Tests editor fallback"
                         spellcheck="false"
+                        [readOnly]="locked"
                         [value]="testCode()"
                         (input)="onTestsChange($any($event.target).value)"></textarea>
                 </ng-template>
@@ -165,6 +178,10 @@
                         [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
+            </div>
+
+            <div *ngIf="concealedNote" class="concealed-note" data-testid="js-concealed-note">
+                <p>{{ concealedNote }}</p>
             </div>
 
             <div
@@ -212,7 +229,7 @@
                         </header>
 
                         <article class="editor-decision-focus">
-                            <h4 class="editor-decision-focus__title">{{ active.node.title }}</h4>
+                            <h4 class="editor-decision-focus__title"><fa-inline-code [text]="active.node.title"></fa-inline-code></h4>
                             <p *ngIf="!active.resolved" class="editor-decision-focus__hint">
                                 This anchor is not present in the currently loaded solution variant.
                             </p>
@@ -231,7 +248,7 @@
                                     <span>Why this choice?</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy">{{ active.node.why }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('why')" class="editor-branch__copy"><fa-inline-code [text]="active.node.why"></fa-inline-code></p>
                             </article>
 
                             <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('alternative')">
@@ -246,7 +263,7 @@
                                     <span>Alternative</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy">{{ active.node.alternative }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('alternative')" class="editor-branch__copy"><fa-inline-code [text]="active.node.alternative"></fa-inline-code></p>
                             </article>
 
                             <article class="editor-branch" [class.expanded]="isDecisionBranchExpanded('tradeoff')">
@@ -261,7 +278,7 @@
                                     <span>Tradeoff</span>
                                     <app-fa-glyph class="editor-branch__caret" icon="pi pi-chevron-down" aria-hidden="true"></app-fa-glyph>
                                 </button>
-                                <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy">{{ active.node.tradeoff }}</p>
+                                <p *ngIf="isDecisionBranchExpanded('tradeoff')" class="editor-branch__copy"><fa-inline-code [text]="active.node.tradeoff"></fa-inline-code></p>
                             </article>
                         </section>
                     </section>
@@ -269,7 +286,7 @@
             </div>
 
             <div
-                *ngIf="topTab()==='code' && !interviewModeEnabled() && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
+                *ngIf="topTab()==='code' && !interviewModeEnabled() && !rehearsing && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
                 class="editor-assist-dock"
                 data-testid="editor-assist-dock"
             >
@@ -312,9 +329,9 @@
                             <strong>{{ explainHint()?.title }}</strong>
                             <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
                         </div>
-                        <p class="assist-chip__panel-body">{{ explainHint()?.why }}</p>
+                        <p class="assist-chip__panel-body"><fa-inline-code [text]="explainHint()?.why"></fa-inline-code></p>
                         <ul class="assist-chip__actions">
-                            <li *ngFor="let action of explainHint()?.actions">{{ action }}</li>
+                            <li *ngFor="let action of explainHint()?.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
                         </ul>
                     </div>
                 </div>
@@ -328,14 +345,17 @@
         <!-- BOTTOM: Actions + Results/Console -->
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell" data-nosnippet>
             <div class="fa-runner-topbar">
-                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()"
-                    [disabled]="!(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
+                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="onRunTestsClick()"
+                    [disabled]="locked || !(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
                 <button *ngIf="!interviewModeEnabled()" class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
+                <div class="fa-runner-interview-controls" *ngIf="clockLabel || locked">
+                    <span class="interview-pill" data-testid="js-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
+                </div>
                 <div class="fa-runner-interview-controls" *ngIf="interviewModeEnabled()">
                     <span class="interview-pill">{{ interviewRemainingLabel() }}</span>
                     <button class="interview-end-btn" type="button" data-testid="interview-mode-end" (click)="endInterviewMode('manual')">
@@ -352,7 +372,7 @@
                     </div>
 
                     <div *ngIf="hasRunTests()" class="space-y-2">
-                        <div *ngIf="showDuckPanel()" class="assist-duck" data-testid="assist-rubber-duck">
+                        <div *ngIf="showDuckPanel() && !rehearsing" class="assist-duck" data-testid="assist-rubber-duck">
                             <div class="assist-duck__head">
                                 <strong>Rubber duck checklist</strong>
                                 <button type="button" class="assist-duck__toggle" (click)="toggleDuckPanel()">

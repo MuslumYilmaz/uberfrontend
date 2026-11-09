@@ -368,8 +368,6 @@ function compileTS(src, filename){
       const originalClearTimeout = window.clearTimeout.bind(window);
       const originalSetInterval = window.setInterval.bind(window);
       const originalClearInterval = window.clearInterval.bind(window);
-      const originalAddEventListener = document.addEventListener.bind(document);
-      const originalRemoveEventListener = document.removeEventListener.bind(document);
       const activeTimers = new Set();
       const documentListeners = new Set();
       let timerBaseline = new Set();
@@ -398,13 +396,15 @@ function compileTS(src, filename){
         activeTimers.delete(id);
         return originalClearInterval(id);
       };
+      // Resolve these per call: zone.js patches EventTarget later, and a listener that
+      // skips the patch never triggers Angular change detection.
       document.addEventListener = function(type, listener, options){
         if (listener) documentListeners.add(type + ':' + String(listener));
-        return originalAddEventListener(type, listener, options);
+        return EventTarget.prototype.addEventListener.call(document, type, listener, options);
       };
       document.removeEventListener = function(type, listener, options){
         if (listener) documentListeners.delete(type + ':' + String(listener));
-        return originalRemoveEventListener(type, listener, options);
+        return EventTarget.prototype.removeEventListener.call(document, type, listener, options);
       };
       window.__FA_GET_PREVIEW_LEAKS = function(){
         return { timers: activeTimers.size, documentListeners: documentListeners.size };

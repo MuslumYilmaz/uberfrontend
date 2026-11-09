@@ -87,7 +87,7 @@
         [attr.data-testid]="'incident-card-' + item.id">
         <div class="incident-row__main">
           <h2 class="incident-row__title">{{ item.title }}</h2>
-          <p class="incident-row__summary">{{ item.summary }}</p>
+          <p class="incident-row__summary"><fa-inline-code [text]="item.summary"></fa-inline-code></p>
           <div class="incident-row__chips">
             <span class="incident-chip">{{ techLabel(item) }}</span>
             <span class="incident-chip">{{ item.difficulty | titlecase }}</span>
@@ -100,7 +100,7 @@
         </div>
 
         <div class="incident-row__signals">
-          <span class="incident-signal" *ngFor="let signal of item.signals">{{ signal }}</span>
+          <span class="incident-signal" *ngFor="let signal of item.signals"><fa-inline-code [text]="signal"></fa-inline-code></span>
         </div>
 
         <div class="incident-row__status">

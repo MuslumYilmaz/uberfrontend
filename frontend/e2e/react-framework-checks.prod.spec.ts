@@ -39,6 +39,12 @@ const COUNTER_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+const REVIEW_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json',
+);
+// The fixes live in the component and its stylesheet; the spec is reviewed, not run.
+const REVIEW_FIXES = { 'src/App.vue': REVIEW_SOLUTION['src/App.vue'], 'src/App.css': REVIEW_SOLUTION['src/App.css'] };
+
 const DEBOUNCE_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-debounced-search-pressure-solution.v1.json',
@@ -96,6 +102,150 @@ const PAGINATION_TABLE_PRESSURE_SOLUTIONS = {
   ),
   vue: readCanonicalFiles(
     '../cdn/sb/vue/solution/vue-pagination-table-pressure-solution.v1.json',
+  ),
+} as const;
+
+const AUTOCOMPLETE_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-autocomplete-search-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-autocomplete-search-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-autocomplete-search-pressure-solution.v1.json',
+  ),
+} as const;
+
+const TEAM_LIST_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-fetch-list-states-pressure-solution.v1.json',
+);
+
+const NESTED_COMMENTS_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-nested-comments-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-nested-comments-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-nested-comments-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CONTACT_FORM_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-contact-form-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-contact-form-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-contact-form-pressure-solution.v1.json',
+  ),
+} as const;
+
+const CHAT_STREAMING_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-chat-streaming-ui-pressure-solution.v1.json',
+);
+
+const USE_EFFECT_ONCE_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-use-effect-once-pressure-solution.v1.json',
+);
+
+const DEBUG_DOUBLE_RENDER_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-debug-double-render-pressure-solution.v1.json',
+);
+
+// Each file must compile on its own while the bundle loads, so the child comes before the parent that uses it.
+const TWO_WAY_CONTROL_PRESSURE_SOLUTION = (() => {
+  const files = readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-input-output-two-way-pressure-solution.v1.json',
+  );
+  const order = [
+    'src/app/child.component.ts',
+    'src/app/child.component.html',
+    'src/app/child.component.css',
+    'src/app/app.component.ts',
+    'src/app/app.component.html',
+    'src/app/app.component.css',
+  ];
+  return Object.fromEntries(order.map((file) => [file, files[file]]));
+})();
+
+const MULTI_STEP_FORM_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-multi-step-form-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-multi-step-form-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-multi-step-form-pressure-solution.v1.json',
+  ),
+} as const;
+
+const NESTED_CHECKBOXES_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-nested-checkboxes-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-nested-checkboxes-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-nested-checkboxes-pressure-solution.v1.json',
+  ),
+} as const;
+
+const IMAGE_SLIDER_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-image-slider-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-image-slider-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-image-slider-pressure-solution.v1.json',
+  ),
+} as const;
+
+const FILE_EXPLORER_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-file-explorer-pressure-solution.v1.json',
+);
+
+const TRANSCRIPT_SYNC_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-debug-transcript-sync-pressure-solution.v1.json',
+);
+
+const FILES_TABLE_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-files-table-select-all-pressure-solution.v1.json',
+);
+
+const BOOKING_WIDGET_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json',
+);
+
+const LIKE_BUTTON_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-like-button-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-like-button-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-like-button-pressure-solution.v1.json',
+  ),
+} as const;
+
+const TRANSFER_LIST_PRESSURE_SOLUTIONS = {
+  react: readCanonicalFiles(
+    '../cdn/sb/react/solution/react-transfer-list-pressure-solution.v1.json',
+  ),
+  angular: readCanonicalFiles(
+    '../cdn/sb/angular/solution/angular-transfer-list-pressure-solution.v1.json',
+  ),
+  vue: readCanonicalFiles(
+    '../cdn/sb/vue/solution/vue-transfer-list-pressure-solution.v1.json',
   ),
 } as const;
 
@@ -164,6 +314,40 @@ const COUNTER_PRESSURE_FLOW: PressureFlowContract = {
   debriefText: 'You handled a changing interview contract',
 };
 
+const TRANSCRIPT_SYNC_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [2, 3, 4, 6],
+  roundIds: [
+    'clock-follows-the-controls',
+    'search-while-it-plays',
+    'switch-languages-mid-review',
+    'loop-and-seek',
+  ],
+  debriefText: 'You kept the transcript in step with the audio',
+};
+
+const FILES_TABLE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'select-all-across-pages',
+    'filter-and-sort',
+    'download-request',
+    'full-export',
+  ],
+  debriefText: 'You kept the selection true at any size',
+};
+
+const BOOKING_WIDGET_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5, 6],
+  roundIds: [
+    'price-the-stay',
+    'guests-within-the-cap',
+    'booked-dates',
+    'confirm-dialog',
+    'guest-currency',
+  ],
+  debriefText: 'You priced the stay and booked it once',
+};
+
 const DEBOUNCE_PRESSURE_FLOW: PressureFlowContract = {
   checkCounts: [1, 2, 3, 5],
   roundIds: [
@@ -217,6 +401,160 @@ const PAGINATION_TABLE_PRESSURE_FLOW: PressureFlowContract = {
     'selection-and-accessibility',
   ],
   debriefText: 'You kept table state predictable under pressure',
+};
+
+const AUTOCOMPLETE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-search',
+    'keyboard-selection',
+    'instant-repeat-searches',
+    'accessibility-and-cleanup',
+  ],
+  debriefText: 'You kept the search predictable as it grew',
+};
+
+const TEAM_LIST_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'request-states',
+    'refresh-keeps-list',
+    'newest-request-wins',
+    'real-cancellation',
+  ],
+  debriefText: 'You kept every request state honest',
+};
+
+const NESTED_COMMENTS_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'core-thread',
+    'keyboard-flow',
+    'hide-threads',
+    'safe-delete',
+  ],
+  debriefText: 'You kept the thread correct as it grew',
+};
+
+const CONTACT_FORM_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'validation',
+    'one-request',
+    'failure-recovery',
+    'slow-server-and-accessibility',
+  ],
+  debriefText: "You protected the user's work in every outcome",
+};
+
+const CHAT_STREAMING_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'stream-the-answer',
+    'stop-keeps-the-text',
+    'failure-and-retry',
+    'announcements-and-cleanup',
+  ],
+  debriefText: 'You kept the stream under control',
+};
+
+const USE_EFFECT_ONCE_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-connection',
+    'prove-the-order',
+    'connecting-takes-time',
+    'settings-without-reconnecting',
+  ],
+  debriefText: 'You kept every connection accounted for',
+};
+
+const DEBUG_DOUBLE_RENDER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-click-one-render',
+    'do-not-copy-props',
+    'typing-leaves-the-badge-alone',
+    'many-updates-one-render',
+  ],
+  debriefText: 'You removed every render that had no reason to happen',
+};
+
+const TWO_WAY_CONTROL_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 4],
+  roundIds: [
+    'parent-owns-the-value',
+    'changes-from-the-parent',
+    'work-inside-a-form',
+    'keyboard-and-names',
+  ],
+  debriefText: 'You built a control other teams can reuse',
+};
+
+const MULTI_STEP_FORM_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'valid-navigation',
+    'edit-from-summary',
+    'company-step',
+    'finish-and-focus',
+  ],
+  debriefText: 'You kept the signup moving without losing anything',
+};
+
+const NESTED_CHECKBOXES_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'parent-child-sync',
+    'deep-tree',
+    'locked-items',
+    'selection-summary',
+  ],
+  debriefText: 'You kept the whole tree consistent',
+};
+
+const IMAGE_SLIDER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'one-current-slide',
+    'autoplay',
+    'keyboard-and-screen-readers',
+    'slides-can-disappear',
+  ],
+  debriefText: 'You kept every slide change under control',
+};
+
+const FILE_EXPLORER_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'folders-and-files',
+    'keyboard',
+    'load-when-opened',
+    'rename',
+  ],
+  debriefText: 'You turned a static tree into a working file explorer',
+};
+
+const LIKE_BUTTON_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'update-first',
+    'server-says-no',
+    'fast-clicks',
+    'say-what-happened',
+  ],
+  debriefText: 'You kept the button fast and the server honest',
+};
+
+const TRANSFER_LIST_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [1, 2, 3, 5],
+  roundIds: [
+    'move-between-lists',
+    'select-many',
+    'search-inside-a-list',
+    'undo-and-announce',
+  ],
+  debriefText: 'You kept every item in exactly one place',
 };
 
 const ACCORDION_FAQ_PRESSURE_FLOW: PressureFlowContract = {
@@ -1015,6 +1353,373 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
   });
 
+  test('JavaScript bug squash runs its files as modules and keeps an edit in the file it was made in', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium bug squash test');
+    const id = 'js-debug-bug-squash-invoices';
+    const codeModel = `q-${id}-code`;
+    await seedPremiumSession(page, baseURL);
+    await page.goto(`/javascript/debug/${id}`);
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+
+    const tabs = page.getByTestId('js-file-tab');
+    await expect(tabs).toHaveText(['src/currency.js', 'src/line-items.js', 'src/ids.js', 'src/invoice.js', 'src/payments.js']);
+    await expect(tabs.first()).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('js-language-select')).toHaveCount(0);
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.floor(amount');
+
+    const runButton = page.getByTestId('js-run-tests');
+    const results = page.getByTestId('js-results-panel');
+    const run = async () => {
+      await expect(runButton).toBeEnabled();
+      await runButton.click();
+      await expect(results.getByTestId('test-result')).toHaveCount(6, { timeout: 30_000 });
+      await expect(runButton).toBeEnabled({ timeout: 10_000 });
+      return (await results.getByTestId('test-status').allTextContents()).map((status) => status.trim());
+    };
+
+    // The four reports fail; the zero-decimal and declined-card guards pass as the repo stands.
+    expect(await run()).toEqual(['FAIL', 'PASS', 'FAIL', 'FAIL', 'FAIL', 'PASS']);
+    expect(normalizeRunnerText(await results.innerText())).not.toMatch(RUNNER_FAILURE);
+
+    const currency = await getMonacoModelValue(page, codeModel);
+    await setMonacoModelValue(page, codeModel, currency.replace('Math.floor(amount', 'Math.round(amount'));
+    expect(await run()).toEqual(['PASS', 'PASS', 'FAIL', 'FAIL', 'FAIL', 'PASS']);
+
+    // Each tab shows its own file, and the fix stays in currency.js, on this device too.
+    await tabs.nth(4).click();
+    await expect(tabs.nth(4)).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('export async function payInvoice');
+    await tabs.first().click();
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.round(amount');
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_js',
+      keyPrefix: `v2:code:js2:${id}@`,
+      substring: 'Math.round(amount',
+    });
+    await page.reload();
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('Math.round(amount');
+
+    // The solution loads as the same five files and passes every test.
+    await page.getByRole('button', { name: /^Solution$/ }).first().click();
+    await page.getByTestId('solution-load-approach-0').click();
+    await expect(tabs).toHaveCount(5);
+    await expect.poll(() => getMonacoModelValue(page, codeModel)).toContain('round to the nearest minor unit');
+    expect(await run()).toEqual(['PASS', 'PASS', 'PASS', 'PASS', 'PASS', 'PASS']);
+  });
+
+  test('Meta rehearsal runs two problems on one clock, on drafts of their own, and locks them for the review', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+    const debounceModel = 'q-js-debounce-code';
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
+
+    // The person's own draft of Debounce, which the rehearsal leaves alone.
+    await page.goto('/javascript/coding/js-debounce');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    const own = `${await getMonacoModelValue(page, debounceModel)}\n// my own draft\n`;
+    await setMonacoModelValue(page, debounceModel, own);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_js',
+      keyPrefix: 'v2:code:js2:js-debounce@',
+      substring: '// my own draft',
+    });
+
+    // A sequential rehearsal starts at its first problem, with the second one hidden and the solution locked.
+    const entry = page.getByTestId('rehearsal-entry');
+    await expect(entry).toContainText('Meta coding round: 2 problems in 40 minutes');
+    await entry.getByTestId('rehearsal-start').click();
+    await expect(page).toHaveURL(/\/javascript\/coding\/js-dom-twin-node$/);
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(40:00|39:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Find the Corresponding Node in Twin DOM Trees\s*Not run yet/,
+      /Problem 2\s*Opens when you move on/,
+    ]);
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left$/);
+    await expect(page.getByRole('button', { name: 'Solution locked', exact: true })).toBeDisabled();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
+    await expect(page.getByTestId('interview-mode-setup-toggle')).toHaveCount(0);
+
+    // A run counts toward the review.
+    const runButton = page.getByTestId('js-run-tests');
+    await expect(runButton).toBeEnabled({ timeout: 30_000 });
+    await runButton.click();
+    await expect(page.getByTestId('js-results-panel').getByTestId('test-result')).toHaveCount(4, { timeout: 30_000 });
+    await expect(panel.getByTestId('rehearsal-item').first()).toContainText(/(\d of 4|All 4) tests pass/);
+
+    // The second problem opens from its starter code, not from the person's draft.
+    await panel.getByTestId('rehearsal-next').click();
+    await expect(page).toHaveURL(/\/javascript\/coding\/js-debounce$/);
+    await expect(panel.getByTestId('rehearsal-item').nth(1)).toContainText('Debounce Function');
+    await expect.poll(() => getMonacoModelValue(page, debounceModel)).toContain('export default function debounce');
+    expect(await getMonacoModelValue(page, debounceModel)).not.toContain('// my own draft');
+
+    // When the time is up the editor turns read-only and the review lists both problems.
+    await page.clock.fastForward('40:00');
+    await expect(panel.getByTestId('rehearsal-verdict')).toHaveText(/^Time is up\. \d of 2 problems pass every test\.$/);
+    await expect(panel.getByTestId('rehearsal-item').nth(1)).toContainText('Not run');
+    await expect(runButton).toBeDisabled();
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText('Rehearsal over: read-only');
+    await expect.poll(() => isReadOnly(debounceModel)).toBe(true);
+    await expect(page.getByRole('button', { name: /^Solution$/ }).first()).toBeEnabled();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(1);
+
+    // Closing the review gives the task back the person's own draft.
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+    await expect.poll(() => getMonacoModelValue(page, debounceModel)).toContain('// my own draft');
+    await expect.poll(() => isReadOnly(debounceModel)).toBe(false);
+    await expect(runButton).toBeEnabled();
+    await expect(entry).toBeVisible();
+  });
+
+  test('Walmart Karat rehearsal asks its short answers first, with the problem out of sight, then reviews them', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+    const parenthesesModel = 'q-js-valid-parentheses-code';
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
+
+    // The task is in three rehearsals, listed in one card: Revolut's and Booking.com's assessments, Walmart's Karat screen.
+    await page.goto('/javascript/coding/js-valid-parentheses');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('rehearsal-offers')).toContainText('This problem is part of 3 timed rehearsals');
+    const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Walmart Karat screen' });
+    await expect(entry).toContainText('Walmart Karat screen: 8 short answers and 2 problems in 55 minutes');
+    await entry.getByTestId('rehearsal-start').click();
+
+    // The questions come first: the problem waits out of sight and its editor is read-only.
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(55:00|54:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Short answers: question 1 of 8');
+    await expect(panel.getByTestId('rehearsal-question')).toHaveText('What is a closure in JavaScript?');
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Opens after the questions/,
+      /Problem 2\s*Opens after the questions/,
+    ]);
+    await expect(page.getByTestId('question-title')).toBeHidden();
+    await expect(page.getByTestId('coding-breadcrumb')).toBeHidden();
+    await expect(page.getByTestId('js-concealed-note')).toHaveText('The problems open after the questions.');
+    await expect(page.getByTestId('js-rehearsal-clock')).toHaveText(/left: questions first$/);
+    const runButton = page.getByTestId('js-run-tests');
+    await expect(runButton).toBeDisabled();
+    await expect.poll(() => isReadOnly(parenthesesModel)).toBe(true);
+
+    // An answer is kept, through a reload too.
+    const answer = 'A function that keeps the variables of the scope it was made in.';
+    await panel.getByTestId('rehearsal-answer').fill(answer);
+    await panel.getByTestId('rehearsal-question-next').click();
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 8');
+    await expect(panel.getByTestId('rehearsal-answer')).toBeFocused();
+    await page.reload();
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 8', { timeout: 30_000 });
+
+    // Moving on opens the first problem, editable, on the same clock.
+    await panel.getByTestId('rehearsal-skip').click();
+    await expect(panel.getByTestId('rehearsal-questions')).toHaveCount(0);
+    await expect(page.getByTestId('question-title')).toBeVisible();
+    await expect(page.getByTestId('js-concealed-note')).toHaveCount(0);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Valid Parentheses \(Balanced Brackets\)\s*Not run yet/,
+      /Problem 2\s*Opens when you move on/,
+    ]);
+    await expect(runButton).toBeEnabled({ timeout: 30_000 });
+    await expect.poll(() => isReadOnly(parenthesesModel)).toBe(false);
+
+    // The review sets each answer beside a sample one and links the full answer.
+    await page.clock.fastForward('55:00');
+    await expect(panel.getByTestId('rehearsal-verdict'))
+      .toHaveText('Time is up. 0 of 2 problems pass every test. You answered 1 of 8 short questions.');
+    const reviewed = panel.getByTestId('rehearsal-answer-review');
+    await expect(reviewed).toHaveCount(8);
+    await expect(reviewed.first()).toContainText(`Your answer: ${answer}`);
+    await expect(reviewed.first()).toContainText('A sample answer: A function that keeps access to the variables');
+    await expect(reviewed.nth(1)).toContainText('Your answer: No answer');
+    await expect(reviewed.first().getByRole('link', { name: 'Read the full answer' }))
+      .toHaveAttribute('href', '/javascript/trivia/js-closures');
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+  });
+
+  test('Booking.com rehearsal asks two multiple-choice questions, then runs its JavaScript and React problems on one clock', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium rehearsal test');
+    await page.clock.install();
+    await seedPremiumSession(page, baseURL);
+    const isReadOnly = (modelKeyPart: string) => page.evaluate((needle: string) => {
+      const monaco = (window as any).monaco;
+      const editor = (monaco?.editor?.getEditors?.() || [])
+        .find((entry: any) => (entry?.getModel?.()?.uri?.toString?.() || '').includes(needle));
+      return editor ? editor.getOption(monaco.editor.EditorOption.readOnly) : null;
+    }, modelKeyPart);
+
+    await page.goto('/javascript/coding/js-valid-parentheses');
+    await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+    const entry = page.getByTestId('rehearsal-entry').filter({ hasText: 'Booking.com HackerRank assessment' });
+    await expect(entry).toContainText('Booking.com HackerRank assessment: 2 multiple-choice questions and 3 problems in 90 minutes');
+    await entry.getByText('What it covers').click();
+    await expect(entry).toContainText('the React one a form that calls an API');
+    await entry.getByTestId('rehearsal-start').click();
+
+    // One option first: a radio group under the question.
+    const panel = page.getByTestId('rehearsal-panel');
+    await expect(panel.getByTestId('rehearsal-clock')).toHaveText(/^(1:30:00|1:29:[0-5]\d) left$/);
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Multiple choice: question 1 of 2');
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('The clock keeps running for the whole rehearsal.');
+    await expect(page.getByTestId('js-concealed-note')).toHaveText('The problems open after the questions.');
+    const options = panel.getByTestId('rehearsal-choice');
+    await expect(options).toHaveCount(4);
+    await options.nth(3).check();
+    await panel.getByTestId('rehearsal-question-next').click();
+
+    // Then every right option: checkboxes.
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('question 2 of 2');
+    await expect(panel.getByTestId('rehearsal-questions')).toContainText('Pick every option that is right.');
+    await expect(options.first()).toBeFocused();
+    await options.nth(0).check();
+    await options.nth(1).check();
+    await panel.getByTestId('rehearsal-question-next').click();
+
+    // The problems open at once, as on HackerRank, the React one with them.
+    await expect(panel.getByTestId('rehearsal-questions')).toHaveCount(0);
+    await expect(panel.getByTestId('rehearsal-item')).toHaveText([
+      /Problem 1\s*Valid Parentheses \(Balanced Brackets\)\s*Not run yet/,
+      /Problem 2\s*Merge Two Sorted Arrays/,
+      /Problem 3\s*Contact Form \(Component \+ HTTP\)/,
+    ]);
+    await expect(page.getByTestId('js-concealed-note')).toHaveCount(0);
+
+    // The React problem runs in its own panel, on the same clock, and its checks count.
+    await panel.getByRole('link', { name: 'Contact Form (Component + HTTP)' }).click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-contact-form-starter$/);
+    await expect(page.getByTestId('rehearsal-panel')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText(/^1:2\d:[0-5]\d left$/);
+    await expect(page.getByTestId('pressure-mode-entry')).toHaveCount(0);
+    const runChecks = page.getByTestId('framework-run-checks');
+    await expect(runChecks).toBeEnabled({ timeout: 30_000 });
+    await runChecks.click();
+    await expect(page.getByTestId('framework-check-result')).toHaveCount(3, { timeout: 60_000 });
+    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 3|All 3) tests pass/);
+
+    // When the time is up, the React editor turns read-only and its checks stop.
+    await page.clock.fastForward('01:30:00');
+    await expect(panel.getByTestId('rehearsal-verdict'))
+      .toHaveText(/^Time is up\. \d of 3 problems pass every test\. You got 1 of 2 multiple-choice questions right\.$/);
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText('Rehearsal over: read-only');
+    await expect(runChecks).toBeDisabled();
+    await expect.poll(() => isReadOnly('App.tsx')).toBe(true);
+    const reviewed = panel.getByTestId('rehearsal-answer-review');
+    await expect(reviewed.first()).toContainText('Your answer: 222px (not right)');
+    await expect(reviewed.first()).toContainText('The right answer: 178px');
+    await expect(reviewed.nth(1)).toContainText('(right)');
+    await expect(reviewed.nth(1)).toContainText('The right answer: position: relative; transform: translateX(0)');
+    await panel.getByTestId('rehearsal-close').click();
+    await expect(page.getByTestId('rehearsal-panel')).toHaveCount(0);
+  });
+
+  test.describe('for a visitor', () => {
+    // The pricing page asks for its checkout config, which this visitor's mocked API refuses.
+    test.use({ consoleErrorAllowlist: ['\\/api\\/billing\\/checkout\\/config'] });
+
+    test('Meta rehearsal offers pricing to a visitor, and nothing on a phone', async ({ page }) => {
+      // A visitor with no session: nothing here may reach the production API.
+      await page.route('https://api.frontendatlas.com/**', (route) =>
+        route.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"Not signed in"}' }));
+      await page.goto('/javascript/coding/js-debounce');
+      await expect(page.getByTestId('js-panel')).toBeVisible({ timeout: 30_000 });
+      const entry = page.getByTestId('rehearsal-entry');
+      await expect(entry).toContainText('Timed rehearsal · Premium');
+      await expect(entry.getByTestId('rehearsal-start')).toHaveCount(0);
+      await entry.getByTestId('rehearsal-pricing').click();
+      await expect(page).toHaveURL(/\/pricing\?src=coding_rehearsal_javascript/);
+
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto('/javascript/coding/js-debounce');
+      await expect(page.getByTestId('coding-mobile-notice')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('rehearsal-entry')).toHaveCount(0);
+    });
+  });
+
+  test('Vue merge request review keeps the written review, passes the top fixes and compares with the sample', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium review test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/vue/coding/vue-issue-list-merge-request-review');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.issue');
+
+    // The workspace opens on the change under review, which fails every check.
+    const starter = await runChecks(page, 4);
+    await expect(starter.locator('.framework-check-results__summary')).toHaveText('0/4 passed');
+    expect(await checkRows(page).evaluateAll((rows) => rows.map((row) => row.getAttribute('data-failure-kind'))))
+      .toEqual(['assertion', 'assertion', 'assertion', 'assertion']);
+
+    await page.getByTestId('review-mode-start').click();
+    const panel = page.getByTestId('review-mode-panel');
+    await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Add label filters to the issue list');
+    // GitLab's written review has up to an hour, finished before the 90-minute interview starts.
+    await expect(page.getByTestId('review-mode-timer')).toHaveText('Review: 60 of 60 min left');
+    await expect(page.getByTestId('review-mode-file-0')).toContainText('watch(selectedLabel, loadIssues, { immediate: true });');
+    await expect(page.getByTestId('review-mode-file-2')).toContainText('src/App.spec.js');
+    await expectNoHorizontalOverflow(page);
+    await page.getByTestId('review-mode-comment-0').fill('L84: the watch reloads the list on every label');
+    await page.getByTestId('review-mode-summary').fill('Request changes: the filter reloads the list.');
+
+    // The written review stays on this device and reopens where it was.
+    await page.reload();
+    await expect(page.getByTestId('review-mode-comment-0')).toHaveValue('L84: the watch reloads the list on every label', { timeout: 30_000 });
+    await expect(page.getByTestId('review-mode-summary')).toHaveValue('Request changes: the filter reloads the list.');
+
+    await page.getByTestId('review-mode-start-fixes').click();
+    await expect(page.getByTestId('review-mode-timer')).toHaveText('Interview: 90 of 90 min left');
+    await expect(panel).toContainText('L84: the watch reloads the list on every label');
+    await waitForFrameworkPreview(page, '.issue');
+    await loadCanonicalBundle(page, REVIEW_FIXES);
+    await rebuildPreview(page, '.issue');
+    const fixed = await runChecks(page, 4);
+    await expect(fixed.locator('.framework-check-results__summary')).toHaveText('4/4 passed');
+    await dismissPostPassPrompt(page);
+
+    await page.getByTestId('review-mode-compare').click();
+    const sample = page.getByTestId('review-mode-sample');
+    await expect(sample.locator('.review-mode__comment-title').first()).toHaveText('Every label click loads the list again');
+    await expect(sample.locator('.review-mode__comment')).toHaveCount(10);
+    await expect(sample.locator('.review-mode__checked')).toHaveCount(4);
+    await expect(sample).toContainText('L84: the watch reloads the list on every label');
+
+    await page.getByTestId('review-mode-exit').click();
+    await expect(panel).toHaveCount(0);
+    await expect(page.getByTestId('question-title')).toBeVisible();
+    await expect(page.getByTestId('review-mode-entry')).toBeVisible();
+  });
+
   for (const framework of ['angular', 'vue'] as const) {
     test(`${framework} Debounced Search passes async race, accessibility, and cleanup pressure rounds`, async ({
       page,
@@ -1086,6 +1791,46 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, TODO_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '#new-task');
       await completePressureRounds(page, TODO_PRESSURE_FLOW);
+    });
+  }
+
+  // Company-content tasks of 2026-11: each scenario must load in the app and its pressure solution must clear every
+  // round in the real runner. A scenario the loader rejects never opens, which no unit test of the files notices.
+  for (const contract of [
+    {
+      label: 'ElevenLabs transcript player',
+      route: '/react/coding/react-debug-transcript-sync',
+      readySelector: '.line',
+      solution: TRANSCRIPT_SYNC_PRESSURE_SOLUTION,
+      flow: TRANSCRIPT_SYNC_PRESSURE_FLOW,
+    },
+    {
+      label: 'CrowdStrike downloadable-files table',
+      route: '/react/coding/react-files-table-select-all',
+      readySelector: '.row',
+      solution: FILES_TABLE_PRESSURE_SOLUTION,
+      flow: FILES_TABLE_PRESSURE_FLOW,
+    },
+    {
+      label: 'Airbnb listing booking widget',
+      route: '/react/coding/react-listing-booking-widget',
+      readySelector: '.book',
+      solution: BOOKING_WIDGET_PRESSURE_SOLUTION,
+      flow: BOOKING_WIDGET_PRESSURE_FLOW,
+    },
+  ] as const) {
+    test(`${contract.label} opens its Premium pressure mode and clears every round`, async ({ page, baseURL }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`${contract.route}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, contract.readySelector);
+
+      await loadCanonicalBundle(page, contract.solution);
+      await rebuildPreview(page, contract.readySelector);
+      await completePressureRounds(page, contract.flow);
     });
   }
 
@@ -1295,6 +2040,250 @@ test.describe('Framework checks against the production SSR build', () => {
       await loadCanonicalBundle(page, PAGINATION_TABLE_PRESSURE_SOLUTIONS[framework]);
       await rebuildPreview(page, '.table');
       await completePressureRounds(page, PAGINATION_TABLE_PRESSURE_FLOW);
+    });
+  }
+
+  test('React Autocomplete keeps its free pressure draft isolated and passes every round', async ({ page }) => {
+    await page.goto('/react/coding/react-autocomplete-search-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.input');
+
+    const normalMarker = `normal-autocomplete-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-autocomplete-search-starter@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter\?mode=pressure$/);
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.input');
+    await completePressureRounds(page, AUTOCOMPLETE_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
+    await waitForFrameworkPreview(page, '.input');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const [framework, questionId] of [
+    ['angular', 'angular-autocomplete-search-starter'],
+    ['vue', 'vue-autocomplete-search'],
+  ] as const) {
+    // The Angular and Vue members of the autocomplete family are free like the React one since 2026-11-05, so a
+    // visitor without an account runs the same pressure rounds as a free pilot.
+    test(`${framework} Autocomplete passes search, selection, repeat, accessibility, and cleanup pressure rounds`, async ({
+      page,
+    }) => {
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
+      await waitForFrameworkPreview(page, '.input');
+
+      await loadCanonicalBundle(page, AUTOCOMPLETE_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.input');
+      await completePressureRounds(page, AUTOCOMPLETE_PRESSURE_FLOW);
+    });
+  }
+
+  test('React-only Team List runs its free pressure mode and keeps the normal draft isolated', async ({ page }) => {
+    await page.goto('/react/coding/react-fetch-list-states');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.mode');
+
+    const normalMarker = `normal-team-list-draft-${Date.now()}`;
+    const normalDraft = `// ${normalMarker}\n${await getMonacoModelValue(page, 'src/App.tsx')}`;
+    await loadCanonicalFile(page, 'src/App.tsx', normalDraft);
+    await waitForIndexedDbKeyPrefixContains(page, {
+      dbName: 'frontendatlas',
+      storeName: 'fa_ng',
+      keyPrefix: 'v2:code:fw2:react:react-fetch-list-states@',
+      substring: normalMarker,
+    });
+
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-fetch-list-states\?mode=pressure$/);
+    await expect(page.getByTestId('pressure-mode-panel').locator('.pressure-mode__meta')).toContainText('Free');
+    await waitForFrameworkPreview(page, '.mode');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
+
+    await loadCanonicalBundle(page, TEAM_LIST_PRESSURE_SOLUTION);
+    await rebuildPreview(page, '.mode');
+    await completePressureRounds(page, TEAM_LIST_PRESSURE_FLOW);
+
+    await page.getByRole('button', { name: 'Interview', exact: true }).click();
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page).toHaveURL(/\/react\/coding\/react-fetch-list-states$/);
+    await waitForFrameworkPreview(page, '.mode');
+    await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).toContain(normalMarker);
+  });
+
+  for (const [framework, questionId] of [
+    ['react', 'react-nested-comments'],
+    ['angular', 'angular-nested-comments'],
+    ['vue', 'vue-nested-comments'],
+  ] as const) {
+    test(`${framework} Nested Comments passes thread, keyboard, hide, delete, and announcement pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, '.composer');
+
+      await loadCanonicalBundle(page, NESTED_COMMENTS_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.composer');
+      await completePressureRounds(page, NESTED_COMMENTS_PRESSURE_FLOW);
+    });
+  }
+
+  for (const [framework, questionId] of [
+    ['react', 'react-contact-form-starter'],
+    ['angular', 'angular-contact-form-starter'],
+    ['vue', 'vue-contact-form-starter'],
+  ] as const) {
+    test(`${framework} Contact Form passes validation, send, failure, time limit, and accessibility pressure rounds`, async ({
+      page,
+      baseURL,
+    }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, '.panel');
+
+      await loadCanonicalBundle(page, CONTACT_FORM_PRESSURE_SOLUTIONS[framework]);
+      await rebuildPreview(page, '.panel');
+      await completePressureRounds(page, CONTACT_FORM_PRESSURE_FLOW);
+    });
+  }
+
+  test('A long code value in a pressure rule stays inside the panel on a phone', async ({
+    page,
+    baseURL,
+  }) => {
+    if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-contact-form-starter?mode=pressure');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.panel');
+    await loadCanonicalBundle(page, CONTACT_FORM_PRESSURE_SOLUTIONS.react);
+    await rebuildPreview(page, '.panel');
+
+    const results = await runPressureChecks(page, 1);
+    await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    await page.getByTestId('pressure-next-round').click();
+
+    const round = page.getByTestId('pressure-active-round');
+    await expect(round).toHaveAttribute('data-round-id', 'one-request');
+    await expect(round.locator('code', { hasText: 'https://jsonplaceholder.typicode.com/posts' })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => round.evaluate((panel) => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(0);
+  });
+
+  for (const scenario of [
+    {
+      name: 'React Chat Streaming passes stream, stop, retry, announcement, and cleanup pressure rounds',
+      route: '/react/coding/react-chat-streaming-ui',
+      readySelector: '.chat-input',
+      solution: CHAT_STREAMING_PRESSURE_SOLUTION,
+      flow: CHAT_STREAMING_PRESSURE_FLOW,
+    },
+    {
+      name: 'React useEffect Once passes connection, order, slow connect, mute, and cleanup pressure rounds',
+      route: '/react/coding/react-use-effect-once',
+      readySelector: '.active-count',
+      solution: USE_EFFECT_ONCE_PRESSURE_SOLUTION,
+      flow: USE_EFFECT_ONCE_PRESSURE_FLOW,
+    },
+    {
+      name: 'React Debug Double Render passes render count, badge, note, update, and sum pressure rounds',
+      route: '/react/coding/react-debug-double-render',
+      readySelector: '[data-testid="count"]',
+      solution: DEBUG_DOUBLE_RENDER_PRESSURE_SOLUTION,
+      flow: DEBUG_DOUBLE_RENDER_PRESSURE_FLOW,
+    },
+    {
+      name: 'Angular Two-way Control passes owner, parent change, form, and keyboard pressure rounds',
+      route: '/angular/coding/angular-input-output-two-way',
+      readySelector: '.panel',
+      solution: TWO_WAY_CONTROL_PRESSURE_SOLUTION,
+      flow: TWO_WAY_CONTROL_PRESSURE_FLOW,
+    },
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Multi-step Signup passes navigation, edit, company, finish, and focus pressure rounds`,
+      route: `/${framework}/coding/${
+        { react: 'react-multi-step-signup', angular: 'angular-multi-step-form-starter', vue: 'vue-multi-step-form' }[framework]
+      }`,
+      readySelector: '.step-title',
+      solution: MULTI_STEP_FORM_PRESSURE_SOLUTIONS[framework],
+      flow: MULTI_STEP_FORM_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Checkbox Tree passes sync, depth, locked, summary, and order pressure rounds`,
+      route: `/${framework}/coding/${framework}-nested-checkboxes`,
+      readySelector: '.panel',
+      solution: NESTED_CHECKBOXES_PRESSURE_SOLUTIONS[framework],
+      flow: NESTED_CHECKBOXES_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Image Carousel passes slide, autoplay, keyboard, removal, and cleanup pressure rounds`,
+      route: `/${framework}/coding/${
+        { react: 'react-image-slider', angular: 'angular-image-slider-starter', vue: 'vue-image-slider' }[framework]
+      }`,
+      readySelector: '.actions',
+      solution: IMAGE_SLIDER_PRESSURE_SOLUTIONS[framework],
+      flow: IMAGE_SLIDER_PRESSURE_FLOW,
+    })),
+    {
+      name: 'React File Explorer passes tree, keyboard, loading, rename, and path pressure rounds',
+      route: '/react/coding/react-file-explorer',
+      readySelector: '.tree',
+      solution: FILE_EXPLORER_PRESSURE_SOLUTION,
+      flow: FILE_EXPLORER_PRESSURE_FLOW,
+    },
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Like Button passes instant update, failure, fast click, status, and cleanup pressure rounds`,
+      route: `/${framework}/coding/${framework}-like-button`,
+      readySelector: '.likeBtn',
+      solution: LIKE_BUTTON_PRESSURE_SOLUTIONS[framework],
+      flow: LIKE_BUTTON_PRESSURE_FLOW,
+    })),
+    ...(['react', 'angular', 'vue'] as const).map((framework) => ({
+      name: `${framework} Transfer List passes move, select all, search, undo, and announcement pressure rounds`,
+      route: `/${framework}/coding/${framework}-transfer-list`,
+      readySelector: '.layout',
+      solution: TRANSFER_LIST_PRESSURE_SOLUTIONS[framework],
+      flow: TRANSFER_LIST_PRESSURE_FLOW,
+    })),
+  ]) {
+    test(scenario.name, async ({ page, baseURL }) => {
+      if (!baseURL) throw new Error('Playwright baseURL is required for the premium pressure test');
+      await seedPremiumSession(page, baseURL);
+      await page.goto(`${scenario.route}?mode=pressure`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await expect(page.getByTestId('pressure-mode-panel')).toContainText('Premium');
+      await waitForFrameworkPreview(page, scenario.readySelector);
+
+      await loadCanonicalBundle(page, scenario.solution);
+      await rebuildPreview(page, scenario.readySelector);
+      await completePressureRounds(page, scenario.flow);
     });
   }
 
@@ -1632,16 +2621,16 @@ test.describe('Framework checks against the production SSR build', () => {
   }
 
   test('unsupported pressure URLs fall back to the normal canonical question flow', async ({ page }) => {
-    await page.goto('/react/coding/react-autocomplete-search-starter?mode=pressure');
+    await page.goto('/react/coding/react-vanilla-dropdown-port?mode=pressure');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
-    await expect(page).toHaveURL(/\/react\/coding\/react-autocomplete-search-starter$/);
+    await expect(page).toHaveURL(/\/react\/coding\/react-vanilla-dropdown-port$/);
     await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
     const entry = page.getByTestId('pressure-mode-entry');
     await expect(entry).toHaveCount(0);
     await expect(page.getByTestId('pressure-mode-start')).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
-      /\/react\/coding\/react-autocomplete-search-starter$/,
+      /\/react\/coding\/react-vanilla-dropdown-port$/,
     );
 
     for (const width of [834, 1366, 1440]) {

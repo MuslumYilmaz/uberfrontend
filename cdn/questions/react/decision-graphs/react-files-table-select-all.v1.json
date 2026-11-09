@@ -1,0 +1,97 @@
+{
+  "questionId": "react-files-table-select-all",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface FileRow {\n  id: string;\n  name: string;\n  sizeKb: number;\n  available: boolean;\n}\n\nexport const PAGE_SIZE = 8;\n\n/** Twenty-four files from a sensor export, two of them not yet available for download. */\nexport const FILES: FileRow[] = [\n  { id: 'f01', name: 'agent-config-2026-10.json', sizeKb: 12, available: true },\n  { id: 'f02', name: 'detections-report-q3.pdf', sizeKb: 2048, available: true },\n  { id: 'f03', name: 'host-inventory.csv', sizeKb: 640, available: true },\n  { id: 'f04', name: 'incident-timeline.xlsx', sizeKb: 300, available: true },\n  { id: 'f05', name: 'ioc-feed-latest.json', sizeKb: 96, available: false },\n  { id: 'f06', name: 'kernel-telemetry-sample.bin', sizeKb: 8192, available: true },\n  { id: 'f07', name: 'login-anomalies-report.pdf', sizeKb: 1536, available: true },\n  { id: 'f08', name: 'network-flows-day1.csv', sizeKb: 4096, available: true },\n  { id: 'f09', name: 'network-flows-day2.csv', sizeKb: 4100, available: true },\n  { id: 'f10', name: 'policy-audit-report.pdf', sizeKb: 720, available: true },\n  { id: 'f11', name: 'quarantine-log.txt', sizeKb: 48, available: true },\n  { id: 'f12', name: 'release-notes-7.12.md', sizeKb: 20, available: true },\n  { id: 'f13', name: 'sensor-crash-dump.dmp', sizeKb: 16384, available: false },\n  { id: 'f14', name: 'sensor-health-report.pdf', sizeKb: 880, available: true },\n  { id: 'f15', name: 'threat-graph-export.json', sizeKb: 2560, available: true },\n  { id: 'f16', name: 'user-sessions.csv', sizeKb: 512, available: true },\n  { id: 'f17', name: 'vuln-scan-results.xml', sizeKb: 1024, available: true },\n  { id: 'f18', name: 'weekly-summary-report.pdf', sizeKb: 400, available: true },\n  { id: 'f19', name: 'api-keys-rotation.log', sizeKb: 8, available: true },\n  { id: 'f20', name: 'cloud-posture-report.pdf', sizeKb: 1900, available: true },\n  { id: 'f21', name: 'dns-queries.csv', sizeKb: 3072, available: true },\n  { id: 'f22', name: 'endpoint-baseline.json', sizeKb: 256, available: true },\n  { id: 'f23', name: 'firewall-rules.yaml', sizeKb: 64, available: true },\n  { id: 'f24', name: 'malware-samples-index.csv', sizeKb: 128, available: true }\n];\n\ntype SortKey = 'name' | 'size';\n\n/** Selection as a mode plus exceptions, so select all never needs every id in memory. */\ninterface Selection {\n  mode: 'none' | 'all';\n  exceptions: Set<string>;\n}\n\nfunction formatSize(sizeKb: number): string {\n  return sizeKb >= 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`;\n}\n\nexport default function App() {\n  const [filter, setFilter] = useState('');\n  const [sortKey, setSortKey] = useState<SortKey>('name');\n  const [page, setPage] = useState(1);\n  const [selection, setSelection] = useState<Selection>({ mode: 'none', exceptions: new Set() });\n  const headerRef = useRef<HTMLInputElement>(null);\n\n  const matching = useMemo(() => {\n    const q = filter.trim().toLowerCase();\n    const rows = q ? FILES.filter((file) => file.name.toLowerCase().includes(q)) : FILES;\n    return [...rows].sort((a, b) => (sortKey === 'name' ? a.name.localeCompare(b.name) : a.sizeKb - b.sizeKb));\n  }, [filter, sortKey]);\n\n  const pageCount = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));\n  const currentPage = Math.min(page, pageCount);\n  const visible = matching.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);\n  const selectable = matching.filter((file) => file.available);\n\n  const isSelected = (file: FileRow) =>\n    file.available && (selection.mode === 'all' ? !selection.exceptions.has(file.id) : selection.exceptions.has(file.id));\n  const selectedCount = selectable.filter(isSelected).length;\n  const headerState: 'none' | 'some' | 'all' =\n    selectedCount === 0 ? 'none' : selectedCount === selectable.length ? 'all' : 'some';\n\n  useEffect(() => {\n    if (headerRef.current) headerRef.current.indeterminate = headerState === 'some';\n  }, [headerState]);\n\n  const toggleAll = () => {\n    setSelection(headerState === 'all' ? { mode: 'none', exceptions: new Set() } : { mode: 'all', exceptions: new Set() });\n  };\n\n  const toggleRow = (file: FileRow) => {\n    setSelection((current) => {\n      const exceptions = new Set(current.exceptions);\n      if (exceptions.has(file.id)) exceptions.delete(file.id);\n      else exceptions.add(file.id);\n      return { mode: current.mode, exceptions };\n    });\n  };\n\n  const changeFilter = (value: string) => {\n    setFilter(value);\n    setPage(1);\n    setSelection({ mode: 'none', exceptions: new Set() });\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Downloadable Files (Solution)</h1>\n          <p className=\"subtitle\">Select all follows the filter and survives paging, sorting and a few deselections.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"file-filter\">Filter by name</label>\n          <input\n            id=\"file-filter\"\n            className=\"filter\"\n            type=\"search\"\n            value={filter}\n            placeholder=\"Try report, csv or flows\"\n            onChange={(event: React.ChangeEvent<HTMLInputElement>) => changeFilter(event.target.value)}\n          />\n          <button type=\"button\" className=\"sort-name\" aria-pressed={sortKey === 'name'} onClick={() => setSortKey('name')}>\n            Sort by name\n          </button>\n          <button type=\"button\" className=\"sort-size\" aria-pressed={sortKey === 'size'} onClick={() => setSortKey('size')}>\n            Sort by size\n          </button>\n        </div>\n\n        <div className=\"summary\">\n          <span className=\"selection-count\">{selectedCount} selected</span>\n          <button type=\"button\" className=\"download\" disabled={selectedCount === 0}>\n            Download selected\n          </button>\n        </div>\n\n        {matching.length === 0 ? (\n          <p className=\"empty\">No files match &quot;{filter}&quot;.</p>\n        ) : (\n          <div className=\"table-scroll\">\n            <table className=\"files\">\n              <caption className=\"caption\">Files matching the filter, page {currentPage} of {pageCount}</caption>\n              <thead>\n                <tr>\n                  <th scope=\"col\" className=\"col-select\">\n                    <input\n                      ref={headerRef}\n                      type=\"checkbox\"\n                      className=\"select-all\"\n                      aria-label=\"Select all matching files\"\n                      aria-checked={headerState === 'some' ? 'mixed' : headerState === 'all'}\n                      checked={headerState === 'all'}\n                      onChange={toggleAll}\n                    />\n                  </th>\n                  <th scope=\"col\">Name</th>\n                  <th scope=\"col\">Size</th>\n                  <th scope=\"col\">Status</th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((file) => (\n                  <tr key={file.id} className={`row${isSelected(file) ? ' row--selected' : ''}`}>\n                    <td>\n                      <input\n                        type=\"checkbox\"\n                        className=\"select-row\"\n                        aria-label={`Select ${file.name}`}\n                        checked={isSelected(file)}\n                        disabled={!file.available}\n                        onChange={() => toggleRow(file)}\n                      />\n                    </td>\n                    <td className=\"name\">{file.name}</td>\n                    <td className=\"size\">{formatSize(file.sizeKb)}</td>\n                    <td className={`status${file.available ? '' : ' status--unavailable'}`}>\n                      {file.available ? 'Available' : 'Not available yet'}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n\n        <div className=\"pager\">\n          <button type=\"button\" className=\"prev\" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>\n            Previous\n          </button>\n          <span className=\"page\">Page {currentPage} of {pageCount}</span>\n          <button type=\"button\" className=\"next\" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>\n            Next\n          </button>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-mode-plus-exceptions",
+          "title": "Store the selection as a mode plus exceptions",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "mode: 'none' | 'all';"
+          },
+          "why": "Select all must cover files on pages that were never rendered. A mode of all with a set of unticked ids describes that selection without listing every id, and a deselection on page two is one more exception.",
+          "alternative": "Keep a set of selected ids and add every matching id on select all.",
+          "tradeoff": "A plain id set is simpler to read but grows with the export and forgets files the filter has not loaded yet; the mode stays the same size."
+        },
+        {
+          "id": "a2-derive-the-rows",
+          "title": "Derive the matching rows from the filter and the sort",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "const matching = useMemo(() => {"
+          },
+          "why": "The visible page is a slice of one derived list, so filtering, sorting and paging can never disagree with each other or with the selection.",
+          "alternative": "Copy the filtered and sorted rows into state from an effect.",
+          "tradeoff": "A copy in state renders once with stale rows and can drift; the memo recomputes only when the filter or the sort changes."
+        },
+        {
+          "id": "a3-selection-by-id",
+          "title": "Decide selection by file id and availability",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "file.available && (selection.mode === "
+          },
+          "why": "A row is selected because of its id, never its position, so a sort cannot move a tick to another file, and an unavailable file is never counted.",
+          "alternative": "Track selected row indexes on the current page.",
+          "tradeoff": "Indexes break on every sort, filter and page change; ids survive all three."
+        },
+        {
+          "id": "a4-header-from-counts",
+          "title": "Derive the header state from counts",
+          "anchor": {
+            "lineStart": 75,
+            "lineEnd": 75,
+            "snippet": "selectedCount === 0 ? 'none' : selectedCount === selectable.length ? 'all' : 'some';"
+          },
+          "why": "The header reflects every matching file, not the rendered rows, so it turns mixed as soon as one file on any page is unticked.",
+          "alternative": "Check whether every rendered row is ticked.",
+          "tradeoff": "Looking at the rendered rows reports all when only the current page is ticked."
+        },
+        {
+          "id": "a5-indeterminate-in-an-effect",
+          "title": "Set the indeterminate property in an effect",
+          "anchor": {
+            "lineStart": 78,
+            "lineEnd": 78,
+            "snippet": "headerRef.current.indeterminate = headerState === 'some';"
+          },
+          "why": "The mixed look of a checkbox is a DOM property with no HTML attribute, so React cannot render it; an effect sets it after each change, and aria-checked=\"mixed\" tells assistive technology the same thing.",
+          "alternative": "Render a custom mixed icon instead of a native checkbox.",
+          "tradeoff": "A custom control needs its own keyboard and screen reader behavior; the native checkbox keeps both."
+        },
+        {
+          "id": "a6-filter-clears-selection",
+          "title": "Clear the selection when the filter changes",
+          "anchor": {
+            "lineStart": 94,
+            "lineEnd": 94,
+            "snippet": "const changeFilter = (value: string) => {"
+          },
+          "why": "A selection made under one filter would otherwise download files the user can no longer see. Clearing it, and returning to page one, keeps the download honest.",
+          "alternative": "Keep hidden selections and show how many are hidden by the filter.",
+          "tradeoff": "Keeping them is friendlier for long sessions but needs a visible hidden count; clearing is simpler and has to be said out loud in the review."
+        },
+        {
+          "id": "a7-empty-and-download",
+          "title": "Show an empty line and gate the download on the count",
+          "anchor": {
+            "lineStart": 128,
+            "lineEnd": 128,
+            "snippet": "<button type=\"button\" className=\"download\" disabled={selectedCount === 0}>"
+          },
+          "why": "The download button reads the same count as the summary, so it is enabled exactly when something is selected, and a filter with no match shows an empty line instead of an empty table.",
+          "alternative": "Enable the button and validate the selection on click.",
+          "tradeoff": "A disabled button tells the user why nothing can happen before they try."
+        }
+      ]
+    }
+  }
+}

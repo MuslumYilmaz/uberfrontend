@@ -4,6 +4,8 @@
 // the variant list prices never change. Pure functions; the checkout start
 // service decides when a custom checkout can actually be created.
 
+const { resolveLocalEstimate } = require('./local-currency');
+
 const REGIONAL_PRICING_ENV = 'BILLING_REGIONAL_PRICING_JSON';
 const COUNTRY_CODE_PATTERN = /^[A-Z]{2}$/;
 const MULTIPLIER_MIN = 0.1;
@@ -140,6 +142,8 @@ function resolvePublicPricingRules({
   planDetails = {},
   customCheckoutAvailable = false,
   env = process.env,
+  exchangeRates,
+  today,
 } = {}) {
   const rules = {
     student: { multiplier: STUDENT_PRICE_MULTIPLIER, planIds: [...STUDENT_PRICE_PLAN_IDS] },
@@ -155,7 +159,9 @@ function resolvePublicPricingRules({
     prices[planId] = amountCents;
   }
   if (!Object.keys(prices).length) return rules;
-  rules.regional = { ...regional, prices };
+  // The page may add "about ₹910 a month" next to the dollar price; null when no fresh rate exists.
+  const local = resolveLocalEstimate(regional.countryCode, { table: exchangeRates, today });
+  rules.regional = { ...regional, prices, local };
   return rules;
 }
 

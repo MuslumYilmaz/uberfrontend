@@ -3,6 +3,7 @@ import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sit
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
 import { PREP_MENU_ROUTES } from './prep-menu';
+import { GATED_COMPANY_GUIDES } from '../src/app/features/company/company-preview/company-guide-gate';
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -233,11 +234,13 @@ const CASES = [
     ],
   },
   {
-    path: '/angular/coding/angular-autocomplete-search-starter',
-    titleIncludes: 'Angular Autocomplete Search',
-    h1: 'Autocomplete Search Bar (Standalone Component)',
+    // The Angular autocomplete starter went free with its React and Vue family on 2026-11-05; the tabs switcher
+    // keeps the Premium locked-preview coverage.
+    path: '/angular/coding/angular-tabs-switcher',
+    titleIncludes: 'Angular Tabs Switcher',
+    h1: 'Angular Tabs / Multi-View Switcher',
     detail: true,
-    premiumPreviewText: 'As the user types, show a dropdown of suggestions',
+    premiumPreviewText: 'accessible Angular tab switcher',
   },
   {
     path: '/react/coding/react-autocomplete-search-starter',
@@ -702,7 +705,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -723,7 +726,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -744,7 +747,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -765,7 +768,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -787,7 +790,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -808,7 +811,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -829,7 +832,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -850,7 +853,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -863,6 +866,8 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Apple Frontend Interview Questions and Process',
     headings: [
       'A screen, then a team loop of four to seven rounds',
+      'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
+      'Practise one question',
       'Rehearse the screen, then the coding loop',
       'Common questions about Apple frontend interviews',
     ],
@@ -871,7 +876,7 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -883,13 +888,14 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
     headings: [
-      'An editorial practice grouping',
+      'The booking widget screen and the chat design',
       'Common questions about this Airbnb page',
     ],
     markers: [
       'data-testid="company-editorial-intro"',
+      'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>What you can do now for free</h2>',
+      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -901,15 +907,15 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Waymo',
     path: '/companies/waymo/preview',
-    title: 'Waymo Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Waymo Frontend Interview Questions: 6 Prompts + Prep Guide',
     description:
-      'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.',
+      'Prepare for a Waymo frontend interview with 6 prompts modelled on a public 2026 report: tree filter and UI, Angular debugging, Promises, AI chat, autocomplete.',
     h1: 'Waymo Frontend Interview Questions',
     kicker: 'Public Waymo prep guide',
     headings: [
       'Prepare for product judgment, not Waymo trivia',
       'What the report establishes, and what you still need to confirm',
-      'Five Waymo frontend interview practice questions',
+      'Six Waymo frontend interview practice questions',
       'Scope the tree filter before writing the first line',
       'A 7-day Waymo frontend interview preparation plan',
       'Common Waymo frontend interview preparation questions',
@@ -919,6 +925,7 @@ const AUTHORED_GUIDE_CASES = [
     trustFragment: 'not leaked, confirmed or official Waymo questions',
     prompts: [
       { id: 'tree-filter-render', title: 'Filter a tree by substring and render it indented' },
+      { id: 'tree-filter-ui', title: 'Build a UI for the filtered tree' },
       { id: 'angular-bug-reports-debugging', title: 'Fix an Angular screen from three user bug reports' },
       { id: 'promise-contract-typescript', title: 'Implement a Promise contract in TypeScript' },
       { id: 'ai-chat-frontend-design', title: 'Design the frontend of an AI chat application' },
@@ -1101,6 +1108,8 @@ const AUTHORED_GUIDE_CASES = [
     headings: [
       'Prepare for product judgment, not Amazon trivia',
       'What the official page and the public accounts establish, and what you still need to confirm',
+      'Amazon Leadership Principles questions for front end engineers: what was asked',
+      'Practise one question',
       'Seven Amazon frontend interview practice questions',
       'Scope the paginated address widget before writing the first line',
       'A 7-day Amazon frontend interview preparation plan',
@@ -1141,6 +1150,10 @@ const AUTHORED_GUIDE_CASES = [
     headings: [
       'Prepare for product judgment, not Meta trivia',
       'What the official pages and the public accounts establish, and what you still need to confirm',
+      // The behavioural decoder and its drill render on the server, with the questions a visitor cannot pick yet.
+      'Meta behavioural interview for front end engineers: the five signals and what was asked',
+      'Practise one question',
+      'Tell me about a hard bug you debugged.',
       'Seven Meta frontend interview practice questions',
       'Scope clearAllTimeout before writing the first line',
       'A 7-day Meta frontend interview preparation plan',
@@ -3822,7 +3835,8 @@ test.describe('seo-ssr', () => {
       headline: GOOGLE_PREVIEW_H1,
       description: GOOGLE_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      isAccessibleForFree: true,
+      isAccessibleForFree: false,
+      hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
       mainEntity: { '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts` },
     });
     await expectSitemapModificationDate(request, GOOGLE_PREVIEW_PATH, collectionPage);
@@ -3903,6 +3917,10 @@ test.describe('seo-ssr', () => {
       'What Netflix publishes—and what you still need to confirm',
       'Three product contexts for practicing transferable frontend judgment',
       'Six Netflix frontend interview practice questions',
+      // The culture decoder and its drill render on the server, with the questions a visitor cannot pick yet.
+      'Netflix culture interview for frontend engineers: what the memo asks for and what was asked',
+      'Practise one question',
+      'Tell me about a tough decision you had to make quickly when circumstances changed.',
       'Scope Continue Watching before drawing architecture boxes',
       'A 7-day Netflix frontend interview preparation plan',
       'Common Netflix frontend interview preparation questions',
@@ -3950,7 +3968,8 @@ test.describe('seo-ssr', () => {
       headline: NETFLIX_PREVIEW_H1,
       description: NETFLIX_PREVIEW_DESCRIPTION,
       inLanguage: 'en',
-      isAccessibleForFree: true,
+      isAccessibleForFree: false,
+      hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
       mainEntity: { '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts` },
     });
     await expectSitemapModificationDate(request, NETFLIX_PREVIEW_PATH, collectionPage);
@@ -4037,6 +4056,31 @@ test.describe('seo-ssr', () => {
 
     await page.waitForTimeout(300);
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
+  });
+
+  test('raw company guides carry the plan card above the H1, the same link under a week plan and on the locked prompts and samples cards', async ({ request }) => {
+    test.setTimeout(120_000);
+    // Guides with prompts past the open ones name them in a card, and catalog guides with Premium samples close the
+    // sample list with a card; both lead into the plan. Behind the account gate the prompts card leads to a free
+    // account instead, so it adds no plan link.
+    for (const [slug, weekPlan, lockedPrompts, lockedSamples] of [
+      ['elevenlabs', true, true, false],
+      ['netflix', true, true, false],
+      ['apple', false, false, true],
+    ] as const) {
+      const html = await readRawHtml(request, `/companies/${slug}/preview`);
+      const gated = GATED_COMPANY_GUIDES.has(slug);
+      const cardAt = html.indexOf('data-testid="company-plan-entry"');
+      expect(cardAt, `${slug} plan card`).toBeGreaterThan(-1);
+      expect(cardAt, `${slug} plan card before the H1`).toBeLessThan(html.indexOf('<h1'));
+      expect(html.includes('data-testid="company-prompt-gate"'), `${slug} locked prompts card`).toBe(lockedPrompts);
+      expect(html.includes('data-testid="company-sample-gate"'), `${slug} locked samples card`).toBe(lockedSamples);
+      if (gated) {
+        expect(html, `${slug} account gate`).toContain(`href="/auth/signup?redirectTo=%2Fcompanies%2F${slug}%2Fpreview"`);
+      }
+      expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`)
+        .toBe(1 + Number(weekPlan) + Number(lockedPrompts && !gated) + Number(lockedSamples));
+    }
   });
 
   test('raw Amazon company preview renders the official preparation pages table with follow links', async ({ request }) => {
@@ -4126,8 +4170,8 @@ test.describe('seo-ssr', () => {
       path: '/companies/amazon/preview',
       heading: 'Amazon Front End Engineer interview process',
       tables: 2,
-      // The authored guide places the table between its source note and the practice prompts.
-      after: 'id="amazon-published-context"',
+      // The authored guide opens with the table, right under its hero, and the practice prompts follow it.
+      after: '<h1',
       before: 'id="amazon-practice-prompts"',
       officialUrl: 'https://amazon.jobs/content/en/how-we-hire/fee-interview-prep',
       reportUrl: 'https://leetcode.com/discuss/post/1984996/',
@@ -4138,25 +4182,27 @@ test.describe('seo-ssr', () => {
       heading: 'Walmart frontend interview process',
       tables: 3,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       reportUrl: 'https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/',
       practicePath: '/react/trivia/react-ssr-hydration',
     },
     {
       path: '/companies/tesla/preview',
+      gated: true,
       heading: 'Tesla frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       reportUrl: 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x',
       practicePath: '/javascript/coding/js-color-contrast-ratio',
     },
     {
-      // Google keeps its own template branch: the table follows the time-sensitive process note.
+      // Google keeps its own template branch; its table also opens the page, before the time-sensitive process note.
       path: '/companies/google/preview',
+      gated: true,
       heading: 'Google frontend interview process',
       tables: 1,
-      after: 'id="google-process-note"',
+      after: '<h1',
       before: 'id="google-practice-prompts"',
       officialUrl: 'https://www.google.com/about/careers/applications/how-we-hire/',
       reportUrl: 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt',
@@ -4164,9 +4210,10 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/meta/preview',
+      gated: true,
       heading: 'Meta Front End Engineer interview process',
       tables: 2,
-      after: 'id="meta-published-context"',
+      after: '<h1',
       before: 'id="meta-practice-prompts"',
       officialUrl: 'https://www.metacareers.com/FEE-prep-onsite/',
       reportUrl: 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi',
@@ -4174,10 +4221,11 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/microsoft/preview',
+      gated: true,
       heading: 'Microsoft frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>What you can do now for free</h2>',
+      before: '>Sample FrontendAtlas practice prompts</h2>',
       officialUrl: 'https://careers.microsoft.com/v2/global/en/hiring-tips',
       reportUrl: 'https://leetcode.com/discuss/interview-experience/5456468/',
       practicePath: '/javascript/trivia/js-event-loop',
@@ -4187,7 +4235,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/openai/preview',
       heading: 'OpenAI frontend interview process',
       tables: 1,
-      after: 'id="openai-published-context"',
+      after: '<h1',
       before: 'id="openai-prompts"',
       officialUrl: 'https://openai.com/interview-guide/',
       reportUrl: 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq',
@@ -4196,9 +4244,10 @@ test.describe('seo-ssr', () => {
     {
       // Netflix keeps its own template branch: the table follows the source-boundary note.
       path: '/companies/netflix/preview',
+      gated: true,
       heading: 'Netflix frontend interview process',
       tables: 2,
-      after: 'id="netflix-published-context"',
+      after: '<h1',
       before: 'id="netflix-role-lenses"',
       officialUrl: 'https://jobs.netflix.com/careers/new-grads',
       reportUrl: 'https://leetcode.com/discuss/post/7421643/',
@@ -4208,7 +4257,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/elevenlabs/preview',
       heading: 'ElevenLabs frontend interview process',
       tables: 1,
-      after: 'id="elevenlabs-published-context"',
+      after: '<h1',
       before: 'id="elevenlabs-role-lenses"',
       officialUrl: 'https://elevenlabs.io/careers',
       reportUrl: 'https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72',
@@ -4218,7 +4267,7 @@ test.describe('seo-ssr', () => {
       path: '/companies/waymo/preview',
       heading: 'Waymo frontend interview process',
       tables: 2,
-      after: 'id="waymo-published-context"',
+      after: '<h1',
       before: 'id="waymo-role-lenses"',
       officialUrl: 'https://careers.withwaymo.com/how-we-hire',
       reportUrl: 'https://leetcode.com/discuss/post/7949696/',
@@ -4228,23 +4277,32 @@ test.describe('seo-ssr', () => {
       path: '/companies/crowdstrike/preview',
       heading: 'CrowdStrike frontend interview process',
       tables: 3,
-      after: 'id="crowdstrike-published-context"',
+      after: '<h1',
       before: 'id="crowdstrike-role-lenses"',
       officialUrl: 'https://www.crowdstrike.com/en-us/careers/interviewing/',
       reportUrl:
         'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
       practicePath: '/javascript/trivia/js-event-delegation',
     },
+    {
+      path: '/companies/airbnb/preview',
+      heading: 'Airbnb frontend interview process',
+      tables: 1,
+      after: 'data-testid="company-editorial-intro"',
+      before: 'data-testid="company-prep-steps"',
+      reportUrl: 'https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm',
+      practicePath: '/javascript/trivia/js-closures',
+    },
   ];
 
-  // Every company with a sourced table; Airbnb waits for its authored page (template-thin plan, Step 4).
+  // Every company with a sourced table.
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'crowdstrike', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
+    'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'crowdstrike', 'datadog', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
     'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
     'walmart', 'waymo', 'xai', 'zalando',
   ];
 
-  test('raw company previews render a sourced process table only where research supports one', async ({ request }) => {
+  test('raw company previews render a sourced process table for every company', async ({ request }) => {
     test.setTimeout(180_000);
     for (const slug of COMPANIES_WITH_PROCESS_TABLES) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
@@ -4253,12 +4311,16 @@ test.describe('seo-ssr', () => {
       const section = html.slice(sectionAt, html.indexOf('</section>', sectionAt));
       expect(section.match(/<table\b/g)?.length ?? 0, `${slug} tables`).toBeGreaterThan(0);
       const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
-      expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
+      if (GATED_COMPANY_GUIDES.has(slug)) {
+        // Behind the account gate the raw table reads in full and carries the evidence counts with a tag, not the links.
+        expect(reportAnchors.length, `${slug} report links behind the gate`).toBe(0);
+        expect(section, `${slug} evidence counts`).toContain('interview-process__strength');
+        expect(section, `${slug} free-account tag`).toContain('>Free account<');
+        expect(section, `${slug} blurred rounds`).not.toContain('interview-process__detail');
+      } else {
+        expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
+      }
       expect(section, `${slug} banned sources`).not.toMatch(/glassdoor|1point3acres|github\.com|prepfully|dataford/i);
-    }
-    for (const slug of ['airbnb']) {
-      const html = await readRawHtml(request, `/companies/${slug}/preview`);
-      expect(html, `${slug} has no process table yet`).not.toContain('data-testid="company-interview-process"');
     }
   });
 
@@ -4277,20 +4339,24 @@ test.describe('seo-ssr', () => {
       expect(html.indexOf(item.after)).toBeLessThan(sectionAt);
       expect(html.indexOf(item.before), `${item.path} content after the table`).toBeGreaterThan(sectionAt);
 
-      const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
-      expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
-      expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
-      if (item.officialUrl) {
-        const officialAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.officialUrl)}"[^>]*>`))?.[0] ?? '';
-        expect(officialAnchor, `${item.path} official anchor`).not.toBe('');
-        expect(officialAnchor).not.toContain('nofollow');
+      if ('gated' in item && item.gated) {
+        // Behind the account gate the raw table keeps its text, counts and practice links and carries no evidence links.
+        expect(section, `${item.path} gated evidence`).not.toContain(`href="${item.reportUrl}"`);
+        expect(section).toContain('>Free account<');
+        expect(section).not.toContain('interview-process__detail');
+      } else {
+        const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
+        expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
+        expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
+        if (item.officialUrl) {
+          const officialAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.officialUrl)}"[^>]*>`))?.[0] ?? '';
+          expect(officialAnchor, `${item.path} official anchor`).not.toBe('');
+          expect(officialAnchor).not.toContain('nofollow');
+        }
       }
       expect(section, `${item.path} crawlable practice link`).toContain(`href="${item.practicePath}"`);
       expect(section).not.toMatch(/glassdoor|1point3acres|github\.com/i);
     }
-
-    const airbnb = await readRawHtml(request, '/companies/airbnb/preview');
-    expect(airbnb).not.toContain('data-testid="company-interview-process"');
   });
 
   test('interview process tables switch to cards in narrow containers and keep readable cells', async ({ page }) => {
@@ -4416,6 +4482,158 @@ test.describe('seo-ssr', () => {
       expectNoHydrationOrChunkIssues(runtimeIssues, guide.path);
     });
   }
+
+  // The header's pricing link appears only after the first client render, so the clicks below reach the router.
+  test('a link low on a long page opens the next page at the top, on the first click after load', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/companies/elevenlabs/preview', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('header-pricing-link')).toBeVisible();
+
+    const closingCta = page.locator('.company-guide-cta a');
+    await closingCta.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(1000);
+    await page.evaluate(() => { (window as Window & { __sameDocument?: boolean }).__sameDocument = true; });
+    await closingCta.click();
+
+    await expect(page).toHaveURL(/\/pricing\?src=company_preview_elevenlabs/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    // A full page load would also start at the top, so this must have been a client-side navigation.
+    expect(await page.evaluate(() => (window as Window & { __sameDocument?: boolean }).__sameDocument)).toBe(true);
+  });
+
+  test('same-page hash links stay on the page and scroll their target clear of the fixed header', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    // Agoda's architecture decoder rehearses on prompt 1, an open prompt on the same page.
+    await page.goto('/companies/agoda/preview', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('header-pricing-link')).toBeVisible();
+
+    await page.getByRole('link', { name: 'Rehearse the hotel search page architecture prompt' }).click();
+
+    await expect(page).toHaveURL(/\/companies\/agoda\/preview#hotel-search-page-frontend-architecture$/);
+    await expect(page.locator('h1')).toHaveText('Agoda Frontend Interview Questions');
+    await expect(page.locator('#hotel-search-page-frontend-architecture h3')).toBeInViewport();
+    const targetTop = await page.locator('#hotel-search-page-frontend-architecture').evaluate((node) => node.getBoundingClientRect().top);
+    expect(targetTop, 'the target clears the fixed header').toBeGreaterThanOrEqual(56);
+    expect(targetTop, 'the target is at the top of the viewport, not just somewhere inside it').toBeLessThan(200);
+
+    await page.goto('/legal/privacy', { waitUntil: 'networkidle' });
+    await page.locator('a[href="#cookies"]').first().click();
+    await expect(page).toHaveURL(/\/legal\/privacy#cookies$/);
+    expect(await page.evaluate(() => window.scrollY), 'privacy scrolled to its section').toBeGreaterThan(0);
+  });
+
+  test('a direct load of /system-design opens at the top', async ({ page, request }) => {
+    // A select that writes autofocus into prerendered HTML makes the browser scroll down to the filters on load.
+    expect(await readRawHtml(request, '/system-design')).not.toMatch(/\sautofocus\b/);
+
+    for (const width of [1366, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/system-design', { waitUntil: 'networkidle' });
+      expect(await page.evaluate(() => window.scrollY), `scroll position at ${width}px`).toBe(0);
+      await expect(page.locator('h1')).toBeInViewport();
+    }
+  });
+
+  test('prerendered pages already hold the sidebar column and the phone plan order, so loading moves nothing', async ({ browser, page }) => {
+    const rawContext = await browser.newContext({ javaScriptEnabled: false });
+    const rawPage = await rawContext.newPage();
+    const prerenderedColumnX = async (path: string, width: number) => {
+      await rawPage.setViewportSize({ width, height: 900 });
+      await rawPage.goto(fullUrl(path));
+      return (await rawPage.locator('.main-col').boundingBox())?.x;
+    };
+
+    expect(await prerenderedColumnX('/focus-areas', 1366), 'full sidebar column').toBe(280);
+    expect(await prerenderedColumnX('/coding', 1366), 'guest rail on starter routes').toBe(60);
+    expect(await prerenderedColumnX('/focus-areas', 390), 'no column where the sidebar is a drawer').toBe(0);
+
+    await rawPage.goto(fullUrl('/pricing'));
+    const quarterly = await rawPage.locator('.pr-card--quarterly').boundingBox();
+    const monthly = await rawPage.locator('.pr-card--monthly').boundingBox();
+    expect(quarterly!.y, 'the recommended plan leads on a phone before any script runs').toBeLessThan(monthly!.y);
+    await rawContext.close();
+
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.goto('/focus-areas', { waitUntil: 'networkidle' });
+    await expect(page.locator('app-sidebar aside')).toBeVisible();
+    expect((await page.locator('.main-col').boundingBox())?.x, 'the mounted sidebar takes the same column').toBe(280);
+  });
+
+  test('a guest opening a premium company link lands on that company guide', async ({ page }) => {
+    await page.goto('/companies/agoda');
+    await expect(page).toHaveURL(/\/companies\/agoda\/preview$/);
+    await expect(page.locator('h1')).toContainText('Agoda');
+    await expect(page.locator('app-premium-required-dialog [role="dialog"]')).toHaveCount(0);
+  });
+
+  test('addresses with no page of their own end on /404 or their real page', async ({ page }) => {
+    for (const path of ['/companies/does-not-exist/preview', '/javascript/trivia/does-not-exist']) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(/\/404$/);
+    }
+    for (const [path, target] of [['/auth', /\/auth\/login/], ['/onboarding', /\/onboarding\/quick-start/], ['/billing', /\/pricing/]] as const) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(target);
+    }
+  });
+
+  test('legal pages and guide anchors stay stable: no reflow from late styles, every heading id unique', async ({ page, request }) => {
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.addInitScript(() => {
+      (window as any).__shift = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as any[]) if (!entry.hadRecentInput) (window as any).__shift += entry.value;
+      }).observe({ type: 'layout-shift', buffered: true });
+    });
+    await page.goto('/legal/refund', { waitUntil: 'networkidle' });
+    expect(await page.evaluate(() => (window as any).__shift), 'layout shift on /legal/refund').toBeLessThan(0.1);
+
+    for (const path of ['/guides/framework-prep/angular-prep-path', '/guides/interview-blueprint/dsa-for-fe']) {
+      const ids = [...(await readRawHtml(request, path)).matchAll(/<h[23][^>]*\sid="([^"]+)"/g)].map((match) => match[1]);
+      expect(ids.length, path).toBeGreaterThan(3);
+      expect(new Set(ids).size, `duplicate heading ids on ${path}`).toBe(ids.length);
+    }
+  });
+
+  test('raw pages show no unrendered markdown or escaped entities', async ({ request }) => {
+    test.setTimeout(120_000);
+    const paths = [
+      '/interview-questions',
+      '/javascript/interview-questions',
+      '/angular/interview-questions',
+      '/react/interview-questions',
+      '/vue/interview-questions',
+      '/html/interview-questions',
+      '/html-css/interview-questions',
+      '/incidents',
+      '/tradeoffs/promise-all-vs-sequential-awaits',
+      '/companies/revolut/preview',
+    ];
+    for (const path of paths) {
+      const text = rawVisibleTextPreserveCase(await readRawHtml(request, path));
+      expect(text.match(/\*\*[^*\s]|`[^`\n]+`|&lt;|&gt;/)?.[0], `unrendered markup on ${path}`).toBeUndefined();
+    }
+
+    const solution = rawVisibleTextPreserveCase(await readRawHtml(request, '/javascript/coding/js-debounce'));
+    expect(solution, 'solution notes render their inline code').toContain('debounced wrappers typically return void');
+  });
+
+  test('raw trivia answers keep HTML examples as text and table cells as values', async ({ request }) => {
+    const cascade = await readRawHtml(request, '/css/trivia/css-cascade-order');
+    expect(rawVisibleTextPreserveCase(cascade)).toContain('#header');
+    expect(cascade).not.toMatch(/<td[^>]*>\s*<h\d/i);
+
+    const semantic = await readRawHtml(request, '/html/trivia/html-semantic-elements');
+    expect(semantic.match(/<h1\b/gi), 'one H1 on the page').toHaveLength(1);
+    expect(rawVisibleTextPreserveCase(semantic)).toContain('<header><h1>Site Title</h1></header>');
+
+    const inline = rawVisibleTextPreserveCase(await readRawHtml(request, '/html/trivia/html-block-inline-elements'));
+    expect(inline).toMatch(/Examples include <span>\s*,\s*<a>\s*,\s*<em>\s*,\s*and\s*<strong>/);
+
+    const lists = rawVisibleTextPreserveCase(await readRawHtml(request, '/html/trivia/html-ol-ul-dl-difference'));
+    expect(lists).not.toContain('<pre>');
+    expect(lists).toContain('Cook for 10 minutes');
+  });
 
   for (const note of EDITORIAL_NOTE_CASES) {
     test(`raw ${note.label} company preview renders its editorial notes around the catalog blocks`, async ({ request }) => {

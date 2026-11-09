@@ -3,7 +3,6 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  Input,
   OnDestroy,
   computed,
   inject,
@@ -16,8 +15,13 @@ import { ConversionContextService } from '../../../core/services/conversion-cont
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { FaButtonComponent } from '../../ui/button/fa-button.component';
 
-type StickySurface = 'showcase' | 'pricing';
+const ANALYTICS_SURFACE = 'showcase_mobile_sticky';
 
+/**
+ * The homepage's phone shortcuts: a free account for guests and the way to pricing, once the hero has scrolled away
+ * and while no plan card is on screen. Closing it is remembered on the device, so it appears until dismissed once.
+ * The pricing page carries no copy of it: there the plan cards are the page.
+ */
 @Component({
     selector: 'app-conversion-sticky-cta',
     imports: [CommonModule, RouterModule, FaButtonComponent],
@@ -30,8 +34,6 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
   private readonly auth = inject(AuthService);
   private readonly analytics = inject(AnalyticsService);
   private readonly conversionContext = inject(ConversionContextService);
-
-  @Input() surface: StickySurface = 'showcase';
 
   private readonly isMobile = signal(false);
   private readonly heroOutOfView = signal(false);
@@ -51,8 +53,7 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
   readonly visible = computed(() => {
     if (!this.isMobile() || this.dismissed() || this.overlayOpen()) return false;
     if (this.authState() === 'pending' || this.authState() === 'pro') return false;
-    const surfaceReady = this.surface === 'pricing' || this.heroOutOfView();
-    return surfaceReady && !this.planCardsVisible();
+    return this.heroOutOfView() && !this.planCardsVisible();
   });
 
   ngAfterViewInit(): void {
@@ -60,8 +61,8 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
     this.syncViewport();
     window.addEventListener('resize', this.onResize, { passive: true });
     // AfterViewInit already runs after this component and its page landmarks
-    // are rendered. Observe synchronously so the pricing page does not flash a
-    // sticky CTA for one frame while its plan cards are already visible.
+    // are rendered. Observe synchronously so the page does not flash the
+    // shortcuts for one frame while its plan cards are already visible.
     this.observePageLandmarks();
     this.mutationObserver = new MutationObserver(() => this.syncOverlayState());
     this.mutationObserver.observe(document.body, {
@@ -85,11 +86,11 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
     this.dismissed.set(true);
     if (typeof window !== 'undefined') {
       try {
-        sessionStorage.setItem(ConversionStickyCtaComponent.DISMISSED_KEY, '1');
+        localStorage.setItem(ConversionStickyCtaComponent.DISMISSED_KEY, '1');
       } catch { }
     }
     this.analytics.track('mobile_sticky_cta_dismissed', {
-      surface: this.analyticsSurface(),
+      surface: ANALYTICS_SURFACE,
       auth_state: this.analyticsAuthState(),
     });
   }
@@ -99,31 +100,26 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
   }
 
   trackPricing(): void {
-    const source = this.surface === 'pricing' ? 'pricing_mobile_sticky' : 'showcase_mobile_sticky';
-    // On `/pricing` this link only scrolls to the existing plan cards. Writing
-    // navigation context there would be ignored now and misattribute a later
-    // pricing visit in the same tab.
-    if (this.surface !== 'pricing') {
-      this.conversionContext.rememberPricingContext(source, this.analyticsSurface());
-    }
+    this.conversionContext.rememberPricingContext(ANALYTICS_SURFACE, ANALYTICS_SURFACE);
     this.trackClick('view_pricing', '/pricing#pricing-plans');
   }
 
   private observePageLandmarks(): void {
     if (typeof IntersectionObserver !== 'function') {
-      this.heroOutOfView.set(this.surface === 'showcase');
+      this.heroOutOfView.set(true);
       return;
     }
 
-    if (this.surface === 'showcase') {
-      const hero = document.querySelector('.showcase-hero');
-      if (hero) {
-        const observer = new IntersectionObserver(([entry]) => {
-          this.heroOutOfView.set(!entry.isIntersecting && entry.boundingClientRect.bottom <= 0);
-        }, { threshold: 0.01 });
-        observer.observe(hero);
-        this.observers.push(observer);
-      }
+    const hero = document.querySelector('.showcase-hero');
+    if (hero) {
+      const observer = new IntersectionObserver(([entry]) => {
+        this.heroOutOfView.set(!entry.isIntersecting && entry.boundingClientRect.bottom <= 0);
+      }, { threshold: 0.01 });
+      observer.observe(hero);
+      this.observers.push(observer);
+    } else {
+      // A page without the hero landmark has nothing to wait for.
+      this.heroOutOfView.set(true);
     }
 
     const planCards = document.querySelector('#pricing-plans');
@@ -147,13 +143,9 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
     this.analytics.track('mobile_sticky_cta_clicked', {
       action,
       destination,
-      surface: this.analyticsSurface(),
+      surface: ANALYTICS_SURFACE,
       auth_state: this.analyticsAuthState(),
     });
-  }
-
-  private analyticsSurface(): string {
-    return this.surface === 'pricing' ? 'pricing_mobile_sticky' : 'showcase_mobile_sticky';
   }
 
   private analyticsAuthState(): 'guest' | 'logged_in_free' | 'logged_in_pro' {
@@ -178,7 +170,7 @@ export class ConversionStickyCtaComponent implements AfterViewInit, OnDestroy {
   private wasDismissed(): boolean {
     if (typeof window === 'undefined') return false;
     try {
-      return sessionStorage.getItem(ConversionStickyCtaComponent.DISMISSED_KEY) === '1';
+      return localStorage.getItem(ConversionStickyCtaComponent.DISMISSED_KEY) === '1';
     } catch {
       return false;
     }

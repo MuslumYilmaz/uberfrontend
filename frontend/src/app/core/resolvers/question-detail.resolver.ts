@@ -148,7 +148,9 @@ function resolveDetail(tech: Tech, kind: QuestionKind, id: string, pressureReque
   return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
     switchMap((list) => {
       const resolved = buildQuestionDetailResolved(tech, kind, id, list);
-      if (useLightweightTransferState && isPlatformServer(platformId)) {
+      // A Premium question never travels in the transfer state: the prerendered page is the public locked view,
+      // and its HTML must not carry the answer. The browser loads the bank instead, as coding pages do.
+      if (useLightweightTransferState && isPlatformServer(platformId) && resolved.question?.access !== 'premium') {
         transferState.set(stateKey, resolved);
       }
       const assetPath = solutionAssetPath(resolved, pressureRequested);

@@ -227,6 +227,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-contact-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/contact-form.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-contact-form-starter.v1.json",
@@ -600,6 +601,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-image-slider-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/image-slider.v1.json",
     "companies": [
       "amazon",
       "google"
@@ -1310,6 +1312,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/multi-step-form.v1.json",
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-multi-step-form-starter.v1.json",
@@ -1909,6 +1912,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-nested-checkboxes"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-nested-checkboxes.v1.json",
     "access": "premium",
@@ -1998,7 +2002,7 @@
         {
           "title": "Subject-driven results$ stream + keyboard navigation + outside click close",
           "prose": "1) Create `queryControl = new FormControl<string>('')` for binding.\n2) Create `searchTerm$ = new Subject<string>()`.\n3) On input: `queryControl.setValue(value)` and `searchTerm$.next(value)`.\n4) Build `results$` from `searchTerm$`:\n   - `startWith(queryControl.value ?? '')`\n   - `map(v => String(v ?? '').trim())`\n   - `debounceTime(300)`\n   - `distinctUntilChanged()`\n   - `tap(q => open/close dropdown + reset activeIndex)`\n   - `switchMap(q => q ? search(q) : of([]))`\n5) Implement `onKeyDown`:\n   - Escape closes\n   - ArrowDown/ArrowUp updates `activeIndex` with wrap-around\n   - Enter selects the active option\n6) Close on outside click using `@HostListener('document:mousedown')` + `ElementRef.contains`.\n7) Use `(mousedown)` on options to avoid losing selection due to input blur ordering.",
-          "codeTs": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      if (!q) {\n        this.isOpen = false;\n        this.activeIndex = -1;\n      } else {\n        this.isOpen = true;\n        this.activeIndex = -1;\n      }\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n"
+          "codeTs": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private pickedValue: string | null = null;\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      // A pick fills the input, but it is not a new search.\n      this.isOpen = !!q && q !== this.pickedValue;\n      this.activeIndex = -1;\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.pickedValue = null;\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.pickedValue = value;\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n"
         }
       ],
       "notes": {
@@ -2007,7 +2011,8 @@
           "Not trimming the query (whitespace should behave like empty).",
           "Using `(click)` on options (can lose selection due to event ordering when the input blurs).",
           "Not handling wrap-around behavior for arrow navigation.",
-          "Missing ARIA roles/attributes, making it harder for assistive tech."
+          "Missing ARIA roles/attributes, making it harder for assistive tech.",
+          "Reopening the dropdown after a pick: filling the input with the picked city is not a new search."
         ],
         "techniques": [
           "Drive the RxJS pipeline with a `Subject<string>` fed by `(input)` events to avoid `valueChanges` typing/environment issues.",
@@ -2022,6 +2027,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-autocomplete-search-starter"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/autocomplete-search.v1.json",
     "companies": [
       "apple",
       "booking-com"
@@ -2046,7 +2052,7 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
     "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-autocomplete-search-starter.v1.json",
-    "access": "premium",
+    "access": "free",
     "updatedAt": "2026-07-15",
     "seo": {
       "title": "Build Angular Autocomplete Search Component",
@@ -2069,14 +2075,50 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".option"
+            "type": "mouseDown",
+            "selector": ".option"
           },
           {
             "type": "expectValue",
             "selector": ".input",
             "value": "London",
             "match": "contains"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".list",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-outside-click-closes",
+        "name": "Clicking outside closes the dropdown",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Lond"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "selector": "body"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".list",
+            "count": 0,
+            "timeoutMs": 500
           }
         ]
       }
@@ -2155,6 +2197,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-transfer-list"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "companies": [
       "meta"
     ],
@@ -2177,7 +2220,7 @@
           },
           {
             "type": "click",
-          "selector": ".layout .listCard:nth-child(1) .row input"
+            "selector": ".layout .listCard:nth-child(1) .row input"
           },
           {
             "type": "click",
@@ -2186,8 +2229,8 @@
           },
           {
             "type": "waitForCount",
-          "selector": ".layout .listCard:last-child .row",
-          "count": 4
+            "selector": ".layout .listCard:last-child .row",
+            "count": 4
           }
         ]
       }
@@ -2354,6 +2397,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-like-button"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/like-button.v1.json",
     "companies": [
       "amazon"
     ],
@@ -2389,17 +2433,17 @@
           "Parent component must demonstrate:",
           "  - Property binding: `[label]=\"...\"` and `[value]=\"...\"`",
           "  - Event binding: `(valueChange)=\"...\"` or `[(value)]=\"...\"`",
-          "UI should include an input + a button inside the child. Child emits updated value when user edits input or presses button."
+          "UI should include + and − buttons and a Like button inside the child. The child emits an updated value when the user presses a button."
         ],
         "expectedBehavior": [
-          "Typing in the child input updates the parent's state (via two-way binding).",
-          "Clicking child button emits an event that the parent logs/increments a counter.",
+          "Pressing + or − in the child updates the parent's state (via two-way binding).",
+          "Pressing Like emits an event that updates the parent's liked state.",
           "Parent can also update the value programmatically and child reflects it."
         ],
         "implementationNotes": [
           "Use standalone components.",
           "Use a classic `@Input() value` + `@Output() valueChange = new EventEmitter<...>()` for two-way binding.",
-          "Avoid FormsModule; use plain `(input)` event handling for simplicity.",
+          "Avoid FormsModule; plain button click handlers are enough.",
           "Keep everything minimal: two components + one small UI."
         ],
         "techFocus": [
@@ -2437,6 +2481,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-input-output-two-way"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/input-output-two-way.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json",
     "companies": [
       "google"
@@ -2642,6 +2687,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-nested-comments"
     },
+    "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
     "companies": [],
     "access": "premium",
@@ -2855,7 +2901,7 @@
         "steps": [
           {
             "type": "setValue",
-          "selector": ".chip-input input",
+            "selector": ".chip-input input",
             "value": "Alice"
           },
           {
@@ -2865,8 +2911,8 @@
             "timeoutMs": 800
           },
           {
-          "type": "mouseDown",
-          "selector": ".suggestion"
+            "type": "mouseDown",
+            "selector": ".suggestion"
           },
           {
             "type": "waitForCount",
@@ -3187,9 +3233,9 @@
             "className": "cell--head",
             "expected": false
           },
-        {
-          "type": "wait",
-          "durationMs": 110
+          {
+            "type": "wait",
+            "durationMs": 110
           },
           {
             "type": "expectClass",
@@ -3208,21 +3254,21 @@
       },
       {
         "id": "snake-keyboard-grow-score",
-      "name": "Keyboard guard, growth, score, and food respawn",
-      "steps": [
-        {
-          "type": "click",
-          "selector": ".actions button",
-          "index": 0
-        },
-        {
-          "type": "key",
-          "selector": "body",
-          "key": "ArrowLeft"
-        },
-        {
-          "type": "wait",
-          "durationMs": 200
+        "name": "Keyboard guard, growth, score, and food respawn",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
           },
           {
             "type": "expectClass",
@@ -3252,9 +3298,9 @@
             "selector": "body",
             "key": "ArrowDown"
           },
-        {
-          "type": "wait",
-          "durationMs": 100
+          {
+            "type": "wait",
+            "durationMs": 100
           },
           {
             "type": "expectClass",
@@ -3266,24 +3312,24 @@
       },
       {
         "id": "snake-wall-collision-stop",
-      "name": "Wall collision ends the game and stops movement",
-      "steps": [
-        {
-          "type": "click",
-          "selector": ".actions button",
-          "index": 0
-        },
-        {
-          "type": "waitForText",
+        "name": "Wall collision ends the game and stops movement",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".actions button",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
             "selector": ".status-row",
             "text": "Game over",
             "match": "contains",
             "timeoutMs": 2200
           },
           {
-          "type": "expectClass",
-          "selector": ".cell",
-          "index": 111,
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
             "className": "cell--head"
           },
           {
@@ -3292,9 +3338,9 @@
             "key": "Shift"
           },
           {
-          "type": "expectClass",
-          "selector": ".cell",
-          "index": 111,
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
             "className": "cell--head"
           }
         ]

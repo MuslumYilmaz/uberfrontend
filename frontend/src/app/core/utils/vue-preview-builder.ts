@@ -325,6 +325,38 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
 </html>`;
 }
 
+// The names each generated script already reads from the Vue global.
+const VUE_MODULE_PRELUDE = new Set([
+  'ref',
+  'reactive',
+  'computed',
+  'watch',
+  'watchEffect',
+  'nextTick',
+  'onMounted',
+  'onUnmounted',
+  'onBeforeMount',
+  'onBeforeUnmount',
+  'onUpdated',
+  'onBeforeUpdate',
+]);
+const VUE_SETUP_PRELUDE = new Set([...VUE_MODULE_PRELUDE, 'defineComponent', 'h']);
+
+/** Reads any other import from vue, such as toRefs or shallowRef, from the global too. */
+function vueImportBindings(src: string, provided: Set<string>): string {
+  const named: string[] = [];
+  for (const [, clause] of src.matchAll(/^\s*import\s+(?!type\b)([\w$\s,{}]+?)\s+from\s+['"]vue['"]/mg)) {
+    for (const part of (clause.match(/\{([\s\S]*)\}/)?.[1] ?? '').split(',')) {
+      const trimmed = part.trim();
+      if (!trimmed || /^type\s/.test(trimmed)) continue;
+      const [imported, local] = trimmed.split(/\s+as\s+/);
+      if (local) named.push(`${imported}: ${local}`);
+      else if (!provided.has(imported)) named.push(imported);
+    }
+  }
+  return named.length ? `const { ${named.join(', ')} } = Vue;` : '';
+}
+
 /** -----------------------------------------------------------------------
  *  Parse SFC to extract <template> and <script> (supports <script setup>)
  * --------------------------------------------------------------------- */
@@ -333,8 +365,8 @@ function parseSfc(src: string): {
   script: string;
   scriptExports: string;
 } {
-  // 1) <template> bloğunu yakala
-  const templateRE = /<template>([\s\S]*?)<\/template>/;
+  // 1) <template> bloğunu yakala. Greedy, because the block can hold nested <template v-if> tags.
+  const templateRE = /<template>([\s\S]*)<\/template>/;
   const tplMatch = src.match(templateRE);
   let template = tplMatch?.[1]?.trim() ?? '';
 
@@ -360,6 +392,14 @@ function parseSfc(src: string): {
       bindings.add(String(name));
       return _m;
     });
+    // const { a, b: c, d = 1 } = useThing() and const [x, y] = useThing() declare names too.
+    body.replace(/\b(?:const|let|var)\s*[{[]([^}\]]*)[}\]]\s*(?::[^=]+)?=/g, (_m, list) => {
+      for (const part of String(list).split(',')) {
+        const name = part.split('=')[0].split(':').pop()!.replace('...', '').trim();
+        if (/^[A-Za-z_$][\w$]*$/.test(name)) bindings.add(name);
+      }
+      return _m;
+    });
 
     // Replace component tags (<Tree />) with dynamic component usage (<component :is="Tree" />)
     const componentTags = new Set<string>();
@@ -375,8 +415,8 @@ function parseSfc(src: string): {
     // 2) Template içinde gerçekten kullanılan identifier'ları bul
     const templateIds = new Set<string>();
 
-    // {{ ... }}, :prop="...", v-foo="...", @click="..." içindeki expression'lar
-    const exprRE = /{{([^}]*)}}|:([\w-]+)="([^"]+)"|v-[\w-]+="([^"]+)"|@[\w-]+="([^"]+)"/g;
+    // {{ ... }}, :prop="...", v-foo:bar.baz="...", @click.prevent="...", ref="..." içindeki expression'lar
+    const exprRE = /{{([^}]*)}}|:[^\s=>"]+="([^"]+)"|v-[^\s=>"]+="([^"]+)"|@[^\s=>"]+="([^"]+)"|\sref="([^"]+)"/g;
     const identRE = /[A-Za-z_$][\w$]*/g;
     const reserved = new Set([
       'true', 'false', 'null', 'undefined',
@@ -386,7 +426,7 @@ function parseSfc(src: string): {
 
     m = null;
     while ((m = exprRE.exec(template)) !== null) {
-      const expr = m[1] || m[3] || m[4] || m[5] || '';
+      const expr = m[1] || m[2] || m[3] || m[4] || m[5] || '';
       let idm: RegExpExecArray | null;
       while ((idm = identRE.exec(expr)) !== null) {
         const name = idm[0];
@@ -401,7 +441,10 @@ function parseSfc(src: string): {
       templateIds.has(name)
     );
 
-    const returned = exportedNames.length ? exportedNames.join(', ') : '';
+    // Binding detection also sees locals of nested functions, which do not exist at this scope.
+    const returned = exportedNames
+      .map((name) => `...(typeof ${name} !== 'undefined' ? { ${name} } : {})`)
+      .join(', ');
 
     const indentedBody = body
       ? body.split('\n').map(line => '      ' + line).join('\n')
@@ -411,6 +454,7 @@ function parseSfc(src: string): {
 
     const script = `
 const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate, defineComponent, h } = Vue;
+${vueImportBindings(scriptRaw, VUE_SETUP_PRELUDE)}
 
 const App = {
   template: \`${escTemplate}\`,
@@ -426,14 +470,10 @@ ${indentedBody}
 
 
   // ---------- Normal <script> yolu (options / composition) ----------
-  let script = scriptRaw;
-  let scriptExports = '';
-
-  const exportMatch = scriptRaw.match(/export\s+default\s+({[\s\S]*?})/);
-  if (exportMatch) {
-    scriptExports = exportMatch[1];
-    script = scriptRaw.replace(exportMatch[0], '').trim();
-  }
+  // A regex cannot find where the options object ends, so it stays whole under a name.
+  const defaultExportRE = /\bexport\s+default\s+/;
+  const hasDefaultExport = defaultExportRE.test(scriptRaw);
+  const script = scriptRaw.replace(defaultExportRE, 'const __faOptions = ');
 
   const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
 
@@ -441,11 +481,11 @@ ${indentedBody}
 ${script}
 export default {
   template: \`${escTemplate}\`,
-  ${scriptExports || ''}
+  ${hasDefaultExport ? '...__faOptions' : ''}
 };
 `.trim();
 
-  return { template, script: fullScript, scriptExports };
+  return { template, script: fullScript, scriptExports: '' };
 }
 
 function rewriteComponentTags(template: string, tags: Set<string>): string {
@@ -471,6 +511,7 @@ function rewriteVueModuleToUMD(src: string): string {
   // 2) Detect and strip imports from 'vue'
   const vueImportRE = /^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg;
   const hadVueImport = vueImportRE.test(s);
+  const importedHelpers = vueImportBindings(s, VUE_MODULE_PRELUDE);
   s = s.replace(vueImportRE, '');
 
   // 3) Rewrite export default → const App =
@@ -488,6 +529,7 @@ function rewriteVueModuleToUMD(src: string): string {
   if (hadVueImport) {
     const helpers =
       `const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
+${importedHelpers}
 `;
     s = helpers + s;
   }

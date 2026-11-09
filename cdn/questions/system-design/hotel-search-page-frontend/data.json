@@ -1,0 +1,52 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The URL is the only durable search state. SearchQuery is what it parses into, ResultsState is what the results unit holds for the current queryId, and PriceQuote carries the currency and the fetch time so a stale price is never shown as current."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SortOrder = 'recommended' | 'price-asc' | 'rating-desc';\n\ninterface SearchQuery {\n  city: string;\n  checkIn: string;\n  checkOut: string;\n  adults: number;\n  children: number;\n  filters: Record<string, string[]>;\n  sort: SortOrder;\n  page: number;\n}\n\ninterface PriceQuote {\n  amount: number;\n  currency: string;\n  quotedAt: string;\n}\n\ninterface ResultCard {\n  hotelId: string;\n  name: string;\n  rating: number;\n  price: PriceQuote;\n}\n\ninterface FacetCount {\n  filter: string;\n  value: string;\n  count: number;\n}\n\ntype ResultsPhase = 'idle' | 'loading' | 'ready' | 'error';\n\ninterface ResultsState {\n  queryId: string;\n  phase: ResultsPhase;\n  cards: ResultCard[];\n  facets: FacetCount[];\n  total: number;\n  nextPage: number | null;\n  errorCode: string | null;\n}\n\ninterface UnitManifest {\n  unit: 'inputs' | 'filters' | 'results';\n  buildId: string;\n  entryUrl: string;\n  contractVersion: number;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "hotel-search-page-frontend-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Hotel search identity rules",
+      "columns": [
+        "Identity",
+        "Created by",
+        "Used for"
+      ],
+      "rows": [
+        [
+          "queryId",
+          "Search gateway, on every URL change",
+          "Ignoring late replies and tagging one search's events"
+        ],
+        [
+          "searchId",
+          "Shell, on the first query of a visit",
+          "Joining funnel events from search to view, book and pay"
+        ],
+        [
+          "buildId",
+          "Each unit's CI build",
+          "The manifest, the asset names and every telemetry event"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "What stays in the units and what never persists",
+      "text": "Uncommitted guest counts and dates stay inside the inputs unit, so a half-typed date never refetches. Prices render with their quoted time and are never written to storage, so a reopened tab refetches."
+    }
+  ]
+}

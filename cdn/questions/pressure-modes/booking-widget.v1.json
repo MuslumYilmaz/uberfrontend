@@ -1,0 +1,406 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "booking-widget-pressure-v1",
+  "family": "booking-widget",
+  "title": "Listing Booking Widget Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 40,
+  "supportedQuestions": {
+    "react": "react-listing-booking-widget"
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json"
+  },
+  "rounds": [
+    {
+      "id": "price-the-stay",
+      "title": "Price the stay",
+      "interviewerPrompt": "Start with the core of the screen: pick check-in and check-out and show what the stay costs. The nights, the nightly line, the cleaning fee and the total all come from the same two dates.",
+      "constraints": [
+        "Count the nights from the two dates in UTC days.",
+        "The nightly line reads `$180 x 3 nights`, and the total adds the cleaning fee once.",
+        "Without both dates there is no total, and Book now stays disabled."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-booking-price-stay",
+          "name": "Round 1 · Three nights cost $600",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": ".book"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-10"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-13"
+            },
+            {
+              "type": "expectText",
+              "selector": ".price-line",
+              "text": "$180 x 3 nights",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".price-amount",
+              "text": "$540",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cleaning-fee",
+              "text": "$60",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".total",
+              "text": "$600",
+              "match": "equals"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".book",
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "guests-within-the-cap",
+      "title": "Guests change the price, within the cap",
+      "interviewerPrompt": "Now the guests. Adults and children both count, the nightly price covers two guests, and each guest after that adds a fee every night. The cabin sleeps four.",
+      "constraints": [
+        "Each guest after the second adds $25 a night.",
+        "Adults start at one and never go below it; children start at zero.",
+        "At four guests both plus buttons are disabled."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-booking-extra-guests",
+          "name": "Round 2 · Four guests pay $230 a night",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-10"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-13"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".adults-minus"
+            },
+            {
+              "type": "click",
+              "selector": ".adults-plus"
+            },
+            {
+              "type": "click",
+              "selector": ".adults-plus"
+            },
+            {
+              "type": "click",
+              "selector": ".children-plus"
+            },
+            {
+              "type": "expectText",
+              "selector": ".adults-count",
+              "text": "3",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".children-count",
+              "text": "1",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".price-line",
+              "text": "$230 x 3 nights",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".total",
+              "text": "$750",
+              "match": "equals"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".adults-plus"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".children-plus"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "booked-dates",
+      "title": "Booked dates grey out the button",
+      "interviewerPrompt": "The host already has a booking from December 24 to 27. A stay that overlaps it cannot be booked, and the button has to say so before anyone clicks.",
+      "constraints": [
+        "A stay overlaps a booking when it starts before the booking ends and ends after it starts.",
+        "Overlapping dates show `Those dates are booked` and disable Book now; a stay that starts on the 27th is free.",
+        "A check-out on or before check-in shows an error and no total."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-booking-booked-dates",
+          "name": "Round 3 · An overlap greys out Book now",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-23"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-26"
+            },
+            {
+              "type": "expectText",
+              "selector": ".availability",
+              "text": "Those dates are booked",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".total",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".book"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-27"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-29"
+            },
+            {
+              "type": "expectText",
+              "selector": ".total",
+              "text": "$420",
+              "match": "equals"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".book",
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "confirm-dialog",
+      "title": "Confirm in an accessible dialog",
+      "interviewerPrompt": "Book now opens a confirmation. Make it a real dialog: it says what is being booked, takes focus, closes on Escape and gives focus back to the button.",
+      "constraints": [
+        "The dialog has `role=\"dialog\"`, `aria-modal=\"true\"` and a title.",
+        "Focus moves to Confirm booking; Escape or Cancel closes the dialog and returns focus to Book now.",
+        "Confirm shows `Booked: Lakeside cabin, Dec 10 to Dec 13` and disables Book now."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-booking-dialog-focus",
+          "name": "Round 4 · The dialog takes focus and Escape returns it",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-10"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-13"
+            },
+            {
+              "type": "click",
+              "selector": ".book"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".confirm-dialog",
+              "count": 1,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".confirm-dialog",
+              "attribute": "role",
+              "expected": "dialog"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".confirm-dialog",
+              "attribute": "aria-modal",
+              "expected": "true"
+            },
+            {
+              "type": "expectText",
+              "selector": ".confirm-summary",
+              "text": "Dec 10 to Dec 13 · 3 nights · 1 guest · $600",
+              "match": "equals"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".confirm"
+            },
+            {
+              "type": "key",
+              "selector": ".confirm-dialog",
+              "key": "Escape"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".confirm-dialog",
+              "count": 0
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".book"
+            }
+          ]
+        },
+        {
+          "id": "pressure-booking-confirm",
+          "name": "Round 4 · Confirm books the stay",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-10"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-13"
+            },
+            {
+              "type": "click",
+              "selector": ".book"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".confirm-dialog",
+              "count": 1,
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".confirm"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".confirm-dialog",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".booked-message",
+              "text": "Booked: Lakeside cabin, Dec 10 to Dec 13",
+              "match": "equals"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".book"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "guest-currency",
+      "title": "Show prices in the guest's currency",
+      "interviewerPrompt": "Product follow-up: guests abroad want prices in their own currency. Add a currency picker with US dollars and euros, using the rate table you were given.",
+      "constraints": [
+        "Convert the nightly price and the cleaning fee with `RATES` and round them to whole units.",
+        "Build the stay and the total from the converted amounts, so the lines always add up.",
+        "Format every amount with `Intl.NumberFormat` in the chosen currency."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-booking-currency",
+          "name": "Round 5 · Euros: the lines add up to €553",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".check-in",
+              "value": "2026-12-10"
+            },
+            {
+              "type": "setValue",
+              "selector": ".check-out",
+              "value": "2026-12-13"
+            },
+            {
+              "type": "setValue",
+              "selector": ".currency",
+              "value": "EUR"
+            },
+            {
+              "type": "expectText",
+              "selector": ".price-line",
+              "text": "€166 x 3 nights",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".price-amount",
+              "text": "€498",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".cleaning-fee",
+              "text": "€55",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".total",
+              "text": "€553",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You priced the stay and booked it once",
+    "summary": "You built a booking widget whose every line comes from one quote derived from the dates and the guests, kept booked dates from ever reaching a confirmation, and made the confirmation a dialog that takes focus and gives it back. The review signal is that the lines, the total and the button can never disagree.",
+    "takeaways": [
+      "Derive one quote from the dates and the guests, and let every line, the total and the button read it.",
+      "Count nights in UTC days and treat booked ranges as half-open, so a check-out on the day a booking starts is free.",
+      "Gate Book now on the quote, and say why it is disabled: a date error or booked dates.",
+      "A dialog moves focus in, closes on Escape and returns focus; convert prices from one rounded nightly amount so the lines add up."
+    ],
+    "frameworkNotes": {
+      "react": "The quote is a useMemo over the dates and the guest count; the dialog moves focus with refs in an effect, and the currency picker changes one formatter instead of copying prices into state."
+    }
+  }
+}

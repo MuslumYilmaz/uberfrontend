@@ -1,3 +1,5 @@
+import type { AuthoredRoundSpotlight } from '../../../shared/company-previews/authored-company-preview.model';
+
 export type GooglePracticePrompt = {
   readonly id: string;
   readonly title: string;
@@ -237,7 +239,7 @@ export const GOOGLE_PREP_SEQUENCE: readonly GooglePrepDay[] = [
   },
   {
     day: 'Day 7',
-    focus: 'Run a timed mock, revisit missed edge cases, and practice explaining decisions before implementation details.',
+    focus: 'Run a timed mock, revisit missed edge cases, practice explaining decisions before implementation details, and answer two Googleyness questions in the drill above.',
     artifact: 'A mock-interview scorecard, recording or notes, and a final edge-case checklist.',
   },
 ];
@@ -312,3 +314,75 @@ export const GOOGLE_RESOURCE_LINKS: readonly GoogleResourceLink[] = [
     path: '/javascript/trivia/js-compare-two-objects',
   },
 ];
+
+/**
+ * The Googleyness interview, decoded on the guide; the process table's Googleyness row links here. Google's current
+ * pages no longer use the word: the interview tips describe the same behavioural and hypothetical questions, and the
+ * archived 2020 interview page named it as one of four areas. Questions are quoted only from accounts read in full,
+ * and the ones from general software engineer loops say so.
+ */
+export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
+  id: 'googleyness',
+  kicker: 'Round decoder',
+  title: 'Google Googleyness interview for front-end engineers: what it is and what was asked',
+  lede: [
+    'Front-end loops at Google include one Googleyness interview beside the coding rounds and, at L5 and above, a design round: about 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership and which is rated on the same Hire scale as the coding rounds.',
+    'Google\'s current interview tips no longer use the word, but they describe the same questions, "Tell me about a time when…" and "How would you approach this situation…?", and ask for specific examples rather than habits.',
+  ],
+  facts: [
+    {
+      label: 'Position in the loop',
+      value: 'One of the four or five loop interviews in front-end accounts from 2021 and 2022. In three 2026 software engineer accounts it sat in a first, virtual stage with one technical round, before the onsite coding; one early-career loop added 15 minutes of it to a technical interview.',
+    },
+    {
+      label: 'What it looks for',
+      value: 'Google\'s 2020 interview page described it as how you work alone and on a team, how you help others, how you handle ambiguity and how you push yourself to grow; several accounts call it Googleyness and Leadership.',
+    },
+    {
+      label: 'Google\'s own examples',
+      value: 'The interview tips ask how you push yourself to grow outside your comfort zone, how you would address a conflict with someone you work with, and when you drove collaboration. Google\'s re:Work guide gives "Tell me about a time your behavior had a positive impact on your team."',
+    },
+    {
+      label: 'Asked in a 2026 front-end track',
+      value: 'A walkthrough of the current project and your role in it; joining a project with unclear requirements; a time you worked under a tight deadline, with follow-ups on what you would do differently and how the team responded (Medium, April 2026, an L4 frontend/SWE track).',
+    },
+    {
+      label: 'Patterns in other software engineer loops',
+      value: 'A conflict with teammates and whether your suggestions were considered; a teammate who takes the credit for shared work; every task marked P0; a time you worked to a strict deadline; leading an underperforming team as its manager (LeetCode, 2024 and 2025).',
+    },
+    {
+      label: 'Scoring',
+      value: 'A 2026 account reports a Hire to Strong Hire rating for this round, on the same scale as its coding rounds.',
+    },
+    {
+      label: 'A 2026 pilot',
+      value: 'The May 2026 pilot for junior to mid-level roles on some US teams, the one the time-sensitive note describes, adds a technical design discussion about a past project to this round, beside an AI-assisted code comprehension round; ask your recruiter whether it applies to you.',
+    },
+    {
+      label: 'Sources',
+      value: 'Google\'s interview tips, its re:Work guide and its archived 2020 interview page, the front-end accounts on Blind, LeetCode and Medium, and LeetCode accounts from 2024 to 2026; all are on the Googleyness row of the process table.',
+    },
+  ],
+  practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
+  processLink: { label: 'See the Googleyness row in the reported process', fragment: 'google-interview-process-1-stage-googleyness-interview' },
+  // The facts above, one question each: Google's own examples first, then the accounts.
+  drill: {
+    note: 'Google\'s examples come from its interview tips and its re:Work guide; the rest are what the accounts report, the last two from general software engineer loops.',
+    questions: [
+      { id: 'comfort-zone', text: 'How do you push yourself to grow outside your comfort zone?', source: 'Google\'s interview tips' },
+      { id: 'conflict', text: 'How would you address a conflict with someone you work with?', source: 'Google\'s interview tips', kind: 'approach' },
+      { id: 'collaboration', text: 'Tell me about a time you drove collaboration.', source: 'Google\'s interview tips' },
+      { id: 'team-impact', text: 'Tell me about a time your behavior had a positive impact on your team.', source: 'Google\'s re:Work guide' },
+      { id: 'current-project', text: 'Walk me through your current project and your role in it.', source: 'Medium, April 2026' },
+      { id: 'unclear-requirements', text: 'Tell me about joining a project with unclear requirements.', source: 'Medium, April 2026' },
+      { id: 'tight-deadline', text: 'Tell me about a time you worked under a tight deadline. What would you do differently?', source: 'Medium, April 2026' },
+      { id: 'credit', text: 'A teammate takes the credit for shared work. What do you do?', source: 'LeetCode, 2024 and 2025', kind: 'approach' },
+      { id: 'every-task-p0', text: 'Every task is marked P0. What do you do?', source: 'LeetCode, 2024 and 2025', kind: 'approach' },
+    ],
+    checks: [
+      'It is a specific time, not a habit.',
+      'It shows how I worked with others or helped the team.',
+      'I can say how the team responded, a follow-up a 2026 account reports.',
+    ],
+  },
+};

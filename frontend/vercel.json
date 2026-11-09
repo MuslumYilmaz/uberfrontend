@@ -278,6 +278,106 @@
       "destination": "/html/interview-questions",
       "permanent": true
     },
+    {
+      "source": "/safeJsonParse",
+      "destination": "/javascript/coding/js-safe-json-parse",
+      "permanent": true
+    },
+    {
+      "source": "/code-reviews",
+      "destination": "/coding",
+      "permanent": true
+    },
+    {
+      "source": "/track",
+      "destination": "/tracks",
+      "permanent": true
+    },
+    {
+      "source": "/track/:slug",
+      "destination": "/tracks/:slug/preview",
+      "permanent": true
+    },
+    {
+      "source": "/tools/cv-linter",
+      "destination": "/tools/cv",
+      "permanent": true
+    },
+    {
+      "source": "/guides/playbook",
+      "destination": "/guides/interview-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/guides/playbook/:slug",
+      "destination": "/guides/interview-blueprint/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio",
+      "destination": "/guides/system-design-blueprint/radio-framework",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/framework",
+      "destination": "/guides/system-design-blueprint/radio-framework",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/requirements",
+      "destination": "/guides/system-design-blueprint/radio-requirements",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/architecture",
+      "destination": "/guides/system-design-blueprint/architecture",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/data-model",
+      "destination": "/guides/system-design-blueprint/state-data",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/interface",
+      "destination": "/guides/system-design-blueprint/ux",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/radio/optimizations",
+      "destination": "/guides/system-design-blueprint/performance",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design",
+      "destination": "/guides/system-design-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/guides/system-design/:slug",
+      "destination": "/guides/system-design-blueprint/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/auth",
+      "destination": "/auth/login",
+      "permanent": true
+    },
+    {
+      "source": "/onboarding",
+      "destination": "/onboarding/quick-start",
+      "permanent": true
+    },
+    {
+      "source": "/billing",
+      "destination": "/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/:tech(javascript|react|angular|vue|html|css)",
+      "destination": "/coding",
+      "permanent": true
+    },
     { "source": "/:path+/", "destination": "/:path+", "permanent": true }
   ],
   "rewrites": [

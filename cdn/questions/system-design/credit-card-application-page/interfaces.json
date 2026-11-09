@@ -1,0 +1,77 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The gateway is the only code that talks to the application service, and its types encode the privacy rules: a draft cannot carry a sensitive field, and telemetry has no slot for a value."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type SensitiveField = 'ssn' | 'dateOfBirth' | 'annualIncome';\ntype NonSensitiveField = Exclude<FieldName, SensitiveField>;\n\ninterface FieldError {\n  field: FieldName;\n  code: string;\n  message: string;\n}\n\ntype SubmitReply =\n  | { kind: 'created'; applicationId: string; status: DecisionStatus }\n  | { kind: 'replayed'; applicationId: string; status: DecisionStatus }\n  | { kind: 'field-errors'; errors: FieldError[] };\n\ninterface ApplicationGateway {\n  submit(\n    fields: Record<FieldName, string>,\n    idempotencyKey: string,\n    signal: AbortSignal,\n  ): Promise<SubmitReply>;\n  status(applicationId: string): Promise<ApplicationRecord>;\n  saveDraft(draftId: string, fields: Partial<Record<NonSensitiveField, string>>): Promise<void>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "credit-card-application-page-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type TelemetryEvent =\n  | { name: 'section_viewed'; section: SectionId }\n  | { name: 'field_error'; section: SectionId; field: FieldName; code: string }\n  | { name: 'submit_sent'; attempt: number }\n  | { name: 'outcome_shown'; status: DecisionStatus | 'failed'; elapsedMs: number };\n\ninterface Telemetry {\n  track(event: TelemetryEvent): void;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "credit-card-application-page-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Card application API semantics",
+      "columns": [
+        "Request",
+        "Reply",
+        "Browser behavior"
+      ],
+      "rows": [
+        [
+          "POST /applications with an Idempotency-Key header",
+          "201 with applicationId and status",
+          "Replace the history entry with the status route"
+        ],
+        [
+          "The same key after a completed request",
+          "200 with the same applicationId",
+          "Same route; no second application exists"
+        ],
+        [
+          "The same key while the first request is still running",
+          "409",
+          "Wait, then retry with the same key, which returns the first application once it settles"
+        ],
+        [
+          "The same key with different fields",
+          "422",
+          "Treat as a client bug: keep the fields and start a new attempt"
+        ],
+        [
+          "A submit that fails validation",
+          "400 with FieldError entries",
+          "Map errors by field name, focus the error summary, end the attempt"
+        ],
+        [
+          "GET /applications/{applicationId}",
+          "200 with a masked ApplicationRecord",
+          "Poll while pending review; stop on a final status"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible fields and error recovery",
+      "text": "Every field has a visible label and the matching autocomplete token, such as given-name, street-address or postal-code. Errors are tied to their fields with aria-describedby and listed in a summary at the top of the section, and a failed submit moves focus to that summary. Submit progress and the decision are announced in a polite live region, and a session timeout warns before it expires and offers more time."
+    }
+  ]
+}

@@ -2,9 +2,9 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
 
 /**
  * Revolut frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported frontend accounts (six on Taro from 2023 to 2025, one Blind thread from 2022) and on
- * the Revolut Tech post on web engineering. Nothing here is a leaked, confirmed or official Revolut question, and a
- * handful of accounts cannot establish a fixed loop.
+ * self-reported frontend accounts (on Taro from 2022 to 2025, on Blind from 2022 and 2026, and a 2017 candidate
+ * repository) and on the Revolut Tech post on web engineering. Nothing here is a leaked, confirmed or official
+ * Revolut question, and a handful of accounts cannot establish a fixed loop.
  */
 const REVOLUT_APRIL_2025_URL =
   'https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-warsaw-masovia-april-1-2025-no-offer-neutral-71032bb4/';
@@ -49,7 +49,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Revolut prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by six public frontend accounts from 2023 to 2025 and by the Revolut Tech post on web engineering: a one-hour TypeScript task that fetches data and renders it with loading and error states, a pairing session against an authenticated API, a three-task HackerRank screen, a recruiter-run theory check, and a frontend system-design round about product features and API contracts.',
+      'Prepare with five practice prompts shaped by public frontend accounts from 2022 to 2025 and the Revolut Tech post: a one-hour TypeScript fetch-and-render task, an API pairing session, a three-task HackerRank screen, a theory check and a system-design round.',
     caveat:
       'This guide uses public, self-reported interview accounts and the published Revolut Tech post on web engineering to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Revolut team.',
     chips: ['5 practice prompts', 'TypeScript, React, API contracts', 'Full practice set requires Premium'],
@@ -59,15 +59,15 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Revolut trivia',
     paragraphs: [
       'The public accounts converge on one exercise: in about an hour, fetch data from a source and render it in React with TypeScript, with a loading state, data state management and fetching with error handling. The one account that shared written feedback was told that type management and loading-state handling needed more practice, so the drills below start there. The Revolut Tech post on web engineering describes the same bar from the other side of the table: the interviews place candidates in real-world scenarios and ask them to implement features standard to web engineers, not to crack obscure JavaScript puzzles.',
-      'Around that exercise the accounts describe a HackerRank screen or a short theory check run by the recruiter, a frontend system-design round in a 2025 loop, a team-fit conversation and a Bar Raiser interview. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Around that exercise the accounts describe a HackerRank screen or a short theory check run by the recruiter, a frontend system-design round in a 2025 loop, a team-fit conversation and a Bar Raiser interview. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Six self-reported frontend accounts on Taro inform this guide; Taro shows most of their dates as the first of a month, so those months are approximate, and its locations are not used. April 2025, a React role at middle level: an intro call with CV questions, a 15-minute theory check with HR from a checklist of React questions (reconciliation, microtasks versus macrotasks in the event loop, the DOM tree), then a one-hour TypeScript live-coding task with a provided boilerplate to implement a loading state, data state management and fetching with error handling, with optimisation or unit tests if time allowed; team-fit and Bar Raiser rounds would have followed. May 2025: a recruiter call, a pairing session that used a service API with authentication to display data in a React component, a frontend system-design round to suggest product features and design the APIs between the frontend and other services, and a team-fit call. April 2024, senior: a HackerRank screen with three tasks in 85 minutes, the third at a high-medium level, then a timed live-coding session on a small React app. November 2025: a HackerRank JavaScript test with a standard sliding-window problem. May 2024, senior: a HackerRank test with three tasks in 110 minutes, live coding on API calls, data mapping, error handling and unit tests, and a system-design round on a physical card delivery system. September 2023: three HackerRank tasks, React components with three JavaScript questions, and a design interview used to set the level. A 2022 Blind thread adds a reply describing LeetCode-style problems, JavaScript fundamentals and React, with no system design expected.',
-      'Together they establish that these round types occurred between 2022 and 2025; they do not establish exact wording, the current format, or how every hub interviews. Confirm the screen format, the allowed tools, whether a take-home exists for the role and the timing with the recruiter. Revolut publishes its web stack and interview philosophy on its Tech blog and a careers video on the Bar Raiser stage; use them for context, not as evidence of specific questions.',
+      '{reports} public frontend accounts inform this guide, each listed under Sources; six of them, on Taro, are described here. April 2025, a React role at middle level: an intro call with CV questions, a 15-minute theory check with HR from a checklist of React questions (reconciliation, microtasks versus macrotasks in the event loop, the DOM tree), then a one-hour TypeScript live-coding task with a provided boilerplate to implement a loading state, data state management and fetching with error handling, with optimisation or unit tests if time allowed; team-fit and Bar Raiser rounds would have followed. May 2025: a recruiter call, a pairing session that used a service API with authentication to display data in a React component, a frontend system-design round to suggest product features and design the APIs between the frontend and other services, and a team-fit call. April 2024, senior: a HackerRank screen with three tasks in 85 minutes, the third at a high-medium level, then a timed live-coding session on a small React app. November 2025: a HackerRank JavaScript test with a standard sliding-window problem. May 2024, senior: a HackerRank test with three tasks in 110 minutes, live coding on API calls, data mapping, error handling and unit tests, and a system-design round on a physical card delivery system. September 2023: three HackerRank tasks, React components with three JavaScript questions, and a design interview used to set the level. A 2022 Blind thread adds a reply describing LeetCode-style problems, JavaScript fundamentals and React, with no system design expected.',
+      'Together they establish that these round types occurred between 2022 and 2025; they do not establish exact wording, the current format, or how every hub interviews. Confirm the screen format, the allowed tools, whether a take-home exists for the role and the timing with the recruiter. Revolut publishes its web stack and interview philosophy on its Tech blog and a careers video on the Bar Raiser stage; use them for context, not as evidence of specific questions. The process table above draws on more reports: twelve from 2022 to 2026.',
     ],
   },
   roundSpotlights: [
@@ -85,7 +85,7 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'Length', value: 'Not reported in the public accounts.' },
         { label: 'Before it', value: 'A recruiter or HR screen (some recruiters ask a few JavaScript questions); a HackerRank test of three algorithm tasks in 85 to 110 minutes, sometimes before the recruiter call; about an hour of React and TypeScript live coding; a system design round for mid and senior roles; team fit.' },
         { label: 'Official pages', value: 'The careers video "How to succeed in your Bar Raiser interview" and the engineering careers page, which lists an intro call, tech interviews, team fit and an offer, without formats or durations.' },
-        { label: 'Sources', value: 'Taro accounts from 2023 to 2025 across Warsaw, Barcelona, Madrid, Portugal, Poland and Krakow; Blind posts from 2022 and March 2026; Revolut careers pages and the Bar Raiser video. All are listed under Sources below with what each can establish.' },
+        { label: 'Sources', value: 'Taro accounts from 2022 to 2025, most of them from Poland, Spain and Portugal; Blind posts from 2022 and March 2026; Revolut careers pages and the Bar Raiser video. All are listed under Sources below with what each can establish.' },
       ],
       practiceLink: { label: 'Prepare decision stories with the behavioural guide', path: '/guides/behavioral' },
       processLink: { label: 'See the Bar Raiser row in the reported process', fragment: 'revolut-interview-process-1-stage-bar-raiser' },
@@ -308,14 +308,14 @@ export const REVOLUT_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: 'Candidate repository: Revolut web development home task, October 2017', url: REVOLUT_HOME_TASK_URL, note: 'A public solution whose README quotes the brief: an exchange-screen widget that polls rates for GBP, EUR and USD every ten seconds, in React or Preact with Redux. It establishes a 2017 take-home, not anything about the current process.', kind: 'report' },
       { label: 'Revolut Tech: Building the Web that Moves Money, October 2025', url: REVOLUT_WEB_ENGINEERING_URL, note: 'Official post on web engineering at Revolut. It states the interview philosophy, real-world scenarios rather than obscure JavaScript puzzles, the stack and the two groups of web products; it names no interview questions.', kind: 'official' },
       { label: 'Revolut Careers: How to succeed in your Bar Raiser interview', url: REVOLUT_BAR_RAISER_VIDEO_URL, note: 'Official careers video on the Revolut YouTube channel, published June 2025. Its description says the Bar Raiser interview is where Revolut gets to know how you work and what drives you and whether your decision-making fits its culture; the guide uses it to confirm that the stage exists and its purpose, not for questions.', kind: 'official' },
-      { label: 'Revolut Careers: Engineering', url: 'https://www.revolut.com/careers/team/engineering/', note: 'Lists four hiring steps, an intro call with an IT recruiter, tech interviews, team fit and offer, with no formats or durations. The live page blocks automated readers and was read from an archived copy.', kind: 'official' },
+      { label: 'Revolut Careers: Engineering', url: 'https://www.revolut.com/careers/team/engineering/', note: 'Lists four hiring steps, an intro call with an IT recruiter, tech interviews, team fit and offer, with no formats or durations.', kind: 'official' },
     ],
   },
   cta: {
     kicker: 'Full company practice',
     title: 'Continue with the full Revolut practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the company-tagged Revolut set, including the debounced search against a fake API, and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the company-tagged Revolut set, including the debounced search against a fake API, and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Revolut practice set',
     src: 'company_preview_revolut',
   },

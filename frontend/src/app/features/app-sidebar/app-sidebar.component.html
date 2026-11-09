@@ -50,6 +50,10 @@
         <div class="nav-section">
             <p class="section-heading">Plans</p>
 
+            @defer (when hasCompanyPlan()) {
+                <app-company-plan-sidebar-card [collapsed]="shouldCollapseRail()" (followed)="closeDrawer()" />
+            }
+
             <ng-container *ngIf="isGroup(nav[2])">
                 <div class="nav-group nav-block">
                     <button class="group-header" type="button" (click)="toggleGroup(2)"
@@ -110,7 +114,7 @@
             <ng-container *ngIf="isGroup(nav[4])">
                 <div class="nav-group nav-block">
                     <button class="group-header nav-link--pill" type="button" (click)="toggleGroup(4)"
-                        aria-label="Shortcuts and tools" pTooltip="Shortcuts &amp; tools" tooltipPosition="right"
+                        aria-label="Shortcuts &amp; tools" pTooltip="Shortcuts &amp; tools" tooltipPosition="right"
                         [tooltipDisabled]="!shouldCollapseRail()"
                         [attr.aria-expanded]="isGroupExpanded(4)" [attr.aria-controls]="'group-4'">
                         <i class="pi nav-ic pi-stopwatch" aria-hidden="true"></i>

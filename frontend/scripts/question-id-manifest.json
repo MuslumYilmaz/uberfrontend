@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-23T11:14:16.444Z",
+  "generatedAt": "2026-11-09T05:12:37.649Z",
   "entries": [
     {
       "tech": "angular",
@@ -881,6 +881,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-autocomplete-engine",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-build-tree-from-flat-list",
       "file": "javascript/coding.json"
     },
@@ -1122,6 +1128,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-lodash-get",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-longest-substring-without-repeating",
       "file": "javascript/coding.json"
     },
     {
@@ -1392,6 +1404,18 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-async-race",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-bug-squash-invoices",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-intern-budget-summary",
       "file": "javascript/debug.json"
     },
     {
@@ -1865,6 +1889,12 @@
     {
       "tech": "javascript",
       "kind": "trivia",
+      "id": "js-web-fundamentals-hour-hotel-booking",
+      "file": "javascript/trivia.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "trivia",
       "id": "js-web-workers-basics",
       "file": "javascript/trivia.json"
     },
@@ -1973,6 +2003,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-debug-transcript-sync",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-dynamic-counter-buttons",
       "file": "react/coding.json"
     },
@@ -1997,6 +2033,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-files-table-select-all",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-filterable-user-list",
       "file": "react/coding.json"
     },
@@ -2016,6 +2058,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-like-button",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-listing-booking-widget",
       "file": "react/coding.json"
     },
     {
@@ -2243,6 +2291,12 @@
     {
       "tech": "react",
       "kind": "trivia",
+      "id": "react-phone-screen-search-bar-rehearsal",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
       "id": "react-portals",
       "file": "react/trivia.json"
     },
@@ -2292,6 +2346,12 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-strictmode-double-invoke-effects",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-take-home-table-review-questions",
       "file": "react/trivia.json"
     },
     {
@@ -2412,6 +2472,12 @@
       "tech": "vue",
       "kind": "coding",
       "id": "vue-image-slider",
+      "file": "vue/coding.json"
+    },
+    {
+      "tech": "vue",
+      "kind": "coding",
+      "id": "vue-issue-list-merge-request-review",
       "file": "vue/coding.json"
     },
     {

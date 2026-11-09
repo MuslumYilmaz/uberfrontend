@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { afterNextRender, computed, effect, inject, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import type { SavedCompanyPlan } from '../models/company-plan.model';
 import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { apiUrl, getFrontendBase } from '../utils/api-base';
@@ -93,6 +94,7 @@ export interface User {
   billing?: Billing;
   coupons?: Array<{ code: string; scope: 'pro' | 'projects'; appliedAt: string }>;
   solvedQuestionIds?: string[];
+  companyPlan?: SavedCompanyPlan | null;
   createdAt: string;
 }
 

@@ -45,7 +45,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public xAI prep guide',
     subtitle:
-      'Prepare with four practice prompts shaped by one public Taro account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
+      'Prepare with four practice prompts shaped by a single Taro account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
     caveat:
       'xAI merged into SpaceX (the merger closed on 2 February 2026), rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026, with SpaceXAI LLC as the legal entity; on 22 October 2026 the job board still lived at the xai slug. The frontend postings that described a loop were removed between June 2025 and February 2026, so the loop below describes 2025 to early 2026. This guide does not claim access to private interview material, a fixed format, or the stack of every team.',
     chips: ['4 practice prompts', 'React, TypeScript, HTML/CSS, AI chat design', 'Full practice set requires Premium'],
@@ -54,7 +54,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not xAI trivia',
     paragraphs: [
-      'The public pages reward engineers who ship a working slice under a clock while explaining it: a small React app in TypeScript that handles its loading and failure states, a layout rebuilt from a screenshot that still reflows, a chat interface that can send, show a reply arriving and stop it. The one Taro account adds React questions asked in passing, such as what useCallback does, so each hook you use should come with a one-sentence reason. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The public pages reward engineers who ship a working slice under a clock while explaining it: a small React app in TypeScript that handles its loading and failure states, a layout rebuilt from a screenshot that still reflows, a chat interface that can send, show a reply arriving and stop it. The one Taro account adds React questions asked in passing, such as what useCallback does, so each hook you use should come with a one-sentence reason. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'Treat the postings as a shape, not a script. The closed London posting gave 45 minutes each to a React round and an HTML/CSS/Tailwind round; the Bay Area postings described a coding assessment in a language of your choice, one or two React/TypeScript interviews and a "Meet the Team" session where you present past exceptional work. Practise the timed builds first, then rehearse the ten-minute story of work you are proud of, because the application itself asks for a "statement of exceptional work".',
     ],
   },
@@ -62,7 +62,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Three public interview reports read in full inform this guide: one Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, read in full on 21 October 2026 and behind a member wall since) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page read on 21 October 2026 keeps four generic steps.',
+      '{reports} public interview reports inform this guide, each listed under Sources, three of them in detail here: one Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, now behind a member wall) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page, checked on 21 October 2026, keeps four generic steps.',
       'These pages establish that those rounds and stages were described; they do not establish exact wording, the current format after the merger, or how each team interviews now. On 21 October 2026 the job board at the xai slug listed one frontend-titled opening and no engineering posting with an interview section. Confirm the exercise types, the allowed tools, the expected stack and the timing with whoever runs your process; the careers page says engineers, not recruiters, evaluate applications.',
     ],
   },
@@ -236,7 +236,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Is there a take-home?',
         answer:
-          'No frontend posting mentions one. Two general software-engineer accounts do: a 2025 Member of Technical Staff loop had a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person session reading an unfamiliar class, per its public summary; the full account, read on 21 October 2026, added a choice of six prompts, provided API keys, a GitHub repository and a Loom walkthrough due within 24 hours. A personal blog post from October 2025 about a recruiter-sourced Grok role mentions a "4-hour intensive programming challenge". Ask whether your loop includes one.',
+          'No frontend posting mentions one. Two general software-engineer accounts do: a 2025 Member of Technical Staff loop had a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person session reading an unfamiliar class, per its public summary; the full account, now behind a member wall, adds a choice of six prompts, provided API keys, a GitHub repository and a Loom walkthrough due within 24 hours. A personal blog post from October 2025 about a recruiter-sourced Grok role mentions a "4-hour intensive programming challenge". Ask whether your loop includes one.',
       },
       {
         question: 'Do I need Next.js or Tailwind?',
@@ -285,7 +285,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: XAI_MTS_REPORT_LABEL,
         url: XAI_MTS_REPORT_URL,
         note:
-          'One general software-engineer loop, not a frontend posting, rejected after four weeks. Its public summary: a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person final reading an unfamiliar class. The full account, read on 21 October 2026 and behind a member wall since, added a choice of six prompts, provided API keys, a GitHub repository and a Loom video within 24 hours. Used only for the take-home question.',
+          'One general software-engineer loop, not a frontend posting, rejected after four weeks. Its public summary: a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person final reading an unfamiliar class. The full account, now behind a member wall, adds a choice of six prompts, provided API keys, a GitHub repository and a Loom video within 24 hours. Used only for the take-home question.',
         kind: 'report',
       },
       {
@@ -327,7 +327,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: 'xAI careers (SpaceXSI)',
         url: XAI_CAREERS_URL,
         note:
-          'Read on 21 October 2026. Four generic steps (application review of the CV and a statement of exceptional work, a screening interview with short technical questions, technical interviews, offer) and "We generally do not use recruiters for assessments." Product context and the generic shape only; the job board that day listed no frontend posting with interview text.',
+          'Checked on 21 October 2026. Four generic steps (application review of the CV and a statement of exceptional work, a screening interview with short technical questions, technical interviews, offer) and "We generally do not use recruiters for assessments." Product context and the generic shape only; the job board that day listed no frontend posting with interview text.',
         kind: 'official',
       },
       {
@@ -348,7 +348,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full xAI practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
+      'Premium unlocks the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
     buttonLabel: 'Unlock the full xAI practice set',
     src: 'company_preview_xai',
   },

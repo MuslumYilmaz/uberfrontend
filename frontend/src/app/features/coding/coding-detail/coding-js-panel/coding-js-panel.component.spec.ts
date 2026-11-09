@@ -6,6 +6,7 @@ import { DecisionGraphService } from '../../../../core/services/decision-graph.s
 import type { ConsoleEntry, TestResult } from '../../console-logger/console-logger.component';
 import { CodingJsPanelComponent } from './coding-js-panel.component';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import { joinFileBundle } from '../../../../core/utils/file-bundle.util';
 import {
   clearSolutionDraft,
   clearTestsDraft,
@@ -103,6 +104,111 @@ describe('CodingJsPanelComponent', () => {
     expect(component.testResults().length).toBe(1);
     expect(component.hasRunTests()).toBe(true);
     expect(lastConsole.length).toBe(1);
+  });
+
+  it('hands the Run tests click to a listening host, and runs the tests itself without one', () => {
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    const run = spyOn(component, 'runTests').and.resolveTo();
+
+    component.onRunTestsClick();
+    expect(run).toHaveBeenCalledTimes(1);
+
+    const requested = jasmine.createSpy('requestRunTests');
+    component.requestRunTests.subscribe(requested);
+    component.onRunTestsClick();
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
+  describe('a multi-file task', () => {
+    const money = { path: 'src/money.js', code: 'export const cents = (n) => Math.floor(n * 100);\n' };
+    const cart = { path: 'src/cart.js', code: "import { cents } from './money.js';\n" };
+    const create = () => {
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      component.question = { id: 'bug-squash' } as any;
+      component.disablePersistence = true;
+      component.editorContent.set(joinFileBundle([money, cart]));
+      (component as any)._hydrating = false;
+      return component;
+    };
+
+    it('shows one file at a time and keeps an edit in that file', () => {
+      const component = create();
+      expect(component.editorCode()).toBe(money.code);
+
+      component.selectBundleFile('src/cart.js');
+      expect(component.editorCode()).toBe(cart.code);
+      component.onCodeChange('export const total = 0;\n');
+      expect(component.bundleFiles()).toEqual([money, { path: 'src/cart.js', code: 'export const total = 0;\n' }]);
+
+      // A single-file task shows its whole code, as before.
+      component.editorContent.set('export default 1;\n');
+      expect(component.bundleFiles()).toBeNull();
+      expect(component.editorCode()).toBe('export default 1;\n');
+    });
+
+    it('runs the files as modules, with the open file as the editor holds it and the tests as written', async () => {
+      const runner = new RunnerStub();
+      const component = create();
+      (component as any).loadRunner = async () => runner;
+      const tests = "import { cents } from './src/money.js';\ntest('cents', () => expect(cents(19.99)).toBe(1999));\n";
+      component.testCode.set(tests);
+      component.codeEditor = { getValue: () => 'export const cents = (n) => Math.round(n * 100);\n' } as any;
+      component.testsEditor = { getValue: () => tests } as any;
+
+      await component.runTests();
+
+      const args = runner.runWithTests.calls.mostRecent().args[0];
+      expect(args.userCode).toBe('');
+      expect(args.testCode).toBe(tests);
+      expect(args.files).toEqual([{ path: 'src/money.js', code: 'export const cents = (n) => Math.round(n * 100);\n' }, cart]);
+      expect(component.bundleFiles()?.[0].code).toContain('Math.round');
+    });
+  });
+
+  it("starts timed practice at the task's own minutes, the number its plan row shows", () => {
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    const reset = () => (component as any).resetRunnerStateForQuestionChange();
+    component.question = { id: 'js-debug-bug-squash-invoices', difficulty: 'hard' } as any;
+    reset();
+    expect(component.interviewDurationMin()).toBe(45);
+    component.question = { id: 'js-flatten-once', difficulty: 'easy' } as any;
+    reset();
+    expect(component.interviewDurationMin()).toBe(15);
+  });
+
+  describe('in a rehearsal', () => {
+    it('runs no tests once the review has locked the task', async () => {
+      const runner = new RunnerStub();
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      (component as any).loadRunner = async () => runner;
+      component.question = { id: 'js-debounce' } as any;
+      component.disablePersistence = true;
+      component.locked = true;
+
+      await component.runTests();
+
+      expect(runner.runWithTests).not.toHaveBeenCalled();
+      expect(component.hasRunTests()).toBeFalse();
+    });
+
+    it('opens the draft under a new storage key on the same task, but not on the first binding', () => {
+      const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+      const init = spyOn(component, 'initFromQuestion').and.resolveTo();
+      component.question = { id: 'js-debounce' } as any;
+      const keyChange = (previous: string | null, current: string | null, first: boolean) =>
+        ({ storageKeyOverride: { previousValue: previous, currentValue: current, firstChange: first, isFirstChange: () => first } }) as any;
+
+      component.ngOnChanges(keyChange(undefined as any, null, true));
+      expect(init).not.toHaveBeenCalled();
+
+      component.ngOnChanges(keyChange(null, 'rehearsal:meta-full-loop-coding:1:js-debounce', false));
+      expect(init).toHaveBeenCalledTimes(1);
+
+      // A new task loads once, whatever key comes with it.
+      component.ngOnChanges({ ...keyChange('rehearsal:meta-full-loop-coding:1:js-debounce', null, false), question: {} as any });
+      expect(init).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('persists an intentionally cleared editor draft', fakeAsync(() => {

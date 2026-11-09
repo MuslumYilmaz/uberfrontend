@@ -92,6 +92,8 @@ export class HeaderComponent implements OnInit {
 
   public auth = inject(AuthService);
   isPro = computed(() => isProActive(this.auth.user()));
+  /** The plan route sends a free account on to its preview. */
+  hasPlan = computed(() => Boolean(this.auth.user()?.companyPlan));
   brandLink = computed(() => this.auth.authUiState() === 'authenticated' ? ['/dashboard'] : ['/']);
   brandDestination = computed(() => this.auth.authUiState() === 'authenticated' ? '/dashboard' : '/');
   ctaLabel = computed(() => {
@@ -150,12 +152,12 @@ export class HeaderComponent implements OnInit {
     const recentLink = recent ? this.intentToLink(recent) : null;
     const loggedIn = this.auth.isLoggedIn();
     return {
-      title: 'Continue where I left off',
+      title: recent || loggedIn ? 'Continue where I left off' : 'Not sure where to start?',
       subtitle: recent
         ? recent.subtitle
         : (loggedIn
           ? 'Return to your dashboard or your last interview prep path.'
-          : 'Open the fastest route back into interview prep.'),
+          : 'Open the fastest route into interview prep.'),
       route: recentLink ?? (loggedIn ? ['/dashboard'] : ['/guides', 'interview-blueprint', 'intro']),
       badge: recent ? 'Recent' : null,
       item: recent,

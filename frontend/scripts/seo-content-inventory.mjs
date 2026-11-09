@@ -580,6 +580,7 @@ export function buildSeoInventory(reader) {
     coding: records.filter((record) => record.kind === 'coding').map((record) => record.entry),
     trivia: records.filter((record) => record.kind === 'trivia').map((record) => record.entry),
     system: records.filter((record) => record.kind === 'system-design').map((record) => record.entry),
+    debug: records.filter((record) => record.kind === 'debug').map((record) => record.entry),
   }, buildFrameworkFamilyByIdMap(familySource));
   const aggregateSources = ['cdn/questions/', 'cdn/incidents/index.json', 'cdn/tradeoff-battles/index.json', familyFile];
   const guideGroups = new Map();

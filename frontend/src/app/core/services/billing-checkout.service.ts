@@ -150,11 +150,19 @@ export type CheckoutAttemptStatusResult = {
 // Regional prices (docs/references/pricing-plan-2026-10.md, Step 7): the backend
 // resolves the visitor's country and publishes the prices it will charge through
 // a custom checkout. The pricing page shows them with the list price struck.
+// A dated rate for "about ₹910 a month" next to the regional price; the checkout still charges dollars.
+export type RegionalLocalEstimate = {
+  currency: string;
+  rate: number;
+  asOf: string;
+};
+
 export type RegionalPricing = {
   countryCode: string;
   countryName: string;
   multiplier: number;
   prices: Partial<Record<PlanId, number>>;
+  local?: RegionalLocalEstimate | null;
 };
 
 export type CheckoutPricingRules = {
@@ -486,7 +494,19 @@ function normalizeRegionalPricing(value: RegionalPricing | null | undefined): Re
   }
   if (!Object.keys(prices).length) return null;
   const countryName = String(value.countryName || '').trim().slice(0, 64) || countryCode;
-  return { countryCode, countryName, multiplier, prices };
+  const local = normalizeLocalEstimate(value.local);
+  return { countryCode, countryName, multiplier, prices, ...(local ? { local } : {}) };
+}
+
+function normalizeLocalEstimate(value: RegionalLocalEstimate | null | undefined): RegionalLocalEstimate | null {
+  if (!value || typeof value !== 'object') return null;
+  const currency = String(value.currency || '').trim().toUpperCase();
+  const rate = Number(value.rate);
+  const asOf = String(value.asOf || '').trim();
+  if (!/^[A-Z]{3}$/.test(currency) || currency === 'USD') return null;
+  if (!Number.isFinite(rate) || rate <= 0) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf) || Number.isNaN(Date.parse(`${asOf}T00:00:00Z`))) return null;
+  return { currency, rate, asOf };
 }
 
 function normalizePlanDetails(

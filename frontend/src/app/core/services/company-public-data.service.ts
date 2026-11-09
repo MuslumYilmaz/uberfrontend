@@ -4,7 +4,8 @@ import { Observable, defer, forkJoin, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { companyBrandFor } from '../../shared/company-branding';
 import { AUTHORED_COMPANY_SLUGS_TOKEN } from '../../shared/company-previews/authored-company-slugs';
-import { collectCompanyCounts } from '../../shared/company-counts.util';
+import { FRAMEWORK_FAMILY_BY_ID } from '../../shared/framework-families';
+import { collectCompanyCounts, emptyCompanyCounts } from '../../shared/company-counts.util';
 import { CompanyIndexResolved, CompanyPreviewQuestion, CompanyPreviewResolved } from '../models/company-public.model';
 import { SystemDesignListItem } from '../models/system-design.model';
 import { MixedQuestionListItem, QuestionService } from './question.service';
@@ -13,12 +14,12 @@ type CompanyCatalog = {
   coding: MixedQuestionListItem[];
   trivia: MixedQuestionListItem[];
   system: SystemDesignListItem[];
+  debug: MixedQuestionListItem[];
 };
 type CompanyQuestion = MixedQuestionListItem | SystemDesignListItem;
 
 // Hard-coded template branches; registry-driven authored guides are read from the injected registry.
 const LEGACY_EDITORIAL_COMPANIES = new Set(['google', 'openai', 'netflix']);
-const emptyCounts = () => ({ all: 0, coding: 0, trivia: 0, system: 0 });
 
 @Injectable({ providedIn: 'root' })
 export class CompanyPublicDataService {
@@ -47,7 +48,7 @@ export class CompanyPublicDataService {
     const fallback: CompanyPreviewResolved = {
       slug,
       mode: this.isEditorial(slug) ? 'editorial' : 'catalog',
-      counts: emptyCounts(),
+      counts: emptyCompanyCounts(),
       samples: [],
       reports: [],
     };
@@ -57,7 +58,7 @@ export class CompanyPublicDataService {
     return this.resolveWithTransferState(`company-public:preview:${slug}`, fallback, () =>
       forkJoin({ catalog: this.loadCatalog(), reports: this.questions.loadCompanyReports() }).pipe(map(({ catalog, reports }) => ({
         ...fallback,
-        counts: collectCompanyCounts(catalog)[slug] ?? emptyCounts(),
+        counts: collectCompanyCounts(catalog)[slug] ?? emptyCompanyCounts(),
         samples: this.buildSamples(slug, catalog),
         reports: reports.companies[slug] ?? [],
       }))),
@@ -73,6 +74,7 @@ export class CompanyPublicDataService {
       coding: this.questions.loadAllQuestionSummaries('coding', { transferState: false }),
       trivia: this.questions.loadAllQuestionSummaries('trivia', { transferState: false }),
       system: this.questions.loadSystemDesign({ transferState: false }),
+      debug: this.questions.loadAllDebugSummaries({ transferState: false }),
     });
   }
 
@@ -96,12 +98,16 @@ export class CompanyPublicDataService {
   private buildSamples(slug: string, { coding, trivia, system }: CompanyCatalog): CompanyPreviewQuestion[] {
     const matches = (question: CompanyQuestion) => (question.companies ?? [])
       .some((company) => String(company).trim().toLowerCase() === slug);
+    // One card per exercise: a task published in three frameworks shows once, so the sample's counts match its cards.
+    const codingMatches = oneCardPerExercise(coding.filter(matches));
+    const triviaMatches = trivia.filter(matches);
+    const systemMatches = system.filter(matches);
     const primary = [
-      ...coding.filter(matches).slice(0, 3).map((question) => this.toSample(question, 'coding')),
-      ...trivia.filter(matches).slice(0, 3).map((question) => this.toSample(question, 'trivia')),
-      ...system.filter(matches).slice(0, 2).map((question) => this.toSample(question, 'system-design')),
+      ...codingMatches.slice(0, 3).map((question) => this.toSample(question, 'coding')),
+      ...triviaMatches.slice(0, 3).map((question) => this.toSample(question, 'trivia')),
+      ...systemMatches.slice(0, 2).map((question) => this.toSample(question, 'system-design')),
     ];
-    const extras = [...coding, ...trivia, ...system].filter(matches).slice(0, 8)
+    const extras = [...codingMatches, ...triviaMatches, ...systemMatches].slice(0, 8)
       .map((question) => this.toSample(question, question.type));
     const samples: CompanyPreviewQuestion[] = [];
     const seen = new Set<string>();
@@ -127,4 +133,20 @@ export class CompanyPublicDataService {
       access: question.access === 'free' ? 'free' : 'premium',
     };
   }
+}
+
+/**
+ * Keeps the first of each framework family, in catalog order; a task with no counterparts always stays. It reads the
+ * shared family map, as the page's locked count does: a module under shared/company-previews would re-date every
+ * company guide in the SEO inventory.
+ */
+function oneCardPerExercise<T extends { id?: unknown }>(questions: readonly T[]): T[] {
+  const seen = new Set<string>();
+  return questions.filter((question) => {
+    const family = FRAMEWORK_FAMILY_BY_ID.get(String(question.id || ''))?.key;
+    if (!family) return true;
+    if (seen.has(family)) return false;
+    seen.add(family);
+    return true;
+  });
 }

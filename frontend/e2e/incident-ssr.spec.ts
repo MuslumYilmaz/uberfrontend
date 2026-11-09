@@ -16,7 +16,8 @@ const premiumScenarios = scenarios.filter(({ meta }) => meta.access === 'premium
 const race = scenarios.find(({ meta }) => meta.id === 'stale-search-race')!;
 const sessionKey = (id: string, scope = 'guest') => `fa:practice:session:v3:${scope}:incident:${id}`;
 const progressKey = (scope = 'guest') => `fa:practice:progress:v3:${scope}`;
-const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
+// Authored text renders its `code` and **bold** as elements, which drops the markers and splits text nodes.
+const renderedText = (value: string) => value.replace(/`|\*\*/g, '').replace(/\s+/g, '');
 
 type HtmlNode = DefaultTreeAdapterMap['node'];
 type HtmlElement = DefaultTreeAdapterMap['element'];
@@ -92,28 +93,28 @@ test.describe('incident initial HTML content', () => {
       const nodes = elements(document);
       for (const stage of scenario.stages) {
         const panel = byTestId(nodes, `incident-stage-${stage.id}`);
-        const text = normalize(htmlText(panel));
-        expect(text).toContain(normalize(stage.prompt));
-        if (stage.helperText) expect(text).toContain(normalize(stage.helperText));
-        const feedback = normalize(htmlText(byTestId(nodes, `incident-feedback-${stage.id}`)));
+        const text = renderedText(htmlText(panel));
+        expect(text).toContain(renderedText(stage.prompt));
+        if (stage.helperText) expect(text).toContain(renderedText(stage.helperText));
+        const feedback = renderedText(htmlText(byTestId(nodes, `incident-feedback-${stage.id}`)));
         if (stage.type === 'priority-order') {
-          for (const candidate of stage.candidates) expect(text).toContain(normalize(candidate.label));
+          for (const candidate of stage.candidates) expect(text).toContain(renderedText(candidate.label));
           for (const expectedId of stage.expectedOrder) {
             const label = stage.candidates.find(({ id }) => id === expectedId)!.label;
-            expect(feedback).toContain(normalize(`Expected: ${label}`));
+            expect(feedback).toContain(renderedText(`Expected: ${label}`));
           }
         } else {
           for (const option of stage.options) {
-            expect(text).toContain(normalize(option.label));
-            expect(feedback).toContain(normalize(option.feedback));
+            expect(text).toContain(renderedText(option.label));
+            expect(feedback).toContain(renderedText(option.feedback));
           }
         }
       }
-      const debrief = normalize(htmlText(byTestId(nodes, 'incident-debrief')));
-      for (const item of scenario.debrief.idealRunbook) expect(debrief).toContain(normalize(item));
+      const debrief = renderedText(htmlText(byTestId(nodes, 'incident-debrief')));
+      for (const item of scenario.debrief.idealRunbook) expect(debrief).toContain(renderedText(item));
       for (const block of scenario.debrief.teachingBlocks) {
-        if ('title' in block && block.title) expect(debrief).toContain(normalize(block.title));
-        for (const text of 'text' in block ? [block.text] : block.items) expect(debrief).toContain(normalize(text));
+        if ('title' in block && block.title) expect(debrief).toContain(renderedText(block.title));
+        for (const text of 'text' in block ? [block.text] : block.items) expect(debrief).toContain(renderedText(text));
       }
       expect(debrief).not.toContain('Review again · 0/100');
       const robots = nodes.find((node) => node.tagName === 'meta' && attr(node, 'name') === 'robots');
@@ -129,11 +130,11 @@ test.describe('incident initial HTML content', () => {
       const nodes = elements(document);
       expect(nodes.filter((node) => attr(node, 'data-testid') === 'incident-debrief')).toHaveLength(0);
       expect(nodes.filter((node) => (attr(node, 'class') || '').split(' ').includes('incident-stage-card'))).toHaveLength(0);
-      const text = normalize(htmlText(document));
-      for (const item of scenario.debrief.idealRunbook) expect(text).not.toContain(normalize(item));
+      const text = renderedText(htmlText(document));
+      for (const item of scenario.debrief.idealRunbook) expect(text).not.toContain(renderedText(item));
       for (const stage of scenario.stages) {
         if (stage.type !== 'priority-order') {
-          for (const option of stage.options) expect(text).not.toContain(normalize(option.feedback));
+          for (const option of stage.options) expect(text).not.toContain(renderedText(option.feedback));
         }
       }
       const robots = nodes.find((node) => node.tagName === 'meta' && attr(node, 'name') === 'robots');
@@ -218,8 +219,8 @@ test.describe('incident hydrated interaction and access', () => {
         const order = answer as string[];
         for (let i = 0; i < order.length; i += 1) {
           const up = panel.getByTestId(`incident-priority-up-${order[i]}`);
-          const labels = (await panel.locator('.incident-priority__title').allTextContents()).map(normalize);
-          const currentIndex = labels.indexOf(normalize(stage.candidates.find(({ id }) => id === order[i])!.label));
+          const labels = (await panel.locator('.incident-priority__title').allTextContents()).map(renderedText);
+          const currentIndex = labels.indexOf(renderedText(stage.candidates.find(({ id }) => id === order[i])!.label));
           expect(currentIndex).toBeGreaterThanOrEqual(i);
           for (let moves = currentIndex - i; moves > 0; moves -= 1) await up.click();
         }

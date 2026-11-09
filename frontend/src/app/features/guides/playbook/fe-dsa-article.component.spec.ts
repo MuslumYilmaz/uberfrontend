@@ -164,4 +164,15 @@ describe('FeDsaArticle', () => {
     expect(linkTargets).toContain('/guides/interview-blueprint/javascript-interviews');
     expect(linkTargets).toContain('/guides/interview-blueprint/coding-interviews');
   });
+
+  it('names each table cell after its column, so a phone can show every row as a labelled card', () => {
+    const tables = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLTableElement>('.table-wrap table'));
+    expect(tables.length).toBe(4);
+    for (const table of tables) {
+      const columns = Array.from(table.querySelectorAll('thead th')).map((cell) => cell.textContent?.trim());
+      for (const row of Array.from(table.querySelectorAll('tbody tr'))) {
+        expect(Array.from(row.querySelectorAll('td')).map((cell) => cell.getAttribute('data-label'))).withContext(columns.join(' / ')).toEqual(columns);
+      }
+    }
+  });
 });

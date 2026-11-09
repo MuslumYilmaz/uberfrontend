@@ -5,6 +5,7 @@ import {
   OpaquePreviewReadyTimeoutError,
 } from './opaque-dom-check-runner';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
+import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 
 describe('OpaqueDomCheckRunner', () => {
   let runner: OpaqueDomCheckRunner;
@@ -351,6 +352,55 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Fetch lifecycle', passed: true }]);
   });
 
+  it('rejects an aborted mocked fetch with the signal reason and drops its late response', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <button class="send" type="button">Send</button>
+        <button class="cancel" type="button">Cancel</button>
+        <button class="send-aborted" type="button">Send aborted</button>
+        <div class="status"></div>
+        <script>
+          const status = document.querySelector('.status');
+          const url = 'https://jsonplaceholder.typicode.com/posts';
+          const report = (request) => request.then(
+            () => { status.textContent = 'Sent'; },
+            (error) => { status.textContent = error.name; },
+          );
+          let controller;
+          document.querySelector('.send').addEventListener('click', () => {
+            controller = new AbortController();
+            report(fetch(url, { method: 'POST', body: '{}', signal: controller.signal }));
+          });
+          document.querySelector('.cancel').addEventListener('click', () => controller.abort());
+          document.querySelector('.send-aborted').addEventListener('click', () => {
+            const signal = AbortSignal.abort(new DOMException('Too slow', 'TimeoutError'));
+            report(fetch(new Request(url, { method: 'POST', body: '{}', signal })));
+          });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </body></html>`,
+      [{
+        id: 'fetch-abort',
+        name: 'Fetch abort',
+        steps: [
+          { type: 'mockHttp', status: 201, durationMs: 200 },
+          { type: 'click', selector: '.send' },
+          { type: 'expectHttpRequest', method: 'POST', count: 1 },
+          { type: 'click', selector: '.cancel' },
+          { type: 'expectText', selector: '.status', text: 'AbortError' },
+          { type: 'wait', durationMs: 250 },
+          { type: 'expectText', selector: '.status', text: 'AbortError' },
+          { type: 'mockHttp', status: 201, durationMs: 0 },
+          { type: 'click', selector: '.send-aborted' },
+          { type: 'expectText', selector: '.status', text: 'TimeoutError' },
+          { type: 'expectHttpRequest', count: 0 },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Fetch abort', passed: true }]);
+  });
+
   it('runs the real React builder with production vendor assets at the assertion layer', async () => {
     const [starterResponse, solutionResponse] = await Promise.all([
       fetch('/assets/sb/react/question/react-counter.v1.json'),
@@ -385,6 +435,186 @@ describe('OpaqueDomCheckRunner', () => {
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
   });
+
+  it('runs the real Vue builder with event modifiers, template refs and shadowing locals', async () => {
+    const html = makeVuePreviewHtml({
+      'src/App.vue': `
+        <template>
+          <main ref="rootRef" class="root" :data-has-root="hasRoot">
+            <input class="input" @keydown.enter="post" />
+            <div class="state" :class="{ active: isActive }">{{ label }}</div>
+          </main>
+        </template>
+
+        <script setup lang="ts">
+        import { computed, onMounted, ref } from 'vue';
+
+        const rootRef = ref<HTMLElement | null>(null);
+        const hasRoot = ref(false);
+        const posted = ref(false);
+        const isActive = computed(() => {
+          const active = posted.value;
+          return active;
+        });
+        const label = computed(() => (posted.value ? 'Posted' : 'Idle'));
+        function post() {
+          posted.value = true;
+        }
+        onMounted(() => {
+          hasRoot.value = !!rootRef.value;
+        });
+        </script>
+      `,
+    }, window.location.origin);
+
+    const results = await runner.runFramework(html, [{
+      id: 'vue-script-setup-bindings',
+      name: 'Vue script setup bindings',
+      steps: [
+        { type: 'expectText', selector: '.state', text: 'Idle' },
+        { type: 'wait', durationMs: 50 },
+        { type: 'expectAttribute', selector: '.root', attribute: 'data-has-root', expected: 'true' },
+        { type: 'key', selector: '.input', key: 'Enter' },
+        { type: 'expectText', selector: '.state', text: 'Posted' },
+        { type: 'expectClass', selector: '.state', className: 'active' },
+      ],
+    }] as any);
+
+    expect(results).toEqual([{ name: 'Vue script setup bindings', passed: true }]);
+  });
+
+  // A candidate may write valid code in any common shape. None of these may die in the preview.
+  const countingCheck = [{
+    id: 'counter-runs',
+    name: 'The counter runs',
+    steps: [
+      { type: 'expectText', selector: '.out', text: '0' },
+      { type: 'click', selector: '.go' },
+      { type: 'expectText', selector: '.out', text: '1' },
+    ],
+  }] as any;
+  const passedCountingCheck = [{ name: 'The counter runs', passed: true }];
+  const reactBody = `<main><button className="go" onClick={() => setN((v) => v + 1)}>Go</button><p className="out">{n}</p></main>`;
+
+  const reactShapes: Record<string, string> = {
+    'a declared App exported at the end': `
+      import React, { useState } from 'react';
+      function App() { const [n, setN] = useState(0); return ${reactBody}; }
+      export default App;`,
+    'an arrow App exported at the end': `
+      import { useState } from 'react';
+      const App = () => { const [n, setN] = useState(0); return ${reactBody}; };
+      export default App;`,
+    'a default export wrapped in memo': `
+      import { memo, useState } from 'react';
+      function App() { const [n, setN] = useState(0); return ${reactBody}; }
+      export default memo(App);`,
+    'exports beyond the common hooks': `
+      import { Fragment, forwardRef, memo, useId, useLayoutEffect, useState } from 'react';
+      const Go = forwardRef<HTMLButtonElement, any>((props, ref) => <button ref={ref} className="go" {...props}>Go</button>);
+      const Out = memo(({ n }: { n: number }) => <p className="out">{n}</p>);
+      export default function App() {
+        const [n, setN] = useState(0);
+        const id = useId();
+        useLayoutEffect(() => {}, []);
+        return <Fragment><Go id={id} onClick={() => setN((v) => v + 1)} /><Out n={n} /></Fragment>;
+      }`,
+    'aliased and multi-line imports': `
+      import React, {
+        useState as useCount,
+        type ReactNode,
+      } from 'react';
+      const Shell = ({ children }: { children: ReactNode }) => <main>{children}</main>;
+      export default function App() {
+        const [n, setN] = useCount(0);
+        return <Shell><button className="go" onClick={() => setN((v) => v + 1)}>Go</button><p className="out">{n}</p></Shell>;
+      }`,
+    'a namespace import': `
+      import * as R from 'react';
+      export default function App() { const [n, setN] = R.useState(0); return ${reactBody}; }`,
+    'a default import under another name': `
+      import R from 'react';
+      export default function App() { const [n, setN] = R.useState(0); return ${reactBody}; }`,
+    'react-dom exports': `
+      import { useState } from 'react';
+      import { createPortal, flushSync } from 'react-dom';
+      export default function App() {
+        const [n, setN] = useState(0);
+        return <main>{createPortal(<p className="out">{n}</p>, document.body)}<button className="go" onClick={() => flushSync(() => setN((v) => v + 1))}>Go</button></main>;
+      }`,
+  };
+
+  for (const [label, code] of Object.entries(reactShapes)) {
+    it(`runs a React preview with ${label}`, async () => {
+      const html = makeReactPreviewHtml({ 'src/App.tsx': code } as any, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
+
+  const vueTemplate = `<main><button class="go" @click="inc">Go</button><p class="out">{{ n }}</p></main>`;
+  const vueShapes: Record<string, string> = {
+    'the Options API': `
+      <template>${vueTemplate}</template>
+      <script>
+      export default {
+        data() { return { n: 0 }; },
+        methods: { inc() { this.n += 1; } },
+      };
+      </script>`,
+    'defineComponent and lang="ts"': `
+      <template>${vueTemplate}</template>
+      <script lang="ts">
+      import { defineComponent } from 'vue';
+      export default defineComponent({
+        data() { return { n: 0 as number }; },
+        methods: { inc(): void { this.n += 1; } },
+      });
+      </script>`,
+    'a setup function': `
+      <template>${vueTemplate}</template>
+      <script>
+      import { ref } from 'vue';
+      export default {
+        setup() {
+          const n = ref(0);
+          const inc = () => { n.value += 1; };
+          return { n, inc };
+        },
+      };
+      </script>`,
+    'a nested template tag': `
+      <template><main><template v-if="true"><button class="go" @click="inc">Go</button></template><p class="out">{{ n }}</p></main></template>
+      <script setup lang="ts">
+      import { ref } from 'vue';
+      const n = ref(0);
+      const inc = () => { n.value += 1; };
+      </script>`,
+    'destructured refs and a helper outside the usual list': `
+      <template>${vueTemplate}</template>
+      <script setup lang="ts">
+      import { reactive, toRefs } from 'vue';
+      const state = reactive({ n: 0 });
+      const { n } = toRefs(state);
+      const inc = () => { state.n += 1; };
+      </script>`,
+    'a destructured composable with aliases': `
+      <template>${vueTemplate}</template>
+      <script setup lang="ts">
+      import { ref as makeRef, type Ref } from 'vue';
+      function useCounter() {
+        const count: Ref<number> = makeRef(0);
+        return { count, add: () => { count.value += 1; } };
+      }
+      const { count: n, add: inc } = useCounter();
+      </script>`,
+  };
+
+  for (const [label, code] of Object.entries(vueShapes)) {
+    it(`runs a Vue preview with ${label}`, async () => {
+      const html = makeVuePreviewHtml({ 'src/App.vue': code }, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
 
   it('removes the frame and rejects promptly when a run is cancelled', async () => {
     const run = runner.runFramework(

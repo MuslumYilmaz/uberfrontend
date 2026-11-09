@@ -1,0 +1,548 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "contact-form-pressure-v1",
+  "family": "contact-form",
+  "title": "Contact Form Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-contact-form-starter",
+    "angular": "angular-contact-form-starter",
+    "vue": "vue-contact-form-starter"
+  },
+  "rounds": [
+    {
+      "id": "validation",
+      "title": "Check the form before sending",
+      "interviewerPrompt": "Start with validation. The form must explain what is wrong and must never send bad data.",
+      "constraints": [
+        "Name cannot be empty or only spaces. Email needs a basic valid format such as `jane@example.com`. Message needs at least 10 characters.",
+        "Keep the Send message button (class `primary`) enabled while the form is invalid. A disabled button cannot tell the user what is wrong.",
+        "Submitting an invalid form sends nothing and shows every error, in elements with the ids `name-error`, `email-error` and `message-error`.",
+        "A fresh form shows no errors.",
+        "Fixing a field removes its error right away."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-contact-validation",
+          "name": "Round 1 · Bad data is never sent and every error is explained",
+          "steps": [
+            {
+              "type": "mockHttp",
+              "durationMs": 50,
+              "status": 201
+            },
+            {
+              "type": "expectCount",
+              "selector": "#name-error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "#email-error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "#message-error",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "   "
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@"
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Too short"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "expectHttpRequest",
+              "method": "POST",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "#name-error",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "#email-error",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "#message-error",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "Jane Doe"
+            },
+            {
+              "type": "expectCount",
+              "selector": "#name-error",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@example.com"
+            },
+            {
+              "type": "expectCount",
+              "selector": "#email-error",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "expectCount",
+              "selector": "#message-error",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "one-request",
+      "title": "Send once, then reset",
+      "interviewerPrompt": "Now send the form. The user must see that it is sending, and pressing the button twice must not send it twice.",
+      "constraints": [
+        "On submit, send one `POST` request to `https://jsonplaceholder.typicode.com/posts` with `name`, `email` and `message` as JSON. Remove extra spaces around the values first.",
+        "While sending, disable the button and change its text to `Sending…`. A second submit during this time sends nothing.",
+        "On success, show `Your message has been sent. Thank you!` in an element with the class `success`, and empty all three fields.",
+        "The emptied form shows no errors, even though its fields are empty again.",
+        "Typing again removes the success message."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-contact-send",
+          "name": "Round 2 · One submit sends one clean request",
+          "steps": [
+            {
+              "type": "mockHttp",
+              "durationMs": 300,
+              "status": 201
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "  Jane Doe  "
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@example.com"
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": true
+            },
+            {
+              "type": "expectText",
+              "selector": ".primary",
+              "text": "Sending",
+              "match": "contains"
+            },
+            {
+              "type": "expectHttpRequest",
+              "method": "POST",
+              "url": "https://jsonplaceholder.typicode.com/posts",
+              "bodyContains": "\"name\":\"Jane Doe\"",
+              "count": 1
+            },
+            {
+              "type": "expectHttpRequest",
+              "method": "POST",
+              "url": "https://jsonplaceholder.typicode.com/posts",
+              "bodyContains": "\"email\":\"jane@example.com\"",
+              "count": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".success",
+              "text": "Your message has been sent. Thank you!",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectValue",
+              "selector": "#name",
+              "value": ""
+            },
+            {
+              "type": "expectValue",
+              "selector": "#email",
+              "value": ""
+            },
+            {
+              "type": "expectValue",
+              "selector": "#message",
+              "value": ""
+            },
+            {
+              "type": "expectCount",
+              "selector": "#name-error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "#email-error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "#message-error",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "J"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".success",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "failure-recovery",
+      "title": "Failure keeps the user's work",
+      "interviewerPrompt": "Servers fail. A failed send must not lose what the user wrote, and they must be able to try again straight away.",
+      "constraints": [
+        "An HTTP error such as 500 is a failure, even though `fetch` does not throw for it. A network error is a failure too.",
+        "On failure, show `Something went wrong. Please try again.` in an element with the class `error`, and keep all three fields as they are.",
+        "Turn the button back on so the user can try again.",
+        "When a new try starts, remove the old error right away."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-contact-failure",
+          "name": "Round 3 · A failed send keeps the text and can be retried",
+          "steps": [
+            {
+              "type": "mockHttp",
+              "durationMs": 50,
+              "status": 500
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "Jane Doe"
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@example.com"
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".error",
+              "text": "Something went wrong. Please try again.",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".success",
+              "count": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": "#name",
+              "value": "Jane Doe"
+            },
+            {
+              "type": "expectValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "mockHttp",
+              "durationMs": 50,
+              "error": "Network failed"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".error",
+              "text": "Something went wrong. Please try again.",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".success",
+              "count": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "mockHttp",
+              "durationMs": 300,
+              "status": 201
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".error",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".success",
+              "text": "Your message has been sent. Thank you!",
+              "timeoutMs": 1500
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slow-server-and-accessibility",
+      "title": "Slow servers and screen readers",
+      "interviewerPrompt": "Last round. Some requests never come back, and not everyone can see the form. Handle both.",
+      "constraints": [
+        "If the server has not answered after 2 seconds, stop waiting and show `The server took too long. Please try again.` in the `error` element. Turn the button back on.",
+        "If the answer arrives after that, ignore it: it must not show a success message or empty the fields.",
+        "Give invalid fields `aria-invalid=\"true\"` and point them to their message with `aria-describedby`, for example `email-error`. Valid fields have `aria-invalid=\"false\"`. The `error` element has `role=\"alert\"`.",
+        "When a submit is blocked, move focus to the first invalid field.",
+        "Removing the component while sending must leave no timer running."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-contact-time-limit",
+          "name": "Round 4 · A late answer cannot change the result",
+          "steps": [
+            {
+              "type": "mockHttp",
+              "durationMs": 3000,
+              "status": 201
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "Jane Doe"
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@example.com"
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "wait",
+              "durationMs": 1500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".error",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".error",
+              "text": "The server took too long. Please try again.",
+              "timeoutMs": 1100
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".error",
+              "attribute": "role",
+              "expected": "alert"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".primary",
+              "disabled": false
+            },
+            {
+              "type": "wait",
+              "durationMs": 1200
+            },
+            {
+              "type": "expectCount",
+              "selector": ".success",
+              "count": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            }
+          ]
+        },
+        {
+          "id": "pressure-contact-accessibility",
+          "name": "Round 4 · Errors, focus and cleanup are wired",
+          "steps": [
+            {
+              "type": "mockHttp",
+              "durationMs": 3000,
+              "status": 201
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#email",
+              "attribute": "aria-invalid",
+              "expected": "true"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#email",
+              "attribute": "aria-describedby",
+              "expected": "email-error"
+            },
+            {
+              "type": "expectFocused",
+              "selector": "#name"
+            },
+            {
+              "type": "setValue",
+              "selector": "#name",
+              "value": "Jane Doe"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": "#name",
+              "attribute": "aria-invalid",
+              "expected": "false"
+            },
+            {
+              "type": "setValue",
+              "selector": "#email",
+              "value": "jane@example.com"
+            },
+            {
+              "type": "setValue",
+              "selector": "#message",
+              "value": "Hello from tests"
+            },
+            {
+              "type": "submit",
+              "selector": ".panel"
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You protected the user's work in every outcome",
+    "summary": "You built a form that explains its errors, sends once, keeps the user's text when a request fails and ignores answers that come too late. The interview signal is handling every outcome, not only the happy path.",
+    "takeaways": [
+      "Check the data again at submit, and explain every error next to its field.",
+      "Keep the button usable while the form is invalid, and disable it only while sending.",
+      "A failed request must never cost the user what they wrote.",
+      "Give a request a time limit, then make sure a late answer cannot change the result."
+    ],
+    "frameworkNotes": {
+      "react": "An `AbortController` and a timer owned by a ref control the request, and an effect cleanup stops both when the component is removed. Remember that `fetch` only rejects on network failures, so check `response.ok`.",
+      "angular": "`HttpClient` reports HTTP errors for you, the `timeout` operator sets the limit, and unsubscribing when the component is destroyed stops the request. `Validators.required` accepts spaces, so trim the name yourself.",
+      "vue": "Keep the controller and the timer outside template state, check `response.ok`, and stop both in `onUnmounted`."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-contact-form-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-contact-form-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-contact-form-pressure-solution.v1.json"
+  }
+}

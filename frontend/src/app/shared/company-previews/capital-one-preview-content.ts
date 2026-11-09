@@ -50,9 +50,9 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Capital One prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by fifteen public frontend accounts from 2020 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
+      'Prepare with five practice prompts shaped by {reports} public frontend accounts from 2022 to 2025 and by Capital One careers pages: a CodeSignal assessment, then a Power Day of four one-hour interviews covering frontend design, a frontend technical round, a case built on reading code, and behavioral questions.',
     caveat:
-      'The evidence is thin and dated: all fifteen accounts are reviews re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
+      'The evidence is thin and dated: nearly every account is a review re-hosted on Taro, the newest with round detail is from late 2024, and the official process text is written for AI and ML roles. A front-end-focused candidate on a 2025 full-stack loop met generic coding and backend design rounds instead, so confirm the rounds with your recruiter.',
     chips: ['5 practice prompts', 'React, Angular, TypeScript, case code', 'Full practice set requires Premium'],
   },
   studyPriorities: {
@@ -67,7 +67,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish',
     paragraphs: [
-      'Fifteen frontend-titled accounts inform this guide, all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025, and nine describe Power Day rounds. Blind threads add Capital One employees describing the assessment and their own loops.',
+      '{reports} frontend-titled accounts inform this guide, nearly all of them Taro re-hosts of Glassdoor reviews from the United States and Canada, 2020 to 2025, and most describe Power Day rounds. Blind threads add Capital One employees describing the assessment and their own loops.',
       'Capital One publishes a Power Day description for AI and ML roles and a general interview guide, but no frontend-specific one. Employees on Blind mentioned a hiring freeze in April 2026, while seven frontend postings were open in October 2026.',
     ],
   },
@@ -90,7 +90,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'After Power Day', value: 'Feedback within a day in one account; in others a pass led to team matching that stalled, a filled position, or a call from another team.' },
         { label: 'Sources', value: 'Taro re-hosted reviews of senior and lead frontend loops from 2022 to 2024 and Capital One careers pages; all listed under Sources below with what each can establish.' },
       ],
-      practiceLink: { label: 'Rehearse the Power Day case: the budgeting bug', fragment: 'power-day-case-budgeting-bug' },
+      // Prompt 4 sits past the open prompts, so the rehearsal leads to its free drill rather than a locked card.
+      practiceLink: { label: 'Rehearse the Power Day case with the free nullish-defaults debug', path: '/javascript/debug/js-debug-nullish-defaults' },
       processLink: { label: 'See the four Power Day rows in the reported process', fragment: 'capital-one-interview-process-1-stage-power-day-frontend-design' },
     },
   ],
@@ -142,8 +143,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Drawing the happy path only, with no answer for a double submit, a failed request or a pending decision.',
-        resourceLabel: 'Work through the multi-step form with autosave case (Premium)',
-        resourcePath: '/system-design/multi-step-form-autosave',
+        resourceLabel: 'Work through the credit card application page case (Premium)',
+        resourcePath: '/system-design/credit-card-application-page',
         reportedRound: { label: CAPITALONE_CARD_DESIGN_2024_LABEL, url: CAPITALONE_CARD_DESIGN_2024_URL },
       },
       {
@@ -211,8 +212,8 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Rewriting the whole function instead of finding the one defect, or guessing without tracing an example.',
-        resourceLabel: 'Fix a defaults bug in a teammate helper (free)',
-        resourcePath: '/javascript/debug/js-debug-nullish-defaults',
+        resourceLabel: "Work the intern's budget case: find the bug without coding the fix",
+        resourcePath: '/javascript/debug/js-debug-intern-budget-summary',
         reportedRound: { label: CAPITALONE_CARD_DESIGN_2024_LABEL, url: CAPITALONE_CARD_DESIGN_2024_URL },
       },
       {
@@ -236,7 +237,9 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Making the code shorter and cleverer instead of clearer, or changing behaviour without saying so.',
         resourceLabel: 'Rewrite a helper that mutates its input (free)',
         resourcePath: '/javascript/debug/js-debug-mutating-input',
-        reportedRound: { label: CAPITALONE_LEAD_CASE_2022_LABEL, url: CAPITALONE_LEAD_CASE_2022_URL },
+        // The senior account the default list cites names "badly written code"; the 2022 lead account asks the same
+        // ("read some code, tell me what it does, and improve it") and stays in the sources.
+        reportedRound: { label: CAPITALONE_ANGULAR_2023_LABEL, url: CAPITALONE_ANGULAR_2023_URL },
       },
     ],
   },
@@ -339,7 +342,7 @@ export const CAPITALONE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Capital One practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
+      'Premium unlocks the credit card application page case, the multi-step form with autosave case, the component state from a mock case and the wider premium library for the same skills.',
     buttonLabel: 'Unlock the full Capital One practice set',
     src: 'company_preview_capital_one',
   },

@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { isProActive } from '../../../core/utils/entitlements.util';
+import { isPremiumRoute } from '../../../core/utils/premium-route.util';
 import type {
   CompanyInterviewProcess,
   InterviewProcessSource,
@@ -21,6 +24,53 @@ export class CompanyInterviewProcessComponent {
   @Input() slug = '';
   @Input() companyLabel = '';
   @Input() process: CompanyInterviewProcess | null = null;
+  /** The viewer has no Premium, so a practice link to a Premium page keeps its name under a blur. */
+  @Input() lockPremium = false;
+  /**
+   * Whether the evidence links are rendered. A gated guide shows a viewer without an account the counts and a
+   * "Free account" tag in their place; what each round asks stays open for everyone.
+   */
+  @Input() showSourceLinks = true;
+  /** Navigation state for the practice links: a locked task page shows the way back to the guide. */
+  @Input() returnState: { [key: string]: any } | undefined;
+
+  /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
+  private readonly opened = signal<ReadonlySet<string>>(new Set());
+
+  private readonly auth = inject(AuthService);
+  /** Set after the first render, so the prerendered table stays the visitor's. */
+  private readonly rendered = signal(false);
+  /** A free account reads Premium names on the guide, so a Premium practice link keeps its tag. */
+  private readonly freeAccount = computed(() => {
+    const user = this.auth.user();
+    return this.rendered() && Boolean(user) && user?.role !== 'admin' && !isProActive(user);
+  });
+
+  constructor() {
+    afterNextRender(() => this.rendered.set(true));
+  }
+
+  expanded(variantIndex: number, stage: InterviewProcessStage): boolean {
+    return this.opened().has(`${variantIndex}:${stage.stage}`);
+  }
+
+  toggleSources(variantIndex: number, stage: InterviewProcessStage): void {
+    const key = `${variantIndex}:${stage.stage}`;
+    this.opened.update((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+
+  practiceLocked(path: string): boolean {
+    return this.lockPremium && isPremiumRoute(path);
+  }
+
+  practicePremium(path: string): boolean {
+    return this.freeAccount() && isPremiumRoute(path);
+  }
 
   get headingId(): string {
     return `${this.slug || 'company'}-interview-process`;

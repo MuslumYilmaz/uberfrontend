@@ -55,6 +55,28 @@ function buildTrackPreviewUrlTree(router: Router, targetUrl?: string): UrlTree |
   });
 }
 
+function buildCompanyPreviewUrlTree(router: Router, targetUrl?: string): UrlTree | null {
+  if (!targetUrl) return null;
+  const parsed = router.parseUrl(targetUrl);
+  const segments = parsed.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
+  if (segments[0] !== 'companies') return null;
+  const slug = segments[1];
+  if (!slug) return null;
+
+  return router.createUrlTree(['/companies', slug, 'preview'], {
+    queryParams: parsed.queryParams,
+    fragment: parsed.fragment ?? undefined,
+  });
+}
+
+// Tracks always send visitors without access to their preview. A direct link to a company
+// page lands on its public guide; a click inside the app keeps the gate, so the click gets an answer.
+function previewInsteadOfGate(router: Router, reason: PremiumGateReason, targetUrl?: string): UrlTree | null {
+  if (reason === 'tracks') return buildTrackPreviewUrlTree(router, targetUrl);
+  if (reason === 'company' && !router.navigated) return buildCompanyPreviewUrlTree(router, targetUrl);
+  return null;
+}
+
 function buildTrackDetailUrlTree(
   router: Router,
   targetUrl: string,
@@ -66,22 +88,6 @@ function buildTrackDetailUrlTree(
   if (!slug) return null;
 
   return router.createUrlTree(['/tracks', slug], {
-    queryParams: parsed.queryParams,
-    fragment: parsed.fragment ?? undefined,
-  });
-}
-
-function buildCompanyDetailUrlTree(
-  router: Router,
-  targetUrl: string,
-  fallbackSlug?: string | null,
-): UrlTree | null {
-  const parsed = router.parseUrl(targetUrl);
-  const segments = parsed.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
-  const slug = fallbackSlug || (segments[0] === 'companies' ? segments[1] : undefined);
-  if (!slug) return null;
-
-  return router.createUrlTree(['/companies', slug], {
     queryParams: parsed.queryParams,
     fragment: parsed.fragment ?? undefined,
   });
@@ -109,18 +115,10 @@ function premiumCheck(
   return auth.ensureMe().pipe(
     map((u) => {
       if (u && isPremiumUser(u)) return true;
-      if (reason === 'tracks') {
-        const previewUrl = buildTrackPreviewUrlTree(router, targetUrl);
-        if (previewUrl) return previewUrl;
-      }
-      return showGate(!!u);
+      return previewInsteadOfGate(router, reason, targetUrl) ?? showGate(!!u);
     }),
     catchError(() => {
-      if (reason === 'tracks') {
-        const previewUrl = buildTrackPreviewUrlTree(router, targetUrl);
-        if (previewUrl) return of(previewUrl);
-      }
-      return of(showGate(false));
+      return of(previewInsteadOfGate(router, reason, targetUrl) ?? showGate(false));
     }),
   );
 }
@@ -155,36 +153,6 @@ export const trackPreviewAccessGuard: CanActivateFn = (
   const resolveAccess = (user: User | null): boolean | UrlTree => {
     if (!isPremiumUser(user)) return true;
     return buildTrackDetailUrlTree(router, state.url, routeSlug) || true;
-  };
-
-  if (auth.isLoggedIn()) {
-    return resolveAccess(auth.user());
-  }
-
-  // Public preview pages only redirect premium members to the full route. A
-  // visitor with no session hint (first visit, crawler rendering) is anonymous
-  // without asking the API, which otherwise answered 401 on every render.
-  if (!sessionAuthority.hasSessionHint()) return true;
-
-  return auth.ensureMe().pipe(
-    map((u) => resolveAccess(u)),
-    catchError(() => of(true)),
-  );
-};
-
-export const companyPreviewAccessGuard: CanActivateFn = (
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot,
-): boolean | UrlTree | Observable<boolean | UrlTree> => {
-  const auth = inject(AuthService);
-  const sessionAuthority = inject(AuthSessionAuthorityService);
-  const router = inject(Router);
-
-  const routeSlug = (route.paramMap.get('slug') || '').trim().toLowerCase();
-
-  const resolveAccess = (user: User | null): boolean | UrlTree => {
-    if (!isPremiumUser(user)) return true;
-    return buildCompanyDetailUrlTree(router, state.url, routeSlug) || true;
   };
 
   if (auth.isLoggedIn()) {

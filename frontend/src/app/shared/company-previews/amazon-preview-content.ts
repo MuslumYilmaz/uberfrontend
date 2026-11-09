@@ -2,7 +2,7 @@ import type { AuthoredCompanyPreview } from './authored-company-preview.model';
 
 /**
  * Amazon frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on rounds
- * described in public, self-reported front end engineer accounts (LeetCode Discuss and Blind, 2020 to
+ * described in public, self-reported front end engineer accounts (LeetCode Discuss, Blind and Medium, 2019 to
  * 2025) and on the loop shape Amazon publishes on its own preparation page. Nothing here is a leaked,
  * confirmed or official Amazon question, and accounts spanning five years cannot establish a fixed loop.
  */
@@ -24,6 +24,21 @@ const AMAZON_BLIND_2022_URL =
   'https://www.teamblind.com/post/amazon-frontend-fee-i-oa-phone-screen-loop-interview-2022-qqdjoknw';
 const AMAZON_FEE_PREP_URL = 'https://amazon.jobs/content/en/how-we-hire/fee-interview-prep';
 const AMAZON_LEADERSHIP_PRINCIPLES_URL = 'https://www.amazon.jobs/content/en/our-workplace/leadership-principles';
+// Leadership Principles questions, read 2026-11-06. Amazon's pages and the files its FEE page links give example
+// questions; the LeetCode and Medium accounts quote the questions their interviewers asked.
+const AMAZON_INTERVIEW_LOOP_URL = 'https://www.amazon.jobs/content/en/how-we-hire/interview-loop';
+const AMAZON_LP_VIDEO_URL = 'https://www.youtube.com/watch?v=CpcxVE5JIX4';
+const AMAZON_LP_WORKSHEET_URL =
+  'https://duaa2xs5z3ldn.cloudfront.net/assets/McsJv4WXKWb_FlRc_LRX21Ro-EvUopwEW-LeadershipPrinciplesSTARtemplate.pdf';
+const AMAZON_HM_2019_URL = 'https://leetcode.com/discuss/post/336727/';
+const AMAZON_NYC_2019_URL = 'https://leetcode.com/discuss/post/320613/';
+const AMAZON_L5_NYC_2020_URL = 'https://leetcode.com/discuss/post/618601/';
+const AMAZON_CUSTOMER_2021_URL = 'https://leetcode.com/discuss/post/1639880/';
+const AMAZON_FEE_I_2025_URL = 'https://leetcode.com/discuss/post/6968134/';
+const AMAZON_GRAD_SCREEN_2025_URL = 'https://leetcode.com/discuss/post/7075953/';
+const AMAZON_MEDIUM_2021_URL = 'https://medium.com/javarevisited/how-was-my-frontend-engineer-interview-experience-amazon-d10055fbdd89';
+const AMAZON_MEDIUM_2025_URL =
+  'https://javascript.plainenglish.io/my-interview-experience-amazon-for-frontend-developer-and-lessons-learned-a4c23221b9c6';
 
 export const AMAZON_PREVIEW_TITLE = 'Amazon Frontend Interview Questions: 7 Prompts + Prep Guide';
 export const AMAZON_PREVIEW_H1 = 'Amazon Frontend Interview Questions';
@@ -31,7 +46,7 @@ export const AMAZON_PREVIEW_DESCRIPTION =
   'Prepare for an Amazon front end engineer interview with 7 practice prompts: star rating, carousel, paginated addresses, countdown timer, image service design.';
 export const AMAZON_PREVIEW_CANONICAL_PATH = '/companies/amazon/preview';
 export const AMAZON_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on the loop shape Amazon publishes, not leaked, confirmed or official Amazon questions. Self-reported loops from 2020 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and on the loop shape Amazon publishes, not leaked, confirmed or official Amazon questions. Self-reported loops from 2019 to 2025 cannot establish a fixed format; use recruiter-provided material as the source of truth.';
 
 export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'amazon',
@@ -44,7 +59,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Amazon prep guide',
     subtitle:
-      'Prepare with seven practice prompts shaped by Amazon\'s own Front End Engineer preparation page and nine public interview accounts from 2020 to 2025: a five-star rating widget in vanilla JavaScript, a carousel with state follow-ups, a modal with language tabs, a countdown timer built in thirty minutes, a paginated address widget, a file explorer from an ASCII sketch, and the front-end design of an image service or an ordering app.',
+      'Prepare with seven practice prompts shaped by Amazon\'s Front End Engineer preparation page and {reports} public interview accounts from 2019 to 2025: a star rating widget, a carousel, a countdown timer, a file explorer and an image service design.',
     caveat:
       'This guide uses public, self-reported interview accounts and Amazon\'s published preparation page to create realistic constraints. It does not claim access to private interview material. The accounts span five years, two levels and three countries, so no single loop described here is the format you will get.',
     chips: ['7 practice prompts', 'Vanilla JavaScript, React, UI widgets, front-end design', 'Full practice set requires Premium'],
@@ -54,17 +69,62 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Amazon trivia',
     paragraphs: [
       'Amazon is one of the few companies that publishes the shape of its front end engineer loop: an online assessment with two coding questions in 90 minutes, 20 minutes of system design scenarios and a short work-style survey; a 60-minute phone screen that spends half its time on the Leadership Principles and half on front-end coding; then four 55-minute interviews with at least one front-end system design question. The public accounts from 2020 to 2025 show what the coding halves looked like in practice: small interface widgets built live, medium algorithm problems, and design conversations about an image service, a restaurant ordering app, an application\'s component architecture or a file browser.',
-      'Two tactical lessons repeat across the accounts. Most interviews include two or three Leadership Principles questions, usually at the start, so ten to fifteen adaptable stories with metrics are the cheapest preparation available. And the coding half is short: the 2020 Seattle account could not finish a countdown timer in thirty minutes, and the 2024 account lost time decoding an ASCII sketch of the interface, so pin the contract in a minute and show working behaviour early. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Two tactical lessons repeat across the accounts. Most interviews include two or three Leadership Principles questions, usually at the start, so ten to fifteen adaptable stories with metrics are the cheapest preparation available. And the coding half is short: the 2020 Seattle account could not finish a countdown timer in thirty minutes, and the 2024 account lost time decoding an ASCII sketch of the interface, so pin the contract in a minute and show working behaviour early. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {
-    kicker: 'Source boundary · checked October 2026',
+    kicker: 'Source boundary · checked November 2026',
     title: 'What the official page and the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Amazon\'s Front End Engineer interview preparation page establishes the loop shape, the whiteboard tool used for design, the requirement to write syntactically correct code rather than pseudo code, and the objectives a design answer is judged on: usability, performance, user experience, accessibility, security and scalability. Nine self-reported accounts add the exercises. A March 2020 phone screen asked for a five-star rating widget in vanilla HTML, CSS and JavaScript. An April 2020 Seattle loop reports a carousel and the coin change problem in the phone screen, then a modal with three language tabs, integer and Roman numeral conversion, CSS questions followed by a countdown timer, a transitive dependency search over referral logs, and a manager round of Leadership Principles. A June 2020 offer account reports a modal screen in the phone screen, then a front-end widget, a binary tree problem, the design of an image service and a further front-end round. A June 2020 phone screen contained only short questions: block versus inline elements, reflow versus repaint, adding an element with web APIs, CSS preprocessors, micro and macro tasks, unit versus integration testing, memory leaks and prime numbers up to n.',
+      'Amazon\'s Front End Engineer interview preparation page establishes the loop shape, the whiteboard tool used for design, the requirement to write syntactically correct code rather than pseudo code, and the objectives a design answer is judged on: usability, performance, user experience, accessibility, security and scalability. {reports} self-reported accounts, each listed under Sources, add the exercises. A March 2020 phone screen asked for a five-star rating widget in vanilla HTML, CSS and JavaScript. An April 2020 Seattle loop reports a carousel and the coin change problem in the phone screen, then a modal with three language tabs, integer and Roman numeral conversion, CSS questions followed by a countdown timer, a transitive dependency search over referral logs, and a manager round of Leadership Principles. A June 2020 offer account reports a modal screen in the phone screen, then a front-end widget, a binary tree problem, the design of an image service and a further front-end round. A June 2020 phone screen contained only short questions: block versus inline elements, reflow versus repaint, adding an element with web APIs, CSS preprocessors, micro and macro tasks, unit versus integration testing, memory leaks and prime numbers up to n.',
       'An October 2021 rejection reports the component architecture of an application with authentication, algorithm questions from a public Amazon list, a custom data structure in JavaScript with a prototype follow-up, closures and event loop questions, and a form recreated from a picture. An April 2022 Vancouver offer reports the paginated address widget, a restaurant ordering app design, a thesaurus class and a bar raiser round. An October 2024 Seattle rejection reports a file explorer interface from an ASCII sketch, an anagram problem, a file browser design that drifted to backend questions, and unit tests for a small problem, with thirty minutes of Leadership Principles in every round. A January 2025 India account for Front End Engineer I reports an online assessment with one coding question and multiple-choice questions, a frontend assignment, two data structure problems and a screen recreated with HTML and CSS. A 2022 Front End Engineer I loop on Blind reports a component implementation, an API from a frontend library, a graph problem with a topological sort follow-up and a design question with the hiring manager. Together they establish that these round types occurred; they do not establish exact wording, the current format, or how every team interviews. Confirm the language expectations, the editor, the whiteboard and the round order with the recruiter.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'leadership-principles',
+      kicker: 'Round decoder',
+      title: 'Amazon Leadership Principles questions for front end engineers: what was asked',
+      lede: [
+        'Leadership Principles questions run through the whole Amazon front end loop. Amazon\'s FEE page says each interviewer typically asks two or three behavioural questions, and half of the 60-minute phone screen covers the principles. Each question asks for one past situation told in the STAR shape, and the follow-ups dig into its details, its numbers and what you would do differently.',
+        'Amazon publishes example questions, and front end accounts from 2019 to 2025 report the same few patterns: a decision between options or without all the data, a disagreement, a deadline, a failure or negative feedback, a customer you went out of your way for, and work beyond your role.',
+      ],
+      facts: [
+        { label: 'Where they come', value: 'Two or three at the start of each loop interview in most accounts; the hiring manager round is often all principles, and in some loops the bar raiser round is too. Phone screens vary: a 2020 screen had no behavioural questions, and a 2025 new-graduate screen spent more than 40 minutes on them.' },
+        { label: 'Amazon\'s own examples', value: 'The interview loop page asks about "a problem with multiple possible solutions", a time you took a risk, made a mistake or failed, a project you led, and how you used data to decide. The principles video on the FEE page adds a decision between two technology choices and a decision without all the data.' },
+        { label: 'Decisions and ambiguity', value: 'A time you "jumped into a problem and had no idea what was going on", and a time with too few requirements (Seattle, 2020); starting to deliver with few requirements (Medium, 2021); a calculated risk, and short-term against long-term costs (New York, 2020).' },
+        { label: 'Conflict and backbone', value: 'A disagreement with a coworker (Seattle, 2019); a conflict with a peer (New York, 2019); disagreement at work (Medium, 2025); something you did without telling your manager, and why (Hyderabad, 2025).' },
+        { label: 'Deadlines, failure and feedback', value: 'A tight deadline, followed by how you prioritized (Seattle, 2019); negative feedback, and a time you messed up and what followed (Seattle, 2020); a delivery that was not up to the mark (Medium, 2021); a 15-day deadline for two or three months of work, asked as a hypothetical (Hyderabad, 2025).' },
+        { label: 'Customers and ownership', value: 'A time you went out of your way to help a customer urgently, then "what did you do to make sure that never happened again" (Vancouver, 2021); something beyond what was required (Seattle, 2020); work outside your responsibility (Hyderabad, 2025).' },
+        { label: 'How the follow-ups work', value: 'Amazon\'s principles worksheet says interviewers dive deep into each example, and the accounts describe follow-ups on the details and the data. One 2019 candidate heard the same questions from the hiring manager and the bar raiser; a 2021 account advises not to reuse a story across rounds.' },
+        { label: 'Sources', value: 'Amazon\'s FEE preparation page with its principles video and worksheet, Amazon\'s interview loop page, and front end accounts on LeetCode and Medium from 2019 to 2025; a city and year in brackets mark a LeetCode account. All are listed under Sources below with what each can establish.' },
+      ],
+      practiceLink: { label: 'Draft your story bank with the STAR stories guide', path: '/guides/behavioral/stories' },
+      processLink: { label: 'See the Leadership Principles row in the reported process', fragment: 'amazon-interview-process-1-stage-loop-leadership-principles' },
+      // The facts above, one question each: Amazon's own examples first, then the accounts.
+      drill: {
+        note: 'Each question is one of Amazon\'s own examples or one an account reports; the last is a hypothetical, as the 2025 account asked it.',
+        questions: [
+          { id: 'multiple-solutions', text: 'Tell me about a problem with multiple possible solutions.', source: 'Amazon\'s interview loop page' },
+          { id: 'mistake', text: 'Tell me about a time you made a mistake or failed.', source: 'Amazon\'s interview loop page' },
+          { id: 'without-all-the-data', text: 'Tell me about a decision you made without all the data.', source: 'Amazon\'s principles video' },
+          { id: 'disagreement', text: 'Tell me about a disagreement with a coworker.', source: 'Seattle, 2019' },
+          { id: 'tight-deadline', text: 'Tell me about a tight deadline. How did you prioritize?', source: 'Seattle, 2019' },
+          { id: 'negative-feedback', text: 'Tell me about negative feedback you received, and what followed.', source: 'Seattle, 2020' },
+          { id: 'customer', text: 'Tell me about a time you went out of your way to help a customer urgently. What did you do to make sure it never happened again?', source: 'Vancouver, 2021' },
+          { id: 'few-requirements', text: 'Tell me about a time you started to deliver with few requirements.', source: 'Medium, 2021' },
+          { id: 'beyond-required', text: 'Tell me about something you did beyond what was required.', source: 'Seattle, 2020' },
+          { id: 'without-telling-manager', text: 'Tell me about something you did without telling your manager, and why.', source: 'Hyderabad, 2025' },
+          { id: 'fifteen-days', text: 'You have 15 days for two or three months of work. What do you do?', source: 'Hyderabad, 2025', kind: 'approach' },
+        ],
+        checks: [
+          'I can name the Leadership Principle it shows.',
+          'I have the data behind each decision ready for the follow-ups.',
+          'Another story is ready for this question: Amazon\'s video advises against using the same example every time.',
+        ],
+      },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Two product contexts for practising transferable frontend judgment',
@@ -318,7 +378,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: 'Amazon: Front End Engineer interview prep', url: AMAZON_FEE_PREP_URL, note: 'The official loop shape, the design objectives, the whiteboard tool and the coding expectations. It names example design prompts, an Instagram widget, a type-ahead widget, infinite scrolling and a carousel widget, and links a sample coding question, but not the questions asked in interviews.', kind: 'official' },
       { label: 'Amazon: Leadership Principles', url: AMAZON_LEADERSHIP_PRINCIPLES_URL, note: 'The principles behind the behavioural questions in each interview; official context only.', kind: 'official' },
       { label: AMAZON_PHONE_2020_LABEL, url: AMAZON_PHONE_2020_URL, note: 'One self-reported phone screen. It establishes the five-star widget in vanilla HTML, CSS and JavaScript; it cannot establish frequency or current wording.', kind: 'report' },
-      { label: AMAZON_LOOP_2020_LABEL, url: AMAZON_LOOP_2020_URL, note: 'One self-reported five-round loop. It establishes the carousel, the language tabs modal, the countdown timer, the CSS questions and two algorithm problems; it names no exact wording.', kind: 'report' },
+      { label: AMAZON_LOOP_2020_LABEL, url: AMAZON_LOOP_2020_URL, note: 'One self-reported five-round loop. It establishes the carousel, the language tabs modal, the countdown timer, the CSS questions and two algorithm problems, and it quotes the Leadership Principles questions of each round; it names no exact wording for the technical prompts.', kind: 'report' },
       { label: AMAZON_OFFER_2020_LABEL, url: AMAZON_OFFER_2020_URL, note: 'One self-reported loop with an offer. It establishes the modal screen in the phone screen, a front-end widget, a binary tree problem and the image service design; it names no exact prompt for the final round.', kind: 'report' },
       { label: 'Public report: Amazon front end engineer phone screen, June 2020', url: AMAZON_PHONE_TRIVIA_2020_URL, note: 'One self-reported phone screen with no behavioural questions. It lists eight short technical questions, from block versus inline elements to memory leaks; trivia pages on FrontendAtlas carry no company sources, so these shape the fundamentals day only.', kind: 'report' },
       { label: 'Public report: Amazon frontend onsite rejection, October 2021', url: AMAZON_ONSITE_2021_URL, note: 'One self-reported loop without an offer. It establishes the component architecture design round, the prototype follow-up and the form recreated from a picture, and reports system design as the stated reason for the rejection.', kind: 'report' },
@@ -326,6 +386,17 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: AMAZON_SEATTLE_2024_LABEL, url: AMAZON_SEATTLE_2024_URL, note: 'One self-reported loop without an offer. It establishes the file explorer interface, the anagram problem, the file browser design and the unit testing round, and reports thirty minutes of Leadership Principles per round.', kind: 'report' },
       { label: 'Public report: Amazon Front End Engineer I, India, January 2025', url: AMAZON_INDIA_2025_URL, note: 'One self-reported process for a junior role in India. It establishes an online assessment with one coding question and multiple-choice questions, a frontend assignment, two data structure problems and a screen recreated with HTML and CSS; the format differs from the US accounts.', kind: 'report' },
       { label: 'Public report: Amazon Front End Engineer I assessment, phone screen and loop, 2022', url: AMAZON_BLIND_2022_URL, note: 'One self-reported loop on Blind. It establishes the round shape for a junior role: a component implementation, an API from a frontend library, a graph problem and a design question with the hiring manager; it names no exact prompt.', kind: 'report' },
+      { label: 'Amazon: Interview loop', url: AMAZON_INTERVIEW_LOOP_URL, note: 'The general loop page for every role. It lists five example behavioural questions, describes the Bar Raiser and gives about 45 minutes to an hour per interviewer; it is not specific to front end engineers.', kind: 'official' },
+      { label: 'Amazon: Leadership Principles video, linked from the FEE preparation page', url: AMAZON_LP_VIDEO_URL, note: 'An Amazon software development manager explains the behavioural questions. The transcript gives two examples, a decision between two technology choices and a decision without all the data, and advises against using the same example every time.', kind: 'official' },
+      { label: 'Amazon: Leadership Principles STAR worksheet, linked from the FEE preparation page', url: AMAZON_LP_WORKSHEET_URL, note: 'A worksheet that lists the sixteen principles and says interviewers will dive deep into each example with follow-up questions; it gives no example questions.', kind: 'official' },
+      { label: 'Public report: Amazon front end engineer loop, Seattle, July 2019', url: AMAZON_HM_2019_URL, note: 'One self-reported loop without an offer, which the poster puts down to the behavioural rounds. It quotes the hiring manager\'s questions on a tight deadline and a disagreement with a coworker, and reports that the bar raiser asked the same questions again.', kind: 'report' },
+      { label: 'Public report: Amazon front end engineer loop, New York, June 2019', url: AMAZON_NYC_2019_URL, note: 'One self-reported loop that lists one or two principles questions per round in the poster\'s shorthand, from a conflict with a peer to a failure to deliver; it gives topics more than exact wording.', kind: 'report' },
+      { label: 'Public report: Amazon L5 front end engineer loop, New York, May 2020', url: AMAZON_L5_NYC_2020_URL, note: 'One self-reported loop. It quotes a calculated-risk question and a question on short-term against long-term costs, and reports about thirty minutes of behavioural questions per round.', kind: 'report' },
+      { label: 'Public report: Amazon front end engineer loop, Vancouver, December 2021', url: AMAZON_CUSTOMER_2021_URL, note: 'One self-reported loop. It quotes a question about helping a customer urgently, which the poster read as Customer Obsession, and the follow-up about preventing a repeat.', kind: 'report' },
+      { label: 'Public report: Amazon Front End Engineer I loop, Hyderabad, 2025', url: AMAZON_FEE_I_2025_URL, note: 'One self-reported loop that ended in a selection after a move from SDE to Front End Engineer I. It quotes deadline, ownership and manager questions and a hypothetical about a deadline far shorter than the work.', kind: 'report' },
+      { label: 'Public report: Amazon Front End Engineer graduate phone screen, Dublin, August 2025', url: AMAZON_GRAD_SCREEN_2025_URL, note: 'One self-reported new-graduate screen that spent more than forty minutes on principles questions in the STAR shape and asked no front end questions.', kind: 'report' },
+      { label: 'Public report: Medium frontend engineer phone round, July 2021', url: AMAZON_MEDIUM_2021_URL, note: 'One self-reported phone round. It quotes three principles questions: delivering with few requirements, a delivery that was not up to the mark, and acting on requirements without the team\'s approval.', kind: 'report' },
+      { label: 'Public report: Medium frontend developer loop, 2025', url: AMAZON_MEDIUM_2025_URL, note: 'One self-reported loop without an offer, posted in August 2025. It quotes three behavioural questions, among them how you handle disagreement at work; the interview year is not stated.', kind: 'report' },
       { label: 'LeetCode Discuss: community list of front end interview questions, July 2020', url: AMAZON_LIST_2020_URL, note: 'A secondhand list compiled by one candidate. It tags custom map, reduce, filter and sort, an accordion and a grid with search and sort as Amazon questions; it cannot establish wording or frequency.', kind: 'report' },
     ],
   },
@@ -333,7 +404,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Amazon practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the star rating, carousel, tabs, countdown timer and pagination exercises in React, Angular and Vue, the image upload case and the broader company-tagged editorial set.',
+      'Premium unlocks the star rating, carousel, tabs, countdown timer and pagination exercises in React, Angular and Vue, the image upload case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Amazon practice set',
     src: 'company_preview_amazon',
   },

@@ -4,8 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import { cdnSystemDesignIndexPath } from './content-paths.mjs';
+import { cdnQuestionsDir, cdnSystemDesignIndexPath, generatedAppDir, srcPrerenderRoutesPath } from './content-paths.mjs';
+import { loadTsModule } from './load-ts-module.mjs';
 import { startSeoStaticServer } from './seo-static-server.mjs';
+import { marksPremiumParts, premiumLockViolations } from './seo-premium-lock-contract.mjs';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from './seo-sitemap-date-contract.mjs';
 
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
@@ -110,15 +112,15 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Waymo',
     route: '/companies/waymo/preview',
-    title: 'Waymo Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Waymo Frontend Interview Questions: 6 Prompts + Prep Guide',
     description:
-      'Prepare for a Waymo frontend interview with 5 prompts modelled on a public 2026 report: tree filtering, Angular debugging, Promises, AI chat and autocomplete.',
+      'Prepare for a Waymo frontend interview with 6 prompts modelled on a public 2026 report: tree filter and UI, Angular debugging, Promises, AI chat, autocomplete.',
     h1: 'Waymo Frontend Interview Questions',
     kicker: 'Public Waymo prep guide',
     headings: [
       'Prepare for product judgment, not Waymo trivia',
       'What the report establishes, and what you still need to confirm',
-      'Five Waymo frontend interview practice questions',
+      'Six Waymo frontend interview practice questions',
       'Scope the tree filter before writing the first line',
       'A 7-day Waymo frontend interview preparation plan',
       'Common Waymo frontend interview preparation questions',
@@ -128,6 +130,7 @@ const AUTHORED_GUIDE_SMOKE = [
     trustFragment: 'not leaked, confirmed or official Waymo questions',
     prompts: [
       { id: 'tree-filter-render', title: 'Filter a tree by substring and render it indented' },
+      { id: 'tree-filter-ui', title: 'Build a UI for the filtered tree' },
       { id: 'angular-bug-reports-debugging', title: 'Fix an Angular screen from three user bug reports' },
       { id: 'promise-contract-typescript', title: 'Implement a Promise contract in TypeScript' },
       { id: 'ai-chat-frontend-design', title: 'Design the frontend of an AI chat application' },
@@ -909,7 +912,7 @@ const EDITORIAL_NOTE_SMOKE = [
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
     headings: [
-      'An editorial practice grouping',
+      'The booking widget screen and the chat design',
       'Common questions about this Airbnb page',
     ],
     practicePath: '/javascript/trivia/js-closures',
@@ -1888,9 +1891,9 @@ try {
     detail: `mainEntity=${googleCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Google company preview CollectionPage declares free access and the sitemap modification date',
+    name: 'Google company preview CollectionPage marks its locked prompts as Premium and declares the sitemap modification date',
     ok:
-      googleCollectionPage?.isAccessibleForFree === true &&
+      marksPremiumParts(googleCollectionPage) &&
       schemaDateMatchesSitemap(googleCollectionPage, GOOGLE_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${googleCollectionPage?.dateModified || '(missing)'}`,
   });
@@ -2067,9 +2070,9 @@ try {
     detail: `mainEntity=${netflixCollectionPage?.mainEntity?.['@id'] || '(missing)'}`,
   });
   checks.push({
-    name: 'Netflix company preview CollectionPage declares free access and the sitemap modification date',
+    name: 'Netflix company preview CollectionPage marks its locked prompts as Premium and declares the sitemap modification date',
     ok:
-      netflixCollectionPage?.isAccessibleForFree === true &&
+      marksPremiumParts(netflixCollectionPage) &&
       schemaDateMatchesSitemap(netflixCollectionPage, NETFLIX_PREVIEW_ROUTE, sitemapDates),
     detail: `dateModified=${netflixCollectionPage?.dateModified || '(missing)'}`,
   });
@@ -2191,11 +2194,11 @@ try {
       detail: `item_count=${listItems.length}`,
     });
     checks.push({
-      name: `${guide.label} company preview CollectionPage references the ItemList, declares free access and matches the sitemap date`,
+      name: `${guide.label} company preview CollectionPage references the ItemList, marks its locked prompts as Premium and matches the sitemap date`,
       ok:
         Boolean(collectionPage?.mainEntity?.['@id']) &&
         collectionPage?.mainEntity?.['@id'] === itemList?.['@id'] &&
-        collectionPage?.isAccessibleForFree === true &&
+        (guide.prompts.length > 3 ? marksPremiumParts(collectionPage) : collectionPage?.isAccessibleForFree === true) &&
         schemaDateMatchesSitemap(collectionPage, guide.route, sitemapDates),
       detail: `mainEntity=${collectionPage?.mainEntity?.['@id'] || '(missing)'} dateModified=${collectionPage?.dateModified || '(missing)'}`,
     });
@@ -2224,7 +2227,7 @@ try {
     const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
     const titleOk = extractTitle(body) === note.title;
     const headingsOk = [note.h1, ...note.headings].every((heading) => visibleText.includes(normalizeText(heading)));
-    const catalogOk = visibleText.includes(normalizeText('What you can do now for free')) && body.includes(`href="${note.practicePath}"`);
+    const catalogOk = visibleText.includes(normalizeText('Sample FrontendAtlas practice prompts')) && body.includes(`href="${note.practicePath}"`);
     const schemaOk = Boolean(collectionPage?.dateModified) && !jsonLd.graph.some((node) => hasSchemaType(node, 'FAQPage'));
     checks.push({
       name: `${note.label} company preview renders its editorial notes around the catalog blocks with a dated CollectionPage`,
@@ -2232,6 +2235,86 @@ try {
       detail: `title=${titleOk} headings=${headingsOk} catalog=${catalogOk} schema=${schemaOk}`,
     });
   }
+
+  const premiumRoutes = new Set(loadTsModule(path.join(generatedAppDir, 'premium-question-routes.ts')).PREMIUM_QUESTION_ROUTES);
+  const companyGuideRoutes = fs.readFileSync(srcPrerenderRoutesPath, 'utf8').split('\n')
+    .map((line) => line.trim())
+    .filter((route) => /^\/companies\/[^/]+\/preview$/.test(route));
+  const lockProblems = [];
+  for (const route of companyGuideRoutes) {
+    const body = await curlBody(`${base}${route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const collectionPage = extractSeoJsonLd(body).graph.find((node) => hasSchemaType(node, 'CollectionPage'));
+    lockProblems.push(...premiumLockViolations(body, { premiumRoutes, collectionPage }).map((problem) => `${route}: ${problem}`));
+  }
+  checks.push({
+    name: `${companyGuideRoutes.length} company guides show no Premium practice name to visitors and mark the locked parts for search`,
+    ok: companyGuideRoutes.length > 0 && premiumRoutes.size > 0 && lockProblems.length === 0,
+    detail: lockProblems.length ? lockProblems.slice(0, 5).join(' | ') : `${premiumRoutes.size} Premium routes checked`,
+  });
+
+  // A Premium page prerenders the public locked view: its HTML, transfer state included, carries neither the answer
+  // of a trivia question, the solution block of a coding task, nor the sections of a system design case. Probes are
+  // 40-character runs of the locked text that the public fields (title, description, preview, practice) do not share.
+  const prerenderedRoutes = new Set(fs.readFileSync(srcPrerenderRoutesPath, 'utf8').split('\n').map((line) => line.trim()));
+  const readCdnJson = (...parts) => {
+    const file = path.join(cdnQuestionsDir, ...parts);
+    return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+  };
+  const banks = new Map();
+  const bankEntry = (tech, kind, id) => {
+    const key = `${tech}/${kind}`;
+    if (!banks.has(key)) banks.set(key, readCdnJson(tech, `${kind}.json`) ?? []);
+    return banks.get(key).find((item) => item?.id === id) ?? null;
+  };
+  const lockedProbes = (texts, publicText) => texts
+    .flatMap((text) => String(text || '').split(/<[^>]+>/))
+    .flatMap((segment) => segment.match(/[A-Za-z0-9 ,]{40,}/g) ?? [])
+    .map((run) => run.trim().slice(0, 40))
+    .filter((probe) => probe.length === 40 && !publicText.includes(probe));
+  const blockTexts = (blocks) => (blocks ?? []).flatMap((block) => [
+    block?.text,
+    block?.code,
+    ...(block?.rows ?? []).flat(),
+    ...(block?.steps ?? []).map((step) => step?.text),
+    ...(block?.items ?? []).filter((item) => typeof item === 'string'),
+  ]);
+  const leakProblems = [];
+  let lockedPages = 0;
+  for (const route of premiumRoutes) {
+    if (!prerenderedRoutes.has(route)) continue;
+    const question = /^\/([a-z]+)\/(trivia|coding|debug)\/([^/]+)$/.exec(route);
+    const design = /^\/system-design\/([^/]+)$/.exec(route);
+    let probes = [];
+    let solutionKey = false;
+    if (question) {
+      const [, tech, kind, id] = question;
+      const entry = bankEntry(tech, kind, id);
+      if (!entry) continue;
+      const publicText = [entry.title, entry.description, entry.seo?.title, entry.seo?.description, entry.premiumPreview?.summary,
+        ...(entry.premiumPreview?.learningOutcomes ?? []), entry.premiumPreview?.unlockDescription].map(String).join(' ');
+      probes = kind === 'trivia' ? lockedProbes([...blockTexts(entry.answer?.blocks), entry.incidentCard?.scenario], publicText) : [];
+      solutionKey = kind !== 'trivia';
+    } else if (design) {
+      const meta = readCdnJson('system-design', design[1], 'meta.json');
+      if (!meta) continue;
+      const publicText = JSON.stringify([meta.title, meta.description, meta.seo, meta.premiumPreview, meta.practice, meta.sources]);
+      const sections = ['requirements', 'architecture', 'data', 'interfaces', 'optimizations']
+        .map((section) => readCdnJson('system-design', design[1], `${section}.json`));
+      probes = lockedProbes(sections.flatMap((section) => blockTexts(section?.blocks)), publicText);
+    } else {
+      continue;
+    }
+    lockedPages += 1;
+    const body = await curlBody(`${base}${route}`, { followRedirects: true, userAgent: GOOGLEBOT_USER_AGENT });
+    const found = probes.filter((probe) => body.includes(probe));
+    if (found.length) leakProblems.push(`${route}: locked text in the HTML ("${found[0]}")`);
+    if (solutionKey && body.includes('"solutionBlock"')) leakProblems.push(`${route}: solutionBlock in the HTML`);
+  }
+  checks.push({
+    name: `${lockedPages} prerendered Premium pages carry no answer, solution or locked section in their HTML`,
+    ok: lockedPages > 0 && leakProblems.length === 0,
+    detail: leakProblems.length ? leakProblems.slice(0, 5).join(' | ') : `${lockedPages} pages checked`,
+  });
 
   let failed = 0;
   for (const check of checks) {

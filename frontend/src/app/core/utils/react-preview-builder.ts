@@ -1,10 +1,54 @@
 /** Turn a module-style React file into plain script that runs with UMD globals */
 // core/utils/react-preview-builder.ts
 
+// These reach the compiled code as function parameters, so declaring them again would be an error.
+const REACT_PREVIEW_PARAMETERS = new Set([
+  'React',
+  'ReactDOM',
+  'useState',
+  'useEffect',
+  'useMemo',
+  'useRef',
+  'useReducer',
+  'useContext',
+  'createContext',
+  'useCallback',
+]);
+
+/** An import from react becomes a read from the UMD global, so every export keeps working. */
+function reactImportBindings(clause: string, moduleName: string): string {
+  if (/^type\s/.test(clause)) return '';
+  const source = moduleName === 'react' ? 'React' : 'ReactDOM';
+  const statements: string[] = [];
+
+  const namespaceName = clause.match(/\*\s+as\s+([\w$]+)/)?.[1];
+  const defaultName = clause.match(/^([\w$]+)\s*(?:,|$)/)?.[1];
+  for (const name of [namespaceName, defaultName]) {
+    if (name && !REACT_PREVIEW_PARAMETERS.has(name)) statements.push(`const ${name} = ${source};`);
+  }
+
+  const named = (clause.match(/\{([\s\S]*)\}/)?.[1] ?? '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part && !/^type\s/.test(part))
+    .map((part) => part.split(/\s+as\s+/))
+    .filter(([imported, local]) => !REACT_PREVIEW_PARAMETERS.has(local ?? imported))
+    .map(([imported, local]) => (local ? `${imported}: ${local}` : imported));
+  if (named.length) statements.push(`const { ${named.join(', ')} } = ${source};`);
+
+  return statements.join('\n');
+}
+
 function rewriteReactModuleToUMD(src: string): string {
   let s = src;
 
-  // 1) React / ReactDOM importlarını sil
+  // 1) React / ReactDOM importlarını UMD global'lerinden okuyan satırlara çevir
+  s = s.replace(
+    /^\s*import\s+([\w$*\s,{}]+?)\s+from\s+['"](react(?:-dom(?:\/client)?)?)['"];?[ \t]*$/mg,
+    (_match, clause: string, moduleName: string) => reactImportBindings(clause.trim(), moduleName)
+  );
+
+  // Kalanları (örneğin içinde yorum olan importları) sil
   s = s.replace(
     /^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg,
     ''
@@ -40,9 +84,10 @@ function rewriteReactModuleToUMD(src: string): string {
     /\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m,
     'class App'
   );
+  // App may already be declared, as in: function App() {} export default App;
   s = s.replace(
     /\bexport\s+default\s+/m,
-    'const App = '
+    'const __faDefaultExport = '
   );
 
   // 6) Kalan named export keyword'lerini kaldır
@@ -80,8 +125,13 @@ export function makeReactPreviewHtml(files: Record<string, string>, assetBase?: 
     files['src/theme.js'] ??
     '';
 
+  // Only App's default export is the component to render.
+  const themeModuleSrc = themeSrc
+    .replace(/\bexport\s+default\s+(function|class)\b/, '$1')
+    .replace(/\bexport\s+default\s+/, 'const __faThemeDefaultExport = ');
+
   // theme'i App'in önüne ekle ki önce o tanımlansın
-  const combinedSrc = themeSrc ? `${themeSrc}\n\n${appSrc}` : appSrc;
+  const combinedSrc = themeModuleSrc ? `${themeModuleSrc}\n\n${appSrc}` : appSrc;
 
   const appModuleSrc = rewriteReactModuleToUMD(combinedSrc);
 
@@ -411,7 +461,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           'createContext',
           'useCallback',
           // DİKKAT: burada ÇİFTE backslash var
-          compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;'
+          compiled + '\\n;return (typeof __faDefaultExport !== "undefined") ? __faDefaultExport : ((typeof App !== "undefined") ? App : undefined);'
         );
 
         const AppRef = run(
@@ -431,7 +481,8 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         window.__FA_UNMOUNT_PREVIEW = function(){
           try { root.unmount(); } catch (_e) {}
         };
-        if (typeof AppRef === 'function') {
+        // memo() and forwardRef() return objects, and those are components too.
+        if (typeof AppRef === 'function' || (AppRef && typeof AppRef === 'object')) {
           root.render(
             React.createElement(
               FAErrorBoundary,

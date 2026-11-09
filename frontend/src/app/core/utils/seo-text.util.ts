@@ -47,3 +47,33 @@ export function normalizeSeoPlainText(input: string): string {
     withoutWrappers.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
   );
 }
+
+export const SEO_TITLE_MAX = 70;
+export const SEO_DESCRIPTION_MAX = 170;
+
+/** Drops a title's optional trailing qualifiers, one at a time, until it fits a search result. */
+export function fitSeoTitle(title: string): string {
+  let fitted = title;
+  for (const qualifier of [/\s*\|\s*FrontendAtlas$/, /\s*\+\s*Tests$/]) {
+    if (fitted.length <= SEO_TITLE_MAX) break;
+    fitted = fitted.replace(qualifier, '');
+  }
+  return fitted;
+}
+
+/** The page title with its label when both fit a search result, otherwise the title alone. */
+export function labelledSeoTitle(title: string, label: string): string {
+  const labelled = `${title} - ${label}`;
+  return labelled.length <= SEO_TITLE_MAX ? labelled : title;
+}
+
+/** Cuts a long meta description at a sentence end, or else at a word, so it never stops mid-word. */
+export function clampMetaDescription(value: string): string {
+  const text = value.trim();
+  if (text.length <= SEO_DESCRIPTION_MAX) return text;
+  const head = text.slice(0, SEO_DESCRIPTION_MAX);
+  const sentenceEnd = Math.max(head.lastIndexOf('. '), head.lastIndexOf('? '), head.lastIndexOf('! '));
+  if (sentenceEnd >= 80) return head.slice(0, sentenceEnd + 1);
+  const words = text.slice(0, SEO_DESCRIPTION_MAX - 1);
+  return `${words.slice(0, words.lastIndexOf(' ')).replace(/[,;:\s]+$/, '')}…`;
+}

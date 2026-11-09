@@ -72,6 +72,30 @@ describe('locked preview builder', () => {
     expect(preview.pitfalls.length).toBeGreaterThanOrEqual(3);
     expect(preview.related.length).toBeGreaterThan(0);
     expect(preview.related[0].title).toBe('Count Vowels');
+
+    // A task with an Interview Pressure Mode says so on its lock page, as its plan row's chip does.
+    const withPressure = buildLockedPreviewForCoding({ ...q, pressureModeAsset: 'assets/questions/pressure-modes/sum.v1.json' }, { candidates, tech: 'javascript', kind: 'coding' });
+    expect(withPressure?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.',
+    );
+
+    // A task's sample reaches the lock page as written; one without its quote reaches it not at all.
+    const sample = { label: 'A comment from the sample review', quote: 'The assertion runs after the test returns.', note: 'Ten comments like this one.' };
+    expect(buildLockedPreviewForCoding({ ...q, previewSample: sample }, { candidates, tech: 'javascript', kind: 'coding' })?.sample).toEqual(sample);
+    expect(buildLockedPreviewForCoding({ ...q, previewSample: { label: 'A comment', quote: ' ' } }, { candidates, tech: 'javascript', kind: 'coding' })?.sample).toBeUndefined();
+    expect(preview.sample).toBeUndefined();
+
+    // So does a framework task that opens as a merge request review, and a plain JavaScript task that opens as a case.
+    // The page's tech decides: the question the detail page passes carries no technology of its own.
+    const withAsset = { ...q, technology: undefined, reviewModeAsset: 'assets/questions/review-modes/sum.v1.json' };
+    const withReview = buildLockedPreviewForCoding(withAsset, { candidates, tech: 'vue', kind: 'coding' });
+    expect(withReview?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a merge request review: comment on the change in writing, fix it against the clock, then compare with a sample review.',
+    );
+    const withCase = buildLockedPreviewForCoding(withAsset, { candidates, tech: 'javascript', kind: 'coding' });
+    expect(withCase?.unlockDescription).toBe(
+      'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a case: work an example by hand, mark the lines that are wrong and say why without running the code, then compare with a sample answer and fix it.',
+    );
   });
 
   it('builds a trivia preview without relying on answers', () => {

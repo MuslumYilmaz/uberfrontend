@@ -21,7 +21,6 @@ import { IncidentService } from '../../core/services/incident.service';
 import { Tech } from '../../core/models/user.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { BillingCheckoutService, CheckoutSurface, RegionalPricing } from '../../core/services/billing-checkout.service';
-import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService, ShowcaseStatsPayload } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { TradeoffBattleService } from '../../core/services/tradeoff-battle.service';
@@ -31,7 +30,6 @@ import {
   PricingPlanDetails,
   PricingPlansSectionComponent,
 } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
-import { ConversionContextService } from '../../core/services/conversion-context.service';
 import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
 import { apiUrl } from '../../core/utils/api-base';
@@ -47,6 +45,8 @@ import { PrepRoadmapComponent, type PrepRoadmapItem } from '../../shared/compone
 import { PriorityLinksComponent } from '../../shared/components/priority-links/priority-links.component';
 import { HOME_PRIORITY_LINK_GROUPS } from '../../core/content/priority-links';
 import { ShowcaseIconComponent, ShowcaseIconName } from './showcase-icon.component';
+import { ShowcaseInterviewPanelComponent } from './showcase-interview-panel.component';
+import { ShowcasePracticeCardComponent } from './showcase-practice-card.component';
 import { ConversionStickyCtaComponent } from '../../shared/components/conversion-sticky-cta/conversion-sticky-cta.component';
 import { TRACK_LOOKUP, deriveTrackMetrics } from '../tracks/track.data';
 
@@ -88,7 +88,7 @@ if (!FOUNDATIONS_TRACK) {
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, ConversionStickyCtaComponent],
+    imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, ShowcasePracticeCardComponent, ShowcaseInterviewPanelComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, ConversionStickyCtaComponent],
     selector: 'app-showcase-page',
     templateUrl: './showcase.page.html',
     styleUrls: ['./showcase.page.css']
@@ -210,16 +210,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
-  heroLede = 'Start with a guided frontend interview study plan, then practice in a real coding workspace. Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
-  heroPrimaryCtaLabel = 'Start 30-day plan';
-  private heroExperimentVariant: 'control' | 'outcome' = 'control';
-
-  heroFlowSteps = [
-    { key: 'editor', title: 'Editor', subtitle: 'Code in a real IDE with files, tabs, and split panes', icon: 'editor' as ShowcaseIconName, status: 'active' },
-    { key: 'tests', title: 'Checks', subtitle: 'Run deterministic tests and fix exact failures fast', icon: 'checks' as ShowcaseIconName, status: 'idle' },
-    { key: 'preview', title: 'Preview', subtitle: 'Validate real UI output and interaction behavior instantly', icon: 'preview' as ShowcaseIconName, status: 'idle' },
-    { key: 'review', title: 'Review', subtitle: 'Strengthen edge cases, tradeoffs, and interview explanations', icon: 'review' as ShowcaseIconName, status: 'idle' },
-  ];
+  heroLede = 'Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
 
   readonly homepagePrepRoadmapItems: PrepRoadmapItem[] = [
     {
@@ -318,7 +309,6 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
 
-  activeFlowIndex = 0;
   triviaTabs: Array<{
     key: TriviaTabKey;
     label: string;
@@ -647,9 +637,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     private qs: QuestionService,
     private analytics: AnalyticsService,
     private billingCheckout: BillingCheckoutService,
-    private experiments: ExperimentService,
     private route: ActivatedRoute,
-    private conversionContext: ConversionContextService,
   ) { }
 
   get pricingCtaMode(): PricingCtaMode {
@@ -659,20 +647,11 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   ngOnInit(): void {
-    this.heroExperimentVariant = this.experiments.variant('hero_headline_cta_v1', 'showcase');
-    this.experiments.expose(
-      'hero_headline_cta_v1',
-      this.heroExperimentVariant,
-      'showcase_hero',
-      'showcase',
-    );
-    this.applyHeroExperimentCopy();
     this.refreshShowcaseStats();
 
     this.analytics.track('lp_viewed', {
       src: this.readLandingSource(),
       page: 'showcase',
-      hero_variant: this.heroExperimentVariant,
     });
     if (this.isBrowser) {
       this.syncViewportState();
@@ -916,44 +895,6 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
   }
 
-  onHeroPrimaryClick() {
-    this.analytics.track('lp_primary_cta_clicked', {
-      src: 'lp_hero',
-      destination: 'foundations_30d_preview',
-      route: '/tracks/foundations-30d/preview',
-      start_path_variant: 'guided_plan_first',
-      hero_variant: this.heroExperimentVariant,
-    });
-  }
-
-  onHeroSecondaryClick() {
-    this.analytics.track('lp_secondary_cta_clicked', {
-      src: 'lp_hero',
-      destination: 'interview_blueprint',
-      route: '/guides/interview-blueprint/intro',
-      start_path_variant: 'guided_plan_first',
-      hero_variant: this.heroExperimentVariant,
-    });
-  }
-
-  onHeroSignupClick(): void {
-    this.analytics.track('lp_conversion_link_clicked', {
-      action: 'create_account',
-      src: 'showcase_hero',
-      surface: 'showcase_hero',
-      destination: '/auth/signup',
-    });
-  }
-
-  onHeroPricingClick(): void {
-    this.conversionContext.rememberPricingContext('showcase_hero', 'showcase_hero');
-    this.analytics.track('lp_conversion_link_clicked', {
-      action: 'view_pricing',
-      src: 'showcase_hero',
-      surface: 'showcase_hero',
-      destination: '/pricing',
-    });
-  }
 
   get demoInputs() {
     const tab = this.activeDemo;
@@ -1035,10 +976,6 @@ You can also reset any task back to the starter whenever you want to re-practice
       .toLowerCase();
     if (!raw || !this.LP_SRC_PATTERN.test(raw)) return 'direct';
     return raw;
-  }
-
-  private applyHeroExperimentCopy() {
-    this.heroPrimaryCtaLabel = 'Start 30-day plan';
   }
 
   private buildSystemInjector() {

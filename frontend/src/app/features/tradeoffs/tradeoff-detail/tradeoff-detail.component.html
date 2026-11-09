@@ -8,7 +8,7 @@
       <div class="tradeoff-detail__hero-main">
         <p class="tradeoff-detail__eyebrow">TRADEOFF BATTLE</p>
         <h1>{{ current.meta.title }}</h1>
-        <p class="tradeoff-detail__summary">{{ current.meta.summary }}</p>
+        <p class="tradeoff-detail__summary"><fa-inline-code [text]="current.meta.summary"></fa-inline-code></p>
       </div>
 
       <div class="tradeoff-detail__hero-meta">
@@ -20,8 +20,8 @@
 
     <section class="tradeoff-detail__scenario">
       <h2>The prompt</h2>
-      <p>{{ current.scenario }}</p>
-      <div class="tradeoff-detail__prompt">{{ current.prompt }}</div>
+      <p><fa-inline-code [text]="current.scenario"></fa-inline-code></p>
+      <div class="tradeoff-detail__prompt"><fa-inline-code [text]="current.prompt"></fa-inline-code></div>
     </section>
 
     <section class="tradeoff-detail__section">
@@ -39,7 +39,7 @@
           (click)="selectOption(option.id)"
         >
           <span class="tradeoff-option__label">{{ option.label }}</span>
-          <span class="tradeoff-option__summary">{{ option.summary }}</span>
+          <span class="tradeoff-option__summary"><fa-inline-code [text]="option.summary"></fa-inline-code></span>
         </button>
       </div>
     </section>
@@ -54,7 +54,7 @@
         <div class="tradeoff-detail__decision-copy" *ngIf="selectedOption() as picked; else noSelection">
           <p class="tradeoff-detail__decision-label">Your current angle</p>
           <h3>{{ picked.label }}</h3>
-          <p>{{ picked.summary }}</p>
+          <p><fa-inline-code [text]="picked.summary"></fa-inline-code></p>
         </div>
         <ng-template #noSelection>
           <div class="tradeoff-detail__decision-copy">
@@ -97,12 +97,12 @@
       <section class="tradeoff-detail__section tradeoff-detail__callout">
         <p class="tradeoff-detail__eyebrow">STRONG ANSWER</p>
         <h2>{{ current.strongAnswer.title }}</h2>
-        <p>{{ current.strongAnswer.summary }}</p>
+        <p><fa-inline-code [text]="current.strongAnswer.summary"></fa-inline-code></p>
         <ul>
-          <li *ngFor="let item of current.strongAnswer.reasoning; trackBy: trackByString">{{ item }}</li>
+          <li *ngFor="let item of current.strongAnswer.reasoning; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
         </ul>
         <p *ngIf="current.strongAnswer.recommendation" class="tradeoff-detail__recommendation">
-          {{ current.strongAnswer.recommendation }}
+          <fa-inline-code [text]="current.strongAnswer.recommendation"></fa-inline-code>
         </p>
       </section>
 
@@ -116,7 +116,7 @@
           <article *ngFor="let row of current.decisionMatrix" class="tradeoff-matrix-row">
             <div class="tradeoff-matrix-row__head">
               <h3>{{ row.title }}</h3>
-              <p>{{ row.prompt }}</p>
+              <p><fa-inline-code [text]="row.prompt"></fa-inline-code></p>
             </div>
 
             <div class="tradeoff-matrix-row__cells">
@@ -133,7 +133,7 @@
                 >
                   {{ verdictLabel(cell.verdict) }}
                 </span>
-                <p *ngIf="matrixCell(row, option.id) as cell">{{ cell.note }}</p>
+                <p *ngIf="matrixCell(row, option.id) as cell"><fa-inline-code [text]="cell.note"></fa-inline-code></p>
               </article>
             </div>
           </article>
@@ -156,20 +156,20 @@
               {{ selectedOptionId() === option.id ? 'Your pick' : 'Alternative' }}
             </p>
             <h3>{{ option.label }}</h3>
-            <p>{{ option.summary }}</p>
+            <p><fa-inline-code [text]="option.summary"></fa-inline-code></p>
 
             <div class="tradeoff-detail__comparison-lists">
               <div>
                 <h4>When it wins</h4>
                 <ul>
-                  <li *ngFor="let item of option.whenItWins; trackBy: trackByString">{{ item }}</li>
+                  <li *ngFor="let item of option.whenItWins; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
                 </ul>
               </div>
 
               <div>
                 <h4>Watch out for</h4>
                 <ul>
-                  <li *ngFor="let item of option.watchOutFor; trackBy: trackByString">{{ item }}</li>
+                  <li *ngFor="let item of option.watchOutFor; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
                 </ul>
               </div>
             </div>
@@ -187,7 +187,7 @@
           <article *ngFor="let item of current.interviewerPushback" class="tradeoff-detail__panel tradeoff-pushback">
             <p class="tradeoff-detail__comparison-kicker">Pushback</p>
             <h3>{{ item.question }}</h3>
-            <p>{{ item.answer }}</p>
+            <p><fa-inline-code [text]="item.answer"></fa-inline-code></p>
           </article>
         </div>
       </section>
@@ -208,13 +208,13 @@
               <p class="tradeoff-detail__comparison-kicker">{{ example.title }}</p>
             </div>
             <div class="tradeoff-example__answer-shell">
-              <blockquote>{{ example.answer }}</blockquote>
+              <blockquote><fa-inline-code [text]="example.answer"></fa-inline-code></blockquote>
             </div>
             <div class="tradeoff-example__feedback">
               <p class="tradeoff-example__feedback-label">
                 {{ example.level === 'strong' ? 'Why it works' : 'What it is missing' }}
               </p>
-              <p class="tradeoff-example__why">{{ example.whyItWorks }}</p>
+              <p class="tradeoff-example__why"><fa-inline-code [text]="example.whyItWorks"></fa-inline-code></p>
             </div>
           </article>
         </div>
@@ -229,7 +229,7 @@
         <div class="tradeoff-detail__dimensions">
           <article *ngFor="let dimension of current.evaluationDimensions" class="tradeoff-dimension">
             <h3>{{ dimension.title }}</h3>
-            <p>{{ dimension.description }}</p>
+            <p><fa-inline-code [text]="dimension.description"></fa-inline-code></p>
           </article>
         </div>
       </section>
@@ -240,7 +240,7 @@
           <p>Use this structure if you want your answer to sound calm and easy to follow.</p>
         </div>
         <ol class="tradeoff-detail__framework">
-          <li *ngFor="let item of current.answerFramework; trackBy: trackByString">{{ item }}</li>
+          <li *ngFor="let item of current.answerFramework; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
         </ol>
       </section>
 
@@ -250,7 +250,7 @@
           <p>Avoid these shortcuts if you want the answer to feel grounded in engineering tradeoffs.</p>
         </div>
         <ul class="tradeoff-detail__anti-patterns">
-          <li *ngFor="let item of current.antiPatterns; trackBy: trackByString">{{ item }}</li>
+          <li *ngFor="let item of current.antiPatterns; trackBy: trackByString"><fa-inline-code [text]="item"></fa-inline-code></li>
         </ul>
       </section>
     </div>

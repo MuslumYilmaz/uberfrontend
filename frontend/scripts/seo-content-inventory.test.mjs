@@ -461,7 +461,7 @@ test('company previews are dated by their own content: shared template and compo
   const ts = read.read(component);
   const edits = [
     // Shared catalog copy and the shared component class render every company.
-    [template, html.replace('<h2>What you can do now for free</h2>', '<h2>What you can do for free today</h2>'), []],
+    [template, html.replace('<h2>Sample FrontendAtlas practice prompts</h2>', '<h2>Sample FrontendAtlas practice questions</h2>'), []],
     [component, ts.replace('title: `${this.label} Frontend Interview Questions Preview`,', 'title: `${this.label} Frontend Interview Questions: Preview`,'), []],
     // Inline branches and prefixed constants belong to one company.
     [template, html.replace('<p class="preview-kicker">Time-sensitive context</p>', '<p class="preview-kicker">Time-sensitive note</p>'), ['/companies/google/preview']],
@@ -479,8 +479,12 @@ test('company previews are dated by their own content: shared template and compo
 
 test('wiring a company-keyed registry into the preview re-dates only the companies with an entry', () => {
   const component = `${APP}features/company/company-preview/company-preview.component.ts`;
+  const registry = `${APP}shared/company-previews/company-interview-processes.ts`;
   const read = currentReader();
-  const before = buildSeoInventory(read);
+  // Every company has an entry today, so the company without one is made by renaming Airbnb's key.
+  const withoutEntry = read.read(registry).replace('\n  airbnb: {\n', '\n  airbnbWithoutEntry: {\n');
+  assert.notEqual(withoutEntry, read.read(registry));
+  const before = buildSeoInventory(currentReader({ [registry]: withoutEntry }));
   const original = read.read(component);
   // As before the interview process tables shipped: no import, no getter.
   const modified = original
@@ -488,7 +492,7 @@ test('wiring a company-keyed registry into the preview re-dates only the compani
     .replace('  get interviewProcess(): CompanyInterviewProcess | null {\n    return COMPANY_INTERVIEW_PROCESSES[this.slug] ?? null;\n  }\n', '');
   assert.ok(!modified.includes('COMPANY_INTERVIEW_PROCESSES'));
   assert.notEqual(modified, original);
-  const changes = [...buildSeoInventory(currentReader({ [component]: modified }))]
+  const changes = [...buildSeoInventory(currentReader({ [registry]: withoutEntry, [component]: modified }))]
     .filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
   for (const slug of ['walmart', 'openai', 'netflix', 'elevenlabs', 'waymo']) {
     assert.ok(changes.includes(`/companies/${slug}/preview`), `${slug} has an interview process: ${changes.join(',')}`);
@@ -496,6 +500,9 @@ test('wiring a company-keyed registry into the preview re-dates only the compani
   for (const slug of ['airbnb']) {
     assert.ok(!changes.includes(`/companies/${slug}/preview`), `${slug} has no interview process: ${changes.join(',')}`);
   }
+  // The renamed key is what keeps Airbnb out: with its real entry it moves like the others.
+  const route = '/companies/airbnb/preview';
+  assert.notEqual(buildSeoInventory(currentReader({ [component]: modified })).get(route)?.fingerprint, buildSeoInventory(read).get(route)?.fingerprint);
 });
 
 test('a missing inline company branch fails current reads and dates history as a catalog page', () => {

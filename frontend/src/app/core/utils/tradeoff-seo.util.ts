@@ -6,6 +6,7 @@ import {
   robotsForContentAccess,
 } from './content-access-policy.util';
 import { seoContentDateModified } from './seo-content-date.util';
+import { labelledSeoTitle } from './seo-text.util';
 
 /** Never allow an unresolved detail route to advertise an indexable tradeoff page. */
 export const TRADEOFF_DETAIL_FALLBACK_SEO: SeoMeta = {
@@ -108,7 +109,7 @@ export function buildTradeoffSeoMeta(
   };
 
   return {
-    title: `${meta.title} - ${techLabel} Tradeoff Question`,
+    title: labelledSeoTitle(meta.title, `${techLabel} Tradeoff Question`),
     description,
     canonical: canonicalPath,
     robots: robotsForContentAccess(meta.access),

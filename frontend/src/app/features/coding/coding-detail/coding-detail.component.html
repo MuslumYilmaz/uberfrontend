@@ -28,9 +28,9 @@
 
         <button faButton type="button" variant="ghost" [iconOnly]="true" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
-          [disabled]="pressureActive() && !pressureCompleted()"
-          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : 'Solution'">
-          <app-fa-glyph class="fa-btn__icon" [icon]="pressureActive() && !pressureCompleted() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
+          [disabled]="solutionLocked()"
+          (click)="onSolutionTabClick()" [attr.aria-label]="pressureActive() ? (pressureCompleted() ? 'Pressure debrief' : 'Solution locked until all rounds pass') : rehearsalPhase() === 'active' ? 'Solution locked until the rehearsal ends' : findLocked() ? 'Solution locked until you compare' : 'Solution'">
+          <app-fa-glyph class="fa-btn__icon" [icon]="solutionLocked() ? 'pi pi-lock' : 'pi pi-code'"></app-fa-glyph>
         </button>
       </div>
       <div></div>
@@ -46,9 +46,9 @@
 
           <button class="px-4 py-2 flex-1 text-left font-medium" data-testid="coding-solution-tab" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            [disabled]="pressureActive() && !pressureCompleted()"
+            [disabled]="solutionLocked()"
             (click)="onSolutionTabClick()">
-            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : 'Solution' }}
+            {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : rehearsalPhase() === 'active' || findLocked() ? 'Solution locked' : 'Solution' }}
           </button>
         </div>
 
@@ -62,10 +62,17 @@
       <div class="coding-description-content flex-1 overflow-auto p-6 font-sm">
         <p *ngIf="showMobileDesktopGuard()" class="mobile-workspace-notice" data-testid="coding-mobile-notice">
           Read the question and solution on your phone. Use a desktop or tablet to write code and run checks.
+          <span *ngIf="rehearsalPhoneNote() as note" data-testid="rehearsal-phone-note">{{ note }}</span>
         </p>
         <!-- Description Panel -->
-        <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0">
-          <ng-container *ngIf="pressureActive(); else normalDescriptionContent">
+        <section class="space-y-4" data-testid="coding-description-panel" [hidden]="activePanel()!==0"
+          [class.rehearsal-answering]="rehearsalAnswering()">
+          <ng-template #reviewOrDescription>
+            <app-review-mode-panel *ngIf="reviewOpen() && reviewScenario() as scenario; else normalDescriptionContent"
+              [scenario]="scenario" [questionId]="question()!.id" (exit)="exitReviewMode()"
+              (phaseChange)="reviewPhase.set($event)"></app-review-mode-panel>
+          </ng-template>
+          <ng-container *ngIf="pressureActive(); else reviewOrDescription">
             <div *ngIf="pressureScenario() as scenario" class="pressure-mode" data-testid="pressure-mode-panel">
               <header class="pressure-mode__header">
                 <div class="pressure-mode__header-copy">
@@ -84,7 +91,7 @@
 
               <div class="pressure-mode__meta">
                 <span>{{ scenario.estimatedMinutes }} min</span>
-                <span>{{ scenario.access === 'free' ? 'Free pilot' : 'Premium' }}</span>
+                <span>{{ pressureAccessLabel() }}</span>
                 <span>{{ pressureClearedRounds() }}/{{ scenario.rounds.length }} rounds cleared</span>
               </div>
 
@@ -109,9 +116,9 @@
                 [attr.data-round-id]="round.id" data-testid="pressure-active-round">
                 <p class="pressure-mode__eyebrow">Interviewer constraint · Round {{ pressureRoundIndex() + 1 }}</p>
                 <h2>{{ round.title }}</h2>
-                <p class="pressure-mode__prompt">{{ round.interviewerPrompt }}</p>
+                <p class="pressure-mode__prompt"><fa-inline-code [text]="round.interviewerPrompt"></fa-inline-code></p>
                 <ul>
-                  <li *ngFor="let constraint of round.constraints">{{ constraint }}</li>
+                  <li *ngFor="let constraint of round.constraints"><fa-inline-code [text]="constraint"></fa-inline-code></li>
                 </ul>
                 <p class="pressure-mode__cumulative">
                   Run checks when ready. This round includes every earlier constraint.
@@ -180,9 +187,26 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
+            <!-- A find case on a plain JavaScript task: the bug named in writing before the workspace runs. -->
+            <section *ngIf="!demoMode && tech === 'javascript' && reviewSupported() && workspaceAvailable() && !reviewOpen()"
+              class="pressure-entry" data-testid="review-mode-entry">
+              <div>
+                <p class="pressure-entry__eyebrow">Case interview format</p>
+                <h2>Find the bug without coding the fix</h2>
+                <p>
+                  Read the code, work an example by hand, mark the lines you would change and say why, then compare
+                  with a sample answer. The workspace runs once you have compared.
+                </p>
+              </div>
+              <button type="button" faButton variant="primary" data-testid="review-mode-start" (click)="startReviewMode()">
+                Start the case
+              </button>
+            </section>
+
             <ng-container *ngIf="!demoMode && kind === 'coding' && isFrameworkTech()">
+              <!-- A running rehearsal keeps the React panel on its own draft and clock, so Pressure Mode waits. -->
               <section
-                *ngIf="pressureSupported() && workspaceAvailable()"
+                *ngIf="pressureSupported() && workspaceAvailable() && !rehearsalPhase()"
                 class="pressure-entry"
                 data-testid="pressure-mode-entry"
               >
@@ -200,9 +224,73 @@
                 </button>
               </section>
 
+              <section
+                *ngIf="reviewSupported() && workspaceAvailable() && !reviewOpen()"
+                class="pressure-entry"
+                data-testid="review-mode-entry"
+              >
+                <div>
+                  <p class="pressure-entry__eyebrow">Merge request review</p>
+                  <h2>Review the change, then fix it</h2>
+                  <p>
+                    Read the merge request and comment on it in writing, implement the top fixes in the workspace, then
+                    compare your review with a sample one. The written review and the interview each run on their own
+                    clock, as the reports describe them.
+                  </p>
+                </div>
+                <button type="button" faButton variant="primary" data-testid="review-mode-start"
+                  (click)="startReviewMode()">
+                  Start the review
+                </button>
+              </section>
+
             </ng-container>
 
-            <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta()" data-testid="coding-interview-hero">
+            <ng-container *ngIf="!demoMode && rehearsalSupported() && workspaceAvailable()">
+              <app-rehearsal-panel *ngIf="rehearsalPhase() as phase" [session]="rehearsals.session()!" [phase]="phase"
+                [remainingMs]="rehearsals.remainingMs()" [questionId]="question()!.id"
+                (endRehearsal)="endRehearsal()" (closeReview)="closeRehearsalReview()"
+                (answer)="rehearsals.answer($event)" (nextQuestion)="rehearsals.nextQuestion()"
+                (skipToProblems)="rehearsals.skipToProblems()"></app-rehearsal-panel>
+
+              <ng-container *ngIf="!rehearsalPhase()">
+                <section *ngIf="rehearsalOffers().length === 1" class="pressure-entry" data-testid="rehearsal-entry">
+                  <div>
+                    <p class="pressure-entry__eyebrow">Timed rehearsal · Premium</p>
+                    <h2>{{ rehearsalHeading(rehearsalOffers()[0]) }}</h2>
+                    <p>{{ rehearsalOffers()[0].summary }}</p>
+                    <p *ngIf="otherRehearsalTitle() as other">Starting it ends the {{ other }} rehearsal you have running.</p>
+                  </div>
+                  <button *ngIf="rehearsalAccess() === 'premium'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-start" (click)="startRehearsal(rehearsalOffers()[0])">
+                    Start the rehearsal
+                  </button>
+                  <button *ngIf="rehearsalAccess() === 'locked'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-pricing" (click)="goToPricing('coding_rehearsal')">
+                    View pricing
+                  </button>
+                </section>
+
+                <!-- A problem in several rehearsals lists them in one card, so its description stays in view. -->
+                <section *ngIf="rehearsalOffers().length > 1" class="pressure-entry" data-testid="rehearsal-offers">
+                  <div>
+                    <p class="pressure-entry__eyebrow">Timed rehearsals · Premium</p>
+                    <h2>This problem is part of {{ rehearsalOffers().length }} timed rehearsals</h2>
+                    <p *ngIf="otherRehearsalTitle() as other">Starting one ends the {{ other }} rehearsal you have running.</p>
+                  </div>
+                  <app-rehearsal-offers [offers]="rehearsalOffers()" [canStart]="rehearsalAccess() === 'premium'"
+                    (start)="startRehearsal($event)"></app-rehearsal-offers>
+                  <button *ngIf="rehearsalAccess() === 'locked'" type="button" faButton variant="primary"
+                    data-testid="rehearsal-pricing" (click)="goToPricing('coding_rehearsal')">
+                    View pricing
+                  </button>
+                </section>
+              </ng-container>
+            </ng-container>
+
+            <!-- While a rehearsal runs, the sections that coach a task (its focus, method, mistakes, explanation and test
+                 list) step aside, as the solution does; the task's own statement, requirements and notes stay. -->
+            <section class="detail-interview-hero" *ngIf="hasInterviewHeroMeta() && !rehearsalRunning()" data-testid="coding-interview-hero">
               <p class="detail-interview-hero__intent" *ngIf="interviewFocusSummary()">
                 {{ interviewFocusSummary() }}
               </p>
@@ -215,21 +303,19 @@
                 </span>
               </div>
               <div *ngIf="assessedSkillChips().length" class="detail-interview-hero__skills" aria-label="Assessed skills">
-                <span *ngFor="let skill of assessedSkillChips()" class="fa-chip">
-                  {{ skill }}
-                </span>
+                <span *ngFor="let skill of assessedSkillChips()" class="fa-chip"><fa-inline-code [text]="skill"></fa-inline-code></span>
               </div>
               <ul *ngIf="interviewFocusItems().length" class="detail-interview-hero__checks">
-                <li *ngFor="let item of interviewFocusItems()">{{ item }}</li>
+                <li *ngFor="let item of interviewFocusItems()"><fa-inline-code [text]="item"></fa-inline-code></li>
               </ul>
             </section>
 
-            <section class="quick-win-strip" *ngIf="quickWinShowCompact()" data-testid="quick-win-step-strip">
+            <section class="quick-win-strip" *ngIf="quickWinShowCompact() && !rehearsalRunning()" data-testid="quick-win-step-strip">
               <p class="quick-win-strip__kicker">Quick-win mode</p>
               <p class="quick-win-strip__title">Step 1 of 2: solve this question first.</p>
             </section>
 
-            <section class="quick-win-next" *ngIf="quickWinShowExpanded()" data-testid="quick-win-next-step">
+            <section class="quick-win-next" *ngIf="quickWinShowExpanded() && !rehearsalRunning()" data-testid="quick-win-next-step">
               <div class="quick-win-next__head">
                 <p class="quick-win-next__kicker">Quick-win path</p>
                 <button
@@ -262,11 +348,6 @@
             <!-- Prompt specs -->
             <ng-container *ngIf="descSpecs() as specs">
 
-              <!-- Tech focus chips -->
-              <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
-                <span *ngFor="let t of specs.techFocus" class="fa-chip"><fa-inline-code [text]="t"></fa-inline-code></span>
-              </div>
-
               <!-- Framework preview button styled like the yellow banner -->
               <div *ngIf="isFrameworkTech() && workspaceAvailable()" class="mt-6">
                 <button
@@ -278,7 +359,7 @@
               </div>
 
               <!-- Practice focus -->
-              <div *ngIf="specs.practice?.length" class="mt-4">
+              <div *ngIf="specs.practice?.length && !rehearsalRunning()" class="mt-4">
                 <h3 class="text-sm font-semibold mb-1">What you'll practice:</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let p of specs.practice"><fa-inline-code [text]="displayText(p)"></fa-inline-code></li>
@@ -321,7 +402,7 @@
               </div>
 
               <!-- Common mistakes -->
-              <div *ngIf="specs.commonMistakes?.length" class="mt-3">
+              <div *ngIf="specs.commonMistakes?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Common mistakes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let item of specs.commonMistakes"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
@@ -329,13 +410,13 @@
               </div>
 
               <!-- Interview explanation -->
-              <div *ngIf="specs.interviewExplanation" class="mt-3">
+              <div *ngIf="specs.interviewExplanation && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Interview explanation</h3>
                 <p class="text-sm opacity-90">{{ displayText(specs.interviewExplanation) }}</p>
               </div>
 
               <!-- Testing checklist -->
-              <div *ngIf="specs.testingChecklist?.length" class="mt-3">
+              <div *ngIf="specs.testingChecklist?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Testing checklist</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let item of specs.testingChecklist"><fa-inline-code [text]="displayText(item)"></fa-inline-code></li>
@@ -343,7 +424,7 @@
               </div>
 
               <!-- FAQ -->
-              <div *ngIf="specs.faq?.length" class="mt-3">
+              <div *ngIf="specs.faq?.length && !rehearsalRunning()" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">FAQ</h3>
                 <div class="space-y-2 text-sm opacity-90">
                   <div *ngFor="let item of specs.faq">
@@ -377,8 +458,9 @@
               </div>
             </div>
 
-            <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab -->
-            <details *ngIf="solutionIdea()" class="solution-idea mt-6" data-testid="coding-solution-idea"
+            <!-- Solution idea: the first paragraph of the authored overview, readable on phones and in the initial HTML without opening the solution tab.
+                 A running rehearsal hides it with the solution, once the browser view is ready, so hydration matches the server. -->
+            <details *ngIf="solutionIdea() && !rehearsalRunning()" class="solution-idea mt-6" data-testid="coding-solution-idea"
               [attr.open]="solutionIdeaOpen() ? '' : null">
               <summary><h3 class="inline text-sm font-semibold">Solution idea</h3></summary>
               <div class="solution-prose prose prose-invert max-w-none text-sm opacity-90 mt-1"
@@ -434,7 +516,9 @@
 
               </div>
             </ng-container>
-            <app-question-sources [sources]="sources()" variant="full"></app-question-sources>
+            <!-- An account's note can name the method a problem calls for, so a running rehearsal sets the sources aside
+                 with the coaching sections. -->
+            <app-question-sources *ngIf="!rehearsalRunning()" [sources]="sources()" variant="full"></app-question-sources>
           </ng-template>
 
         </section>
@@ -472,13 +556,13 @@
                 class="pressure-debrief" data-testid="pressure-debrief">
                 <p class="pressure-mode__eyebrow">All constraints cleared</p>
                 <h3>{{ scenario.debrief.title }}</h3>
-                <p>{{ scenario.debrief.summary }}</p>
+                <p><fa-inline-code [text]="scenario.debrief.summary"></fa-inline-code></p>
                 <ul>
-                  <li *ngFor="let takeaway of scenario.debrief.takeaways">{{ takeaway }}</li>
+                  <li *ngFor="let takeaway of scenario.debrief.takeaways"><fa-inline-code [text]="takeaway"></fa-inline-code></li>
                 </ul>
                 <div class="pressure-debrief__framework-note">
                   <strong>{{ tech | titlecase }} implementation note</strong>
-                  <p>{{ $any(scenario.debrief.frameworkNotes)[tech] }}</p>
+                  <p><fa-inline-code [text]="$any(scenario.debrief.frameworkNotes)[tech]"></fa-inline-code></p>
                 </div>
               </section>
 
@@ -536,10 +620,10 @@
               <div class="p-3" *ngFor="let ap of approaches(); let i = index">
                 <div class="ap-row">
                   <span class="ap-num">{{ i + 1 }}</span>
-                  <h3 class="ap-title">{{ ap.title }}</h3>
+                  <h3 class="ap-title"><fa-inline-code [text]="ap.title"></fa-inline-code></h3>
                   <div class="ap-actions">
                     <button faButton [attr.data-testid]="'solution-load-approach-' + i"
-                      *ngIf="workspaceAvailable() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
+                      *ngIf="workspaceAvailable() && !rehearsalPhase() && activePanel()===1 && ((isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs)))"
                       (click)="loadApproach(ap, i)" title="Load into editor">
                       Load into editor
                     </button>
@@ -661,7 +745,7 @@
                   <div *ngIf="structuredSolution()?.notes?.pitfalls?.length" class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Pitfalls</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let p of structuredSolution()?.notes?.pitfalls">{{ p }}</li>
+                      <li class="font-sm" *ngFor="let p of structuredSolution()?.notes?.pitfalls"><fa-inline-code [text]="displayText(p)"></fa-inline-code></li>
                     </ul>
                   </div>
 
@@ -669,7 +753,7 @@
                     class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Edge cases</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let e of structuredSolution()?.notes?.edgeCases">{{ e }}</li>
+                      <li class="font-sm" *ngFor="let e of structuredSolution()?.notes?.edgeCases"><fa-inline-code [text]="displayText(e)"></fa-inline-code></li>
                     </ul>
                   </div>
 
@@ -677,7 +761,7 @@
                     class="p-3 rounded border border-white/10">
                     <div class="text-xs uppercase opacity-70 mb-2">Techniques</div>
                     <ul class="list-disc list-inside text-sm space-y-1">
-                      <li class="font-sm" *ngFor="let t of structuredSolution()?.notes?.techniques">{{ t }}</li>
+                      <li class="font-sm" *ngFor="let t of structuredSolution()?.notes?.techniques"><fa-inline-code [text]="displayText(t)"></fa-inline-code></li>
                     </ul>
                   </div>
                 </div>
@@ -689,9 +773,9 @@
                 <ul class="space-y-3">
                   <li *ngFor="let hint of commonMistakes()" class="p-3 rounded border border-white/10">
                     <p class="text-sm font-medium" data-testid="coding-common-mistake-title">{{ hint.title }}</p>
-                    <p class="text-sm opacity-80 mt-1">{{ hint.why }}</p>
+                    <p class="text-sm opacity-80 mt-1"><fa-inline-code [text]="hint.why"></fa-inline-code></p>
                     <ul class="list-disc list-inside text-sm space-y-1 mt-2">
-                      <li class="font-sm" *ngFor="let action of hint.actions">{{ action }}</li>
+                      <li class="font-sm" *ngFor="let action of hint.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
                     </ul>
                   </li>
                 </ul>
@@ -701,7 +785,7 @@
               <section class="space-y-2 mb-6" *ngIf="!pressureRequested() && structuredSolution()?.followUp?.length">
                 <h3 class="text-sm font-semibold opacity-90">Common interview follow-ups:</h3>
                 <ul class="list-disc list-inside text-sm space-y-1">
-                  <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp">{{ f }}</li>
+                  <li class="font-sm" *ngFor="let f of structuredSolution()?.followUp"><fa-inline-code [text]="displayText(f)"></fa-inline-code></li>
                 </ul>
               </section>
 
@@ -825,6 +909,8 @@
         [storageKeyOverride]="frameworkStorageKey()"
         [frameworkTestsOverride]="pressureActive() ? pressureFrameworkTests() : null"
         [interviewMode]="pressureActive()"
+        [locked]="rehearsalLocked() || findLocked()" [lockedLabel]="findLocked() ? 'Find the bug first: the code runs after the comparison' : rehearsalLockedLabel()"
+        [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">
@@ -851,12 +937,16 @@
       <!-- JS / TS EDITOR stays the same -->
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
-          [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+          [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="jsStorageKey()"
           [solutionPanelOpen]="activePanel()===1"
-          [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
+          [hideRestoreBanner]="demoMode || hideRestoreBanner || !!rehearsalPhase()" [disablePersistence]="disablePersistence || demoMode"
+          [locked]="rehearsalLocked() || findLocked()" [lockedLabel]="findLocked() ? 'Find the bug first: the code runs after the comparison' : rehearsalLockedLabel()"
+          [concealedNote]="rehearsalConcealedNote() ?? findConcealedNote()"
+          [clockLabel]="rehearsalClockLabel()" [timedPracticeHidden]="findCaseOpen()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
+          (requestRunTests)="runTests()"
           (langChange)="onChildLang($event)"
-          (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
+          (testResultsChange)="onJsTestResults($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
         </app-coding-js-panel>
       </ng-template>
@@ -881,12 +971,12 @@
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [prevHref]="prevHref()" [nextHref]="nextHref()"
-    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : 'Incidents hub') : null"
-    [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : ['/incidents']) : null"
-    [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : null"
+    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? (rehearsalRunning() ? null : 'Incidents hub'))) : null"
+    [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : (planReturn()?.route ?? ['/incidents'])) : null"
+    [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"
-    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && isCompletionPending()"
+    [submitLabel]="submitLabel()" [submitDisabled]="!isCourseContext() && (isCompletionPending() || rehearsalLocked() || findLocked())"
     [secondaryLabel]="footerSecondaryLabel()"
     (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
     (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()"
@@ -1042,8 +1132,19 @@
           {{ lockedGuestCopy }}
         </ng-template>
       </p>
+      <!-- On a phone the unlocked task is reading material; the editor and checks need a larger screen. -->
+      <p class="locked-phone" *ngIf="isPhoneViewport()" data-testid="coding-locked-phone-note">
+        On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.
+      </p>
       <div class="locked-actions">
         <button faButton variant="primary" type="button" (click)="goToPricing()">View pricing</button>
+        <a
+          *ngIf="lockedReturn() as back"
+          faButton
+          variant="ghost"
+          data-testid="coding-locked-return"
+          [routerLink]="back.route"
+          [queryParams]="back.queryParams">{{ back.label }}</a>
         <button faButton variant="ghost" type="button" data-testid="coding-report-access-issue-btn" (click)="reportAccessIssue()">
           Report access issue
         </button>

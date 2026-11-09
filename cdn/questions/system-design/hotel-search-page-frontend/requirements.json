@@ -1,0 +1,65 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 20-minute hotel search trace",
+      "steps": [
+        {
+          "title": "Name the traveller outcome",
+          "text": "A traveller picks a city, dates and guests, narrows the list with filters, scans cards with a price and a photo, and opens one. Success means the cards always match the inputs and the filters on screen, a shared link reproduces the same list, and the page stays usable while results load. Follow one filter change through a slow fetch, a shared link on a phone and a release by the filters team."
+        },
+        {
+          "title": "Draw the ownership line",
+          "text": "The browser owns the inputs, the filters, which results are on screen and what gets announced. The search backend owns availability, prices, ranking and the result pages, behind a contract the frontend never guesses around; inventory and payments stay a black box."
+        },
+        {
+          "title": "Put the search in the URL",
+          "text": "City, dates, guests and every selected filter live in the query string. Each unit derives its state from the URL and writes to it through one router API, so the inputs, the filters and the cards can never disagree. Typing replaces the URL, a committed change pushes a history entry, and a shared link rebuilds the page on load."
+        },
+        {
+          "title": "Split the page by team, not by box",
+          "text": "A thin shell owns routing, layout, the design system version and the telemetry client. The inputs, the filters and the results are three units, each built and deployed by its team and mounted through a typed contract. The shell pins React once and runs a contract test before it mounts a new unit build."
+        },
+        {
+          "title": "Make a release traceable",
+          "text": "Every unit build carries a buildId, and every vital, error and funnel event names the unit and the build that produced it. The CDN serves hashed assets as immutable and HTML with a short lifetime, so a worse LCP after a release points at one unit's deploy instead of at the page."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "table",
+      "title": "Hotel search authority map",
+      "columns": [
+        "Concern",
+        "Owner",
+        "Browser role"
+      ],
+      "rows": [
+        [
+          "Search inputs and filters",
+          "The URL, written through the shell router",
+          "Derive unit state from it and write back through one API"
+        ],
+        [
+          "Results, ranking and prices",
+          "Search backend",
+          "Render the backend's order and show each price with its quoted time"
+        ],
+        [
+          "Unit builds",
+          "Each team, behind the shell contract",
+          "Mount, update and unmount through the contract"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: each unit keeps its own filters",
+      "text": "We reject letting the inputs, the filters and the results each hold a copy of the selected filters and sync through events. The copies drift after a slow reply or a missed event, so a user sees cards for one filter set under checkboxes for another, and a shared link opens a different list than the sender saw. The URL as the single writer costs one serializer."
+    }
+  ]
+}

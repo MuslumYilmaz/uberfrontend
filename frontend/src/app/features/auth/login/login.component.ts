@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { classifyAuthFailure, normalizeAuthAnalyticsSource } from '../../../core/utils/auth-analytics.util';
 import { getAuthDisplayError } from '../../../core/utils/auth-error.util';
+import { companyPlanNameFromRedirect } from '../../../core/utils/company-plan-redirect.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
@@ -20,6 +21,8 @@ export class LoginComponent implements OnInit {
   submitted = false;
   redirectTo = '/dashboard';
   redirectToPresent = false;
+  /** The company plan the person came from, named so the page says what the account keeps. */
+  planName: string | null = null;
   analyticsSource = 'direct';
   authSwitchQueryParams: Record<string, string> = { src: 'direct' };
 
@@ -37,6 +40,7 @@ export class LoginComponent implements OnInit {
   ) {
     this.redirectTo = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
     this.redirectToPresent = this.redirectTo !== '/dashboard';
+    this.planName = companyPlanNameFromRedirect(this.redirectTo);
     this.analyticsSource = normalizeAuthAnalyticsSource(this.route.snapshot.queryParamMap.get('src'));
     this.authSwitchQueryParams = {
       ...(this.redirectToPresent ? { redirectTo: this.redirectTo } : {}),

@@ -1,6 +1,6 @@
 // app.component.ts
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal, DOCUMENT } from '@angular/core';
+import { CommonModule, ViewportScroller, isPlatformBrowser } from '@angular/common';
+import { Component, NgZone, OnDestroy, OnInit, PLATFORM_ID, afterNextRender, computed, inject, signal, DOCUMENT } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { BugReportService } from './core/services/bug-report.service';
@@ -23,6 +23,9 @@ import { PrepRoadmapSwitcherComponent } from './shared/components/prep-roadmap/p
 import { AchievementToastComponent } from './shared/components/achievement-toast/achievement-toast.component';
 import { SiteFooterComponent } from './shared/components/footer/site-footer.component';
 
+/** Clears the fixed header (56px) with some room, so an anchor target is not hidden behind it. */
+const ANCHOR_SCROLL_OFFSET_PX = 72;
+
 @Component({
     selector: 'app-root',
     imports: [
@@ -44,6 +47,8 @@ import { SiteFooterComponent } from './shared/components/footer/site-footer.comp
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private readonly doc = inject(DOCUMENT);
+  private readonly zone = inject(NgZone);
+  private readonly viewportScroller = inject(ViewportScroller);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly currentUrl = signal(this.initialUrl());
   bugReport = inject(BugReportService);
@@ -82,6 +87,9 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/showcase\/?$/,
     // The pricing page reads as a marketing page at full width; the drawer stays reachable from the header.
     /^\/pricing\/?$/,
+    // The plan form needs the width, and the company guides below it keep their own links.
+    /^\/companies\/?$/,
+    /^\/companies\/(?:preview|plan)\/?$/,
   ];
 
   // strip query/hash before testing
@@ -101,6 +109,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.HIDE_SIDEBAR_PATTERNS.some(rx => rx.test(this.pathOnly()))
   );
   showSidebar = computed(() => !this.hideSidebar());
+  // False through the server render and hydration, so @defer draws the sidebar's placeholder
+  // in prerendered HTML: a `when` that is already true on first render draws nothing there.
+  readonly sidebarReady = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.sidebarReady.set(true));
+  }
 
   // --- SITE FOOTER on public pages ---
   // Route-only decisions (see core/content/site-footer.json), so the server and
@@ -133,12 +148,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.daily.ensureTodaySet();
     this.scheduleToNextMidnight();
     document.addEventListener('visibilitychange', this.onVisibility);
+    this.viewportScroller.setOffset([0, ANCHOR_SCROLL_OFFSET_PX]);
+    document.addEventListener('click', this.onHashLinkClick);
   }
 
   ngOnDestroy() {
     if (!this.isBrowser) return;
     if (this.midnightTimer) window.clearTimeout(this.midnightTimer);
     document.removeEventListener('visibilitychange', this.onVisibility);
+    document.removeEventListener('click', this.onHashLinkClick);
   }
 
   private onVisibility = () => {
@@ -148,16 +166,39 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   };
 
+  /**
+   * <base href="/"> resolves a plain href="#id" to the home page. Same-page links go through the router instead,
+   * which keeps the reader on the page and runs anchor scrolling.
+   */
+  private onHashLinkClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const link = event.target instanceof Element ? event.target.closest('a[href^="#"]') : null;
+    const fragment = link?.getAttribute('href')?.slice(1);
+    if (!fragment) return;
+    event.preventDefault();
+    // initialUrl, not router.url: until the first navigation ends router.url is still '/', the page the bug sent readers to.
+    const target = this.router.parseUrl(this.initialUrl());
+    target.fragment = fragment;
+    void this.router.navigateByUrl(target);
+  };
+
   private scheduleToNextMidnight() {
     if (!this.isBrowser) return;
     if (this.midnightTimer) window.clearTimeout(this.midnightTimer);
     const now = new Date();
     const next = new Date(now);
     next.setHours(24, 0, 0, 0);
-    this.midnightTimer = window.setTimeout(() => {
-      this.daily.ensureTodaySet();
-      this.scheduleToNextMidnight();
-    }, next.getTime() - now.getTime());
+    // Outside the zone: a timer pending inside it keeps the app from ever turning stable, and the router skips every
+    // scroll reset and anchor jump until it does, so a click would open the next page at the old scroll position.
+    this.zone.runOutsideAngular(() => {
+      this.midnightTimer = window.setTimeout(() => {
+        this.zone.run(() => {
+          this.daily.ensureTodaySet();
+          this.scheduleToNextMidnight();
+        });
+      }, next.getTime() - now.getTime());
+    });
   }
 
   private configureRouteRuntime(url: string) {

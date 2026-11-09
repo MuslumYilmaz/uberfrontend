@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "rehearsals": [
+    {
+      "id": "meta-full-loop-coding",
+      "access": "premium",
+      "company": "meta",
+      "title": "Meta coding round",
+      "round": "full-loop-coding",
+      "summary": "Public accounts of Meta's full loop describe about two JavaScript problems in about 40 minutes, with no dynamic programming, and name DOM and utility problems. This rehearsal pairs one of each: the second opens when you move on, and the solutions stay locked until the clock stops.",
+      "minutes": 40,
+      "order": "sequential",
+      "items": [
+        {
+          "path": "/javascript/coding/js-dom-twin-node",
+          "title": "Find the Corresponding Node in Twin DOM Trees"
+        },
+        {
+          "path": "/javascript/coding/js-debounce",
+          "title": "Debounce Function"
+        }
+      ]
+    },
+    {
+      "id": "revolut-hackerrank-assessment",
+      "access": "premium",
+      "company": "revolut",
+      "title": "Revolut HackerRank assessment",
+      "round": "hackerrank-assessment",
+      "summary": "Public accounts of Revolut's assessment describe three algorithm tasks on HackerRank in 85 to 110 minutes, done at home before a deadline; a 2025 account names a standard sliding-window problem, a 2024 account a third task at a high-medium level. This rehearsal gives three such tasks the shorter 85 minutes, all open from the start as on HackerRank, with the solutions locked until the clock stops.",
+      "minutes": 85,
+      "order": "free",
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-longest-substring-without-repeating",
+          "title": "Longest Substring Without Repeating Characters"
+        },
+        {
+          "path": "/javascript/coding/js-three-sum",
+          "title": "3Sum (find unique triplets that sum to zero)"
+        }
+      ]
+    },
+    {
+      "id": "agoda-coding-interview",
+      "access": "premium",
+      "company": "agoda",
+      "title": "Agoda coding interview",
+      "round": "coding-interview",
+      "summary": "Public accounts of Agoda's coding interview describe 60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, then questions on test cases and the pull-request process. This rehearsal gives the two problems 45 minutes, so the questions still fit in the hour.",
+      "planNote": "The round runs 60 minutes; its last 15 go to questions on test cases and pull requests.",
+      "minutes": 45,
+      "order": "sequential",
+      "items": [
+        {
+          "path": "/javascript/coding/js-add-strings",
+          "title": "Add Large Integers as Strings"
+        },
+        {
+          "path": "/javascript/coding/js-recover-bst-swapped-nodes",
+          "title": "Recover a BST with Two Swapped Nodes"
+        }
+      ]
+    },
+    {
+      "id": "walmart-karat-screen",
+      "access": "premium",
+      "company": "walmart",
+      "title": "Walmart Karat screen",
+      "round": "coding-screen",
+      "summary": "Public accounts of Walmart's Karat screen describe about ten minutes of role-focused questions with one-line answers, then 45 minutes for two easy-to-medium algorithm problems. This rehearsal asks eight frontend questions on topics Walmart's reports name, then two algorithm problems from other Walmart rounds; sample answers and solutions open when the clock stops.",
+      "minutes": 55,
+      "order": "sequential",
+      "quiz": {
+        "minutes": 10,
+        "questions": [
+          {
+            "question": "What is a closure in JavaScript?",
+            "answer": "A function that keeps access to the variables of the scope where it was created, even after that scope has finished running.",
+            "path": "/javascript/trivia/js-closures"
+          },
+          {
+            "question": "Is JavaScript block-scoped or function-scoped?",
+            "answer": "Both: `var` is function-scoped, while `let` and `const` are block-scoped and throw if used before their declaration runs (the temporal dead zone).",
+            "path": "/javascript/trivia/js-block-scoped-or-function-scoped"
+          },
+          {
+            "question": "A resolved promise's `then` callback and a `setTimeout(fn, 0)` callback are both waiting. Which runs first?",
+            "answer": "The promise callback: microtasks run as soon as the current task finishes, before the browser takes the next task, such as the timer.",
+            "path": "/javascript/trivia/js-event-loop"
+          },
+          {
+            "question": "How does `bind()` differ from `call()` and `apply()`?",
+            "answer": "`call()` and `apply()` run the function at once with the given `this` (`apply()` takes the arguments as an array); `bind()` returns a new function with `this` fixed.",
+            "path": "/javascript/trivia/js-call-apply-bind"
+          },
+          {
+            "question": "An element has `width: 300px`, `padding: 20px` and a 2px border. How wide does it render?",
+            "answer": "344px under the default `content-box`; with `box-sizing: border-box` the width includes padding and border, so it renders 300px wide.",
+            "path": "/css/trivia/css-box-model"
+          },
+          {
+            "question": "What is an element with `position: absolute` positioned against?",
+            "answer": "Its nearest ancestor with a `position` other than `static` (or a transform, filter or contain), else the initial containing block.",
+            "path": "/css/trivia/css-position-relative-absolute-fixed"
+          },
+          {
+            "question": "What is `useEffect` for?",
+            "answer": "Synchronizing a component with something outside React, such as a subscription, a timer or a request, after the render commits; values computed from props or state belong in render.",
+            "path": "/react/trivia/react-useeffect-purpose"
+          },
+          {
+            "question": "What is the difference between `useMemo` and `useCallback`?",
+            "answer": "`useMemo` caches a computed value and `useCallback` caches a function; both pay off only when the work is expensive or a memoized child or effect needs a stable reference.",
+            "path": "/react/trivia/react-usememo-vs-usecallback"
+          }
+        ]
+      },
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-stack-queue-implementation",
+          "title": "Implement Stack and Queue in JavaScript"
+        }
+      ]
+    },
+    {
+      "id": "booking-com-hackerrank-assessment",
+      "access": "premium",
+      "company": "booking-com",
+      "title": "Booking.com HackerRank assessment",
+      "round": "hackerrank-assessment",
+      "summary": "Public accounts of Booking.com's HackerRank test describe five items in 90 to 100 minutes: two easy algorithm problems, two HTML and CSS multiple-choice questions and a React component, whose logic one account says fetched data and showed it by state. This rehearsal gives all five 90 minutes: the CSS questions first, then the three problems at once, the React one a form that calls an API.",
+      "minutes": 90,
+      "order": "free",
+      "quiz": {
+        "questions": [
+          {
+            "question": "An element has `width: 200px`, `padding: 10px` and a 1px border, with `box-sizing: border-box`. How wide is its content box?",
+            "choices": ["178px", "180px", "200px", "222px"],
+            "correct": [0],
+            "pick": "one",
+            "answer": "With `border-box` the 200px include the padding and the border: 200px minus 20px of padding and 2px of border leaves 178px. Under the default `content-box` the content is 200px and the whole box 222px.",
+            "path": "/css/trivia/css-box-model"
+          },
+          {
+            "question": "Which of these, set on an ancestor, make it the box that an absolutely positioned child is placed against?",
+            "choices": ["`position: relative`", "`transform: translateX(0)`", "`display: flex`", "`overflow: hidden`"],
+            "correct": [0, 1],
+            "pick": "all",
+            "answer": "An absolutely positioned element is placed against its nearest ancestor with a `position` other than `static`, or with a transform, filter or contain. A flex container or `overflow: hidden` alone does not do it.",
+            "path": "/css/trivia/css-position-relative-absolute-fixed"
+          }
+        ]
+      },
+      "items": [
+        {
+          "path": "/javascript/coding/js-valid-parentheses",
+          "title": "Valid Parentheses (Balanced Brackets)"
+        },
+        {
+          "path": "/javascript/coding/js-merge-sorted-arrays",
+          "title": "Merge Two Sorted Arrays"
+        },
+        {
+          "path": "/react/coding/react-contact-form-starter",
+          "title": "Contact Form (Component + HTTP)"
+        }
+      ]
+    }
+  ]
+}

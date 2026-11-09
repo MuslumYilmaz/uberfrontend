@@ -37,7 +37,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Datadog prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by three public senior frontend accounts from 2024 and 2025: a sortable table of real-time data, the frontend architecture of a Live Tail log view, a timed ordering-and-filtering exercise, incremental live coding on data and tables, and a walkthrough of how you would build a feature or fix a major bug.',
+      'Prepare with five practice prompts shaped by public senior frontend accounts from 2024 and 2025: a sortable table of real-time data, the frontend architecture of a Live Tail log view, a timed ordering-and-filtering exercise, incremental live coding on data and tables, and a walkthrough of how you would build a feature or fix a major bug.',
     caveat:
       'This guide uses public, self-reported interview accounts to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Datadog team.',
     chips: ['5 practice prompts', 'React, data tables, real-time logs', 'Full practice set requires Premium'],
@@ -46,7 +46,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not Datadog trivia',
     paragraphs: [
-      'Every public account converges on the same material: data that keeps changing, tables that must stay sortable and filterable while it changes, and logs that arrive faster than a screen can show them. The accounts also describe loops that test algorithms and frontend work equally, with LeetCode-style screens before the React and design rounds. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Every public account converges on the same material: data that keeps changing, tables that must stay sortable and filterable while it changes, and logs that arrive faster than a screen can show them. The accounts also describe loops that test algorithms and frontend work equally, with LeetCode-style screens before the React and design rounds. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'The September 2025 account gives the most useful tactical advice: the live coding exercise starts simple and adds parts step by step, so complete each task step by step and do not worry about optimisations such as context providers or virtualisation.',
     ],
   },
@@ -54,8 +54,8 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Three self-reported senior frontend loops on Taro inform this guide; Taro shows two of their dates as the first of a month, so those months are approximate, and its locations are not used. October 2024: two algorithm exercises, a practical React session, a harder algorithm round, frontend architecture on a whiteboard tool, an experience and values interview, and team matching; its listed prompts include counting repeated words, matching a pattern without regular expressions, a sortable real-time table and a Live Tail log view. September 2025: a medium algorithm screen, incremental live coding on data and tables, frontend and API design, behavioural questions. November 2025: an ordering-and-filtering exercise and an onsite discussion of how to build a feature or fix a major bug. A shorter 2024 account adds a prompt to sketch the architecture of a real-time event viewer.',
-      'Together they establish that these round types occurred between 2024 and 2025; they do not establish exact wording, the current format, or how every office interviews. Confirm the exercise types, the allowed tools and the timing with the recruiter. Datadog publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
+      'Three senior frontend loops on Taro shape the practice prompts in this guide. October 2024: two algorithm exercises, a practical React session, a harder algorithm round, frontend architecture on a whiteboard tool, an experience and values interview, and team matching; its listed prompts include counting repeated words, matching a pattern without regular expressions, a sortable real-time table and a Live Tail log view. September 2025: a medium algorithm screen, incremental live coding on data and tables, frontend and API design, behavioural questions. November 2025: an ordering-and-filtering exercise and an onsite discussion of how to build a feature or fix a major bug. A shorter 2024 account adds a prompt to sketch the architecture of a real-time event viewer.',
+      'Together they establish that these round types occurred between 2024 and 2025; they do not establish exact wording, the current format, or how every office interviews. Confirm the exercise types, the allowed tools and the timing with the recruiter. Datadog publishes its roles on its careers site; use that for product context, not as evidence of interview content. The process table above draws on more reports from 2023 to 2025, these three loops among them: {reports} public accounts inform the guide in all, each listed under Sources.',
     ],
   },
   roleLenses: {
@@ -237,7 +237,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { question: 'Are these the real Datadog questions?', answer: 'No. They are FrontendAtlas practice versions modelled on round types described in public, self-reported accounts. The wording, the data and the test cases are ours.' },
       { question: 'How much algorithm practice does a frontend loop need?', answer: 'The public accounts describe LeetCode-style screens and at least one algorithm round in the onsite, alongside React and design rounds. Plan for medium problems with clean fundamentals rather than hard puzzles.' },
       { question: 'Should I build virtualisation in the live coding round?', answer: 'The September 2025 account advises against it: complete each task step by step and do not worry about optimisations such as virtualisation or context providers. Keep the hour for behaviour.' },
-      { question: 'Does every office interview the same way?', answer: 'The three accounts differ in round count and order, and the locations Taro attaches to them are not reliable enough to map them to offices. Treat them as shapes to practise and confirm the loop with the recruiter.' },
+      { question: 'Does every office interview the same way?', answer: 'The accounts differ in round count and order and do not reliably show which office ran them. Treat them as shapes to practise and confirm the loop with the recruiter.' },
     ],
   },
   resourceLinks: {
@@ -271,7 +271,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Datadog practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the dynamic table, the sort and filter implementations, the live comments stream case and the broader company-tagged editorial set.',
+      'Premium unlocks the dynamic table, the sort and filter implementations, the live comments stream case and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full Datadog practice set',
     src: 'company_preview_datadog',
   },

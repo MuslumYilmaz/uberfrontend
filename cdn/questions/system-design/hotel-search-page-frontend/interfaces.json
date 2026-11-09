@@ -1,0 +1,61 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "SearchGateway covers the query request with cancellation, the next page and city suggestions. UnitContract is what the shell demands from every unit build, and Telemetry is the one client every unit reports through."
+    },
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "interface SearchReply {\n  queryId: string;\n  cards: ResultCard[];\n  facets: FacetCount[];\n  total: number;\n  nextPage: number | null;\n}\n\ninterface SearchGateway {\n  search(input: { query: SearchQuery; queryId: string; signal: AbortSignal }): Promise<SearchReply>;\n  loadPage(input: { query: SearchQuery; queryId: string; page: number; signal: AbortSignal }): Promise<SearchReply>;\n  suggestCities(input: { text: string; signal: AbortSignal }): Promise<string[]>;\n}\n\ninterface UnitContract {\n  contractVersion: number;\n  mount(slot: HTMLElement, props: { query: SearchQuery; onQueryChange(next: SearchQuery, mode: 'replace' | 'push'): void }): void;\n  update(props: { query: SearchQuery; results: ResultsState | null }): void;\n  unmount(): void;\n}\n\ntype TelemetryEvent =\n  | { type: 'vital'; name: 'LCP' | 'INP' | 'CLS'; value: number; unit: string; buildId: string }\n  | { type: 'funnel'; stage: 'search' | 'view' | 'book' | 'pay'; searchId: string; unit: string; buildId: string }\n  | { type: 'error'; code: string; unit: string; buildId: string };\n\ninterface Telemetry {\n  report(event: TelemetryEvent): void;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "hotel-search-page-frontend-contract"
+      }
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "GET /api/search?city=bangkok&checkIn=2026-03-12&checkOut=2026-03-15&adults=2&filters=pool,breakfast&page=1 HTTP/1.1\nAccept: application/json\nX-Query-Id: q_42\n\nHTTP/1.1 200 OK\nContent-Type: application/json\nCache-Control: private, max-age=120\n\n{\"queryId\": \"q_42\", \"total\": 38, \"nextPage\": 2, \"cards\": [{\"hotelId\": \"h_1180\", \"name\": \"Riverside Garden\", \"rating\": 8.7, \"price\": {\"amount\": 96, \"currency\": \"USD\", \"quotedAt\": \"2026-03-01T09:12:40Z\"}}]}",
+      "validation": {
+        "kind": "protocol",
+        "protocol": "http"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Hotel search API semantics",
+      "columns": [
+        "Operation",
+        "Identity sent",
+        "Client behavior"
+      ],
+      "rows": [
+        [
+          "GET search",
+          "queryId and the URL query",
+          "Abort the previous request; ignore a reply whose queryId is not current"
+        ],
+        [
+          "GET next page",
+          "queryId and page",
+          "Append only while the queryId is current; a URL change resets paging"
+        ],
+        [
+          "Unit manifest",
+          "contractVersion and buildId",
+          "Mount only a build whose contractVersion the shell supports"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible search controls and results",
+      "text": "The filters are real checkboxes in a labelled group, the date picker works from the keyboard, and the city combobox moves through its suggestions with the arrow keys. The results region is a polite live region with one summary per reply, never one message per card. Focus stays on the control the traveller used."
+    }
+  ]
+}

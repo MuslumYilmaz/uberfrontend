@@ -21,15 +21,18 @@ async function login(page: any, user: MockUser, password = 'secret123', opts?: {
   await page.getByTestId('login-submit').click();
 }
 
-async function seedPremiumSession(page: any) {
+async function seedPremiumSession(page: any, overrides: Record<string, unknown> = {}) {
   const baseUrl = resolveBaseUrl();
   const token = `e2e-token-company-premium-${Date.now()}`;
-  const user = buildMockUser({
-    _id: 'e2e-company-premium-user',
-    username: 'company_premium_user',
-    email: 'company-premium@example.com',
-    accessTier: 'premium',
-  });
+  const user = {
+    ...buildMockUser({
+      _id: 'e2e-company-premium-user',
+      username: 'company_premium_user',
+      email: 'company-premium@example.com',
+      accessTier: 'premium',
+    }),
+    ...overrides,
+  };
 
   await installAuthMock(page, {
     token,
@@ -162,7 +165,7 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
   });
 
-  test('anonymous users see the premium gate without rendering the full Google company route', async ({ page }) => {
+  test('a direct link sends anonymous users to the public guide without rendering the full Google company route', async ({ page }) => {
     await page.route('**/api/auth/me', async (route) => {
       await route.fulfill({
         status: 401,
@@ -173,9 +176,8 @@ test.describe('routing and access critical paths', () => {
 
     await page.goto('/companies/google');
 
-    await expect(page).toHaveURL(/\/(?:companies)?$/);
-    expect(new URL(page.url()).pathname).not.toBe('/companies/google');
-    await expect(page.getByRole('heading', { name: 'Premium company questions' })).toBeVisible();
+    await expect(page).toHaveURL(/\/companies\/google\/preview$/);
+    await expect(page.getByRole('heading', { name: 'Premium company questions' })).toHaveCount(0);
     await expect(page.locator('app-company-detail')).toHaveCount(0);
     await expect(
       page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),
@@ -183,15 +185,62 @@ test.describe('routing and access critical paths', () => {
     await expect(page.getByRole('heading', { name: /how google evaluates front-end engineers/i })).toHaveCount(0);
   });
 
-  test('company preview route redirects premium users to full company detail', async ({ page }) => {
+  test('premium users read the public company guide and still open the full company set', async ({ page }) => {
     await seedPremiumSession(page);
 
     await page.goto('/companies/google/preview');
+    await expect(page).toHaveURL('/companies/google/preview');
+    await expect(page.getByRole('heading', { level: 1, name: 'Google Frontend Interview Questions' })).toBeVisible();
+    await expect(page.getByTestId('company-plan-entry')).toContainText('With Premium, your plan opens right away.');
+    await expect(page.getByRole('link', { name: 'Unlock the full Google practice set' })).toBeHidden();
+
+    await page.getByTestId('company-set-entry').getByRole('link', { name: 'Open the Google set' }).click();
     await expect(page).toHaveURL('/companies/google/all');
+    await expect(page.getByTestId('company-detail-links').getByRole('link', { name: 'Read the Google guide' })).toHaveAttribute('href', '/companies/google/preview');
     await expect(page.locator('app-company-detail')).toBeVisible();
     await expect(
       page.getByRole('heading', { level: 1, name: 'Google Frontend Practice Group' }),
     ).toBeVisible();
+  });
+
+  test('the company plan opens for Premium, renews an ended member, sends a free account to its preview and a guest to sign in', async ({ page }) => {
+    // "Later" has no date, so no date warning depends on the day the suite runs.
+    const companyPlan = {
+      companies: [{ slug: 'elevenlabs' }],
+      level: 'senior',
+      when: 'later',
+      createdAt: new Date().toISOString(),
+      passedRounds: [],
+      markedDone: [],
+    };
+
+    await page.goto('/companies/plan');
+    await expect(page).toHaveURL('/auth/login?redirectTo=%2Fcompanies%2Fplan');
+
+    await seedPremiumSession(page, { accessTier: 'free', companyPlan });
+    await page.goto('/companies/plan');
+    await expect(page).toHaveURL('/companies/preview');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
+
+    await seedPremiumSession(page, { companyPlan });
+    await page.goto('/companies/plan');
+    await expect(page).toHaveURL('/companies/plan');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan is ready' })).toBeVisible();
+    await expect(page.getByTestId('company-plan-next')).toBeVisible();
+
+    // The next day, /companies and the header lead back to it.
+    await page.goto('/companies');
+    await expect(page.getByTestId('company-plan-resume')).toContainText('Continue your ElevenLabs plan');
+    await page.getByTestId('company-plan-resume-open').click();
+    await expect(page).toHaveURL('/companies/plan');
+    await page.goto('/interview-questions');
+    await page.getByTestId('header-company-plan').click();
+    await expect(page).toHaveURL('/companies/plan');
+
+    await seedPremiumSession(page, { accessTier: 'free', entitlements: { pro: { status: 'expired', validUntil: null } }, companyPlan });
+    await page.goto('/companies/plan');
+    await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan is saved' })).toBeVisible();
+    await expect(page.getByTestId('company-plan-next')).toContainText('Renew Premium');
   });
 
   test('track preview route redirects premium users to full track detail', async ({ page }) => {

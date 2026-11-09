@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "intern-budget-case",
+  "title": "Case: find the bug in an intern's budget summary",
+  "access": "premium",
+  "format": "find",
+  "sessionMinutes": 45,
+  "supportedQuestions": {
+    "javascript": "js-debug-intern-budget-summary"
+  },
+  "workedExample": {
+    "prompt": "Income $4,000 a month; rent $1,500 a month, groceries $100 a week, insurance $600 a year; groceries have a $400 limit. What should the summary say?",
+    "answer": "Groceries 100 × 52 / 12 = $433.33 a month and insurance 600 / 12 = $50, so $1,983.33 is spent and $2,016.67 is left. The savings rate is 2,016.67 / 4,000 = 50.4%, shown as 50%, and groceries are over their $400 limit. The code reports groceries at $400, $2,050 left, a 51% rate and no category over its limit."
+  },
+  "mergeRequest": {
+    "title": "Find the bug in an intern's budget summary",
+    "description": "A summer intern wrote the monthly budget summary behind the household dashboard, and a few users say the numbers look off. Work the example by hand, then read the function, find the bug and explain the smallest fix without running the code, as the case round asks.",
+    "issue": {
+      "title": "What the summary should do",
+      "requirements": [
+        "Turn each expense into a monthly amount: a monthly one as it is, a weekly one 52 times a year, a yearly one once.",
+        "Round each monthly amount to cents, as the dashboard shows cents.",
+        "Report what was spent, what is left of the income, and the savings rate as a whole percentage of the income.",
+        "Report a savings rate of 0 for a month without income.",
+        "Flag every category whose monthly total goes over its limit; a limit of 0 counts, and a category without a limit is never flagged."
+      ]
+    },
+    "files": [
+      {
+        "path": "summarizeBudget.js",
+        "after": "// Monthly budget summary for the household dashboard.\n// Written by our summer intern; a few users say the numbers look off.\nexport default function summarizeBudget(monthlyIncome, expenses, limits) {\n  const totals = {};\n  for (let i = 0; i < expenses.length; i++) {\n    const { category, amount, frequency } = expenses[i];\n    let monthly = amount;\n    if (frequency === 'weekly') monthly = amount * 4;\n    if (frequency === 'yearly') monthly = amount / 12;\n    totals[category] = (totals[category] || 0) + monthly;\n  }\n\n  let spent = 0;\n  const overLimit = [];\n  for (const category in totals) {\n    spent += totals[category];\n    if (limits[category] && totals[category] > limits[category]) {\n      overLimit.push(category);\n    }\n  }\n\n  const remaining = monthlyIncome - spent;\n  const savingsRate = Math.round((remaining / monthlyIncome) * 100);\n  return { totals, spent, remaining, savingsRate, overLimit };\n}\n"
+      }
+    ]
+  },
+  "sampleReview": {
+    "summary": "The bug is on line 8: a weekly expense counts four weeks a month instead of 52 over 12, so every weekly cost is about 8% too low and the dashboard shows more money left than there is. The fix is amount * 52 / 12 with each monthly amount rounded to cents, which line 10 never does: 100 × 52 / 12 is 433.333…, and the worked example, the test that would have caught both, needs exactly $433.33. Lines 17 and 23 break two more stated rules: a limit of 0, and a month without income.",
+    "comments": [
+      {
+        "path": "summarizeBudget.js",
+        "line": 8,
+        "snippet": "monthly = amount * 4",
+        "severity": "blocker",
+        "checked": true,
+        "title": "A weekly expense counts four weeks in every month",
+        "body": "A month has 52 / 12 ≈ 4.33 weeks, so amount * 4 undercounts every weekly expense by about 8%: $100 a week becomes $400 instead of $433.33, and the summary overstates what is left. Fix: monthly = amount * 52 / 12, which gives 433.333… until line 10 rounds it to cents."
+      },
+      {
+        "path": "summarizeBudget.js",
+        "line": 17,
+        "snippet": "limits[category] &&",
+        "severity": "major",
+        "checked": true,
+        "title": "A limit of 0 is never checked",
+        "body": "limits[category] && … is false for a limit of 0, so a category the household set to $0 is never flagged, however much is spent there. Check that the category has a limit instead: limits[category] !== undefined."
+      },
+      {
+        "path": "summarizeBudget.js",
+        "line": 10,
+        "snippet": "totals[category] = (totals[category] || 0) + monthly",
+        "severity": "major",
+        "checked": true,
+        "title": "Amounts are never rounded to cents",
+        "body": "The rules round each monthly amount to cents, and nothing here does: 100 × 52 / 12 is 433.333…, so the worked example, the totals, the spending and what is left all carry fractions of a cent. Add up whole cents per monthly amount and convert back at the end."
+      },
+      {
+        "path": "summarizeBudget.js",
+        "line": 23,
+        "snippet": "remaining / monthlyIncome",
+        "severity": "major",
+        "checked": true,
+        "title": "A month without income divides by zero",
+        "body": "With an income of 0 the rate is -Infinity or NaN, and the dashboard prints it. The rule says 0, so return 0 before dividing."
+      }
+    ]
+  }
+}

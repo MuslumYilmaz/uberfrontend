@@ -1,0 +1,188 @@
+@if (state() === 'loading') {
+  <p class="plan-status" role="status" data-testid="company-plan-loading">Loading your plan…</p>
+} @else if (state() === 'error') {
+  <div class="plan-status" role="alert" data-testid="company-plan-error">
+    <p>We could not load your plan just now. Your answers and marks are safe.</p>
+    <button faButton type="button" variant="primary" (click)="load()">Try again</button>
+  </div>
+} @else if (plan()) {
+  <section class="plan-hero" aria-labelledby="company-plan-title" data-testid="company-plan">
+    <div class="plan-hero__head">
+      <p class="plan-hero__kicker">Your plan</p>
+      <h1 id="company-plan-title" class="plan-hero__title">{{ title() }}</h1>
+      <div class="plan-hero__chips">
+        @for (chip of chips(); track chip) {
+          <span class="plan-hero__chip">{{ chip }}</span>
+        }
+        <a class="plan-hero__edit" routerLink="/companies">Edit answers</a>
+      </div>
+    </div>
+
+    <div class="plan-hero__facts">
+      <p class="plan-hero__evidence">{{ evidence() }}</p>
+      @for (warning of warnings(); track warning) {
+        <p class="plan-hero__warning" data-testid="company-plan-warning">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.5 20h19L12 4Z"></path><path d="M12 10v4M12 17.5v.5"></path></svg>
+          <span>{{ warning }}</span>
+        </p>
+      }
+    </div>
+
+    @if (panel(); as next) {
+      <aside class="plan-panel" aria-labelledby="company-plan-panel-label" data-testid="company-plan-panel">
+        <h2 id="company-plan-panel-label" class="plan-panel__label">{{ next.label }}</h2>
+        <p class="plan-panel__title"><fa-inline-code [text]="next.title" /></p>
+        <p class="plan-panel__meta">{{ next.meta }}</p>
+        <a faButton variant="primary" size="lg" [block]="true" data-testid="company-plan-next" [routerLink]="next.route" [queryParams]="next.queryParams" [state]="next.state" (click)="next.task && taskOpened(next.task)">{{ next.cta }} <span aria-hidden="true">→</span></a>
+        @if (next.note) {
+          <p class="plan-panel__note">{{ next.note }}</p>
+        }
+      </aside>
+    }
+
+    @if (map(); as timeMap) {
+      <section class="plan-map" aria-labelledby="company-plan-map-title" data-testid="company-plan-map">
+        <div class="plan-map__head">
+          <div class="plan-map__heading">
+            <h2 id="company-plan-map-title" class="plan-map__title">{{ timeMap.title }}</h2>
+            <span class="plan-map__progress" data-testid="company-plan-progress">{{ timeMap.progress }}</span>
+          </div>
+          <ul class="plan-map__legend" aria-label="What the bars mean">
+            <li><span class="plan-map__swatch plan-map__swatch--done" aria-hidden="true"></span>Solved</li>
+            <li><span class="plan-map__swatch" aria-hidden="true"></span>To do</li>
+          </ul>
+        </div>
+        <div class="plan-map__groups">
+          @for (group of timeMap.groups; track group.name; let last = $last) {
+            <div class="plan-map__group" [class.plan-map__group--last]="last" [style.flex-grow]="group.minutes" [style.--plan-map-share.%]="group.share">
+              <div class="plan-map__group-head">
+                <span class="plan-map__group-name">{{ group.name }}</span>
+                <span class="plan-map__group-time">{{ group.time }}</span>
+              </div>
+              <div class="plan-map__bar">
+                @for (block of group.blocks; track block.task.id) {
+                  <button type="button" class="plan-map__block" [class.plan-map__block--done]="block.task.solved" [style.flex-grow]="block.task.minutes" [attr.aria-label]="block.label" data-testid="company-plan-map-block" (click)="jumpTo(block.task)">
+                    <span class="plan-map__fill" aria-hidden="true"></span>
+                    <span class="plan-map__tip" aria-hidden="true">{{ block.tip }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+  </section>
+
+  <div class="plan-body">
+    <div class="plan-body__main">
+      @if (saveFailed()) {
+        <p class="plan-body__alert" role="status" data-testid="company-plan-save-failed">We could not save that just now. Try again.</p>
+      }
+
+      @for (entry of companies(); track entry.company.slug) {
+        <section class="plan-company" [attr.aria-labelledby]="'company-plan-' + entry.company.slug">
+          <div>
+            <h2 class="plan-company__title" [id]="'company-plan-' + entry.company.slug">{{ entry.company.name }}, round by round</h2>
+            <p class="plan-company__meta">{{ entry.meta }} · <a [routerLink]="entry.guide">Read the guide</a></p>
+          </div>
+          <ol class="plan-rounds">
+            @for (item of entry.rounds; track item.round.key) {
+              <li class="plan-round" [class.plan-round--passed]="item.round.passed" [class.plan-round--active]="item.tasks.length > 0" [class.plan-round--last]="item.last" data-testid="company-plan-round">
+                <span class="plan-round__dot" aria-hidden="true"></span>
+                <div class="plan-round__head">
+                  <h3 class="plan-round__name">{{ item.round.name }}</h3>
+                  <button type="button" class="plan-round__pass" data-testid="company-plan-round-pass" [attr.aria-pressed]="item.round.passed" [attr.aria-label]="(item.round.passed ? 'Undo passed: ' : 'Mark as passed: ') + item.round.name" (click)="togglePassed(item.round)">{{ item.round.passed ? 'Passed. Undo' : 'Mark as passed' }}</button>
+                </div>
+                @if (!item.round.passed) {
+                  @if (item.round.note) {
+                    <p class="plan-round__note">{{ item.round.note }}</p>
+                  }
+                  @if (item.sources) {
+                    <p class="plan-round__sources">{{ item.sources }}</p>
+                  }
+                }
+                @if (item.tasks.length) {
+                  <div class="plan-tasks">
+                    @for (view of item.tasks; track view.task.id) {
+                      <ng-container *ngTemplateOutlet="taskRow; context: { $implicit: view }"></ng-container>
+                    }
+                  </div>
+                }
+              </li>
+            }
+          </ol>
+        </section>
+      }
+
+      @if (format(); as practice) {
+        <section class="plan-format" aria-labelledby="company-plan-format-title" data-testid="company-plan-format">
+          <div>
+            <h2 id="company-plan-format-title" class="plan-format__title">{{ practice.title }}</h2>
+            <p class="plan-format__body">{{ practice.body }}</p>
+          </div>
+          <div class="plan-tasks">
+            @for (view of practice.tasks; track view.task.id) {
+              <ng-container *ngTemplateOutlet="taskRow; context: { $implicit: view }"></ng-container>
+            }
+          </div>
+        </section>
+      }
+
+      <p class="plan-body__last">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h13l-3 4.5L18 13H5"></path></svg>
+        <span><strong>Before the interview:</strong> ask your recruiter about format, tools and stack. Reports change, and loops differ by team.</span>
+      </p>
+    </div>
+
+    <aside class="plan-guides" aria-label="More for this plan">
+      @for (entry of companies(); track entry.company.slug) {
+        <a class="plan-guides__link" [routerLink]="entry.guide">Read the {{ entry.company.name }} guide</a>
+      }
+      <p class="plan-guides__body">The full process, practice prompts and every source.</p>
+      @if (beyond(); as more) {
+        <div class="plan-guides__beyond" data-testid="company-plan-beyond">
+          <p class="plan-guides__title">Beyond your plan</p>
+          @for (set of more.sets; track set.link) {
+            <a class="plan-guides__link" [routerLink]="set.link">The full {{ set.name }} set: {{ set.count }} questions</a>
+          }
+          <a class="plan-guides__link" routerLink="/coding">All {{ more.premiumTotal }} Premium questions</a>
+        </div>
+      }
+    </aside>
+  </div>
+} @else {
+  <div class="plan-status" data-testid="company-plan-empty">
+    <p>You do not have a company plan yet. Pick your companies, date and level to build one.</p>
+    <a faButton variant="primary" routerLink="/companies">Build your plan</a>
+  </div>
+}
+
+<ng-template #taskRow let-view>
+  <div class="plan-task" [id]="view.domId" [class.plan-task--next]="view.next" [class.plan-task--done]="view.task.solved" data-testid="company-plan-task">
+    <button type="button" class="plan-task__check" data-testid="company-plan-task-check" [attr.aria-pressed]="view.task.solved" [attr.aria-label]="view.doneLabel" [disabled]="view.locked" (click)="toggleDone(view)">
+      <span class="plan-task__circle" aria-hidden="true">{{ view.task.solved ? '✓' : '' }}</span>
+    </button>
+    @if (ended()) {
+      <a class="plan-task__link" routerLink="/pricing" [queryParams]="pricingParams()" [attr.aria-label]="view.renewLabel">
+        <span class="plan-task__title"><fa-inline-code [text]="view.task.title" /></span>
+        <span class="plan-task__why">{{ view.why }}<span class="plan-task__inline-time"> · {{ view.task.solved ? 'Solved' : 'about ' + view.time }}</span></span>
+      </a>
+    } @else {
+      <a class="plan-task__link" [routerLink]="view.task.route" [fragment]="view.task.fragment" [state]="view.state" (click)="taskOpened(view.task)">
+        @if (view.next) {
+          <span class="plan-task__next">Next up</span>
+        }
+        <span class="plan-task__title"><fa-inline-code [text]="view.task.title" /></span>
+        <span class="plan-task__why">{{ view.why }}<span class="plan-task__inline-time"> · {{ view.task.solved ? 'Solved' : 'about ' + view.time }}</span></span>
+        @if (view.task.detail) {
+          <span class="plan-task__detail" data-testid="company-plan-task-detail">{{ view.task.detail }}</span>
+        }
+      </a>
+    }
+    <span class="plan-task__time">{{ view.time }}</span>
+    @if (ended()) {
+      <svg class="plan-task__lock" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+    }
+  </div>
+</ng-template>

@@ -1,0 +1,70 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 20-minute card application trace",
+      "steps": [
+        {
+          "title": "Name the applicant outcome",
+          "text": "An applicant enters identity, address, income and housing costs, accepts the terms and gets a clear decision: approved, declined, pending review or a request to verify identity. Success means no lost input, one application per person per attempt, no sensitive value outside the form, and a confirmation that still makes sense after a refresh. Follow one submit through a double click, a slow reply and a pending decision."
+        },
+        {
+          "title": "Draw the ownership line",
+          "text": "The browser owns the fields, their errors, which section is open and what gets announced. The application service owns the record, the final validation and the decision; the credit check and the identity check stay a black box behind it. The browser never shows an outcome it has not received."
+        },
+        {
+          "title": "Keep one form store",
+          "text": "One store holds every field with its value, touched flag and error, plus the open section. Validation runs in three layers: format on blur, completeness before the next section, and the server's rules on submit, whose field errors map back onto the same fields by name. Social Security number, date of birth and income stay in memory only."
+        },
+        {
+          "title": "Submit once, then render every outcome",
+          "text": "Opening the review section creates an idempotencyKey, and the submit sends it, so a double click, a retry after a timeout or a second tab returns the same applicationId. The button turns into a progress state, and each outcome gets its own screen: approved, declined, pending review, verify identity, and a failure that offers a retry."
+        },
+        {
+          "title": "Make the confirmation a read",
+          "text": "After the reply the browser replaces the history entry with a status route that reads the application by its applicationId. A refresh reads again instead of posting the form, values are masked to their last four digits, and analytics record the section and the outcome, never a field value."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "table",
+      "title": "Card application authority map",
+      "columns": [
+        "Concern",
+        "Owner",
+        "Browser role"
+      ],
+      "rows": [
+        [
+          "Field values, touched flags and errors",
+          "The form store, in memory",
+          "Validate format and completeness, announce errors, mask on display"
+        ],
+        [
+          "Final validation and the decision",
+          "Application service",
+          "Map its field errors by name and render the outcome it returns"
+        ],
+        [
+          "The application record",
+          "Application service, keyed by idempotencyKey",
+          "Read status by applicationId on the confirmation route"
+        ],
+        [
+          "Identity verification",
+          "A verification step behind the service",
+          "Open the step it asks for and resume the same application"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: carry the application in the URL",
+      "text": "Putting fields in query parameters to survive a reload, or posting the form again when the confirmation loads, leaks values into history, server logs and referrers and can create a second application. The confirmation route carries only the applicationId, and the service decides what that id may show."
+    }
+  ]
+}

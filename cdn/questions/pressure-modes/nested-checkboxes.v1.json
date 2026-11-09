@@ -1,0 +1,501 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "nested-checkboxes-pressure-v1",
+  "family": "nested-checkboxes",
+  "title": "Checkbox Tree Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-nested-checkboxes",
+    "angular": "angular-nested-checkboxes",
+    "vue": "vue-nested-checkboxes"
+  },
+  "rounds": [
+    {
+      "id": "parent-child-sync",
+      "title": "Parent and children stay in sync",
+      "interviewerPrompt": "Start with one parent and three children. The parent controls the children, and the children decide how the parent looks.",
+      "constraints": [
+        "Give each checkbox a `data-id` attribute: `parent`, `child-1`, `child-2` and `child-3`.",
+        "Clicking the parent checks all children, and clicking it again clears them. Clicking it while only some are checked selects all of them.",
+        "Clicking a child changes only that child.",
+        "The parent is checked when all children are checked and unchecked when none are. Otherwise it is indeterminate. Use the checkbox's `indeterminate` property, not `aria-checked`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tree-sync",
+          "name": "Round 1 · The parent always reflects its children",
+          "steps": [
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-3\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-3\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-2\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-3\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-3\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-2\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deep-tree",
+      "title": "Make it a real tree",
+      "interviewerPrompt": "The data is now a real tree. The same rules must work at any depth, so render it from data with recursion.",
+      "constraints": [
+        "Render this tree from data: Parent has Child 1, Child 2 and Child 3. Child 1 has Child 1.1 and Child 1.2.",
+        "Add the `data-id` values `child-1-1` and `child-1-2`.",
+        "Store a value only on the items with no children. Every other checkbox is calculated from the items below it.",
+        "Clicking any checkbox with children sets every item below it, and all the checkboxes above it update."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tree-depth",
+          "name": "Round 2 · Every level follows the same rules",
+          "steps": [
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1-1\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1-2\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-2\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-3\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1-1\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1-2\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1-1\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "locked-items",
+      "title": "Locked items",
+      "interviewerPrompt": "Some items are locked by an admin. They keep their value, and they must not stop the user from selecting everything else.",
+      "constraints": [
+        "Add two more children under Parent with the `data-id` values `child-4` and `child-5`. Both are disabled. Child 4 starts unchecked and Child 5 starts checked.",
+        "Clicking a parent never changes a locked item.",
+        "Locked items do not count: a parent is checked when all its unlocked items are checked, and unchecked when none of them are.",
+        "Clicking a checked parent still clears its unlocked items, so it can never get stuck."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tree-locked",
+          "name": "Round 3 · Locked items keep their value and cannot block the parent",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": "[data-id=\"child-4\"]",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[data-id=\"child-5\"]",
+              "disabled": true
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-5\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-4\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-4\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-5\"]:checked",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"parent\"]:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-2\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-4\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-5\"]:checked",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "selection-summary",
+      "title": "Say what is selected",
+      "interviewerPrompt": "Finish by telling the user what is selected. The result must depend on the selection, not on the order of the clicks.",
+      "constraints": [
+        "Always keep one element with the class `selection-summary` and `aria-live=\"polite\"` on the page. It counts unlocked items with no children, for example `1 of 4 selected`.",
+        "Show the selected unlocked items in an element with the class `selected-ids`, as `data-id` values separated by a comma and a space, in tree order.",
+        "Add a button with the class `reset-selection` that returns every unlocked item to unchecked."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-tree-summary",
+          "name": "Round 4 · The summary counts what is really selected",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "0 of 4 selected"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".selection-summary",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-2\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "1 of 4 selected"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"parent\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "4 of 4 selected"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "2 of 4 selected"
+            }
+          ]
+        },
+        {
+          "id": "pressure-tree-order",
+          "name": "Round 4 · The selection list follows the tree, not the clicks",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".selected-ids",
+              "text": ""
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-3\"]"
+            },
+            {
+              "type": "click",
+              "selector": "[data-id=\"child-1-1\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selected-ids",
+              "text": "child-1-1, child-3"
+            },
+            {
+              "type": "click",
+              "selector": ".reset-selection"
+            },
+            {
+              "type": "expectText",
+              "selector": ".selected-ids",
+              "text": ""
+            },
+            {
+              "type": "expectText",
+              "selector": ".selection-summary",
+              "text": "0 of 4 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-3\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-1-1\"]:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": "[data-id=\"child-5\"]:checked",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the whole tree consistent",
+    "summary": "You started with one parent and ended with a tree that stays correct at any depth, handles locked items and describes its own selection. The interview signal is storing the least state you can and calculating everything else from it.",
+    "takeaways": [
+      "Store values only on the items with no children, and calculate every parent from them.",
+      "`indeterminate` is a property of the element, so it must be set from code or a property binding.",
+      "Decide early how locked items count, or a parent can get stuck.",
+      "Build the selected list by walking the tree, so click order cannot change the result."
+    ],
+    "frameworkNotes": {
+      "react": "Set `indeterminate` through a ref callback after render, and let one recursive function render every level.",
+      "angular": "Bind `[indeterminate]` and `[checked]` as properties, and render the levels with a recursive `ng-template`.",
+      "vue": "Bind `:indeterminate` as a property, and build the rows with one recursive helper."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-nested-checkboxes-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-nested-checkboxes-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-nested-checkboxes-pressure-solution.v1.json"
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Who owns each part of the application page",
+      "columns": [
+        "Part",
+        "Owns",
+        "Talks to"
+      ],
+      "rows": [
+        [
+          "ApplicationShell",
+          "The route, the section order, progress and the leave warning",
+          "FormStore and the section components"
+        ],
+        [
+          "Section components",
+          "Identity, address, income and review layouts, labels and help text",
+          "FormStore, through field bindings"
+        ],
+        [
+          "FormStore",
+          "Every field, its touched flag and error, the open section and the submit phase",
+          "Validators and ApplicationGateway"
+        ],
+        [
+          "ApplicationGateway",
+          "The submit with its idempotencyKey and the status read",
+          "The application service"
+        ],
+        [
+          "ConfirmationPage",
+          "The outcome screen for one applicationId, with masked values",
+          "ApplicationGateway"
+        ],
+        [
+          "Telemetry",
+          "Section views, error codes, submit timing and outcomes, never values",
+          "The analytics endpoint"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "One form store, one idempotent submit, a confirmation that reads",
+      "text": "ApplicationShell renders the identity, address, income and review sections from one FormStore, which keeps every field with its touched flag and error. ApplicationGateway sends the submit with an idempotencyKey created when the review section opens, so a retry returns the same applicationId. The shell then replaces the history entry with the status route, ConfirmationPage reads ApplicationRecord by applicationId and shows masked values, and Telemetry records sections and outcomes without field values.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: a double click during a slow submit",
+      "steps": [
+        {
+          "title": "The review section opens",
+          "text": "FormStore creates idempotencyKey k_7 and keeps it for this attempt. Every earlier section has passed its completeness check, so the Submit button is enabled."
+        },
+        {
+          "title": "Two clicks arrive",
+          "text": "The first click moves the submit phase to submitting and disables the button; the second click finds the phase already submitting and does nothing. One request leaves with k_7."
+        },
+        {
+          "title": "The reply is slow",
+          "text": "The request times out on the client. The phase becomes failed with a retry action, and the fields stay filled."
+        },
+        {
+          "title": "The retry finds the first application",
+          "text": "The retry sends k_7 again. The service already created a_19 for that key, so it answers with a_19 and pending review instead of a second application."
+        },
+        {
+          "title": "The confirmation takes over",
+          "text": "The shell replaces the history entry with the status route for a_19. ConfirmationPage reads the record, shows the masked name and the last four digits of the Social Security number, and polls status until the decision arrives."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/credit-card-application-page/card-application-submit-flow.svg",
+      "alt": "Flow where four sections write to one form store, the gateway submits with an idempotency key, the service returns an application id, and the confirmation route reads its status.",
+      "caption": "Submit flow: the form store owns the fields, the key makes a retry safe, and the confirmation reads status by id.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: The identity, address, income and review sections write to one form store. The gateway sends the submit with an idempotency key to the application service, which returns an application id. The browser replaces the history entry with the status route, and the confirmation reads the record by that id."
+    }
+  ]
+}

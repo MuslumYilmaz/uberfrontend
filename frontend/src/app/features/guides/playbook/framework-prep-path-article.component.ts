@@ -4657,7 +4657,7 @@ function onInput(value) {
         'If Vue prep feels split across framework details, trivia bursts, and “build this in 30 minutes” prompts, you are not alone. This guide is for engineers who already ship Vue and want a cleaner interview rhythm.',
         'The common failure mode is fragmented recall: you remember isolated topics, then one follow-up crosses boundaries (reactivity → render timing → async behavior), and the answer gets messy. The fix is one stable 3-layer loop: Topics, Trivia, and Coding prompts.',
         'Topics give you the model. Trivia checks whether you can explain that model quickly. Coding prompts verify whether your model still holds when UI constraints and edge cases show up.',
-        'A concrete example: Vue batches DOM updates, so changing reactive state does not mean the element is ready right away. In flows like “enter edit mode, then focus input,” `await nextTick()` is the point where DOM-dependent logic becomes safe.',
+        'A concrete example: Vue batches DOM updates, so changing reactive state does not mean the element is ready right away. In flows like “enter edit mode, then focus input,” await nextTick() is the point where DOM-dependent logic becomes safe.',
         'That is the tone of this path: fewer memorized phrases, more runtime reasoning you can defend under pressure.',
       ],
       bullets: [

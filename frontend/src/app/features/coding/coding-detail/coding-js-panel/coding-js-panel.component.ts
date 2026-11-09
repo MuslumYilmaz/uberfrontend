@@ -17,6 +17,8 @@ import { createFailureSignature, normalizeErrorLine, stableHash } from '../../..
 import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-prompts.util';
 import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
+import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -37,12 +39,15 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
+import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 
 declare const monaco: any;
 
 export type JsLang = 'js' | 'ts';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
-type Runner = { runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> };
+type Runner = {
+  runWithTests(args: { userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number }): Promise<RunnerOutput>;
+};
 type ApplySolutionOptions = {
   decisionGraphAsset?: string | null;
   decisionGraphKey?: string | null;
@@ -80,7 +85,7 @@ const DEFAULT_ASSIST_FLAGS: AssistFlags = {
 
 @Component({
     selector: 'app-coding-js-panel',
-    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
+    imports: [CommonModule, InlineCodeComponent, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
     templateUrl: './coding-js-panel.component.html',
     styleUrls: ['./coding-js-panel.component.css']
 })
@@ -96,6 +101,20 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() hideRestoreBanner = false;
   @Input() disablePersistence = false;
   @Input() liteMode = false;
+  /** A rehearsal's review, or its questions: the editors turn read-only and the tests stop running. */
+  @Input() locked = false;
+  /** Why the editors are read-only, when it is not the review. */
+  @Input() lockedLabel: string | null = null;
+  /** A rehearsal's questions come first: the code and tests stay out of sight behind this note. */
+  @Input() concealedNote: string | null = null;
+  /** A running rehearsal's clock; it takes the place of timed practice. */
+  @Input() clockLabel: string | null = null;
+  /** The page keeps its own clock, as an open case does, so timed practice is not offered beside it. */
+  @Input() timedPracticeHidden = false;
+  /** A rehearsal holds the task as the round would, as timed practice does: no hints beside the code, and no failure explained. */
+  get rehearsing(): boolean {
+    return !!this.clockLabel || this.locked;
+  }
   private _solutionPanelOpen = false;
   @Input() set solutionPanelOpen(value: boolean) {
     this._solutionPanelOpen = !!value;
@@ -131,6 +150,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Output() codeChange = new EventEmitter<{ lang: JsLang, code: string }>();
   @Output() langChange = new EventEmitter<JsLang>();
   @Output() requestEditorUpgrade = new EventEmitter<void>();
+  /** The Run tests button, for a host that counts attempts: it calls runTests() itself. */
+  @Output() requestRunTests = new EventEmitter<void>();
 
   /* ---------- Local state ---------- */
   jsLang = signal<JsLang>('js');                       // 'js' | 'ts'
@@ -151,6 +172,16 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
+
+  // A multi-file task keeps its files in the one code string (file-bundle.util); the editor shows one file.
+  readonly bundleFiles = computed(() => parseFileBundle(this.editorContent()));
+  private readonly activeFilePath = signal('');
+  readonly activeBundleFile = computed(() => {
+    const files = this.bundleFiles();
+    return files ? files.find((file) => file.path === this.activeFilePath()) ?? files[0] : null;
+  });
+  /** What the code editor shows: the open file of a multi-file task, else the whole code. */
+  readonly editorCode = computed(() => this.activeBundleFile()?.code ?? this.editorContent());
   hasRunTests = signal(false);
   isRunningTests = signal(false);
   testResults = signal<TestResult[]>([]);
@@ -956,6 +987,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   ngOnChanges(ch: SimpleChanges) {
     if (ch['question'] && this.question) {
       this.initFromQuestion();                 // inputs are ready, initialize
+    } else if (ch['storageKeyOverride'] && !ch['storageKeyOverride'].firstChange && this.question) {
+      // A rehearsal started or its review closed on this page: open the draft kept under the new key. A pending
+      // save keeps the key it was scheduled with.
+      this.initFromQuestion();
     }
     if (ch['liteMode']) {
       this.configureLiteEditors();
@@ -1167,6 +1202,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.interviewRemainingSec.set(0);
     this.interviewSetupOpen.set(false);
     this.interviewSession = null;
+    // Timed practice starts at the task's own minutes, the number its plan row shows; a running session keeps its own.
+    this.interviewDurationMin.set(timedPracticeStep(practiceMinutes(this.question)));
     this.stopInterviewTicker();
     this.subTab.set('tests');
     this.testResultsChange.emit([]);
@@ -1695,9 +1732,20 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   /* ---------- Handlers ---------- */
-  onCodeChange(code: string) {
+  selectBundleFile(path: string): void {
+    this.activeFilePath.set(path);
+  }
+
+  /** The whole code for what the editor holds: in a multi-file task, the files with the open one's edits. */
+  private withEditorCode(code: string): string {
+    const file = this.activeBundleFile();
+    return file ? replaceBundleFile(this.editorContent(), file.path, code) : code;
+  }
+
+  onCodeChange(editorCode: string) {
     if (this._hydrating) return;
     const q = this.question; if (!q) return;
+    const code = this.withEditorCode(editorCode);
     if (this.disablePersistence) {
       if (code === this.editorContent()) return;
       this.editorContent.set(code);
@@ -1762,9 +1810,15 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.pendingTestsPersist = null;
   }
 
+  /** Without a host listening, the panel runs the tests on its own. */
+  onRunTestsClick(): void {
+    if (this.requestRunTests.observed) this.requestRunTests.emit();
+    else void this.runTests();
+  }
+
   // Run tests
   async runTests() {
-    const q = this.question; if (!q || this.destroyed) return;
+    const q = this.question; if (!q || this.destroyed || this.locked) return;
     let rawUserSnapshot = this.editorContent();
 
     const runId = ++this._runSeq;
@@ -1777,23 +1831,24 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     try {
       await this.flushEditorBuffer();
       if (runId !== this._runSeq) return;
-      const rawUser = this.codeEditor?.getValue?.() ?? this.editorContent();
+      const rawUser = this.withEditorCode(this.codeEditor?.getValue?.() ?? this.editorCode());
       rawUserSnapshot = rawUser;
       const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
       this.syncEditorBuffers(rawUser, rawTests);
-      const userSrc = await this.ensureJs(rawUser, `${q.id}.ts`);
+      // A multi-file task runs its files as modules that the tests import, in JavaScript only.
+      const files = parseFileBundle(rawUser);
+      const userSrc = files ? '' : await this.ensureJs(rawUser, `${q.id}.ts`);
       if (runId !== this._runSeq) return;
 
-      const testsSrc = await this.ensureJs(rawTests, `${q.id}.tests.ts`);
+      const testsSrc = files ? rawTests : await this.ensureJs(rawTests, `${q.id}.tests.ts`);
       if (runId !== this._runSeq) return;
-
-      const wrapped = this.wrapExportDefault(userSrc);
-      const prepared = this.transformTestCode(testsSrc);
 
       try {
         const runner = await this.loadRunner();
         if (runId !== this._runSeq) return;
-        const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
+        const out = await runner.runWithTests(files
+          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500 }
+          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         const sandboxResults = out?.results || [];

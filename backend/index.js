@@ -312,6 +312,9 @@ app.use('/api/interviews', require('./routes/interviews'));
 // ---- Admin routes (protected) ----
 app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
+// ---- Company plan routes ----
+app.use('/api/users/me/company-plan', require('./routes/company-plan'));
+
 // ---- Progress routes ----
 // Authenticated-only manual solved sync. Guest solve attempts are intentionally not persisted.
 app.post('/api/users/me/solved', requireAuth, async (req, res) => {

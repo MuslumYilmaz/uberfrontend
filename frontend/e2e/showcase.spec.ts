@@ -1,17 +1,7 @@
+import type { Locator } from '@playwright/test';
 import { test, expect } from './fixtures';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-async function seedHeroVariant(page: any, variant: 'control' | 'outcome'): Promise<void> {
-  await page.addInitScript((value: string) => {
-    try {
-      window.localStorage.setItem('fa:exp:assignment:hero_headline_cta_v1', value);
-      window.localStorage.setItem('fa:exp:anon_id', 'e2e-seo-fixed-anon');
-    } catch {
-      // ignore storage failures in constrained browsers
-    }
-  }, variant);
-}
 
 test('showcase: demo CTA routes to the correct question pages', async ({ page }) => {
   await page.goto('/');
@@ -150,38 +140,33 @@ test('content: react-counter solution avoids React.useState', async () => {
   expect(raw).not.toContain('React.useState');
 });
 
-test('showcase: hero experiment keeps the guided plan as the primary CTA', async ({ browser }) => {
-  const controlContext = await browser.newContext();
-  const controlPage = await controlContext.newPage();
-  await seedHeroVariant(controlPage, 'control');
-  await controlPage.goto('/');
+test('showcase: the hero opens practice by topic and a company plan at the date', async ({ page }) => {
+  // A prerendered button ignores a click until hydration, so try again until the list is open.
+  const open = async (slot: Locator, menu: Locator) => {
+    await expect(async () => {
+      if (!(await menu.isVisible())) await slot.click();
+      await expect(menu).toBeVisible({ timeout: 1_000 });
+    }).toPass({ timeout: 20_000 });
+  };
 
-  const controlH1 = (await controlPage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
-  const controlLede = (await controlPage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
-  const controlCta = controlPage.locator('.hero-actions .sk-btn-primary').first();
-  const controlCtaLabel = (await controlCta.textContent())?.trim() || '';
-  const controlCtaHref = await controlCta.getAttribute('href');
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.goto('/');
+  await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
 
-  const outcomeContext = await browser.newContext();
-  const outcomePage = await outcomeContext.newPage();
-  await seedHeroVariant(outcomePage, 'outcome');
-  await outcomePage.goto('/');
+  const card = page.getByTestId('showcase-practice-card');
+  await expect(card.getByTestId('showcase-practice-plan')).toHaveAttribute('href', '/tracks/foundations-30d/preview');
+  await open(card.getByTestId('showcase-practice-slot'), card.getByTestId('showcase-practice-menu'));
+  await card.getByTestId('showcase-practice-menu').getByRole('link', { name: /^React/ }).click();
+  await expect(page).toHaveURL('/coding?tech=react');
 
-  const outcomeH1 = (await outcomePage.getByTestId('showcase-hero-title').textContent())?.trim() || '';
-  const outcomeLede = (await outcomePage.locator('.showcase-hero .lede').first().textContent())?.trim() || '';
-  const outcomeCta = outcomePage.locator('.hero-actions .sk-btn-primary').first();
-  const outcomeCtaLabel = (await outcomeCta.textContent())?.trim() || '';
-  const outcomeCtaHref = await outcomeCta.getAttribute('href');
-
-  expect(outcomeH1).toBe(controlH1);
-  expect(outcomeLede).toBe(controlLede);
-  expect(controlCtaLabel).toBe('Start 30-day plan');
-  expect(outcomeCtaLabel).toBe('Start 30-day plan');
-  expect(controlCtaHref).toBe('/tracks/foundations-30d/preview');
-  expect(outcomeCtaHref).toBe('/tracks/foundations-30d/preview');
-
-  await controlContext.close();
-  await outcomeContext.close();
+  await page.goto('/');
+  const panel = page.getByTestId('showcase-interview-panel');
+  await expect(panel).toContainText('Interview coming up?');
+  await open(panel.getByTestId('showcase-interview-slot'), panel.getByTestId('showcase-interview-menu'));
+  // The list opens over the section below the hero, so its last row must take the click.
+  await panel.getByTestId('showcase-interview-menu').getByRole('link', { name: /^Walmart/ }).click();
+  await expect(page).toHaveURL('/companies?company=walmart&from=home');
+  await expect(page.getByRole('heading', { level: 2, name: 'When is your interview?' })).toBeVisible();
 });
 
 test('showcase: embedded previews never add a second h1', async ({ page }) => {

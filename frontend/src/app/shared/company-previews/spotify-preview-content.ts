@@ -8,7 +8,7 @@ import type { AuthoredCompanyPreview } from '../../shared/company-previews/autho
  */
 const SPOTIFY_OFFER_2022_URL = 'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg';
 const SPOTIFY_OFFER_2022_LABEL = 'Public report: Spotify web engineer final round with an offer, April 2022';
-const SPOTIFY_FOLLOW_UP_2022_URL = 'https://www.teamblind.com/post/Spotify-Final-Round-Web-Interview-QyUG2ZqX';
+const SPOTIFY_FOLLOW_UP_2022_URL = 'https://www.teamblind.com/post/spotify-final-round-web-interview-qyug2zqx';
 const SPOTIFY_THREAD_2021_URL = 'https://www.teamblind.com/post/Spotify-Web-Engineer-Interview-hNTex8N7';
 const SPOTIFY_THREAD_2021_LABEL = 'Public report: Spotify web engineer interview thread, 2021 to 2022';
 const SPOTIFY_STOCKHOLM_2019_URL = 'https://www.teamblind.com/post/spotify-frontend-interview-4ghdysqn';
@@ -38,7 +38,7 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Spotify prep guide',
     subtitle:
-      'Prepare with seven practice prompts shaped by public web engineer accounts from 2021 and 2022, more recent Glassdoor previews and the official Life at Spotify pages: a search form that fetches from an API and renders into the DOM without a framework, an image carousel as a practice build, a traffic light, an event-loop output question, a closure that limits calls, a system-design round that includes the backend, and the algorithms round.',
+      'Prepare with seven practice prompts shaped by public web engineer accounts from 2021 and 2022 and the Life at Spotify pages: a framework-free search form, an image carousel, an event-loop question, a call limiter, system design and algorithms.',
     caveat:
       'This guide uses public, self-reported interview accounts and the official Spotify hiring pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Spotify team.',
     chips: ['7 practice prompts', 'HTML, JavaScript, DOM, system design', 'Full practice set requires Premium'],
@@ -48,14 +48,14 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Spotify trivia',
     paragraphs: [
       'The public accounts of the web loop describe a recruiter chat, then a final round of four interviews: data structures and algorithms, a web practical, system design, and values. The web practical is where frontend preparation pays off, and it is framework-free. One candidate who received an offer built a form, fetched data from the Spotify API based on the input and rendered the result into the DOM; another, who joined Spotify, described building a feature with JavaScript, HTML and CSS and no debugging round. The first candidate wrote afterwards that the interviews needed a good grasp of HTML and JavaScript fundamentals, tested no arcane concepts and, for them, needed no CSS.',
-      'Public previews of Glassdoor web engineer reports add JavaScript fundamentals under questioning: the output order of code that mixes setTimeout and promise chains, a closure that limits how many times a function can run, event delegation, memoization and the CSS box model, and a traffic light built in plain HTML, CSS and JavaScript. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'Public previews of Glassdoor web engineer reports add JavaScript fundamentals under questioning: the output order of code that mixes setTimeout and promise chains, a closure that limits how many times a function can run, event delegation, memoization and the CSS box model, and a traffic light built in plain HTML, CSS and JavaScript. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts and the official pages establish, and what you still need to confirm',
     paragraphs: [
-      'Four Blind threads inform the web loop. April 2022, a web engineer candidate for a personalization team who received an offer: a recruiter chat about why they were looking, why Spotify, their current week and their stack, then a final round of four interviews (data structures and algorithms, web development, behavioural and values, system design); the web task was to build a form, fetch data from the Spotify API based on the input and render the result into the DOM, and the system-design discussion covered requirements, CAP trade-offs, database choice, how the layers interact, load balancing, message queues and caches. October 2021 to April 2022, a second thread: a Spotify engineer summarised the rounds as LeetCode-style algorithms and a live coding session relevant to the role, the original poster, who joined Spotify, described algorithm questions and building a feature with JavaScript, HTML and CSS with no debugging round, and the April 2022 candidate, before the final round, relayed being told the web round was a practical application of HTML, CSS and JavaScript, asked whether that meant debugging or building from scratch, and gave an image carousel as an example of their own; no account reports a carousel task. A 2019 thread opened by a Stockholm applicant has one commenter expecting algorithms, system design, values and a JavaScript web round, and another saying the process differs by country. Public previews of Glassdoor web engineer reports add the closure-limit prompt, and their full text could not be read by our tools; the output-order and traffic-light prompts also appear in Taro accounts from August 2022 and February 2025, and an April 2022 Taro account lists closures, memoization and event delegation.',
+      'Four Blind threads inform the web loop. April 2022, a web engineer candidate for a personalization team who received an offer: a recruiter chat about why they were looking, why Spotify, their current week and their stack, then a final round of four interviews (data structures and algorithms, web development, behavioural and values, system design); the web task was to build a form, fetch data from the Spotify API based on the input and render the result into the DOM, and the system-design discussion covered requirements, CAP trade-offs, database choice, how the layers interact, load balancing, message queues and caches. October 2021 to April 2022, a second thread: a Spotify engineer summarised the rounds as LeetCode-style algorithms and a live coding session relevant to the role, the original poster, who joined Spotify, described algorithm questions and building a feature with JavaScript, HTML and CSS with no debugging round, and the April 2022 candidate, before the final round, relayed being told the web round was a practical application of HTML, CSS and JavaScript, asked whether that meant debugging or building from scratch, and gave an image carousel as an example of their own; no account reports a carousel task. A 2019 thread opened by a Stockholm applicant has one commenter expecting algorithms, system design, values and a JavaScript web round, and another saying the process differs by country. Public previews of Glassdoor web engineer reports add the closure-limit prompt; the output-order and traffic-light prompts also appear in Taro accounts from August 2022 and February 2025, and an April 2022 Taro account lists closures, memoization and event delegation.',
       'Two Medium posts give context outside the web loop: a 2018 web developer internship with a 30-minute behavioural interview and a 90-minute interview on CSS and JavaScript questions, and a 2022 Android loop in Stockholm with four one-hour final interviews (algorithms, system design, a pair-programming session in your own IDE, values), each with a second interviewer shadowing. The official Life at Spotify pages describe a recruiter call, a second interview with one or two team members, a final round with several band members, CoderPad and Mural for technical work, and an assessment of values, ownership, adaptability, collaboration and drive. Together they establish the round types in accounts from 2018 to 2022 and in more recent previews; they do not establish exact wording, the current web format, or how the London and Stockholm teams interview. Confirm the format, the tools and the timing with the recruiter.',
     ],
   },
@@ -85,7 +85,7 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Representative practice prompts',
     title: 'Seven Spotify frontend interview practice questions',
     intro:
-      'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Prompts modelled on a report read in full link to it; the others draw on the Glassdoor previews listed under the sources.',
+      'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Prompts modelled on one report link to it; the others draw on the Glassdoor previews listed under the sources.',
     itemListName: 'Seven Spotify frontend interview practice prompts',
     items: [
       {
@@ -130,7 +130,8 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Clickable divs without keyboard support, and autoplay that keeps moving while the user is reading or focused on a control.',
-        resourceLabel: 'Practice the image slider (Premium)',
+        // The bank has no framework-free carousel; the label says the practice is the same widget in React.
+        resourceLabel: 'Practice the same carousel in React (Premium)',
         resourcePath: '/react/coding/react-image-slider',
         reportedRound: { label: SPOTIFY_THREAD_2021_LABEL, url: SPOTIFY_THREAD_2021_URL },
       },
@@ -310,7 +311,7 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: 'Blind: Spotify final round web interview thread, April 2022', url: SPOTIFY_FOLLOW_UP_2022_URL, note: 'The same candidate before and after the final round: the recruiter chat topics, and the view that the round needed HTML and JavaScript fundamentals and, for them, no CSS. Several replies are hidden behind a sign-up.', kind: 'report' },
       { label: SPOTIFY_THREAD_2021_LABEL, url: SPOTIFY_THREAD_2021_URL, note: 'A thread with a Spotify engineer summarising the rounds, a candidate who joined describing algorithms and a build-a-feature round with no debugging, and one candidate asking whether the web round would be debugging or building, with an image carousel as their own example. Details were exchanged in private messages and are not visible.', kind: 'report' },
       { label: 'Blind: Spotify frontend interview thread from a Stockholm applicant, 2019', url: SPOTIFY_STOCKHOLM_2019_URL, note: 'The only web thread tied to a European office. It records expected rounds and a comment that the process differs by country; nobody in the visible replies describes an actual Stockholm web loop.', kind: 'report' },
-      { label: 'Glassdoor: Spotify web engineer interview reports', url: SPOTIFY_GLASSDOOR_URL, note: 'Public previews mention an output-order question mixing setTimeout and promise chains, a closure that limits how many times a function can run, JavaScript and CSS basics, and a traffic light in plain HTML, CSS and JavaScript. The full reports could not be read by our tools, so nothing else from them is used.', kind: 'report' },
+      { label: 'Glassdoor: Spotify web engineer interview reports', url: SPOTIFY_GLASSDOOR_URL, note: 'Public previews mention an output-order question mixing setTimeout and promise chains, a closure that limits how many times a function can run, JavaScript and CSS basics, and a traffic light in plain HTML, CSS and JavaScript; nothing else from these reports is used.', kind: 'report' },
       { label: 'Public report: Spotify senior web engineer interview on Taro, 2022', url: 'https://www.jointaro.com/interviews/companies/spotify/experiences/senior-web-engineer-united-states-august-30-2022-no-offer-neutral-e746c706/', note: 'A technical screen with an output-order question about console logs printed from timeouts and functions.', kind: 'report' },
       { label: 'Public report: Spotify web engineer interview on Taro, 2022', url: 'https://www.jointaro.com/interviews/companies/spotify/experiences/web-engineer-toronto-on-april-1-2022-no-offer-positive-a2f8744e/', note: 'A one-hour first round on closures and memoization, event listeners and event delegation. Taro dates are approximate.', kind: 'report' },
       { label: 'Public report: Spotify software engineer interview on Taro, 2025', url: 'https://www.jointaro.com/interviews/companies/spotify/experiences/software-engineer-new-york-ny-february-1-2025-no-offer-positive-0dc5e197/', note: 'A round asking to simulate traffic lights in plain HTML, JavaScript and CSS. Taro dates are approximate.', kind: 'report' },
@@ -325,7 +326,7 @@ export const SPOTIFY_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Spotify practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the company-tagged Spotify set, including the image slider and the debounced search, and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the company-tagged Spotify set, including the image slider and the debounced search, and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Spotify practice set',
     src: 'company_preview_spotify',
   },

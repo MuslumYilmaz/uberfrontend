@@ -87,6 +87,10 @@ export type FaQuestionRowVariant = {
             <span class="fa-question-row__kind" *ngIf="kindLabel">{{ kindLabel }}</span>
             <div
               class="fa-question-row__title fa-card-title"
+              [class.fa-question-row__concealed]="concealed"
+              [class.premium-locked]="concealed"
+              [attr.data-nosnippet]="concealed ? '' : null"
+              [attr.aria-hidden]="concealed ? 'true' : null"
               [attr.data-testid]="testId ? 'question-row-title-' + testId : null"
             >
               {{ title | stripInlineMarkup }}
@@ -112,6 +116,10 @@ export type FaQuestionRowVariant = {
           <div
             class="fa-question-row__description fa-meta-text"
             *ngIf="description"
+            [class.fa-question-row__concealed]="concealed"
+            [class.premium-locked]="concealed"
+            [attr.data-nosnippet]="concealed ? '' : null"
+            [attr.aria-hidden]="concealed ? 'true' : null"
             [pTooltip]="descriptionTooltip || description"
             tooltipPosition="bottom"
             appendTo="body"
@@ -120,8 +128,8 @@ export type FaQuestionRowVariant = {
             [autoHide]="true"
             [life]="0"
             [escape]="false"
-            [tooltipDisabled]="!(descriptionTooltip || description)"
-            tabindex="0"
+            [tooltipDisabled]="concealed || !(descriptionTooltip || description)"
+            [attr.tabindex]="concealed ? null : 0"
           >
             {{ description }}
           </div>
@@ -179,6 +187,8 @@ export class FaQuestionRowComponent {
   @Input() disabled = false;
   @Input() solved = false;
   @Input() lockedLabel = '';
+  /** A Premium item shown to a viewer without Premium: title and description stay in the page, under a blur. */
+  @Input() concealed = false;
   @Input() companies: readonly unknown[] = [];
   @Input() preferredCompanySlug: string | null | undefined = null;
   @Input() metaChips: readonly FaQuestionRowMetaChip[] = [];

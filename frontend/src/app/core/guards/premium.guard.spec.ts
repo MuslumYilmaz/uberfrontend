@@ -3,7 +3,8 @@ import { ActivatedRouteSnapshot, GuardResult, MaybeAsync, Router, RouterStateSna
 import { firstValueFrom, isObservable, of } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthSessionAuthorityService } from '../services/auth-session-authority.service';
-import { companyPreviewAccessGuard, trackPreviewAccessGuard } from './premium.guard';
+import { PremiumGateService } from '../services/premium-gate.service';
+import { premiumGuard, trackPreviewAccessGuard } from './premium.guard';
 
 type PreviewFixture = {
   guard: typeof trackPreviewAccessGuard;
@@ -12,9 +13,9 @@ type PreviewFixture = {
   detailUrl: string;
 };
 
-const FIXTURES: Record<'tracks' | 'companies', PreviewFixture> = {
+// Company guides have no such guard: a Premium member reads the same guide.
+const FIXTURES: Record<'tracks', PreviewFixture> = {
   tracks: { guard: trackPreviewAccessGuard, url: '/tracks/crash-7d/preview?src=hub', slug: 'crash-7d', detailUrl: '/tracks/crash-7d?src=hub' },
-  companies: { guard: companyPreviewAccessGuard, url: '/companies/google/preview', slug: 'google', detailUrl: '/companies/google' },
 };
 
 async function resolve(result: MaybeAsync<GuardResult>): Promise<GuardResult> {
@@ -39,7 +40,7 @@ describe('public preview access guards', () => {
     return TestBed.runInInjectionContext(() => fixture.guard(route, { url: fixture.url } as RouterStateSnapshot));
   }
 
-  for (const [family, fixture] of Object.entries(FIXTURES) as Array<['tracks' | 'companies', PreviewFixture]>) {
+  for (const [family, fixture] of Object.entries(FIXTURES) as Array<['tracks', PreviewFixture]>) {
     it(`${family}: an anonymous visitor without a session hint gets the preview without an API round trip`, async () => {
       const ensureMe = configure({ sessionHint: false });
       expect(await resolve(run(fixture))).toBeTrue();
@@ -66,4 +67,37 @@ describe('public preview access guards', () => {
       expect(ensureMe).not.toHaveBeenCalled();
     });
   }
+});
+
+describe('premium company routes without access', () => {
+  function runGuard(navigated: boolean, url = '/companies/agoda/all?src=mail') {
+    const open = jasmine.createSpy('open');
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { isLoggedIn: () => false, user: () => null, ensureMe: () => of(null) } },
+        { provide: PremiumGateService, useValue: { open } },
+      ],
+    });
+    const router = TestBed.inject(Router);
+    router.navigated = navigated;
+    const result = TestBed.runInInjectionContext(() =>
+      premiumGuard({ data: {} } as unknown as ActivatedRouteSnapshot, { url } as RouterStateSnapshot));
+    return { open, router, result };
+  }
+
+  it('lands a direct link on the public guide of that company, with no gate', async () => {
+    const { open, router, result } = runGuard(false);
+    const target = await resolve(result);
+
+    expect(open).not.toHaveBeenCalled();
+    expect(router.serializeUrl(target as UrlTree)).toBe('/companies/agoda/preview?src=mail');
+  });
+
+  it('keeps the gate for a click inside the app, so the click gets an answer', async () => {
+    const { open, result } = runGuard(true);
+    await resolve(result);
+
+    expect(open).toHaveBeenCalledWith(jasmine.objectContaining({ reason: 'company', isLoggedIn: false }));
+  });
 });

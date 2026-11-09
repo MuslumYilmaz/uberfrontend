@@ -1,0 +1,918 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "multi-step-form-pressure-v1",
+  "family": "multi-step-form",
+  "title": "Multi-step Signup Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-multi-step-signup",
+    "angular": "angular-multi-step-form-starter",
+    "vue": "vue-multi-step-form"
+  },
+  "rounds": [
+    {
+      "id": "valid-navigation",
+      "title": "Only valid steps can move on",
+      "interviewerPrompt": "Build the three steps first. A step can only move on when its data is valid, and going back must never lose what the user typed.",
+      "constraints": [
+        "Keep the Next button enabled. A disabled button cannot tell the user what is missing.",
+        "Pressing Next on an invalid step stays on that step and shows each problem in an element with the class `error` inside that field. A new step starts with no errors.",
+        "Name, Street, City and Country cannot be empty or only spaces. Email needs a basic valid format such as `jane@example.com`. Postal code is optional.",
+        "Fixing a field removes its error right away.",
+        "Back keeps everything the user typed. Keep the starter classes `subtitle`, `step-title`, `field`, `actions` and `summary`, and the order of the fields and buttons."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-signup-navigation",
+          "name": "Round 1 · Only valid data moves forward and Back keeps it",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": false,
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 2
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "   ",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 2
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 2 of 3"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 3
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Main Street 1",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Türkiye",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 3 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".summary",
+              "text": "Jane Doe",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".summary",
+              "text": "Istanbul",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "edit-from-summary",
+      "title": "Edit from the summary",
+      "interviewerPrompt": "Users spot mistakes on the summary. Let them fix one step and come straight back, without walking through the others.",
+      "constraints": [
+        "Add two buttons on the Summary step: Edit with the class `edit-basic` and Edit with the class `edit-address`. Each opens its step with the values in place.",
+        "While editing, the Next button says `Save`. Save returns directly to the Summary.",
+        "Save follows the same rules as Next: an invalid step stays open and shows its errors.",
+        "The Summary always shows the latest values. After returning, Next and Back work as usual."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-signup-edit",
+          "name": "Round 2 · Editing returns straight to the summary",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Main Street 1",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Türkiye",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "click",
+              "selector": ".edit-basic"
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".actions button",
+              "text": "Save",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "new@example.com",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".summary",
+              "text": "new@example.com",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".edit-address"
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Berlin",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".summary",
+              "text": "Berlin",
+              "match": "contains"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".summary",
+              "text": "Istanbul",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectText",
+              "selector": ".actions button",
+              "text": "Next",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "company-step",
+      "title": "A step that comes and goes",
+      "interviewerPrompt": "Company signups need one more step. Steps can no longer be fixed numbers in the code.",
+      "constraints": [
+        "Add a checkbox with the class `is-company` on the Basic info step, outside the elements with the class `field`.",
+        "When it is checked, a step titled `Company` with a required Company name field appears between Address and Summary. The subtitle says `Step 1 of 4`.",
+        "When it is unchecked, the step goes away and the subtitle says `Step 1 of 3`.",
+        "The Summary shows the company name only while the checkbox is checked."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-signup-company",
+          "name": "Round 3 · The company step appears and disappears cleanly",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 1 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".is-company"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 1 of 4"
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 2 of 4"
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Main Street 1",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Türkiye",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Company"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 3 of 4"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Company"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Acme",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 4 of 4"
+            },
+            {
+              "type": "expectText",
+              "selector": ".summary",
+              "text": "Acme",
+              "match": "contains"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Company"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".is-company:checked",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".is-company"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 1 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 2 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 3 of 3"
+            },
+            {
+              "type": "expectNoText",
+              "selector": ".summary",
+              "text": "Acme",
+              "match": "contains"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finish-and-focus",
+      "title": "Finish and focus",
+      "interviewerPrompt": "Finish the flow. Submitting must end cleanly, and keyboard users must always know where they are.",
+      "constraints": [
+        "Submit shows `Signup complete for Jane Doe.` in an element with the class `success` and `role=\"status\"`, using the typed name, and the Submit button goes away.",
+        "Add a Start over button with the class `restart`. It returns to Step 1 with empty fields, no errors and the company checkbox cleared.",
+        "When a step changes, move focus to its title. Give the element with the class `step-title` `tabindex=\"-1\"`.",
+        "When Next is blocked, move focus to the first invalid field and set `aria-invalid=\"true\"` on invalid fields.",
+        "Give the element with the class `subtitle` `aria-live=\"polite\"`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-signup-finish",
+          "name": "Round 4 · Submit ends the flow and Start over clears it",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".is-company"
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Main Street 1",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Istanbul",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Türkiye",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Acme",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Summary"
+            },
+            {
+              "type": "click",
+              "selector": ".primary"
+            },
+            {
+              "type": "expectText",
+              "selector": ".success",
+              "text": "Signup complete for Jane Doe."
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".success",
+              "attribute": "role",
+              "expected": "status"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".primary",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".restart"
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectText",
+              "selector": ".subtitle",
+              "text": "Step 1 of 3"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "",
+              "index": 0
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".success",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".is-company:checked",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectValue",
+              "selector": ".field input",
+              "value": "",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".field .error",
+              "count": 0
+            }
+          ]
+        },
+        {
+          "id": "pressure-signup-focus",
+          "name": "Round 4 · Focus follows the step and the first problem",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".field input",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".field input",
+              "attribute": "aria-invalid",
+              "expected": "true",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "Jane Doe",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".field input",
+              "index": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".field input",
+              "value": "jane@example.com",
+              "index": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": "[aria-invalid=\"true\"]",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Address"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".step-title"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".step-title",
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".step-title",
+              "text": "Basic info"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".step-title"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".subtitle",
+              "attribute": "aria-live",
+              "expected": "polite"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the signup moving without losing anything",
+    "summary": "You built a flow that explains what is missing, keeps what the user typed, returns from edits, grows a step when needed and tells keyboard users where they are. The interview signal is deriving the steps from data instead of fixing them in the code.",
+    "takeaways": [
+      "Derive the list of steps from the form data, and let everything else read that list.",
+      "Keep the user's values in one place, so moving between steps can never lose them.",
+      "Treat editing as its own state, and clear it when the user returns.",
+      "Move focus when the screen changes, because the button the user pressed may be gone."
+    ],
+    "frameworkNotes": {
+      "react": "Keep one form object and derive the steps during render. An effect keyed on the current step moves focus after the new step is on the page.",
+      "angular": "Nested form groups keep every value while the step template changes. `Validators.required` accepts spaces, so trim first, and run change detection before moving focus.",
+      "vue": "A computed list of steps replaces fixed numbers, and `nextTick` moves focus after the DOM updates."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-multi-step-form-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-multi-step-form-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-multi-step-form-pressure-solution.v1.json"
+  }
+}

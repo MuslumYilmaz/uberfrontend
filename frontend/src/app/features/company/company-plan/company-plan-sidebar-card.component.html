@@ -1,0 +1,38 @@
+@if (card(); as plan) {
+  <div class="sidebar-plan" [class.sidebar-plan--rail]="collapsed()" data-testid="sidebar-company-plan">
+    <a
+      class="sidebar-plan__main"
+      [routerLink]="plan.link"
+      [attr.aria-label]="plan.label"
+      [pTooltip]="plan.label"
+      tooltipPosition="right"
+      [tooltipDisabled]="!collapsed()"
+      data-testid="sidebar-company-plan-open"
+      (click)="opened()">
+      <span class="sidebar-plan__mark" aria-hidden="true"><i class="pi pi-flag"></i></span>
+      <span class="sidebar-plan__body">
+        <span class="sidebar-plan__title">{{ plan.title }}</span>
+        <span class="sidebar-plan__line">{{ plan.line }}</span>
+        @if (plan.progress; as progress) {
+          <span class="sidebar-plan__line">{{ progress.text }}</span>
+          <span class="sidebar-plan__bar" aria-hidden="true"><span class="sidebar-plan__fill" [style.width.%]="progress.percent"></span></span>
+        } @else if (plan.status) {
+          <span class="sidebar-plan__line">{{ plan.status }}</span>
+        }
+      </span>
+    </a>
+    @if (plan.next; as next) {
+      <a
+        class="sidebar-plan__next"
+        [routerLink]="next.task.route"
+        [fragment]="next.task.fragment"
+        [state]="next.state"
+        data-testid="sidebar-company-plan-next"
+        (click)="nextOpened(next.task)">
+        <span class="sidebar-plan__next-label">Next</span>
+        <span class="sidebar-plan__next-title">{{ next.title }}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    }
+  </div>
+}

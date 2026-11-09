@@ -6158,7 +6158,7 @@
       "iteration"
     ],
     "description": {
-      "summary": "Merge two already-sorted arrays into a single sorted array. Do not call sort on the combined output; use a two-pointer merge.",
+      "summary": "Merge two already-sorted arrays into a single sorted array. Do not call sort on the combined output; the merge should take O(n + m) time.",
       "arguments": [
         {
           "name": "a",
@@ -6803,7 +6803,7 @@
       }
     ],
     "description": {
-      "summary": "Given two identical DOM trees and a node in tree A, return the corresponding node in tree B. Traverse both trees in sync or compute a path index. Complexity: O(n) time, O(h) stack.",
+      "summary": "Given two identical DOM trees and a node in tree A, return the corresponding node in tree B. Aim for O(n) time and O(h) extra space, where h is the height of the tree.",
       "arguments": [
         {
           "name": "rootA",
@@ -6916,7 +6916,7 @@
       }
     ],
     "description": {
-      "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Use a head index or deque to keep queue operations O(1). Complexity: O(1) amortized operations.",
+      "summary": "Implement Stack (push/pop/peek/size) and Queue (enqueue/dequeue/peek/size). Every operation, dequeue included, should take O(1) amortized time.",
       "arguments": [],
       "returns": {
         "type": "Object",
@@ -7063,7 +7063,7 @@
       "meta"
     ],
     "description": {
-      "summary": "Given a 2D grid of 0/1 (0=open, 1=wall), determine if a path exists from start to end using 4-direction moves. Use BFS/DFS with visited tracking. Complexity: O(rows*cols) time, O(rows*cols) space.",
+      "summary": "Given a 2D grid of 0/1 (0=open, 1=wall), determine if a path exists from start to end using 4-direction moves. Aim for O(rows*cols) time and space.",
       "arguments": [
         {
           "name": "grid",
@@ -9262,7 +9262,7 @@
         "company": "apple",
         "publisher": "LeetCode Discuss",
         "date": "2025-07",
-        "note": "Public search previews of this report list a nested-tabs rendering problem in React that required converting a flat list into a tree. The full report could not be read by our tools, so only that listing is used."
+        "note": "Public search previews of this report list a nested-tabs rendering problem in React that required converting a flat list into a tree; nothing else from the report is used."
       }
     ],
     "seo": {
@@ -9696,5 +9696,215 @@
       "description": "Implement JSON.stringify in JavaScript: toJSON keys, null versus omitted values, string escaping, BigInt errors and circular references, with tests."
     },
     "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-json-stringify.v1.json"
+  },
+  {
+    "id": "js-autocomplete-engine",
+    "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "async",
+      "promises",
+      "timers",
+      "cancellation",
+      "caching",
+      "utilities"
+    ],
+    "companies": [
+      "booking-com"
+    ],
+    "sources": [
+      {
+        "label": "Code360: Booking.com frontend engineer interview experience, April 2023",
+        "url": "https://www.naukri.com/code360/interview-experiences/booking-com/interview-experience-frontend-engineer-apr-2023-exp-0-2-years",
+        "company": "booking-com",
+        "publisher": "Code360",
+        "date": "2023-04",
+        "note": "The account describes a coding round that builds an autocomplete component in plain JavaScript with debounce and result handling. This engine is the logic of that component, written so its behaviour can be tested without a page."
+      },
+      {
+        "label": "enginebogie: Booking.com frontend engineer interview experience, May 2023",
+        "url": "https://enginebogie.com/interview/experience/booking-com-frontend-engineer/84",
+        "company": "booking-com",
+        "publisher": "enginebogie",
+        "date": "2023-05",
+        "note": "The account describes a 60-minute frontend coding round with two engineers building a typeahead and discussing debounce, stale responses and caching. The tests here cover those three discussions."
+      }
+    ],
+    "description": {
+      "summary": "Build the engine behind an autocomplete box as a plain JavaScript module: createAutocomplete(fetchSuggestions, options) returns update, cancel and getState. update(text, onResults) trims and lower-cases the text, answers a repeated query from a small cache at once, otherwise waits for the debounce, fetches once for the final query, ranks the suggestions (prefix matches first, then substring matches, each alphabetical, no duplicates, capped at maxResults) and reports idle, waiting, loading, ready or error states to onResults. A response for a query the user has already left never reaches the callback, and cancel() clears the pending wait and marks every request in flight as stale. Public interview reports describe this round at Booking.com: a coding round that builds an autocomplete in plain JavaScript (2023) and a 60-minute typeahead session with two engineers that discussed debounce, stale responses and caching (2023). Complexity: O(n log n) per response for the ranking, O(1) for a cache hit.",
+      "arguments": [
+        {
+          "name": "fetchSuggestions",
+          "type": "(query: string) => Promise<string[]>",
+          "desc": "Loads suggestions for a normalised query. Treat it as given; it may answer slowly or reject."
+        },
+        {
+          "name": "options",
+          "type": "object",
+          "desc": "debounceMs (default 300), minLength (default 1), maxResults (default 8) and cacheSize (default 50)."
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "desc": "{ update(text, onResults), cancel(), getState() }. onResults receives { query, status, items, message } for the latest query only."
+      },
+      "examples": [
+        "const auto = createAutocomplete((q) => fetch(`/api/cities?q=${q}`).then((r) => r.json()), { debounceMs: 300 });\ninput.addEventListener('input', () => auto.update(input.value, render));\n// render receives { status: 'waiting' } at once, then 'loading', then 'ready' with the ranked items",
+        "auto.update('am', render);\n// after 300 ms: fetchSuggestions('am') → ready with ['Amsterdam', 'Rotterdam']\nauto.update('AM', render);\n// answered from the cache at once, no new request",
+        "auto.update('ba', render);\nauto.update('bar', render);\n// the slow response for 'ba' is ignored; only 'bar' reaches render"
+      ]
+    },
+    "starterCode": "/**\n * createAutocomplete(fetchSuggestions, options)\n * - fetchSuggestions(query) returns a Promise of strings\n * - options: { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 }\n * Returns { update(text, onResults), cancel(), getState() }.\n * onResults receives { query, status, items, message } for the latest query only.\n */\nexport default function createAutocomplete(fetchSuggestions, options = {}) {\n  const { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 } = options;\n  let state = { query: '', status: 'idle', items: [], message: '' };\n\n  function update(text, onResults) {\n    // TODO: trim and lower-case the text; below minLength emit idle and clear any pending work.\n    // TODO: answer a cached query at once; otherwise emit waiting, debounce, emit loading, then fetch.\n    // TODO: rank (prefix first, then substring, each alphabetical, no duplicates), cap at maxResults, cache.\n    // TODO: ignore a response that is not for the latest query; turn a rejection into an error state.\n    throw new Error('Not implemented');\n  }\n\n  function cancel() {\n    // TODO: clear the pending debounce and mark every in-flight request stale.\n  }\n\n  return { update, cancel, getState: () => state };\n}\n",
+    "starterCodeTs": "export type AutocompleteStatus = 'idle' | 'waiting' | 'loading' | 'ready' | 'error';\n\nexport interface AutocompleteState {\n  query: string;\n  status: AutocompleteStatus;\n  items: string[];\n  message: string;\n}\n\nexport interface AutocompleteOptions {\n  debounceMs?: number;\n  minLength?: number;\n  maxResults?: number;\n  cacheSize?: number;\n}\n\nexport type FetchSuggestions = (query: string) => Promise<string[]>;\nexport type OnResults = (state: AutocompleteState) => void;\n\nexport interface Autocomplete {\n  update(text: string, onResults: OnResults): void;\n  cancel(): void;\n  getState(): AutocompleteState;\n}\n\n/**\n * createAutocomplete(fetchSuggestions, options)\n * Returns { update(text, onResults), cancel(), getState() }.\n * onResults receives { query, status, items, message } for the latest query only.\n */\nexport default function createAutocomplete(fetchSuggestions: FetchSuggestions, options: AutocompleteOptions = {}): Autocomplete {\n  const { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 } = options;\n  let state: AutocompleteState = { query: '', status: 'idle', items: [], message: '' };\n\n  function update(text: string, onResults: OnResults): void {\n    // TODO: trim and lower-case the text; below minLength emit idle and clear any pending work.\n    // TODO: answer a cached query at once; otherwise emit waiting, debounce, emit loading, then fetch.\n    // TODO: rank (prefix first, then substring, each alphabetical, no duplicates), cap at maxResults, cache.\n    // TODO: ignore a response that is not for the latest query; turn a rejection into an error state.\n    throw new Error('Not implemented');\n  }\n\n  function cancel(): void {\n    // TODO: clear the pending debounce and mark every in-flight request stale.\n  }\n\n  return { update, cancel, getState: () => state };\n}\n",
+    "solutionBlock": {
+      "overview": "The engine keeps three pieces of state: the latest normalised query, a request id that grows on every cancel or new request, and a small Map cache. update normalises the text, cancels the pending work, answers short queries with idle and cached queries with ready, and otherwise emits waiting, debounces, emits loading, fetches, ranks and caches. The request id and the latest query decide whether a response may reach the callback, so a slow response for an older query is dropped and a rejection becomes an error state the next query clears.\n\n**Test cases**\n- Typing `a` then `am` within the window sends one request, for `am`, after the wait.\n- Prefix matches rank before substring matches, each alphabetical, duplicates dropped, capped at `maxResults`.\n- A slow response for `ba` never replaces the results for `bar`.\n- Below `minLength` the engine goes idle at once and sends nothing.\n- A repeated query answers from the cache without a request.\n- A rejection becomes `error` with the message; the next query recovers.\n- `cancel()` clears the pending wait and ignores a response in flight.",
+      "approaches": [
+        {
+          "title": "Approach: latest-query guard with a request id and a Map cache",
+          "prose": "Treat every update as the start of a new attempt.\n\n1. Normalise the text (trim, lower-case) so the debounce, the cache and the ranking agree on what a query is.\n2. Cancel first: clear the pending timer and bump the request id, so whatever was in flight can no longer reach the callback.\n3. Short-circuit the cheap cases: below `minLength` emit `idle` with an empty list; a cached query emits `ready` at once.\n4. Otherwise emit `waiting`, start the debounce, and when it fires take a fresh request id, emit `loading` and call `fetchSuggestions`.\n5. In both handlers compare the request id and the latest query before touching state. On success rank, cache and emit `ready`; on failure emit `error` with the message.\n6. Rank with two buckets, prefix and substring, each sorted, deduplicated with a Set of lower-cased names, then cap the list.\n\nThe interviewer is listening for the race: say out loud which response may win and why the id check settles it.",
+          "codeJs": "/**\n * createAutocomplete(fetchSuggestions, options)\n * - fetchSuggestions(query) returns a Promise of strings\n * - options: { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 }\n * Returns { update(text, onResults), cancel(), getState() }.\n * onResults receives { query, status, items, message } for the latest query only.\n */\nexport default function createAutocomplete(fetchSuggestions, options = {}) {\n  const { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 } = options;\n  const cache = new Map();\n  let timer = null;\n  let latest = '';\n  let requestId = 0;\n  let state = { query: '', status: 'idle', items: [], message: '' };\n\n  function emit(onResults, next) {\n    state = next;\n    onResults(next);\n  }\n\n  function remember(query, items) {\n    cache.delete(query);\n    cache.set(query, items);\n    if (cache.size > cacheSize) cache.delete(cache.keys().next().value);\n  }\n\n  function rank(query, items) {\n    const q = query.toLowerCase();\n    const seen = new Set();\n    const prefix = [];\n    const inner = [];\n    for (const raw of items) {\n      const item = String(raw).trim();\n      const key = item.toLowerCase();\n      if (!item || seen.has(key)) continue;\n      seen.add(key);\n      if (key.startsWith(q)) prefix.push(item);\n      else if (key.includes(q)) inner.push(item);\n    }\n    const byName = (a, b) => a.localeCompare(b);\n    return [...prefix.sort(byName), ...inner.sort(byName)].slice(0, maxResults);\n  }\n\n  function cancel() {\n    if (timer !== null) {\n      clearTimeout(timer);\n      timer = null;\n    }\n    requestId += 1;\n  }\n\n  function update(text, onResults) {\n    const query = String(text ?? '').trim().toLowerCase();\n    latest = query;\n    cancel();\n    if (query.length < minLength) {\n      emit(onResults, { query, status: 'idle', items: [], message: '' });\n      return;\n    }\n    if (cache.has(query)) {\n      emit(onResults, { query, status: 'ready', items: cache.get(query), message: '' });\n      return;\n    }\n    emit(onResults, { query, status: 'waiting', items: state.items, message: '' });\n    timer = setTimeout(() => {\n      timer = null;\n      const id = ++requestId;\n      emit(onResults, { query, status: 'loading', items: state.items, message: '' });\n      Promise.resolve()\n        .then(() => fetchSuggestions(query))\n        .then((items) => {\n          if (id !== requestId || query !== latest) return;\n          const ranked = rank(query, Array.isArray(items) ? items : []);\n          remember(query, ranked);\n          emit(onResults, { query, status: 'ready', items: ranked, message: '' });\n        })\n        .catch((error) => {\n          if (id !== requestId || query !== latest) return;\n          const message = error instanceof Error && error.message ? error.message : 'Suggestions unavailable';\n          emit(onResults, { query, status: 'error', items: [], message });\n        });\n    }, debounceMs);\n  }\n\n  return { update, cancel, getState: () => state };\n}\n",
+          "codeTs": "export type AutocompleteStatus = 'idle' | 'waiting' | 'loading' | 'ready' | 'error';\n\nexport interface AutocompleteState {\n  query: string;\n  status: AutocompleteStatus;\n  items: string[];\n  message: string;\n}\n\nexport interface AutocompleteOptions {\n  debounceMs?: number;\n  minLength?: number;\n  maxResults?: number;\n  cacheSize?: number;\n}\n\nexport type FetchSuggestions = (query: string) => Promise<string[]>;\nexport type OnResults = (state: AutocompleteState) => void;\n\nexport interface Autocomplete {\n  update(text: string, onResults: OnResults): void;\n  cancel(): void;\n  getState(): AutocompleteState;\n}\n\n/**\n * createAutocomplete(fetchSuggestions, options)\n * Returns { update(text, onResults), cancel(), getState() }.\n * onResults receives { query, status, items, message } for the latest query only.\n */\nexport default function createAutocomplete(fetchSuggestions: FetchSuggestions, options: AutocompleteOptions = {}): Autocomplete {\n  const { debounceMs = 300, minLength = 1, maxResults = 8, cacheSize = 50 } = options;\n  const cache = new Map<string, string[]>();\n  let timer: ReturnType<typeof setTimeout> | null = null;\n  let latest = '';\n  let requestId = 0;\n  let state: AutocompleteState = { query: '', status: 'idle', items: [], message: '' };\n\n  function emit(onResults: OnResults, next: AutocompleteState): void {\n    state = next;\n    onResults(next);\n  }\n\n  function remember(query: string, items: string[]): void {\n    cache.delete(query);\n    cache.set(query, items);\n    if (cache.size > cacheSize) {\n      const oldest = cache.keys().next().value;\n      if (oldest !== undefined) cache.delete(oldest);\n    }\n  }\n\n  function rank(query: string, items: readonly unknown[]): string[] {\n    const q = query.toLowerCase();\n    const seen = new Set<string>();\n    const prefix: string[] = [];\n    const inner: string[] = [];\n    for (const raw of items) {\n      const item = String(raw).trim();\n      const key = item.toLowerCase();\n      if (!item || seen.has(key)) continue;\n      seen.add(key);\n      if (key.startsWith(q)) prefix.push(item);\n      else if (key.includes(q)) inner.push(item);\n    }\n    const byName = (a: string, b: string) => a.localeCompare(b);\n    return [...prefix.sort(byName), ...inner.sort(byName)].slice(0, maxResults);\n  }\n\n  function cancel(): void {\n    if (timer !== null) {\n      clearTimeout(timer);\n      timer = null;\n    }\n    requestId += 1;\n  }\n\n  function update(text: string, onResults: OnResults): void {\n    const query = String(text ?? '').trim().toLowerCase();\n    latest = query;\n    cancel();\n    if (query.length < minLength) {\n      emit(onResults, { query, status: 'idle', items: [], message: '' });\n      return;\n    }\n    const cached = cache.get(query);\n    if (cached) {\n      emit(onResults, { query, status: 'ready', items: cached, message: '' });\n      return;\n    }\n    emit(onResults, { query, status: 'waiting', items: state.items, message: '' });\n    timer = setTimeout(() => {\n      timer = null;\n      const id = ++requestId;\n      emit(onResults, { query, status: 'loading', items: state.items, message: '' });\n      Promise.resolve()\n        .then(() => fetchSuggestions(query))\n        .then((items) => {\n          if (id !== requestId || query !== latest) return;\n          const ranked = rank(query, Array.isArray(items) ? items : []);\n          remember(query, ranked);\n          emit(onResults, { query, status: 'ready', items: ranked, message: '' });\n        })\n        .catch((error: unknown) => {\n          if (id !== requestId || query !== latest) return;\n          const message = error instanceof Error && error.message ? error.message : 'Suggestions unavailable';\n          emit(onResults, { query, status: 'error', items: [], message });\n        });\n    }, debounceMs);\n  }\n\n  return { update, cancel, getState: () => state };\n}\n",
+          "decisionGraphKey": "approach1"
+        }
+      ]
+    },
+    "tests": "import createAutocomplete from './createAutocomplete';\n\nconst flush = async () => {\n  for (let i = 0; i < 6; i += 1) await Promise.resolve();\n};\n\nconst withFakeTimers = async (fn) => {\n  const realSetTimeout = globalThis.setTimeout;\n  const realClearTimeout = globalThis.clearTimeout;\n  let now = 0;\n  let nextId = 1;\n  const timers = new Map();\n  globalThis.setTimeout = (cb, delay = 0) => {\n    const id = nextId++;\n    timers.set(id, { time: now + Math.max(0, Number(delay) || 0), cb });\n    return id;\n  };\n  globalThis.clearTimeout = (id) => {\n    timers.delete(id);\n  };\n  const advance = async (ms) => {\n    const target = now + ms;\n    while (true) {\n      let nextTime = Infinity;\n      let nextTimerId = null;\n      for (const [id, t] of timers.entries()) {\n        if (t.time <= target && t.time < nextTime) {\n          nextTime = t.time;\n          nextTimerId = id;\n        }\n      }\n      if (nextTimerId == null) break;\n      const { cb } = timers.get(nextTimerId);\n      timers.delete(nextTimerId);\n      now = nextTime;\n      cb();\n      await flush();\n    }\n    now = target;\n  };\n  try {\n    await fn({ advance });\n  } finally {\n    globalThis.setTimeout = realSetTimeout;\n    globalThis.clearTimeout = realClearTimeout;\n  }\n};\n\nconst cities = ['Amsterdam', 'Antwerp', 'Ankara', 'Athens', 'Bangkok', 'Barcelona', 'Istanbul', 'Milan', 'Paris', 'Rotterdam', 'Santander', 'Sydney'];\n\nconst makeFetch = () => {\n  const calls = [];\n  const pending = [];\n  const fetchSuggestions = (query) => {\n    calls.push(query);\n    return new Promise((resolve, reject) => {\n      pending.push({ query, resolve, reject });\n    });\n  };\n  const answer = (query, items) => {\n    const index = pending.findIndex((entry) => entry.query === query);\n    if (index < 0) throw new Error(`no pending request for ${query}`);\n    const [entry] = pending.splice(index, 1);\n    entry.resolve(items);\n  };\n  const fail = (query, message) => {\n    const index = pending.findIndex((entry) => entry.query === query);\n    if (index < 0) throw new Error(`no pending request for ${query}`);\n    const [entry] = pending.splice(index, 1);\n    entry.reject(new Error(message));\n  };\n  return { fetchSuggestions, calls, answer, fail };\n};\n\ndescribe('createAutocomplete', () => {\n  test('waits for the debounce, then fetches once for the final query', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 300 });\n      auto.update('a', (r) => results.push(r));\n      await advance(100);\n      auto.update('am', (r) => results.push(r));\n      await advance(299);\n      expect(api.calls).toEqual([]);\n      await advance(1);\n      expect(api.calls).toEqual(['am']);\n      api.answer('am', cities);\n      await flush();\n      const last = results[results.length - 1];\n      expect(last.status).toBe('ready');\n      expect(last.query).toBe('am');\n      expect(last.items).toEqual(['Amsterdam', 'Rotterdam']);\n    });\n  });\n\n  test('ranks prefix matches before substring matches, alphabetically, without duplicates, capped at maxResults', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 10, maxResults: 4 });\n      auto.update('An', (r) => results.push(r));\n      await advance(10);\n      api.answer('an', ['Santander', 'Ankara', 'Antwerp', 'ankara', 'Milan', 'Bangkok', 'Anchorage']);\n      await flush();\n      expect(results[results.length - 1].items).toEqual(['Anchorage', 'Ankara', 'Antwerp', 'Bangkok']);\n    });\n  });\n\n  test('a slow response for an older query never replaces the newer results', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 50 });\n      auto.update('ba', (r) => results.push(r));\n      await advance(50);\n      auto.update('bar', (r) => results.push(r));\n      await advance(50);\n      expect(api.calls).toEqual(['ba', 'bar']);\n      api.answer('bar', ['Barcelona']);\n      await flush();\n      api.answer('ba', ['Bangkok', 'Barcelona']);\n      await flush();\n      const last = results[results.length - 1];\n      expect(last.query).toBe('bar');\n      expect(last.items).toEqual(['Barcelona']);\n      expect(results.some((r) => r.query === 'ba' && r.status === 'ready')).toBe(false);\n    });\n  });\n\n  test('below minLength it goes idle at once, cancels pending work and empties the list', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 100, minLength: 2 });\n      auto.update('pa', (r) => results.push(r));\n      await advance(20);\n      auto.update(' ', (r) => results.push(r));\n      await advance(200);\n      expect(api.calls).toEqual([]);\n      const last = results[results.length - 1];\n      expect(last.status).toBe('idle');\n      expect(last.items).toEqual([]);\n    });\n  });\n\n  test('a repeated query answers from the cache without a new request', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 30 });\n      auto.update('mi', (r) => results.push(r));\n      await advance(30);\n      api.answer('mi', ['Milan']);\n      await flush();\n      auto.update('pa', (r) => results.push(r));\n      await advance(30);\n      api.answer('pa', ['Paris']);\n      await flush();\n      auto.update('MI', (r) => results.push(r));\n      expect(api.calls).toEqual(['mi', 'pa']);\n      const last = results[results.length - 1];\n      expect(last.status).toBe('ready');\n      expect(last.items).toEqual(['Milan']);\n    });\n  });\n\n  test('a rejected request becomes an error state and the next query recovers', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 10 });\n      auto.update('sy', (r) => results.push(r));\n      await advance(10);\n      api.fail('sy', 'Suggestion service unavailable');\n      await flush();\n      expect(results[results.length - 1].status).toBe('error');\n      expect(results[results.length - 1].message).toBe('Suggestion service unavailable');\n      auto.update('syd', (r) => results.push(r));\n      await advance(10);\n      api.answer('syd', ['Sydney']);\n      await flush();\n      expect(results[results.length - 1].status).toBe('ready');\n      expect(results[results.length - 1].items).toEqual(['Sydney']);\n    });\n  });\n\n  test('cancel clears the pending debounce and ignores an in-flight response', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 40 });\n      auto.update('is', (r) => results.push(r));\n      await advance(40);\n      expect(api.calls).toEqual(['is']);\n      auto.cancel();\n      api.answer('is', ['Istanbul']);\n      await flush();\n      expect(results.some((r) => r.status === 'ready')).toBe(false);\n      auto.update('at', (r) => results.push(r));\n      auto.cancel();\n      await advance(100);\n      expect(api.calls).toEqual(['is']);\n    });\n  });\n});\n",
+    "testsTs": "import createAutocomplete from './createAutocomplete';\n\ntype AutocompleteState = { query: string; status: string; items: string[]; message: string };\n\nconst flush = async () => {\n  for (let i = 0; i < 6; i += 1) await Promise.resolve();\n};\n\nconst withFakeTimers = async (fn: (clock: { advance: (ms: number) => Promise<void> }) => Promise<void>) => {\n  const realSetTimeout = globalThis.setTimeout;\n  const realClearTimeout = globalThis.clearTimeout;\n  let now = 0;\n  let nextId = 1;\n  const timers = new Map<number, { time: number; cb: () => void }>();\n  (globalThis as any).setTimeout = (cb: () => void, delay = 0) => {\n    const id = nextId++;\n    timers.set(id, { time: now + Math.max(0, Number(delay) || 0), cb });\n    return id;\n  };\n  (globalThis as any).clearTimeout = (id: number) => {\n    timers.delete(id);\n  };\n  const advance = async (ms: number) => {\n    const target = now + ms;\n    while (true) {\n      let nextTime = Infinity;\n      let nextTimerId: number | null = null;\n      for (const [id, t] of timers.entries()) {\n        if (t.time <= target && t.time < nextTime) {\n          nextTime = t.time;\n          nextTimerId = id;\n        }\n      }\n      if (nextTimerId == null) break;\n      const { cb } = timers.get(nextTimerId)!;\n      timers.delete(nextTimerId);\n      now = nextTime;\n      cb();\n      await flush();\n    }\n    now = target;\n  };\n  try {\n    await fn({ advance });\n  } finally {\n    globalThis.setTimeout = realSetTimeout;\n    globalThis.clearTimeout = realClearTimeout;\n  }\n};\n\nconst cities = ['Amsterdam', 'Antwerp', 'Ankara', 'Athens', 'Bangkok', 'Barcelona', 'Istanbul', 'Milan', 'Paris', 'Rotterdam', 'Santander', 'Sydney'];\n\nconst makeFetch = () => {\n  const calls: string[] = [];\n  const pending: { query: string; resolve: (items: string[]) => void; reject: (error: Error) => void }[] = [];\n  const fetchSuggestions = (query: string) => {\n    calls.push(query);\n    return new Promise<string[]>((resolve, reject) => {\n      pending.push({ query, resolve, reject });\n    });\n  };\n  const answer = (query: string, items: string[]) => {\n    const index = pending.findIndex((entry) => entry.query === query);\n    if (index < 0) throw new Error(`no pending request for ${query}`);\n    const [entry] = pending.splice(index, 1);\n    entry.resolve(items);\n  };\n  const fail = (query: string, message: string) => {\n    const index = pending.findIndex((entry) => entry.query === query);\n    if (index < 0) throw new Error(`no pending request for ${query}`);\n    const [entry] = pending.splice(index, 1);\n    entry.reject(new Error(message));\n  };\n  return { fetchSuggestions, calls, answer, fail };\n};\n\ndescribe('createAutocomplete', () => {\n  test('waits for the debounce, then fetches once for the final query', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 300 });\n      auto.update('a', (r: AutocompleteState) => results.push(r));\n      await advance(100);\n      auto.update('am', (r: AutocompleteState) => results.push(r));\n      await advance(299);\n      expect(api.calls).toEqual([]);\n      await advance(1);\n      expect(api.calls).toEqual(['am']);\n      api.answer('am', cities);\n      await flush();\n      const last = results[results.length - 1];\n      expect(last.status).toBe('ready');\n      expect(last.query).toBe('am');\n      expect(last.items).toEqual(['Amsterdam', 'Rotterdam']);\n    });\n  });\n\n  test('ranks prefix matches before substring matches, alphabetically, without duplicates, capped at maxResults', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 10, maxResults: 4 });\n      auto.update('An', (r: AutocompleteState) => results.push(r));\n      await advance(10);\n      api.answer('an', ['Santander', 'Ankara', 'Antwerp', 'ankara', 'Milan', 'Bangkok', 'Anchorage']);\n      await flush();\n      expect(results[results.length - 1].items).toEqual(['Anchorage', 'Ankara', 'Antwerp', 'Bangkok']);\n    });\n  });\n\n  test('a slow response for an older query never replaces the newer results', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 50 });\n      auto.update('ba', (r: AutocompleteState) => results.push(r));\n      await advance(50);\n      auto.update('bar', (r: AutocompleteState) => results.push(r));\n      await advance(50);\n      expect(api.calls).toEqual(['ba', 'bar']);\n      api.answer('bar', ['Barcelona']);\n      await flush();\n      api.answer('ba', ['Bangkok', 'Barcelona']);\n      await flush();\n      const last = results[results.length - 1];\n      expect(last.query).toBe('bar');\n      expect(last.items).toEqual(['Barcelona']);\n      expect(results.some((r: AutocompleteState) => r.query === 'ba' && r.status === 'ready')).toBe(false);\n    });\n  });\n\n  test('below minLength it goes idle at once, cancels pending work and empties the list', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 100, minLength: 2 });\n      auto.update('pa', (r: AutocompleteState) => results.push(r));\n      await advance(20);\n      auto.update(' ', (r: AutocompleteState) => results.push(r));\n      await advance(200);\n      expect(api.calls).toEqual([]);\n      const last = results[results.length - 1];\n      expect(last.status).toBe('idle');\n      expect(last.items).toEqual([]);\n    });\n  });\n\n  test('a repeated query answers from the cache without a new request', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 30 });\n      auto.update('mi', (r: AutocompleteState) => results.push(r));\n      await advance(30);\n      api.answer('mi', ['Milan']);\n      await flush();\n      auto.update('pa', (r: AutocompleteState) => results.push(r));\n      await advance(30);\n      api.answer('pa', ['Paris']);\n      await flush();\n      auto.update('MI', (r: AutocompleteState) => results.push(r));\n      expect(api.calls).toEqual(['mi', 'pa']);\n      const last = results[results.length - 1];\n      expect(last.status).toBe('ready');\n      expect(last.items).toEqual(['Milan']);\n    });\n  });\n\n  test('a rejected request becomes an error state and the next query recovers', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 10 });\n      auto.update('sy', (r: AutocompleteState) => results.push(r));\n      await advance(10);\n      api.fail('sy', 'Suggestion service unavailable');\n      await flush();\n      expect(results[results.length - 1].status).toBe('error');\n      expect(results[results.length - 1].message).toBe('Suggestion service unavailable');\n      auto.update('syd', (r: AutocompleteState) => results.push(r));\n      await advance(10);\n      api.answer('syd', ['Sydney']);\n      await flush();\n      expect(results[results.length - 1].status).toBe('ready');\n      expect(results[results.length - 1].items).toEqual(['Sydney']);\n    });\n  });\n\n  test('cancel clears the pending debounce and ignores an in-flight response', async () => {\n    await withFakeTimers(async ({ advance }) => {\n      const api = makeFetch();\n      const results: AutocompleteState[] = [];\n      const auto = createAutocomplete(api.fetchSuggestions, { debounceMs: 40 });\n      auto.update('is', (r: AutocompleteState) => results.push(r));\n      await advance(40);\n      expect(api.calls).toEqual(['is']);\n      auto.cancel();\n      api.answer('is', ['Istanbul']);\n      await flush();\n      expect(results.some((r: AutocompleteState) => r.status === 'ready')).toBe(false);\n      auto.update('at', (r: AutocompleteState) => results.push(r));\n      auto.cancel();\n      await advance(100);\n      expect(api.calls).toEqual(['is']);\n    });\n  });\n});\n",
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-autocomplete-engine.v1.json",
+    "premiumPreview": {
+      "summary": "Build the engine behind an autocomplete box: debounce, one request for the final query, ranked suggestions, a small cache, and a guard so a slow response for an older query never replaces the newer results.",
+      "learningOutcomes": [
+        "Debounce input so one request goes out for the final query.",
+        "Drop a response that belongs to a query the user has already left.",
+        "Rank suggestions deterministically and cap the list.",
+        "Turn a rejected request into a state the next query clears."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, the tests, the implementation walkthrough and the decision graph."
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-05",
+    "seo": {
+      "title": "Build an Autocomplete Engine in JavaScript (Debounce, Cache, Stale Guard)",
+      "description": "Implement createAutocomplete with a debounce, a latest-query guard, ranked suggestions, a small cache and error states, tested without a page."
+    }
+  },
+  {
+    "id": "js-longest-substring-without-repeating",
+    "title": "Longest Substring Without Repeating Characters",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "revolut"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Revolut frontend developer screen, November 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-11",
+        "note": "This self-reported frontend developer screen describes Revolut's HackerRank JavaScript test with a standard sliding-window problem, without giving its prompt. This drill is a common problem of that kind, written as a practice version, not the question that was asked."
+      }
+    ],
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "strings",
+      "algorithms",
+      "hash-map",
+      "data-structures"
+    ],
+    "description": {
+      "summary": "Implement lengthOfLongestSubstring(s): return the length of the longest substring of s in which no character repeats. A substring is contiguous, so a subsequence does not count. Spaces and symbols are characters too, an empty string returns 0, and input that is not a string throws a TypeError. Aim for O(n) time on a string of length n.",
+      "arguments": [
+        {
+          "name": "s",
+          "type": "string",
+          "desc": "The input: letters, digits, symbols and spaces. Each UTF-16 code unit counts as one character, as string indexing reads it."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The length of the longest substring with no repeated character."
+      },
+      "examples": [
+        "lengthOfLongestSubstring('abcabcbb'); // => 3, from 'abc'",
+        "lengthOfLongestSubstring('bbbbb'); // => 1",
+        "lengthOfLongestSubstring('pwwkew'); // => 3, from 'wke' ('pwke' is not contiguous)",
+        "lengthOfLongestSubstring(''); // => 0"
+      ]
+    },
+    "starterCode": "export default function lengthOfLongestSubstring(s) {\n  // TODO: return the length of the longest substring of s without a repeated character.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  // TODO: return the length of the longest substring of s without a repeated character.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: scan the string once and keep a window that never holds a repeated character. Remember the last index of every character. When the next character was last seen inside the window, move the window's start to just past that index, never backwards; the window is then free of repeats, and its length is a candidate for the answer. One pass gives O(n) time and O(k) memory for k distinct characters.",
+      "approaches": [
+        {
+          "title": "Approach 1: Last-seen index, one pass",
+          "prose": "Check the type first. Keep start, the first index of the window, and a Map from each character to the last index it appeared at. For each index i, if s[i] was last seen at or after start, set start to that index plus one. Record i as the last index of s[i], then compare i - start + 1 with the best length so far. The check against start matters: in \"abba\", the second a was last seen before the window starts, and moving start back to it would count \"bba\". Time O(n), memory O(k) for k distinct characters.",
+          "codeJs": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const lastSeen = new Map();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const previous = lastSeen.get(s[i]);\n    if (previous !== undefined && previous >= start) start = previous + 1;\n    lastSeen.set(s[i], i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}\n",
+          "codeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const lastSeen = new Map<string, number>();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const previous = lastSeen.get(s[i]);\n    if (previous !== undefined && previous >= start) start = previous + 1;\n    lastSeen.set(s[i], i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: A set window that shrinks from the left",
+          "prose": "Keep the characters of the window in a Set. For each new character, remove characters from the left until the Set no longer holds it, then add it and measure the window. Each character enters and leaves the Set at most once, so the whole scan is O(n) even when one step removes several characters. It is the same window as approach 1, with no indexes to store.",
+          "codeJs": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const inWindow = new Set();\n  let start = 0;\n  let best = 0;\n  for (let end = 0; end < s.length; end++) {\n    while (inWindow.has(s[end])) {\n      inWindow.delete(s[start]);\n      start++;\n    }\n    inWindow.add(s[end]);\n    best = Math.max(best, end - start + 1);\n  }\n  return best;\n}\n",
+          "codeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const inWindow = new Set<string>();\n  let start = 0;\n  let best = 0;\n  for (let end = 0; end < s.length; end++) {\n    while (inWindow.has(s[end])) {\n      inWindow.delete(s[start]);\n      start++;\n    }\n    inWindow.add(s[end]);\n    best = Math.max(best, end - start + 1);\n  }\n  return best;\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Moving start to the last index without comparing it with start: in \"abba\" the final a would pull start back to 0 and count a window with two b.",
+          "Restarting the scan from the repeat's earlier copy for every repeat: correct, but O(n^2) on long strings with few repeats.",
+          "Counting distinct characters of the whole string: \"pwwkew\" has four, but no substring of length 4 is free of repeats.",
+          "Forgetting that a space or a symbol is a character like any other."
+        ],
+        "edgeCases": [
+          "Empty string → 0.",
+          "One repeated character, such as \"bbbbb\" → 1.",
+          "No repeats at all → the whole length.",
+          "A repeat whose earlier copy lies before the window, such as \"abba\" → 2."
+        ],
+        "techniques": [
+          "A window over the string with two indexes",
+          "A Map from character to last index",
+          "A Set of the characters in the window"
+        ]
+      },
+      "followUp": [
+        "How would you return the substring itself, or every longest one?",
+        "How would you allow each character up to k times in the window?",
+        "How would you find the longest substring with at most k distinct characters?",
+        "What changes if a character is a whole emoji, made of two UTF-16 code units?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        },
+        {
+          "title": "MDN – Set",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+        },
+        {
+          "title": "MDN – String: length",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length"
+        }
+      ]
+    },
+    "tests": "import lengthOfLongestSubstring from './lengthOfLongestSubstring';\n\ndescribe('lengthOfLongestSubstring', () => {\n  test('finds the longest run without a repeated character', () => {\n    expect(lengthOfLongestSubstring('abcabcbb')).toBe(3);\n    expect(lengthOfLongestSubstring('bbbbb')).toBe(1);\n    expect(lengthOfLongestSubstring('abcdef')).toBe(6);\n  });\n\n  test('counts a contiguous run, not a subsequence', () => {\n    expect(lengthOfLongestSubstring('pwwkew')).toBe(3);\n  });\n\n  test('returns 0 for an empty string and counts spaces and symbols as characters', () => {\n    expect(lengthOfLongestSubstring('')).toBe(0);\n    expect(lengthOfLongestSubstring(' ')).toBe(1);\n    expect(lengthOfLongestSubstring('a b c')).toBe(3);\n    expect(lengthOfLongestSubstring('!?!?')).toBe(2);\n  });\n\n  test('restarts after the earlier copy of a repeat, never before the current start', () => {\n    expect(lengthOfLongestSubstring('dvdf')).toBe(3);\n    expect(lengthOfLongestSubstring('abba')).toBe(2);\n    expect(lengthOfLongestSubstring('tmmzuxt')).toBe(5);\n  });\n\n  test('handles long input in linear time', () => {\n    const distinct = Array.from({ length: 50000 }, (_, i) => String.fromCharCode(0x100 + i)).join('');\n    expect(lengthOfLongestSubstring(distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring(distinct + distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring('ab'.repeat(50000))).toBe(2);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => lengthOfLongestSubstring(null)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(undefined)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(42)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(['a', 'b'])).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import lengthOfLongestSubstring from './lengthOfLongestSubstring';\n\ndescribe('lengthOfLongestSubstring', () => {\n  test('finds the longest run without a repeated character', () => {\n    expect(lengthOfLongestSubstring('abcabcbb')).toBe(3);\n    expect(lengthOfLongestSubstring('bbbbb')).toBe(1);\n    expect(lengthOfLongestSubstring('abcdef')).toBe(6);\n  });\n\n  test('counts a contiguous run, not a subsequence', () => {\n    expect(lengthOfLongestSubstring('pwwkew')).toBe(3);\n  });\n\n  test('returns 0 for an empty string and counts spaces and symbols as characters', () => {\n    expect(lengthOfLongestSubstring('')).toBe(0);\n    expect(lengthOfLongestSubstring(' ')).toBe(1);\n    expect(lengthOfLongestSubstring('a b c')).toBe(3);\n    expect(lengthOfLongestSubstring('!?!?')).toBe(2);\n  });\n\n  test('restarts after the earlier copy of a repeat, never before the current start', () => {\n    expect(lengthOfLongestSubstring('dvdf')).toBe(3);\n    expect(lengthOfLongestSubstring('abba')).toBe(2);\n    expect(lengthOfLongestSubstring('tmmzuxt')).toBe(5);\n  });\n\n  test('handles long input in linear time', () => {\n    const distinct = Array.from({ length: 50000 }, (_, i) => String.fromCharCode(0x100 + i)).join('');\n    expect(lengthOfLongestSubstring(distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring(distinct + distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring('ab'.repeat(50000))).toBe(2);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => lengthOfLongestSubstring(null as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(undefined as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(42 as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(['a', 'b'] as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "premium",
+    "updatedAt": "2026-11-09",
+    "seo": {
+      "title": "Longest Substring Without Repeating Characters in JavaScript",
+      "description": "Return the length of the longest substring without a repeated character in JavaScript in O(n): contiguous runs, a repeat before the window, spaces, empty input and long strings."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-longest-substring-without-repeating.v1.json"
   }
 ]

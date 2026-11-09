@@ -86,6 +86,12 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   expect(mobileAnnual).toBeTruthy();
   expect(mobileQuarterly!.y).toBeLessThan(mobileMonthly!.y);
   expect(mobileMonthly!.y).toBeLessThan(mobileAnnual!.y);
+  // On a phone the plan cards are the page: no sticky bar covers the terms below them, and without a regional
+  // price for this visitor none is mentioned.
+  await page.getByTestId('pricing-discounts').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('pricing-discounts')).toBeInViewport();
+  await expect(page.getByTestId('conversion-mobile-sticky')).toHaveCount(0);
+  await expect(page.getByTestId('pricing-discounts')).not.toContainText('regional price');
   await expect(primaryCards).toHaveCount(3);
   expect(await primaryCards.evaluateAll((cards) => cards.map((card) => (
     card.classList.contains('pr-card--quarterly')
@@ -93,7 +99,7 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
       : card.classList.contains('pr-card--monthly')
         ? 'monthly'
         : 'annual'
-  )))).toEqual(['quarterly', 'monthly', 'annual']);
+  )))).toEqual(['monthly', 'quarterly', 'annual']);
 });
 
 test('regional pricing shows the list price struck through next to the regional price', async ({ page }) => {
@@ -110,6 +116,7 @@ test('regional pricing shows the list price struck through next to the regional 
             countryName: 'Türkiye',
             multiplier: 0.5,
             prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+            local: { currency: 'TRY', rate: 42.1, asOf: '2026-11-05' },
           },
         },
       }),
@@ -118,6 +125,10 @@ test('regional pricing shows the list price struck through next to the regional 
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/pricing');
+  // Next to the regional price, the amount in the visitor's money at a dated rate; the charge stays in dollars.
+  await expect(page.locator('.pr-card--monthly [data-testid="pricing-local-estimate"]')).toHaveText('about TRY 250 a month');
+  await expect(page.locator('[data-testid="pricing-lifetime-secondary"] [data-testid="pricing-local-estimate"]')).toHaveText('about TRY 4,200 once');
+  await expect(page.getByTestId('pricing-local-note')).toContainText('Charged in US dollars. Local amounts are estimates at the exchange rate of 5 Nov 2026');
 
   await expect(page.getByTestId('pricing-regional-line')).toContainText('Prices for Türkiye: 50% off the list price, applied automatically at checkout.');
   // The badge leads the page above the headline, and each card names its own discount.
@@ -133,6 +144,8 @@ test('regional pricing shows the list price struck through next to the regional 
   await expect(page.locator('[data-testid="pricing-lifetime-secondary"] s[data-list-price]')).toHaveText('$199');
   await expect(page.getByTestId('pricing-lifetime-secondary')).toContainText('$99.50');
   await expect(page.locator('body')).not.toContainText(/limited time|offer ending|was \$/i);
+  // The student terms name the regional price only for a visitor who has one.
+  await expect(page.getByTestId('pricing-discounts')).toContainText('Never combined with the regional price: you get the better of the two.');
 
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);

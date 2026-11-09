@@ -7,6 +7,7 @@
 .auth-home-link:focus-visible{outline:none; box-shadow:var(--uf-focus-ring); border-radius:6px;}
 .auth-card{width:min(520px,100%); background:var(--uf-surface); border:1px solid var(--uf-border-subtle); border-radius:var(--uf-card-radius); box-shadow:var(--uf-card-shadow-strong); padding:24px; display:grid; gap:18px;}
 .auth-title{margin:0; font-size:26px; font-weight:800; color:var(--uf-text-primary);}
+.auth-plan-note{margin:0; padding:10px 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle)); background:color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface)); color:var(--uf-text-primary); font-size:14px; line-height:1.5;}
 .auth-socials{display:grid; gap:10px;}
 .btn-surface{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--uf-border-subtle); background:var(--uf-surface-alt); color:var(--uf-text-primary); font-weight:600; cursor:pointer; transition:border-color .16s, background-color .16s, transform .1s;}
 .btn-surface:hover{border-color:color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%); background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));}

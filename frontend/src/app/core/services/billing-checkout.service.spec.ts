@@ -491,6 +491,7 @@ describe('BillingCheckoutService', () => {
           countryName: 'Türkiye',
           multiplier: 0.5,
           prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950, bogus: 1, extra: -5 },
+          local: { currency: 'try', rate: '50.03', asOf: '2026-11-05' },
         },
       },
     });
@@ -503,6 +504,7 @@ describe('BillingCheckoutService', () => {
         countryName: 'Türkiye',
         multiplier: 0.5,
         prices: { monthly: 600, quarterly: 1450, annual: 3950, lifetime: 9950 },
+        local: { currency: 'TRY', rate: 50.03, asOf: '2026-11-05' },
       },
     });
 

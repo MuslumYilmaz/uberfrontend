@@ -129,7 +129,7 @@
     "title": "What are HTML tags?",
     "description": "HTML tags are the markup primitives browsers parse into a DOM tree. In production, choosing the right tag affects semantics, accessibility, SEO, and how reliably CSS and JavaScript can target the page.",
     "seo": {
-      "title": "HTML tags explained: semantics, DOM structure, and common markup mistakes",
+      "title": "HTML tags explained: semantics, DOM structure, and common mistakes",
       "description": "Learn how HTML tags shape DOM structure, accessibility, SEO, and the common mistake of using generic markup where semantic elements belong."
     },
     "type": "trivia",
@@ -834,42 +834,42 @@
             [
               "<header>",
               "Defines the top section or introduction of a page or section.",
-              "<header><h1>Site Title</h1></header>"
+              "`<header><h1>Site Title</h1></header>`"
             ],
             [
               "<nav>",
               "Defines a section containing navigation links.",
-              "<nav><a href='/'>Home</a></nav>"
+              "`<nav><a href='/'>Home</a></nav>`"
             ],
             [
               "<main>",
               "Specifies the main content area unique to the page.",
-              "<main><article>Content</article></main>"
+              "`<main><article>Content</article></main>`"
             ],
             [
               "<article>",
               "Represents independent content that can stand alone (e.g., blog posts).",
-              "<article><h2>Post Title</h2></article>"
+              "`<article><h2>Post Title</h2></article>`"
             ],
             [
               "<section>",
               "Groups related content within a page.",
-              "<section><h2>About Us</h2></section>"
+              "`<section><h2>About Us</h2></section>`"
             ],
             [
               "<aside>",
               "Contains tangential or supplementary information, like a sidebar.",
-              "<aside>Related links</aside>"
+              "`<aside>Related links</aside>`"
             ],
             [
               "<footer>",
               "Defines the bottom section of a document or section.",
-              "<footer>Contact info</footer>"
+              "`<footer>Contact info</footer>`"
             ],
             [
               "<figure> & <figcaption>",
               "Used for images, diagrams, or charts with optional captions.",
-              "<figure><img src='chart.png'><figcaption>Sales Growth</figcaption></figure>"
+              "`<figure><img src='chart.png'><figcaption>Sales Growth</figcaption></figure>`"
             ]
           ],
           "caption": "Common semantic HTML elements and their purposes."
@@ -1468,15 +1468,52 @@
         },
         {
           "type": "text",
-          "text": "<strong>1) <ol> (Ordered List)</strong><br><br>Used when sequence matters, like steps or rankings. Each item is wrapped in an <li> tag.<br><br><pre><code><ol>\n  <li>Boil water</li>\n  <li>Add pasta</li>\n  <li>Cook for 10 minutes</li>\n</ol></code></pre><br>You can customize numbering using attributes:<br><pre><code><ol type=\"A\" start=\"3\">\n  <li>Step A</li>\n  <li>Step B</li>\n</ol></code></pre><br>Supported type values include 1 (numbers), A/a (letters), and I/i (Roman numerals)."
+          "text": "<strong>1) <ol> (Ordered List)</strong><br><br>Used when sequence matters, like steps or rankings. Each item is wrapped in an <li> tag."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<ol>\n  <li>Boil water</li>\n  <li>Add pasta</li>\n  <li>Cook for 10 minutes</li>\n</ol>"
         },
         {
           "type": "text",
-          "text": "<strong>2) <ul> (Unordered List)</strong><br><br>Used when order doesn’t matter. Each item is wrapped in an <li> tag.<br><br><pre><code><ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>JavaScript</li>\n</ul></code></pre><br>You can style bullet types using CSS:<br><pre><code>ul { list-style-type: square; } /* disc | circle | square | none */</code></pre>"
+          "text": "You can customize numbering using attributes:"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<ol type=\"A\" start=\"3\">\n  <li>Step A</li>\n  <li>Step B</li>\n</ol>"
         },
         {
           "type": "text",
-          "text": "<strong>3) &lt;dl&gt; (Description List)</strong><br><br>Used for name–value pairs such as glossary terms or FAQs. Combine with &lt;dt&gt; (term) and &lt;dd&gt; (definition):<br><br><pre><code>&lt;dl&gt;\n  &lt;dt&gt;HTML&lt;/dt&gt;\n  &lt;dd&gt;The standard markup language for web pages.&lt;/dd&gt;\n  &lt;dt&gt;CSS&lt;/dt&gt;\n  &lt;dd&gt;A stylesheet language for presentation.&lt;/dd&gt;\n&lt;/dl&gt;</code></pre>"
+          "text": "Supported type values include 1 (numbers), A/a (letters), and I/i (Roman numerals)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>2) <ul> (Unordered List)</strong><br><br>Used when order doesn’t matter. Each item is wrapped in an <li> tag."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>JavaScript</li>\n</ul>"
+        },
+        {
+          "type": "text",
+          "text": "You can style bullet types using CSS:"
+        },
+        {
+          "type": "code",
+          "language": "css",
+          "code": "ul { list-style-type: square; } /* disc | circle | square | none */"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3) &lt;dl&gt; (Description List)</strong><br><br>Used for name–value pairs such as glossary terms or FAQs. Combine with &lt;dt&gt; (term) and &lt;dd&gt; (definition):"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<dl>\n  <dt>HTML</dt>\n  <dd>The standard markup language for web pages.</dd>\n  <dt>CSS</dt>\n  <dd>A stylesheet language for presentation.</dd>\n</dl>"
         },
         {
           "type": "text",
@@ -1793,7 +1830,7 @@
     "importance": 3,
     "description": "The placeholder attribute is only a temporary hint, and the common production pitfall is treating it like a label and creating accessibility, validation, and autofill confusion.",
     "seo": {
-      "title": "HTML placeholder attribute: accessibility pitfalls and form UX guidance",
+      "title": "HTML placeholder attribute: accessibility pitfalls and form UX",
       "description": "Learn when placeholder text helps, why it should not replace labels, and which common form UX mistakes it creates."
     },
     "answer": {
@@ -3057,7 +3094,7 @@
     ],
     "description": "Shadow DOM creates an encapsulated subtree for a component so styles and markup do not leak in or out. That isolation is useful, but the real pitfall is forgetting about theming, testing, focus behavior, and accessibility when the component stops behaving like regular DOM.",
     "seo": {
-      "title": "Shadow DOM explained: encapsulation, theming, and web-component pitfalls",
+      "title": "Shadow DOM explained: encapsulation, theming, and pitfalls",
       "description": "Learn how Shadow DOM isolates component markup and styles, and why testing, theming, focus, and accessibility require extra design."
     },
     "answer": {
@@ -3303,7 +3340,7 @@
     "title": "DOM Tree Structure and Depth",
     "description": "DOM tree structure matters under the hood because deep or unstable trees increase traversal, style recalculation, and layout cost, which turns into real debugging and performance pitfalls.",
     "seo": {
-      "title": "DOM tree structure under the hood: depth, traversal, and performance pitfalls",
+      "title": "DOM tree structure: depth, traversal, and performance pitfalls",
       "description": "Learn how DOM depth affects traversal, style/layout work, and why deeply nested trees become a real performance debugging problem."
     },
     "type": "trivia",

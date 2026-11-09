@@ -12,6 +12,7 @@
 .auth-home-link:focus-visible{outline:none; box-shadow:var(--uf-focus-ring); border-radius:6px;}
 .auth-card{width:min(520px,100%); background:var(--uf-surface); border:1px solid var(--uf-border-subtle); border-radius:var(--uf-card-radius); box-shadow:var(--uf-card-shadow-strong); padding:24px; display:grid; gap:18px;}
 .auth-title{margin:0; font-size:26px; font-weight:800; color:var(--uf-text-primary);}
+.auth-plan-note{margin:0; padding:10px 12px; border-radius:10px; border:1px solid color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle)); background:color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface)); color:var(--uf-text-primary); font-size:14px; line-height:1.5;}
 .auth-legal{margin:0; color:color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); line-height:1.5;}
 .auth-legal a{color:var(--uf-accent); font-weight:700; text-underline-offset:2px;}
 .auth-legal a:hover{color:var(--uf-accent-strong);}

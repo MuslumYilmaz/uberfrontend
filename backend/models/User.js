@@ -59,7 +59,28 @@ const StripeProviderSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const UserSchema = new mongoose.Schema(
+// Answers from the company form, not a task list: the plan is rebuilt from these and the current content.
+const CompanyPlanSchema = new mongoose.Schema(
+  {
+    companies: {
+      type: [new mongoose.Schema({ slug: String, list: String }, { _id: false })],
+      default: undefined,
+    },
+    level: { type: String, enum: ['junior', 'mid', 'senior', 'staff'] },
+    when: { type: String, enum: ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'] },
+    // The framework the person chose for the tasks, when it differs from the one the company's reports name.
+    framework: { type: String, enum: ['react', 'angular', 'vue'] },
+    // "Next week" is turned into a date from this.
+    createdAt: Date,
+    // Keys of the form <company>/<list>/<round>.
+    passedRounds: { type: [String], default: [] },
+    // Tasks marked by hand, such as a guide. Separate from solvedQuestionIds, so no XP or dashboard count moves.
+    markedDone: { type: [String], default: [] },
+  },
+  { _id: false }
+);
+
+const UserSchema =new mongoose.Schema(
   {
     // identity
     username: { type: String, required: true, unique: true, trim: true },
@@ -174,6 +195,7 @@ const UserSchema = new mongoose.Schema(
 
     // progress
     solvedQuestionIds: { type: [String], default: [] },
+    companyPlan: { type: CompanyPlanSchema, default: null },
 
     // security / housekeeping
     passwordUpdatedAt: Date,

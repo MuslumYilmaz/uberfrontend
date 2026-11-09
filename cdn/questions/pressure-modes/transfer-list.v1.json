@@ -1,0 +1,978 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "transfer-list-pressure-v1",
+  "family": "transfer-list",
+  "title": "Transfer List Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-transfer-list",
+    "angular": "angular-transfer-list",
+    "vue": "vue-transfer-list"
+  },
+  "rounds": [
+    {
+      "id": "move-between-lists",
+      "title": "Move items between lists",
+      "interviewerPrompt": "Build the two lists first. An item lives in exactly one list, and moving it must never change the order of anything else.",
+      "constraints": [
+        "Checking a row selects that item. The `move down` button moves the selected Top items to Bottom, and `move up` moves the selected Bottom items to Top.",
+        "Moved items go to the end of the other list, in the order they had.",
+        "Each button is disabled when its list has nothing selected.",
+        "A move clears the selection of the list it came from. The selection in the other list stays, and moved items arrive unselected.",
+        "Keep the starter classes `listCard`, `row` and `empty`, and show `Empty` when a list has no items."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transfer-move",
+          "name": "Round 1 · Items move in order and the selection stays honest",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move down\"]",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move up\"]",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:last-child .row input",
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move down\"]",
+              "disabled": false
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move up\"]",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 2
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Xenon",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Beta",
+              "index": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Gamma",
+              "index": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row input:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row:first-child input:checked",
+              "count": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move down\"]",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move up\"]",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:last-child .row input",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:last-child .row input",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move up\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Beta",
+              "index": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 3
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .empty",
+              "text": "Empty"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move down\"]",
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "select-many",
+      "title": "Select many at once",
+      "interviewerPrompt": "Lists get long. Let the user select everything at once and see how many are selected.",
+      "constraints": [
+        "Add a checkbox with the class `select-all` to each list, outside the rows. It selects or clears every row in that list.",
+        "It is checked when every row is selected and unchecked when none are. Otherwise it is indeterminate, and clicking it selects all. Use the checkbox's `indeterminate` property.",
+        "An empty list disables its `select-all`, and it is not checked.",
+        "Show the count in an element with the class `selection-count`, for example `2 of 5 selected`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transfer-select-all",
+          "name": "Round 2 · Select all reflects the rows",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "0 of 5 selected"
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .selection-count",
+              "text": "0 of 3 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "1 of 5 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "5 of 5 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 5
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:indeterminate",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "0 of 5 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:checked",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .select-all"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "0 of 0 selected"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".listCard:first-child .select-all",
+              "disabled": true
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:checked",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .selection-count",
+              "text": "0 of 8 selected"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".listCard:last-child .select-all",
+              "disabled": false
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .select-all:checked",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "search-inside-a-list",
+      "title": "Search inside a list",
+      "interviewerPrompt": "Add a search box to each list. What the user can see decides what happens next.",
+      "constraints": [
+        "Add an input with the class `list-search` to each list, outside the rows. It filters that list by name, ignoring case.",
+        "Searching never changes the selection. An item hidden by the search stays selected, even after a move.",
+        "`select-all`, `selection-count` and the move buttons only work with the rows on screen. A selected item that is hidden does not move.",
+        "If no row matches, show `No matches` in the element with the class `empty`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transfer-search",
+          "name": "Round 3 · Only the rows on screen count",
+          "steps": [
+            {
+              "type": "setValue",
+              "selector": ".listCard:first-child .list-search",
+              "value": "TA"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Beta",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "0 of 2 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Xenon",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .select-all"
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "2 of 2 selected"
+            },
+            {
+              "type": "setValue",
+              "selector": ".listCard:first-child .list-search",
+              "value": ""
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "2 of 5 selected"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .select-all:indeterminate",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".listCard:first-child .list-search",
+              "value": "ta"
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "2 of 2 selected"
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .selection-count",
+              "text": "1 of 2 selected"
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Xenon",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Beta",
+              "index": 3
+            },
+            {
+              "type": "setValue",
+              "selector": ".listCard:first-child .list-search",
+              "value": ""
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Gamma",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 1
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row:first-child input:checked",
+              "count": 1
+            },
+            {
+              "type": "setValue",
+              "selector": ".listCard:first-child .list-search",
+              "value": "zz"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .empty",
+              "text": "No matches"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": "[aria-label=\"move down\"]",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".listCard:first-child .select-all",
+              "disabled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "undo-and-announce",
+      "title": "Undo and announce",
+      "interviewerPrompt": "People make mistakes. Let them undo a move, and make sure nobody loses their place when a button turns off.",
+      "constraints": [
+        "Add a button with the class `undo-move`. It undoes the last move, and pressing it again undoes the one before. It is disabled when there is nothing to undo.",
+        "Undo puts both lists back in exactly the order they had before that move, and clears the selection in both lists.",
+        "After a move, move focus to the title of the list the items went to. Give each `listTitle` `tabindex=\"-1\"`.",
+        "Always keep one element with the class `transfer-status` and `aria-live=\"polite\"` on the page. It says `2 items moved to Bottom`, `1 item moved to Top` or `Move undone`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-transfer-undo",
+          "name": "Round 4 · Undo restores the exact order",
+          "steps": [
+            {
+              "type": "expectDisabled",
+              "selector": ".undo-move",
+              "disabled": true
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo-move",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:last-child .row input",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move up\"]"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Gamma",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Xenon",
+              "index": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Beta",
+              "index": 2
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".undo-move"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Gamma",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 4
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Xenon",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Beta",
+              "index": 3
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row input:checked",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row input:checked",
+              "count": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo-move",
+              "disabled": false
+            },
+            {
+              "type": "click",
+              "selector": ".undo-move"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:first-child .row",
+              "count": 5
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Alpha",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Beta",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Gamma",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Delta",
+              "index": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:first-child .row",
+              "text": "Epsilon",
+              "index": 4
+            },
+            {
+              "type": "expectCount",
+              "selector": ".listCard:last-child .row",
+              "count": 3
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Xenon",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Yttrium",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".listCard:last-child .row",
+              "text": "Zinc",
+              "index": 2
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".undo-move",
+              "disabled": true
+            }
+          ]
+        },
+        {
+          "id": "pressure-transfer-announce",
+          "name": "Round 4 · Focus and status follow each move",
+          "steps": [
+            {
+              "type": "expectCount",
+              "selector": ".transfer-status",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".transfer-status",
+              "text": ""
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".transfer-status",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:first-child .row input",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move down\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".transfer-status",
+              "text": "2 items moved to Bottom"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".listCard:last-child .listTitle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".listCard:last-child .listTitle",
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "click",
+              "selector": ".listCard:last-child .row input",
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": "[aria-label=\"move up\"]"
+            },
+            {
+              "type": "expectText",
+              "selector": ".transfer-status",
+              "text": "1 item moved to Top"
+            },
+            {
+              "type": "expectFocused",
+              "selector": ".listCard:first-child .listTitle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".listCard:first-child .listTitle",
+              "attribute": "tabindex",
+              "expected": "-1"
+            },
+            {
+              "type": "click",
+              "selector": ".undo-move"
+            },
+            {
+              "type": "expectText",
+              "selector": ".transfer-status",
+              "text": "Move undone"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept every item in exactly one place",
+    "summary": "You started with two lists and added bulk selection, search and undo without losing an item or its position. The interview signal is deciding clearly what the selection means when the user cannot see part of it.",
+    "takeaways": [
+      "Store selected ids per list, and calculate the select-all state and the count from them.",
+      "An empty list is never \"all selected\", so check for that case.",
+      "Decide what hidden items do, and make every action follow the same rule.",
+      "Keep snapshots for undo, because moving items back does not restore their order."
+    ],
+    "frameworkNotes": {
+      "react": "Calculate the visible rows during render, and set `indeterminate` through a ref callback. A plain function can render both lists, because it does not create a new component on every render.",
+      "angular": "Bind `[indeterminate]` and `[checked]` as properties, so the header checkbox always follows the rows.",
+      "vue": "Computed values give each list its visible rows, and `:indeterminate` binds the property."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-transfer-list-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-transfer-list-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-transfer-list-pressure-solution.v1.json"
+  }
+}

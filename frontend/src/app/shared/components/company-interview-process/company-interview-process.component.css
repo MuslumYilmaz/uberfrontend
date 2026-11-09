@@ -110,6 +110,26 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
 }
 
+/* A Premium practice page: the name stays in the page for search engines, under a blur, until the viewer has Premium. */
+.interview-process__locked {
+  filter: blur(8px);
+  user-select: none;
+}
+
+/* Names a blurred link for what it is, or the evidence counts for what opens them, so neither reads as a rendering fault. */
+.interview-process__tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 7px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 45%, transparent);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--uf-accent);
+  vertical-align: middle;
+}
+
 .interview-process__strength {
   display: block;
   font-size: 12px;
@@ -133,8 +153,9 @@
   white-space: nowrap;
 }
 
+/* The no-break space keeps the dot on the line of the link before it, so no line opens with a separator. */
 .interview-process__sources li:not(:last-child)::after {
-  content: ' · ';
+  content: '\00a0· ';
   color: color-mix(in srgb, var(--uf-text-secondary) 70%, transparent);
 }
 
@@ -199,5 +220,35 @@
     letter-spacing: 0.03em;
     text-transform: uppercase;
     color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+  }
+}
+
+/* Wide screens show every source list; the toggle only exists for stacked rows. */
+.interview-process__toggle {
+  display: none;
+}
+
+@container interview-process (max-width: 959px) {
+  /* A stacked row shows its evidence count and keeps the source list behind a tap, so a phone reader is not
+     scrolled through five links per round. */
+  .interview-process__toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 2px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--uf-accent);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .interview-process__sources--collapsed {
+    display: none;
   }
 }

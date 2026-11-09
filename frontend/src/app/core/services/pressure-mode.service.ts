@@ -5,6 +5,7 @@ import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import {
   PressureModeDebrief,
   PressureModeFramework,
+  PressureModeFrameworkMap,
   PressureModeRound,
   PressureModeScenario,
 } from '../models/pressure-mode.model';
@@ -91,6 +92,9 @@ export class PressureModeService {
     if (!schemaVersion || !id || !family || !title || !access) return null;
     if (!Number.isFinite(estimatedMinutes) || estimatedMinutes <= 0) return null;
     if (!supportedQuestions || !solutionAssets || !debrief) return null;
+    if (!Object.keys(supportedQuestions).length) return null;
+    if (!this.coversSameFrameworks(supportedQuestions, solutionAssets)) return null;
+    if (!this.coversSameFrameworks(supportedQuestions, debrief.frameworkNotes)) return null;
     if (!rounds.length || rounds.length > 6) return null;
     if (new Set(rounds.map((round) => round.id)).size !== rounds.length) return null;
 
@@ -198,11 +202,12 @@ export class PressureModeService {
   private normalizeFrameworkMap(
     value: unknown,
     requireAssetPath = false,
-  ): Record<PressureModeFramework, string> | null {
+  ): PressureModeFrameworkMap | null {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
     const source = value as Record<string, unknown>;
-    const normalized = {} as Record<PressureModeFramework, string>;
+    const normalized: PressureModeFrameworkMap = {};
     for (const framework of FRAMEWORKS) {
+      if (!(framework in source)) continue;
       const text = this.text(source[framework]);
       if (!text) return null;
       if (requireAssetPath && !new RegExp(`^assets/sb/${framework}/solution/[a-z0-9.-]+\\.json$`, 'i').test(text)) {
@@ -211,6 +216,10 @@ export class PressureModeService {
       normalized[framework] = text;
     }
     return normalized;
+  }
+
+  private coversSameFrameworks(a: PressureModeFrameworkMap, b: PressureModeFrameworkMap): boolean {
+    return FRAMEWORKS.every((framework) => (framework in a) === (framework in b));
   }
 
   private stringList(value: unknown): string[] {

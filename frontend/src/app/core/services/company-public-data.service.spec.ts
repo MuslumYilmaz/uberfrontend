@@ -18,8 +18,9 @@ describe('CompanyPublicDataService', () => {
     authored: Record<string, AuthoredCompanyPreview> = AUTHORED_COMPANY_PREVIEWS,
   ): CompanyPublicDataService {
     TestBed.resetTestingModule();
-    questions = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadAllQuestionSummaries', 'loadSystemDesign', 'loadCompanyReports']);
+    questions = jasmine.createSpyObj<QuestionService>('QuestionService', ['loadAllQuestionSummaries', 'loadAllDebugSummaries', 'loadSystemDesign', 'loadCompanyReports']);
     questions.loadAllQuestionSummaries.and.returnValue(of([]));
+    questions.loadAllDebugSummaries.and.returnValue(of([]));
     questions.loadSystemDesign.and.returnValue(of([]));
     questions.loadCompanyReports.and.returnValue(of({ schemaVersion: 1, companies: {} }));
     TestBed.configureTestingModule({ providers: [
@@ -62,6 +63,7 @@ describe('CompanyPublicDataService', () => {
     expect(questions.loadAllQuestionSummaries).toHaveBeenCalledWith('coding', { transferState: false });
     expect(questions.loadAllQuestionSummaries).toHaveBeenCalledWith('trivia', { transferState: false });
     expect(questions.loadSystemDesign).toHaveBeenCalledWith({ transferState: false });
+    expect(questions.loadAllDebugSummaries).toHaveBeenCalledWith({ transferState: false });
   });
 
   it('keeps the 3 coding, 3 trivia, 2 system sample order and transfers only the compact preview', async () => {
@@ -79,8 +81,11 @@ describe('CompanyPublicDataService', () => {
       companies: ['microsoft'], access: 'premium' as const, difficulty: 'hard' as const,
     })) as any));
 
+    // Debugging tasks count with the set, though the page shows no sample card for them.
+    questions.loadAllDebugSummaries.and.returnValue(of([question('debug-0'), question('debug-1')]));
+
     const resolved = await firstValueFrom(service.loadPreview(' MICROSOFT '));
-    expect(resolved.counts).toEqual({ all: 11, coding: 4, trivia: 4, system: 3 });
+    expect(resolved.counts).toEqual({ all: 13, coding: 4, trivia: 4, system: 3, debug: 2 });
     expect(resolved.samples.map((item) => item.id)).toEqual([
       'coding-0', 'coding-1', 'coding-2', 'trivia-0', 'trivia-1', 'trivia-2', 'system-0', 'system-1',
     ]);
@@ -94,6 +99,7 @@ describe('CompanyPublicDataService', () => {
     const browserService = configure('browser', transferState);
     expect(await firstValueFrom(browserService.loadPreview('microsoft'))).toEqual(resolved);
     expect(questions.loadAllQuestionSummaries).not.toHaveBeenCalled();
+    expect(questions.loadAllDebugSummaries).not.toHaveBeenCalled();
     expect(questions.loadSystemDesign).not.toHaveBeenCalled();
     expect(transferState.hasKey(makeStateKey<CompanyPreviewResolved>('company-public:preview:microsoft'))).toBeFalse();
   });
@@ -108,6 +114,25 @@ describe('CompanyPublicDataService', () => {
     expect(resolved.samples.map((item) => item.id)).toEqual([
       'same', 'extra-0', 'concept', 'extra-1', 'extra-2', 'extra-3', 'extra-4', 'extra-5',
     ]);
+  });
+
+  it('shows one card per framework family, so the locked count on the page matches the locked cards', async () => {
+    const service = configure();
+    questions.loadAllQuestionSummaries.and.callFake((kind) => of(kind === 'coding'
+      ? [
+        question('angular-chips-input-autocomplete', 'coding', 'premium'),
+        question('react-chips-input-autocomplete', 'coding', 'premium'),
+        question('vue-chips-input-autocomplete', 'coding', 'premium'),
+        question('react-counter'),
+        question('vue-counter'),
+        question('js-only-once'),
+      ]
+      : [question('concept', 'trivia')],
+    ));
+    const resolved = await firstValueFrom(service.loadPreview('microsoft'));
+    // The first member of each family stays, in catalog order; the slots it frees go to other tasks.
+    expect(resolved.samples.map((item) => item.id)).toEqual(['angular-chips-input-autocomplete', 'react-counter', 'js-only-once', 'concept']);
+    expect(resolved.samples.filter((item) => item.access === 'premium').length).toBe(1);
   });
 
   it('keeps authored previews independent of catalog availability', async () => {
@@ -127,7 +152,7 @@ describe('CompanyPublicDataService', () => {
     const transferState = new TransferState();
     const service = configure('browser', transferState);
     transferState.set(makeStateKey<CompanyPreviewResolved>('company-public:preview:microsoft'), {
-      slug: 'microsoft', mode: 'catalog', counts: { all: 1, coding: 1, trivia: 0, system: 0 },
+      slug: 'microsoft', mode: 'catalog', counts: { all: 1, coding: 1, trivia: 0, system: 0, debug: 0 },
       samples: [{ id: 'old', title: 'Old', kind: 'coding', difficulty: 'easy', access: 'free' }],
     });
     questions.loadAllQuestionSummaries.and.returnValue(throwError(() => new Error('Offline')));

@@ -134,6 +134,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         occurrencesHighlight: 'off',
         ...langDefaults,
         ...this.options,
+        // Past its end the editor hands the wheel back, so the demo on the home page cannot trap the scroll.
+        scrollbar: { alwaysConsumeMouseWheel: false, ...this.options?.scrollbar },
       };
 
       if (!this.autoHeight) {
@@ -242,7 +244,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     if (changes['options'] && !changes['options'].isFirstChange()) {
-      const next = { automaticLayout: !this.autoHeight, ...this.options };
+      const next = {
+        automaticLayout: !this.autoHeight,
+        ...this.options,
+        scrollbar: { alwaysConsumeMouseWheel: false, ...this.options?.scrollbar },
+      };
       this.editor?.updateOptions(next);
       if (this.autoHeight) this.fit();
     }

@@ -19,6 +19,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -43,6 +44,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
+import { CompanyPlanReturnLink, companyPlanReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -81,6 +83,13 @@ import type { FailureHint } from '../../../core/models/editor-assist.model';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
+import { ReviewModeService } from '../../../core/services/review-mode.service';
+import type { ReviewModePhase, ReviewModeScenario, ReviewModeTech } from '../../../core/models/review-mode.model';
+import { ReviewModePanelComponent, readReviewDraft } from '../review-mode/review-mode-panel.component';
+import { RehearsalService } from '../../../core/services/rehearsal.service';
+import type { RehearsalDefinition, RehearsalPhase } from '../../../core/models/rehearsal.model';
+import { RehearsalPanelComponent, formatRehearsalClock, rehearsalHeading, rehearsalPhoneNote } from '../rehearsal/rehearsal-panel.component';
+import { RehearsalOffersComponent } from '../rehearsal/rehearsal-offers.component';
 import {
   AuthPromptContext,
   LoginRequiredDialogComponent,
@@ -170,6 +179,9 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         LockedPreviewComponent,
         QuestionSourcesComponent,
         LoginRequiredDialogComponent,
+        ReviewModePanelComponent,
+        RehearsalPanelComponent,
+        RehearsalOffersComponent,
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
@@ -330,6 +342,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;      // old array-based navigation
   private returnToUrl: string | null = null;  // 🔹 new: full URL for global/company lists
+  planReturn = signal<CompanyPlanReturnLink | null>(null);
+  /** The way back from the locked view, which has no footer: the company plan or guide the task was opened from. */
+  lockedReturn = signal<CompanyPlanReturnLink | null>(null);
 
 
   copiedIdx: number | null = null;
@@ -337,6 +352,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private challengeSource = 'direct';
   private lastTrackedChallengeOpenKey: string | null = null;
   private challengeAttemptNumber = 0;
+  /** Bumped per JS run, so a run that a newer one replaced reports no result. */
+  private jsRunSequence = 0;
   private solutionViewedTracked = false;
   quickWinActive = signal(false);
   quickWinEngaged = signal(false);
@@ -372,6 +389,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       && typeof q?.pressureModeAsset === 'string'
       && q.pressureModeAsset.trim().length > 0;
   });
+  pressureAccessLabel = computed(() => this.question()?.access === 'free' ? 'Free' : 'Premium');
   pressureRounds = computed(() => this.pressureScenario()?.rounds || []);
   pressureCurrentRound = computed<PressureModeRound | null>(() => {
     const rounds = this.pressureRounds();
@@ -401,6 +419,78 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private pressurePreviousCollapsed: boolean | null = null;
   private pressurePreviousAsideRatio: number | null = null;
   private pendingPressureExitReason: 'button' | 'navigation' | null = null;
+
+  // Merge request review: the task opens as a change to review in writing, then to fix in the workspace.
+  private readonly reviewModes = inject(ReviewModeService);
+  reviewScenario = signal<ReviewModeScenario | null>(null);
+  reviewOpen = signal(false);
+  reviewSupported = computed(() => {
+    const q = this.question();
+    if (typeof q?.reviewModeAsset !== 'string' || !q.reviewModeAsset.trim()) return false;
+    // A merge request review opens on a framework coding task; a find case opens on a plain JavaScript task too.
+    return this.isFrameworkTech() ? this.kind === 'coding' : this.tech === 'javascript';
+  });
+  /** The step the review is on, as its panel reports it; a find case keeps the workspace read-only on the first. */
+  reviewPhase = signal<ReviewModePhase>('review');
+  /** A find case is open: it keeps its own clock, so timed practice is not offered beside it. */
+  findCaseOpen = computed(() => this.reviewOpen() && this.reviewScenario()?.format === 'find');
+  /** A find case asks for the bug without running the code, so the workspace and the solution wait for the comparison. */
+  findLocked = computed(() => this.findCaseOpen() && this.reviewPhase() === 'review');
+  /** While the case is read, its tests would name the bugs, so the workspace waits behind a note; the code is in the case. */
+  findConcealedNote = computed(() => (this.findLocked() ? 'Read the code in the case. The workspace and its tests open after you compare with the sample answer.' : null));
+  private reviewLoadSeq = 0;
+  private reviewPreviousAsideRatio: number | null = null;
+
+  // Timed rehearsal: the tasks of one round on one clock, each on its own page (see rehearsal.service.ts).
+  readonly rehearsals = inject(RehearsalService);
+  rehearsalOffers = signal<RehearsalDefinition[]>([]);
+  rehearsalPhase = computed<RehearsalPhase | null>(() => {
+    const q = this.question();
+    // Pressure Mode owns a React task's page while it runs; the rehearsal's clock keeps going and its panel comes back.
+    return q && this.rehearsals.includes(q.id) && !this.pressureActive() ? this.rehearsals.phase() : null;
+  });
+  rehearsalClockLabel = computed(() =>
+    this.rehearsalPhase() === 'active' ? `${formatRehearsalClock(this.rehearsals.remainingMs())} left` : null
+  );
+  /**
+   * A running rehearsal keeps its task as the round would: nothing beside the problem teaches its method, and the
+   * footer leads to no other practice. Only once the browser view is ready, as the panel itself, so hydration matches
+   * the server.
+   */
+  rehearsalRunning = computed(() => this.workspaceAvailable() && this.rehearsalPhase() === 'active');
+  /**
+   * The rehearsal's questions are on screen, in the panel: the problem waits behind them, as it does in the round,
+   * so its description and code are out of sight and its editor read-only.
+   */
+  rehearsalAnswering = computed(() => this.rehearsalRunning() && this.rehearsals.answering());
+  /** The rehearsal keeps the task read-only: its questions are on screen, or its review is. */
+  rehearsalLocked = computed(() => this.rehearsalPhase() === 'review' || this.rehearsalAnswering());
+  rehearsalLockedLabel = computed(() => (this.rehearsalAnswering() ? `${this.rehearsalClockLabel()}: questions first` : null));
+  rehearsalConcealedNote = computed(() => (this.rehearsalAnswering() ? 'The problems open after the questions.' : null));
+  rehearsalPhoneNote = computed(() => (this.showMobileDesktopGuard() ? rehearsalPhoneNote(this.rehearsalOffers()) : null));
+  readonly rehearsalHeading = rehearsalHeading;
+
+  /** The panels that keep a rehearsal's clock and record its runs serve plain JavaScript tasks and React tasks. */
+  rehearsalSupported(): boolean {
+    return this.tech === 'javascript' || this.tech === 'react';
+  }
+  rehearsalAccess = computed<'pending' | 'premium' | 'locked'>(() => {
+    if (this.auth.authUiState() === 'pending') return 'pending';
+    return isProActive(this.auth.user()) ? 'premium' : 'locked';
+  });
+  /** A rehearsal running on other tasks, which starting one here would end. */
+  otherRehearsalTitle = computed(() => {
+    const session = this.rehearsals.session();
+    return session && this.rehearsals.phase() === 'active' && !this.rehearsalPhase() ? session.definition.title : null;
+  });
+  /** While a rehearsal runs or is reviewed, its tasks open on drafts of their own, from the starter code. */
+  jsStorageKey = computed(() => {
+    const q = this.question();
+    if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
+    return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
+  });
+  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active' || this.findLocked());
+  private rehearsalLoadSeq = 0;
 
   // Practice session
   private practice: PracticeSession = null;
@@ -446,6 +536,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       starterCode: q.starterCode,
       code: q.code,
       starterCodeTs: (q as Question & { starterCodeTs?: string }).starterCodeTs,
+      pressureModeAsset: q.pressureModeAsset,
+      reviewModeAsset: q.reviewModeAsset,
+      previewSample: q.previewSample,
     };
     const publicCandidates = this.allQuestions.map((candidate) => ({
       id: candidate.id,
@@ -658,11 +751,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
   }
 
-  goToPricing() {
+  goToPricing(context: 'coding_locked' | 'coding_rehearsal' = 'coding_locked') {
     const profile = this.onboarding.getProfile();
     this.analytics.track('premium_gate_path_clicked', {
       action: 'view_pricing',
-      context: 'coding_locked',
+      context,
       question_id: this.question()?.id ?? null,
       tech: this.tech,
       kind: this.kind,
@@ -672,7 +765,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
     this.analytics.track('premium_cta_click', {
       action: 'view_pricing',
-      context: 'coding_locked',
+      context,
       question_id: this.question()?.id ?? null,
       tech: this.tech,
       kind: this.kind,
@@ -682,7 +775,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     });
     this.router.navigate(['/pricing'], {
       queryParams: {
-        src: `coding_locked_${this.tech || 'javascript'}`,
+        src: `${context}_${this.tech || 'javascript'}`,
         framework: profile?.framework ?? undefined,
         timeline: profile?.timeline ?? undefined,
       },
@@ -766,15 +859,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.pressureActive()) {
       return `Round ${this.pressureRoundIndex() + 1} of ${this.pressureRounds().length}`;
     }
+    const rehearsal = this.rehearsalRunning() ? this.rehearsals.session() : null;
+    if (rehearsal) {
+      const items = rehearsal.definition.items;
+      return `Problem ${items.findIndex((item) => item.questionId === this.question()?.id) + 1} of ${items.length}`;
+    }
     if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
   hasPrev(): boolean {
-    if (this.pressureActive()) return false;
+    if (this.pressureActive() || this.rehearsalRunning()) return false;
     return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
   }
   hasNext(): boolean {
-    if (this.pressureActive()) return false;
+    if (this.pressureActive() || this.rehearsalRunning()) return false;
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
   }
@@ -799,6 +897,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.pressureActive() && q && scenario) {
       return this.pressureProgress.itemId(scenario.id, q.id);
     }
+    // While a rehearsal runs or is reviewed, its React tasks open on drafts of their own, as its JavaScript tasks do.
+    if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   }
 
@@ -892,6 +992,32 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       }
     }, { allowSignalWrites: true });
 
+    // A new task closes the review; a review left open on this device reopens where it was.
+    effect(() => {
+      const q = this.question();
+      untracked(() => {
+        if (this.reviewOpen()) this.exitReviewMode();
+        this.reviewScenario.set(null);
+        if (!q?.reviewModeAsset || !this.isBrowser || this.demoMode) return;
+        if (readReviewDraft(q.id)?.open) void this.openReviewMode(q);
+      });
+    });
+
+    // A task offers the rehearsals it belongs to; opening a task of the running rehearsal moves it on.
+    effect(() => {
+      const q = this.question();
+      // The list is read where a rehearsal can start, a JavaScript or React task with the workspace open, and on a
+      // phone, which names the rehearsals in place of their card.
+      const listed = this.workspaceAvailable() || this.showMobileDesktopGuard();
+      untracked(() => {
+        this.rehearsalOffers.set([]);
+        if (!q || !this.isBrowser || this.demoMode || !this.rehearsalSupported()) return;
+        this.rehearsals.refresh();
+        if (this.rehearsals.includes(q.id)) this.rehearsals.reach(q.id);
+        if (listed) void this.loadRehearsalOffers(q);
+      });
+    });
+
     effect(() => {
       const q = this.question();
       const canAccessSolution = q ? this.canAccessQuestionSolution(q) : false;
@@ -980,6 +1106,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.returnToUrl = null;
       this.returnLabel.set(null);
     }
+    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
+    this.lockedReturn.set(companyReturnLink(this.router, this.returnToUrl, this.returnLabel()));
 
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;
@@ -1999,12 +2127,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const attemptNumber = this.trackChallengeAttemptStarted('run_tests');
 
     // Plain JS/TS -> delegate to child panel
+    const run = ++this.jsRunSequence;
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
     await this.jsPanel?.runTests();
-    if (!this.isCurrentWorkspaceRun(epoch, q)) return false;
+    if (run !== this.jsRunSequence || !this.isCurrentWorkspaceRun(epoch, q)) return false;
     this.hasRunTests = true;
 
     const passing = this.allPassing();
@@ -2018,7 +2147,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (passing) {
       this.trackQuickWinCompleted(q.id, 'first_pass');
-      this.maybePromptOnboarding('first_pass', q.id);
     }
 
     this.subTab.set('tests');
@@ -2033,6 +2161,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
+    // While a rehearsal or a find case keeps the task read-only, there is nothing to submit.
+    if (this.rehearsalLocked() || this.findLocked()) return;
     const epoch = this.workspaceEpoch;
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
@@ -2050,6 +2180,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
+      this.recordRehearsalChecks(q.id, results);
       const event = {
         questionId: q.id,
         passed: results.length > 0 && results.every((result) => result.passed),
@@ -2094,6 +2225,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!passing) {
       return;
     }
+    // Asked on a passing submit only: the prompt has no "seen" record, so a plain run would reopen it every time.
+    this.maybePromptOnboarding('first_pass', q.id);
 
     if (!this.ensureAuthenticated()) {
       this.solved.set(false);
@@ -2124,8 +2257,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       await this.handlePressureFrameworkCheckRun(event);
       return;
     }
+    const q = this.question();
+    if (q && event.questionId === q.id) this.recordRehearsalChecks(q.id, event.results);
     this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
+  }
+
+  /** A React task's check run counts toward a running rehearsal, from the panel's button or the footer's. */
+  private recordRehearsalChecks(questionId: string, results: readonly TestResult[] | undefined): void {
+    const list = Array.isArray(results) ? results : [];
+    if (this.rehearsalPhase() !== 'active' || !list.length) return;
+    this.rehearsals.record(questionId, list.filter((result) => result.passed).length, list.length);
   }
 
   private async handlePressureFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
@@ -2409,6 +2551,78 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     void this.activatePressureMode(q);
   }
 
+  startReviewMode(): void {
+    const q = this.question();
+    if (!q || this.showMobileDesktopGuard() || !this.reviewSupported()) return;
+    void this.openReviewMode(q);
+  }
+
+  exitReviewMode(): void {
+    this.reviewOpen.set(false);
+    if (this.reviewPreviousAsideRatio !== null) {
+      this.horizontalRatio.set(this.reviewPreviousAsideRatio);
+      this.lastAsideRatio = this.reviewPreviousAsideRatio;
+    }
+    this.reviewPreviousAsideRatio = null;
+  }
+
+  private async openReviewMode(q: Question): Promise<void> {
+    const loadSeq = ++this.reviewLoadSeq;
+    const scenario = await firstValueFrom(this.reviewModes.load(String(q.reviewModeAsset || '')));
+    // A later task or a second click wins; a scenario for another task never opens here.
+    if (loadSeq !== this.reviewLoadSeq || this.question()?.id !== q.id) return;
+    if (!scenario || scenario.supportedQuestions[this.tech as ReviewModeTech] !== q.id) return;
+    // On a phone the workspace is closed, so a draft left open waits for a wider screen.
+    if (this.showMobileDesktopGuard()) return;
+    this.reviewScenario.set(scenario);
+    // The panel opens on the step its draft left, and reports each move after that.
+    this.reviewPhase.set(readReviewDraft(q.id)?.phase ?? 'review');
+    this.reviewOpen.set(true);
+    // The diff needs room to read; the workspace keeps the rest.
+    if (this.reviewPreviousAsideRatio === null) this.reviewPreviousAsideRatio = this.horizontalRatio();
+    this.descCollapsed.set(false);
+    this.activePanel.set(0);
+    this.horizontalRatio.set(Math.max(0.42, this.horizontalRatio()));
+  }
+
+  private async loadRehearsalOffers(q: Question): Promise<void> {
+    const loadSeq = ++this.rehearsalLoadSeq;
+    const offers = await firstValueFrom(this.rehearsals.forTask(`/${this.tech}/${this.kind}/${q.id}`));
+    if (loadSeq !== this.rehearsalLoadSeq || this.question()?.id !== q.id) return;
+    this.rehearsalOffers.set(offers);
+  }
+
+  startRehearsal(definition: RehearsalDefinition): void {
+    const q = this.question();
+    if (!q || this.showMobileDesktopGuard() || this.rehearsalAccess() !== 'premium') return;
+    this.rehearsals.start(definition, q.id);
+    this.showSolutionWarning.set(false);
+    this.activePanel.set(0);
+    const first = definition.items[0];
+    // A sequential rehearsal starts at its first problem, as the interviewer would.
+    if (definition.order === 'sequential' && first.questionId !== q.id) {
+      void this.router.navigateByUrl(first.path);
+    } else {
+      this.rehearsals.reach(q.id);
+    }
+  }
+
+  endRehearsal(): void {
+    this.rehearsals.end();
+  }
+
+  closeRehearsalReview(): void {
+    this.rehearsals.close();
+  }
+
+  onJsTestResults(results: TestResult[]): void {
+    this.testResults.set(results);
+    const q = this.question();
+    if (q && results.length && this.rehearsalPhase() === 'active') {
+      this.rehearsals.record(q.id, results.filter((result) => result.passed).length, results.length);
+    }
+  }
+
   startPressureMode(): void {
     if (this.showMobileDesktopGuard() || !this.pressureSupported()) return;
     this.router.navigate([], {
@@ -2504,7 +2718,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         scenario_id: scenario.id,
         question_id: q.id,
         tech: framework,
-        access: scenario.access,
+        access: q.access,
         total_rounds: scenario.rounds.length,
       });
     }
@@ -2559,6 +2773,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     loadSeq: number,
   ): Promise<void> {
     const assetPath = scenario.solutionAssets[framework];
+    if (!assetPath) return;
     try {
       const raw = await fetchSdkAsset(this.http, assetPath);
       const { files, initialPath } = resolveSolutionFiles(raw);
@@ -3762,6 +3977,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const block = (q as any)?.solutionBlock as FASolutionBlock | undefined;
     if (block) return block;
     const legacy = this.solutionInfo();
+    // A legacy solution is the fixed code itself: show it as code the editor can load, not as an overview in prose.
+    if (legacy.codeJs.trim() || legacy.codeTs.trim()) {
+      return { approaches: [{ title: 'The fixed code', codeJs: legacy.codeJs, ...(legacy.codeTs ? { codeTs: legacy.codeTs } : {}) }] };
+    }
     return { overview: legacy.explanation };
   });
 
@@ -3861,7 +4080,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Load one approach directly into the appropriate editor
   loadApproach(ap: FAApproach, approachIndex: number) {
-    if (this.showMobileDesktopGuard()) return;
+    // A rehearsal's draft is the person's own attempt; its review is read-only.
+    if (this.showMobileDesktopGuard() || this.rehearsalPhase()) return;
     // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
@@ -3968,6 +4188,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   onSolutionTabClick() {
+    if (this.rehearsalPhase() === 'active') return;
     if (this.pressureActive()) {
       if (!this.pressureCompleted()) return;
       if (this.descriptionCollapsed()) this.toggleDescription();
@@ -4009,7 +4230,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
-    if (this.showMobileDesktopGuard()) return;
+    if (this.showMobileDesktopGuard() || this.rehearsalPhase()) return;
     // For frameworks: delegate to panel; for JS/TS keep existing behavior.
     if (this.isFrameworkTech()) {
       this.frameworkPanel?.applySolutionFiles(this.solutionCurrentPath());
@@ -4036,15 +4257,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const escapeHtml = (t: string) =>
       t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
-    // Renders inline `code` spans safely
-    const renderInline = (t: string) => {
+    // Renders inline `code` and **bold** spans safely
+    const renderInline = (t: string): string => {
       let out = '';
       let last = 0;
-      const re = /`([^`]+)`/g;
+      const re = /`([^`]+)`|\*\*(?=\S)([^*\n]+?)(?<=\S)\*\*/g;
       let m: RegExpExecArray | null;
       while ((m = re.exec(t))) {
-        out += escapeHtml(t.slice(last, m.index));         // text before code
-        out += `<code>${escapeHtml(m[1])}</code>`;         // code content
+        out += escapeHtml(t.slice(last, m.index));         // text before the span
+        out += m[1] !== undefined
+          ? `<code>${escapeHtml(m[1])}</code>`
+          : `<strong>${renderInline(m[2])}</strong>`;
         last = re.lastIndex;
       }
       out += escapeHtml(t.slice(last));                    // tail

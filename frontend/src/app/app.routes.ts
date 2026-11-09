@@ -13,7 +13,6 @@ import { prerenderPageRedirect } from './core/guards/prerender-page-redirect';
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
 import {
-  companyPreviewAccessGuard,
   premiumGuard,
   trackPreviewAccessGuard,
 } from './core/guards/premium.guard';
@@ -110,7 +109,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'FrontendAtlas changelog',
-        description: 'Weekly product updates and shipped improvements in FrontendAtlas.',
+        description: 'Weekly FrontendAtlas product updates: new practice questions, guides, fixes and shipped improvements.',
         robots: 'index,follow',
       },
     },
@@ -174,6 +173,7 @@ export const routes: Routes = [
   {
     path: 'auth',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'login' },
       {
         path: 'login',
         loadComponent: () =>
@@ -245,6 +245,7 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'quick-start' },
       {
         path: 'quick-start',
         loadComponent: () =>
@@ -339,8 +340,30 @@ export const routes: Routes = [
         },
       },
       {
+        // Before :slug: the address carries one person's answers, so it stays out of search and the sitemap.
+        path: 'preview',
+        loadComponent: () =>
+          import('./features/company/company-plan/company-plan-preview.component').then(
+            (m) => m.CompanyPlanPreviewComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Your company interview plan',
+            description: 'A preview of a frontend interview plan built from your company, date and level.',
+            robots: 'noindex,follow',
+          },
+        },
+      },
+      {
+        // Before :slug: a Premium page read from the account, so it stays out of search and the sitemap. Its routes
+        // carry the guard, which keeps it out of the first download.
+        path: 'plan',
+        loadChildren: () =>
+          import('./features/company/company-plan/company-plan.routes').then((m) => m.COMPANY_PLAN_ROUTES),
+      },
+      {
+        // Open to everyone: a Premium member reads the same guide, with the card leading to their plan.
         path: ':slug/preview',
-        canActivate: [companyPreviewAccessGuard],
         loadComponent: () =>
           import('./features/company/company-preview/company-preview.component').then(
             (m) => m.CompanyPreviewComponent,
@@ -463,6 +486,7 @@ export const routes: Routes = [
   {
     path: 'billing',
     children: [
+      { path: '', pathMatch: 'full', redirectTo: '/pricing' },
       {
         path: 'success',
         loadComponent: () =>
@@ -1020,7 +1044,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Legal overview',
-            description: 'Browse FrontendAtlas terms, privacy, and cookie policies.',
+            description: 'Browse the FrontendAtlas terms, privacy, cookie, refund and editorial policies in one place.',
           },
         },
       },
@@ -1033,7 +1057,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Editorial Policy',
-            description: 'How FrontendAtlas creates, reviews, and updates learning content.',
+            description: 'How FrontendAtlas creates, reviews, corrects and updates its interview prep learning content.',
             robots: 'index,follow',
           },
         },
@@ -1045,7 +1069,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Terms of Service',
-            description: 'FrontendAtlas terms of service and user responsibilities.',
+            description: 'FrontendAtlas terms of service: eligibility, acceptable use, content ownership and your responsibilities.',
             robots: 'index,follow',
           },
         },
@@ -1057,7 +1081,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Privacy Policy',
-            description: 'How FrontendAtlas collects, uses, and protects your data.',
+            description: 'How FrontendAtlas collects, uses and protects your data, and the choices you have over it.',
             robots: 'index,follow',
           },
         },
@@ -1069,7 +1093,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Refund Policy',
-            description: 'FrontendAtlas refund policy for digital subscription products.',
+            description: 'FrontendAtlas refund policy for digital products: the 14-day first-purchase refund, renewals and cancellations.',
             robots: 'index,follow',
           },
         },
@@ -1081,7 +1105,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Cookie Policy',
-            description: 'Learn how FrontendAtlas uses cookies and how to control them.',
+            description: 'Learn which cookies FrontendAtlas uses, what each one is for, and how you can control them.',
             robots: 'index,follow',
           },
         },

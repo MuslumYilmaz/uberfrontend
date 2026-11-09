@@ -601,7 +601,7 @@
       "accessibility",
       "keyboard"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-15",
     "schemaVersion": "question.v1",
@@ -3283,6 +3283,28 @@
     "assetRef": "questions/javascript/trivia.json#js-async-race-conditions"
   },
   {
+    "id": "js-autocomplete-engine",
+    "family": "question",
+    "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
+    "route": "/javascript/coding/js-autocomplete-engine",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build the engine behind an autocomplete box: debounce, one request for the final query, ranked suggestions, a small cache, and a guard so a slow response for an older query never replaces the newer results.",
+    "tags": [
+      "async",
+      "promises",
+      "timers",
+      "cancellation",
+      "caching",
+      "utilities"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-autocomplete-engine"
+  },
+  {
     "id": "js-big-o-notation",
     "family": "question",
     "title": "Big-O Notation (Time and Space Complexity)",
@@ -3301,6 +3323,30 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-big-o-notation"
+  },
+  {
+    "id": "js-debug-bug-squash-invoices",
+    "family": "question",
+    "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
+    "route": "/javascript/debug/js-debug-bug-squash-invoices",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "Five files you have not seen and four bug reports from support: find the cause of each in a small invoicing repo, fix it without changing the public functions, and make the tests pass.",
+    "tags": [
+      "debugging",
+      "modules",
+      "numbers",
+      "immutability",
+      "async",
+      "promises",
+      "error-handling",
+      "testing"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-07",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-bug-squash-invoices"
   },
   {
     "id": "js-dom-renderer",
@@ -3382,6 +3428,25 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-capitalize-words"
+  },
+  {
+    "id": "js-debug-intern-budget-summary",
+    "family": "question",
+    "title": "Case: Find the Bug in an Intern's Budget Summary",
+    "route": "/javascript/debug/js-debug-intern-budget-summary",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "An intern's monthly budget summary looks off to a few users: work one example by hand, then find the bug and explain the smallest fix without running the code, as Capital One's case round asks.",
+    "tags": [
+      "debugging",
+      "numbers",
+      "testing"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-09",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-intern-budget-summary"
   },
   {
     "id": "js-palindrome-check",
@@ -4616,6 +4681,31 @@
     "assetRef": "questions/javascript/trivia.json#ai-streaming-data-handling"
   },
   {
+    "id": "js-web-fundamentals-hour-hotel-booking",
+    "family": "question",
+    "title": "How would you answer a one-hour web-fundamentals round about a hotel booking page?",
+    "route": "/javascript/trivia/js-web-fundamentals-hour-hotel-booking",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "A Platform hour can be sixty minutes of questions with no editor, and the answers that pass give a recommendation for the booking page and the trade-off behind it.",
+    "tags": [
+      "caching",
+      "cookies",
+      "fundamentals",
+      "performance",
+      "rendering",
+      "security",
+      "storage",
+      "testing",
+      "xss"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/trivia.json#js-web-fundamentals-hour-hotel-booking"
+  },
+  {
     "id": "js-compare-two-objects",
     "family": "question",
     "title": "How would you compare two objects in JavaScript?",
@@ -5071,6 +5161,26 @@
     "assetRef": "questions/javascript/trivia.json#js-memory-leaks-common-sources"
   },
   {
+    "id": "js-longest-substring-without-repeating",
+    "family": "question",
+    "title": "Longest Substring Without Repeating Characters",
+    "route": "/javascript/coding/js-longest-substring-without-repeating",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Return the length of the longest run of consecutive characters in which no character repeats, in one pass over the string.",
+    "tags": [
+      "strings",
+      "algorithms",
+      "hash-map",
+      "data-structures"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-09",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-longest-substring-without-repeating"
+  },
+  {
     "id": "js-map-filter-reduce",
     "family": "question",
     "title": "map vs filter vs reduce in JavaScript (Array Transformations)",
@@ -5100,7 +5210,7 @@
     "route": "/javascript/coding/js-maze-path",
     "tech": "javascript",
     "difficulty": "intermediate",
-    "summary": "Find a valid route through a grid maze while respecting blocked cells and bounded movement.",
+    "summary": "Decide whether a path connects the start and end cells of a grid maze while respecting walls and bounded movement.",
     "tags": [
       "algorithms",
       "grid",
@@ -7079,6 +7189,50 @@
     "assetRef": "questions/react/coding.json#react-debug-api-misuse"
   },
   {
+    "id": "react-debug-transcript-sync",
+    "family": "question",
+    "title": "Debug: Transcript Highlight That Lags Behind the Audio",
+    "route": "/react/coding/react-debug-transcript-sync",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Debug a dubbing review player whose transcript highlight lags behind the audio, then add a position line.",
+    "tags": [
+      "react",
+      "debugging",
+      "effects",
+      "closure",
+      "timers",
+      "async"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-debug-transcript-sync"
+  },
+  {
+    "id": "react-files-table-select-all",
+    "family": "question",
+    "title": "Downloadable Files Table: Select All Across Pages",
+    "route": "/react/coding/react-files-table-select-all",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a downloadable-files table whose select all stays correct across pages, filters and sorts. The selection model is the part a take-home review probes: a mode plus exceptions keyed by file id.",
+    "tags": [
+      "react",
+      "state-management",
+      "pagination",
+      "tables",
+      "accessibility",
+      "performance"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-files-table-select-all"
+  },
+  {
     "id": "react-file-explorer",
     "family": "question",
     "title": "File Explorer Tree with Keyboard Navigation",
@@ -7250,6 +7404,52 @@
     "assetRef": "questions/react/trivia.json#react-code-splitting-module-federation"
   },
   {
+    "id": "react-take-home-table-review-questions",
+    "family": "question",
+    "title": "How do you defend and extend a downloadable-files table in a take-home review?",
+    "route": "/react/trivia/react-take-home-table-review-questions",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Two reviewers open your take-home table and ask six questions, and the answers that score are the ones that name a change, a trade-off and an extension that keeps the code you shipped.",
+    "tags": [
+      "accessibility",
+      "pagination",
+      "react",
+      "state-management",
+      "testing",
+      "virtualization"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-take-home-table-review-questions"
+  },
+  {
+    "id": "react-phone-screen-search-bar-rehearsal",
+    "family": "question",
+    "title": "How do you rehearse a one-hour React screen with JS questions, a search bar and a LeetCode easy?",
+    "route": "/react/trivia/react-phone-screen-search-bar-rehearsal",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Rehearse a one-hour React screen in its parts: two-sentence answers to common JavaScript questions, a search bar with empty and stale states, and an easy problem narrated from brute force to one pass.",
+    "tags": [
+      "react",
+      "javascript",
+      "closures",
+      "event-loop",
+      "debounce",
+      "hash-map",
+      "search",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-phone-screen-search-bar-rehearsal"
+  },
+  {
     "id": "react-jsx-transform-and-why-not-required",
     "family": "question",
     "title": "How does JSX get transformed, and why doesn’t React require it?",
@@ -7357,6 +7557,30 @@
     "updatedAt": "2026-02-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-chips-input-autocomplete"
+  },
+  {
+    "id": "react-listing-booking-widget",
+    "family": "question",
+    "title": "Listing Booking Widget: Dates, Guests and Total Price",
+    "route": "/react/coding/react-listing-booking-widget",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a listing booking widget that prices a stay from two dates and a guest count, greys out Book now on booked dates and confirms in an accessible dialog.",
+    "tags": [
+      "react",
+      "forms",
+      "derived-state",
+      "date-time",
+      "dialog",
+      "accessibility",
+      "focus",
+      "intl"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-listing-booking-widget"
   },
   {
     "id": "react-multi-step-signup",
@@ -7745,7 +7969,7 @@
       "components",
       "grid"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",
@@ -8635,6 +8859,57 @@
     "assetRef": "questions/system-design/car-rental-booking-frontend/meta.json"
   },
   {
+    "id": "credit-card-application-page",
+    "family": "question",
+    "title": "Design a Credit Card Application Page and Its Confirmation Page",
+    "route": "/system-design/credit-card-application-page",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design a credit card application page and its confirmation page where one form store owns the fields, a retried submit creates one application, and a refresh never posts the form again.",
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "error-handling",
+      "forms",
+      "loading-states",
+      "multi-step",
+      "security",
+      "state-management",
+      "validation"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-11-06",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/credit-card-application-page/meta.json"
+  },
+  {
+    "id": "hotel-search-page-frontend",
+    "family": "question",
+    "title": "Design a Hotel Search Page Frontend for Several Teams",
+    "route": "/system-design/hotel-search-page-frontend",
+    "tech": "system-design",
+    "difficulty": "hard",
+    "summary": "Design a hotel search page frontend where the URL owns the search, several teams deploy their units behind one shell, and a regression is traced to one deploy.",
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "architecture",
+      "caching",
+      "cdn",
+      "frontend-architecture",
+      "performance",
+      "routing",
+      "search",
+      "state-management"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-11-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/hotel-search-page-frontend/meta.json"
+  },
+  {
     "id": "messaging-inbox-frontend",
     "family": "question",
     "title": "Design a Real-Time Messaging Inbox",
@@ -9109,7 +9384,7 @@
       "accessibility",
       "components"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
@@ -9122,7 +9397,7 @@
     "route": "/vue/trivia/vue-computed-vs-watchers",
     "tech": "vue",
     "difficulty": "intermediate",
-    "summary": "Computed properties and watchers both react to reactive changes, but they solve different problems: &lt;strong&gt;computed&lt;/strong&gt; is for &lt;strong&gt;derived state&lt;/strong&gt; (cached, declarative), while &lt;strong&gt;watch&lt;/strong&gt; is for &lt;strong&gt;side effects&lt;/strong&gt; (async/imperative work triggered by changes).",
+    "summary": "Computed properties and watchers both react to reactive changes, but they solve different problems: **computed** is for **derived state** (cached, declarative), while **watch** is for **side effects** (async/imperative work triggered by changes).",
     "tags": [
       "vue",
       "computed",
@@ -9372,6 +9647,30 @@
     "updatedAt": "2026-02-09",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-chips-input-autocomplete"
+  },
+  {
+    "id": "vue-issue-list-merge-request-review",
+    "family": "question",
+    "title": "Merge Request Review: Issue List Label Filter",
+    "route": "/vue/coding/vue-issue-list-merge-request-review",
+    "tech": "vue",
+    "difficulty": "intermediate",
+    "summary": "Review a merge request that adds label filters to a Vue 3 issue list: read the three-file diff, write your comments, fix what blocks the merge in the workspace, then compare with a sample review.",
+    "tags": [
+      "vue",
+      "composition-api",
+      "watchers",
+      "computed",
+      "testing",
+      "accessibility",
+      "responsive",
+      "debugging"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-07",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/vue/coding.json#vue-issue-list-merge-request-review"
   },
   {
     "id": "vue-multi-step-form",
@@ -9806,7 +10105,7 @@
       "dom",
       "accessibility"
     ],
-    "access": "premium",
+    "access": "free",
     "estimatedMinutes": 18,
     "updatedAt": "2026-07-14",
     "schemaVersion": "question.v1",

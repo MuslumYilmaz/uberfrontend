@@ -171,6 +171,20 @@ describe('PricingPlansSectionComponent', () => {
     expect(button.textContent || '').toContain('Manage subscription');
   });
 
+  it('opens every card with a waiting company plan and keeps what sets each plan apart', () => {
+    const features = (planId: string) => Array.from(
+      fixture.nativeElement.querySelector(`[data-testid="pricing-cta-${planId}"]`).closest('.pr-card').querySelectorAll('.features li'),
+    ).map((item) => (item as HTMLElement).textContent?.trim());
+
+    fixture.detectChanges();
+    expect(features('monthly')).toEqual(['Full Premium content', 'Cancel before the next renewal']);
+
+    fixture.componentRef.setInput('featureLead', ['Your full ElevenLabs plan', '31 Premium React tasks with a live preview']);
+    fixture.detectChanges();
+    expect(features('monthly')).toEqual(['Your full ElevenLabs plan', '31 Premium React tasks with a live preview', 'Cancel before the next renewal']);
+    expect(features('lifetime')).toEqual(['Your full ElevenLabs plan', '31 Premium React tasks with a live preview', 'Premium access forever']);
+  });
+
   it('renders quarterly as the only recommended sprint plan', () => {
     fixture.detectChanges();
 
@@ -264,8 +278,8 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.querySelector('.rec-badge')?.textContent || '').trim()).toBe('Recommended');
   });
 
-  it('keeps the server plan order on the first render and applies the mobile order after hydration', async () => {
-    // Prerendered HTML carries the desktop order; the first client render must match it.
+  it('keeps one plan order in the DOM on a phone, so prerendered cards do not swap on hydration', async () => {
+    // The phone order is CSS only (.pr-card--quarterly order); e2e/pricing-offer-v2 checks where the cards land.
     spyOn(window, 'matchMedia').and.callFake((query: string) => ({
       matches: query.includes('max-width: 640px'),
       media: query,
@@ -285,7 +299,7 @@ describe('PricingPlansSectionComponent', () => {
 
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(cardTitles()).toEqual(['Quarterly', 'Monthly', 'Annual']);
+    expect(cardTitles()).toEqual(['Monthly', 'Quarterly', 'Annual']);
   });
 
   it('states student pricing per account state inside the discounts block', () => {
@@ -313,12 +327,21 @@ describe('PricingPlansSectionComponent', () => {
     expect(action()).toBeNull();
     expect(block.textContent || '').toContain('The annual plan on your first purchase');
     expect(block.textContent || '').not.toContain('quarterly and annual');
+    // Without a regional price for this visitor, none is mentioned anywhere on the page.
+    const studentFaq = () => component.faqGroups.flatMap((group) => group.items).find((item) => item.id === 'student-discount')?.a || '';
+    expect(block.textContent || '').not.toContain('regional price');
+    expect(studentFaq()).not.toContain('regional price');
 
-    // A regional price at or below the student price replaces it; the notice says so.
+    // A regional price at or below the student price replaces it; the notice says so, and the terms name the two.
     component.regionalPricing = { countryCode: 'TR', countryName: 'Türkiye', multiplier: 0.5, prices: { annual: 3950 } };
     fixture.detectChanges();
     expect(notice()?.textContent || '').toContain('regional price shown here is lower than the student price');
+    expect(block.textContent || '').toContain('Never combined with the regional price: you get the better of the two.');
+    expect(studentFaq()).toContain('Student pricing is never combined with the regional price; you get the better of the two.');
     component.regionalPricing = null;
+    fixture.detectChanges();
+    expect(block.textContent || '').not.toContain('regional price');
+    expect(studentFaq()).not.toContain('regional price');
 
     auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: false, studentEmailPendingVerification: true } as any);
     fixture.detectChanges();
@@ -337,6 +360,35 @@ describe('PricingPlansSectionComponent', () => {
       auth_state: 'logged_in_free',
       recommended_plan: 'quarterly',
     }));
+  });
+
+  it('adds a local-currency estimate per card and a dated note when the regional block carries a rate', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.regionalPricing = {
+      countryCode: 'IN',
+      countryName: 'India',
+      multiplier: 0.4,
+      prices: { monthly: 960, quarterly: 1960, annual: 3960, lifetime: 7160 },
+      local: { currency: 'INR', rate: 88, asOf: '2026-11-05' },
+    };
+    fixture.detectChanges();
+
+    const page: HTMLElement = fixture.nativeElement;
+    const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    expect(text('.pr-card--monthly [data-testid="pricing-local-estimate"]')).toBe('about ₹840 a month');
+    expect(text('.pr-card--quarterly [data-testid="pricing-local-estimate"]')).toBe('about ₹570 a month');
+    expect(text('.pr-card--annual [data-testid="pricing-local-estimate"]')).toBe('about ₹290 a month');
+    expect(text('[data-testid="pricing-lifetime-secondary"] [data-testid="pricing-local-estimate"]')).toBe('about ₹6,300 once');
+    expect(text('[data-testid="pricing-local-note"]')).toBe(
+      'Charged in US dollars. Local amounts are estimates at the exchange rate of 5 Nov 2026, rates by Exchange Rate API.',
+    );
+    expect(page.querySelector('[data-testid="pricing-local-note"] a')?.getAttribute('href')).toBe('https://www.exchangerate-api.com');
+
+    // Without a rate the regional block shows dollars only.
+    component.regionalPricing = { ...component.regionalPricing, local: null };
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="pricing-local-estimate"]')).toBeNull();
+    expect(page.querySelector('[data-testid="pricing-local-note"]')).toBeNull();
   });
 
   it('shows the regional price with the list price struck through and a banner when the config publishes it', async () => {
@@ -373,9 +425,10 @@ describe('PricingPlansSectionComponent', () => {
     for (const card of ['.pr-card--monthly', '.pr-card--quarterly', '.pr-card--annual', '[data-testid="pricing-lifetime-secondary"]']) {
       expect(text(`${card} .price-off`)).withContext(card).toBe('50% off');
     }
-    // The regional badge leads the page, above the headline.
+    // The regional line takes the kicker's slot above the headline, so it does not push the page down.
     const regionalLine = page.querySelector('[data-testid="pricing-regional-line"]')!;
-    expect(page.querySelector('.pr-wrap')!.firstElementChild).toBe(regionalLine);
+    expect(page.querySelector('.pr-hero')!.firstElementChild).toBe(regionalLine);
+    expect(page.querySelector('.pr-kicker')).toBeNull();
     expect(regionalLine.compareDocumentPosition(page.querySelector('.pr-hero h1')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     // begin_checkout reports the amount the checkout charges.
@@ -515,6 +568,8 @@ describe('PricingPlansSectionComponent', () => {
     const runTests = faqItems.find((item) => item.id === 'run-tests');
     const solutions = faqItems.find((item) => item.id === 'solutions-and-explanations');
     expect(premiumIncludes?.a || '').toContain('each with a guided solution');
+    expect(premiumIncludes?.a || '').toContain('timed rehearsals of company rounds on one clock');
+    expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('Timed rehearsals of company rounds');
     expect(premiumIncludes?.a || '').not.toContain('Typically');
     expect(runTests?.a || '').toContain('Every JavaScript and debugging task has runnable checks');
     expect(solutions?.a || '').toContain('Every coding question, free or Premium, includes a guided solution');
@@ -529,7 +584,8 @@ describe('PricingPlansSectionComponent', () => {
     expect(employer?.a || '').not.toMatch(/Google|Meta|Amazon|Microsoft/);
     expect(student?.a || '').toContain('40% off the annual plan');
     expect(student?.a || '').not.toContain('quarterly and annual');
-    expect(student?.a || '').toContain('never combined with a regional price');
+    // No regional price for this visitor, so none is mentioned.
+    expect(student?.a || '').not.toContain('regional price');
     expect(student?.a || '').toContain('verify it from your profile');
     expect(student?.a || '').toContain('applied at checkout automatically');
   });

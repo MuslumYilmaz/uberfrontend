@@ -139,6 +139,12 @@
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fa-text) 6%, transparent);
 }
 
+/* A Premium item for a viewer without Premium: the text stays in the page for search engines, under a blur. */
+.fa-question-row__concealed {
+  filter: blur(8px);
+  user-select: none;
+}
+
 .fa-question-row__locked {
   display: inline-flex;
   align-items: center;
@@ -321,5 +327,16 @@
 
   .fa-question-row__description {
     font-size: 12px;
+  }
+}
+
+/* A phone has no room for a one-line description, so it wraps to two lines instead of clipping mid-word. */
+@media (max-width: 460px) {
+  .fa-question-row__description {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }

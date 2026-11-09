@@ -17,6 +17,12 @@ import { SeoService } from '../../../core/services/seo.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { PressureModeProgressService } from '../../../core/services/pressure-mode-progress.service';
 import { PressureModeService } from '../../../core/services/pressure-mode.service';
+import { ReviewModeService } from '../../../core/services/review-mode.service';
+import type { ReviewModeScenario } from '../../../core/models/review-mode.model';
+import { reviewDraftKey } from '../review-mode/review-mode-panel.component';
+import { RehearsalService } from '../../../core/services/rehearsal.service';
+import type { RehearsalDefinition } from '../../../core/models/rehearsal.model';
+import { By } from '@angular/platform-browser';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { CodingDetailComponent } from './coding-detail.component';
@@ -24,6 +30,7 @@ import { CodingJsPanelComponent } from './coding-js-panel/coding-js-panel.compon
 import { listQuestionFailureHints } from '../../../core/utils/failure-explain-rules';
 import { PUBLIC_QUESTION_NAVIGATION } from '../../../generated/public-question-navigation';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 
 describe('CodingDetailComponent', () => {
   let questionService: jasmine.SpyObj<QuestionService>;
@@ -105,7 +112,7 @@ describe('CodingDetailComponent', () => {
       'UserProgressService',
       ['solvedIds', 'isSolved', 'setSolvedIds', 'markSolvedLocal', 'unmarkSolved'],
     );
-    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers']);
+    auth = jasmine.createSpyObj<AuthService>('AuthService', ['user', 'isLoggedIn', 'ensureMe', 'headers', 'authUiState']);
     pressureModes = jasmine.createSpyObj<PressureModeService>('PressureModeService', ['load']);
     pressureProgress = jasmine.createSpyObj<PressureModeProgressService>(
       'PressureModeProgressService',
@@ -131,6 +138,7 @@ describe('CodingDetailComponent', () => {
     progress.unmarkSolved.and.resolveTo();
     authUser = signal<any>(null);
     (auth.user as any).and.callFake(() => authUser());
+    (auth.authUiState as any).and.callFake(() => (authUser() ? 'authenticated' : 'signed_out'));
     auth.isLoggedIn.and.returnValue(false);
     auth.ensureMe.and.returnValue(of(null));
     auth.headers.and.returnValue({} as any);
@@ -256,6 +264,63 @@ describe('CodingDetailComponent', () => {
       expect(component.prevHref()).toBeNull(); // Unlisted targets retain button navigation.
     });
   }
+
+  it('leads back to the company plan only from a task opened there', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    const state = window.history.state;
+    window.history.replaceState({ returnToUrl: '/companies/preview?companies=elevenlabs&level=staff', returnLabel: 'Back to plan' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toEqual({
+      label: 'Back to plan',
+      route: ['/companies/preview'],
+      queryParams: { companies: 'elevenlabs', level: 'staff' },
+    });
+    expect(component.lockedReturn()).toEqual(component.planReturn());
+    // A company guide is a way back for the locked view only; the footer keeps its usual link.
+    window.history.replaceState({ returnToUrl: '/companies/jpmorgan/preview', returnLabel: 'Back to the JPMorgan guide' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toBeNull();
+    expect(component.lockedReturn()).toEqual({ label: 'Back to the JPMorgan guide', route: ['/companies/jpmorgan/preview'], queryParams: {} });
+    window.history.replaceState({ returnToUrl: '/coding?tech=javascript', returnLabel: 'Back to questions' }, '');
+    (component as any).hydrateReturnInfo();
+    expect(component.planReturn()).toBeNull();
+    expect(component.lockedReturn()).toBeNull();
+    window.history.replaceState(state, '');
+  });
+
+  it('tells a phone visitor what a locked task opens as and leads back to the guide it was opened from', async () => {
+    const width = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(390);
+    const state = window.history.state;
+    window.history.replaceState({ returnToUrl: '/companies/jpmorgan/preview', returnLabel: 'Back to the JPMorgan guide' }, '');
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = { ...makeDeferredPromiseQuestion(), access: 'premium' };
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question] as any));
+    spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+    // The routed page reads the navigation state itself; a directly loaded question is hydrated here.
+    (component as any).hydrateReturnInfo();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    expect(component.locked()).toBeTrue();
+    expect(host.querySelector('[data-testid="coding-locked-phone-note"]')?.textContent?.trim())
+      .toBe('On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.');
+    const back = host.querySelector('[data-testid="coding-locked-return"]') as HTMLAnchorElement;
+    expect(back.textContent?.trim()).toBe('Back to the JPMorgan guide');
+    expect(back.getAttribute('href')).toBe('/companies/jpmorgan/preview');
+
+    // On a desktop the note goes; the way back stays.
+    width.and.returnValue(1366);
+    window.dispatchEvent(new Event('resize'));
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="coding-locked-phone-note"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-locked-return"]')).not.toBeNull();
+    window.history.replaceState(state, '');
+  });
 
   it('uses list neighbors for direct entry and suppresses links for course, pressure and unavailable targets', () => {
     const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
@@ -470,7 +535,8 @@ describe('CodingDetailComponent', () => {
     expect(Array.from(mistakes.querySelectorAll('[data-testid="coding-common-mistake-title"]')).map((node) => node.textContent?.trim()))
       .toEqual(expected.map((hint) => hint.title));
     expect(mistakes.textContent).toContain(expected[0].why);
-    expect(mistakes.textContent).toContain(expected[0].actions[0]);
+    expect(mistakes.textContent).toContain(stripInlineMarkup(expected[0].actions[0]));
+    expect(mistakes.textContent).withContext('hint text renders its inline code').not.toContain('`');
     expect(mistakes.textContent).not.toContain('Multiple tests are failing');
     expect(host.querySelector('[data-testid="coding-description-panel"]')?.textContent).not.toContain(expected[0].title);
 
@@ -517,6 +583,23 @@ describe('CodingDetailComponent', () => {
     const locked = await render({ ...question, access: 'premium' });
     expect(locked.host.querySelector('[data-testid="coding-solution-idea"]')).toBeNull();
     expect(locked.component.solutionIdea()).toBe('');
+  });
+
+  it('shows a legacy solution string as the fixed code, not as an overview or a solution idea', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const fixed = 'export default function chunk(items, size) {\n  return items;\n}\n';
+    const question = { id: 'js-debug-legacy', title: 'Fix chunk', access: 'free', solution: fixed } as any;
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    questionService.loadQuestions.and.returnValue(of([question]));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.question.set(question);
+
+    expect(component.structuredSolution()).toEqual({ approaches: [{ title: 'The fixed code', codeJs: fixed }] });
+    expect(component.solutionIdea()).toBe('');
+    expect(component.solutionCodeForCurrentLang()).toBe(fixed);
   });
 
   it('renders both HTML and CSS solution blocks as mobile read-only code', async () => {
@@ -716,6 +799,108 @@ describe('CodingDetailComponent', () => {
     expect(runSpy).toHaveBeenCalled();
     expect(component.subTab()).toBe('tests');
     expect(component.consoleEntries().length).toBe(0);
+  });
+
+  it('counts a click on the JS panel Run tests button as an attempt', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    const question = {
+      id: 'two-sum',
+      title: 'Two Sum',
+      description: 'Solve it.',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'easy',
+      tags: ['arrays'],
+      importance: 3,
+      starterCode: 'export default function solve() {}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const panel = fixture.debugElement.query(By.directive(CodingJsPanelComponent)).componentInstance as CodingJsPanelComponent;
+    const panelRun = spyOn(panel, 'runTests').and.callFake(async () => component.onJsTestResults([{ name: 'ok', passed: true }]));
+    const run = spyOn(component, 'runTests').and.callThrough();
+    panel.testCode.set(question.tests);
+    fixture.detectChanges();
+
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('[data-testid="js-run-tests"]')!.click();
+    expect(run).toHaveBeenCalledTimes(1);
+    await run.calls.mostRecent().returnValue;
+
+    expect(panelRun).toHaveBeenCalledTimes(1);
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_started', jasmine.objectContaining({
+      question_id: 'two-sum',
+      workspace_type: 'js_tests',
+      action_type: 'run_tests',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
+      question_id: 'two-sum',
+      action_type: 'run_tests',
+      outcome: 'passed',
+    }));
+  });
+
+  it('reports no result for a JS run that a newer run replaced', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+    component.question.set({ id: 'q1', access: 'free' } as any);
+    let finishFirst!: () => void;
+    let calls = 0;
+    component.jsPanel = {
+      runTests: () => (++calls === 1
+        ? new Promise<void>((resolve) => { finishFirst = resolve; })
+        : Promise.resolve().then(() => component.onJsTestResults([{ name: 'ok', passed: true }]))),
+    } as any;
+
+    const first = component.runTests();
+    const second = component.runTests();
+    expect(await second).toBeTrue();
+    finishFirst();
+    expect(await first).toBeFalse();
+
+    const results = analytics.track.calls.allArgs().filter(([name]) => name === 'challenge_attempt_result');
+    expect(results.length).toBe(1);
+    expect(results[0][1]).toEqual(jasmine.objectContaining({ outcome: 'passed', attempt_number: 2 }));
+  });
+
+  it('asks the onboarding question after a passing submit, not after each passing run', async () => {
+    localStorage.removeItem('fa:onboarding:v1');
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({ id: 'q1', access: 'free', difficulty: 'easy' } as any);
+    component.jsPanel = {
+      runTests: jasmine.createSpy('runTests').and.callFake(async () => component.onJsTestResults([{ name: 'ok', passed: true }])),
+    } as any;
+
+    await component.runTests();
+    expect(component.onboardingPromptOpen).toBeFalse();
+
+    await component.submitCode();
+    expect(component.onboardingPromptOpen).toBeTrue();
+    expect(analytics.track).toHaveBeenCalledWith('onboarding_prompt_shown', jasmine.objectContaining({
+      trigger: 'first_pass',
+      question_id: 'q1',
+    }));
   });
 
   it('loads JS approach with its own decision graph asset override', () => {
@@ -1424,6 +1609,33 @@ describe('CodingDetailComponent', () => {
       outcome: 'passed',
       auth_state: 'guest',
     }));
+  });
+
+  it('labels and reports pressure access from the question, not the shared scenario', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    const question = {
+      id: 'react-counter',
+      access: 'premium',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any;
+
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.pressureRequested.set(true);
+
+    await (component as any).activatePressureMode(question);
+
+    expect(pressureScenario.access).toBe('free');
+    expect(component.pressureAccessLabel()).toBe('Premium');
+    expect(analytics.track).toHaveBeenCalledWith(
+      'pressure_mode_started',
+      jasmine.objectContaining({ access: 'premium' }),
+    );
+
+    component.question.set({ ...question, access: 'free' });
+    expect(component.pressureAccessLabel()).toBe('Free');
   });
 
   it('clears an intermediate pressure round without completing the normal question', async () => {
@@ -2377,9 +2589,11 @@ describe('CodingDetailComponent', () => {
       openFile: 'src/App.tsx',
     }));
 
+    // A phone also reads the rehearsal list, to name the rehearsals a problem belongs to; only the solution counts here.
+    const solutionReads = () => httpGetSpy.calls.allArgs().filter(([url]) => url === 'https://assets.example/premium-solution.json').length;
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(httpGetSpy).not.toHaveBeenCalled();
+    expect(solutionReads()).toBe(0);
     expect(component.solutionFilesMap()).toEqual({});
 
     authUser.set({ accessTier: 'premium' });
@@ -2390,7 +2604,7 @@ describe('CodingDetailComponent', () => {
       (component as any).loadQuestionSeq,
     );
     expect(resolveSpy).toHaveBeenCalledTimes(1);
-    expect(httpGetSpy).toHaveBeenCalledOnceWith('https://assets.example/premium-solution.json');
+    expect(solutionReads()).toBe(1);
 
     expect(component.locked()).toBeFalse();
     expect(component.solutionFilesMap()['src/App.tsx']).toContain('Premium');
@@ -2576,6 +2790,11 @@ describe('CodingDetailComponent', () => {
     expect(title?.tagName).toBe('H2');
     expect(title?.textContent?.trim()).toBeTruthy();
     expect(host.querySelectorAll('h1').length).toBe(0);
+  });
+
+  it('renders bold and inline code in solution prose', () => {
+    const html = TestBed.createComponent(CodingDetailComponent).componentInstance.md('**Test cases**\n- Click **Add** once, then check `count`.');
+    expect(html).toBe('<p class="sol-p"><strong>Test cases</strong></p><ul class="sol-ul"><li>Click <strong>Add</strong> once, then check <code>count</code>.</li></ul>');
   });
 
   it('renders inline code and bold in the prompt without a collapsed leading space', async () => {
@@ -3245,6 +3464,570 @@ describe('CodingDetailComponent', () => {
     const names = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList')
       ?.itemListElement?.map((item: any) => item.name) || [];
     expect(names[names.length - 1]).toBe('Theme panels with var() tokens');
+  });
+
+  describe('merge request review', () => {
+    const reviewQuestion = {
+      id: 'vue-issue-list-merge-request-review',
+      title: 'Merge Request Review: Issue List Label Filter',
+      access: 'premium',
+      difficulty: 'intermediate',
+      reviewModeAsset: 'assets/questions/review-modes/issue-label-filter.v1.json',
+      sdk: {
+        asset: 'assets/sb/vue/question/vue-issue-list-merge-request-review.v1.json',
+        openFile: '/src/App.vue',
+        storageKey: 'v2:ui:vue:vue-issue-list-merge-request-review',
+      },
+      frameworkTests: [],
+    } as any;
+    const reviewScenario: ReviewModeScenario = {
+      schemaVersion: '1.0.0',
+      id: 'issue-label-filter-review-v1',
+      title: 'Issue list label filter review',
+      access: 'premium',
+      format: 'review',
+      sessionMinutes: 90,
+      supportedQuestions: { vue: reviewQuestion.id },
+      mergeRequest: {
+        title: 'Add label filters to the issue list',
+        description: 'Adds a filter bar above the list.',
+        issue: { title: 'Filter issues by label', requirements: ['Filter without loading the list again.'] },
+        files: [{ path: 'src/App.vue', before: '<p>Issues</p>\n', after: '<p>Issues</p>\n<p>Filters</p>\n' }],
+      },
+      sampleReview: {
+        summary: 'Request changes.',
+        comments: [{ path: 'src/App.vue', line: 2, severity: 'blocker', title: 'Reloads on click', body: 'Filter the loaded list.', checked: true }],
+      },
+    };
+    let load: jasmine.Spy;
+
+    beforeEach(() => {
+      localStorage.removeItem(reviewDraftKey(reviewQuestion.id));
+      load = spyOn(TestBed.inject(ReviewModeService), 'load').and.returnValue(of(reviewScenario));
+    });
+
+    afterEach(() => localStorage.removeItem(reviewDraftKey(reviewQuestion.id)));
+
+    async function render() {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+      auth.isLoggedIn.and.returnValue(true);
+      questionService.loadQuestions.and.returnValue(of([reviewQuestion]));
+      component.questionId = reviewQuestion.id;
+      component.questionTech = 'vue';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+      spyOn(component as any, 'resolveSolutionAsset').and.resolveTo({ files: {}, initialPath: '' });
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'vue';
+      component.kind = 'coding';
+      component.question.set(reviewQuestion);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      return { fixture, component, find: (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`) };
+    }
+
+    it('opens in place of the description with room for the diff, and gives the layout back on leaving', async () => {
+      const { fixture, component, find } = await render();
+      component.horizontalRatio.set(0.3);
+      expect(find('review-mode-panel')).toBeNull();
+
+      find('review-mode-start')!.click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(load).toHaveBeenCalledWith(reviewQuestion.reviewModeAsset);
+      expect(find('review-mode-panel')?.textContent).toContain('Add label filters to the issue list');
+      expect(find('question-title')).toBeNull();
+      expect(find('review-mode-entry')).toBeNull();
+      expect(component.horizontalRatio()).toBe(0.42);
+
+      find('review-mode-exit')!.click();
+      fixture.detectChanges();
+
+      expect(find('review-mode-panel')).toBeNull();
+      expect(find('question-title')).not.toBeNull();
+      expect(component.horizontalRatio()).toBe(0.3);
+      expect(JSON.parse(localStorage.getItem(reviewDraftKey(reviewQuestion.id))!).open).toBeFalse();
+    });
+
+    it('reopens a review left open on this device at the step it was on', async () => {
+      localStorage.setItem(
+        reviewDraftKey(reviewQuestion.id),
+        JSON.stringify({ open: true, startedAt: Date.now(), phase: 'fix', comments: { 'src/App.vue': 'L2: filter the loaded list' }, summary: '' }),
+      );
+      const { find } = await render();
+
+      expect(find('review-mode-panel')?.textContent).toContain('L2: filter the loaded list');
+      expect(find('review-mode-compare')).not.toBeNull();
+    });
+
+    it('stays closed on a phone, and for a review written for another task', async () => {
+      const { component } = await render();
+      const open = (component as any).openReviewMode.bind(component);
+
+      component.isPhoneViewport.set(true);
+      await open(reviewQuestion);
+      expect(component.reviewOpen()).toBeFalse();
+
+      component.isPhoneViewport.set(false);
+      load.and.returnValue(of({ ...reviewScenario, supportedQuestions: { vue: 'vue-other-task' } }));
+      await open(reviewQuestion);
+      expect(component.reviewOpen()).toBeFalse();
+    });
+  });
+
+  describe('find case', () => {
+    const caseQuestion = {
+      id: 'js-debug-budget-case',
+      title: 'Case: Find the Bug in a Budget Summary',
+      description: { text: 'Find the bug without coding the fix.' },
+      technology: 'javascript',
+      access: 'premium',
+      difficulty: 'intermediate',
+      tags: ['debugging'],
+      importance: 3,
+      starterCode: 'export default function monthly(weekly) {\n  return weekly * 4;\n}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+      reviewModeAsset: 'assets/questions/review-modes/budget-case.v1.json',
+    } as any;
+    const findScenario: ReviewModeScenario = {
+      schemaVersion: '1.0.0',
+      id: 'budget-case',
+      title: 'Budget case',
+      access: 'premium',
+      format: 'find',
+      sessionMinutes: 45,
+      supportedQuestions: { javascript: caseQuestion.id },
+      workedExample: { prompt: 'Work $100 a week by hand.', answer: '$433.33 a month.' },
+      mergeRequest: {
+        title: 'Find the bug in the budget summary',
+        description: 'Find it without running the code.',
+        issue: { title: 'What it should do', requirements: ['A weekly expense happens 52 times a year.'] },
+        files: [{ path: 'monthly.js', before: '', after: caseQuestion.starterCode }],
+      },
+      sampleReview: {
+        summary: 'Line 2 counts four weeks a month.',
+        comments: [{ path: 'monthly.js', line: 2, severity: 'blocker', title: 'Four weeks a month', body: 'Use 52 / 12.', checked: true }],
+      },
+    };
+
+    beforeEach(() => {
+      localStorage.removeItem(reviewDraftKey(caseQuestion.id));
+      spyOn(TestBed.inject(ReviewModeService), 'load').and.returnValue(of(findScenario));
+      // The JS panel announces a resize after loading a task; the page then measures a laptop-wide window.
+      spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    });
+
+    afterEach(() => localStorage.removeItem(reviewDraftKey(caseQuestion.id)));
+
+    it('opens on a plain JavaScript task and keeps the workspace and the solution shut until the comparison', async () => {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+      auth.isLoggedIn.and.returnValue(true);
+      questionService.loadQuestions.and.returnValue(of([caseQuestion]));
+      component.questionId = caseQuestion.id;
+      component.questionTech = 'javascript';
+      component.disablePersistence = true;
+      component.hideFooterBar = true;
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'javascript';
+      component.kind = 'debug';
+      component.question.set(caseQuestion);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      const find = (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+      const jsPanel = () => fixture.debugElement.query(By.directive(CodingJsPanelComponent)).componentInstance as CodingJsPanelComponent;
+
+      expect(find('review-mode-entry')?.textContent).toContain('Find the bug without coding the fix');
+      expect(component.findLocked()).toBeFalse();
+      find('review-mode-start')!.click();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      expect(find('review-mode-panel')?.textContent).toContain('Case: find the bug');
+      expect(component.findLocked()).toBeTrue();
+      expect(jsPanel().locked).toBeTrue();
+      expect(jsPanel().lockedLabel).toBe('Find the bug first: the code runs after the comparison');
+      expect(component.solutionLocked()).toBeTrue();
+      // The test names would give the bugs away, so the workspace waits behind a note; the case keeps its own clock.
+      expect(find('js-concealed-note')?.textContent).toContain('The workspace and its tests open after you compare');
+      expect(jsPanel().timedPracticeHidden).toBeTrue();
+
+      find('review-mode-compare')!.click();
+      fixture.detectChanges();
+      expect(component.findLocked()).toBeFalse();
+      expect(jsPanel().locked).toBeFalse();
+      expect(component.solutionLocked()).toBeFalse();
+      expect(find('js-concealed-note')).toBeNull();
+      expect(jsPanel().timedPracticeHidden).toBeTrue();
+    });
+  });
+
+  describe('timed rehearsal', () => {
+    const payload = {
+      id: 'meta-full-loop-coding',
+      access: 'premium',
+      company: 'meta',
+      title: 'Meta coding round',
+      round: 'Full loop: coding',
+      summary: 'About two problems in about 40 minutes.',
+      minutes: 40,
+      order: 'sequential',
+      items: [
+        { path: '/javascript/coding/js-dom-twin-node', title: 'Find the Corresponding Node in Twin DOM Trees' },
+        { path: '/javascript/coding/js-debounce', title: 'Debounce Function' },
+      ],
+    };
+    const task = (id: string, title: string) => ({
+      id,
+      title,
+      description: 'Solve it.',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'intermediate',
+      tags: ['dom'],
+      importance: 3,
+      starterCode: 'export default function solve() {}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+    }) as any;
+    const twin = task('js-dom-twin-node', 'Find the Corresponding Node in Twin DOM Trees');
+    const debounce = task('js-debounce', 'Debounce Function');
+    const premium = { _id: 'premium-user', accessTier: 'premium' };
+    let rehearsals: RehearsalService;
+    let definition: RehearsalDefinition;
+
+    beforeEach(() => {
+      localStorage.removeItem('fa:rehearsal:v1');
+      rehearsals = TestBed.inject(RehearsalService);
+      rehearsals.close();
+      definition = rehearsals.normalize(payload)!;
+      spyOn(rehearsals, 'forTask').and.callFake((path: string) =>
+        of(definition.items.some((item) => item.path === path) ? [definition] : []));
+      // The JS panel announces a resize after loading a task; the page then measures a laptop-wide window.
+      spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    });
+
+    afterEach(() => {
+      rehearsals.close();
+      localStorage.removeItem('fa:rehearsal:v1');
+    });
+
+    async function render(question: any, user: any, options: { list?: any[]; footer?: boolean } = {}) {
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set(user);
+      auth.isLoggedIn.and.returnValue(!!user);
+      questionService.loadQuestions.and.returnValue(of(options.list ?? [question]));
+      component.questionId = question.id;
+      component.questionTech = 'javascript';
+      component.disablePersistence = true;
+      component.hideFooterBar = !options.footer;
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+      component.tech = 'javascript';
+      component.kind = 'coding';
+      component.question.set(question);
+      component.loadState.set('loaded');
+      component.isPhoneViewport.set(false);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      return {
+        fixture,
+        component,
+        jsPanel: () => fixture.debugElement.query(By.directive(CodingJsPanelComponent))?.componentInstance as CodingJsPanelComponent,
+        find: (testId: string) => host.querySelector<HTMLElement>(`[data-testid="${testId}"]`),
+      };
+    }
+
+    it('offers the rehearsal to Premium, pricing to everyone else, and names it on a phone', async () => {
+      const member = await render(twin, premium);
+      expect(rehearsals.forTask).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
+      expect(member.find('rehearsal-entry')?.textContent).toContain('Meta coding round: 2 problems in 40 minutes');
+      expect(member.find('rehearsal-start')).not.toBeNull();
+      expect(member.find('rehearsal-pricing')).toBeNull();
+      expect(member.find('rehearsal-phone-note')).toBeNull();
+      // A phone cannot run it, so a sentence in the phone notice names it in place of its card: the problem is no
+      // plain warm-up.
+      member.component.isPhoneViewport.set(true);
+      member.fixture.detectChanges();
+      await member.fixture.whenStable();
+      member.fixture.detectChanges();
+      expect(member.find('rehearsal-entry')).toBeNull();
+      expect(member.find('rehearsal-start')).toBeNull();
+      expect(member.find('coding-mobile-notice')?.textContent).toContain(
+        'Use a desktop or tablet to write code and run checks. This problem is also part of the Meta coding round rehearsal (Premium): 2 problems in 40 minutes, on a desktop or tablet.'
+      );
+      member.component.question.set({ ...debounce, id: 'js-other' });
+      member.fixture.detectChanges();
+      await member.fixture.whenStable();
+      member.fixture.detectChanges();
+      expect(member.find('coding-mobile-notice')).not.toBeNull();
+      expect(member.find('rehearsal-phone-note')).toBeNull();
+      member.fixture.destroy();
+
+      const visitor = await render(twin, null);
+      const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+      expect(visitor.find('rehearsal-start')).toBeNull();
+      visitor.find('rehearsal-pricing')!.click();
+      expect(navigate).toHaveBeenCalledWith(['/pricing'], jasmine.objectContaining({
+        queryParams: jasmine.objectContaining({ src: 'coding_rehearsal_javascript' }),
+      }));
+    });
+
+    it('starts on the first problem with the clock, a draft of its own, its runs counted and the solution locked', async () => {
+      const { fixture, component, jsPanel, find } = await render(twin, premium);
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      expect(rehearsals.phase()).toBe('active');
+      expect(find('rehearsal-entry')).toBeNull();
+      expect(find('rehearsal-clock')?.textContent?.trim()).toMatch(/^(40:00|39:5\d) left$/);
+      expect(component.jsStorageKey()).toBe(rehearsals.draftKey('js-dom-twin-node'));
+      expect(jsPanel().storageKeyOverride).toBe(rehearsals.draftKey('js-dom-twin-node'));
+      expect(jsPanel().clockLabel).toMatch(/left$/);
+      expect(jsPanel().locked).toBeFalse();
+      expect(component.solutionLocked()).toBeTrue();
+
+      component.onJsTestResults([{ name: 'a', passed: true }, { name: 'b', passed: false }]);
+      expect(rehearsals.session()?.results['js-dom-twin-node']).toEqual({ passed: 1, total: 2, runs: 1 });
+    });
+
+    it('keeps a running rehearsal to its task: no coaching beside it, and no footer way on to other practice', async () => {
+      const coached = {
+        ...twin,
+        estimatedMinutes: 30,
+        sources: [{
+          label: 'Blind: Meta frontend screen, March 2022',
+          url: 'https://www.teamblind.com/post/meta-frontend-screen-example',
+          company: 'meta',
+          publisher: 'Blind',
+          date: '2022-03',
+          note: 'The account names a walk over both trees at once.',
+        }],
+        description: {
+          summary: 'Return the node of tree B that sits where the given node sits in tree A.',
+          specs: {
+            practice: ['Walking both trees in sync'],
+            requirements: ['Return null when the node is not in tree A'],
+            implementationNotes: ['Export the function as the default export'],
+            commonMistakes: ['Comparing nodes by their text'],
+            interviewExplanation: 'A path of child indexes finds the twin.',
+            testingChecklist: ['A node at the root'],
+            faq: [{ question: 'Recursion or a loop?', answer: 'Either works.' }],
+          },
+        },
+      };
+      const { fixture, component, jsPanel, find } = await render(coached, premium, { list: [coached, debounce], footer: true });
+      const description = () => find('coding-description-panel')!.textContent ?? '';
+      // An account's note can name the method too, so the sources step aside with the coaching.
+      const coaching = ['Walking both trees in sync', 'Comparing nodes by their text', 'A path of child indexes', 'A node at the root', 'Recursion or a loop?', 'a walk over both trees at once'];
+      // Of two tasks in the list, one is a step away, whichever order the list keeps.
+      const footerLinks = () => ['footer-prev', 'footer-next'].filter((id) => find(id)?.tagName === 'A');
+      for (const line of coaching) expect(description()).withContext(line).toContain(line);
+      expect(find('coding-interview-hero')?.textContent).toContain('30 min');
+      jsPanel().explainHint.set({ ruleId: 'off-by-one', title: 'Off by one', why: 'The loop stops one step early.', actions: ['Check the bound'], confidence: 0.9 });
+      fixture.detectChanges();
+      expect(find('assist-explain-card')?.textContent).toContain('Explain failure');
+      expect(footerLinks().length).toBe(1);
+      expect(find('footer-progress')?.textContent?.trim()).toMatch(/^[12] \/ 2$/);
+      expect(find('footer-left')?.textContent).toContain('Incidents hub');
+
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      for (const line of coaching) expect(description()).withContext(line).not.toContain(line);
+      expect(find('coding-interview-hero')).toBeNull();
+      expect(find('editor-assist-dock')).toBeNull();
+      // The task's own statement, requirements and notes stay: the round would give them too.
+      expect(description()).toContain('Return the node of tree B');
+      expect(description()).toContain('Return null when the node is not in tree A');
+      expect(description()).toContain('Export the function as the default export');
+      expect((find('footer-prev') as HTMLButtonElement).disabled).toBeTrue();
+      expect((find('footer-next') as HTMLButtonElement).disabled).toBeTrue();
+      expect(find('footer-progress')?.textContent?.trim()).toBe('Problem 1 of 2');
+      expect(find('footer-left')).toBeNull();
+
+      // A plan's way back stays, since the clock keeps running while the person reads the plan.
+      component.planReturn.set({ label: 'Back to my plan', route: ['/companies/plan'], queryParams: {} });
+      fixture.detectChanges();
+      expect(find('footer-left')?.textContent).toContain('Back to my plan');
+
+      rehearsals.end();
+      fixture.detectChanges();
+      for (const line of coaching) expect(description()).withContext(line).toContain(line);
+      expect(footerLinks().length).toBe(1);
+    });
+
+    it('locks the task for the review and gives the drafts back when the review closes', async () => {
+      const { fixture, component, jsPanel, find } = await render(twin, premium);
+      rehearsals.start(definition, twin.id);
+      rehearsals.end();
+      fixture.detectChanges();
+
+      expect(find('rehearsal-verdict')?.textContent).toContain('0 of 2 problems pass every test.');
+      expect(jsPanel().locked).toBeTrue();
+      expect(jsPanel().clockLabel).toBeNull();
+      expect(component.solutionLocked()).toBeFalse();
+      expect(jsPanel().storageKeyOverride).toBe(rehearsals.draftKey(twin.id));
+
+      find('rehearsal-close')!.click();
+      fixture.detectChanges();
+      expect(find('rehearsal-panel')).toBeNull();
+      expect(jsPanel().storageKeyOverride).toBeNull();
+      expect(jsPanel().locked).toBeFalse();
+      expect(find('rehearsal-entry')).not.toBeNull();
+    });
+
+    it('sends a sequential rehearsal started on its second problem to the first one', async () => {
+      const { find } = await render(debounce, premium);
+      const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+      find('rehearsal-start')!.click();
+      expect(navigate).toHaveBeenCalledWith('/javascript/coding/js-dom-twin-node');
+      expect(rehearsals.session()?.reached).toBe(0);
+    });
+
+    it('keeps the problem out of sight and its editor read-only while the questions run', async () => {
+      definition = rehearsals.normalize({
+        ...payload,
+        id: 'walmart-karat-screen',
+        title: 'Walmart Karat screen',
+        minutes: 55,
+        quiz: {
+          minutes: 10,
+          questions: [
+            { question: 'What is a closure?', answer: 'A function that keeps its scope.', path: '/javascript/trivia/js-closures' },
+            { question: 'What does border-box change?', answer: 'Width includes padding and border.', path: '/css/trivia/css-box-model' },
+            { question: 'What is useEffect for?', answer: 'Syncing with the outside world.', path: '/react/trivia/react-useeffect-purpose' },
+          ],
+        },
+      })!;
+      const { fixture, jsPanel, find } = await render(twin, premium);
+      expect(find('rehearsal-entry')?.textContent).toContain('Walmart Karat screen: 3 short answers and 2 problems in 55 minutes');
+      find('rehearsal-start')!.click();
+      fixture.detectChanges();
+
+      const description = find('coding-description-panel')!;
+      const rendered = () => Array.from(description.children)
+        .filter((child) => child.getClientRects().length > 0)
+        .map((child) => child.tagName.toLowerCase());
+      expect(find('rehearsal-question')?.textContent?.trim()).toBe('What is a closure?');
+      expect(rendered()).toEqual(['app-rehearsal-panel']);
+      expect(jsPanel().locked).toBeTrue();
+      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left: questions first$/);
+      // The starter code would give the problem away: it waits behind a note, out of reach of the keyboard too.
+      expect(find('js-concealed-note')?.textContent?.trim()).toBe('The problems open after the questions.');
+      expect(find('js-code-editor')?.hasAttribute('inert')).toBeTrue();
+
+      find('rehearsal-skip')!.click();
+      fixture.detectChanges();
+      expect(find('js-concealed-note')).toBeNull();
+      expect(find('js-code-editor')?.hasAttribute('inert')).toBeFalse();
+      expect(rendered()).toContain('app-rehearsal-panel');
+      expect(rendered().length).toBeGreaterThan(1);
+      expect(description.querySelector('[data-testid="question-title"]')!.getClientRects().length).toBeGreaterThan(0);
+      expect(jsPanel().locked).toBeFalse();
+      expect(find('js-rehearsal-clock')?.textContent?.trim()).toMatch(/left$/);
+    });
+
+    it('runs a React task inside a rehearsal: on a draft of its own, with its checks counted until the review', async () => {
+      definition = rehearsals.normalize({
+        ...payload,
+        order: 'free',
+        items: [...payload.items, { path: '/react/coding/react-counter', title: 'Counter' }],
+      })!;
+      const fixture = TestBed.createComponent(CodingDetailComponent);
+      const component = fixture.componentInstance;
+      authUser.set(premium);
+      auth.isLoggedIn.and.returnValue(true);
+      component.tech = 'react';
+      component.kind = 'coding';
+      component.question.set({
+        id: 'react-counter',
+        access: 'free',
+        difficulty: 'easy',
+        frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      } as any);
+      expect(component.rehearsalSupported()).toBeTrue();
+      const ownDraft = component.frameworkStorageKey();
+
+      rehearsals.start(definition, 'react-counter');
+      expect(component.rehearsalPhase()).toBe('active');
+      expect(component.frameworkStorageKey()).toBe(rehearsals.draftKey('react-counter'));
+      expect(component.frameworkStorageKey()).not.toBe(ownDraft);
+      await component.onFrameworkCheckRun({
+        questionId: 'react-counter',
+        passed: false,
+        results: [{ name: 'Counter renders', passed: true }, { name: 'Counter counts', passed: false }],
+      });
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 1, total: 2, runs: 1 });
+
+      // The footer's Run checks counts as the panel's does.
+      const runFrameworkChecks = jasmine.createSpy('runFrameworkChecks').and.resolveTo([
+        { name: 'Counter renders', passed: true },
+        { name: 'Counter counts', passed: true },
+      ]);
+      (component as any).frameworkPanel = { runFrameworkChecks };
+      await component.submitCode();
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 2, total: 2, runs: 2 });
+
+      // The review keeps the draft, stops counting, and leaves the footer nothing to submit.
+      rehearsals.end();
+      expect(component.rehearsalPhase()).toBe('review');
+      expect(component.rehearsalLocked()).toBeTrue();
+      expect(component.frameworkStorageKey()).toBe(rehearsals.draftKey('react-counter'));
+      await component.onFrameworkCheckRun({ questionId: 'react-counter', passed: true, results: [{ name: 'Counter renders', passed: true }] });
+      await component.submitCode();
+      expect(runFrameworkChecks).toHaveBeenCalledTimes(1);
+      expect(rehearsals.session()?.results['react-counter']).toEqual({ passed: 2, total: 2, runs: 2 });
+
+      component.tech = 'vue';
+      expect(component.rehearsalSupported()).toBeFalse();
+    });
+
+    it('lists several rehearsals of one problem in one card, with a start for each and one way to pricing', async () => {
+      const other = rehearsals.normalize({ ...payload, id: 'acme-screen', title: 'Acme screen', summary: 'Two problems in 30 minutes.', minutes: 30 })!;
+      (rehearsals.forTask as jasmine.Spy).and.returnValue(of([definition, other]));
+      const member = await render(twin, premium);
+      const host = member.fixture.nativeElement as HTMLElement;
+      expect(host.querySelectorAll('[data-testid="rehearsal-offers"]').length).toBe(1);
+      expect(member.find('rehearsal-offers')?.textContent).toContain('This problem is part of 2 timed rehearsals');
+      const rows = Array.from(host.querySelectorAll<HTMLElement>('[data-testid="rehearsal-entry"]'));
+      expect(rows.map((row) => row.querySelector('h3')?.textContent?.trim())).toEqual([
+        'Meta coding round: 2 problems in 40 minutes',
+        'Acme screen: 2 problems in 30 minutes',
+      ]);
+      // Each summary is a click away, so the description stays in view.
+      expect(rows[1].querySelector('details summary')?.textContent?.trim()).toBe('What it covers');
+      expect(rows[1].querySelector('details p')?.textContent?.trim()).toBe('Two problems in 30 minutes.');
+      const start = rows[1].querySelector<HTMLButtonElement>('[data-testid="rehearsal-start"]')!;
+      expect(start.getAttribute('aria-label')).toBe('Start the Acme screen rehearsal');
+      start.click();
+      expect(rehearsals.session()?.definition.id).toBe('acme-screen');
+      rehearsals.close();
+      member.fixture.destroy();
+
+      const visitor = await render(twin, null);
+      const visitorHost = visitor.fixture.nativeElement as HTMLElement;
+      expect(visitorHost.querySelectorAll('[data-testid="rehearsal-start"]').length).toBe(0);
+      expect(visitorHost.querySelectorAll('[data-testid="rehearsal-pricing"]').length).toBe(1);
+    });
   });
 
   describe('question sources', () => {

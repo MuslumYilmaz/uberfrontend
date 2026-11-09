@@ -15,7 +15,8 @@
     "frontend-architecture"
   ],
   "companies": [
-    "walmart"
+    "walmart",
+    "airbnb"
   ],
   "type": "system-design",
   "sections": [
@@ -75,6 +76,13 @@
         "sourceUrl": "https://www.teamblind.com/post/Walmart-Interview-for-Frontend-software-engineer-III-TQhXf1X5",
         "sourceTitle": "Walmart interview for frontend software engineer III, January 2022 (Blind)",
         "checkedAt": "2026-10-19"
+      },
+      {
+        "company": "airbnb",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/airbnb/experiences/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/",
+        "sourceTitle": "Airbnb staff frontend engineer interview, February 2025 (Taro)",
+        "checkedAt": "2026-11-06"
       }
     ]
   },
@@ -86,6 +94,22 @@
       "publisher": "Blind",
       "date": "2022-01",
       "note": "A Walmart-badged reply on this thread says frontend system design rounds include designing a professional network chat and search autocomplete, and that accessibility questions come up. This inbox practises the chat shape; it is not a reported prompt."
+    },
+    {
+      "label": "Taro: Airbnb staff frontend engineer interview, February 2025",
+      "url": "https://www.jointaro.com/interviews/companies/airbnb/experiences/staff-frontend-engineer-united-states-february-22-2025-no-offer-positive-80b29888/",
+      "company": "airbnb",
+      "publisher": "Taro",
+      "date": "2025-02",
+      "note": "The system design round asked for a mobile chat app and went deep on WebSockets and online and offline flows. This inbox practices those parts on the web; it is framed for a professional network and is not the reported prompt."
+    },
+    {
+      "label": "Taro: Airbnb front end engineer interview, San Francisco, 2022",
+      "url": "https://www.jointaro.com/interviews/companies/airbnb/experiences/front-end-engineer-san-francisco-ca-june-1-2022-declined-offer-negative-afab47f0/",
+      "company": "airbnb",
+      "publisher": "Taro",
+      "date": "2022-06",
+      "note": "A second account lists explaining the architecture of a mock chat app among its questions, without describing how the round ran."
     }
   ],
   "contentSchemaVersion": 2,

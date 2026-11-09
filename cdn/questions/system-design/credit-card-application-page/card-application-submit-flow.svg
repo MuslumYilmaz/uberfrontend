@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Card application submit flow</title>
+  <desc id="desc">The identity, address, income and review sections write to one form store, which holds the values, touched flags, errors, the open section and the submit phase. The store hands the submit to the application gateway, which posts it with idempotency key k_7 to the application service. The service replies with application a_19 and its status. The browser replaces the history entry with the status route, and the status route reads the masked record by application id through the gateway.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#172033">One form store, one keyed submit, a confirmation that reads</text>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="122" y="104">Sections</text>
+    <text x="347" y="104">Form store</text>
+    <text x="590" y="104">Gateway and route</text>
+    <text x="870" y="104">Service</text>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="32" y="124" width="180" height="52" rx="12"/>
+    <rect x="32" y="190" width="180" height="52" rx="12"/>
+    <rect x="32" y="256" width="180" height="52" rx="12"/>
+    <rect x="32" y="322" width="180" height="52" rx="12"/>
+    <rect x="262" y="190" width="170" height="118" rx="14"/>
+    <rect x="500" y="190" width="180" height="80" rx="14"/>
+    <rect x="500" y="380" width="180" height="86" rx="14"/>
+    <rect x="800" y="150" width="140" height="180" rx="14"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="46" y="146" font-size="15" font-weight="700">Identity</text>
+    <text x="46" y="165" font-size="12" fill="#526078">name, birth date, SSN</text>
+    <text x="46" y="212" font-size="15" font-weight="700">Address</text>
+    <text x="46" y="231" font-size="12" fill="#526078">street, city, postal code</text>
+    <text x="46" y="278" font-size="15" font-weight="700">Income</text>
+    <text x="46" y="297" font-size="12" fill="#526078">income, housing cost</text>
+    <text x="46" y="344" font-size="15" font-weight="700">Review</text>
+    <text x="46" y="363" font-size="12" fill="#526078">terms; creates key k_7</text>
+    <text x="276" y="216" font-size="16" font-weight="700">FormStore</text>
+    <text x="276" y="240" font-size="12" fill="#526078">values, touched, errors</text>
+    <text x="276" y="258" font-size="12" fill="#526078">open section</text>
+    <text x="276" y="276" font-size="12" fill="#526078">submit phase</text>
+    <text x="276" y="294" font-size="12" fill="#526078">sensitive: memory only</text>
+    <text x="514" y="218" font-size="15" font-weight="700">ApplicationGateway</text>
+    <text x="514" y="240" font-size="12" fill="#526078">submit with the key</text>
+    <text x="514" y="258" font-size="12" fill="#526078">read status by id</text>
+    <text x="514" y="406" font-size="15" font-weight="700">Status route</text>
+    <text x="514" y="428" font-size="12" fill="#526078">/application/a_19/status</text>
+    <text x="514" y="448" font-size="12" fill="#526078">shows the masked record</text>
+    <text x="870" y="226" font-size="16" font-weight="700" text-anchor="middle">Application</text>
+    <text x="870" y="246" font-size="16" font-weight="700" text-anchor="middle">service</text>
+    <text x="870" y="272" font-size="12" fill="#526078" text-anchor="middle">record, decision</text>
+  </g>
+  <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M212 150H237M212 216H237M212 282H237M212 348H237M237 150V348" stroke="#315ee8"/>
+    <path d="M237 249H262" stroke="#315ee8"/>
+    <path d="m250 239 12 10-12 10" stroke="#315ee8"/>
+    <path d="M432 230H500" stroke="#315ee8"/>
+    <path d="m488 220 12 10-12 10" stroke="#315ee8"/>
+    <path d="M680 215H800" stroke="#7950b8"/>
+    <path d="m788 205 12 10-12 10" stroke="#7950b8"/>
+    <path d="M800 245H680" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m692 235-12 10 12 10" stroke="#268455"/>
+    <path d="M590 270V380" stroke="#315ee8"/>
+    <path d="m580 368 10 12 10-12" stroke="#315ee8"/>
+    <path d="M650 380V270" stroke="#315ee8"/>
+    <path d="m640 282 10-12 10 12" stroke="#315ee8"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#172033" text-anchor="middle">
+    <text x="466" y="221">submit</text>
+    <text x="740" y="206">POST, key k_7</text>
+    <text x="740" y="264">a_19, status</text>
+  </g>
+  <text x="580" y="330" font-family="Arial, sans-serif" font-size="12" fill="#172033" text-anchor="end">replace history entry</text>
+  <text x="660" y="330" font-family="Arial, sans-serif" font-size="12" fill="#172033">read status</text>
+  <text x="48" y="510" font-family="Arial, sans-serif" font-size="14" fill="#526078">Sensitive fields never leave the form store except in the submit; the confirmation shows masked values from the record.</text>
+</svg>

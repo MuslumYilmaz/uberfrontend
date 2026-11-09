@@ -16,6 +16,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "angular",
     "kind": "coding",
+    "title": "Autocomplete Search Bar (Standalone Component)",
+    "route": "/angular/coding/angular-autocomplete-search-starter"
+  },
+  {
+    "tech": "angular",
+    "kind": "coding",
     "title": "Counter (Standalone Component)",
     "route": "/angular/coding/angular-counter-starter"
   },
@@ -1480,6 +1486,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "coding",
+    "title": "React Snake Game (Grid + Food + Collision)",
+    "route": "/react/coding/react-snake-game"
+  },
+  {
+    "tech": "react",
+    "kind": "coding",
     "title": "Todo List (Component with Local State)",
     "route": "/react/coding/react-todo-list"
   },
@@ -1720,6 +1732,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "vue",
     "kind": "coding",
+    "title": "Autocomplete Search (debounce + keyboard + outside click)",
+    "route": "/vue/coding/vue-autocomplete-search"
+  },
+  {
+    "tech": "vue",
+    "kind": "coding",
     "title": "Todo List (Refs + List Rendering)",
     "route": "/vue/coding/vue-todo-list"
   },
@@ -1728,6 +1746,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "coding",
     "title": "Vue Counter (Guarded Decrement)",
     "route": "/vue/coding/vue-counter"
+  },
+  {
+    "tech": "vue",
+    "kind": "coding",
+    "title": "Vue Snake Game (Grid + Food + Collision)",
+    "route": "/vue/coding/vue-snake-game"
   },
   {
     "tech": "vue",

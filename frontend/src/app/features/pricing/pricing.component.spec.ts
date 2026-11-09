@@ -1,29 +1,49 @@
-import { signal } from '@angular/core';
+import { WritableSignal, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+import rawPlanData from '../../../../../cdn/questions/company-plan-data.json';
+import type { CompanyPlanAnswers } from '../../core/models/company-plan.model';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService } from '../../core/services/billing-checkout.service';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
+import { CompanyPlanData, buildCompanyPlan } from '../company/company-plan/company-plan.engine';
+import { CompanyPlanService } from '../company/company-plan/company-plan.service';
 import { PricingComponent } from './pricing.component';
+
+const PLAN_DATA = rawPlanData as unknown as CompanyPlanData;
 
 describe('PricingComponent', () => {
   let fixture: ComponentFixture<PricingComponent>;
   let component: PricingComponent;
   let billingCheckoutStub: jasmine.SpyObj<BillingCheckoutService>;
   let analyticsStub: jasmine.SpyObj<AnalyticsService>;
+  let plansStub: { answers: WritableSignal<CompanyPlanAnswers | null>; loadData: jasmine.Spy; buildPlan: unknown };
 
   beforeEach(async () => {
     sessionStorage.removeItem('fa:conversion:pricing-context:v1');
+    sessionStorage.removeItem('fa:checkout:intent:v1');
     billingCheckoutStub = jasmine.createSpyObj<BillingCheckoutService>('BillingCheckoutService', ['getCheckoutConfig', 'prefetch']);
     billingCheckoutStub.getCheckoutConfig.and.resolveTo(null);
     billingCheckoutStub.prefetch.and.resolveTo();
     analyticsStub = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
+    plansStub = {
+      answers: signal(null),
+      loadData: jasmine.createSpy('loadData').and.returnValue(of(PLAN_DATA)),
+      buildPlan: (data: CompanyPlanData, answers: CompanyPlanAnswers) => buildCompanyPlan(data, {
+        companies: answers.companies.map((company) => company.slug),
+        when: answers.when,
+        level: answers.level,
+        today: '2026-11-02',
+      }),
+    };
 
     await TestBed.configureTestingModule({
       imports: [PricingComponent],
       providers: [
         provideRouter([]),
+        { provide: CompanyPlanService, useValue: plansStub },
         { provide: BillingCheckoutService, useValue: billingCheckoutStub },
         {
           provide: AuthService,
@@ -160,5 +180,85 @@ describe('PricingComponent', () => {
       offer_version: 'interview_sprint_v2',
       checkout_surface: 'overlay',
     }));
+  });
+
+  describe('with a company plan waiting', () => {
+    const strip = () => fixture.nativeElement.querySelector('[data-testid="company-plan-pricing-strip"]') as HTMLElement | null;
+    const firstCardLines = () => Array.from(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card')[0].querySelectorAll('.features li'))
+      .map((item) => (item as HTMLElement).textContent?.trim());
+
+    async function render(url: string): Promise<void> {
+      await TestBed.inject(Router).navigateByUrl(url);
+      fixture = TestBed.createComponent(PricingComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+
+    beforeEach(() => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });
+    });
+
+    afterEach(() => sessionStorage.removeItem('fa:checkout:intent:v1'));
+
+    it('recommends the month, and says why, when the interview is this week', async () => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'this-week', level: 'senior' });
+      await render('/?src=company_plan_elevenlabs');
+
+      expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')?.textContent?.trim())
+        .toBe('Your interview is this week, so a month of Premium is enough.');
+      const recommended = fixture.nativeElement.querySelector('.pr-rec') as HTMLElement;
+      expect(recommended.textContent).toContain('Monthly');
+      expect(recommended.textContent).toContain('Recommended');
+      expect(fixture.nativeElement.querySelectorAll('.pr-rec').length).toBe(1);
+    });
+
+    it('keeps the quarter recommended, with no note, when the interview is further away', async () => {
+      plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior' });
+      await render('/?src=company_plan_elevenlabs');
+      expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')).toBeNull();
+      expect((fixture.nativeElement.querySelector('.pr-rec') as HTMLElement).textContent).toContain('Quarterly');
+    });
+
+    it('shows the plan above the plans and opens every card with it', async () => {
+      await render('/?src=company_plan_elevenlabs');
+
+      expect(strip()?.querySelector('h2')?.textContent?.trim()).toBe('Your ElevenLabs plan is waiting');
+      expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\./);
+      expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
+      expect(firstCardLines()).toEqual([
+        'Your full ElevenLabs plan',
+        `${PLAN_DATA.general.premiumCounts.react} Premium React tasks with a live preview`,
+        `${PLAN_DATA.general.premiumCounts.systemDesign} Premium system design walkthroughs`,
+        'Cancel before the next renewal',
+      ]);
+    });
+
+    it('finds the plan again after the visitor signs in on the way', async () => {
+      sessionStorage.setItem('fa:checkout:intent:v1', JSON.stringify({
+        version: 1,
+        planId: 'quarterly',
+        src: 'company_plan_elevenlabs',
+        surface: 'pricing_page',
+        returnUrl: '/pricing',
+        createdAt: Date.now(),
+      }));
+      await render('/');
+      expect(strip()).toBeTruthy();
+    });
+
+    it('leaves the page as it was without a company plan source, for a general plan and for Premium members', async () => {
+      await render('/');
+      expect(strip()).toBeNull();
+      expect(firstCardLines()[0]).toBe('Full Premium content');
+      expect(plansStub.loadData).not.toHaveBeenCalled();
+
+      await render('/?src=company_plan_general');
+      expect(strip()).toBeNull();
+
+      (TestBed.inject(AuthService).user as unknown as jasmine.Spy).and.returnValue({ _id: 'u1', entitlements: { pro: { status: 'lifetime' } } });
+      await render('/?src=company_plan_elevenlabs');
+      expect(strip()).toBeNull();
+    });
   });
 });

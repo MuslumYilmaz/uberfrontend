@@ -30,20 +30,47 @@
                   {{ stage.format }}
                   @if (stage.practice; as practice) {
                     <span class="interview-process__practice">
-                      Practice: <a [routerLink]="practice.path">{{ practice.label }}</a>
+                      @if (practiceLocked(practice.path)) {
+                        Practice: <a class="interview-process__locked" [routerLink]="practice.path" inert><span class="premium-locked" data-nosnippet>{{ practice.label }}</span></a>
+                        <span class="interview-process__tag">Premium task for this round</span>
+                      } @else {
+                        Practice: <a [routerLink]="practice.path" [fragment]="practice.fragment" [state]="returnState">{{ practice.label }}</a>
+                        @if (practicePremium(practice.path)) {
+                          <span class="interview-process__tag">Premium task for this round</span>
+                        }
+                      }
+                    </span>
+                  }
+                  @if (stage.rehearsal; as rehearsal) {
+                    <!-- A visitor reads no link to a Premium page by name, so a rehearsal that opens on one is named
+                         without its link until the viewer has an account. -->
+                    <span class="interview-process__practice" data-testid="company-interview-process-rehearsal">
+                      @if (practiceLocked(rehearsal.path)) {
+                        Timed rehearsal: {{ rehearsal.label }}
+                      } @else {
+                        Timed rehearsal: <a [routerLink]="rehearsal.path" [state]="returnState">{{ rehearsal.label }}</a>
+                      }
+                      <span class="interview-process__tag">Premium</span>
                     </span>
                   }
                 </td>
                 <td data-label="Who">{{ stage.appliesTo }}</td>
                 <td data-label="Evidence">
                   <span class="interview-process__strength">{{ evidenceLabel(stage) }}</span>
-                  <ul class="interview-process__sources">
-                    @for (source of stage.sources; track source.url) {
-                      <li>
-                        <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
-                      </li>
-                    }
-                  </ul>
+                  @if (!showSourceLinks) {
+                    <span class="interview-process__tag">Free account</span>
+                  }
+                  @if (showSourceLinks) {
+                    <!-- On a phone the list waits behind its count; wider screens show it in full. -->
+                    <button type="button" class="interview-process__toggle" [attr.aria-expanded]="expanded(i, stage)" (click)="toggleSources(i, stage)">{{ expanded(i, stage) ? 'Hide the sources' : 'Show the sources' }}</button>
+                    <ul class="interview-process__sources" [class.interview-process__sources--collapsed]="!expanded(i, stage)">
+                      @for (source of stage.sources; track source.url) {
+                        <li>
+                          <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
+                        </li>
+                      }
+                    </ul>
+                  }
                 </td>
               </tr>
             }

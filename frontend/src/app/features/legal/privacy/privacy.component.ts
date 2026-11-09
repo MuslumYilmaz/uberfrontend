@@ -66,6 +66,8 @@ import { RouterModule } from '@angular/router';
           <li><strong>Profile data</strong> — optional bio, avatar, preferred technologies, links to portfolio/socials.</li>
           <li><strong>Communications</strong> — messages you send to support or feedback you submit.</li>
           <li><strong>Billing</strong> — subscription details; payment card data is handled by our payment processors and not stored by us.</li>
+          <li><strong>Interview plans</strong> — if you build a company interview plan: the companies you pick (up to three), when your interview is, your level, the rounds you have passed, the framework you choose, and the tasks you mark. Before you sign in, these answers stay in your browser’s local storage. After you sign in, they are kept on your account so your plan is there on any device, until you build a new plan or delete your account. Our usage analytics count which companies plans are built for, without linking them to your account.</li>
+          <li><strong>Practice notes</strong> — what you write in a behavioural drill, a code review or a timed rehearsal stays in your browser’s local storage on this device. It is not sent to us, and clearing your browser data removes it.</li>
           <li><strong>Marketing preferences</strong> — newsletter opt-ins and related choices.</li>
         </ul>
 
@@ -251,6 +253,10 @@ import { RouterModule } from '@angular/router';
     </article>
   `,
     styles: [`
+    /* The global stylesheet arrives after first paint; matching its type values here keeps the page from reflowing. */
+    h1, h2, h3 { line-height: 1.3; letter-spacing: 0.01em; }
+    p, li { font-size: 14px; line-height: 1.58; }
+
     :host { display: block; background: radial-gradient(circle at 16% 20%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     /* Layout */
     .doc {
@@ -373,6 +379,6 @@ import { RouterModule } from '@angular/router';
 export class PrivacyComponent {
   readonly companyName = 'FrontendAtlas';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'August 29, 2026';
+  readonly effectiveDate = 'November 9, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }

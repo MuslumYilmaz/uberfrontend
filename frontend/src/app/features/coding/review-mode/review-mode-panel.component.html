@@ -1,0 +1,295 @@
+<section class="review-mode" data-testid="review-mode-panel" aria-labelledby="review-mode-title">
+  <header class="review-mode__header">
+    <div class="review-mode__header-copy">
+      <p class="review-mode__eyebrow">{{ isFind() ? 'Case: find the bug' : 'Merge request review' }}</p>
+      <h1 id="review-mode-title">{{ scenario.mergeRequest.title }}</h1>
+      <p class="review-mode__timer" data-testid="review-mode-timer">{{ timerLabel() }}</p>
+    </div>
+    <button type="button" faButton variant="ghost" size="sm" data-testid="review-mode-exit" (click)="leave()">
+      {{ isFind() ? 'Leave the case' : 'Leave the review' }}
+    </button>
+  </header>
+
+  @if (isFind()) {
+    <ol class="review-mode__steps" aria-label="Case steps">
+      <li [class.is-current]="phase() === 'review'" [attr.aria-current]="phase() === 'review' ? 'step' : null">Find the bug in writing</li>
+      <li [class.is-current]="phase() === 'compare'" [attr.aria-current]="phase() === 'compare' ? 'step' : null">Compare with a sample answer</li>
+      <li [class.is-current]="phase() === 'fix'" [attr.aria-current]="phase() === 'fix' ? 'step' : null">Fix it in the workspace</li>
+    </ol>
+
+    @switch (phase()) {
+      @case ('review') {
+        <section class="review-mode__request" aria-labelledby="review-mode-request">
+          <h2 id="review-mode-request">The case</h2>
+          <p>{{ scenario.mergeRequest.description }}</p>
+          <h3>{{ scenario.mergeRequest.issue.title }}</h3>
+          <ul>
+            @for (requirement of scenario.mergeRequest.issue.requirements; track $index) {
+              <li>{{ requirement }}</li>
+            }
+          </ul>
+        </section>
+
+        @if (scenario.workedExample; as worked) {
+          <fa-field label="Work this example by hand first" [hint]="worked.prompt">
+            <span class="fa-input review-mode__input">
+              <textarea rows="4" [value]="example()" (input)="setExample($event)" data-testid="review-mode-example"></textarea>
+            </span>
+          </fa-field>
+        }
+
+        @for (file of codeFiles(); track file.path; let fileIndex = $index) {
+          <section class="review-mode__file" [attr.data-testid]="'review-mode-file-' + fileIndex">
+            <header class="review-mode__file-head">
+              <h2 class="review-mode__path">{{ file.path }}</h2>
+              <span class="review-mode__stats">Mark the lines you would change</span>
+            </header>
+            <div class="review-mode__diff" role="region" [attr.aria-label]="'The code of ' + file.path" tabindex="0">
+              <table class="review-mode__table">
+                <caption class="review-mode__sr">The code of {{ file.path }}, line by line</caption>
+                <tbody>
+                  @for (code of file.lines; track $index; let index = $index) {
+                    <tr class="review-mode__row" [class.review-mode__row--marked]="marked(file.path, index + 1)">
+                      <td class="review-mode__num">
+                        <button type="button" class="review-mode__mark" [attr.aria-pressed]="marked(file.path, index + 1)"
+                          [attr.aria-label]="(marked(file.path, index + 1) ? 'Unmark line ' : 'Mark line ') + (index + 1)"
+                          [attr.data-testid]="'review-mode-mark-' + fileIndex + '-' + (index + 1)"
+                          (click)="toggleLine(file.path, index + 1)">{{ index + 1 }}</button>
+                      </td>
+                      <td class="review-mode__code">{{ code }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        }
+
+        <section class="review-mode__findings" aria-labelledby="review-mode-findings" data-testid="review-mode-findings">
+          <h2 id="review-mode-findings">Your findings</h2>
+          @for (finding of findings(); track finding.key) {
+            <fa-field [label]="'Line ' + finding.line + ': what is wrong, and the smallest fix'" [hint]="finding.code">
+              <span class="fa-input review-mode__input">
+                <textarea rows="3" [value]="finding.text" (input)="setFinding(finding.key, $event)"
+                  [attr.data-testid]="'review-mode-finding-' + finding.line"></textarea>
+              </span>
+            </fa-field>
+          } @empty {
+            <p class="review-mode__muted">Mark a line number in the code to write down what is wrong there.</p>
+          }
+        </section>
+
+        <fa-field label="Your answer" hint="The bug in one sentence, the smallest fix, and a test that would have caught it.">
+          <span class="fa-input review-mode__input">
+            <textarea rows="3" [value]="summary()" (input)="setSummary($event)" data-testid="review-mode-summary"></textarea>
+          </span>
+        </fa-field>
+        <div class="review-mode__actions">
+          <button type="button" faButton variant="primary" data-testid="review-mode-compare" (click)="go('compare')">
+            Done: compare with a sample answer
+          </button>
+        </div>
+      }
+
+      @case ('compare') {
+        <section class="review-mode__sample" data-testid="review-mode-sample" aria-labelledby="review-mode-sample">
+          <h2 id="review-mode-sample">A sample answer</h2>
+          <p>{{ scenario.sampleReview.summary }}</p>
+          @if (scenario.workedExample; as worked) {
+            <h3>The worked example</h3>
+            <p class="review-mode__own-text" data-testid="review-mode-sample-example">{{ worked.answer }}</p>
+          }
+          <ol class="review-mode__comments">
+            @for (comment of sortedComments(); track $index) {
+              <li class="review-mode__comment">
+                <p class="review-mode__comment-head">
+                  <span [class]="'review-mode__severity review-mode__severity--' + comment.severity">{{ severityLabel(comment.severity) }}</span>
+                  <code class="review-mode__where">{{ comment.path }}:{{ comment.line }}</code>
+                  @if (comment.checked) {
+                    <span class="review-mode__checked">Checked in the workspace</span>
+                  }
+                </p>
+                <p class="review-mode__comment-title">{{ comment.title }}</p>
+                <p>{{ comment.body }}</p>
+              </li>
+            }
+          </ol>
+          <h3>Yours</h3>
+          @if (example().trim()) {
+            <div class="review-mode__own">
+              <p class="review-mode__path">Worked example</p>
+              <p class="review-mode__own-text">{{ example() }}</p>
+            </div>
+          }
+          @for (finding of writtenFindings(); track finding.key) {
+            <div class="review-mode__own">
+              <p class="review-mode__path">{{ finding.path }}:{{ finding.line }}</p>
+              <p class="review-mode__own-text">{{ finding.text }}</p>
+            </div>
+          }
+          @if (summary().trim()) {
+            <div class="review-mode__own">
+              <p class="review-mode__path">Your answer</p>
+              <p class="review-mode__own-text">{{ summary() }}</p>
+            </div>
+          }
+          @if (!example().trim() && !writtenFindings().length && !summary().trim()) {
+            <p class="review-mode__muted">You wrote nothing down this time.</p>
+          }
+          <div class="review-mode__actions">
+            <button type="button" faButton variant="ghost" (click)="go('review')">Back to the case</button>
+            <button type="button" faButton variant="primary" data-testid="review-mode-start-fixes" (click)="go('fix')">
+              Fix it in the workspace
+            </button>
+          </div>
+        </section>
+      }
+
+      @case ('fix') {
+        <section class="review-mode__fix" aria-labelledby="review-mode-fix">
+          <h2 id="review-mode-fix">Fix it in the workspace</h2>
+          <p>
+            The code runs now. Make the smallest fix for each finding, then run the tests: they check the bug and the
+            risks in the sample answer that are marked as checked.
+          </p>
+          <div class="review-mode__actions">
+            <button type="button" faButton variant="ghost" (click)="go('compare')">Back to the sample answer</button>
+          </div>
+        </section>
+      }
+    }
+  } @else {
+  <ol class="review-mode__steps" aria-label="Review steps">
+    <li [class.is-current]="phase() === 'review'" [attr.aria-current]="phase() === 'review' ? 'step' : null">Review in writing</li>
+    <li [class.is-current]="phase() === 'fix'" [attr.aria-current]="phase() === 'fix' ? 'step' : null">Implement the top fixes</li>
+    <li [class.is-current]="phase() === 'compare'" [attr.aria-current]="phase() === 'compare' ? 'step' : null">Compare with a sample review</li>
+  </ol>
+
+  @switch (phase()) {
+    @case ('review') {
+      <section class="review-mode__request" aria-labelledby="review-mode-request">
+        <h2 id="review-mode-request">What the merge request says</h2>
+        <p>{{ scenario.mergeRequest.description }}</p>
+        <h3>{{ scenario.mergeRequest.issue.title }}</h3>
+        <ul>
+          @for (requirement of scenario.mergeRequest.issue.requirements; track $index) {
+            <li>{{ requirement }}</li>
+          }
+        </ul>
+      </section>
+
+      @for (file of files(); track file.path; let fileIndex = $index) {
+        <section class="review-mode__file" [attr.data-testid]="'review-mode-file-' + fileIndex">
+          <header class="review-mode__file-head">
+            <h2 class="review-mode__path">{{ file.path }}</h2>
+            <span class="review-mode__stats">
+              <span class="review-mode__stat review-mode__stat--added">+{{ file.added }}</span>
+              <span class="review-mode__stat review-mode__stat--removed">-{{ file.removed }}</span>
+            </span>
+          </header>
+          <div class="review-mode__diff" role="region" [attr.aria-label]="'Changes in ' + file.path" tabindex="0">
+            <table class="review-mode__table">
+              <caption class="review-mode__sr">Line-by-line changes in {{ file.path }}</caption>
+              <tbody>
+                @for (row of file.rows; track $index) {
+                  @if (row.kind === 'gap') {
+                    <tr class="review-mode__row review-mode__row--gap">
+                      <td colspan="3">{{ row.lines }} unchanged {{ row.lines === 1 ? 'line' : 'lines' }}</td>
+                    </tr>
+                  } @else {
+                    <tr [class]="'review-mode__row review-mode__row--' + row.kind">
+                      <td class="review-mode__num">{{ oldLine(row) }}</td>
+                      <td class="review-mode__num">{{ newLine(row) }}</td>
+                      <td class="review-mode__code"><span class="review-mode__marker" aria-hidden="true">{{ marker(row) }}</span>@if (row.kind !== 'same') {<span class="review-mode__sr">{{ row.kind === 'added' ? 'Added: ' : 'Removed: ' }}</span>}{{ row.text }}</td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+          <fa-field [label]="'Your comments on ' + file.path" hint="One per line, starting with the line number, for example L12.">
+            <span class="fa-input review-mode__input">
+              <textarea rows="4" [value]="commentFor(file.path)" (input)="setComment(file.path, $event)"
+                [attr.data-testid]="'review-mode-comment-' + fileIndex"></textarea>
+            </span>
+          </fa-field>
+        </section>
+      }
+
+      <fa-field label="Your summary" hint="What blocks the merge, and what would you change first?">
+        <span class="fa-input review-mode__input">
+          <textarea rows="3" [value]="summary()" (input)="setSummary($event)" data-testid="review-mode-summary"></textarea>
+        </span>
+      </fa-field>
+      <div class="review-mode__actions">
+        <button type="button" faButton variant="primary" data-testid="review-mode-start-fixes" (click)="go('fix')">
+          Done: implement the top fixes
+        </button>
+      </div>
+    }
+
+    @case ('fix') {
+      <section class="review-mode__fix" aria-labelledby="review-mode-fix">
+        <h2 id="review-mode-fix">Implement the top fixes</h2>
+        <p>
+          Make the changes you would hold the merge for in the workspace, then run the checks. They cover the fixes a
+          reviewer would insist on, not every comment, so say the rest out loud as you would to the interviewer.
+        </p>
+        <h3>Your review</h3>
+        @if (ownComments().length) {
+          @for (entry of ownComments(); track entry.path) {
+            <div class="review-mode__own">
+              <p class="review-mode__path">{{ entry.path }}</p>
+              <p class="review-mode__own-text">{{ entry.text }}</p>
+            </div>
+          }
+        } @else {
+          <p class="review-mode__muted">You left no comments. Go back and write down what you would change before you fix it.</p>
+        }
+        <div class="review-mode__actions">
+          <button type="button" faButton variant="ghost" (click)="go('review')">Back to the review</button>
+          <button type="button" faButton variant="primary" data-testid="review-mode-compare" (click)="go('compare')">
+            Compare with a sample review
+          </button>
+        </div>
+      </section>
+    }
+
+    @case ('compare') {
+      <section class="review-mode__sample" data-testid="review-mode-sample" aria-labelledby="review-mode-sample">
+        <h2 id="review-mode-sample">A sample review</h2>
+        <p>{{ scenario.sampleReview.summary }}</p>
+        <ol class="review-mode__comments">
+          @for (comment of sortedComments(); track $index) {
+            <li class="review-mode__comment">
+              <p class="review-mode__comment-head">
+                <span [class]="'review-mode__severity review-mode__severity--' + comment.severity">{{ severityLabel(comment.severity) }}</span>
+                <code class="review-mode__where">{{ comment.path }}:{{ comment.line }}</code>
+                @if (comment.checked) {
+                  <span class="review-mode__checked">Checked in the workspace</span>
+                }
+              </p>
+              <p class="review-mode__comment-title">{{ comment.title }}</p>
+              <p>{{ comment.body }}</p>
+            </li>
+          }
+        </ol>
+        <h3>Your review</h3>
+        @if (ownComments().length) {
+          @for (entry of ownComments(); track entry.path) {
+            <div class="review-mode__own">
+              <p class="review-mode__path">{{ entry.path }}</p>
+              <p class="review-mode__own-text">{{ entry.text }}</p>
+            </div>
+          }
+        } @else {
+          <p class="review-mode__muted">You left no comments this time.</p>
+        }
+        <div class="review-mode__actions">
+          <button type="button" faButton variant="ghost" (click)="go('fix')">Back to the fixes</button>
+        </div>
+      </section>
+    }
+  }
+  }
+</section>

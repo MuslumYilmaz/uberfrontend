@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Card application outcome states</title>
+  <desc id="desc">Editing leads to submitting when the applicant presses Submit. A timeout moves submitting to failed, and a retry with the same key returns to submitting. A 400 reply moves submitting to field errors, which go back to editing with a new key. A 201 or 200 reply moves submitting to the status route, which shows approved, declined, pending review or verify identity. Pending review and verify identity later become approved or declined.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#172033">Every outcome has a screen; only a retry reuses the key</text>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="40" y="220" width="150" height="64" rx="14"/>
+    <rect x="270" y="220" width="160" height="64" rx="14"/>
+    <rect x="270" y="96" width="160" height="64" rx="14"/>
+    <rect x="270" y="344" width="160" height="64" rx="14"/>
+    <rect x="510" y="220" width="170" height="64" rx="14"/>
+    <rect x="760" y="100" width="160" height="56" rx="12"/>
+    <rect x="760" y="180" width="160" height="56" rx="12"/>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2" stroke-dasharray="7 5">
+    <rect x="760" y="260" width="160" height="56" rx="12"/>
+    <rect x="760" y="340" width="160" height="56" rx="12"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="56" y="248" font-size="16" font-weight="700">Editing</text>
+    <text x="56" y="270" font-size="12" fill="#526078">form store, key k</text>
+    <text x="286" y="248" font-size="16" font-weight="700">Submitting</text>
+    <text x="286" y="270" font-size="12" fill="#526078">button shows progress</text>
+    <text x="286" y="124" font-size="16" font-weight="700">Failed</text>
+    <text x="286" y="146" font-size="12" fill="#526078">fields kept, retry offered</text>
+    <text x="286" y="372" font-size="16" font-weight="700">Field errors</text>
+    <text x="286" y="394" font-size="12" fill="#526078">mapped by field name</text>
+    <text x="526" y="248" font-size="16" font-weight="700">Status route</text>
+    <text x="526" y="270" font-size="12" fill="#526078">reads by applicationId</text>
+    <text x="776" y="133" font-size="15" font-weight="700">Approved</text>
+    <text x="776" y="213" font-size="15" font-weight="700">Declined</text>
+    <text x="776" y="293" font-size="15" font-weight="700">Pending review</text>
+    <text x="776" y="373" font-size="15" font-weight="700">Verify identity</text>
+  </g>
+  <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M190 252H270" stroke="#315ee8"/>
+    <path d="m258 242 12 10-12 10" stroke="#315ee8"/>
+    <path d="M330 220V160" stroke="#b45309"/>
+    <path d="m320 172 10-12 10 12" stroke="#b45309"/>
+    <path d="M370 160V220" stroke="#315ee8"/>
+    <path d="m360 208 10 12 10-12" stroke="#315ee8"/>
+    <path d="M330 284V344" stroke="#b45309"/>
+    <path d="m320 332 10 12 10-12" stroke="#b45309"/>
+    <path d="M270 376H115V284" stroke="#315ee8"/>
+    <path d="m105 296 10-12 10 12" stroke="#315ee8"/>
+    <path d="M430 252H510" stroke="#268455"/>
+    <path d="m498 242 12 10-12 10" stroke="#268455"/>
+    <path d="M680 252H720M720 128V368M720 128H760M720 208H760M720 288H760M720 368H760" stroke="#268455"/>
+    <path d="m748 118 12 10-12 10M748 198l12 10-12 10M748 278l12 10-12 10M748 358l12 10-12 10" stroke="#268455"/>
+    <path d="M770 406V416H910V406" stroke="#9aa7bc" stroke-width="2"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#172033">
+    <text x="230" y="243" text-anchor="middle">Submit</text>
+    <text x="322" y="194" text-anchor="end">timeout</text>
+    <text x="378" y="194">retry, same key</text>
+    <text x="322" y="318" text-anchor="end">400</text>
+    <text x="192" y="368" text-anchor="middle">new key</text>
+    <text x="470" y="243" text-anchor="middle">201 or 200</text>
+    <text x="840" y="436" text-anchor="middle">later: approved or declined</text>
+  </g>
+  <text x="48" y="510" font-family="Arial, sans-serif" font-size="14" fill="#526078">A failed submit retries with the same key; a field-error reply ends the attempt, and the corrected submit gets a new one.</text>
+</svg>

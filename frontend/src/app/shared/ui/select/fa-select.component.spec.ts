@@ -47,6 +47,16 @@ describe('FaSelectComponent', () => {
     expect(multiSelect.ariaLabelledBy).toBe('tag-label');
     expect(multiSelect.ariaFilterLabel).toBe('Filter tags');
   });
+
+  it('never writes autofocus into the page, which would scroll a prerendered page to the control on load', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[autofocus]')).toBeNull();
+
+    const multi = TestBed.createComponent(FaSelectComponent);
+    multi.componentInstance.multiple = true;
+    multi.detectChanges();
+    expect(multi.nativeElement.querySelector('[autofocus]')).toBeNull();
+  });
 });
 
 function childInstance<T>(host: DebugElement, type: new (...args: never[]) => T): T {

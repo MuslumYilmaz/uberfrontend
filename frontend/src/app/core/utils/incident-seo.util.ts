@@ -6,6 +6,7 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from './content-access-policy.util';
+import { labelledSeoTitle } from './seo-text.util';
 
 export const INCIDENT_DETAIL_FALLBACK_SEO: SeoMeta = {
   title: 'Frontend Debug Scenario for Interview Practice',
@@ -105,7 +106,7 @@ export function buildIncidentSeoMeta(
   };
 
   return {
-    title: `${meta.title} - ${techLabel} Debug Scenario`,
+    title: labelledSeoTitle(meta.title, `${techLabel} Debug Scenario`),
     description: detailDescription,
     canonical: canonicalPath,
     robots: robotsForContentAccess(meta.access),

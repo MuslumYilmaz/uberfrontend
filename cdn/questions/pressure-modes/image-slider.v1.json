@@ -1,0 +1,590 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "image-slider-pressure-v1",
+  "family": "image-slider",
+  "title": "Image Carousel Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-image-slider",
+    "angular": "angular-image-slider-starter",
+    "vue": "vue-image-slider"
+  },
+  "rounds": [
+    {
+      "id": "one-current-slide",
+      "title": "One current slide",
+      "interviewerPrompt": "Build the slider first. One current slide decides everything on the screen.",
+      "constraints": [
+        "Next and Previous move one slide. Previous is disabled on the first slide, and Next is disabled on the last.",
+        "Clicking a dot jumps to that slide. The current dot has `aria-current=\"true\"`, and the other dots have no `aria-current`.",
+        "The image `alt`, the `caption` and the `meta` text always match the current slide, for example `Slide 2 of 3`.",
+        "Keep the starter classes `image`, `caption`, `meta`, `actions` and `dot`, and the order of the buttons."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-slider-current",
+          "name": "Round 1 · One current slide drives the whole screen",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "Snowflakes glowing under city lights"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".image",
+              "attribute": "alt",
+              "expected": "Snowflakes glowing under city lights"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": false,
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": "true",
+              "index": 0
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": false,
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "Forest trail in the morning"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".image",
+              "attribute": "alt",
+              "expected": "Forest trail in the morning"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": "true",
+              "index": 1
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": false,
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": false,
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".dot",
+              "index": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 3 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "City lights at night"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": "true",
+              "index": 2
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": false,
+              "index": 0
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "Forest trail in the morning"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "autoplay",
+      "title": "Autoplay",
+      "interviewerPrompt": "Now the slider can play by itself. A slide must never jump right after the user moved it.",
+      "constraints": [
+        "Add a button with the class `autoplay-toggle`. It says `Play` when stopped and `Pause` when playing. The page opens stopped.",
+        "While playing, move to the next slide every second. After the last slide, go back to the first.",
+        "`Pause` stops the movement at once.",
+        "Any move by the user restarts that one second wait.",
+        "Next stays disabled on the last slide, even while playing."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-slider-autoplay",
+          "name": "Round 2 · Autoplay moves on its own and waits after a user move",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".autoplay-toggle",
+              "text": "Play"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "expectText",
+              "selector": ".autoplay-toggle",
+              "text": "Pause"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".section .meta",
+              "text": "Slide 3 of 3",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 1
+            },
+            {
+              "type": "waitForText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3",
+              "timeoutMs": 1500
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "expectText",
+              "selector": ".autoplay-toggle",
+              "text": "Play"
+            },
+            {
+              "type": "wait",
+              "durationMs": 1200
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3"
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "wait",
+              "durationMs": 500
+            },
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3"
+            },
+            {
+              "type": "wait",
+              "durationMs": 700
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".section .meta",
+              "text": "Slide 3 of 3",
+              "timeoutMs": 800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard-and-screen-readers",
+      "title": "Keyboard and screen readers",
+      "interviewerPrompt": "Make the slider work without a mouse, and make sure a playing slider does not keep talking over a screen reader.",
+      "constraints": [
+        "On the element with the class `section`, set `role=\"region\"`, `aria-roledescription=\"carousel\"`, `aria-label=\"Image slider\"` and `tabindex=\"0\"`.",
+        "`ArrowRight` and `ArrowLeft` on that element do what Next and Previous do, with the same limits.",
+        "`Home` goes to the first slide and `End` goes to the last.",
+        "Give the element with the class `meta` `aria-live=\"polite\"` while stopped and `aria-live=\"off\"` while playing."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-slider-keyboard",
+          "name": "Round 3 · The keyboard keeps the limits and the live region goes quiet",
+          "steps": [
+            {
+              "type": "expectAttribute",
+              "selector": ".section",
+              "attribute": "role",
+              "expected": "region"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section",
+              "attribute": "aria-roledescription",
+              "expected": "carousel"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section",
+              "attribute": "aria-label",
+              "expected": "Image slider"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section",
+              "attribute": "tabindex",
+              "expected": "0"
+            },
+            {
+              "type": "key",
+              "selector": ".section",
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 3"
+            },
+            {
+              "type": "key",
+              "selector": ".section",
+              "key": "End"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 3 of 3"
+            },
+            {
+              "type": "key",
+              "selector": ".section",
+              "key": "ArrowRight"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 3 of 3"
+            },
+            {
+              "type": "key",
+              "selector": ".section",
+              "key": "Home"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3"
+            },
+            {
+              "type": "key",
+              "selector": ".section",
+              "key": "ArrowLeft"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 3"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section .meta",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section .meta",
+              "attribute": "aria-live",
+              "expected": "off"
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section .meta",
+              "attribute": "aria-live",
+              "expected": "polite"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "slides-can-disappear",
+      "title": "Slides can disappear",
+      "interviewerPrompt": "Editors can now remove slides while the slider is open. The current slide must always be a real one, and removing the last slide must not break the page.",
+      "constraints": [
+        "Add a button with the class `remove-slide`. It removes the current slide.",
+        "The next slide takes its place. If the removed slide was the last one, the new last slide becomes current.",
+        "With fewer than two slides, autoplay stops and `autoplay-toggle` is disabled.",
+        "When no slides are left, show `No slides left` in an element with the class `empty-state`, and remove `frame`, `meta`, `actions`, `dots` and `remove-slide`.",
+        "Removing the component while it plays must leave no timer running."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-slider-remove",
+          "name": "Round 4 · Removing slides keeps the current slide real",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".actions button",
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".remove-slide"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 2 of 2"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "City lights at night"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".dot",
+              "count": 2
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".dot",
+              "attribute": "aria-current",
+              "expected": "true",
+              "index": 1
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 1
+            },
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "expectText",
+              "selector": ".autoplay-toggle",
+              "text": "Pause"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-slide"
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 1"
+            },
+            {
+              "type": "expectText",
+              "selector": ".caption",
+              "text": "Snowflakes glowing under city lights"
+            },
+            {
+              "type": "expectText",
+              "selector": ".autoplay-toggle",
+              "text": "Play"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".autoplay-toggle",
+              "disabled": true
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 0
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".actions button",
+              "disabled": true,
+              "index": 1
+            },
+            {
+              "type": "wait",
+              "durationMs": 1200
+            },
+            {
+              "type": "expectText",
+              "selector": ".section .meta",
+              "text": "Slide 1 of 1"
+            },
+            {
+              "type": "expectAttribute",
+              "selector": ".section .meta",
+              "attribute": "aria-live",
+              "expected": "polite"
+            },
+            {
+              "type": "click",
+              "selector": ".remove-slide"
+            },
+            {
+              "type": "expectText",
+              "selector": ".empty-state",
+              "text": "No slides left"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".frame",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".section .meta",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".actions",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".dots",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".remove-slide",
+              "count": 0
+            }
+          ]
+        },
+        {
+          "id": "pressure-slider-cleanup",
+          "name": "Round 4 · Removing the slider stops its timer",
+          "steps": [
+            {
+              "type": "click",
+              "selector": ".autoplay-toggle"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept every slide change under control",
+    "summary": "You started with a simple slider and added autoplay that respects the user, a keyboard path with the same limits, a quiet live region and slides that can disappear. The interview signal is keeping one source of truth while a timer and a person both try to change it.",
+    "takeaways": [
+      "Derive the image, caption, dots and buttons from one current index.",
+      "A timer and a user change the same value, so decide who wins. Restarting the wait after a user move is the usual answer.",
+      "Turn off live announcements while the slider moves by itself. Real carousels also pause on hover and while the tab is hidden.",
+      "Check the index again whenever the list changes, because it may point at nothing."
+    ],
+    "frameworkNotes": {
+      "react": "An effect keyed on the playing state and the current index owns one timer, so any move restarts the wait and the cleanup stops it. A function update keeps the timer from reading an old index.",
+      "angular": "Keep one timer id in the component, restart it after every move, and clear it in `ngOnDestroy`.",
+      "vue": "A `watch` on the playing state and the current index restarts the timer, and `onUnmounted` clears it. The current slide can be empty, so guard the template with `v-if`."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-image-slider-pressure-solution.v1.json",
+    "angular": "assets/sb/angular/solution/angular-image-slider-pressure-solution.v1.json",
+    "vue": "assets/sb/vue/solution/vue-image-slider-pressure-solution.v1.json"
+  }
+}

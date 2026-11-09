@@ -1,0 +1,97 @@
+{
+  "questionId": "react-listing-booking-widget",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface BookedRange {\n  /** The first booked night, as an ISO date. */\n  from: string;\n  /** The check-out day after the last booked night, so a range is half-open. */\n  to: string;\n}\n\nexport interface Listing {\n  name: string;\n  currency: string;\n  nightlyPrice: number;\n  cleaningFee: number;\n  includedGuests: number;\n  extraGuestFee: number;\n  maxGuests: number;\n  booked: BookedRange[];\n}\n\n/** One listing; every price is in whole units of its currency. */\nexport const LISTING: Listing = {\n  name: 'Lakeside cabin',\n  currency: 'USD',\n  nightlyPrice: 180,\n  cleaningFee: 60,\n  includedGuests: 2,\n  extraGuestFee: 25,\n  maxGuests: 4,\n  booked: [{ from: '2026-12-24', to: '2026-12-27' }],\n};\n\n/** Exchange rates from the listing currency, for the currency follow-up. */\nexport const RATES: Record<string, number> = { USD: 1, EUR: 0.92 };\n\nconst DAY_MS = 86_400_000;\nconst ISO_DATE = /^\\d{4}-\\d{2}-\\d{2}$/;\n\n/** Whole days since the epoch in UTC, so a stay never gains or loses a night across a clock change. */\nconst toDay = (iso: string) => Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)) - 1, Number(iso.slice(8, 10))) / DAY_MS;\n\nconst money = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: LISTING.currency,\n  minimumFractionDigits: 0,\n  maximumFractionDigits: 0,\n});\nconst shortDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });\nconst showDate = (iso: string) => shortDate.format(new Date(`${iso}T00:00:00Z`));\nconst plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;\n\ntype Quote =\n  | { kind: 'empty' }\n  | { kind: 'invalid'; message: string }\n  | { kind: 'booked'; message: string }\n  | { kind: 'ready'; nights: number; nightly: number; stay: number; total: number };\n\ninterface CounterProps {\n  name: string;\n  className: string;\n  value: number;\n  min: number;\n  canAdd: boolean;\n  onChange: (value: number) => void;\n}\n\nfunction Counter({ name, className, value, min, canAdd, onChange }: CounterProps) {\n  const noun = name.toLowerCase();\n  return (\n    <div className={`counter ${className}`}>\n      <span className=\"counter-name\">{name}</span>\n      <button type=\"button\" className={`step ${className}-minus`} aria-label={`Remove one from ${noun}`} disabled={value <= min} onClick={() => onChange(value - 1)}>\n        -\n      </button>\n      <output className={`${className}-count`} aria-live=\"polite\">{value}</output>\n      <button type=\"button\" className={`step ${className}-plus`} aria-label={`Add one to ${noun}`} disabled={!canAdd} onClick={() => onChange(value + 1)}>\n        +\n      </button>\n    </div>\n  );\n}\n\nexport default function App() {\n  const [checkIn, setCheckIn] = useState('');\n  const [checkOut, setCheckOut] = useState('');\n  const [adults, setAdults] = useState(1);\n  const [children, setChildren] = useState(0);\n  const [confirming, setConfirming] = useState(false);\n  const [bookedMessage, setBookedMessage] = useState('');\n  const bookRef = useRef<HTMLButtonElement>(null);\n  const confirmRef = useRef<HTMLButtonElement>(null);\n  const messageRef = useRef<HTMLParagraphElement>(null);\n  const guests = adults + children;\n\n  // One derived quote: every line, the total and the button read it, so they can never disagree.\n  const quote = useMemo<Quote>(() => {\n    if (!ISO_DATE.test(checkIn) || !ISO_DATE.test(checkOut)) return { kind: 'empty' };\n    const nights = toDay(checkOut) - toDay(checkIn);\n    if (nights <= 0) return { kind: 'invalid', message: 'Check-out must be after check-in' };\n    // Half-open ranges: a stay that checks out on the day a booking starts does not overlap it.\n    if (LISTING.booked.some((range) => checkIn < range.to && range.from < checkOut)) {\n      return { kind: 'booked', message: 'Those dates are booked' };\n    }\n    const nightly = LISTING.nightlyPrice + Math.max(0, guests - LISTING.includedGuests) * LISTING.extraGuestFee;\n    const stay = nightly * nights;\n    return { kind: 'ready', nights, nightly, stay, total: stay + LISTING.cleaningFee };\n  }, [checkIn, checkOut, guests]);\n\n  const canBook = quote.kind === 'ready' && !bookedMessage;\n\n  useEffect(() => {\n    if (confirming) confirmRef.current?.focus();\n  }, [confirming]);\n\n  useEffect(() => {\n    if (bookedMessage) messageRef.current?.focus();\n  }, [bookedMessage]);\n\n  const closeDialog = () => {\n    setConfirming(false);\n    bookRef.current?.focus();\n  };\n\n  const confirmBooking = () => {\n    if (quote.kind !== 'ready') return;\n    setConfirming(false);\n    setBookedMessage(`Booked: ${LISTING.name}, ${showDate(checkIn)} to ${showDate(checkOut)}`);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\" aria-labelledby=\"listing-title\">\n        <header className=\"header\">\n          <h1 id=\"listing-title\" className=\"title\">{LISTING.name}</h1>\n          <p className=\"subtitle\">\n            {money.format(LISTING.nightlyPrice)} a night for {LISTING.includedGuests} guests · up to {LISTING.maxGuests} guests\n          </p>\n        </header>\n\n        <div className=\"dates\">\n          <label className=\"field\">\n            <span className=\"label\">Check-in</span>\n            <input className=\"check-in\" type=\"date\" value={checkIn} onChange={(event) => setCheckIn(event.target.value)} />\n          </label>\n          <label className=\"field\">\n            <span className=\"label\">Check-out</span>\n            <input className=\"check-out\" type=\"date\" value={checkOut} onChange={(event) => setCheckOut(event.target.value)} />\n          </label>\n        </div>\n\n        <fieldset className=\"guests\">\n          <legend className=\"label\">Guests</legend>\n          <Counter name=\"Adults\" className=\"adults\" value={adults} min={1} canAdd={guests < LISTING.maxGuests} onChange={setAdults} />\n          <Counter name=\"Children\" className=\"children\" value={children} min={0} canAdd={guests < LISTING.maxGuests} onChange={setChildren} />\n        </fieldset>\n\n        {quote.kind === 'invalid' && <p className=\"date-error\" role=\"alert\">{quote.message}</p>}\n        {quote.kind === 'booked' && <p className=\"availability\" role=\"status\">{quote.message}</p>}\n        {quote.kind === 'ready' && (\n          <dl className=\"breakdown\">\n            <div className=\"line\">\n              <dt className=\"price-line\">{money.format(quote.nightly)} x {plural(quote.nights, 'night')}</dt>\n              <dd className=\"price-amount\">{money.format(quote.stay)}</dd>\n            </div>\n            <div className=\"line\">\n              <dt>Cleaning fee</dt>\n              <dd className=\"cleaning-fee\">{money.format(LISTING.cleaningFee)}</dd>\n            </div>\n            <div className=\"line line--total\">\n              <dt>Total</dt>\n              <dd className=\"total\">{money.format(quote.total)}</dd>\n            </div>\n          </dl>\n        )}\n\n        <button ref={bookRef} type=\"button\" className=\"book\" disabled={!canBook} onClick={() => setConfirming(true)}>\n          Book now\n        </button>\n        {bookedMessage && (\n          <p ref={messageRef} className=\"booked-message\" role=\"status\" tabIndex={-1}>\n            {bookedMessage}\n          </p>\n        )}\n\n        {confirming && quote.kind === 'ready' && (\n          <div className=\"backdrop\">\n            <div\n              className=\"confirm-dialog\"\n              role=\"dialog\"\n              aria-modal=\"true\"\n              aria-labelledby=\"confirm-title\"\n              onKeyDown={(event) => {\n                if (event.key === 'Escape') closeDialog();\n              }}\n            >\n              <h2 id=\"confirm-title\" className=\"dialog-title\">Confirm your stay</h2>\n              <p className=\"confirm-summary\">\n                {showDate(checkIn)} to {showDate(checkOut)} · {plural(quote.nights, 'night')} · {plural(guests, 'guest')} · {money.format(quote.total)}\n              </p>\n              <div className=\"dialog-actions\">\n                <button type=\"button\" className=\"cancel\" onClick={closeDialog}>\n                  Cancel\n                </button>\n                <button ref={confirmRef} type=\"button\" className=\"confirm\" onClick={confirmBooking}>\n                  Confirm booking\n                </button>\n              </div>\n            </div>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-one-derived-quote",
+          "title": "Derive one quote from the dates and the guests",
+          "anchor": {
+            "lineStart": 97,
+            "lineEnd": 97,
+            "snippet": "const quote = useMemo<Quote>(() => {"
+          },
+          "why": "The nightly line, the stay, the total and the button all read one value, so a guest change or a new date can never leave one of them stale.",
+          "alternative": "Keep the total in state and update it in each change handler.",
+          "tradeoff": "A stored total has to be recomputed in every handler that can change it; a derived quote is recomputed by React when its inputs change."
+        },
+        {
+          "id": "a2-utc-days",
+          "title": "Count nights in UTC days",
+          "anchor": {
+            "lineStart": 41,
+            "lineEnd": 41,
+            "snippet": "const toDay = (iso: string) =>"
+          },
+          "why": "Parsing a date input as local time can lose or gain an hour on a clock change, and an hour off turns three nights into 2.96. UTC days are whole numbers.",
+          "alternative": "Subtract two `new Date(value)` objects and divide by a day.",
+          "tradeoff": "Local dates read naturally but break around daylight saving; UTC needs one helper."
+        },
+        {
+          "id": "a3-extra-guest-fee",
+          "title": "Price extra guests per night",
+          "anchor": {
+            "lineStart": 105,
+            "lineEnd": 105,
+            "snippet": "Math.max(0, guests - LISTING.includedGuests) * LISTING.extraGuestFee"
+          },
+          "why": "The listing price covers two guests; each guest after that adds a fee for every night, so the fee belongs in the nightly price, not in a one-off line.",
+          "alternative": "Add the guest fee once to the total.",
+          "tradeoff": "A one-off fee undercharges long stays and makes the nightly line wrong."
+        },
+        {
+          "id": "a4-half-open-overlap",
+          "title": "Check booked dates as half-open ranges",
+          "anchor": {
+            "lineStart": 102,
+            "lineEnd": 102,
+            "snippet": "checkIn < range.to && range.from < checkOut"
+          },
+          "why": "A stay and a booking overlap when the stay starts before the booking ends and ends after it starts. Treating both as half-open lets a guest check out on the morning the next one checks in.",
+          "alternative": "List every booked night and look for each night of the stay.",
+          "tradeoff": "A night list works for short stays but grows with the calendar; two comparisons per range do not."
+        },
+        {
+          "id": "a5-guest-cap",
+          "title": "Cap guests at the listing maximum",
+          "anchor": {
+            "lineStart": 154,
+            "lineEnd": 154,
+            "snippet": "canAdd={guests < LISTING.maxGuests}"
+          },
+          "why": "Adults and children share one cap, so both plus buttons read the same sum and disable together when the cabin is full.",
+          "alternative": "Validate the guest count when the guest clicks Book now.",
+          "tradeoff": "A late error makes the guest undo their choices; disabled buttons never let them make an impossible one."
+        },
+        {
+          "id": "a6-gate-the-button",
+          "title": "Gate Book now on the quote",
+          "anchor": {
+            "lineStart": 110,
+            "lineEnd": 110,
+            "snippet": "const canBook = quote.kind === 'ready' && !bookedMessage;"
+          },
+          "why": "The button is enabled exactly when there is a priced stay to book, and the message next to it says why when there is not.",
+          "alternative": "Enable the button and show errors after a click.",
+          "tradeoff": "An enabled button that fails teaches the guest to distrust it; a disabled one with a reason does not."
+        },
+        {
+          "id": "a7-dialog-focus",
+          "title": "Move focus into the dialog and back",
+          "anchor": {
+            "lineStart": 113,
+            "lineEnd": 113,
+            "snippet": "if (confirming) confirmRef.current?.focus();"
+          },
+          "why": "A keyboard or screen reader user must land in the dialog when it opens and back on Book now when it closes, or the confirmation is invisible to them.",
+          "alternative": "Render the summary inline under the button.",
+          "tradeoff": "Inline text is simpler but gives no moment to confirm; a dialog needs focus handling and Escape."
+        }
+      ]
+    }
+  }
+}

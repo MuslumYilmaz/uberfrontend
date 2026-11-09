@@ -19,7 +19,7 @@ export const ELEVENLABS_PREVIEW_DESCRIPTION =
   'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.';
 export const ELEVENLABS_PREVIEW_CANONICAL_PATH = '/companies/elevenlabs/preview';
 export const ELEVENLABS_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. Two public pages cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official ElevenLabs questions. {reports} public reports cannot establish a fixed loop; use recruiter-provided material as the source of truth.';
 
 export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'elevenlabs',
@@ -41,7 +41,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not ElevenLabs trivia',
     paragraphs: [
-      'The public accounts reward engineers who can make a media interface truthful under time: a highlight that follows playback without drifting, a review screen that keeps an editor and voice actors in sync, a fix that addresses the cause of a bug rather than its symptom. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The public accounts reward engineers who can make a media interface truthful under time: a highlight that follows playback without drifting, a review screen that keeps an editor and voice actors in sync, a fix that addresses the cause of a bug rather than its symptom. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
       'The senior account describes a 90-minute technical assessment sent before the recruiter screen, followed by a live session fixing a practical problem with the interviewer; it does not list the assessment questions. Practice both shapes with a clock running, and narrate your decisions while you type.',
     ],
   },
@@ -49,7 +49,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public pages establish, and what you still need to confirm',
     paragraphs: [
-      'Two public pages on Aced anchor this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a 90-minute technical assessment, a recruiter screen and a live practical fix. Four further accounts add the stack: a second Aced account with a practical front-end debugging round in a small React app, and three Taro full-stack accounts with React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
+      'Two pages on Aced anchor this guide: a question bank updated by ElevenLabs candidates that lists the audio-transcript synchronisation exercise and the voice-dubbing review prompt alongside classic algorithm problems and behavioural questions, and one senior full-stack, frontend-leaning account describing a 90-minute technical assessment, a recruiter screen and a live practical fix. Four further accounts add the stack: a second Aced account with a practical front-end debugging round in a small React app, and three Taro full-stack accounts with React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home. They establish that those exercises and that shape occurred; they do not establish exact wording, the current format, or how other teams interview.',
       'Confirm the exercise types, the allowed tools, the expected stack and the timing with the recruiter and the job description. ElevenLabs publishes its roles on its careers site; use that for product context, not as evidence of interview content.',
     ],
   },
@@ -59,7 +59,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       kicker: 'Round decoder',
       title: 'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
       lede: [
-        'ElevenLabs runs a coding assessment around the recruiter call and then a live technical round with an engineer. The assessment\'s format changed from loop to loop in the five public accounts from 2024 to 2026: a 90-minute assessment sent before the recruiter screen, an asynchronous easy or medium algorithm question with a React knowledge check, React and algorithm problems on CoderPad such as fixing a React bug, a LeetCode-style Python round, or a take-home exercise.',
+        'ElevenLabs runs a coding assessment around the recruiter call and then a live technical round with an engineer. The assessment\'s format changed from loop to loop in the public accounts from 2024 to 2026: a 90-minute assessment sent before the recruiter screen, an asynchronous easy or medium algorithm question with a React knowledge check, React and algorithm problems on CoderPad such as fixing a React bug, a LeetCode-style Python round, or a take-home exercise.',
         'The live round is pair work with an engineer: fixing a practical problem (2026), debugging a small React app (2025), building a text-to-speech React component (2024) or a real-life problem with changing constraints (another 2024 account). A product or design round follows in most loops, and the final conversation is with the CTO or a founder; the careers FAQ names a founder or Bar Raiser.',
       ],
       facts: [
@@ -70,7 +70,8 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'Stack', value: 'React is the safe default: React bug fixes on CoderPad, a React knowledge check and a React and TypeScript take-home appear in the accounts; the senior Aced account names no stack.' },
         { label: 'Sources', value: 'Aced: a senior full-stack account from 2026, a frontend-leaning account from 2025 and a candidate-sourced question bank updated in October 2026; Taro full-stack accounts from 2024 and 2025; ElevenLabs careers pages. All are listed under Sources and in the reported process below with what each can establish.' },
       ],
-      practiceLink: { label: 'Rehearse the 90-minute assessment', fragment: 'timed-assessment-react-and-algorithms' },
+      // Prompt 4 sits past the open prompts, so the rehearsal leads to its free starter rather than a locked card.
+      practiceLink: { label: 'Rehearse the assessment with the free React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
       processLink: { label: 'See the coding assessment row in the reported process', fragment: 'elevenlabs-interview-process-1-stage-coding-assessment' },
     },
   ],
@@ -168,8 +169,8 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Patching the symptom, for example forcing a re-render or adding a delay, while the race or stale closure stays in place.',
-        resourceLabel: 'Fix the async race in fetchWithCache',
-        resourcePath: '/javascript/debug/js-debug-async-race',
+        resourceLabel: 'Debug the transcript player that lags behind the audio',
+        resourcePath: '/react/coding/react-debug-transcript-sync',
         reportedRound: { label: ELEVENLABS_EXPERIENCE_LABEL, url: ELEVENLABS_EXPERIENCE_URL },
       },
       {
@@ -288,7 +289,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full ElevenLabs practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the AI-assisted review flow case, the timer-manager drill and the broader company-tagged editorial set.',
+      'Premium unlocks the AI-assisted review flow case, the timer-manager drill and the broader company-tagged editorial set.',
     buttonLabel: 'Unlock the full ElevenLabs practice set',
     src: 'company_preview_elevenlabs',
   },

@@ -167,7 +167,7 @@ test('generic company sample/count hydration shells fail and authored previews p
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 2)}${companyLink(authored, 1)}</section>`);
   assert.match(failures(audit()), /Company preview missing or unexpected initial-HTML samples/);
-  const preview = '<span class="preview-chip">2 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 2 · Concepts 0 · System 0</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
+  const preview = '<span class="preview-chip">2 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 2</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
   f.page(route, preview);
   assert.deepEqual(audit().failures, []);
   f.page(route, preview.replace('Coding 2', 'Coding 999'));
@@ -180,7 +180,7 @@ test('generic company sample/count hydration shells fail and authored previews p
   assert.match(failures(audit()), /Company directory missing initial-HTML link/);
 });
 
-test('company counts deduplicate framework families while preview samples retain each variant', (t) => {
+test('company counts and preview samples both show one card per framework family', (t) => {
   const route = '/companies/microsoft/preview';
   const f = fixture(t, ['/', '/companies', route]);
   const questionsDir = path.join(f.buildDir, 'catalog');
@@ -190,10 +190,16 @@ test('company counts deduplicate framework families while preview samples retain
   }
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 1)}</section>`);
-  const preview = '<span class="preview-chip">1 editorial practice prompt</span><span data-testid="company-preview-counts">Coding 1 · Concepts 0 · System 0</span><div data-testid="company-preview-question-react-counter"></div><div data-testid="company-preview-question-angular-counter-starter"></div>';
-  f.page(route, preview);
+  // Angular comes before React in the page's catalog order, so its member stands for the family.
+  const card = (id) => `<div data-testid="company-preview-question-${id}"></div>`;
+  const preview = '<span class="preview-chip">1 editorial practice prompt</span><span data-testid="company-preview-counts">Coding 1 · Concepts 0 · System 0</span>';
+  f.page(route, preview + card('angular-counter-starter'));
   assert.deepEqual(f.audit({ questionsDir }).failures, []);
-  f.page(route, preview.replace('Coding 1', 'Coding 2'));
+  f.page(route, preview + card('angular-counter-starter') + card('react-counter'));
+  assert.match(failures(f.audit({ questionsDir })), /Company preview missing or unexpected initial-HTML samples/);
+  f.page(route, preview + card('react-counter'));
+  assert.match(failures(f.audit({ questionsDir })), /missing=angular-counter-starter/);
+  f.page(route, preview.replace('Coding 1', 'Coding 2') + card('angular-counter-starter'));
   assert.match(failures(f.audit({ questionsDir })), /Company preview count mismatch/);
 });
 
@@ -270,4 +276,25 @@ test('CLI preserves build/output envs; historical link quotas never fail a healt
   const report = JSON.parse(fs.readFileSync(output, 'utf8'));
   assert.equal(report.summary.publicQuestions, registry.length);
   assert.equal(report.summary.orphanPages, 0);
+});
+
+test('a company preview counts its debugging tasks on the chip and in the total, with no sample card for them', (t) => {
+  const route = '/companies/stripe/preview';
+  const f = fixture(t, ['/', '/companies', route]);
+  const questionsDir = path.join(f.buildDir, 'catalog');
+  fs.mkdirSync(path.join(questionsDir, 'javascript'), { recursive: true });
+  fs.writeFileSync(path.join(questionsDir, 'javascript', 'coding.json'), JSON.stringify([{ id: 'js-coding', title: 'Coding', companies: ['stripe'] }]));
+  fs.writeFileSync(path.join(questionsDir, 'javascript', 'debug.json'), JSON.stringify([
+    { id: 'js-debug-one', title: 'Debug one', companies: ['stripe'] },
+    { id: 'js-debug-two', title: 'Debug two', companies: ['stripe'] },
+  ]));
+  f.page('/', link('/companies'));
+  f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 3)}</section>`);
+  const card = '<div data-testid="company-preview-question-js-coding"></div>';
+  const preview = '<span class="preview-chip">3 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 1 · Debugging 2</span>';
+  f.page(route, preview + card);
+  assert.deepEqual(f.audit({ questionsDir }).failures, []);
+  // A chip that leaves the debugging tasks out no longer matches the set.
+  f.page(route, preview.replace(' · Debugging 2', '') + card);
+  assert.match(failures(f.audit({ questionsDir })), /Company preview count mismatch/);
 });

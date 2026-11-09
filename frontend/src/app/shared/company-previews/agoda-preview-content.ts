@@ -31,7 +31,7 @@ export const AGODA_PREVIEW_DESCRIPTION =
   'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 5 practice prompts.';
 export const AGODA_PREVIEW_CANONICAL_PATH = '/companies/agoda/preview';
 export const AGODA_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Agoda questions. Six self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Agoda questions. A few self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
 
 export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'agoda',
@@ -44,7 +44,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Agoda prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by six public frontend accounts from 2025 and 2026, most of them Bangkok relocation loops, two of them interviewed from India, and by Agoda\'s own description of its four rounds: a hotel search page frontend designed from scratch for a million users and several teams, a scalable architecture for a travel booking site, a React and TypeScript take-home on stock data, a one-hour web-fundamentals round that runs from CDN caching to CSRF and Core Web Vitals, and a JavaScript implementation round beside a HackerRank coding hour.',
+      'Prepare with five practice prompts shaped by frontend accounts from 2025 and 2026 and by Agoda\'s description of its four rounds: a HackerRank coding hour, a Platform hour on web fundamentals or JavaScript, an architecture round and a culture-fit round.',
     caveat:
       'This guide uses public, self-reported interview accounts and Agoda\'s published careers and engineering pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Agoda team.',
     chips: ['5 practice prompts', 'React, TypeScript, web platform', 'Full practice set requires Premium'],
@@ -54,15 +54,15 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Prepare for product judgment, not Agoda trivia',
     paragraphs: [
       'The public accounts converge on a loop run remotely on HackerRank with about a week between rounds: a coding hour with two easy-to-medium problems and verbal questions on test cases and pull requests, a Frontend Platform hour, a preliminary call in which the level is set, an architecture hour on a product such as a hotel search page, and a culture-fit conversation with an engineering manager. Agoda\'s own interview-process page lists the same four rounds, Coding, Platform, System Design and Agoda Culture Fit, and its interviewer\'s guide says the Platform round typically asks candidates to implement something related to Agoda and often includes reviewing, fixing and improving a given code snippet.',
-      'The round that sets the level is the Platform hour, and its content varies by interviewer: a 2026 Senior candidate got a web-fundamentals question-and-answer hour with no code, a 2025 Staff candidate got a JavaScript implementation grown out of a resume item, and a 2025 Senior candidate was told to expect component reusability, state management, handling API data and rendering performance. Each prompt below starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
+      'The round that sets the level is the Platform hour, and its content varies by interviewer: a 2026 Senior candidate got a web-fundamentals question-and-answer hour with no code, a 2025 Staff candidate got a JavaScript implementation grown out of a resume item, and a 2025 Senior candidate was told to expect component reusability, state management, handling API data and rendering performance. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
     title: 'What the public accounts establish, and what you still need to confirm',
     paragraphs: [
-      'Six self-reported frontend accounts inform this guide. LeetCode, July 2026, a Senior Software Engineer (Frontend) candidate in a Bangkok relocation loop who had applied for Staff: three HackerRank rounds a week apart, two easy problems (Rank Transform of an Array and Climbing Stairs with 1, 2 or 3 steps) with questions on test cases and pull requests, a one-hour web-fundamentals question-and-answer round, a hotel search page architecture hour, a down-level after the second round and a rejection. Code360, May to June 2025, a Frontend Engineer in Gurgaon: a Stock Analyzer Dashboard take-home in React and TypeScript, an hour of Longest Substring Without Repeating Characters plus a debounced utility function, an hour of frontend architecture for a travel booking site and a technical-strategy hour, every round marked Cleared and the outcome a rejection. Medium, August to September 2025, a Senior Software Engineer in Bangkok with an offer: the recruiter\'s seven-step list with durations, a 15-minute prep call, 60-minute Coding and Platform interviews, a 30-minute preliminary call, 60-minute Architecture, BE Platform and Culture Fit interviews, the Platform interview also on HackerRank, and the manager presenting the offer. LeetCode, February 2025, a Staff Frontend candidate in Bangkok who was selected: two medium problems in JavaScript, a pipeline function extended to an async limit, and a doctor appointment booking application in the architecture round. Blind, June 2025, a Senior Software Engineer in Gurgaon: an assessment with 8 HTML/CSS questions and 2 JavaScript problems, an HR screen, a HackerRank round, a platform round on hoisting, class behaviour, SSR versus CSR, atomic design and testing, then a rejection without a managerial round; a commenter adds that the recruiters and interviewers were in Bangkok. frontendgeek, July 2025, a Staff candidate in Bangalore interviewing for Thailand relocation: a phone screen on JavaScript basics, promises and a sliding-window problem, a DSA and JavaScript round and a live HackerRank stack problem, not selected.',
-      'Together they establish that these round types occurred in 2025 and 2026; they do not establish exact wording, the current format, or how the Gurgaon, Manila and Bangalore teams interview today. Confirm with the recruiter whether a HackerRank assessment opens the loop, which rounds belong to the Staff track, which tool each round uses and the timing. Agoda publishes its process on its careers site, which our tools could only read from an archive capture, and an interviewer\'s guide on its engineering blog; use them for the round names and the Platform round\'s intent, not as evidence of specific questions.',
+      '{reports} public accounts inform this guide, each listed under Sources; six are described here and the rest are cited on the process table. LeetCode, July 2026, a Senior Software Engineer (Frontend) candidate in a Bangkok relocation loop who had applied for Staff: three HackerRank rounds a week apart, two easy problems (Rank Transform of an Array and Climbing Stairs with 1, 2 or 3 steps) with questions on test cases and pull requests, a one-hour web-fundamentals question-and-answer round, a hotel search page architecture hour, a down-level after the second round and a rejection. Code360, May to June 2025, a Frontend Engineer in Gurgaon: a Stock Analyzer Dashboard take-home in React and TypeScript, an hour of Longest Substring Without Repeating Characters plus a debounced utility function, an hour of frontend architecture for a travel booking site and a technical-strategy hour, every round marked Cleared and the outcome a rejection. Medium, August to September 2025, a Senior Software Engineer in Bangkok with an offer: the recruiter\'s seven-step list with durations, a 15-minute prep call, 60-minute Coding and Platform interviews, a 30-minute preliminary call, 60-minute Architecture, BE Platform and Culture Fit interviews, the Platform interview also on HackerRank, and the manager presenting the offer. LeetCode, February 2025, a Staff Frontend candidate in Bangkok who was selected: two medium problems in JavaScript, a pipeline function extended to an async limit, and a doctor appointment booking application in the architecture round. Blind, June 2025, a Senior Software Engineer in Gurgaon: an assessment with 8 HTML/CSS questions and 2 JavaScript problems, an HR screen, a HackerRank round, a platform round on hoisting, class behaviour, SSR versus CSR, atomic design and testing, then a rejection without a managerial round; a commenter adds that the recruiters and interviewers were in Bangkok. frontendgeek, July 2025, a Staff candidate in Bangalore interviewing for Thailand relocation: a phone screen on JavaScript basics, promises and a sliding-window problem, a DSA and JavaScript round and a live HackerRank stack problem, not selected.',
+      'Together they establish that these round types occurred in 2025 and 2026; they do not establish exact wording, the current format, or how the Gurgaon, Manila and Bangalore teams interview today. Confirm with the recruiter whether a HackerRank assessment opens the loop, which rounds belong to the Staff track, which tool each round uses and the timing. Agoda publishes its process on its careers site and an interviewer\'s guide on its engineering blog; use them for the round names and the Platform round\'s intent, not as evidence of specific questions. The process table above draws on more reports: eleven from 2024 to 2026.',
     ],
   },
   roundSpotlights: [
@@ -83,7 +83,8 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         { label: 'Official description', value: 'Implement something related to Agoda, and review, fix and improve a code snippet, playing the role of a lint tool (Agoda Engineering interviewer guide, June 2023).' },
         { label: 'Sources', value: 'LeetCode, July 2026; Medium, September 2025; LeetCode, February 2025; Blind, June 2025; the Agoda careers process page; the Agoda Engineering interviewer guide. All are listed under Sources below with what each can establish.' },
       ],
-      practiceLink: { label: 'Rehearse the web-fundamentals Platform hour', fragment: 'web-fundamentals-platform-hour' },
+      // Prompt 4 sits past the open prompts, so the rehearsal leads to its free drill rather than a locked card.
+      practiceLink: { label: 'Rehearse the Platform hour with the free storage drill', path: '/javascript/trivia/js-cookie-sessionstorage-localstorage' },
       processLink: { label: 'See the Platform interview row in the reported process', fragment: 'agoda-interview-process-1-stage-frontend-platform-interview' },
     },
     {
@@ -153,8 +154,8 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Drawing the three visual areas as components and stopping there, with no answer for who deploys what, where the filter state lives, or how a regression would be noticed.',
-        resourceLabel: 'Work through the real-time search with debounce and caching case (Premium)',
-        resourcePath: '/system-design/realtime-search-debounce-cache',
+        resourceLabel: 'Work through the hotel search page frontend case (Premium)',
+        resourcePath: '/system-design/hotel-search-page-frontend',
         reportedRound: { label: AGODA_BANGKOK_2026_LABEL, url: AGODA_BANGKOK_2026_URL },
       },
       {
@@ -194,7 +195,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         strongAnswer: [
           'Hold the request in one discriminated union with loading, success, empty and error states, and type the response once at the fetch boundary.',
           'Compute the statistics in a pure, tested module from the full dataset rather than from the visible page, and memoise them on the data reference.',
-          'Drive the table from a page index and page size held in state or the URL, derive the visible slice from the sorted data, and reset the page when the dataset changes; the React paginated data table drill at /react/coding/react-pagination-table (Premium) covers this slice.',
+          'Drive the table from a page index and page size held in state or the URL, derive the visible slice from the sorted data, and reset the page when the dataset changes.',
           'Separate the data layer, the statistics and the table components so each has one job; in the follow-up, write the debounce with one timer per instance, a cancel method, and the preserved this and arguments.',
         ],
         commonMiss:
@@ -223,8 +224,8 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         commonMiss:
           'Answering localStorage for the token without naming the XSS exposure, or describing CSRF as a variant of XSS; the round checks whether the trade-off is understood, not whether the term is recognised.',
-        resourceLabel: 'Review cookies versus sessionStorage versus localStorage (free)',
-        resourcePath: '/javascript/trivia/js-cookie-sessionstorage-localstorage',
+        resourceLabel: 'Read the twelve-question Platform hour answer guide (Premium)',
+        resourcePath: '/javascript/trivia/js-web-fundamentals-hour-hotel-booking',
         reportedRound: { label: AGODA_BANGKOK_2026_LABEL, url: AGODA_BANGKOK_2026_URL },
       },
       {
@@ -320,7 +321,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: AGODA_BLIND_GURGAON_2025_LABEL, url: AGODA_BLIND_GURGAON_2025_URL, note: 'One self-reported Gurgaon loop from June 2025 that ended with a rejection and no managerial round. It establishes the assessment with 8 HTML/CSS questions and 2 JavaScript problems, the HackerRank coding round and the platform topics; two commenters, not the poster, add that the recruiters and interviewers were in Bangkok and describe the Staff track.', kind: 'report' },
       { label: 'Public report: LeetCode senior full-stack loops, Gurgaon then Bangkok, February 2026', url: 'https://leetcode.com/discuss/post/7580886/', note: 'A senior full-stack candidate rejected in the second Gurgaon round, then given an offer by a Bangkok loop after the six-month cooling period. Used for the Gurgaon note only.', kind: 'report' },
       { label: AGODA_BANGALORE_2025_LABEL, url: AGODA_BANGALORE_2025_URL, note: 'One self-reported Staff loop from July 2025 by a Bangalore candidate interviewing for Thailand relocation, not selected. It establishes a phone screen on JavaScript basics, promises and a sliding-window problem, a DSA and JavaScript round and a live HackerRank stack problem; it ends earlier in the loop than the Bangkok accounts.', kind: 'report' },
-      { label: 'Agoda Careers: How we hire, the Tech team interview process, July 2025', url: AGODA_HOW_WE_HIRE_TECH_URL, note: 'Official page describing a HackerRank online test as the coding assessment, four rounds (Coding, Platform, System Design and Agoda Culture Fit), a final decision typically within two weeks of the last round, and the front-end stack of TypeScript with React and Redux, Rspack and Vite. The live site blocks automated reads, so it was read from an archive capture of April 2026; it names no interview questions.', kind: 'official' },
+      { label: 'Agoda Careers: How we hire, the Tech team interview process, July 2025', url: AGODA_HOW_WE_HIRE_TECH_URL, note: 'Official page describing a HackerRank online test as the coding assessment, four rounds (Coding, Platform, System Design and Agoda Culture Fit), a final decision typically within two weeks of the last round, and the front-end stack of TypeScript with React and Redux, Rspack and Vite. It names no interview questions.', kind: 'official' },
       { label: 'Agoda Engineering: Preparing for an interview at Agoda, June 2023', url: AGODA_INTERVIEWER_GUIDE_URL, note: 'An interviewer\'s guide on the Agoda Engineering blog. It states what the Coding round looks for and that the Platform round typically asks candidates to implement something related to Agoda and often includes reviewing, fixing and improving a code snippet; it is from 2023 and names no questions.', kind: 'official' },
     ],
   },
@@ -328,7 +329,7 @@ export const AGODA_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full Agoda practice set',
     copy:
-      'This public guide is complete enough to plan a focused week. Premium unlocks the real-time search with debounce and caching case, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
+      'Premium unlocks the hotel search page frontend case, the twelve-question Platform hour answer guide, the car rental booking frontend case, the React paginated data table drill and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Agoda practice set',
     src: 'company_preview_agoda',
   },

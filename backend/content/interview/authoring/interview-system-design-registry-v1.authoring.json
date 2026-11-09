@@ -4,9 +4,9 @@
   "registryVersion": "1.2.0",
   "status": "candidate",
   "finalApproval": null,
-  "definitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
+  "definitionHash": "bb1ea97c0aa6502430e47d1d1eb14aa4f667f2185036d91c99c14aa9ada47474",
   "reviewBatch": {
-    "reviewedDefinitionHash": "a162973c75f6637c7b2bca2ba32730dd83d490c2a1f4e331de635c39090a4987",
+    "reviewedDefinitionHash": "bb1ea97c0aa6502430e47d1d1eb14aa4f667f2185036d91c99c14aa9ada47474",
     "reviewedAt": "2026-08-12",
     "technical": {
       "reviewer": "codex-system-design-technical-v8",
@@ -32,7 +32,8 @@
         "2026-10-21 source-pin maintenance review: the realtime-search-debounce-cache meta.json source gains the agoda company tag, one public interview-report source and the matching editorial.companyEvidence entry, and the ai-chat-textarea-design meta.json source gains the xai company tag, one public interview-report source and the matching editorial.companyEvidence entry; all section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-25 source-pin maintenance review: the answer-checkpoint checklist title in optimizations.json changes from slug text to a readable title for realtime-search-debounce-cache, news-feed-timeline, dashboard-widgets-draggable-resizable, image-upload-preview and live-chart-high-frequency-updates (for example \"dashboard widgets draggable resizable answer rubric\" becomes \"Drag-and-drop dashboard answer rubric\"); the checklist items, all other section content and the other source files are unchanged. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-10-25 source-pin maintenance review: a fact-check corrected four pinned sources. notification-toast-system now describes the dismiss and expiry race in the orders the event loop allows (a cleared timeout never fires; a dismiss after expiry is a no-op), starts the countdown when a toast becomes visible, and states WCAG 2.2.1 correctly; ai-chat-textarea-design replaces \"Enter submits only after compositionend\" with a keydown guard on isComposing or keyCode 229 and aligns the event identity gate with TurnEvent; dashboard-widgets-draggable-resizable fixes the collision example, the WCAG 2.5.7 alternative, touch-action and the revision walkthrough; resilient-checkout-payment-flow allows a new attempt identity only after canceled (failed or quote-conflict first call cancelAttempt), removes the client secret from the return URL and corrects the Web Locks and idempotency-retention statements. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. The toast scenario's own public prompt still says the dismiss and expiry timer fire together and needs a separate content review. This is not a new release approval.",
-        "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval."
+        "2026-10-25 source-pin maintenance review (second batch): three pinned sources gain missing practical guidance. notification-toast-system adds a focus hotkey into the toast region and focus return on close; dashboard-widgets-draggable-resizable adds the HTML drag and drop versus pointer events trade-off, Escape cancel, touch scrolling and an edit-mode row; resilient-checkout-payment-flow adds the 3-D Secure completion paths, integer minor units and the PCI DSS scope effect of hosted fields. Guided prompts, rubric, fixtures and scenario revisions are unchanged, so the existing scenario reviews carry forward to the refreshed source pins. This is not a new release approval.",
+        "2026-11-06 source-pin maintenance review: notification-toast-system meta.json changed one ServiceNow source on 2026-11-04, its date from 2026-03 to 2026-02 and its note wording. Prompts, rubrics, timing, scoring and revision are unchanged, so the existing scenario review carries forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "blind": {
@@ -410,7 +411,7 @@
       },
       "private": {
         "sourceContentId": "notification-toast-system",
-        "expectedSourceBundleHash": "97f98e84935ee98c508b2d6671fe0ac7a4674abc8bf6eff030291d57b30603ff",
+        "expectedSourceBundleHash": "84dcc5ee21547b5e6e09dea36f3d04ae56d9d9700e2efca0a81fd9b1c5f41e6a",
         "clarificationAnswers": [
           {
             "clarificationId": "toast-callers",
