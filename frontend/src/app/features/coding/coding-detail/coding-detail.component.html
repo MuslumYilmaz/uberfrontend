@@ -499,7 +499,9 @@
 
               </div>
             </ng-container>
-            <app-question-sources [sources]="sources()" variant="full"></app-question-sources>
+            <!-- An account's note can name the method a problem calls for, so a running rehearsal sets the sources aside
+                 with the coaching sections. -->
+            <app-question-sources *ngIf="!rehearsalRunning()" [sources]="sources()" variant="full"></app-question-sources>
           </ng-template>
 
         </section>

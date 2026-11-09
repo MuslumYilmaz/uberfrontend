@@ -3617,6 +3617,14 @@ describe('CodingDetailComponent', () => {
       const coached = {
         ...twin,
         estimatedMinutes: 30,
+        sources: [{
+          label: 'Blind: Meta frontend screen, March 2022',
+          url: 'https://www.teamblind.com/post/meta-frontend-screen-example',
+          company: 'meta',
+          publisher: 'Blind',
+          date: '2022-03',
+          note: 'The account names a walk over both trees at once.',
+        }],
         description: {
           summary: 'Return the node of tree B that sits where the given node sits in tree A.',
           specs: {
@@ -3632,7 +3640,8 @@ describe('CodingDetailComponent', () => {
       };
       const { fixture, component, jsPanel, find } = await render(coached, premium, { list: [coached, debounce], footer: true });
       const description = () => find('coding-description-panel')!.textContent ?? '';
-      const coaching = ['Walking both trees in sync', 'Comparing nodes by their text', 'A path of child indexes', 'A node at the root', 'Recursion or a loop?'];
+      // An account's note can name the method too, so the sources step aside with the coaching.
+      const coaching = ['Walking both trees in sync', 'Comparing nodes by their text', 'A path of child indexes', 'A node at the root', 'Recursion or a loop?', 'a walk over both trees at once'];
       // Of two tasks in the list, one is a step away, whichever order the list keeps.
       const footerLinks = () => ['footer-prev', 'footer-next'].filter((id) => find(id)?.tagName === 'A');
       for (const line of coaching) expect(description()).withContext(line).toContain(line);

@@ -999,6 +999,25 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-longest-substring-without-repeating-window',
+    questionId: 'js-longest-substring-without-repeating',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['never before the current start', 'not a subsequence', 'linear time', 'not a string']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-longest-substring-without-repeating-window',
+      title: 'Slide a window that never holds a repeat',
+      why: buildProgressAwareWhy(snapshot, 'A substring is contiguous, so the answer is the widest window with no repeated character. Restarting the scan at every repeat is correct but quadratic, and long input runs out of time.'),
+      actions: [
+        'Keep `start`, the first index of the window, and the last index of each character in a `Map`.',
+        'When `s[i]` was last seen at or after `start`, move `start` to that index plus one; an index before `start` must not move it back ("abba").',
+        'Measure `i - start + 1` at every step, and throw a `TypeError` before the loop for input that is not a string.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
     ruleId: 'js-color-contrast-ratio-formula',
     questionId: 'js-color-contrast-ratio',
     priority: 100,
@@ -1325,6 +1344,23 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Throw a `TypeError` before the loop when the input is not a string.',
         'Treat the empty string as valid: nothing was opened, so nothing is left open.',
         'Avoid recursion; thousands of nested brackets must still work.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-longest-substring-without-repeating-default',
+    questionId: 'js-longest-substring-without-repeating',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-longest-substring-without-repeating-default',
+      title: 'One pass, one window, measured at every step',
+      why: buildProgressAwareWhy(snapshot, 'Each character enters the window once and the start only moves forward, so one loop over the string is enough, even for 100,000 characters.'),
+      actions: [
+        'Return `0` for the empty string: no character, no window.',
+        'Count a space or a symbol like any other character.',
+        'Avoid nested loops that restart at every index; a long string without repeats makes them quadratic.',
       ],
       confidence: 0.72,
     }),

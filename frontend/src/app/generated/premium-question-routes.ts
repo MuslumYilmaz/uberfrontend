@@ -53,6 +53,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/javascript/coding/js-group-by",
   "/javascript/coding/js-json-stringify",
   "/javascript/coding/js-lodash-get",
+  "/javascript/coding/js-longest-substring-without-repeating",
   "/javascript/coding/js-max-char",
   "/javascript/coding/js-maze-path",
   "/javascript/coding/js-median-of-array",

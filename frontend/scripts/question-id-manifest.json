@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-07T06:42:18.208Z",
+  "generatedAt": "2026-11-08T21:01:12.169Z",
   "entries": [
     {
       "tech": "angular",
@@ -1128,6 +1128,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-lodash-get",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-longest-substring-without-repeating",
       "file": "javascript/coding.json"
     },
     {

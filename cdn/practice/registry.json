@@ -5142,6 +5142,26 @@
     "assetRef": "questions/javascript/trivia.json#js-memory-leaks-common-sources"
   },
   {
+    "id": "js-longest-substring-without-repeating",
+    "family": "question",
+    "title": "Longest Substring Without Repeating Characters",
+    "route": "/javascript/coding/js-longest-substring-without-repeating",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Return the length of the longest run of consecutive characters in which no character repeats, in one pass over the string.",
+    "tags": [
+      "strings",
+      "algorithms",
+      "hash-map",
+      "data-structures"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-09",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-longest-substring-without-repeating"
+  },
+  {
     "id": "js-map-filter-reduce",
     "family": "question",
     "title": "map vs filter vs reduce in JavaScript (Array Transformations)",

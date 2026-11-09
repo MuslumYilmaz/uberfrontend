@@ -288,6 +288,7 @@
 /javascript/coding/js-is-object-empty
 /javascript/coding/js-json-stringify
 /javascript/coding/js-lodash-get
+/javascript/coding/js-longest-substring-without-repeating
 /javascript/coding/js-max-char
 /javascript/coding/js-maze-path
 /javascript/coding/js-measure-duration

@@ -677,6 +677,7 @@ async function testObjectComparisonDeepEqualExample() {
 }
 
 assertDecisionGraphParity('js-sanitize-href-url');
+assertDecisionGraphParity('js-longest-substring-without-repeating');
 assertDecisionGraphParity('js-poll-until');
 assertDecisionGraphParity('js-implement-new');
 assertDecisionGraphParity('js-promise-any');

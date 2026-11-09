@@ -27,7 +27,7 @@
       "company": "revolut",
       "title": "Revolut HackerRank assessment",
       "round": "hackerrank-assessment",
-      "summary": "Public accounts of Revolut's assessment describe three algorithm tasks on HackerRank in 85 to 110 minutes, done at home before a deadline. This rehearsal gives three such tasks the shorter 85 minutes; all three are open from the start, as on HackerRank, and the solutions stay locked until the clock stops.",
+      "summary": "Public accounts of Revolut's assessment describe three algorithm tasks on HackerRank in 85 to 110 minutes, done at home before a deadline; a 2025 account names a standard sliding-window problem, a 2024 account a third task at a high-medium level. This rehearsal gives three such tasks the shorter 85 minutes, all open from the start as on HackerRank, with the solutions locked until the clock stops.",
       "minutes": 85,
       "order": "free",
       "items": [
@@ -36,12 +36,12 @@
           "title": "Valid Parentheses (Balanced Brackets)"
         },
         {
-          "path": "/javascript/coding/js-three-sum",
-          "title": "3Sum (find unique triplets that sum to zero)"
+          "path": "/javascript/coding/js-longest-substring-without-repeating",
+          "title": "Longest Substring Without Repeating Characters"
         },
         {
-          "path": "/javascript/coding/js-maze-path",
-          "title": "Maze Traversal (Find a Path in a Grid)"
+          "path": "/javascript/coding/js-three-sum",
+          "title": "3Sum (find unique triplets that sum to zero)"
         }
       ]
     },

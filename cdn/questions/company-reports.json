@@ -1794,6 +1794,22 @@
     ],
     "revolut": [
       {
+        "id": "js-longest-substring-without-repeating",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Longest Substring Without Repeating Characters",
+        "access": "premium",
+        "route": "/javascript/coding/js-longest-substring-without-repeating",
+        "sources": [
+          {
+            "label": "Taro: Revolut frontend developer screen, November 2025",
+            "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/",
+            "publisher": "Taro",
+            "date": "2025-11"
+          }
+        ]
+      },
+      {
         "id": "react-debounced-search",
         "kind": "coding",
         "tech": "react",

@@ -45,7 +45,7 @@
       "react": 33,
       "angular": 22,
       "vue": 22,
-      "javascript": 51,
+      "javascript": 52,
       "systemDesign": 20
     },
     "familyMembers": {
@@ -1622,6 +1622,19 @@
         "algo"
       ]
     },
+    "js-longest-substring-without-repeating": {
+      "id": "js-longest-substring-without-repeating",
+      "title": "Longest Substring Without Repeating Characters",
+      "route": "/javascript/coding/js-longest-substring-without-repeating",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "algo",
+        "js"
+      ]
+    },
     "js-map-vs-object": {
       "id": "js-map-vs-object",
       "title": "What’s the difference between a Map and a plain Object in JavaScript?",
@@ -2874,10 +2887,10 @@
       "minutes": 85,
       "members": [
         "js-valid-parentheses",
-        "js-three-sum",
-        "js-maze-path"
+        "js-longest-substring-without-repeating",
+        "js-three-sum"
       ],
-      "detail": "Valid Parentheses, 3Sum and Maze Traversal, all open at once. On a laptop or tablet."
+      "detail": "Valid Parentheses, Longest Substring Without Repeating Characters and 3Sum, all open at once. On a laptop or tablet."
     },
     "rehearsal-walmart-karat-screen": {
       "id": "rehearsal-walmart-karat-screen",
@@ -10044,6 +10057,16 @@
               "lead": true,
               "rounds": [
                 "bar-raiser"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-11"
+              },
+              "rounds": [
+                "hackerrank-assessment"
               ]
             },
             {

@@ -9790,5 +9790,121 @@
       "title": "Build an Autocomplete Engine in JavaScript (Debounce, Cache, Stale Guard)",
       "description": "Implement createAutocomplete with a debounce, a latest-query guard, ranked suggestions, a small cache and error states, tested without a page."
     }
+  },
+  {
+    "id": "js-longest-substring-without-repeating",
+    "title": "Longest Substring Without Repeating Characters",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "revolut"
+    ],
+    "sources": [
+      {
+        "label": "Taro: Revolut frontend developer screen, November 2025",
+        "url": "https://www.jointaro.com/interviews/companies/revolut/experiences/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/",
+        "company": "revolut",
+        "publisher": "Taro",
+        "date": "2025-11",
+        "note": "This self-reported frontend developer screen describes Revolut's HackerRank JavaScript test with a standard sliding-window problem, without giving its prompt. This drill is a common problem of that kind, written as a practice version, not the question that was asked."
+      }
+    ],
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "strings",
+      "algorithms",
+      "hash-map",
+      "data-structures"
+    ],
+    "description": {
+      "summary": "Implement lengthOfLongestSubstring(s): return the length of the longest substring of s in which no character repeats. A substring is contiguous, so a subsequence does not count. Spaces and symbols are characters too, an empty string returns 0, and input that is not a string throws a TypeError. Aim for O(n) time on a string of length n.",
+      "arguments": [
+        {
+          "name": "s",
+          "type": "string",
+          "desc": "The input: letters, digits, symbols and spaces. Each UTF-16 code unit counts as one character, as string indexing reads it."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The length of the longest substring with no repeated character."
+      },
+      "examples": [
+        "lengthOfLongestSubstring('abcabcbb'); // => 3, from 'abc'",
+        "lengthOfLongestSubstring('bbbbb'); // => 1",
+        "lengthOfLongestSubstring('pwwkew'); // => 3, from 'wke' ('pwke' is not contiguous)",
+        "lengthOfLongestSubstring(''); // => 0"
+      ]
+    },
+    "starterCode": "export default function lengthOfLongestSubstring(s) {\n  // TODO: return the length of the longest substring of s without a repeated character.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  // TODO: return the length of the longest substring of s without a repeated character.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Interview answer: scan the string once and keep a window that never holds a repeated character. Remember the last index of every character. When the next character was last seen inside the window, move the window's start to just past that index, never backwards; the window is then free of repeats, and its length is a candidate for the answer. One pass gives O(n) time and O(k) memory for k distinct characters.",
+      "approaches": [
+        {
+          "title": "Approach 1: Last-seen index, one pass",
+          "prose": "Check the type first. Keep start, the first index of the window, and a Map from each character to the last index it appeared at. For each index i, if s[i] was last seen at or after start, set start to that index plus one. Record i as the last index of s[i], then compare i - start + 1 with the best length so far. The check against start matters: in \"abba\", the second a was last seen before the window starts, and moving start back to it would count \"bba\". Time O(n), memory O(k) for k distinct characters.",
+          "codeJs": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const lastSeen = new Map();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const previous = lastSeen.get(s[i]);\n    if (previous !== undefined && previous >= start) start = previous + 1;\n    lastSeen.set(s[i], i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}\n",
+          "codeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const lastSeen = new Map<string, number>();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const previous = lastSeen.get(s[i]);\n    if (previous !== undefined && previous >= start) start = previous + 1;\n    lastSeen.set(s[i], i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}\n",
+          "decisionGraphKey": "approach1"
+        },
+        {
+          "title": "Approach 2: A set window that shrinks from the left",
+          "prose": "Keep the characters of the window in a Set. For each new character, remove characters from the left until the Set no longer holds it, then add it and measure the window. Each character enters and leaves the Set at most once, so the whole scan is O(n) even when one step removes several characters. It is the same window as approach 1, with no indexes to store.",
+          "codeJs": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const inWindow = new Set();\n  let start = 0;\n  let best = 0;\n  for (let end = 0; end < s.length; end++) {\n    while (inWindow.has(s[end])) {\n      inWindow.delete(s[start]);\n      start++;\n    }\n    inWindow.add(s[end]);\n    best = Math.max(best, end - start + 1);\n  }\n  return best;\n}\n",
+          "codeTs": "export default function lengthOfLongestSubstring(s: string): number {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const inWindow = new Set<string>();\n  let start = 0;\n  let best = 0;\n  for (let end = 0; end < s.length; end++) {\n    while (inWindow.has(s[end])) {\n      inWindow.delete(s[start]);\n      start++;\n    }\n    inWindow.add(s[end]);\n    best = Math.max(best, end - start + 1);\n  }\n  return best;\n}\n",
+          "decisionGraphKey": "approach2"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Moving start to the last index without comparing it with start: in \"abba\" the final a would pull start back to 0 and count a window with two b.",
+          "Restarting the scan from the repeat's earlier copy for every repeat: correct, but O(n^2) on long strings with few repeats.",
+          "Counting distinct characters of the whole string: \"pwwkew\" has four, but no substring of length 4 is free of repeats.",
+          "Forgetting that a space or a symbol is a character like any other."
+        ],
+        "edgeCases": [
+          "Empty string → 0.",
+          "One repeated character, such as \"bbbbb\" → 1.",
+          "No repeats at all → the whole length.",
+          "A repeat whose earlier copy lies before the window, such as \"abba\" → 2."
+        ],
+        "techniques": [
+          "A window over the string with two indexes",
+          "A Map from character to last index",
+          "A Set of the characters in the window"
+        ]
+      },
+      "followUp": [
+        "How would you return the substring itself, or every longest one?",
+        "How would you allow each character up to k times in the window?",
+        "How would you find the longest substring with at most k distinct characters?",
+        "What changes if a character is a whole emoji, made of two UTF-16 code units?"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        },
+        {
+          "title": "MDN – Set",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set"
+        },
+        {
+          "title": "MDN – String: length",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length"
+        }
+      ]
+    },
+    "tests": "import lengthOfLongestSubstring from './lengthOfLongestSubstring';\n\ndescribe('lengthOfLongestSubstring', () => {\n  test('finds the longest run without a repeated character', () => {\n    expect(lengthOfLongestSubstring('abcabcbb')).toBe(3);\n    expect(lengthOfLongestSubstring('bbbbb')).toBe(1);\n    expect(lengthOfLongestSubstring('abcdef')).toBe(6);\n  });\n\n  test('counts a contiguous run, not a subsequence', () => {\n    expect(lengthOfLongestSubstring('pwwkew')).toBe(3);\n  });\n\n  test('returns 0 for an empty string and counts spaces and symbols as characters', () => {\n    expect(lengthOfLongestSubstring('')).toBe(0);\n    expect(lengthOfLongestSubstring(' ')).toBe(1);\n    expect(lengthOfLongestSubstring('a b c')).toBe(3);\n    expect(lengthOfLongestSubstring('!?!?')).toBe(2);\n  });\n\n  test('restarts after the earlier copy of a repeat, never before the current start', () => {\n    expect(lengthOfLongestSubstring('dvdf')).toBe(3);\n    expect(lengthOfLongestSubstring('abba')).toBe(2);\n    expect(lengthOfLongestSubstring('tmmzuxt')).toBe(5);\n  });\n\n  test('handles long input in linear time', () => {\n    const distinct = Array.from({ length: 50000 }, (_, i) => String.fromCharCode(0x100 + i)).join('');\n    expect(lengthOfLongestSubstring(distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring(distinct + distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring('ab'.repeat(50000))).toBe(2);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => lengthOfLongestSubstring(null)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(undefined)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(42)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(['a', 'b'])).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import lengthOfLongestSubstring from './lengthOfLongestSubstring';\n\ndescribe('lengthOfLongestSubstring', () => {\n  test('finds the longest run without a repeated character', () => {\n    expect(lengthOfLongestSubstring('abcabcbb')).toBe(3);\n    expect(lengthOfLongestSubstring('bbbbb')).toBe(1);\n    expect(lengthOfLongestSubstring('abcdef')).toBe(6);\n  });\n\n  test('counts a contiguous run, not a subsequence', () => {\n    expect(lengthOfLongestSubstring('pwwkew')).toBe(3);\n  });\n\n  test('returns 0 for an empty string and counts spaces and symbols as characters', () => {\n    expect(lengthOfLongestSubstring('')).toBe(0);\n    expect(lengthOfLongestSubstring(' ')).toBe(1);\n    expect(lengthOfLongestSubstring('a b c')).toBe(3);\n    expect(lengthOfLongestSubstring('!?!?')).toBe(2);\n  });\n\n  test('restarts after the earlier copy of a repeat, never before the current start', () => {\n    expect(lengthOfLongestSubstring('dvdf')).toBe(3);\n    expect(lengthOfLongestSubstring('abba')).toBe(2);\n    expect(lengthOfLongestSubstring('tmmzuxt')).toBe(5);\n  });\n\n  test('handles long input in linear time', () => {\n    const distinct = Array.from({ length: 50000 }, (_, i) => String.fromCharCode(0x100 + i)).join('');\n    expect(lengthOfLongestSubstring(distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring(distinct + distinct)).toBe(50000);\n    expect(lengthOfLongestSubstring('ab'.repeat(50000))).toBe(2);\n  });\n\n  test('throws a TypeError for input that is not a string', () => {\n    expect(() => lengthOfLongestSubstring(null as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(undefined as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(42 as unknown as string)).toThrow(TypeError);\n    expect(() => lengthOfLongestSubstring(['a', 'b'] as unknown as string)).toThrow(TypeError);\n  });\n});\n",
+    "access": "premium",
+    "updatedAt": "2026-11-09",
+    "seo": {
+      "title": "Longest Substring Without Repeating Characters in JavaScript",
+      "description": "Return the length of the longest substring without a repeated character in JavaScript in O(n): contiguous runs, a repeat before the window, spaces, empty input and long strings."
+    },
+    "decisionGraphAsset": "assets/questions/javascript/decision-graphs/js-longest-substring-without-repeating.v1.json"
   }
 ]

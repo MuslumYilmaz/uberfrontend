@@ -1,0 +1,115 @@
+{
+  "questionId": "js-longest-substring-without-repeating",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const lastSeen = new Map();\n  let start = 0;\n  let best = 0;\n  for (let i = 0; i < s.length; i++) {\n    const previous = lastSeen.get(s[i]);\n    if (previous !== undefined && previous >= start) start = previous + 1;\n    lastSeen.set(s[i], i);\n    best = Math.max(best, i - start + 1);\n  }\n  return best;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reject-non-strings-first",
+          "title": "Reject input that is not a string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "typeof s !== 'string'"
+          },
+          "why": "The contract allows strings only, so a TypeError beats a wrong length for null, a number or an array.",
+          "alternative": "Coerce the input with String(s) and keep going.",
+          "tradeoff": "Strict input checking surfaces caller bugs early; coercion would hide them."
+        },
+        {
+          "id": "d2-last-index-per-character",
+          "title": "Remember where each character last appeared",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const lastSeen = new Map();"
+          },
+          "why": "Knowing the last index of a character lets the window jump past a repeat in one step, instead of shrinking one character at a time.",
+          "alternative": "Keep a Set of the window and remove characters from the left until the repeat leaves, as approach 2 does.",
+          "tradeoff": "The Map keeps an entry for every distinct character seen; the Set keeps only the window but may remove several characters in one step."
+        },
+        {
+          "id": "d3-never-move-start-back",
+          "title": "Move the start forward only",
+          "anchor": {
+            "lineStart": 8,
+            "lineEnd": 8,
+            "snippet": "previous >= start"
+          },
+          "why": "An index from before the window is not a repeat inside it. In \"abba\" the final a would otherwise pull the start back to 0 and count a window with two b.",
+          "alternative": "Write start = Math.max(start, previous + 1).",
+          "tradeoff": "Both forms state the same rule; the comparison names the window boundary, the max hides it in arithmetic."
+        },
+        {
+          "id": "d4-measure-every-step",
+          "title": "Measure the window at every step",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "i - start + 1"
+          },
+          "why": "Once the start has moved, the window from start to i holds no repeat, so its length is a candidate at every index.",
+          "alternative": "Measure only when a repeat moves the start, then once more after the loop.",
+          "tradeoff": "Measuring every step costs one comparison per character and leaves no end case to forget."
+        }
+      ]
+    },
+    "approach2": {
+      "language": "javascript",
+      "code": "export default function lengthOfLongestSubstring(s) {\n  if (typeof s !== 'string') throw new TypeError('lengthOfLongestSubstring expects a string');\n  const inWindow = new Set();\n  let start = 0;\n  let best = 0;\n  for (let end = 0; end < s.length; end++) {\n    while (inWindow.has(s[end])) {\n      inWindow.delete(s[start]);\n      start++;\n    }\n    inWindow.add(s[end]);\n    best = Math.max(best, end - start + 1);\n  }\n  return best;\n}\n",
+      "nodes": [
+        {
+          "id": "d1-reject-non-strings-first",
+          "title": "Reject input that is not a string",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "typeof s !== 'string'"
+          },
+          "why": "The contract allows strings only, so a TypeError beats a wrong length for null, a number or an array.",
+          "alternative": "Coerce the input with String(s) and keep going.",
+          "tradeoff": "Strict input checking surfaces caller bugs early; coercion would hide them."
+        },
+        {
+          "id": "d2-set-of-the-window",
+          "title": "Keep the window in a Set",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const inWindow = new Set();"
+          },
+          "why": "The Set answers whether the next character is already in the window in constant time.",
+          "alternative": "Search the window with indexOf or includes on the string.",
+          "tradeoff": "A search scans the window at each step, which turns the pass quadratic on long input; the Set keeps it linear."
+        },
+        {
+          "id": "d3-shrink-until-unique",
+          "title": "Shrink from the left until the repeat leaves",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 10,
+            "snippet": "while (inWindow.has(s[end]))"
+          },
+          "why": "Removing characters from the left keeps the window contiguous and free of repeats.",
+          "alternative": "Jump the start past the last index of the character, as approach 1 does.",
+          "tradeoff": "Each character enters and leaves the Set at most once, so the pass stays O(n), though one step may remove several characters."
+        },
+        {
+          "id": "d4-measure-after-adding",
+          "title": "Measure after adding the new character",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "end - start + 1"
+          },
+          "why": "With the repeat gone and the new character added, the window from start to end is a valid candidate.",
+          "alternative": "Track the Set size, which equals the window length.",
+          "tradeoff": "inWindow.size reads the same number; the index form matches approach 1 and the prose."
+        }
+      ]
+    }
+  }
+}
