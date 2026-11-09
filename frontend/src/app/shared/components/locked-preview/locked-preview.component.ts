@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked-preview.util';
+import { StripInlineMarkupPipe } from '../../ui/inline-code/strip-inline-markup.pipe';
 
 @Component({
     selector: 'app-locked-preview',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, StripInlineMarkupPipe],
     template: `
     <div class="locked-preview-rich" data-testid="premium-preview-rich">
       <section class="locked-preview-rich__section">
@@ -39,7 +40,7 @@ import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked
         <ul class="locked-preview-rich__links">
           <li *ngFor="let item of freeRelated()">
             <a [routerLink]="item.to">
-              <span>{{ item.title }}</span>
+              <span>{{ item.title | stripInlineMarkup }}</span>
               <span class="locked-preview-rich__pill locked-preview-rich__pill--free">Free</span>
             </a>
           </li>

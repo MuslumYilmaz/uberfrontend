@@ -158,6 +158,17 @@ describe('LockedPreviewComponent', () => {
     expect((plain.nativeElement as HTMLElement).querySelector('[data-testid="premium-preview-sample"]')).toBeNull();
   });
 
+  it('names a free related task in plain text, without the backticks its title marks code with', () => {
+    const fixture = TestBed.createComponent(LockedPreviewComponent);
+    fixture.componentInstance.data = {
+      ...new LockedPreviewCtaHostComponent().data,
+      related: [{ title: 'Fix lost `this` binding in callback registration', to: ['/free'], premium: false }],
+    };
+    fixture.detectChanges();
+    const link = (fixture.nativeElement as HTMLElement).querySelector('.locked-preview-rich__links a span') as HTMLElement;
+    expect(link.textContent).toBe('Fix lost this binding in callback registration');
+  });
+
   for (const authored of authoredCases) {
     it(`renders the complete authored ${authored.name} teaser`, () => {
       const fixture = TestBed.createComponent(LockedPreviewComponent);
