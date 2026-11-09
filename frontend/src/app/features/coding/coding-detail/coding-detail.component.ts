@@ -352,6 +352,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private challengeSource = 'direct';
   private lastTrackedChallengeOpenKey: string | null = null;
   private challengeAttemptNumber = 0;
+  /** Bumped per JS run, so a run that a newer one replaced reports no result. */
+  private jsRunSequence = 0;
   private solutionViewedTracked = false;
   quickWinActive = signal(false);
   quickWinEngaged = signal(false);
@@ -2125,12 +2127,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const attemptNumber = this.trackChallengeAttemptStarted('run_tests');
 
     // Plain JS/TS -> delegate to child panel
+    const run = ++this.jsRunSequence;
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
     await this.jsPanel?.runTests();
-    if (!this.isCurrentWorkspaceRun(epoch, q)) return false;
+    if (run !== this.jsRunSequence || !this.isCurrentWorkspaceRun(epoch, q)) return false;
     this.hasRunTests = true;
 
     const passing = this.allPassing();
@@ -2144,7 +2147,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     if (passing) {
       this.trackQuickWinCompleted(q.id, 'first_pass');
-      this.maybePromptOnboarding('first_pass', q.id);
     }
 
     this.subTab.set('tests');
@@ -2223,6 +2225,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!passing) {
       return;
     }
+    // Asked on a passing submit only: the prompt has no "seen" record, so a plain run would reopen it every time.
+    this.maybePromptOnboarding('first_pass', q.id);
 
     if (!this.ensureAuthenticated()) {
       this.solved.set(false);

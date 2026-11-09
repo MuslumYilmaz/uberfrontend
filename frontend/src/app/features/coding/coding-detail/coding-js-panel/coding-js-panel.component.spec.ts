@@ -106,6 +106,20 @@ describe('CodingJsPanelComponent', () => {
     expect(lastConsole.length).toBe(1);
   });
 
+  it('hands the Run tests click to a listening host, and runs the tests itself without one', () => {
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    const run = spyOn(component, 'runTests').and.resolveTo();
+
+    component.onRunTestsClick();
+    expect(run).toHaveBeenCalledTimes(1);
+
+    const requested = jasmine.createSpy('requestRunTests');
+    component.requestRunTests.subscribe(requested);
+    component.onRunTestsClick();
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
   describe('a multi-file task', () => {
     const money = { path: 'src/money.js', code: 'export const cents = (n) => Math.floor(n * 100);\n' };
     const cart = { path: 'src/cart.js', code: "import { cents } from './money.js';\n" };

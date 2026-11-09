@@ -150,6 +150,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Output() codeChange = new EventEmitter<{ lang: JsLang, code: string }>();
   @Output() langChange = new EventEmitter<JsLang>();
   @Output() requestEditorUpgrade = new EventEmitter<void>();
+  /** The Run tests button, for a host that counts attempts: it calls runTests() itself. */
+  @Output() requestRunTests = new EventEmitter<void>();
 
   /* ---------- Local state ---------- */
   jsLang = signal<JsLang>('js');                       // 'js' | 'ts'
@@ -1806,6 +1808,12 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.testsPersistTimer = null;
     }
     this.pendingTestsPersist = null;
+  }
+
+  /** Without a host listening, the panel runs the tests on its own. */
+  onRunTestsClick(): void {
+    if (this.requestRunTests.observed) this.requestRunTests.emit();
+    else void this.runTests();
   }
 
   // Run tests

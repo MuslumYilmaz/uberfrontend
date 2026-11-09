@@ -801,6 +801,108 @@ describe('CodingDetailComponent', () => {
     expect(component.consoleEntries().length).toBe(0);
   });
 
+  it('counts a click on the JS panel Run tests button as an attempt', async () => {
+    spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1440);
+    const question = {
+      id: 'two-sum',
+      title: 'Two Sum',
+      description: 'Solve it.',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'easy',
+      tags: ['arrays'],
+      importance: 3,
+      starterCode: 'export default function solve() {}\n',
+      tests: "test('ok', () => expect(1).toBe(1));\n",
+    } as any;
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    questionService.loadQuestions.and.returnValue(of([question]));
+    component.questionId = question.id;
+    component.questionTech = 'javascript';
+    component.disablePersistence = true;
+    component.hideFooterBar = true;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set(question);
+    component.loadState.set('loaded');
+    component.isPhoneViewport.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const panel = fixture.debugElement.query(By.directive(CodingJsPanelComponent)).componentInstance as CodingJsPanelComponent;
+    const panelRun = spyOn(panel, 'runTests').and.callFake(async () => component.onJsTestResults([{ name: 'ok', passed: true }]));
+    const run = spyOn(component, 'runTests').and.callThrough();
+    panel.testCode.set(question.tests);
+    fixture.detectChanges();
+
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('[data-testid="js-run-tests"]')!.click();
+    expect(run).toHaveBeenCalledTimes(1);
+    await run.calls.mostRecent().returnValue;
+
+    expect(panelRun).toHaveBeenCalledTimes(1);
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_started', jasmine.objectContaining({
+      question_id: 'two-sum',
+      workspace_type: 'js_tests',
+      action_type: 'run_tests',
+    }));
+    expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
+      question_id: 'two-sum',
+      action_type: 'run_tests',
+      outcome: 'passed',
+    }));
+  });
+
+  it('reports no result for a JS run that a newer run replaced', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'javascript';
+    component.question.set({ id: 'q1', access: 'free' } as any);
+    let finishFirst!: () => void;
+    let calls = 0;
+    component.jsPanel = {
+      runTests: () => (++calls === 1
+        ? new Promise<void>((resolve) => { finishFirst = resolve; })
+        : Promise.resolve().then(() => component.onJsTestResults([{ name: 'ok', passed: true }]))),
+    } as any;
+
+    const first = component.runTests();
+    const second = component.runTests();
+    expect(await second).toBeTrue();
+    finishFirst();
+    expect(await first).toBeFalse();
+
+    const results = analytics.track.calls.allArgs().filter(([name]) => name === 'challenge_attempt_result');
+    expect(results.length).toBe(1);
+    expect(results[0][1]).toEqual(jasmine.objectContaining({ outcome: 'passed', attempt_number: 2 }));
+  });
+
+  it('asks the onboarding question after a passing submit, not after each passing run', async () => {
+    localStorage.removeItem('fa:onboarding:v1');
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({ id: 'q1', access: 'free', difficulty: 'easy' } as any);
+    component.jsPanel = {
+      runTests: jasmine.createSpy('runTests').and.callFake(async () => component.onJsTestResults([{ name: 'ok', passed: true }])),
+    } as any;
+
+    await component.runTests();
+    expect(component.onboardingPromptOpen).toBeFalse();
+
+    await component.submitCode();
+    expect(component.onboardingPromptOpen).toBeTrue();
+    expect(analytics.track).toHaveBeenCalledWith('onboarding_prompt_shown', jasmine.objectContaining({
+      trigger: 'first_pass',
+      question_id: 'q1',
+    }));
+  });
+
   it('loads JS approach with its own decision graph asset override', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

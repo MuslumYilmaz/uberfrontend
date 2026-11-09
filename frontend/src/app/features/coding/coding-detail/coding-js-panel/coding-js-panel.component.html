@@ -345,7 +345,7 @@
         <!-- BOTTOM: Actions + Results/Console -->
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell" data-nosnippet>
             <div class="fa-runner-topbar">
-                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()"
+                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="onRunTestsClick()"
                     [disabled]="locked || !(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
