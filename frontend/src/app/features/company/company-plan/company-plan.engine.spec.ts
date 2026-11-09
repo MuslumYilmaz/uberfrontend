@@ -122,7 +122,8 @@ describe('company plan engine', () => {
               expect(plan.preview.open.length).withContext(`${where}: preview`).toBe(3);
               for (const entry of plan.preview.open) {
                 expect(entry.access).withContext(`${where}: ${entry.id}`).toBe('free');
-                expect(entry.kind).withContext(`${where}: ${entry.id}`).not.toBe('guide');
+                // Reading stays in the plan; a guide section with a drill is practice and may be offered.
+                if (entry.kind === 'guide') expect(entry.drill).withContext(`${where}: ${entry.id} is reading`).toBeTrue();
               }
               const openIds = new Set(plan.preview.open.map((entry) => entry.id));
               expect(plan.preview.rest.every((entry) => !openIds.has(entry.id))).withContext(`${where}: rest repeats preview`).toBeTrue();
@@ -442,6 +443,21 @@ describe('company plan engine', () => {
     const plan = buildCompanyPlan(data, input({ when: 'tomorrow' }));
     expect(plan.preview.open.map((entry) => entry.id)).toEqual(['tagged-a', 'concept', 'starter-free']);
     expect(plan.preview.rest.map((entry) => entry.id)).toEqual(['reported-old']);
+  });
+
+  it('offers the drill of the day the person faces next first, and only that day\'s', () => {
+    const lp = '/companies/amazon/preview#amazon-round-leadership-principles';
+    // Leadership Principles next: the loop is one day, so its drill leads, ahead of the loop's tasks that run.
+    const loopDay = buildCompanyPlan(REAL_DATA, {
+      companies: ['amazon'], when: 'this-week', level: 'mid', today: TODAY,
+      passedRounds: ['amazon/experienced/online-assessment', 'amazon/experienced/phone-screen'],
+    });
+    expect(loopDay.preview.open[0].id).toBe(lp);
+    expect(loopDay.preview.rest.map((entry) => entry.id)).not.toContain(lp);
+    // From the first round the drill waits for its day, and something to run comes first.
+    const fromStart = buildCompanyPlan(REAL_DATA, { companies: ['amazon'], when: 'this-week', level: 'mid', today: TODAY });
+    expect(fromStart.preview.open[0].kind).not.toBe('guide');
+    expect(fromStart.preview.open.map((entry) => entry.id)).not.toContain(lp);
   });
 
   it('skips solved tasks in the preview unless nothing else is left', () => {

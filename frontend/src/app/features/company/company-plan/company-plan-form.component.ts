@@ -9,7 +9,7 @@ import { FaRotatingWordsComponent } from '../../../shared/ui/rotating-words/fa-r
 import { hasPremium, premiumEnded } from './company-plan-access';
 import { companyMatchesSearch } from './company-plan-search';
 import { COMPANY_PLAN_WHEEL as WHEEL } from './company-plan-wheel';
-import { CompanyPlanData, CompanyPlanDataList, buildCompanyPlan, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
+import { CompanyPlanData, CompanyPlanDataList, buildCompanyPlan, companyPlanDayOf, companyPlanDefaultList, companyPlanRoundKey } from './company-plan.engine';
 import { LEVEL_LABELS, WHEN_LABELS, planCompanyNames, previewQueryParams } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -26,8 +26,8 @@ const WHEN_OPTIONS: readonly { readonly id: CompanyPlanWhen; readonly label: str
 ];
 
 const LEVEL_OPTIONS: readonly { readonly id: CompanyPlanAnswerLevel; readonly label: string; readonly sub: string; readonly note: string }[] = [
-  { id: 'junior', label: 'Junior', sub: 'Under 2 years', note: 'At most one system design task.' },
-  { id: 'mid', label: 'Mid-level', sub: '2 to 5 years', note: 'At most one system design task.' },
+  { id: 'junior', label: 'Junior', sub: 'Under 2 years', note: 'At most one system design task, plus the design guide where a round has one.' },
+  { id: 'mid', label: 'Mid-level', sub: '2 to 5 years', note: 'At most one system design task, plus the design guide where a round has one.' },
   { id: 'senior', label: 'Senior', sub: 'More than 5 years', note: 'Up to two system design tasks, where the rounds include design.' },
   { id: 'staff', label: 'Staff', sub: 'Leading across teams', note: 'Up to three system design tasks, where the rounds include design.' },
 ];
@@ -185,16 +185,32 @@ export class CompanyPlanFormComponent {
     });
   });
 
-  /** The keys of the rounds behind the person: the ones before the chosen next round, or the marked ones of an unordered list. */
+  /**
+   * The keys of the rounds behind the person: the ones before the chosen next round, or the marked ones of an unordered
+   * list. A round held the same day as the next one (the rest of a loop or a Power Day) is still ahead, whatever its
+   * place in the table.
+   */
   readonly passedRounds = computed<readonly string[]>(() => {
     return this.roundChoices().flatMap((group) => {
       const list = this.listFor(group.slug);
       if (!list) return [];
       if (group.unordered) return list.rounds.filter((round) => group.behind.includes(round.id)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
       const at = list.rounds.findIndex((round) => round.id === group.next);
-      return list.rounds.slice(0, Math.max(at, 0)).map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
+      const next = list.rounds[at];
+      return list.rounds.slice(0, Math.max(at, 0))
+        .filter((round) => !next || companyPlanDayOf(round) !== companyPlanDayOf(next))
+        .map((round) => companyPlanRoundKey(group.slug, list.id, round.id));
     });
   });
+
+  /** Whether a chosen next round keeps earlier rounds of its own day in the plan, so the hint can say so. */
+  private readonly sameDayKept = computed(() => this.roundChoices().some((group) => {
+    if (group.unordered) return false;
+    const list = this.listFor(group.slug);
+    const at = list?.rounds.findIndex((round) => round.id === group.next) ?? -1;
+    const next = list?.rounds[at];
+    return Boolean(next && list?.rounds.slice(0, at).some((round) => companyPlanDayOf(round) === companyPlanDayOf(next)));
+  }));
 
   readonly nextQuestion = computed(() => {
     const groups = this.roundChoices();
@@ -209,6 +225,7 @@ export class CompanyPlanFormComponent {
     const unordered = groups.some((group) => group.unordered);
     const rules = [
       ordered ? 'The rounds before it count as passed, so your plan starts where you are.' : '',
+      this.sameDayKept() ? 'Rounds held the same day as it stay in the plan.' : '',
       unordered ? 'Rounds with no fixed order: mark the ones behind you, and your plan starts with the first round left in this list.' : '',
     ];
     return rules.filter(Boolean).join(' ');
@@ -313,8 +330,10 @@ export class CompanyPlanFormComponent {
       lines.push({
         label: unordered ? 'Rounds behind you' : 'Next round',
         text: this.passedRounds().length
-          ? `${this.nextLabel()}. ${unordered ? 'They count as passed; the rest stay in the plan.' : 'The rounds before it count as passed.'}`
-          : 'From the first round. Every reported round is in the plan.',
+          ? `${this.nextLabel()}. ${unordered ? 'They count as passed; the rest stay in the plan.' : this.sameDayKept() ? 'The rounds before it count as passed, except the ones held the same day.' : 'The rounds before it count as passed.'}`
+          : this.sameDayKept()
+            ? `${this.nextLabel()}. The rounds held the same day stay in the plan, so every reported round is in it.`
+            : 'From the first round. Every reported round is in the plan.',
       });
     }
     return lines;

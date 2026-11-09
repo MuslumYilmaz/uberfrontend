@@ -178,7 +178,9 @@ export class CompanyPlanPreviewComponent {
     const plan = this.plan();
     if (!plan) return { open: [], rest: [] };
     if (plan.general || this.viewer() !== 'premium') return plan.preview;
-    const open = plan.tasks.filter((task) => task.kind !== 'guide').slice(0, plan.preview.open.length);
+    // A member starts where a visitor does: the drill for the next round's day first, then the tasks that run.
+    const drills = plan.preview.open.filter((task) => task.drill);
+    const open = [...drills, ...plan.tasks.filter((task) => task.kind !== 'guide' && !drills.includes(task))].slice(0, plan.preview.open.length);
     return { open, rest: plan.tasks.filter((task) => !open.includes(task)) };
   });
 

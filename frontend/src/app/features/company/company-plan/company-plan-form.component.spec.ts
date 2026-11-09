@@ -481,6 +481,25 @@ describe('CompanyPlanFormComponent', () => {
       expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 4 });
     });
 
+    it('keeps the rounds held the same day as the next one in the plan, and says so', () => {
+      const sameDay = (id: string, name: string) => ({ ...round(id, ['coding']), name });
+      const rounds = [round('recruiter', ['recruiter']), sameDay('design', 'Power Day: design'), sameDay('case', 'Power Day: case')];
+      const data = { ...DATA, companies: { ...DATA.companies, agoda: company('Agoda', { variants: [{ id: 'main', title: 'Engineers', sourceCount: 6, rounds, tasks: [] }] }) } } as unknown as CompanyPlanData;
+      setup({ data });
+      openPicker();
+      click('company-plan-option-agoda');
+      click('company-plan-continue');
+      click('company-plan-when-tomorrow');
+      click('company-plan-level-junior');
+
+      // The case is next: the recruiter round is behind, the design hour of the same Power Day is not.
+      click('company-plan-next-agoda-case');
+      expect(component.passedRounds()).toEqual(['agoda/main/recruiter']);
+      expect(component.nextHint()).toContain('Rounds held the same day as it stay in the plan.');
+      expect(component.answerLines().map((line) => line.text)).toContain('From the Power Day: case. The rounds before it count as passed, except the ones held the same day.');
+      expect(navigate).toHaveBeenCalledOnceWith(['/companies/preview'], { queryParams: { companies: 'agoda', when: 'tomorrow', level: 'junior', passed: 'agoda/main/recruiter' } });
+    });
+
     it('with several companies, takes a next round per company and finishes on the button', () => {
       setup();
       openPicker();

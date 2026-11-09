@@ -187,13 +187,17 @@ function quizCounts(questions) {
   return { ...(shortAnswers ? { shortAnswers } : {}), ...(choiceQuestions ? { choiceQuestions } : {}) };
 }
 
-/** A guide, or a section of one: a company guide's own section on a round keeps its anchor in the id and the link. */
-function guideTask(route, label, fragment) {
+/**
+ * A guide, or a section of one: a company guide's own section on a round keeps its anchor in the id and the link. A
+ * section with a behavioural drill says so, so the plan can offer it as practice.
+ */
+function guideTask(route, label, fragment, drill = false) {
   return {
     id: fragment ? `${route}#${fragment}` : route,
     title: label,
     route,
     ...(fragment ? { fragment } : {}),
+    ...(drill ? { drill: true } : {}),
     kind: 'guide',
     access: 'free',
     minutes: (!fragment && GUIDE_MINUTES.get(route)) || MINUTES_BY_KIND.guide,
@@ -362,11 +366,11 @@ function buildCompany(slug, context) {
     for (const stage of variant.stages) {
       const round = metaRound(stage);
       if (stage.practice) {
-        const { path: route, label, fragment } = stage.practice;
+        const { path: route, label, fragment, drill } = stage.practice;
         if (COMPANY_GUIDE_ROUTE.test(route) && (route !== `/companies/${slug}/preview` || !fragment)) {
           throw new Error(`[gen-company-plan-data] ${slug}/${meta.id} links ${route}: a company guide link must be a section of ${slug}'s own guide.`);
         }
-        leads.add(addLinked(route, isGuideRoute(route) ? guideTask(route, label, fragment) : catalog.get(route), round.id, true));
+        leads.add(addLinked(route, isGuideRoute(route) ? guideTask(route, label, fragment, Boolean(drill)) : catalog.get(route), round.id, true));
       }
       for (const route of round.picks ?? []) addLinked(route, catalog.get(route), round.id);
     }

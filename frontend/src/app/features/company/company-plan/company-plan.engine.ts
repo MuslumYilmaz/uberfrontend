@@ -15,6 +15,8 @@ export type CompanyPlanDataTask = {
   readonly route: string;
   /** A section of the page at `route`: a company guide's own section on a round, such as its behavioural round. */
   readonly fragment?: string;
+  /** A guide section with a behavioural drill: practice to try, not only reading, so the preview offers it. */
+  readonly drill?: true;
   readonly kind: 'coding' | 'debug' | 'trivia' | 'system-design' | 'guide' | 'rehearsal';
   readonly tech?: string;
   readonly access: 'free' | 'premium';
@@ -275,10 +277,11 @@ function bestFit(rounds: readonly CompanyPlanDataRound[], task: CompanyPlanDataT
 }
 
 /** Rounds held on one day share the part of their name before a colon ("Power Day: case"); any other round is its own day. */
-function dayOf(round: CompanyPlanDataRound): string {
+export function companyPlanDayOf(round: { readonly id: string; readonly name: string }): string {
   const colon = round.name.indexOf(':');
   return colon > 0 ? round.name.slice(0, colon).trim() : round.id;
 }
+const dayOf = companyPlanDayOf;
 
 function slotsFor(
   data: CompanyPlanData,
@@ -386,19 +389,23 @@ function buildPreview(
   extras: readonly PlannedTask[],
   starters: readonly PlannedTask[],
   keepRest: boolean,
+  nextDrills: readonly PlannedTask[] = [],
 ): CompanyPlan['preview'] {
   const open: PlannedTask[] = [];
   const seen = new Set<string>();
   const offer = (tasks: readonly PlannedTask[], accept: (task: PlannedTask) => boolean) => {
     for (const task of tasks) {
       if (open.length >= PREVIEW_OPEN_TASKS) return;
-      if (task.access !== 'free' || task.kind === 'guide' || seen.has(task.id) || !accept(task)) continue;
+      // A guide is reading; a guide section with a drill is practice, so it can be offered.
+      if (task.access !== 'free' || (task.kind === 'guide' && !task.drill) || seen.has(task.id) || !accept(task)) continue;
       seen.add(task.id);
       open.push(task);
     }
   };
-  // Something to run comes first. Solved tasks are the last resort, for someone who has done everything else.
+  // The drill for the day the person faces next leads: a behavioural round has nothing else to try. Then something to
+  // run. Solved tasks are the last resort, for someone who has done everything else.
   for (const accept of [(task: PlannedTask) => !task.solved, () => true]) {
+    offer(nextDrills, accept);
     offer(planTasks, (task) => accept(task) && isRunnable(task));
     offer(extras, (task) => accept(task) && isRunnable(task));
     offer(planTasks, accept);
@@ -672,6 +679,10 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   const formatPractice = selected.filter((entry) => entry.key === null).map((entry) => asPlanTask(entry.task, entry.why));
   const tasks = [...companies.flatMap((company) => company.rounds.flatMap((round) => round.tasks)), ...formatPractice];
+  // The drills on the rounds of the day each company holds next: the rest of a loop counts, since it is the same day.
+  const nextDrills = companies.flatMap((company, index) => company.rounds
+    .filter((round) => nextDays[index].keys.has(round.key))
+    .flatMap((round) => round.tasks.filter((task) => task.drill)));
   // A rehearsal in the plan keeps its problems for its clock: none of them is offered beside it as a free warm-up,
   // which would spoil it before it starts.
   const rehearsed = new Set(tasks.flatMap((task) => task.members ?? []));
@@ -697,7 +708,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     companies,
     formatPractice,
     tasks,
-    preview: buildPreview(tasks, extras, starters.filter((task) => !rehearsed.has(task.id)), true),
+    preview: buildPreview(tasks, extras, starters.filter((task) => !rehearsed.has(task.id)), true, nextDrills),
     next: tasks.find((task) => !task.solved && task.kind !== 'guide') ?? tasks.find((task) => !task.solved) ?? null,
     totalMinutes: tasks.reduce((sum, task) => sum + task.minutes, 0),
     remainingMinutes: tasks.filter((task) => !task.solved).reduce((sum, task) => sum + task.minutes, 0),
