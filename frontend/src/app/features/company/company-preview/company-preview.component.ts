@@ -70,6 +70,7 @@ import {
   NETFLIX_WALKTHROUGH_STEPS,
 } from './netflix-preview-content';
 import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
+import { BehavioralDrillComponent } from './behavioral-drill/behavioral-drill.component';
 
 type OpenAiPracticePrompt = {
   id: string;
@@ -298,6 +299,7 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
       FaButtonComponent,
       StripInlineMarkupPipe,
       InlineCodeComponent,
+      BehavioralDrillComponent,
     ],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
@@ -510,6 +512,20 @@ export class CompanyPreviewComponent implements OnInit {
     return this.accountGate('company-process-gate', 'company-prompt-gate company-account-gate',
       'The sources behind each round open with a free account',
       `${this.countedSources(counts)}, ${where}. Premium adds the answer guides and the practice.`);
+  }
+
+  /** How many of a behavioural drill's questions this viewer can pick: the first behind the gate, otherwise all. */
+  drillOpen(total: number): number {
+    return this.detailLocked() ? 1 : total;
+  }
+
+  /** The card under a drill's questions for a visitor without an account on a gated guide. */
+  drillGate(total: number): LockGate | null {
+    const locked = total - this.drillOpen(total);
+    if (locked < 1) return null;
+    return this.accountGate('company-drill-gate', 'company-prompt-gate company-account-gate',
+      `The other ${locked === 1 ? 'question opens' : `${locked} questions open`} with a free account`,
+      'Each one practises the same way, and what you write stays on this device.');
   }
 
   /** The card over a guide's sources list for a visitor without an account on a gated guide. */

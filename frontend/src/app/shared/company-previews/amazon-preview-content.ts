@@ -101,6 +101,26 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       ],
       practiceLink: { label: 'Draft your story bank with the STAR stories guide', path: '/guides/behavioral/stories' },
       processLink: { label: 'See the Leadership Principles row in the reported process', fragment: 'amazon-interview-process-1-stage-loop-leadership-principles' },
+      // The facts above, one question each: Amazon's own examples first, then the accounts.
+      drill: {
+        note: 'Each question is one of Amazon\'s own examples or one an account reports, asked as one past situation.',
+        questions: [
+          { id: 'multiple-solutions', text: 'Tell me about a problem with multiple possible solutions.', source: 'Amazon\'s interview loop page' },
+          { id: 'mistake', text: 'Tell me about a time you made a mistake or failed.', source: 'Amazon\'s interview loop page' },
+          { id: 'without-all-the-data', text: 'Tell me about a decision you made without all the data.', source: 'Amazon\'s principles video' },
+          { id: 'disagreement', text: 'Tell me about a disagreement with a coworker.', source: 'Seattle, 2019' },
+          { id: 'tight-deadline', text: 'Tell me about a tight deadline. How did you prioritize?', source: 'Seattle, 2019' },
+          { id: 'negative-feedback', text: 'Tell me about negative feedback you received, and what followed.', source: 'Seattle, 2020' },
+          { id: 'customer', text: 'Tell me about a time you went out of your way to help a customer urgently. What did you do to make sure it never happened again?', source: 'Vancouver, 2021' },
+          { id: 'few-requirements', text: 'Tell me about a time you started to deliver with few requirements.', source: 'Medium, 2021' },
+          { id: 'beyond-required', text: 'Tell me about something you did beyond what was required.', source: 'Seattle, 2020' },
+        ],
+        checks: [
+          'I can name the Leadership Principle it shows.',
+          'I have the data behind each decision ready for the follow-ups.',
+          'Another story is ready for this question: Amazon\'s video advises against using the same example every time.',
+        ],
+      },
     },
   ],
   roleLenses: {

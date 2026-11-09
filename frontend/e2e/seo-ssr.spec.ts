@@ -1106,6 +1106,8 @@ const AUTHORED_GUIDE_CASES = [
     headings: [
       'Prepare for product judgment, not Amazon trivia',
       'What the official page and the public accounts establish, and what you still need to confirm',
+      'Amazon Leadership Principles questions for front end engineers: what was asked',
+      'Practise one question',
       'Seven Amazon frontend interview practice questions',
       'Scope the paginated address widget before writing the first line',
       'A 7-day Amazon frontend interview preparation plan',
@@ -1146,6 +1148,10 @@ const AUTHORED_GUIDE_CASES = [
     headings: [
       'Prepare for product judgment, not Meta trivia',
       'What the official pages and the public accounts establish, and what you still need to confirm',
+      // The behavioural decoder and its drill render on the server, with the questions a visitor cannot pick yet.
+      'Meta behavioural interview for front end engineers: the five signals and what was asked',
+      'Practise one question',
+      'Tell me about a hard bug you debugged.',
       'Seven Meta frontend interview practice questions',
       'Scope clearAllTimeout before writing the first line',
       'A 7-day Meta frontend interview preparation plan',

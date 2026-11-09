@@ -436,4 +436,34 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByTestId('company-prompt-gate')).toContainText(/The answer guides for prompts 2 to \d+ are in Premium/);
     expect(await overflow(page)).toBe(0);
   });
+
+  test('Hande drills a Meta behavioural question on a phone: her story survives a reload, and a free account opens the other questions', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/companies/meta/preview');
+    const drill = page.getByTestId('behavioral-drill');
+    await drill.scrollIntoViewIfNeeded();
+    await expect(drill.getByTestId('behavioral-drill-question-disagreement')).toBeChecked();
+    await expect(drill.getByTestId('behavioral-drill-question-criticism')).toBeDisabled();
+    await expect(drill.getByTestId('company-drill-gate')).toContainText('The other 7 questions open with a free account');
+
+    await drill.getByTestId('behavioral-drill-situation').fill('Design and I disagreed on the checkout error states a week before launch.');
+    await drill.getByTestId('behavioral-drill-action').fill('We met, we listed the cases and our designer drew them.');
+    await expect(drill.getByTestId('behavioral-drill-notes')).toContainText('say what you did');
+    await drill.getByTestId('behavioral-drill-check-0').check();
+    expect(await overflow(page)).toBe(0);
+
+    // The story is read back once the page is in the browser, after a reload too.
+    await page.reload();
+    await expect(drill.getByTestId('behavioral-drill-situation')).toHaveValue('Design and I disagreed on the checkout error states a week before launch.');
+    await expect(drill.getByTestId('behavioral-drill-check-0')).toBeChecked();
+
+    await signIn(page, newAccount());
+    await page.goto('/companies/meta/preview');
+    await expect(drill.getByTestId('company-drill-gate')).toHaveCount(0);
+    await drill.getByTestId('behavioral-drill-question-criticism').check();
+    await expect(drill.getByTestId('behavioral-drill-asked')).toContainText('criticism you received');
+    await expect(drill.getByTestId('behavioral-drill-situation')).toHaveValue('');
+    await drill.getByTestId('behavioral-drill-question-disagreement').check();
+    await expect(drill.getByTestId('behavioral-drill-situation')).toHaveValue('Design and I disagreed on the checkout error states a week before launch.');
+  });
 });

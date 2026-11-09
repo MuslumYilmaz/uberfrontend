@@ -228,6 +228,8 @@ const META_ME8 = report('Blind', 'https://www.teamblind.com/post/meta-front-end-
 const META_ME9 = report('Taro', `${META_TARO}/front-end-developer-san-francisco-ca-march-6-2024-no-offer-positive-609eb715/`, '2024-03');
 const META_ME10 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-new-york-ny-april-1-2025-no-offer-positive-ae322f20/`, '2025-04');
 const META_ME11 = report('Taro (approx.)', `${META_TARO}/frontend-engineer-menlo-park-ca-june-1-2025-accepted-offer-positive-143f4163/`, '2025-06');
+// Read 2026-11-09 for the behavioural decoder: the account names no round, only the question.
+const META_ME12 = report('Taro', `${META_TARO}/frontend-engineer-menlo-park-ca-november-25-2024-accepted-offer-positive-f6a8939b/`, '2024-11');
 const META_ROLE = 'FEE, IC4 to IC6';
 
 const MICROSOFT_HIRING_TIPS = official('Microsoft: Hiring tips', 'https://careers.microsoft.com/v2/global/en/hiring-tips');
@@ -1019,7 +1021,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager, which is often all behavioural.',
             appliesTo: AMAZON_ROLE,
             sources: [AMAZON_FEE_PREP, AMAZON_INTERVIEW_LOOP, AMAZON_HM_2019, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022, AMAZON_FEE_I_2025],
-            practice: { label: 'Leadership Principles interview questions', path: '/companies/amazon/preview', fragment: 'amazon-round-leadership-principles' },
+            practice: { label: 'Leadership Principles questions and story drill', path: '/companies/amazon/preview', fragment: 'amazon-round-leadership-principles' },
           },
         ],
       },
@@ -1320,7 +1322,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               GOOGLE_GL_L4_2024,
               GOOGLE_GL_L4_BLR_2026,
             ],
-            practice: { label: 'Googleyness interview questions', path: '/companies/google/preview', fragment: 'google-round-googleyness' },
+            practice: { label: 'Googleyness questions and story drill', path: '/companies/google/preview', fragment: 'google-round-googleyness' },
           },
           {
             stage: 'System design',
@@ -1382,8 +1384,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Full loop: behavioural',
             format: 'A 45-minute session.',
             appliesTo: META_ROLE,
-            sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME7, META_ME11],
-            practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
+            sources: [META_FEE_ONSITE, META_ME4, META_ME5, META_ME7, META_ME11, META_ME12],
+            practice: { label: 'Behavioural questions and story drill', path: '/companies/meta/preview', fragment: 'meta-round-behavioural' },
           },
         ],
       },

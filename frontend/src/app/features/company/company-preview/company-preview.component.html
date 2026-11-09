@@ -309,6 +309,12 @@
           <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
         </ng-container>
       </dl>
+      <app-behavioral-drill *ngIf="googleGoogleyness.drill as drill" [drill]="drill" company="google"
+        [openQuestions]="drillOpen(drill.questions.length)">
+        <div drillGate *ngIf="drillGate(drill.questions.length) as gate">
+          <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: gate }"></ng-container>
+        </div>
+      </app-behavioral-drill>
       <p class="company-round-links" *ngIf="googleGoogleyness.practiceLink?.path || googleGoogleyness.processLink">
         <a *ngIf="googleGoogleyness.practiceLink?.path as path" class="company-round-links__link" [routerLink]="path" [state]="returnState">{{ googleGoogleyness.practiceLink!.label }}</a>
         <a *ngIf="googleGoogleyness.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
@@ -816,6 +822,12 @@
           <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
         </ng-container>
       </dl>
+      <app-behavioral-drill *ngIf="round.drill as drill" [drill]="drill" [company]="slug"
+        [openQuestions]="drillOpen(drill.questions.length)">
+        <div drillGate *ngIf="drillGate(drill.questions.length) as gate">
+          <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: gate }"></ng-container>
+        </div>
+      </app-behavioral-drill>
       <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
         <a
           *ngIf="round.practiceLink?.path as path"
@@ -1046,6 +1058,12 @@
           <dd><span [class.company-locked]="detailLocked() && i > 0" [class.premium-locked]="detailLocked() && i > 0" [attr.data-nosnippet]="detailLocked() && i > 0 ? '' : null" [attr.inert]="detailLocked() && i > 0 ? '' : null">{{ fact.value }}</span></dd>
         </ng-container>
       </dl>
+      <app-behavioral-drill *ngIf="round.drill as drill" [drill]="drill" [company]="slug"
+        [openQuestions]="drillOpen(drill.questions.length)">
+        <div drillGate *ngIf="drillGate(drill.questions.length) as gate">
+          <ng-container *ngTemplateOutlet="lockGateCard; context: { $implicit: gate }"></ng-container>
+        </div>
+      </app-behavioral-drill>
       <p class="company-round-links" *ngIf="round.practiceLink || round.processLink">
         <a
           *ngIf="round.practiceLink?.path as path"

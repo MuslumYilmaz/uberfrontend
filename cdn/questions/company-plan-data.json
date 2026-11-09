@@ -149,7 +149,7 @@
   "tasks": {
     "/companies/amazon/preview#amazon-round-leadership-principles": {
       "id": "/companies/amazon/preview#amazon-round-leadership-principles",
-      "title": "Leadership Principles interview questions",
+      "title": "Leadership Principles questions and story drill",
       "route": "/companies/amazon/preview",
       "fragment": "amazon-round-leadership-principles",
       "kind": "guide",
@@ -158,9 +158,18 @@
     },
     "/companies/google/preview#google-round-googleyness": {
       "id": "/companies/google/preview#google-round-googleyness",
-      "title": "Googleyness interview questions",
+      "title": "Googleyness questions and story drill",
       "route": "/companies/google/preview",
       "fragment": "google-round-googleyness",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/companies/meta/preview#meta-round-behavioural": {
+      "id": "/companies/meta/preview#meta-round-behavioural",
+      "title": "Behavioural questions and story drill",
+      "route": "/companies/meta/preview",
+      "fragment": "meta-round-behavioural",
       "kind": "guide",
       "access": "free",
       "minutes": 15
@@ -8614,7 +8623,7 @@
         "Instagram"
       ],
       "checkedAt": "2026-10-20",
-      "sourceCount": 16,
+      "sourceCount": 17,
       "promptCount": 7,
       "variants": [
         {
@@ -8631,7 +8640,7 @@
             ],
             "who": "IC4 to IC6 candidates"
           },
-          "sourceCount": 14,
+          "sourceCount": 15,
           "newestReport": "2025-06",
           "rounds": [
             {
@@ -8758,11 +8767,11 @@
                   "date": "2025-06"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2022-03"
+                  "label": "Taro",
+                  "date": "2024-11"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             }
           ],
           "tasks": [
@@ -8793,7 +8802,7 @@
               ]
             },
             {
-              "id": "/guides/behavioral",
+              "id": "/companies/meta/preview#meta-round-behavioural",
               "lead": true,
               "rounds": [
                 "full-loop-behavioural"

@@ -365,4 +365,23 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
   ],
   practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
   processLink: { label: 'See the Googleyness row in the reported process', fragment: 'google-interview-process-1-stage-googleyness-interview' },
+  // The facts above, one question each: Google's own examples first, then the accounts.
+  drill: {
+    note: 'Google\'s examples come from its interview tips and its re:Work guide; the rest are what the accounts report, the last two from general software engineer loops.',
+    questions: [
+      { id: 'comfort-zone', text: 'How do you push yourself to grow outside your comfort zone?', source: 'Google\'s interview tips' },
+      { id: 'conflict', text: 'How would you address a conflict with someone you work with?', source: 'Google\'s interview tips' },
+      { id: 'collaboration', text: 'Tell me about a time you drove collaboration.', source: 'Google\'s interview tips' },
+      { id: 'team-impact', text: 'Tell me about a time your behavior had a positive impact on your team.', source: 'Google\'s re:Work guide' },
+      { id: 'unclear-requirements', text: 'Tell me about joining a project with unclear requirements.', source: 'Medium, April 2026' },
+      { id: 'tight-deadline', text: 'Tell me about a time you worked under a tight deadline. What would you do differently?', source: 'Medium, April 2026' },
+      { id: 'credit', text: 'A teammate takes the credit for shared work. What do you do?', source: 'LeetCode, 2024 and 2025' },
+      { id: 'every-task-p0', text: 'Every task is marked P0. What do you do?', source: 'LeetCode, 2024 and 2025' },
+    ],
+    checks: [
+      'It is a specific time, not a habit.',
+      'It shows how I worked with others or helped the team.',
+      'For a “How would you…” question: my approach first, then a time I did it.',
+    ],
+  },
 };

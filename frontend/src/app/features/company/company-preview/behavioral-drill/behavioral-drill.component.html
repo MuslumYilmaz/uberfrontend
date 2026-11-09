@@ -1,0 +1,97 @@
+@if (questions().length) {
+  <section class="drill" [attr.id]="id('start')" [attr.aria-labelledby]="id('title')" data-testid="behavioral-drill">
+    <h3 class="drill__title" [attr.id]="id('title')">Practise one question</h3>
+    <p class="drill__intro">
+      Pick a question and tell one story in its parts, then check it before you say it out loud. What you write stays
+      on this device.
+    </p>
+    @if (note()) {
+      <p class="drill__note">{{ note() }}</p>
+    }
+
+    <fieldset class="drill__group">
+      <legend class="drill__legend">Pick a question</legend>
+      <ul class="drill__questions">
+        @for (item of questions(); track item.id; let i = $index) {
+          <li class="drill__question">
+            <label class="drill__choice">
+              <input
+                type="radio"
+                [name]="id('question')"
+                [value]="item.id"
+                [checked]="question()?.id === item.id"
+                [disabled]="locked(i)"
+                (change)="pick(item.id)"
+                [attr.data-testid]="'behavioral-drill-question-' + item.id" />
+              @if (locked(i)) {
+                <span class="drill__locked premium-locked" data-nosnippet inert>
+                  {{ item.text }} <span class="drill__source">{{ item.source }}</span>
+                </span>
+                <span class="drill__tag">Free account</span>
+              } @else {
+                <span>{{ item.text }} <span class="drill__source">{{ item.source }}</span></span>
+              }
+            </label>
+          </li>
+        }
+      </ul>
+    </fieldset>
+    <ng-content select="[drillGate]"></ng-content>
+
+    @if (question(); as current) {
+      <fieldset class="drill__group drill__shapes">
+        <legend class="drill__legend">Tell it as</legend>
+        <label class="drill__choice">
+          <input type="radio" [name]="id('shape')" value="star" [checked]="shape() === 'star'" (change)="setShape('star')"
+            data-testid="behavioral-drill-shape-star" />
+          <span><strong>STAR</strong>: situation, task, action, result</span>
+        </label>
+        <label class="drill__choice">
+          <input type="radio" [name]="id('shape')" value="car" [checked]="shape() === 'car'" (change)="setShape('car')"
+            data-testid="behavioral-drill-shape-car" />
+          <span><strong>CAR</strong>: context, action, result</span>
+        </label>
+      </fieldset>
+
+      <p class="drill__asked" data-testid="behavioral-drill-asked">
+        <span class="drill__asked-label">Your question</span> {{ current.text }}
+      </p>
+      <div class="drill__parts">
+        @for (part of parts(); track part.key) {
+          <fa-field [label]="part.label" [hint]="part.hint">
+            <span class="fa-input drill__input">
+              <textarea rows="3" [value]="story()[part.key] ?? ''" (input)="setPart(part.key, $event)"
+                [attr.data-testid]="'behavioral-drill-' + part.key"></textarea>
+            </span>
+          </fa-field>
+        }
+      </div>
+      @if (notes().length) {
+        <ul class="drill__notes" data-testid="behavioral-drill-notes">
+          @for (line of notes(); track line) {
+            <li>{{ line }}</li>
+          }
+        </ul>
+      }
+
+      <fieldset class="drill__group">
+        <legend class="drill__legend">Before you say it out loud</legend>
+        <ul class="drill__checks">
+          @for (check of checks(); track check; let i = $index) {
+            <li>
+              <label class="drill__choice">
+                <input type="checkbox" [checked]="checked(i)" (change)="toggleCheck(i)" [attr.data-testid]="'behavioral-drill-check-' + i" />
+                <span>{{ check }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+      </fieldset>
+      <div class="drill__actions">
+        <button faButton variant="ghost" size="sm" type="button" (click)="clear()" data-testid="behavioral-drill-clear">
+          Clear this story
+        </button>
+      </div>
+    }
+  </section>
+}

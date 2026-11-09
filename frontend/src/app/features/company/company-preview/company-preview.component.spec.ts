@@ -1466,6 +1466,37 @@ describe('CompanyPreviewComponent', () => {
       expect(host().querySelectorAll('.company-link--locked, .interview-process__locked').length).toBe(0);
     });
 
+    it('puts a story drill under each behavioural decoder that the gate opens one question of, for a visitor', async () => {
+      const drill = (round: string) => host().querySelector(`[aria-labelledby="${round}"] app-behavioral-drill`) as HTMLElement | null;
+      const pickable = (element: HTMLElement) => Array.from(element.querySelectorAll('.drill__questions input')).filter((input) => !(input as HTMLInputElement).disabled).length;
+
+      // Amazon is outside the gate: every question is open and no card asks for an account.
+      await createComponent('amazon');
+      const amazon = drill('amazon-round-leadership-principles') as HTMLElement;
+      expect(pickable(amazon)).toBe(9);
+      expect(amazon.querySelector('.premium-locked')).toBeNull();
+      expect(gateCard('company-drill-gate')).toBeNull();
+
+      for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['google', 'google-round-googleyness']]) {
+        await createComponent(slug);
+        const section = drill(round) as HTMLElement;
+        const total = section.querySelectorAll('.drill__questions input').length;
+        expect(pickable(section)).withContext(slug).toBe(1);
+        expect(section.querySelectorAll('.drill__questions .premium-locked').length).withContext(slug).toBe(total - 1);
+        // The account card sits under the questions, inside the drill, and comes back to this guide.
+        const card = section.querySelector('[data-testid="company-drill-gate"]') as HTMLElement;
+        expect(card.querySelector('.company-prompt-gate__title')?.textContent).withContext(slug).toBe(`The other ${total - 1} questions open with a free account`);
+        expect(card.querySelector('a')?.getAttribute('href')).withContext(slug).toMatch(/^\/auth\/signup\?redirectTo=/);
+      }
+
+      user.set(FREE_ACCOUNT);
+      await createComponent('meta');
+      const open = drill('meta-round-behavioural') as HTMLElement;
+      expect(pickable(open)).toBe(8);
+      expect(open.querySelector('.premium-locked')).toBeNull();
+      expect(gateCard('company-drill-gate')).toBeNull();
+    });
+
     it('opens everything for a member and leaves a guide outside the gate as it was', async () => {
       user.set(MEMBER);
       await createComponent('meta');
