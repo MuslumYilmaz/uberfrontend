@@ -106,6 +106,19 @@ describe('CodingJsPanelComponent', () => {
     expect(lastConsole.length).toBe(1);
   });
 
+  it('lists the failed tests first, each group in run order, and counts them', () => {
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    component.testResults.set([
+      { name: 'a', passed: true },
+      { name: 'b', passed: false, error: 'Expected 1 to be 2' },
+      { name: 'c', passed: true },
+      { name: 'd', passed: false, error: 'Timed out' },
+    ]);
+
+    expect(component.orderedResults().map((result) => result.name)).toEqual(['b', 'd', 'a', 'c']);
+    expect(component.failedCount()).toBe(2);
+  });
+
   it("grades a submission with the task's own tests and leaves the edited Test cases tab as it was", async () => {
     const runner = new RunnerStub();
     const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));

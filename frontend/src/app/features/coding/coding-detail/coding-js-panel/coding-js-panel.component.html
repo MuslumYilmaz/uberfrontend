@@ -409,7 +409,7 @@
                             <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
                             <ng-container *ngIf="totalCount() > 0">
                                 <span *ngIf="allPassing()" class="summary-pass">All tests passed ✓</span>
-                                <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
+                                <span *ngIf="!allPassing()" class="summary-fail" data-testid="js-failed-count">{{ failedCount() }} failed</span>
                             </ng-container>
                         </div>
                         <!-- Which tests graded this run: Submit always uses the task's own, whatever the Test cases tab holds. -->
@@ -424,7 +424,7 @@
                             All tests pass. Submit to save it as solved.
                         </p>
 
-                        <div *ngFor="let t of testResults()" class="test-card" data-testid="test-result"
+                        <div *ngFor="let t of orderedResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                             <div class="test-name">
                                 <app-fa-glyph class="test-status-icon" [icon]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></app-fa-glyph>

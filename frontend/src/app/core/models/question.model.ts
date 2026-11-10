@@ -199,6 +199,8 @@ export interface Question {
   code?: string;
   starterCode?: string;
   tests?: string;
+  /** How long each JavaScript test may run before it fails as timed out; the runner's default is 1000 ms. */
+  testTimeoutMs?: number;
   frameworkTests?: FrameworkTest[];
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]

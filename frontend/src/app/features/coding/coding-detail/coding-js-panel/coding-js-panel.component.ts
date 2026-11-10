@@ -48,7 +48,9 @@ export type JsLang = 'js' | 'ts';
 export type JsTestSuite = 'editor' | 'shipped';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 type Runner = {
-  runWithTests(args: { userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number }): Promise<RunnerOutput>;
+  runWithTests(args: {
+    userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number; testTimeoutMs?: number;
+  }): Promise<RunnerOutput>;
 };
 type ApplySolutionOptions = {
   decisionGraphAsset?: string | null;
@@ -593,7 +595,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   passedCount = computed(() => this.testResults().filter(r => r.passed).length);
   totalCount = computed(() => this.testResults().length);
+  failedCount = computed(() => this.totalCount() - this.passedCount());
   allPassing = computed(() => this.totalCount() > 0 && this.passedCount() === this.totalCount());
+  /** Failures first, each group in the order the tests ran: the row worth reading sits at the top of a short panel. */
+  orderedResults = computed(() => {
+    const results = this.testResults();
+    return [...results.filter((result) => !result.passed), ...results.filter((result) => result.passed)];
+  });
 
   startSplitDrag(ev: PointerEvent) {
     ev.preventDefault();
@@ -1864,9 +1872,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       try {
         const runner = await this.loadRunner();
         if (runId !== this._runSeq) return;
+        // 1500 ms to load the code and the tests, then each test on its own clock (the task may ask for more).
+        const testTimeoutMs = Number(q.testTimeoutMs) > 0 ? Number(q.testTimeoutMs) : undefined;
         const out = await runner.runWithTests(files
-          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500 }
-          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500 });
+          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500, testTimeoutMs }
+          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500, testTimeoutMs });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         const sandboxResults = out?.results || [];

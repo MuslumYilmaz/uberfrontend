@@ -119,6 +119,63 @@ test("Submit grades with the task's own tests, not with tests edited to pass", a
   await expect.poll(() => getMonacoModelValue(page, testsModelKey)).toContain('always passes');
 });
 
+test('a test that never settles fails on its own, and the tests around it keep their results', async ({ page }) => {
+  await page.goto('/javascript/coding/js-promise-any');
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = 'q-js-promise-any-code';
+  await waitForMonacoModel(page, codeModelKey);
+  // Right for every input except an empty one, where the promise never settles.
+  await setMonacoModelValue(page, codeModelKey, [
+    'export default function promiseAny(iterable) {',
+    '  const items = Array.from(iterable);',
+    '  return new Promise((resolve, reject) => {',
+    '    const errors = new Array(items.length);',
+    '    let rejected = 0;',
+    '    items.forEach((item, index) => {',
+    '      Promise.resolve(item).then(resolve, (reason) => {',
+    '        errors[index] = reason;',
+    '        rejected += 1;',
+    "        if (rejected === items.length) reject(new AggregateError(errors, 'All promises were rejected'));",
+    '      });',
+    '    });',
+    '  });',
+    '}',
+    '',
+  ].join('\n'));
+
+  await page.getByTestId('js-run-tests').click();
+  const rows = page.getByTestId('js-results-panel').getByTestId('test-result');
+  const timedOut = rows.filter({ hasText: 'Timed out after 1000 ms' });
+  await expect(timedOut).toHaveCount(1, { timeout: 10_000 });
+  await expect(timedOut).toContainText('empty');
+  // The failure is listed first, and the tests after the hang still ran and passed.
+  await expect(rows.first()).toContainText('Timed out after 1000 ms');
+  await expect.poll(async () => (await rows.filter({ hasText: 'PASS' }).count())).toBeGreaterThanOrEqual(4);
+});
+
+test('a test stuck in an endless loop is named, and the tests before it keep their results', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, codeModelKey);
+  // Fine for values inside the range; a value above it spins forever and blocks the worker.
+  await setMonacoModelValue(page, codeModelKey, [
+    'export default function clamp(value, lower, upper) {',
+    '  while (value > upper) {}',
+    '  return Math.max(value, lower);',
+    '}',
+    '',
+  ].join('\n'));
+
+  await page.getByTestId('js-run-tests').click();
+  const results = page.getByTestId('js-results-panel');
+  const rows = results.getByTestId('test-result');
+  await expect(rows.filter({ hasText: 'kept the runner busy' })).toHaveCount(1, { timeout: 10_000 });
+  await expect(rows.filter({ hasText: 'kept the runner busy' })).toContainText('above upper');
+  await expect(rows.filter({ hasText: 'Not run' })).toContainText('on bounds');
+  await expect(rows.filter({ hasText: 'PASS' })).toHaveCount(2);
+});
+
 test('filter empty state shows reset option and recovers', async ({ page }) => {
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
