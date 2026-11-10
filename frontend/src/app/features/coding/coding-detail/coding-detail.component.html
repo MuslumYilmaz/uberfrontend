@@ -1211,8 +1211,9 @@
       </div>
     </div>
   </div>
-  <!-- A lock page keeps the way on: Prev and Next step over the other Premium tasks to free work. Drawn in the browser
-       only: prerendered, the footer's markup and styles add ~12.7 KB to each of ~130 noindex lock pages. -->
+  <!-- A lock page keeps the way on: Prev and Next step over the other Premium tasks to free work where some is left.
+       Drawn in the browser only: prerendered, the footer's markup and styles add ~12.7 KB to each of ~130 noindex
+       lock pages. -->
   <app-footer *ngIf="browserViewReady() && !hideFooterBar && !isCourseContext()" data-nosnippet data-testid="coding-locked-footer" mode="practice"
     [progressText]="progressText" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [prevHref]="prevHref()" [nextHref]="nextHref()" [nextLabel]="footerNextLabel()"

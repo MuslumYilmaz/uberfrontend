@@ -806,13 +806,17 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.postPass.set(null);
   }
 
-  /** "Next: Throttle", or a plain label when the next task belongs to another bank; none where Next has nowhere to go. */
+  /**
+   * "Next: Throttle", or a plain label when the next task belongs to another bank; "(Premium)" when it opens on a lock
+   * page; none where Next has nowhere to go.
+   */
   postPassNextLabel(): string | null {
     if (this.isCourseContext() || !this.hasNext()) return null;
-    const index = this.neighborIndex(1);
+    const index = this.stepIndex(1);
     const id = index === null ? null : (this.practice ? this.practice.items[index]?.id : this.allQuestions[index]?.id);
     const title = id ? this.findQuestionById(id)?.title : null;
-    return title ? `Next: ${title}` : 'Next task';
+    const premium = index !== null && this.lockedAt(index) ? ' (Premium)' : '';
+    return title ? `Next: ${title}${premium}` : `Next task${premium}`;
   }
 
   private showPostPass(card: PostPassCard): void {
@@ -971,16 +975,18 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
   hasPrev(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.neighborIndex(-1) !== null;
+    return this.stepIndex(-1) !== null;
   }
   hasNext(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.neighborIndex(1) !== null;
+    return this.stepIndex(1) !== null;
   }
 
-  /** A visitor who would meet locks is told why Next skips some tasks: it only opens the ones they can. */
+  /** A visitor who would meet locks is told where Next goes: the next free task, or a Premium one once none is left. */
   footerNextLabel(): string {
-    return isQuestionLockedForTier({ access: 'premium' }, this.auth.user()) ? 'Next free task' : 'Next';
+    const index = this.stepIndex(1);
+    if (index === null || !isQuestionLockedForTier({ access: 'premium' }, this.auth.user())) return 'Next';
+    return this.lockedAt(index) ? 'Next Premium task' : 'Next free task';
   }
 
   prevHref(): string | null {
@@ -992,23 +998,30 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   /**
-   * The nearest task in that direction this visitor can open: a guest or a free account steps over Premium tasks,
-   * so Prev and Next never lead to a lock page and a lock page leads on to free work.
+   * Where Prev or Next goes. A guest or a free account steps over Premium tasks to the nearest one they can open; once
+   * none is left that way, the button opens the task right next door, lock page and price included, instead of going
+   * dead (react-counter is the last free React task in this order).
    */
-  private neighborIndex(offset: 1 | -1): number | null {
+  private stepIndex(offset: 1 | -1): number | null {
+    const from = this.practice ? this.practice.index : this.currentIndex;
     const length = this.practice ? this.practice.items.length : this.allQuestions.length;
-    const user = this.auth.user();
-    for (let index = (this.practice ? this.practice.index : this.currentIndex) + offset; index >= 0 && index < length; index += offset) {
-      const access = this.practice
-        ? this.practice.items[index].access ?? this.findQuestionById(this.practice.items[index].id)?.access
-        : this.allQuestions[index]?.access;
-      if (!access || !isQuestionLockedForTier({ access }, user)) return index;
+    for (let index = from + offset; index >= 0 && index < length; index += offset) {
+      if (!this.lockedAt(index)) return index;
     }
-    return null;
+    const neighbor = from + offset;
+    return neighbor >= 0 && neighbor < length ? neighbor : null;
+  }
+
+  /** Whether this visitor meets a lock on the list's task at that index. */
+  private lockedAt(index: number): boolean {
+    const access = this.practice
+      ? this.practice.items[index]?.access ?? this.findQuestionById(this.practice.items[index]?.id ?? '')?.access
+      : this.allQuestions[index]?.access;
+    return !!access && isQuestionLockedForTier({ access }, this.auth.user());
   }
 
   private adjacentPracticeItem(offset: 1 | -1) {
-    const index = this.neighborIndex(offset);
+    const index = this.stepIndex(offset);
     if (index === null) return undefined;
     if (this.practice) return this.practice.items[index];
     const question = this.allQuestions[index];
@@ -2209,9 +2222,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.stepTo(1);
   }
 
-  /** Opens the nearest task in that direction this visitor can open (neighborIndex). */
+  /** Opens the task Prev or Next points at (stepIndex). */
   private stepTo(offset: 1 | -1) {
-    const index = this.neighborIndex(offset);
+    const index = this.stepIndex(offset);
     if (index === null) return;
     if (this.practice) {
       this.navToPracticeIndex(index);

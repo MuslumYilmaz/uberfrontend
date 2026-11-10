@@ -53,6 +53,24 @@ test('a guest on a Premium task sees the price where they are, and the footer wa
   await expect(page.getByTestId('coding-locked-footer')).toHaveCount(0);
 });
 
+test('past the last free React task, Next opens the next Premium task and its price instead of going dead', async ({ page }) => {
+  // react-counter is the homepage demo and the last free React task in the practice order.
+  await page.goto('/react/coding/react-counter');
+  await expect(page.getByTestId('coding-workspace-panel')).toBeVisible({ timeout: 30_000 });
+  const next = page.getByTestId('practice-footer').getByTestId('footer-next');
+  await expect(next).toBeEnabled();
+  await expect(next).toContainText('Next Premium task');
+
+  await next.click();
+  await expect(page).not.toHaveURL(/react-counter$/);
+  await expect(page.getByTestId('coding-locked-price')).toContainText('Premium is $');
+  // Back from that lock page, Prev steps over any other lock to free work.
+  const prev = page.getByTestId('coding-locked-footer').getByTestId('footer-prev');
+  await expect(prev).toBeEnabled();
+  await prev.click();
+  await expect(page.getByTestId('coding-locked-price')).toHaveCount(0);
+});
+
 test('Free only hides the tasks a guest would meet a lock on, and stays on for the next visit', async ({ page }) => {
   await page.goto('/coding?tech=javascript');
   const results = page.getByTestId('coding-list-results');

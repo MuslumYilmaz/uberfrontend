@@ -367,10 +367,23 @@ describe('CodingDetailComponent', () => {
     component.next();
     expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', 'locked-one']);
 
-    // With only Premium tasks ahead, a free visitor has no Next at all.
+    // Past the last free task, Next does not go dead: it opens the Premium task next door and says so.
     authUser.set({ _id: 'free-user', accessTier: 'free' });
     component.allQuestions = component.allQuestions.slice(0, 3);
+    expect(component.hasNext()).toBeTrue();
+    expect(component.footerNextLabel()).toBe('Next Premium task');
+    expect(component.nextHref()).toBeNull();
+    navigate.calls.reset();
+    component.next();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', 'locked-one']);
+
+    // From the last lock page, Prev steps back over the other lock to the free task; Next has nowhere to go.
+    navigate.calls.reset();
+    component.currentIndex = 2;
+    component.prev();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', 'current']);
     expect(component.hasNext()).toBeFalse();
+    expect(component.footerNextLabel()).toBe('Next');
   });
 
   it('names the task the post-pass Next opens, and counts a plan day in the footer', () => {
@@ -386,6 +399,14 @@ describe('CodingDetailComponent', () => {
 
     // A guest is sent past the lock, and the card names where.
     expect(component.postPassNextLabel()).toBe('Next: Count Vowels');
+    expect(component.footerNextLabel()).toBe('Next free task');
+
+    // From the last free task, the card names the Premium task Next opens.
+    component.currentIndex = 2;
+    component.allQuestions = [...component.allQuestions, { id: 'locked-after', access: 'premium', title: 'Promise Pool' } as Question];
+    expect(component.postPassNextLabel()).toBe('Next: Promise Pool (Premium)');
+    component.allQuestions = component.allQuestions.slice(0, 3);
+    component.currentIndex = 0;
 
     // From a plan day, a task outside this bank keeps a plain label, and the footer names the day.
     (component as any).practice = {
