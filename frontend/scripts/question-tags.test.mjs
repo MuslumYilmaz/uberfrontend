@@ -188,6 +188,18 @@ async function assertEditorialCorrections(errors) {
     errors.push("vue/trivia.json: watch-vs-watchEffect: direct watchEffect self-mutation is still labeled an infinite loop");
   }
 
+  // RxJS 7's shareReplay resets on error (resetOnError: true), so the next subscriber requests again; only a fallback
+  // returned before the cache is kept. The page once said the error itself was replayed forever.
+  const shareReplay = await readQuestion("angular", "trivia", "rxjs-sharereplay-angular-how-it-breaks-your-app");
+  const shareReplayContract = JSON.stringify(shareReplay || {});
+  if (!shareReplay || shareReplay.updatedAt !== "2026-11-10") {
+    errors.push("angular/trivia.json: shareReplay traps: missing current correction date");
+  }
+  if (/replay that error forever|error is also replayed|permanent error states/i.test(shareReplayContract)
+      || !/does not cache an error/.test(shareReplayContract)) {
+    errors.push("angular/trivia.json: shareReplay traps: an error must not be described as cached; the fallback before the cache is");
+  }
+
   const angularForms = await readQuestion("angular", "trivia", "angular-template-driven-vs-reactive-forms-which-scales");
   const angularContract = JSON.stringify(angularForms || {});
   if (!angularForms || angularForms.updatedAt !== "2026-08-27") {

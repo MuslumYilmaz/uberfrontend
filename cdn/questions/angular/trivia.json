@@ -6572,9 +6572,9 @@
               "User navigates away/back and sees outdated data."
             ],
             [
-              "Error caching",
-              "If the source errors, the error is also replayed.",
-              "Stream is permanently broken until reload."
+              "Cached fallback",
+              "A catchError before shareReplay turns a failed request into a value, and the cache keeps that value.",
+              "Users keep seeing the fallback after the API recovers; no new request goes out until the stream is rebuilt."
             ],
             [
               "Unexpected global state",
@@ -6620,12 +6620,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>Another subtle trap: error caching</strong><br><br>If the HTTP call errors once, <code>shareReplay</code> will replay that error forever. All future subscribers instantly get the error, and the stream never retries unless you rebuild it or add <code>retry</code> logic."
+          "text": "<strong>Another subtle trap: caching the fallback</strong><br><br><code>shareReplay</code> does not cache an error. In RxJS 7 the subscribers at that moment receive it, and the next subscriber subscribes to the source again, so a new request goes out. What does get cached is whatever you turn the error into: a <code>catchError</code> that returns a fallback <em>before</em> <code>shareReplay</code> completes the stream with that fallback, and every later subscriber receives it without a new request. Retry before the cache, and put the fallback after it."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "users$ = this.http.get<User[]>('/api/users').pipe(\n  retry(1),\n  shareReplay({ bufferSize: 1, refCount: true })\n);"
+          "code": "users$ = this.http.get<User[]>('/api/users').pipe(\n  retry(1),\n  shareReplay({ bufferSize: 1, refCount: true }),\n  // After the cache: a later subscriber triggers a new request instead of reading the fallback.\n  catchError(() => of([]))\n);"
         },
         {
           "type": "text",
@@ -6664,7 +6664,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br><code>shareReplay</code> shares a single subscription and caches the last values. It is great for avoiding duplicate HTTP calls, but can cause memory leaks, stale data, and permanent error states if used carelessly. In Angular, the safe default is <code>shareReplay({ bufferSize: 1, refCount: true })</code> and a clear cache invalidation strategy."
+          "text": "<strong>Interview summary</strong><br><br><code>shareReplay</code> shares a single subscription and caches the last values. It is great for avoiding duplicate HTTP calls, but can cause memory leaks, stale data, and a cached fallback that outlives the failure if used carelessly. In Angular, the safe default is <code>shareReplay({ bufferSize: 1, refCount: true })</code> and a clear cache invalidation strategy."
         }
       ]
     },
@@ -6677,7 +6677,7 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-11-10",
     "seo": {
       "title": "RxJS shareReplay in Angular: Caching and refCount Traps",
       "description": "Use shareReplay carefully in Angular services: it is great for cold HTTP caching, but wrong reset assumptions can keep stale values or long-lived subscriptions around."

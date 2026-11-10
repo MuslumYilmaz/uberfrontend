@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "export default function flattenOnce(arr) {\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+      "code": "export default function flattenOnce(arr) {\n  const result = [];\n  arr.forEach((el) => {\n    if (Array.isArray(el)) {\n      el.forEach((item) => result.push(item));\n    } else {\n      result.push(el);\n    }\n  });\n  return result;\n}\n",
       "nodes": [
         {
           "id": "d1-accumulate-in-new-array",
@@ -32,16 +32,16 @@
           "tradeoff": "Matches the problem exactly, but won’t flatten nested arrays beyond one level."
         },
         {
-          "id": "d3-spread-array-elements-into-result",
-          "title": "Spread array elements into the result",
+          "id": "d3-push-each-child-skipping-holes",
+          "title": "Push each child, skipping holes",
           "anchor": {
             "lineStart": 5,
             "lineEnd": 5,
-            "snippet": "result.push(...el);"
+            "snippet": "el.forEach((item) => result.push(item));"
           },
-          "why": "Spread inserts each child element directly, so one nesting layer disappears.",
-          "alternative": "Loop through `el` and push each item manually.",
-          "tradeoff": "Compact and readable, though explicit loops can be clearer to some readers."
+          "why": "Each child lands directly in the result, so one nesting layer disappears, and `forEach` skips the holes of a sparse array as `flat(1)` does.",
+          "alternative": "Spread the child with `result.push(...el)`.",
+          "tradeoff": "Spread is shorter, but it reads a hole as `undefined`, so `[2, , 3]` would gain an extra value."
         }
       ]
     },
