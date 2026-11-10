@@ -87,6 +87,13 @@ if (!FOUNDATIONS_TRACK) {
 
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
 
+/** "$24" for whole dollars, "$9.60" otherwise; the checkout charges US dollars everywhere. */
+function heroDollars(cents: number): string {
+  const dollars = cents / 100;
+  const digits = Number.isInteger(dollars) ? 0 : 2;
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(dollars);
+}
+
 @Component({
     imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, ShowcasePracticeCardComponent, ShowcaseInterviewPanelComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, ConversionStickyCtaComponent],
     selector: 'app-showcase-page',
@@ -211,6 +218,22 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   heroHeadline = 'Practice frontend interviews in a real coding workflow';
   heroLede = 'Build UI, run checks, inspect behavior, and explain edge cases and tradeoffs like you would in an interview.';
+
+  /**
+   * The first screen says what is free and what Premium costs, so no one has to scroll to the plans to learn it. It
+   * reads the plan cards' prices: the list price, then the visitor's regional one once the checkout config arrives,
+   * so the two never disagree.
+   */
+  heroOffer(): string {
+    const regional = this.pricingRegionalPricing;
+    const cents = (plan: 'monthly' | 'annual') => regional?.prices?.[plan] ?? this.pricingPlanDetails?.[plan]?.amountCents;
+    const monthly = cents('monthly');
+    const annual = cents('annual');
+    const prices = monthly && annual
+      ? ` for ${heroDollars(monthly)} a month or ${heroDollars(annual)} a year${regional ? ` (prices for ${regional.countryName})` : ', less in many countries'}`
+      : '';
+    return `Most questions are free, no account needed. Premium adds ${this.premiumPracticeCount} practice prompts and timed company rehearsals${prices}.`;
+  }
 
   readonly homepagePrepRoadmapItems: PrepRoadmapItem[] = [
     {
