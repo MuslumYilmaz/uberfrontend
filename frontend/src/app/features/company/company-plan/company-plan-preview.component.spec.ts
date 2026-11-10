@@ -298,7 +298,14 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(testId('company-plan-save-link')?.getAttribute('href')).toContain('/auth/signup?redirectTo=');
       expect(text('[data-testid="company-plan-save-link"]')).toBe('Save this plan with a free account');
       expect(text('[data-testid="company-plan-save-line"] .preview__save-why')).toBe('It keeps your plan and your progress on every device.');
-      expect(text('[data-testid="company-plan-cta-note"]')).toBe('Your plan is part of Premium. You land on it right after payment.');
+    });
+
+    it('says what paying adds with the same numbers as the panel, not that the whole plan is Premium', () => {
+      setup(ELEVENLABS);
+      const [, open, locked] = text('.preview__facts li').match(/: (\d+) open now, (\d+) with Premium/) ?? [];
+      const note = text('[data-testid="company-plan-cta-note"]');
+      expect(note).toBe(`${open} of ${Number(open) + Number(locked)} tasks are open now. Premium opens ${locked === '1' ? 'the locked one' : `the ${locked} locked ones`} and your plan page, and you land on it right after payment.`);
+      expect(note).not.toContain('part of Premium');
     });
 
     it('goes to pricing with the company in the source, after keeping the answers', () => {
@@ -335,7 +342,7 @@ describe('CompanyPlanPreviewComponent', () => {
   describe('for a free account', () => {
     it('says the plan is saved when it is on the account', () => {
       setup(ELEVENLABS, { viewer: 'free', saved: { companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' } });
-      expect(text('[data-testid="company-plan-cta-note"]')).toBe('Saved to your account. Your plan is part of Premium, and you land on it right after payment.');
+      expect(text('[data-testid="company-plan-cta-note"]')).toMatch(/^Saved to your account\. \d+ of \d+ tasks are open now\. Premium opens (the locked one|the \d+ locked ones) and your plan page, and you land on it right after payment\.$/);
       expect(testId('company-plan-save-link')).toBeNull();
     });
 

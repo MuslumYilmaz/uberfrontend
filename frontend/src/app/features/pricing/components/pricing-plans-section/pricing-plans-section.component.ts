@@ -118,7 +118,8 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         <ng-template #offerV2HeroCopy>
           <p class="pr-hero__lede">
             Every plan unlocks the same Premium library; only the access period changes. Every Premium coding question
-            ships with a guided solution, and JavaScript and debugging tasks run checks in the browser.
+            ships with a guided solution; JavaScript and debugging tasks run checks in the browser, and most React,
+            Angular and Vue tasks do too.
           </p>
         </ng-template>
         <div class="pr-proof-chips pr-hero__chips" aria-label="Premium highlights">
@@ -530,9 +531,10 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       premiumValue: 'On every Premium coding question',
     },
     {
+      // Free framework tasks run checks too (the product proof below sends visitors to the free React Counter for it).
       label: 'Runnable checks',
-      freeValue: 'JavaScript and debugging tasks',
-      premiumValue: 'JavaScript and debugging tasks, and most React, Angular and Vue tasks',
+      freeValue: 'JavaScript and debugging tasks, and most React, Angular and Vue tasks',
+      premiumValue: 'The same, across the whole Premium library',
     },
     {
       label: 'Front-end system design',
@@ -824,16 +826,25 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
   }
 
   // "about ₹910 a month": the regional price in the visitor's money at the backend's dated rate, rounded to two
-  // significant digits. The checkout charges dollars; the note under the cards says so.
+  // significant digits. The checkout charges dollars; the note under the cards says so. A quarter or a year is one
+  // payment, so its card names that sum too ("about ₹290 a month, ₹3,500 a year"), as its dollar line does.
   localEstimate(planId: PlanId): string | null {
     const local = this.regionalPricing?.local;
     const detail = this.planDetailForDisplay(planId);
     if (!local || !detail || this.regionalAmount(planId) === null) return null;
-    const perMonth = this.usesPerMonthHeadline(planId) || (detail.interval === 'month' && detail.intervalCount === 1);
-    const dollars = (perMonth ? detail.amountCents / this.billingMonths(detail) : detail.amountCents) / 100;
-    const amount = formatLocalMoney(roundAbout(dollars * local.rate), local.currency);
-    if (!amount) return null;
-    return perMonth ? `about ${amount} a month` : `about ${amount}${this.priceSuffix(planId)}`;
+    const inLocal = (cents: number) => formatLocalMoney(roundAbout((cents / 100) * local.rate), local.currency);
+    const months = this.billingMonths(detail);
+    const monthly = detail.interval === 'month' && detail.intervalCount === 1;
+    if (!monthly && !this.usesPerMonthHeadline(planId)) {
+      const once = inLocal(detail.amountCents);
+      return once ? `about ${once}${this.priceSuffix(planId)}` : null;
+    }
+    const perMonth = inLocal(detail.amountCents / months);
+    if (!perMonth) return null;
+    const total = monthly ? null : inLocal(detail.amountCents);
+    if (!total) return `about ${perMonth} a month`;
+    const yearly = detail.interval === 'year' && detail.intervalCount === 1;
+    return `about ${perMonth} a month, ${total} ${yearly ? 'a year' : `every ${months} months`}`;
   }
 
   localRateDate(): string {

@@ -22,6 +22,7 @@ import {
   planFrameworkLine,
   planPricingSource,
   planSummaryLine,
+  planUnlockNote,
   practiceState,
   previewQueryParams,
   taskGroups,
@@ -311,18 +312,12 @@ export class CompanyPlanPreviewComponent {
   });
 
   readonly ctaNote = computed(() => {
-    if (this.plan()?.general) return '';
+    const plan = this.plan();
+    if (!plan || plan.general) return '';
     if (this.replacing()) return `This replaces your ${this.replacing()} plan. Your solved tasks stay.`;
-    switch (this.viewer()) {
-      case 'premium':
-        return 'You have Premium, so your plan opens right away.';
-      case 'free':
-        return this.plans.saved()
-          ? 'Saved to your account. Your plan is part of Premium, and you land on it right after payment.'
-          : 'Your plan is part of Premium. You land on it right after payment.';
-      default:
-        return 'Your plan is part of Premium. You land on it right after payment.';
-    }
+    if (this.viewer() === 'premium') return 'You have Premium, so your plan opens right away.';
+    const note = planUnlockNote(openTaskCount(plan), plan.tasks.length);
+    return this.viewer() === 'free' && this.plans.saved() ? `Saved to your account. ${note}` : note;
   });
 
   readonly pricingParams = computed(() => ({ src: planPricingSource(this.plan()?.companies[0]?.slug) }));

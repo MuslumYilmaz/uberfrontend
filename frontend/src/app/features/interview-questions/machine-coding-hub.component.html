@@ -53,6 +53,7 @@
           <span>#{{ question.rank }}</span>
           <span>{{ question.tier }}</span>
           <span>{{ question.difficulty }}</span>
+          <span *ngIf="isPremium(question)" class="machine-question-card__premium" data-testid="machine-question-premium">Premium</span>
         </div>
         <h3>{{ question.title }}</h3>
         <p>{{ question.signal }}</p>

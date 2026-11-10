@@ -1,7 +1,7 @@
 import rawPlanData from '../../../../../../cdn/questions/company-plan-data.json';
 import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model';
 import { CompanyPlanData, PlannedTask, buildCompanyPlan } from './company-plan.engine';
-import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planFrameworkChips, planFrameworkLine, planPricingSource, practiceState, previewQueryParams, roundSourcesLine, whyLine, whyLineFor, hoursText } from './company-plan.format';
+import { companyPlanPricingCopy, companySetLine, nextRoundName, planDateChip, planDatePassed, planFrameworkChips, planFrameworkLine, planPricingSource, planUnlockNote, practiceState, previewQueryParams, roundSourcesLine, whyLine, whyLineFor, hoursText } from './company-plan.format';
 
 const DATA = rawPlanData as unknown as CompanyPlanData;
 
@@ -136,24 +136,51 @@ describe('companyPlanPricingCopy', () => {
 
   it('promises a live preview for framework tasks and tests for JavaScript, never checks', () => {
     const counts = DATA.general.premiumCounts;
-    expect(copyFor('elevenlabs').lead).toEqual([
-      'Your full ElevenLabs plan',
+    const elevenlabs = copyFor('elevenlabs').lead;
+    expect(elevenlabs[0]).toMatch(/^The (locked task|\d locked tasks) in your ElevenLabs plan$/);
+    expect(elevenlabs.slice(1)).toEqual([
       `${counts.react} Premium React tasks with a live preview`,
       `${counts.systemDesign} Premium system design walkthroughs`,
     ]);
     // A plan with a timed rehearsal names it right after the plan, since that is what most buyers pay for.
-    expect(copyFor('meta').lead).toEqual([
-      'Your full Meta plan',
+    const meta = copyFor('meta').lead;
+    expect(meta[0]).toMatch(/^The (locked task|\d locked tasks) in your Meta plan$/);
+    expect(meta.slice(1)).toEqual([
       'A timed rehearsal of the Meta coding round',
       `${counts.javascript} Premium JavaScript tasks with browser tests`,
       `${counts.systemDesign} Premium system design walkthroughs`,
     ]);
-    for (const line of [...copyFor('elevenlabs').lead, ...copyFor('meta').lead]) expect(line).not.toMatch(/check/i);
+    for (const line of [...elevenlabs, ...meta]) expect(line).not.toMatch(/check/i);
+  });
+
+  it('names what Premium adds to the open tasks, never "the full plan" while some are open', () => {
+    const walmart = DATA.companies['walmart'];
+    const premiumOnly = {
+      ...DATA,
+      general: { ...DATA.general, guides: { people: '', design: '' } },
+      companies: { walmart: { ...walmart, variants: walmart.variants.map((list) => ({ ...list, tasks: list.tasks.filter((row) => DATA.tasks[row.id]?.access === 'premium') })) } },
+    } as CompanyPlanData;
+    expect(copyFor('walmart', premiumOnly).lead[0]).toBe('Every task in your Walmart plan');
+    expect(copyFor('walmart').lead[0]).toMatch(/^The (locked task|\d locked tasks) in your Walmart plan$/);
+    // The engine always adds a Premium pick, so a plan with every task open is built here by hand.
+    const answers: CompanyPlanAnswers = { companies: [{ slug: 'walmart' }], when: 'next-week', level: 'senior' };
+    const plan = buildCompanyPlan(DATA, { companies: ['walmart'], when: 'next-week', level: 'senior', today: '2026-11-02' });
+    const allOpen = { ...plan, tasks: plan.tasks.filter((task) => task.access === 'free') };
+    expect(companyPlanPricingCopy(DATA, answers, allOpen).lead[0]).toBe('Your Walmart plan page, with your progress');
   });
 
   it('leaves the counts out when the data predates them', () => {
     const old = { ...DATA, general: { ...DATA.general, premiumCounts: undefined } } as unknown as CompanyPlanData;
-    expect(copyFor('elevenlabs', old).lead).toEqual(['Your full ElevenLabs plan']);
+    expect(copyFor('elevenlabs', old).lead).toEqual([jasmine.stringMatching(/^The (locked task|\d locked tasks) in your ElevenLabs plan$/)]);
+  });
+});
+
+describe('planUnlockNote', () => {
+  it('says what paying adds in the plan\'s own numbers', () => {
+    expect(planUnlockNote(5, 6)).toBe('5 of 6 tasks are open now. Premium opens the locked one and your plan page, and you land on it right after payment.');
+    expect(planUnlockNote(3, 6)).toBe('3 of 6 tasks are open now. Premium opens the 3 locked ones and your plan page, and you land on it right after payment.');
+    expect(planUnlockNote(0, 6)).toBe('Every task opens with Premium, and you land on your plan page right after payment.');
+    expect(planUnlockNote(6, 6)).toBe('Every task is open now. Premium adds your plan page with your progress, and you land on it right after payment.');
   });
 });
 

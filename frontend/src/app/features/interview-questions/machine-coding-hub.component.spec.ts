@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SeoService } from '../../core/services/seo.service';
+import { PREMIUM_QUESTION_ROUTES } from '../../generated/premium-question-routes';
 import { MachineCodingHubComponent } from './machine-coding-hub.component';
 
 describe('MachineCodingHubComponent', () => {
@@ -73,6 +74,18 @@ describe('MachineCodingHubComponent', () => {
     expect(nestedCheckbox?.getAttribute('href') || '').toContain('/react/coding/react-nested-checkboxes');
     expect(dataTable?.getAttribute('href') || '').toContain('/react/coding/react-pagination-table');
     expect(transferList?.getAttribute('href') || '').toContain('/react/coding/react-transfer-list');
+  });
+
+  it('marks every Premium prompt before the click, from the generated Premium routes', () => {
+    const host = fixture.nativeElement as HTMLElement;
+    const cards = Array.from(host.querySelectorAll<HTMLAnchorElement>('.machine-question-card'));
+    const marked = cards.filter((card) => card.querySelector('[data-testid="machine-question-premium"]'));
+    const premium = cards.filter((card) => PREMIUM_QUESTION_ROUTES.includes(card.getAttribute('href') || ''));
+
+    expect(premium.length).toBeGreaterThan(0);
+    expect(marked).toEqual(premium);
+    // The free autocomplete stays unmarked, so the list still shows where to start without paying.
+    expect(host.querySelector('[data-testid="machine-question-3"] [data-testid="machine-question-premium"]')).toBeNull();
   });
 
   it('renders rubric, timebox, worked example, and FAQ sections', () => {

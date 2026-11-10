@@ -150,12 +150,21 @@ const capitalizeTechnologies = (text: string): string => {
   );
 };
 
+/**
+ * The complete sentences in one line: each ends at ".", "!" or "?" followed by a space or the end of the line. A dot
+ * inside a name ("Promise.all", "JSON.stringify") ends nothing, so the sentence around it keeps its start.
+ */
+const sentencesIn = (line: string): string[] =>
+  line
+    .replace(/([.!?]+)\s+/g, '$1\u0000')
+    .split('\u0000')
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => /[.!?]$/.test(sentence));
+
 const sentenceBoundaryParts = (text: string): string[] => {
   const normalized = capitalizeTechnologies(normalizeText(text));
   if (!normalized) return [];
-  return (normalized.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [])
-    .map((sentence) => sentence.trim())
-    .filter(Boolean);
+  return sentencesIn(normalized);
 };
 
 const COMPLETE_SENTENCE_VERB_PATTERN = /\b(?:is|are|be|being|been|has|have|do|does|must|should|can|will|accept|account|allow|apply|avoid|build|call|cancel|choose|clear|collect|compare|compose|connect|consider|copy|create|decide|define|derive|design|disable|discuss|display|emit|enable|ensure|execute|explain|expose|fetch|find|flatten|focus|handle|highlight|highlights|ignore|implement|include|invoke|keep|limit|load|maintain|make|match|matches|merge|mirror|mirrors|model|persist|plan|point|points|practice|preserve|provide|read|receive|recognize|reject|remove|render|resolve|return|returns|restore|run|set|show|simulate|sort|store|submit|support|supports|surface|take|test|tests|track|understand|update|use|validate|visit|write)\b/i;
@@ -187,7 +196,7 @@ const cleanCompleteSentence = (raw: string, requireCompleteShape = true): string
 const completePublicSentences = (raw: string): string[] => {
   return String(raw || '')
     .split(/\r?\n+/)
-    .flatMap((line) => line.match(/[^.!?]+[.!?]+(?=\s|$)/g) || [])
+    .flatMap(sentencesIn)
     .map((sentence) => cleanCompleteSentence(sentence.replace(/^\s*[-*]\s+/, '')))
     .filter(Boolean);
 };

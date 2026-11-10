@@ -227,7 +227,7 @@ describe('PricingComponent', () => {
       expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\./);
       expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
       expect(firstCardLines()).toEqual([
-        'Your full ElevenLabs plan',
+        jasmine.stringMatching(/^The (locked task|\d locked tasks) in your ElevenLabs plan$/),
         `${PLAN_DATA.general.premiumCounts.react} Premium React tasks with a live preview`,
         `${PLAN_DATA.general.premiumCounts.systemDesign} Premium system design walkthroughs`,
         'Cancel before the next renewal',
