@@ -2,10 +2,17 @@
   display: block;
 }
 
+/* The gutter sits inside the box: the text keeps its 980px measure on desktop and an edge on phones. */
 .iq-wrap {
-  max-width: 980px;
+  max-width: calc(980px + 2 * var(--uf-page-pad-x));
   margin: 0 auto;
-  padding: 20px 0 42px;
+  padding: 20px var(--uf-page-pad-x) 42px;
+}
+
+@media (max-width: 639px) {
+  .iq-wrap {
+    padding-inline: var(--uf-space-4);
+  }
 }
 
 .iq-header {

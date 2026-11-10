@@ -140,6 +140,9 @@ describe('ShowcasePageComponent', () => {
     } as any);
     Object.defineProperty(component, 'isBrowser', { value: true });
     expect(component.pricingRegionalPricing).toBeNull();
+    // Before the config the first screen names the list prices, as the prerendered cards do.
+    expect(component.heroOffer()).toContain(`Premium adds ${component.premiumPracticeCount} practice prompts`);
+    expect(component.heroOffer()).toMatch(/ a year, less in many countries\.$/);
 
     await (component as any).loadPricingConfig();
 
@@ -150,6 +153,8 @@ describe('ShowcasePageComponent', () => {
     // The homepage cards show the same regional prices the checkout charges.
     expect(component.pricingRegionalPricing?.countryCode).toBe('TR');
     expect(component.pricingRegionalPricing?.prices?.quarterly).toBe(1450);
+    // Once the visitor's prices arrive, the first screen says the same ones the cards charge.
+    expect(component.heroOffer()).toContain('for $6 a month or $39.50 a year (prices for Türkiye).');
   });
 
   it('posts the trimmed contact message and clears the form after a successful send', async () => {
@@ -323,13 +328,13 @@ describe('ShowcasePageComponent', () => {
     expect(comesBefore(demoTitle, roadmap)).toBeTrue();
   });
 
-  it('labels homepage company cards as editorial practice groupings', () => {
+  it('says what a company guide holds, and keeps its prompts labelled as editorial practice', () => {
     const page: HTMLElement = fixture.nativeElement;
     const lead = page.querySelector('.company-lede') as HTMLElement;
     const disclaimer = page.querySelector('[data-testid="company-practice-disclaimer"]') as HTMLElement;
 
     expect(lead.textContent?.trim()).toBe(
-      'A few FrontendAtlas editorial practice groupings across UI, JavaScript, and system design.',
+      'Each guide lists the rounds candidates reported, with their sources, and practice prompts modelled on them.',
     );
     expect(disclaimer.textContent?.trim()).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',

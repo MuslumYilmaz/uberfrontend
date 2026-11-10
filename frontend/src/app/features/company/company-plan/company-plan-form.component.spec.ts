@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angul
 import { BehaviorSubject, of } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { CompanyPlanFormComponent } from './company-plan-form.component';
+import { COMPANY_PLAN_WHEEL } from './company-plan-wheel';
 import { CompanyPlanData } from './company-plan.engine';
 import { CompanyPlanService } from './company-plan.service';
 
@@ -22,6 +23,8 @@ const DATA = {
   tasks: { 'lead-task': { id: 'lead-task', title: 'Lead task', route: '/react/coding/lead-task', kind: 'coding', access: 'free', minutes: 30 } },
   general: { starters: [], formatPractice: { react: [], angular: [], vue: [], javascript: [] }, guides: { people: '/guides/behavioral', design: '/guides/system-design-blueprint' }, premiumCounts: {} },
   companies: {
+    google: company('Google'),
+    uber: company('Uber'),
     elevenlabs: company('ElevenLabs'),
     agoda: company('Agoda'),
     stripe: company('Stripe', { framework: 'javascript' }),
@@ -127,26 +130,26 @@ describe('CompanyPlanFormComponent', () => {
 
     it('names the rotating company for screen readers', () => {
       setup();
-      expect(host.querySelector('[data-testid="company-plan-slot"]')?.getAttribute('aria-label')).toBe('Choose companies. Now: ElevenLabs');
+      expect(host.querySelector('[data-testid="company-plan-slot"]')?.getAttribute('aria-label')).toBe('Choose companies. Now: Google');
       component.wheelIndex.set(1);
       fixture.detectChanges();
-      expect(host.querySelector('[data-testid="company-plan-slot"]')?.getAttribute('aria-label')).toBe('Choose companies. Now: Agoda');
+      expect(host.querySelector('[data-testid="company-plan-slot"]')?.getAttribute('aria-label')).toBe('Choose companies. Now: Meta');
     });
 
     it('follows the sentence with the card on a wide screen', () => {
       setup({ wide: true });
-      expect(cardNames()).toEqual(['ElevenLabs']);
+      expect(cardNames()).toEqual(['Google']);
       component.wheelIndex.set(1);
       fixture.detectChanges();
-      expect(cardNames()).toEqual(['Agoda']);
+      expect(cardNames()).toEqual(['Meta']);
     });
 
     it('keeps the card still on a phone, so the page below does not jump', () => {
       setup({ wide: false });
-      expect(cardNames()).toEqual(['ElevenLabs']);
+      expect(cardNames()).toEqual(['Google']);
       component.wheelIndex.set(1);
       fixture.detectChanges();
-      expect(cardNames()).toEqual(['ElevenLabs']);
+      expect(cardNames()).toEqual(['Google']);
     });
 
     it('says "no account needed" to a visitor', () => {
@@ -173,7 +176,7 @@ describe('CompanyPlanFormComponent', () => {
         general: { ...DATA.general, guides: { people: '/guides/missing', design: '/guides/missing' } },
         companies: {
           ...DATA.companies,
-          elevenlabs: company('ElevenLabs', {
+          google: company('Google', {
             variants: [{ id: 'main', title: 'Engineers', sourceCount: 6, rounds: [round('coding', ['coding']), round('people', ['people']), round('second', ['coding'])], tasks: [{ id: 'lead-task', rounds: ['coding', 'second'], lead: true }] }],
           }),
         },
@@ -190,7 +193,7 @@ describe('CompanyPlanFormComponent', () => {
       setup();
       component.wheelIndex.set(1);
       click('company-plan-continue');
-      expect(component.picked()).toEqual(['agoda']);
+      expect(component.picked()).toEqual(['meta']);
       expect(component.step()).toBe(2);
       expect(plans.track).toHaveBeenCalledWith('company_plan_form_started');
       expect(plans.track).toHaveBeenCalledWith('company_plan_step_completed', { step: 1 });
@@ -258,7 +261,7 @@ describe('CompanyPlanFormComponent', () => {
       host.querySelector('.plan-slot')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
       fixture.detectChanges();
       expect(component.open()).toBeFalse();
-      expect(component.picked()).toEqual(['elevenlabs']);
+      expect(component.picked()).toEqual([COMPANY_PLAN_WHEEL[0].slug]);
 
       openPicker();
       document.body.click();
@@ -360,6 +363,8 @@ describe('CompanyPlanFormComponent', () => {
 
     it('carries a framework chosen on an earlier plan into the new answers, and says so', () => {
       setup({ draft: { companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior', framework: 'angular' } });
+      // The framework carries over whatever the company; this person picks ElevenLabs again.
+      component.wheelIndex.set(COMPANY_PLAN_WHEEL.findIndex((company) => company.slug === 'elevenlabs'));
       click('company-plan-continue');
       expect(host.querySelector('.plan-answers')?.textContent).toContain('Angular: Tasks follow your framework. You can change it on the plan.');
       click('company-plan-when-tomorrow');

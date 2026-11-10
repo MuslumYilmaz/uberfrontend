@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { PreviewBuilderService } from '../../../../core/services/preview-builder.service';
+import { userVisibleFailures } from '../../../../core/utils/user-visible-failure-reporter';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel';
 
 describe('CodingFrameworkPanelComponent', () => {
@@ -13,6 +14,7 @@ describe('CodingFrameworkPanelComponent', () => {
   let attemptInsights: jasmine.SpyObj<AttemptInsightsService>;
 
   beforeEach(() => {
+    spyOn(userVisibleFailures, 'report');
     codeStore = jasmine.createSpyObj<CodeStorageService>('CodeStorageService', [
       'saveFrameworkFileAsync',
       'setFrameworkBundleAsync',
@@ -543,6 +545,7 @@ describe('CodingFrameworkPanelComponent', () => {
 
     tick(29_999);
     expect(component.loadingPreview()).toBeTrue();
+    expect(userVisibleFailures.report).not.toHaveBeenCalled();
 
     tick(1);
     expect(component.loadingPreview()).toBeFalse();
@@ -550,6 +553,7 @@ describe('CodingFrameworkPanelComponent', () => {
       kind: 'infrastructure-timeout',
       message: 'Preview did not report a ready or error state before the infrastructure timeout.',
     });
+    expect(userVisibleFailures.report).toHaveBeenCalledOnceWith('preview_timed_out');
     component.ngOnDestroy();
   }));
 

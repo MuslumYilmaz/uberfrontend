@@ -371,11 +371,26 @@ click count as a challenge attempt (validation item 6), so attempt rates on
 either side of the deployment are not comparable either.
 
 - Pushed to `dev`: 2026-11-03.
-- Production deployment: pending the `dev` to `main` merge. Record its
-  timestamp and Europe/Istanbul date here.
+- Production deployment: 2026-11-09 17:48 UTC (20:48 Europe/Istanbul,
+  2026-11-09), merge 94fe56d6 of pull request #253.
 
 Read the periods before and after the production deployment separately, as in
 the deployment boundary above. Do not compare a window that spans it.
+
+### Homepage visitor fixes exception
+
+A day after that deployment, before any check could be read, a follow-up
+release changes the same surfaces again: the homepage's company sentence and
+its menu now lead with Google, Meta, Amazon and Uber (the `/companies` form
+rotates through the same list), the hero names what is free and what Premium
+costs, the plan preview's unlock note counts the plan's open tasks, and the
+pricing cards name the locked tasks instead of "Your full … plan". The rule
+above is suspended for this release too, and the baseline restarts at its
+production deployment: the company plan release's window is too short to read
+on its own.
+
+- Production deployment: pending. Record its timestamp and Europe/Istanbul
+  date here; the 28 baseline days start the next full day.
 
 Report raw and qualified-session rates side by side. Raw all-session conversion
 is bot/crawler-contaminated and often behaves like a lower bound; qualified

@@ -28,6 +28,7 @@ import { computeFrameworkContentVersion } from '../../../../core/utils/content-v
 import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
+import { userVisibleFailures } from '../../../../core/utils/user-visible-failure-reporter';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -175,6 +176,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   );
 
   treeRoots = computed<TreeNode[]>(() => this.buildTree(this.fileList()));
+  fileLanguages = computed(() => [...new Set(this.fileList().map((path) => this.langFromPath(path)))]);
 
   currentPath = computed(() => this.openPath() || this.frameworkEntryFile || '');
   currentFileLabel = computed(() => {
@@ -1188,6 +1190,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       if (this.destroy) return;
       if (navId !== this.previewNavId) return;
       if (!this.loadingPreview()) return;
+      userVisibleFailures.report('preview_timed_out');
       this.finishPreviewLoading(navId, {
         kind: 'infrastructure-timeout',
         message: 'Preview did not report a ready or error state before the infrastructure timeout.',

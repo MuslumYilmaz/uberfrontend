@@ -325,7 +325,8 @@
       "examples": [
         "// Basic example\nflattenOnce([1, [2, 3], [4, [5]]]) // => [1, 2, 3, 4, [5]]",
         "// Already flat\nflattenOnce([1, 2, 3]) // => [1, 2, 3]",
-        "// Mixed values\nflattenOnce([[1], 2, [3, [4]], 5]) // => [1, 2, 3, [4], 5]"
+        "// Mixed values\nflattenOnce([[1], 2, [3, [4]], 5]) // => [1, 2, 3, [4], 5]",
+        "// Sparse array: holes are skipped, as flat(1) skips them\nflattenOnce([1, , [2, , 3]]) // => [1, 2, 3]"
       ]
     },
     "starterCode": "export default function flattenOnce(arr) {\n  // TODO: Flatten one level deep\n  throw new Error('Not implemented');\n}\n",
@@ -334,10 +335,10 @@
       "overview": "Because only one level is flattened, you can implement it with a single pass and no recursion while preserving order and immutability.",
       "approaches": [
         {
-          "title": "Approach 1: Iterative spread (explicit and clear)",
-          "prose": "Mention that non-array values are pushed as-is and that nested arrays deeper than one level remain nested. This helps clarify expected behavior and prevents over-flattening.",
-          "codeJs": "export default function flattenOnce(arr) {\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
-          "codeTs": "export default function flattenOnce(arr: any[]): any[] {\n  const result: any[] = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+          "title": "Approach 1: Iterative push (explicit and clear)",
+          "prose": "Mention that non-array values are pushed as-is and that nested arrays deeper than one level remain nested. This helps clarify expected behavior and prevents over-flattening. Both loops use `forEach`, which visits only the indexes an array has, so the holes of a sparse array are skipped at both levels, as `flat(1)` skips them; a `for...of` loop or spread would turn each hole into `undefined`.",
+          "codeJs": "export default function flattenOnce(arr) {\n  const result = [];\n  arr.forEach((el) => {\n    if (Array.isArray(el)) {\n      el.forEach((item) => result.push(item));\n    } else {\n      result.push(el);\n    }\n  });\n  return result;\n}\n",
+          "codeTs": "export default function flattenOnce(arr: any[]): any[] {\n  const result: any[] = [];\n  arr.forEach((el) => {\n    if (Array.isArray(el)) {\n      el.forEach((item) => result.push(item));\n    } else {\n      result.push(el);\n    }\n  });\n  return result;\n}\n",
           "decisionGraphKey": "approach1"
         },
         {
@@ -357,11 +358,12 @@
         "edgeCases": [
           "Empty array → returns `[]`.",
           "Already flat array → identical output.",
-          "Mixed values like `[1, [2], 3]` → flattens only first-level arrays."
+          "Mixed values like `[1, [2], 3]` → flattens only first-level arrays.",
+          "Sparse array like `[1, , [2, , 3]]` → `[1, 2, 3]`: holes are skipped at both levels, as `flat(1)` skips them."
         ],
         "techniques": [
           "Using `Array.isArray()` for type checking.",
-          "Using spread syntax (`...`) for shallow unpacking.",
+          "Using `forEach`, which skips holes, for shallow unpacking.",
           "Understanding `.flat(depth)` as a concise modern alternative."
         ]
       },
@@ -376,8 +378,8 @@
         }
       ]
     },
-    "tests": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce', () => {\n  test('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  test('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  test('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  test('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
-    "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
+    "tests": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce', () => {\n  test('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  test('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  test('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  test('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n\n  test('skips holes in a sparse array, as flat(1) does', () => {\n    expect(flattenOnce([1, , [2, , 3]])).toEqual([1, 2, 3]);\n  });\n});\n",
+    "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n\n  it('skips holes in a sparse array, as flat(1) does', () => {\n    expect(flattenOnce([1, , [2, , 3]])).toEqual([1, 2, 3]);\n  });\n});\n",
     "access": "free",
     "companies": [
       "meta",
@@ -411,7 +413,7 @@
         "note": "A commenter in a thread about the Anduril frontend interview says they cleared it and were asked lodash-style questions: flatten, map and reduce. Flattening one level is a representative drill, not the reported depth."
       }
     ],
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-10",
     "seo": {
       "title": "Flatten One Array Level in JavaScript",
       "description": "Given a nested array, flatten only one level and keep the original item order without changing deeper nesting."

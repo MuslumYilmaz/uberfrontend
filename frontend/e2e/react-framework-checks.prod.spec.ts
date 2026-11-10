@@ -7,6 +7,7 @@ import {
   setMonacoModelValue,
   waitForIndexedDbKeyPrefixContains,
   waitForIndexedDbKeyPrefixNotContains,
+  waitForMonacoModel,
 } from './helpers';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 
@@ -2821,6 +2822,41 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(statuses.length).toBeGreaterThan(0);
     expect(statuses.every((status) => /PASS|FAIL/.test(status))).toBe(true);
     expect(normalizeRunnerText(await jsResults.innerText())).not.toMatch(RUNNER_FAILURE);
+  });
+
+  test.describe('when a Monaco language download drops once', () => {
+    // Chromium logs each dropped download as a failed resource.
+    test.use({ consoleErrorAllowlist: ['Failed to load resource: net::ERR_CONNECTION_RESET'] });
+
+    test('the Angular template still opens with HTML support and no unhandled error', async ({ page }) => {
+      const tokenizer = 'basic-languages/html/html.js';
+      const languageService = 'language/html/htmlMode.js';
+      const downloads = new Map<string, number>();
+      for (const modulePath of [tokenizer, languageService]) {
+        await page.route(`**/assets/monaco/min/vs/${modulePath}`, async (route) => {
+          const attempt = (downloads.get(modulePath) ?? 0) + 1;
+          downloads.set(modulePath, attempt);
+          if (attempt === 1) await route.abort('connectionreset');
+          else await route.continue();
+        });
+      }
+
+      await page.goto('/angular/coding/angular-counter-starter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForMonacoModel(page, 'src/app/app.component.ts');
+      // The template's tokenizer arrives with the starter file; its language service waits for the template.
+      await expect.poll(() => downloads.get(tokenizer) ?? 0).toBe(2);
+      expect(downloads.get(languageService) ?? 0).toBe(0);
+
+      await openFrameworkFile(page, 'src/app/app.component.html');
+      await waitForMonacoModel(page, 'src/app/app.component.html');
+      await expect.poll(() => downloads.get(languageService) ?? 0).toBe(2);
+      await expect.poll(() => page.evaluate(() => {
+        const [line] = (window as any).monaco.editor.tokenize('<div></div>', 'html');
+        return line.some((token: { type: string }) => token.type === 'tag.html');
+      })).toBe(true);
+      expect(downloads.get(tokenizer)).toBe(2);
+    });
   });
 });
 

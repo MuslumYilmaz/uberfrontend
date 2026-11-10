@@ -376,8 +376,9 @@ describe('PricingPlansSectionComponent', () => {
     const page: HTMLElement = fixture.nativeElement;
     const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
     expect(text('.pr-card--monthly [data-testid="pricing-local-estimate"]')).toBe('about ₹840 a month');
-    expect(text('.pr-card--quarterly [data-testid="pricing-local-estimate"]')).toBe('about ₹570 a month');
-    expect(text('.pr-card--annual [data-testid="pricing-local-estimate"]')).toBe('about ₹290 a month');
+    // One payment covers a quarter or a year, so those cards name the sum as well as the month.
+    expect(text('.pr-card--quarterly [data-testid="pricing-local-estimate"]')).toBe('about ₹570 a month, ₹1,700 every 3 months');
+    expect(text('.pr-card--annual [data-testid="pricing-local-estimate"]')).toBe('about ₹290 a month, ₹3,500 a year');
     expect(text('[data-testid="pricing-lifetime-secondary"] [data-testid="pricing-local-estimate"]')).toBe('about ₹6,300 once');
     expect(text('[data-testid="pricing-local-note"]')).toBe(
       'Charged in US dollars. Local amounts are estimates at the exchange rate of 5 Nov 2026, rates by Exchange Rate API.',
@@ -562,6 +563,8 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.textContent || '').toLowerCase()).not.toContain('where available');
     expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
     expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('JavaScript and debugging tasks, and most React, Angular and Vue tasks');
+    // Free framework tasks run checks too; the free column must not say otherwise next to the free React Counter offer.
+    expect(component.comparisonRows.find((row) => row.label === 'Runnable checks')?.freeValue).toContain('React, Angular and Vue');
 
     const faqItems = component.faqGroups.flatMap((group) => group.items);
     const premiumIncludes = faqItems.find((item) => item.id === 'premium-includes');

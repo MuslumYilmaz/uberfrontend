@@ -110,6 +110,7 @@
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
                     <app-monaco-editor #frameworkEditor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions" [readOnly]="locked"
+                        [preloadLanguages]="fileLanguages()"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>

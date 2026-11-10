@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SeoService } from '../../core/services/seo.service';
+import { isPremiumRoute } from '../../core/utils/premium-route.util';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
 
 type HubLink = {
@@ -67,6 +68,9 @@ type FaqItem = {
 })
 export class MachineCodingHubComponent implements OnInit {
   private readonly seo = inject(SeoService);
+
+  /** Most of the list needs Premium; the card says so before the click rather than on the lock page after it. */
+  readonly isPremium = (question: FeaturedQuestion): boolean => isPremiumRoute(question.path);
 
   readonly stats: HubStat[] = [
     { value: String(SHOWCASE_STATS.totalQuestions), label: 'practice questions' },

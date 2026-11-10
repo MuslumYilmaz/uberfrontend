@@ -1,6 +1,7 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { HARDENED_PROTOTYPE_CTORS } from '../security/user-code-sandbox-hardening';
 import { createSandboxExpect } from '../security/user-code-sandbox-matchers';
+import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
 import { UserCodeSandboxService, type RunnerOutput } from './user-code-sandbox.service';
 
 class MockWorker {
@@ -70,6 +71,7 @@ describe('UserCodeSandboxService', () => {
     MockWorker.instances = [];
     (window as any).Worker = MockWorker;
     (globalThis as any).Worker = MockWorker;
+    spyOn(userVisibleFailures, 'report');
   });
 
   afterEach(() => {
@@ -194,6 +196,29 @@ describe('UserCodeSandboxService', () => {
     expect(worker.terminate).toHaveBeenCalledTimes(1);
     expect(worker.messageListenerCount()).toBe(0);
     expect(worker.errorListenerCount()).toBe(0);
+  }));
+
+  it('reports a crashed or force-stopped runner as a user-visible failure, but not a finished run', fakeAsync(() => {
+    const service = new UserCodeSandboxService();
+
+    void service.runWithTests({ userCode: 'const value = 1;', testCode: 'test()', timeoutMs: 10 });
+    MockWorker.instances[0].emitError(new Event('error', { cancelable: true }));
+    flushMicrotasks();
+
+    void service.runWithTests({ userCode: 'while (true) {}', testCode: 'test()', timeoutMs: 10 });
+    tick(510);
+    flushMicrotasks();
+
+    void service.runWithTests({ userCode: 'const value = 1;', testCode: 'test()', timeoutMs: 10 });
+    const finished = MockWorker.instances[2];
+    finished.emitMessage({ type: 'done', nonce: finished.lastPostedMessage?.nonce, entries: [], results: [] });
+    flushMicrotasks();
+    tick(1000);
+
+    expect((userVisibleFailures.report as jasmine.Spy).calls.allArgs()).toEqual([
+      ['runner_crashed'],
+      ['runner_force_stopped', { timeoutMs: 510 }],
+    ]);
   }));
 });
 

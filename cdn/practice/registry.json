@@ -1550,7 +1550,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-11-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#rxjs-sharereplay-angular-how-it-breaks-your-app"
   },
@@ -4518,7 +4518,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-10",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-flatten-once"
   },

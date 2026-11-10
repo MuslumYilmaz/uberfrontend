@@ -159,6 +159,14 @@
   color: var(--uf-accent);
 }
 
+.hero-copy .hero-offer {
+  margin: 6px 0 0;
+  max-width: 620px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
 .sk-btn {
   display: inline-flex;
   align-items: center;

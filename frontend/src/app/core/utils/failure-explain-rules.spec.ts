@@ -137,6 +137,22 @@ describe('failure-explain-rules', () => {
     expect(hint.title.toLowerCase()).toContain('promiseall');
   });
 
+  it('explains holes when a for...of or spread flatten fails only the sparse-array test', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-flatten-once',
+      errorLine: 'Expected [1,undefined,2,undefined,3] to equal [1,2,3]',
+      firstFailName: 'skips holes in a sparse array, as flat(1) does',
+      passCount: 4,
+      totalCount: 5,
+      failCount: 1,
+      failedTests: [
+        { name: 'skips holes in a sparse array, as flat(1) does', errorLine: 'Expected [1,undefined,2,undefined,3] to equal [1,2,3]' },
+      ],
+    });
+    expect(hint.ruleId).toBe('js-flatten-once-holes');
+    expect(hint.actions.join(' ')).toContain('forEach');
+  });
+
   it('returns debounce-specific hint when the wrapper calls synchronously', () => {
     const hint = buildFailureHint({
       questionId: 'js-debounce',

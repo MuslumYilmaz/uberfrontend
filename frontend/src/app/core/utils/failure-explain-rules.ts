@@ -896,11 +896,28 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Function is flattening too deep or not flattening arrays consistently',
       why: buildProgressAwareWhy(snapshot, 'This task requires one-level flattening only.'),
       actions: [
-        'When item is an array, push its direct children only (`...item`).',
+        'When item is an array, push its direct children only (`item.forEach`, which also skips holes).',
         'Do not recurse into nested grandchildren (`[4]` should remain nested in sample).',
         'Keep non-array values unchanged and preserve original order.',
       ],
       confidence: 0.91,
+    }),
+  },
+  {
+    ruleId: 'js-flatten-once-holes',
+    questionId: 'js-flatten-once',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['sparse array', 'holes']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-flatten-once-holes',
+      title: 'Holes in a sparse array become undefined',
+      why: buildProgressAwareWhy(snapshot, '`flat(1)` skips the holes of a sparse array, while `for...of` and spread read each hole as `undefined`.'),
+      actions: [
+        'Loop with `forEach` at both levels: it visits only the indexes an array has.',
+        'Or keep an index loop and skip a missing index with `i in arr`.',
+        'Check with `[1, , [2, , 3]]`, which should give `[1, 2, 3]`.',
+      ],
+      confidence: 0.9,
     }),
   },
   {

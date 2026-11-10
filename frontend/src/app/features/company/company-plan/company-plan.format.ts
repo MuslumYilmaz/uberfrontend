@@ -288,6 +288,17 @@ const SOON_NOTES: Readonly<Partial<Record<CompanyPlanWhen, string>>> = {
 };
 
 /**
+ * What paying adds to a plan, in the plan's own numbers. The preview lists which tasks are open, so the note names the
+ * locked ones and the plan page rather than calling the whole plan Premium.
+ */
+export function planUnlockNote(open: number, total: number): string {
+  const locked = total - open;
+  if (!locked) return 'Every task is open now. Premium adds your plan page with your progress, and you land on it right after payment.';
+  if (!open) return 'Every task opens with Premium, and you land on your plan page right after payment.';
+  return `${open} of ${total} tasks are open now. Premium opens ${locked === 1 ? 'the locked one' : `the ${locked} locked ones`} and your plan page, and you land on it right after payment.`;
+}
+
+/**
  * What the pricing page says while a plan waits behind Premium. Every framework task has a live preview, but only
  * some run checks, so the card says only the first. The counts are left out when the data predates them.
  */
@@ -298,6 +309,12 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
   const opens = open
     ? ` ${open} ${open === 1 ? 'is' : 'are'} open now, ${locked} ${locked === 1 ? 'opens' : 'open'} with Premium.`
     : ' Every task opens with Premium.';
+  // The banner above the cards counts the open tasks, so the cards name what Premium adds to them, not "the full plan".
+  const planLine = !locked
+    ? `Your ${names} plan page, with your progress`
+    : open
+      ? `${locked === 1 ? 'The locked task' : `The ${locked} locked tasks`} in your ${names} plan`
+      : `Every task in your ${names} plan`;
   const framework = plan.companies[0]?.framework ?? 'javascript';
   const counts = data.general.premiumCounts;
   const note = SOON_NOTES[answers.when] ?? '';
@@ -310,7 +327,7 @@ export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPl
     note,
     recommendedPlan: note ? 'monthly' : 'quarterly',
     lead: [
-      `Your full ${names} plan`,
+      planLine,
       ...rehearsals,
       ...(counts ? [
         framework === 'javascript'

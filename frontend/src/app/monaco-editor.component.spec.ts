@@ -1,5 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { userVisibleFailures } from './core/utils/user-visible-failure-reporter';
 import { MonacoEditorComponent, MonacoLoadError } from './monaco-editor.component';
 
 describe('MonacoEditorComponent loader failure handling', () => {
@@ -8,6 +9,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
   beforeEach(() => {
     previousGlobals = captureMonacoGlobals();
     resetMonacoGlobals();
+    spyOn(userVisibleFailures, 'report');
 
     TestBed.configureTestingModule({
       imports: [MonacoEditorComponent],
@@ -21,7 +23,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     TestBed.resetTestingModule();
   });
 
-  it('emits a handled loadFailed event when AMD require reports a module load error', async () => {
+  it('emits a handled loadFailed event and reports it when AMD require reports a module load error', async () => {
     const win = window as any;
     win.require = jasmine.createSpy('require').and.callFake((_deps: string[], _ok: () => void, fail: (error: unknown) => void) => {
       fail({ message: '[object Event]', phase: 'loading', moduleId: 'vs/editor/editor.main' });
@@ -42,6 +44,70 @@ describe('MonacoEditorComponent loader failure handling', () => {
       moduleId: 'vs/editor/editor.main',
     }));
     expect(failed[0].url).toContain('/assets/monaco/min/vs/editor/editor.main.js');
+    expect(userVisibleFailures.report).toHaveBeenCalledOnceWith('editor_load_failed', {
+      reason: 'Monaco editor assets failed to load.',
+      phase: 'loading',
+      moduleId: 'vs/editor/editor.main',
+      url: failed[0].url,
+    });
+  });
+
+  it('lets the AMD loader download a failed Monaco module a second time', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const fixture = createComponent();
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const { paths } = (window as any).require.config.calls.mostRecent().args[0];
+    expect(paths.vs).toEqual(['assets/monaco/min/vs', 'assets/monaco/min/vs']);
+    expect(userVisibleFailures.report).not.toHaveBeenCalled();
+  });
+
+  it('loads the tokenizers of files opened later once per module, without surfacing failures', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    const requests: string[][] = [];
+    (window as any).require = jasmine.createSpy('require').and.callFake(
+      (deps: string[], ok: () => void, fail: (error: unknown) => void) => {
+        if (deps[0] === 'vs/editor/editor.main') {
+          ok();
+          return;
+        }
+        requests.push(deps);
+        fail(new Error('[object Event]'));
+      },
+    );
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const firstFixture = createComponent();
+    firstFixture.componentRef.setInput('preloadLanguages', ['typescript', 'html', 'css', 'json', 'plaintext']);
+    firstFixture.detectChanges();
+    await Promise.resolve();
+
+    expect(requests).toEqual([[
+      'vs/basic-languages/typescript/typescript',
+      'vs/basic-languages/html/html',
+      'vs/basic-languages/css/css',
+    ]]);
+
+    firstFixture.componentRef.setInput('preloadLanguages', ['vue', 'scss']);
+    firstFixture.detectChanges();
+    const secondFixture = createComponent();
+    secondFixture.componentRef.setInput('preloadLanguages', ['html', 'scss']);
+    secondFixture.detectChanges();
+    await Promise.resolve();
+
+    expect(requests).toEqual([
+      jasmine.any(Array),
+      ['vs/basic-languages/scss/scss'],
+    ]);
+    expect(userVisibleFailures.report).not.toHaveBeenCalled();
   });
 
   it('normalizes loader script errors and clears the cached promise so a later mount can retry', async () => {
@@ -305,6 +371,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
       loaderPromise: (MonacoEditorComponent as any).loaderPromise,
       monacoReady: (MonacoEditorComponent as any).monacoReady,
       webCompletionsInstalled: (MonacoEditorComponent as any).webCompletionsInstalled,
+      requestedLanguageModules: (MonacoEditorComponent as any).requestedLanguageModules,
     };
   }
 
@@ -318,6 +385,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     (MonacoEditorComponent as any).loaderPromise = snapshot.loaderPromise;
     (MonacoEditorComponent as any).monacoReady = snapshot.monacoReady;
     (MonacoEditorComponent as any).webCompletionsInstalled = snapshot.webCompletionsInstalled;
+    (MonacoEditorComponent as any).requestedLanguageModules = snapshot.requestedLanguageModules;
   }
 
   function restoreOptionalGlobal(
@@ -339,6 +407,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     (MonacoEditorComponent as any).loaderPromise = null;
     (MonacoEditorComponent as any).monacoReady = false;
     (MonacoEditorComponent as any).webCompletionsInstalled = false;
+    (MonacoEditorComponent as any).requestedLanguageModules = new Set<string>();
   }
 
   function makeFakeMonaco(): { api: any; editor: any; model: any } {

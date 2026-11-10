@@ -195,6 +195,33 @@ describe('locked preview builder', () => {
     expect(preview.learningGoals).not.toContain('Practice React state transitions.');
   });
 
+  it('keeps a dotted name such as Promise.all inside its sentence instead of starting the summary after it', () => {
+    const preview = buildLockedPreviewForCoding({
+      id: 'js-promise-all',
+      title: 'Implement Promise.all',
+      type: 'coding',
+      technology: 'javascript',
+      access: 'premium',
+      difficulty: 'intermediate',
+      tags: ['promises'],
+      importance: 3,
+      description: { summary: 'Implement a function that behaves like Promise.all.' },
+      premiumPreview: {
+        summary: 'Implement a JavaScript Promise.all equivalent that coordinates a collection of values and promises. The challenge covers ordering, empty input, normalization, and fail-fast rejection without revealing an implementation.',
+        learningOutcomes: [
+          'Normalize plain values and promises through one asynchronous contract.',
+          'Preserve input order even when values settle in a different order.',
+          'Resolve an empty input collection with an empty result.',
+          'Reject as soon as any input rejects.',
+        ],
+        unlockDescription: 'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.',
+      },
+    }, { candidates: [], tech: 'javascript', kind: 'coding' });
+
+    if (!preview) throw new Error('Expected an authored preview');
+    expect(preview.what).toMatch(/^Implement a JavaScript Promise\.all equivalent that coordinates/);
+  });
+
   it('rejects fallback content that cannot produce three complete public outcomes', () => {
     const question: CodingLockedPreviewQuestion = {
       id: 'unsafe-fallback',

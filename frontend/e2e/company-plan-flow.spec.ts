@@ -150,7 +150,7 @@ test.describe('company plan, five people', () => {
 
     const title = 'Your Netflix, OpenAI and Spotify plan at a glance';
     await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
-    await expect(page.getByTestId('company-plan-cta-note')).toHaveText('Saved to your account. Your plan is part of Premium, and you land on it right after payment.');
+    await expect(page.getByTestId('company-plan-cta-note')).toHaveText(/^Saved to your account\. \d+ of \d+ tasks are open now\. Premium opens (the locked one|the \d+ locked ones) and your plan page, and you land on it right after payment\.$/);
     expect(account.writes).toEqual([{ companies: [{ slug: 'netflix' }, { slug: 'openai' }, { slug: 'spotify' }], level: 'senior', when: 'this-week' }]);
 
     await page.goto('/companies/plan');
@@ -327,7 +327,7 @@ test.describe('company plan from a company guide', () => {
     await page.getByTestId('login-password').fill('secret123');
     await page.getByTestId('login-submit').click();
     await expect(page).toHaveURL(planUrl);
-    await expect(page.getByTestId('company-plan-cta-note')).toHaveText('Saved to your account. Your plan is part of Premium, and you land on it right after payment.');
+    await expect(page.getByTestId('company-plan-cta-note')).toHaveText(/^Saved to your account\. \d+ of \d+ tasks are open now\. Premium opens (the locked one|the \d+ locked ones) and your plan page, and you land on it right after payment\.$/);
     await expect(page.getByTestId('company-plan-save-line')).toHaveCount(0);
     expect(account.writes).toEqual([{ companies: [{ slug: 'agoda' }], level: 'mid', when: 'next-week' }]);
   });

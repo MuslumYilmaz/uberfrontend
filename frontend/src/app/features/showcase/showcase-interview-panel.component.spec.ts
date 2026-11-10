@@ -58,10 +58,10 @@ describe('ShowcaseInterviewPanelComponent', () => {
     setup();
     const build = byTestId<HTMLAnchorElement>('showcase-interview-build');
     expect(host.querySelector('h2')?.textContent?.trim()).toBe('Interview coming up?');
-    expect(build.getAttribute('href')).toBe('/companies?company=elevenlabs&from=home');
-    expect(byTestId('showcase-interview-slot').getAttribute('aria-label')).toBe('Choose your company. Now: ElevenLabs');
+    expect(build.getAttribute('href')).toBe('/companies?company=google&from=home');
+    expect(byTestId('showcase-interview-slot').getAttribute('aria-label')).toBe('Choose your company. Now: Google');
 
-    component.index.set(2);
+    component.index.set(6);
     fixture.detectChanges();
     expect(build.getAttribute('href')).toBe('/companies?company=capital-one&from=home');
 
@@ -81,11 +81,13 @@ describe('ShowcaseInterviewPanelComponent', () => {
     fixture.detectChanges();
     const menu = byTestId('showcase-interview-menu');
     const options = Array.from(menu.querySelectorAll<HTMLAnchorElement>('.interview-option'));
+    // The names visitors look for first lead the list; the companies with a distinctive round follow.
     expect(options.map((option) => option.querySelector('.interview-option__name')?.textContent)).toEqual([
+      'Google', 'Meta', 'Amazon', 'Uber',
       'ElevenLabs', 'Agoda', 'Capital One', 'Intuit', 'Revolut', 'Stripe', 'GitLab', 'Walmart',
     ]);
-    expect(options[0].querySelector('.interview-option__signature')?.textContent).toBe('90-minute assessment');
-    expect(options[5].getAttribute('href')).toBe('/companies?company=stripe&from=home');
+    expect(options[4].querySelector('.interview-option__signature')?.textContent).toBe('90-minute assessment');
+    expect(options[9].getAttribute('href')).toBe('/companies?company=stripe&from=home');
 
     const all = menu.querySelector<HTMLAnchorElement>('.interview-menu__all') as HTMLAnchorElement;
     expect(all.textContent?.trim()).toBe('See all 30 companies');
