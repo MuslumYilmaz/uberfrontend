@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
+    "registryContentHash": "9efc0b4befaf43b8c79d74128efabae7b36c462b16634a873a2c1e419c9667be",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -23,12 +23,13 @@
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the multi-step form and nested-checkboxes source questions gained a Pressure Mode reference and a wrong comment in the Vue nested-checkboxes starter was corrected. That comment is the only public variant content that changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-02 source-pin maintenance: registryContentHash refreshed after the transfer-list source questions gained a Pressure Mode reference. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-10 source-pin maintenance: registryContentHash refreshed after the react-counter source question's requirements named the Reset button its check already presses, and its expected behavior says the minus button is disabled at 0, as the check already asserts. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "21872caf5b519c6620bbb5c379314031ad59ac650dba88734dbf9d3d2fa92792",
+  "definitionHash": "051ee0b3af4d6994efbf47718c398d6225e074d9fb3b267f28bde7bd3ad8f3e7",
   "reviewBatch": {
-    "reviewedDefinitionHash": "21872caf5b519c6620bbb5c379314031ad59ac650dba88734dbf9d3d2fa92792",
+    "reviewedDefinitionHash": "051ee0b3af4d6994efbf47718c398d6225e074d9fb3b267f28bde7bd3ad8f3e7",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -48,7 +49,8 @@
         "2026-11-02 source-pin maintenance review: the React, Angular and Vue multi-step form and nested-checkboxes catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. The Vue nested-checkboxes starter comment said the parent should never become indeterminate, which contradicted the question and its solution, and now says the parent is checked, unchecked or indeterminate. Markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-11-02 source-pin maintenance review: the React, Angular and Vue transfer-list catalog entries gain pressureModeAsset, which this registry does not read because each variant pins its own candidate pressure asset. Starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-11-06 source-pin maintenance review: the react-nested-comments catalog entry's ServiceNow source changed its date from 2026-03 to 2026-02 and its note wording on 2026-11-04. Source metadata only: starters, markup, classes, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant review carries forward to the refreshed source pin. This is not a new release approval.",
-        "2026-11-08 source-pin maintenance review: the react-contact-form-starter catalog entry's requirements now state the rule its reference solution and starter comment already enforce, a message of at least 10 characters, and its first expected-behavior line names it. The interview content reads neither field: starters, markup, classes, checks, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant review carries forward to the refreshed source pin. This is not a new release approval."
+        "2026-11-08 source-pin maintenance review: the react-contact-form-starter catalog entry's requirements now state the rule its reference solution and starter comment already enforce, a message of at least 10 characters, and its first expected-behavior line names it. The interview content reads neither field: starters, markup, classes, checks, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant review carries forward to the refreshed source pin. This is not a new release approval.",
+        "2026-11-10 source-pin maintenance review: the react-counter catalog entry's requirements now ask for the Reset button that its framework check already clicks (the Angular and Vue counters already did), and its expected behavior gains the Reset line and the disabled minus button at 0 that the check already asserts. The interview content reads neither field: starters, markup, classes, checks, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant review carries forward to the refreshed source pin. This is not a new release approval."
       ]
     },
     "editorial": {
@@ -907,7 +909,7 @@
       "level": "junior",
       "catalog": "react",
       "sourceQuestionId": "react-counter",
-      "expectedQuestionHash": "904dc5380c7402d4d6bd4bb82c0cb7674d7515710eb66a581624c6a75d11b1b1",
+      "expectedQuestionHash": "7220b83aaffc6d51d3a2ef90c095b5838147438204b50ba7e17bbeebf0b289cb",
       "expectedStarterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6",
       "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
       "timeLimitSeconds": 1500,
