@@ -954,6 +954,7 @@
           [concealedNote]="rehearsalConcealedNote() ?? findConcealedNote()"
           [clockLabel]="rehearsalClockLabel()" [timedPracticeHidden]="findCaseOpen()"
           (requestEditorUpgrade)="requestLiteUpgrade()"
+          [solved]="solved()"
           (requestRunTests)="runTests()"
           (langChange)="onChildLang($event)"
           (testResultsChange)="onJsTestResults($event)" (consoleEntriesChange)="consoleEntries.set($event)"

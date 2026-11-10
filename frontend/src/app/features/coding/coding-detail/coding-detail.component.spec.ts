@@ -903,6 +903,29 @@ describe('CodingDetailComponent', () => {
     }));
   });
 
+  it("grades Submit with the task's own tests, so edited tests that pass on Run cannot mark it solved", async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({ id: 'q1', access: 'free', difficulty: 'easy' } as any);
+    // The visitor's edited tests pass this code; the task's own tests do not.
+    const panelRun = jasmine.createSpy('runTests').and.callFake(async (options?: { suite?: string }) =>
+      component.onJsTestResults([{ name: 'case', passed: options?.suite !== 'shipped' }]));
+    component.jsPanel = { runTests: panelRun } as any;
+    const record = spyOn(component as any, 'recordCompletion').and.resolveTo(true);
+
+    expect(await component.runTests()).toBeTrue();
+    expect(panelRun.calls.mostRecent().args[0]).toEqual({});
+
+    await component.submitCode();
+    expect(panelRun.calls.mostRecent().args[0]).toEqual({ suite: 'shipped' });
+    expect(component.solved()).toBeFalse();
+    expect(record).not.toHaveBeenCalled();
+  });
+
   it('loads JS approach with its own decision graph asset override', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

@@ -93,6 +93,32 @@ test('Monaco keyboard listener tolerates generic keydown after SPA navigation to
   await expect(email).toHaveValue(typedEmail);
 });
 
+test("Submit grades with the task's own tests, not with tests edited to pass", async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  const testsModelKey = `q-${JS_QUESTION.id}-tests`;
+  await waitForMonacoModel(page, codeModelKey);
+  await waitForMonacoModel(page, testsModelKey);
+
+  // Code that ignores the bounds, and a Test cases tab rewritten to one test that cannot fail.
+  await setMonacoModelValue(page, codeModelKey, 'export default function clamp(value) {\n  return value;\n}\n');
+  await setMonacoModelValue(page, testsModelKey, "test('always passes', () => expect(1).toBe(1));\n");
+
+  await page.getByTestId('js-run-tests').click();
+  const results = page.getByTestId('js-results-panel');
+  await expect(results.getByTestId('test-status')).toHaveText(['PASS']);
+  await expect(results.getByTestId('js-suite-note')).toContainText("Submit runs the task's own tests");
+
+  // A pass would ask a signed-out visitor to log in and save it; the task's own tests fail this code instead.
+  await page.getByTestId('footer-submit').click();
+  await expect(results.getByTestId('js-suite-note')).toContainText("Checked against the task's own tests");
+  await expect(results.getByTestId('test-status').filter({ hasText: 'FAIL' }).first()).toBeAttached();
+  await expect(page.getByTestId('login-required-title')).toBeHidden();
+  // The rewritten Test cases tab is still the visitor's own.
+  await expect.poll(() => getMonacoModelValue(page, testsModelKey)).toContain('always passes');
+});
+
 test('filter empty state shows reset option and recovers', async ({ page }) => {
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();

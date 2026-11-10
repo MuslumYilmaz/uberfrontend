@@ -44,6 +44,8 @@ import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-co
 declare const monaco: any;
 
 export type JsLang = 'js' | 'ts';
+/** 'editor': the Test cases tab as the visitor left it (Run). 'shipped': the task's own tests (Submit). */
+export type JsTestSuite = 'editor' | 'shipped';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 type Runner = {
   runWithTests(args: { userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number }): Promise<RunnerOutput>;
@@ -115,6 +117,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   get rehearsing(): boolean {
     return !!this.clockLabel || this.locked;
   }
+  /** The task is already marked solved, so a passing run needs no nudge toward Submit. */
+  @Input() solved = false;
   private _solutionPanelOpen = false;
   @Input() set solutionPanelOpen(value: boolean) {
     this._solutionPanelOpen = !!value;
@@ -172,6 +176,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
+  /** The tests the last run used: the editable Test cases tab (Run), or the task's own tests (Submit). */
+  readonly lastRunSuite = signal<JsTestSuite>('editor');
 
   // A multi-file task keeps its files in the one code string (file-bundle.util); the editor shows one file.
   readonly bundleFiles = computed(() => parseFileBundle(this.editorContent()));
@@ -1816,12 +1822,22 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     else void this.runTests();
   }
 
-  // Run tests
-  async runTests() {
+  /** True when the Test cases tab no longer holds the task's own tests for the current language. */
+  testsEdited(): boolean {
+    const q = this.question;
+    if (!q) return false;
+    const normalize = (code: string) => String(code ?? '').replace(/\r\n/g, '\n').trim();
+    return normalize(this.testCode()) !== normalize(this.pickTests(q as any, this.jsLang()));
+  }
+
+  // Run tests. A submission runs the task's own tests: tests edited in the Test cases tab never grade it.
+  async runTests(options: { suite?: JsTestSuite } = {}) {
     const q = this.question; if (!q || this.destroyed || this.locked) return;
     let rawUserSnapshot = this.editorContent();
+    const suite = options.suite ?? 'editor';
 
     const runId = ++this._runSeq;
+    this.lastRunSuite.set(suite);
     this.isRunningTests.set(true);
     this.hasRunTests.set(false);
     this.testResults.set([]);
@@ -1833,8 +1849,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       if (runId !== this._runSeq) return;
       const rawUser = this.withEditorCode(this.codeEditor?.getValue?.() ?? this.editorCode());
       rawUserSnapshot = rawUser;
-      const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
-      this.syncEditorBuffers(rawUser, rawTests);
+      const editorTests = this.testsEditor?.getValue?.() ?? this.testCode();
+      const rawTests = suite === 'shipped' ? this.pickTests(q as any, this.jsLang()) : editorTests;
+      // The Test cases tab keeps what the visitor wrote, whichever tests this run used.
+      this.syncEditorBuffers(rawUser, editorTests);
       // A multi-file task runs its files as modules that the tests import, in JavaScript only.
       const files = parseFileBundle(rawUser);
       const userSrc = files ? '' : await this.ensureJs(rawUser, `${q.id}.ts`);

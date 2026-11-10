@@ -101,7 +101,7 @@ import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inlin
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent, FrameworkCheckRunEvent } from './coding-framework-panel/coding-framework-panel';
-import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
+import { CodingJsPanelComponent, JsLang, JsTestSuite } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 
 type CourseNavState =
@@ -2118,7 +2118,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   // ---------- run tests (JS/TS) ----------
-  async runTests(): Promise<boolean> {
+  /** Run practises against the Test cases tab; Submit passes `suite: 'shipped'` to grade with the task's own tests. */
+  async runTests(options: { suite?: JsTestSuite } = {}): Promise<boolean> {
     const q = this.question();
     if (!q || this.showMobileDesktopGuard()) return false;
     const epoch = this.workspaceEpoch;
@@ -2133,7 +2134,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-    await this.jsPanel?.runTests();
+    await this.jsPanel?.runTests(options);
     if (run !== this.jsRunSequence || !this.isCurrentWorkspaceRun(epoch, q)) return false;
     this.hasRunTests = true;
 
@@ -2219,7 +2220,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     // JS/TS: always run tests (delegates to the panel).
-    const passing = await this.runTests();
+    // The task's own tests decide a submission: edits in the Test cases tab only shape practice runs.
+    const passing = await this.runTests({ suite: 'shipped' });
     if (!this.isCurrentWorkspaceRun(epoch, q)) return;
     this.solved.set(passing);
 

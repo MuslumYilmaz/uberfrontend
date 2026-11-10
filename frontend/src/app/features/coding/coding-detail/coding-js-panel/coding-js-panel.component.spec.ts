@@ -106,6 +106,34 @@ describe('CodingJsPanelComponent', () => {
     expect(lastConsole.length).toBe(1);
   });
 
+  it("grades a submission with the task's own tests and leaves the edited Test cases tab as it was", async () => {
+    const runner = new RunnerStub();
+    const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
+    (component as any).loadRunner = async () => runner;
+    component.question = {
+      id: 'unique',
+      tests: "test('drops duplicates', () => expect(unique([1, 1])).toEqual([1]));",
+    } as any;
+    component.disablePersistence = true;
+    component.codeEditor = { getValue: () => 'export default function unique(arr) { return arr; }' } as any;
+    // The visitor swapped the task's tests for one that cannot fail.
+    const edited = "test('always passes', () => expect(1).toBe(1));";
+    component.testCode.set(edited);
+    component.testsEditor = { getValue: () => edited } as any;
+    expect(component.testsEdited()).toBeTrue();
+
+    await component.runTests({ suite: 'shipped' });
+    expect(runner.lastArgs?.testCode).toContain('drops duplicates');
+    expect(runner.lastArgs?.testCode).not.toContain('always passes');
+    expect(component.lastRunSuite()).toBe('shipped');
+    expect(component.testCode()).toBe(edited);
+
+    // Run keeps practising against what the tab holds.
+    await component.runTests();
+    expect(runner.lastArgs?.testCode).toContain('always passes');
+    expect(component.lastRunSuite()).toBe('editor');
+  });
+
   it('hands the Run tests click to a listening host, and runs the tests itself without one', () => {
     const component = TestBed.runInInjectionContext(() => new CodingJsPanelComponent({} as any));
     const run = spyOn(component, 'runTests').and.resolveTo();

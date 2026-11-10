@@ -412,6 +412,17 @@
                                 <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
                             </ng-container>
                         </div>
+                        <!-- Which tests graded this run: Submit always uses the task's own, whatever the Test cases tab holds. -->
+                        <p *ngIf="lastRunSuite() === 'shipped'" class="suite-note" data-testid="js-suite-note">
+                            Checked against the task's own tests.
+                        </p>
+                        <p *ngIf="lastRunSuite() === 'editor' && testsEdited()" class="suite-note" data-testid="js-suite-note">
+                            These are your edited tests. Submit runs the task's own tests.
+                        </p>
+                        <p *ngIf="lastRunSuite() === 'editor' && !testsEdited() && allPassing() && !solved && !rehearsing"
+                            class="suite-note suite-note--next" data-testid="js-submit-hint">
+                            All tests pass. Submit to save it as solved.
+                        </p>
 
                         <div *ngFor="let t of testResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">

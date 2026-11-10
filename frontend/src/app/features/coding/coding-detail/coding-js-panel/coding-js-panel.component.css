@@ -124,6 +124,9 @@ app-monaco-editor {
 .results-panel .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size: var(--fa-runner-font); }
 .results-panel .test-name .test-status-icon { font-size: var(--fa-runner-font); }
 .results-panel .test-error { margin-top:4px; font-size: var(--fa-runner-font-sm); }
+/* Which tests graded the run, and the step after an all-green run */
+.results-panel .suite-note { margin: 0 0 8px; font-size: var(--fa-runner-font-sm); color: var(--uf-text-tertiary); }
+.results-panel .suite-note--next { color: var(--uf-text-primary); font-weight: 600; }
 
 /* ===== Smaller Console typography ===== */
 :host ::ng-deep app-console-logger.console-panel { font-size: var(--fa-runner-font); line-height: var(--fa-runner-line); }
