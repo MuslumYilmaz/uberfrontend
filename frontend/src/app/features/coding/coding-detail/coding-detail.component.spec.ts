@@ -322,6 +322,88 @@ describe('CodingDetailComponent', () => {
     window.history.replaceState(state, '');
   });
 
+  it('steps a guest or a free account over Premium tasks, and keeps every neighbor for a member', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === 'coding')!;
+    const freeId = target.route.split('/').pop()!;
+    component.tech = target.tech as any;
+    component.kind = 'coding';
+    component.allQuestions = [
+      { id: 'current', access: 'free' },
+      { id: 'locked-one', access: 'premium' },
+      { id: 'locked-two', access: 'premium' },
+      { id: freeId, access: 'free' },
+    ] as Question[];
+    component.currentIndex = 0;
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+
+    // Signed out, Next goes past both locks to the free task, as a crawlable link.
+    expect(component.nextHref()).toBe(target.route);
+    component.next();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', freeId]);
+
+    // Prev steps back over them too.
+    navigate.calls.reset();
+    component.currentIndex = 3;
+    component.prev();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', 'current']);
+
+    // From the list, each item carries its access, also for a task in another tech's bank.
+    (component as any).practice = {
+      items: [
+        { tech: 'javascript', kind: 'coding', id: 'current', access: 'free' },
+        { tech: 'react', kind: 'coding', id: 'react-locked', access: 'premium' },
+        { tech: target.tech, kind: 'coding', id: freeId, access: 'free' },
+      ],
+      index: 0,
+    };
+    expect(component.nextHref()).toBe(target.route);
+    (component as any).practice = null;
+
+    // A member opens the Premium task next door.
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    navigate.calls.reset();
+    component.currentIndex = 0;
+    component.next();
+    expect(navigate).toHaveBeenCalledOnceWith(['/', target.tech, 'coding', 'locked-one']);
+
+    // With only Premium tasks ahead, a free visitor has no Next at all.
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    component.allQuestions = component.allQuestions.slice(0, 3);
+    expect(component.hasNext()).toBeFalse();
+  });
+
+  it('names the task the post-pass Next opens, and counts a plan day in the footer', () => {
+    const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.allQuestions = [
+      { id: 'current', access: 'free', title: 'Clamp' },
+      { id: 'locked', access: 'premium', title: 'Throttle Function' },
+      { id: 'free-next', access: 'free', title: 'Count Vowels' },
+    ] as Question[];
+    component.currentIndex = 0;
+
+    // A guest is sent past the lock, and the card names where.
+    expect(component.postPassNextLabel()).toBe('Next: Count Vowels');
+
+    // From a plan day, a task outside this bank keeps a plain label, and the footer names the day.
+    (component as any).practice = {
+      items: [
+        { tech: 'javascript', kind: 'coding', id: 'current', access: 'free' },
+        { tech: 'javascript', kind: 'trivia', id: 'js-event-loop', access: 'free' },
+      ],
+      index: 0,
+      label: 'Day 1',
+    };
+    expect(component.postPassNextLabel()).toBe('Next task');
+    expect(component.progressText).toBe('Day 1 · 1 / 2');
+
+    // The last task of the list has nowhere to go.
+    (component as any).practice.index = 1;
+    expect(component.postPassNextLabel()).toBeNull();
+  });
+
   it('uses list neighbors for direct entry and suppresses links for course, pressure and unavailable targets', () => {
     const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
     const target = PUBLIC_QUESTION_NAVIGATION.find((item) => item.kind === 'coding')!;
@@ -919,7 +1001,7 @@ describe('CodingDetailComponent', () => {
     expect(results[0][1]).toEqual(jasmine.objectContaining({ outcome: 'passed', attempt_number: 2 }));
   });
 
-  it('asks the onboarding question after a passing submit, not after each passing run', async () => {
+  it('offers the plan questions in the results after a saved submit, not in a dialog and not after a plain run', async () => {
     localStorage.removeItem('fa:onboarding:v1');
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -933,14 +1015,43 @@ describe('CodingDetailComponent', () => {
     } as any;
 
     await component.runTests();
-    expect(component.onboardingPromptOpen).toBeFalse();
+    expect(component.postPass()).toBeNull();
 
     await component.submitCode();
-    expect(component.onboardingPromptOpen).toBeTrue();
+    expect(component.onboardingPromptOpen).toBeFalse();
+    expect(component.postPass()).toBe('personalize');
     expect(analytics.track).toHaveBeenCalledWith('onboarding_prompt_shown', jasmine.objectContaining({
       trigger: 'first_pass',
       question_id: 'q1',
+      prompt_surface: 'post_pass_card',
     }));
+
+    // A new run takes the card away until it passes again.
+    await component.runTests();
+    expect(component.postPass()).toBeNull();
+  });
+
+  it('keeps the card to the saved result once the plan questions are answered', async () => {
+    localStorage.setItem('fa:onboarding:v1', JSON.stringify({
+      completed: true,
+      pendingTrigger: null,
+      profile: { timeline: '2_4_weeks', framework: 'javascript', targetRole: 'mid_frontend' },
+    }));
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.question.set({ id: 'q1', access: 'free', difficulty: 'easy' } as any);
+    component.jsPanel = {
+      runTests: jasmine.createSpy('runTests').and.callFake(async () => component.onJsTestResults([{ name: 'ok', passed: true }])),
+    } as any;
+
+    await component.submitCode();
+
+    expect(component.postPass()).toBe('saved');
+    localStorage.removeItem('fa:onboarding:v1');
   });
 
   it("grades Submit with the task's own tests, so edited tests that pass on Run cannot mark it solved", async () => {
@@ -1612,7 +1723,9 @@ describe('CodingDetailComponent', () => {
     await component.submitCode();
 
     expect(activity.complete).not.toHaveBeenCalled();
-    expect(component.loginPromptOpen).toBeTrue();
+    // The pass asks to save in the results, under the work, instead of a dialog over it.
+    expect(component.loginPromptOpen).toBeFalse();
+    expect(component.postPass()).toBe('guest');
   });
 
   it('runs guest JS tests and does not show auth when the attempt fails', async () => {
@@ -1636,6 +1749,7 @@ describe('CodingDetailComponent', () => {
 
     expect(runTests).toHaveBeenCalled();
     expect(component.loginPromptOpen).toBeFalse();
+    expect(component.postPass()).toBeNull();
     expect(activity.complete).not.toHaveBeenCalled();
     expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({
       workspace_type: 'js_tests',
@@ -1673,7 +1787,12 @@ describe('CodingDetailComponent', () => {
     expect(runTests).toHaveBeenCalled();
     expect(ensureAuthenticated).toHaveBeenCalled();
     expect(callOrder).toEqual(['tests', 'auth']);
-    expect(component.loginPromptOpen).toBeTrue();
+    expect(component.loginPromptOpen).toBeFalse();
+    expect(component.postPass()).toBe('guest');
+    expect(analytics.track).toHaveBeenCalledWith('auth_prompt', jasmine.objectContaining({
+      prompt_context: 'coding_submit',
+      prompt_surface: 'post_pass_card',
+    }));
     expect(component.solved()).toBeFalse();
     expect(activity.complete).not.toHaveBeenCalled();
     expect(analytics.track).toHaveBeenCalledWith('challenge_attempt_result', jasmine.objectContaining({

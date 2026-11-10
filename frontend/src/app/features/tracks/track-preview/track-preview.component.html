@@ -84,7 +84,7 @@
           <div class="day-card__topic">{{ day.topic }}</div>
           <ul class="task-list">
             <li *ngFor="let item of dayTasks(day, questions)">
-              <a [routerLink]="questionRoute(item)">{{ item.title }}</a>
+              <a [routerLink]="questionRoute(item)" [state]="navState(dayTasks(day, questions), item, day.label)">{{ item.title }}</a>
               <span class="task-meta">{{ displayKind(item.kind) }}<ng-container *ngIf="item.tech"> · {{ item.tech | titlecase }}</ng-container></span>
               <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
                 {{ item.access === 'free' ? 'Free now' : 'Premium in full plan' }}
@@ -173,7 +173,7 @@
                 <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
                 <span>{{ item.difficulty | titlecase }}</span>
               </div>
-              <a class="sample-link" [routerLink]="questionRoute(item)">Open sample question</a>
+              <a class="sample-link" [routerLink]="questionRoute(item)" [state]="navState(samples, item)">Open sample question</a>
             </li>
           </ul>
         </ng-container>

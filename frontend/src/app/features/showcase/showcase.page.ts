@@ -32,6 +32,7 @@ import {
 } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { isSprintOfferVersion, PRERENDER_OFFER_VERSION } from '../../core/utils/offer-version.util';
 import { PRERENDER_PLAN_DETAILS } from '../../generated/pricing-defaults';
+import { formatPlanDollars, premiumPlanPrices } from '../../core/utils/plan-price.util';
 import { apiUrl } from '../../core/utils/api-base';
 import { PlanId } from '../../core/utils/payments-provider.util';
 import { SHOWCASE_STATS } from '../../generated/content-metadata';
@@ -86,13 +87,6 @@ if (!FOUNDATIONS_TRACK) {
 }
 
 const FOUNDATIONS_TRACK_METRICS = deriveTrackMetrics(FOUNDATIONS_TRACK);
-
-/** "$24" for whole dollars, "$9.60" otherwise; the checkout charges US dollars everywhere. */
-function heroDollars(cents: number): string {
-  const dollars = cents / 100;
-  const digits = Number.isInteger(dollars) ? 0 : 2;
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: digits, maximumFractionDigits: digits }).format(dollars);
-}
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent, ShowcaseIconComponent, ShowcasePracticeCardComponent, ShowcaseInterviewPanelComponent, CompanyLogoMarkComponent, PrepRoadmapComponent, PriorityLinksComponent, ConversionStickyCtaComponent],
@@ -226,11 +220,9 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   heroOffer(): string {
     const regional = this.pricingRegionalPricing;
-    const cents = (plan: 'monthly' | 'annual') => regional?.prices?.[plan] ?? this.pricingPlanDetails?.[plan]?.amountCents;
-    const monthly = cents('monthly');
-    const annual = cents('annual');
-    const prices = monthly && annual
-      ? ` for ${heroDollars(monthly)} a month or ${heroDollars(annual)} a year${regional ? ` (prices for ${regional.countryName})` : ', less in many countries'}`
+    const plan = premiumPlanPrices(this.pricingPlanDetails, regional);
+    const prices = plan
+      ? ` for ${formatPlanDollars(plan.monthly)} a month or ${formatPlanDollars(plan.annual)} a year${regional ? ` (prices for ${regional.countryName})` : ', less in many countries'}`
       : '';
     return `Most questions are free, no account needed. Premium adds ${this.premiumPracticeCount} practice prompts and timed company rehearsals${prices}.`;
   }

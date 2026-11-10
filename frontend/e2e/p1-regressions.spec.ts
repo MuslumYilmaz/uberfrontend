@@ -73,9 +73,9 @@ test('Monaco keyboard listener tolerates generic keydown after SPA navigation to
     '',
   ].join('\n'));
 
+  // The pass asks to save in the results; its Sign in leads to the login page and back to this task.
   await page.getByTestId('footer-submit').click();
-  await expect(page.getByTestId('login-required-title')).toBeVisible();
-  await page.getByTestId('login-required-login').click();
+  await page.getByTestId('coding-post-pass-login').click();
 
   await expect(page).toHaveURL((url) => (
     url.pathname === '/auth/login'
@@ -117,6 +117,32 @@ test("Submit grades with the task's own tests, not with tests edited to pass", a
   await expect(page.getByTestId('login-required-title')).toBeHidden();
   // The rewritten Test cases tab is still the visitor's own.
   await expect.poll(() => getMonacoModelValue(page, testsModelKey)).toContain('always passes');
+});
+
+test('a passing Submit asks a guest to save in the results, not in a dialog, and names the next task', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, codeModelKey);
+  await setMonacoModelValue(
+    page,
+    codeModelKey,
+    'export default function clamp(value, lower, upper) {\n  return Math.min(Math.max(value, lower), upper);\n}\n',
+  );
+
+  await page.getByTestId('footer-submit').click();
+  const card = page.getByTestId('js-results-panel').getByTestId('coding-post-pass');
+  await expect(card).toHaveAttribute('data-card', 'guest', { timeout: 15_000 });
+  await expect(card.getByTestId('coding-post-pass-signup')).toBeVisible();
+  await expect(page.getByTestId('login-required-title')).toBeHidden();
+
+  const next = card.getByTestId('coding-post-pass-next');
+  await expect(next).toHaveText(/^\s*Next: \S/);
+  await next.click();
+  await expect(page).not.toHaveURL(new RegExp(`/${JS_QUESTION.id}$`));
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  // The next task starts clean: no card from the last one.
+  await expect(page.getByTestId('coding-post-pass')).toHaveCount(0);
 });
 
 test('a test that never settles fails on its own, and the tests around it keep their results', async ({ page }) => {

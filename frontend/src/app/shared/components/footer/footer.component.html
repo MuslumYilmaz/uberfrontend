@@ -44,7 +44,7 @@
                 <a *ngIf="nextHref && !nextDisabled; else nextButton"
                     class="pbtn-sm pbtn-sm--nav" [href]="nextHref" (click)="activatePracticeLink($event, 'next')"
                     aria-label="Next practice item" data-testid="footer-next">
-                    <span class="pbtn-sm__full">Next →</span>
+                    <span class="pbtn-sm__full">{{ nextLabel }} →</span>
                     <span class="pbtn-sm__compact" aria-hidden="true">→</span>
                 </a>
                 <ng-template #nextButton>
@@ -52,7 +52,7 @@
                         aria-label="Next practice item" data-testid="footer-next"
                         [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
                         [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
-                        <span class="pbtn-sm__full">Next →</span>
+                        <span class="pbtn-sm__full">{{ nextLabel }} →</span>
                         <span class="pbtn-sm__compact" aria-hidden="true">→</span>
                     </button>
                 </ng-template>

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { convertToParamMap, ActivatedRoute } from '@angular/router';
+import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { QuestionService } from '../../../core/services/question.service';
@@ -197,6 +197,25 @@ describe('TrackPreviewComponent', () => {
     expect(text).toContain('Angular Accordion / FAQ Component');
     expect(text).toContain('Free now');
     expect(text).toContain('Premium in full plan');
+  });
+
+  it('opens a day task inside that day, so the task footer counts the day and leads back to this plan', async () => {
+    const fixture = await createComponent('foundations-30d');
+    const host = fixture.nativeElement as HTMLElement;
+    const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+
+    host.querySelector<HTMLAnchorElement>('.day-card a[href="/javascript/coding/js-count-vowels"]')!.click();
+
+    const [url, extras] = navigate.calls.mostRecent().args;
+    expect(String(url)).toBe('/javascript/coding/js-count-vowels');
+    const state = extras?.state as any;
+    expect(state.session.label).toBe('Day 1');
+    expect(state.session.items.map((item: { id: string }) => item.id))
+      .toEqual(['js-number-clamp', 'js-reverse-string', 'js-count-vowels', 'js-unique-array']);
+    expect(state.session.index).toBe(2);
+    expect(state.session.items[2]).toEqual(jasmine.objectContaining({ tech: 'javascript', kind: 'coding', access: jasmine.any(String) }));
+    expect(state.returnToUrl).toBe('/tracks/foundations-30d/preview');
+    expect(state.returnLabel).toBe('Back to plan');
   });
 
   it('renders 30-day distribution, module previews, comparison cards, and expanded FAQ', async () => {

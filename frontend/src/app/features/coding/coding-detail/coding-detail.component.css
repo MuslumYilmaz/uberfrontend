@@ -1196,6 +1196,13 @@
   font-size: 14px;
   line-height: 1.55;
 }
+.locked-price{
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
 .locked-persona{
   margin: 0;
   font-size: 12px;
@@ -1288,3 +1295,4 @@
     display: none;
   }
 }
+

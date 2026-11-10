@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
+import { frameworkLabel, nextFreeDrill } from '../../../core/utils/onboarding-personalization.util';
 import {
   OnboardingFramework,
   OnboardingProfile,
@@ -11,6 +13,13 @@ import {
   OnboardingTimeline,
   OnboardingTrigger,
 } from '../../../core/services/onboarding.service';
+
+const FRAMEWORK_DRILL_BODY: Record<OnboardingFramework, string> = {
+  javascript: 'A short JavaScript task: run the tests until every one passes.',
+  react: 'A free React task: build it, then finish one clean pass under time pressure.',
+  angular: 'A free Angular task to lock in implementation speed.',
+  vue: 'A free Vue task to sharpen framework-specific fluency.',
+};
 
 type NextAction = {
   id: string;
@@ -36,7 +45,7 @@ export class OnboardingQuickStartComponent implements OnInit {
   form: OnboardingProfile = {
     timeline: '2_4_weeks',
     framework: 'react',
-    targetRole: 'senior_frontend',
+    targetRole: 'mid_frontend',
   };
 
   actions: NextAction[] = [];
@@ -56,6 +65,8 @@ export class OnboardingQuickStartComponent implements OnInit {
   ];
 
   roleOptions: Array<{ value: OnboardingTargetRole; label: string }> = [
+    { value: 'junior_frontend', label: 'Junior Frontend' },
+    { value: 'mid_frontend', label: 'Mid-level Frontend' },
     { value: 'senior_frontend', label: 'Senior Frontend' },
     { value: 'staff_frontend', label: 'Staff Frontend' },
     { value: 'fullstack_frontend', label: 'Full-stack (frontend-heavy)' },
@@ -71,6 +82,7 @@ export class OnboardingQuickStartComponent implements OnInit {
     private router: Router,
     private onboarding: OnboardingService,
     private analytics: AnalyticsService,
+    private progress: UserProgressService,
   ) { }
 
   ngOnInit(): void {
@@ -156,42 +168,27 @@ export class OnboardingQuickStartComponent implements OnInit {
     return [challenge, timelineAction, roleAction];
   }
 
+  /** A free drill in the chosen framework, never the task the visitor just passed or one solved before. */
   private frameworkChallenge(framework: OnboardingFramework): NextAction {
-    if (framework === 'angular') {
+    const done = new Set(this.progress.solvedIds());
+    const justPassed = String(this.route.snapshot.queryParamMap.get('question_id') || '').trim();
+    if (justPassed) done.add(justPassed);
+    const name = frameworkLabel(framework);
+    const drill = nextFreeDrill(framework, done);
+    if (!drill) {
       return {
-        id: 'framework_drill_angular',
-        title: 'Run one Angular coding drill now',
-        body: 'Start with a free Angular counter challenge to lock in implementation speed.',
-        route: ['/angular', 'coding', 'angular-counter-starter'],
-        queryParams: { src: 'onboarding_next_actions' },
+        id: `framework_list_${framework}`,
+        title: `Pick your next ${name} task`,
+        body: 'You have done the starter drills. Filter the coding list by difficulty and take the next one.',
+        route: ['/coding'],
+        queryParams: { tech: framework, src: 'onboarding_next_actions' },
       };
     }
-
-    if (framework === 'vue') {
-      return {
-        id: 'framework_drill_vue',
-        title: 'Run one Vue coding drill now',
-        body: 'Use a quick Vue counter challenge to sharpen framework-specific fluency.',
-        route: ['/vue', 'coding', 'vue-counter'],
-        queryParams: { src: 'onboarding_next_actions' },
-      };
-    }
-
-    if (framework === 'javascript') {
-      return {
-        id: 'framework_drill_javascript',
-        title: 'Run one JavaScript coding drill now',
-        body: 'Start with a concise JS logic challenge and run tests until fully passing.',
-        route: ['/javascript', 'coding', 'js-is-object-empty'],
-        queryParams: { src: 'onboarding_next_actions' },
-      };
-    }
-
     return {
-      id: 'framework_drill_react',
-      title: 'Run one React coding drill now',
-      body: 'Start with a free React challenge and finish one clean pass under time pressure.',
-      route: ['/react', 'coding', 'react-counter'],
+      id: `framework_drill_${framework}`,
+      title: `Next ${name} drill: ${drill.label}`,
+      body: FRAMEWORK_DRILL_BODY[framework],
+      route: drill.route,
       queryParams: { src: 'onboarding_next_actions' },
     };
   }
@@ -237,6 +234,26 @@ export class OnboardingQuickStartComponent implements OnInit {
   }
 
   private roleAction(role: OnboardingTargetRole): NextAction {
+    if (role === 'junior_frontend') {
+      return {
+        id: 'role_junior_frontend',
+        title: 'Start with easy JavaScript tasks',
+        body: 'Run the tests until each one passes, then move up a difficulty.',
+        route: ['/coding'],
+        queryParams: { tech: 'javascript', diff: 'easy', src: 'onboarding_role_junior' },
+      };
+    }
+
+    if (role === 'mid_frontend') {
+      return {
+        id: 'role_mid_frontend',
+        title: 'Alternate UI builds with JavaScript utilities',
+        body: 'Take one component task, then one utility such as debounce or a promise helper.',
+        route: ['/coding'],
+        queryParams: { src: 'onboarding_role_mid' },
+      };
+    }
+
     if (role === 'staff_frontend') {
       return {
         id: 'role_staff_frontend',

@@ -33,8 +33,12 @@ import type {
 } from '../../../core/models/pressure-mode.model';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
-import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { AccessLevel, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { checkSelectors, frameworkCheckCoverage } from '../../../core/utils/framework-check-coverage.util';
+import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
+import type { PlanId } from '../../../core/utils/payments-provider.util';
+import { premiumPriceLine } from '../../../core/utils/plan-price.util';
+import { PRERENDER_PLAN_DETAILS } from '../../../generated/pricing-defaults';
 import {
   buildLockedPreviewForCoding,
   CodingLockedPreviewQuestion,
@@ -45,13 +49,15 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
-import { CompanyPlanReturnLink, companyPlanReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
+import { CompanyPlanReturnLink, planReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
+import { practiceProgressText } from '../../../core/utils/practice-session.util';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { QuestionSourcesComponent } from '../../../shared/components/question-sources/question-sources.component';
 import { buildQuestionSourceCitations, normalizeQuestionSources } from '../../../core/utils/question-sources.util';
@@ -98,6 +104,7 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import { CodingPostPassComponent, type PostPassCard } from './coding-post-pass/coding-post-pass.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
@@ -124,8 +131,10 @@ type ChallengeAccessState = 'available' | 'premium_locked' | 'mobile_blocked';
 type ChallengeActionType = 'run_tests' | 'run_checks' | 'mark_complete';
 type ChallengeOutcome = 'passed' | 'failed' | 'manual';
 type ChallengeAuthState = 'guest' | 'free' | 'premium';
-type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
-type PracticeSession = { items: PracticeItem[]; index: number } | null;
+/** `access`: carried from the list, so Next can step over a Premium task in another tech's bank. */
+type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string; access?: AccessLevel };
+/** A list the task was opened from; `label` names the part of a plan it covers ("Day 1"). */
+type PracticeSession = { items: PracticeItem[]; index: number; label?: string | null } | null;
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -187,6 +196,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
+        CodingPostPassComponent,
         InlineCodeComponent,
         StripInlineMarkupPipe,
         SafeHtmlPipe,
@@ -208,6 +218,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly previewBuilder = inject(PreviewBuilderService);
+  private readonly billingCheckout = inject(BillingCheckoutService);
+  /** Premium's price on a lock page: the prerendered list price, then the visitor's regional one. */
+  private readonly lockedPlanDetails = signal<Partial<Record<PlanId, { amountCents?: number }>>>(PRERENDER_PLAN_DETAILS);
+  private readonly lockedRegionalPricing = signal<RegionalPricing | null>(null);
+  private lockedPricingRequested = false;
+  lockedPriceLine = computed(() => premiumPriceLine(this.lockedPlanDetails(), this.lockedRegionalPricing()));
   private readonly analytics = inject(AnalyticsService);
 
   tech!: Tech;
@@ -661,6 +677,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private previewCloseTimer?: ReturnType<typeof setTimeout>;
   loginPromptOpen = false;
   onboardingPromptOpen = false;
+  /**
+   * After a pass the results say what comes next, under the work instead of a dialog over it: a guest is asked to save
+   * the result, an account without a plan is offered one, and everyone gets the next task.
+   */
+  readonly postPass = signal<PostPassCard | null>(null);
   lifecyclePromptOpen = false;
   lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
   lifecyclePromptSolvedTotal = 0;
@@ -748,6 +769,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       itemId,
     }));
     this.solved.set(false);
+    this.postPass.set(null);
     // A later passing run must record again instead of trusting the stale flag.
     this.recorded = false;
   }
@@ -756,8 +778,72 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.auth.isLoggedIn()) return true;
     this.configureAuthPrompt(context);
     this.onboarding.markPending('save_prompt');
+    // A pass in the JavaScript or framework workspace asks in its results; Pressure Mode and HTML/CSS keep the dialog.
+    if (context === 'coding_submit' && !this.isWebTech()) {
+      this.showPostPass('guest');
+      return false;
+    }
     this.loginPromptOpen = true;
     return false;
+  }
+
+  /** The guest card's buttons: the same sign-up and sign-in pages the dialog opens, back to this task afterwards. */
+  postPassAuth(action: 'sign_up' | 'login'): void {
+    this.analytics.track('auth_prompt_action', {
+      prompt_context: 'coding_submit',
+      src: 'coding_submit',
+      primary_action: 'sign_up',
+      auth_action: action,
+      auth_state: 'guest',
+      prompt_surface: 'post_pass_card',
+    });
+    this.router.navigate([action === 'sign_up' ? '/auth/signup' : '/auth/login'], {
+      queryParams: { redirectTo: sanitizeRedirectTarget(this.router.url || '/'), src: 'coding_submit' },
+    });
+  }
+
+  dismissPostPass(): void {
+    this.postPass.set(null);
+  }
+
+  /** "Next: Throttle", or a plain label when the next task belongs to another bank; none where Next has nowhere to go. */
+  postPassNextLabel(): string | null {
+    if (this.isCourseContext() || !this.hasNext()) return null;
+    const index = this.neighborIndex(1);
+    const id = index === null ? null : (this.practice ? this.practice.items[index]?.id : this.allQuestions[index]?.id);
+    const title = id ? this.findQuestionById(id)?.title : null;
+    return title ? `Next: ${title}` : 'Next task';
+  }
+
+  private showPostPass(card: PostPassCard): void {
+    const q = this.question();
+    // Only the JavaScript and framework workspaces show the card; Pressure Mode and rehearsals end on their own screens.
+    if (!q || this.isWebTech() || this.pressureActive() || this.rehearsalPhase()) return;
+    this.postPass.set(card);
+    if (card === 'guest') {
+      this.analytics.track('auth_prompt', {
+        prompt_context: 'coding_submit',
+        src: 'coding_submit',
+        primary_action: 'sign_up',
+        auth_state: 'guest',
+        prompt_surface: 'post_pass_card',
+      });
+    } else if (card === 'personalize') {
+      this.onboardingPromptReason = 'first_pass';
+      this.analytics.track('onboarding_prompt_shown', {
+        src: this.challengeSource,
+        trigger: 'first_pass',
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        prompt_surface: 'post_pass_card',
+      });
+    }
+  }
+
+  /** A saved pass offers the plan questions until the account has answered them. */
+  private showSavedPostPass(): void {
+    this.showPostPass(this.onboarding.isCompleted() ? 'saved' : 'personalize');
   }
 
   goToLogin() {
@@ -880,17 +966,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       const items = rehearsal.definition.items;
       return `Problem ${items.findIndex((item) => item.questionId === this.question()?.id) + 1} of ${items.length}`;
     }
-    if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
+    if (this.practice) return practiceProgressText(this.practice);
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
   hasPrev(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
+    return this.neighborIndex(-1) !== null;
   }
   hasNext(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.practice ? (this.practice.index + 1 < this.practice.items.length)
-      : (this.currentIndex + 1 < this.allQuestions.length);
+    return this.neighborIndex(1) !== null;
+  }
+
+  /** A visitor who would meet locks is told why Next skips some tasks: it only opens the ones they can. */
+  footerNextLabel(): string {
+    return isQuestionLockedForTier({ access: 'premium' }, this.auth.user()) ? 'Next free task' : 'Next';
   }
 
   prevHref(): string | null {
@@ -901,9 +991,27 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return !this.isCourseContext() && this.hasNext() ? publicQuestionHref(this.adjacentPracticeItem(1)) : null;
   }
 
-  private adjacentPracticeItem(offset: number) {
-    if (this.practice) return this.practice.items[this.practice.index + offset];
-    const question = this.allQuestions[this.currentIndex + offset];
+  /**
+   * The nearest task in that direction this visitor can open: a guest or a free account steps over Premium tasks,
+   * so Prev and Next never lead to a lock page and a lock page leads on to free work.
+   */
+  private neighborIndex(offset: 1 | -1): number | null {
+    const length = this.practice ? this.practice.items.length : this.allQuestions.length;
+    const user = this.auth.user();
+    for (let index = (this.practice ? this.practice.index : this.currentIndex) + offset; index >= 0 && index < length; index += offset) {
+      const access = this.practice
+        ? this.practice.items[index].access ?? this.findQuestionById(this.practice.items[index].id)?.access
+        : this.allQuestions[index]?.access;
+      if (!access || !isQuestionLockedForTier({ access }, user)) return index;
+    }
+    return null;
+  }
+
+  private adjacentPracticeItem(offset: 1 | -1) {
+    const index = this.neighborIndex(offset);
+    if (index === null) return undefined;
+    if (this.practice) return this.practice.items[index];
+    const question = this.allQuestions[index];
     return question ? { tech: this.tech, kind: this.kind, id: question.id } : undefined;
   }
 
@@ -1007,6 +1115,18 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         this.solved.set(solvedIds.includes(q.id));
       }
     }, { allowSignalWrites: true });
+
+    // A lock page names Premium's price; the checkout config then brings the visitor's regional one.
+    effect(() => {
+      if (!this.locked() || !this.isBrowser || this.lockedPricingRequested) return;
+      this.lockedPricingRequested = true;
+      void this.billingCheckout.getCheckoutConfig()
+        .then((config) => {
+          if (config?.planDetails) this.lockedPlanDetails.set(config.planDetails);
+          this.lockedRegionalPricing.set(config?.pricing?.regional ?? null);
+        })
+        .catch(() => undefined);
+    });
 
     // A new task closes the review; a review left open on this device reopens where it was.
     effect(() => {
@@ -1122,7 +1242,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.returnToUrl = null;
       this.returnLabel.set(null);
     }
-    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
+    this.planReturn.set(planReturnLink(this.router, this.returnToUrl, this.returnLabel()));
     this.lockedReturn.set(companyReturnLink(this.router, this.returnToUrl, this.returnLabel()));
 
     this.courseIdFromState = s?.courseId ?? null;
@@ -1830,6 +1950,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.pressureRequested.set(routeRequestsPressure);
     this.pressureLoading.set(routeRequestsPressure && !!q.pressureModeAsset);
     this.question.set(q);
+    this.postPass.set(null);
     this.loadState.set('loaded');
     this.challengeSource = this.readChallengeSource();
     this.syncQuickWinContextFromRoute();
@@ -2068,7 +2189,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       index: clamped,
     };
 
-    const it = this.adjacentPracticeItem(0);
+    const it = this.practice.items[clamped];
     if (!it) return;
 
     this.router.navigate(['/', it.tech, it.kind, it.id], {
@@ -2082,24 +2203,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   prev() {
-    if (this.practice) {
-      if (this.practice.index > 0) this.navToPracticeIndex(this.practice.index - 1);
-      return;
-    }
-    if (this.currentIndex > 0) {
-      const item = this.adjacentPracticeItem(-1);
-      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
-    }
+    this.stepTo(-1);
   }
   next() {
+    this.stepTo(1);
+  }
+
+  /** Opens the nearest task in that direction this visitor can open (neighborIndex). */
+  private stepTo(offset: 1 | -1) {
+    const index = this.neighborIndex(offset);
+    if (index === null) return;
     if (this.practice) {
-      if (this.practice.index + 1 < this.practice.items.length) this.navToPracticeIndex(this.practice.index + 1);
+      this.navToPracticeIndex(index);
       return;
     }
-    if (this.currentIndex + 1 < this.allQuestions.length) {
-      const item = this.adjacentPracticeItem(1);
-      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
-    }
+    const item = this.adjacentPracticeItem(offset);
+    if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
   }
 
   // ---------- course navigations ----------
@@ -2145,6 +2264,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Plain JS/TS -> delegate to child panel
     const run = ++this.jsRunSequence;
+    this.postPass.set(null);
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
@@ -2181,6 +2301,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     // While a rehearsal or a find case keeps the task read-only, there is nothing to submit.
     if (this.rehearsalLocked() || this.findLocked()) return;
     const epoch = this.workspaceEpoch;
+    this.postPass.set(null);
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
@@ -2235,8 +2356,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!passing) {
       return;
     }
-    // Asked on a passing submit only: the prompt has no "seen" record, so a plain run would reopen it every time.
-    this.maybePromptOnboarding('first_pass', q.id);
 
     if (!this.ensureAuthenticated()) {
       this.solved.set(false);
@@ -2250,6 +2369,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'submit');
+    this.showSavedPostPass();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('submit');
@@ -2268,7 +2388,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
     const q = this.question();
-    if (q && event.questionId === q.id) this.recordRehearsalChecks(q.id, event.results);
+    if (q && event.questionId === q.id) {
+      this.recordRehearsalChecks(q.id, event.results);
+      this.postPass.set(null);
+    }
     this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
   }
@@ -2431,6 +2554,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'submit');
+    this.showSavedPostPass();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('submit');
@@ -2465,6 +2589,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'first_pass');
+    this.showSavedPostPass();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('tests');

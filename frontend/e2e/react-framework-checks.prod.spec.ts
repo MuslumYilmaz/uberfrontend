@@ -1018,16 +1018,20 @@ async function expectAssertionLayer(resultsPanel: Locator): Promise<void> {
 }
 
 async function dismissPostPassPrompt(page: Page): Promise<void> {
-  // Anonymous visitors receive the sign-in prompt; signed-in visitors can receive
-  // the progress prompt. Both are deliberately dismissible before rebuilding.
+  // A pass leaves a card in the results, which blocks nothing; Pressure Mode still asks a guest in a dialog, and a
+  // signed-in visitor can receive the progress prompt. Both dialogs are dismissible before rebuilding.
   const accountPrompt = page.getByTestId('login-required-dialog');
   const closeAccountPrompt = page.getByRole('button', { name: 'Close account prompt' });
-  await closeAccountPrompt.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
+  const card = page.getByTestId('coding-post-pass');
+  await expect(card.or(closeAccountPrompt).first())
+    .toBeVisible({ timeout: 5_000 })
+    .catch(() => undefined);
   if (await closeAccountPrompt.isVisible().catch(() => false)) {
     await closeAccountPrompt.click();
     await expect(accountPrompt).toBeHidden();
     return;
   }
+  if (await card.isVisible().catch(() => false)) return;
 
   const cancel = page.getByRole('button', { name: 'Cancel', exact: true }).last();
   await cancel.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
@@ -1177,8 +1181,9 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(note).toContainText('core flow only');
     await expect(note).toContainText('Clear completed');
     await expect(page.getByTestId('footer-submit')).toContainText('Mark as solved');
-    // The run itself marked nothing, so no account prompt asks to save a result.
+    // The run itself marked nothing, so nothing asks to save a result.
     await expect(page.getByTestId('login-required-dialog')).toBeHidden();
+    await expect(page.getByTestId('coding-post-pass')).toHaveCount(0);
   });
 
   test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {

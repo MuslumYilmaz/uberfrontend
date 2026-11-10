@@ -944,6 +944,9 @@
         (requestEditorUpgrade)="requestLiteUpgrade()"
         (filesChanged)="onFrameworkFilesChanged()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">
+        <ng-container ngProjectAs="[postPassCard]">
+          <ng-container *ngTemplateOutlet="postPassCard; context: { $implicit: 'framework' }"></ng-container>
+        </ng-container>
       </app-coding-framework-panel>
     </ng-container>
     <ng-template #pressureWorkspaceLoading>
@@ -979,6 +982,9 @@
           (langChange)="onChildLang($event)"
           (testResultsChange)="onJsTestResults($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
+          <ng-container ngProjectAs="[postPassCard]">
+            <ng-container *ngTemplateOutlet="postPassCard"></ng-container>
+          </ng-container>
         </app-coding-js-panel>
       </ng-template>
     </ng-container>
@@ -997,11 +1003,19 @@
 </app-monaco-editor>
 </div>
 
+<!-- After a pass: saved or not, and the next task, inside the results instead of a dialog over the work. -->
+<ng-template #postPassCard let-place>
+  <app-coding-post-pass *ngIf="postPass() as card" [card]="card" [place]="place === 'framework' ? 'framework' : 'results'"
+    [nextLabel]="postPassNextLabel()" (signUp)="postPassAuth('sign_up')" (signIn)="postPassAuth('login')"
+    (next)="next()" (personalize)="openOnboardingQuickStart()" (dismiss)="dismissPostPass()">
+  </app-coding-post-pass>
+</ng-template>
+
 <!-- Footer -->
 <ng-container *ngIf="!hideFooterBar; else demoFooter">
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
-    [prevHref]="prevHref()" [nextHref]="nextHref()"
+    [prevHref]="prevHref()" [nextHref]="nextHref()" [nextLabel]="footerNextLabel()"
     [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? (rehearsalRunning() ? null : 'All coding tasks'))) : null"
     [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : (planReturn()?.route ?? ['/coding'])) : null"
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
@@ -1167,6 +1181,8 @@
       <p class="locked-phone" *ngIf="isPhoneViewport()" data-testid="coding-locked-phone-note">
         On a phone this task opens as a question with its solution; the workspace is on a desktop or tablet.
       </p>
+      <!-- The price beside the button, so deciding does not take a trip to the pricing page. -->
+      <p *ngIf="lockedPriceLine() as price" class="locked-price" data-testid="coding-locked-price">{{ price }}</p>
       <div class="locked-actions">
         <button faButton variant="primary" type="button" (click)="goToPricing()">View pricing</button>
         <a
@@ -1195,4 +1211,15 @@
       </div>
     </div>
   </div>
+  <!-- A lock page keeps the way on: Prev and Next step over the other Premium tasks to free work. Drawn in the browser
+       only: prerendered, the footer's markup and styles add ~12.7 KB to each of ~130 noindex lock pages. -->
+  <app-footer *ngIf="browserViewReady() && !hideFooterBar && !isCourseContext()" data-nosnippet data-testid="coding-locked-footer" mode="practice"
+    [progressText]="progressText" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
+    [prevHref]="prevHref()" [nextHref]="nextHref()" [nextLabel]="footerNextLabel()"
+    [practiceLeftLabel]="planReturn()?.label ?? 'All coding tasks'" [practiceLeftRoute]="planReturn()?.route ?? ['/coding']"
+    [practiceLeftQueryParams]="planReturn()?.queryParams ?? null"
+    [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'"
+    [showSubmit]="false"
+    (prev)="prev()" (next)="next()">
+  </app-footer>
 </ng-template>
