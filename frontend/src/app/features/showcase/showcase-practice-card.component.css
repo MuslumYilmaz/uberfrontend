@@ -119,6 +119,10 @@
   color: var(--uf-text-secondary);
 }
 
+.practice-card__note--phone {
+  display: none;
+}
+
 .practice-card__actions {
   display: flex;
   flex-wrap: wrap;
@@ -159,5 +163,13 @@
 
   .practice-card__start {
     width: 100%;
+  }
+
+  .practice-card__note--wide {
+    display: none;
+  }
+
+  .practice-card__note--phone {
+    display: inline;
   }
 }

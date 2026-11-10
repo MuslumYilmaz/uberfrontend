@@ -33,7 +33,12 @@
     }
   </div>
 
-  <p class="practice-card__note">Pick a topic and start solving in your browser. No account needed.</p>
+  <!-- A phone opens tasks as questions with their solutions, so the promise to solve in the browser waits for a larger screen. -->
+  <p class="practice-card__note" data-testid="showcase-practice-note">
+    <span class="practice-card__note--wide">Pick a topic and start solving in your browser.</span>
+    <span class="practice-card__note--phone">Pick a topic and read its questions and solutions here; the code runs on a laptop or tablet.</span>
+    No account needed.
+  </p>
   <div class="practice-card__actions">
     <a
       faButton
