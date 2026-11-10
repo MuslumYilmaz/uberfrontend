@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import type { BundleFile } from '../utils/file-bundle.util';
+import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
 
 export type ConsoleEntry = {
   level: 'log' | 'warn' | 'error';
@@ -60,6 +61,7 @@ export class UserCodeSandboxService {
       };
       const err = (event?: Event) => {
         try { event?.preventDefault?.(); } catch { }
+        userVisibleFailures.report('runner_crashed');
         resolveOnce({
           entries: [{ level: 'error', message: 'Worker crashed', timestamp: Date.now() }],
           results: [],
@@ -71,6 +73,7 @@ export class UserCodeSandboxService {
 
       hardTimeoutHandle = setTimeout(() => {
         const message = `Sandbox was force-stopped after ${hardTimeoutMs}ms because execution blocked the worker.`;
+        userVisibleFailures.report('runner_force_stopped', { timeoutMs: hardTimeoutMs });
         resolveOnce({
           entries: [{ level: 'error', message, timestamp: Date.now() }],
           results: [],

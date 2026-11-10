@@ -5,8 +5,23 @@ import {
   OnDestroy, Output, PLATFORM_ID, SimpleChanges, ViewChild, inject
 } from '@angular/core';
 import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
+import { userVisibleFailures } from './core/utils/user-visible-failure-reporter';
 
 const DEFAULT_EDITOR_THEME = 'fa-dark';
+
+// Monaco downloads a language's tokenizer the first time a file of that
+// language opens, which can be minutes into a session. Only tokenizers are
+// loaded ahead: a language service (vs/language/*Mode) loaded early registers
+// its color provider while files are being swapped, and Monaco 0.52's color
+// decorator then cancels a computation it started in the same task, which
+// surfaces as an unhandled "Canceled" rejection.
+const LANGUAGE_TOKENIZER_MODULES: Readonly<Record<string, string>> = {
+  typescript: 'vs/basic-languages/typescript/typescript',
+  javascript: 'vs/basic-languages/javascript/javascript',
+  html: 'vs/basic-languages/html/html',
+  css: 'vs/basic-languages/css/css',
+  scss: 'vs/basic-languages/scss/scss',
+};
 
 declare global {
   interface Window { require: any; monaco: any; }
@@ -56,6 +71,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   /** Optional floor when autoHeight=true (default 24px + a little padding) */
   @Input() minHeight = 24;
 
+  /** Languages the parent opens later, e.g. every file in a file tree; their highlighting loads with the editor. */
+  @Input() preloadLanguages: readonly string[] = [];
+
   @Output() codeChange = new EventEmitter<string>();
   @Output() ready = new EventEmitter<void>();
   @Output() lineClick = new EventEmitter<MonacoLineClickEvent>();
@@ -74,6 +92,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private static webCompletionsInstalled = false;
   private static loaderPromise: Promise<void> | null = null;
   private static monacoReady = false;
+  private static requestedLanguageModules = new Set<string>();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
@@ -209,9 +228,17 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       this.applyInteractivity();
       setTimeout(() => this.layoutToCurrentSize(), 0);
       this.scheduleReadyEmit();
+      this.preloadLanguageSupport();
     } catch (error) {
       if (!this.disposed) {
-        this.loadFailed.emit(this.toMonacoLoadError(error, 'Monaco editor failed to initialize.'));
+        const loadError = this.toMonacoLoadError(error, 'Monaco editor failed to initialize.');
+        userVisibleFailures.report('editor_load_failed', {
+          reason: loadError.message,
+          phase: loadError.phase,
+          moduleId: loadError.moduleId,
+          url: loadError.url,
+        });
+        this.loadFailed.emit(loadError);
       }
     }
   }
@@ -259,6 +286,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
     if (changes['interactive'] && !changes['interactive'].isFirstChange()) {
       this.applyInteractivity();
+    }
+
+    if (changes['preloadLanguages'] && !changes['preloadLanguages'].isFirstChange()) {
+      this.preloadLanguageSupport();
     }
 
     if (changes['autoHeight'] && !changes['autoHeight'].isFirstChange()) {
@@ -331,6 +362,29 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   // ---------- helpers ----------
+
+  /**
+   * Loads the tokenizers for `preloadLanguages` while the editor is set up, so
+   * a file of another language opened later is highlighted without a download.
+   */
+  private preloadLanguageSupport(): void {
+    const req = (window as any).require;
+    if (typeof req !== 'function') return;
+
+    const moduleIds = new Set<string>();
+    for (const language of this.preloadLanguages ?? []) {
+      const moduleId = LANGUAGE_TOKENIZER_MODULES[this.normalizeLanguage(language)];
+      if (moduleId && !MonacoEditorComponent.requestedLanguageModules.has(moduleId)) moduleIds.add(moduleId);
+    }
+    if (!moduleIds.size) return;
+
+    moduleIds.forEach((moduleId) => MonacoEditorComponent.requestedLanguageModules.add(moduleId));
+    try {
+      // When both downloads fail, Monaco shows that language as plain text; the
+      // error callback keeps the failure from surfacing as an unhandled error.
+      req([...moduleIds], () => { }, () => { });
+    } catch { }
+  }
 
   private registerDefaultTheme(): void {
     // Monaco requires hex colors rather than CSS variables. Its built-in dark
@@ -566,7 +620,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
           if (typeof req.config === 'function') {
             req.config({
-              paths: { vs: this.vsBasePath },
+              // The AMD loader tries a module's paths in order, so listing the
+              // base twice downloads a module a second time when the first
+              // attempt fails, including the ones Monaco loads later.
+              paths: { vs: [this.vsBasePath, this.vsBasePath] },
               onError: (error: unknown) => fail(error),
             });
             req.configuredForVs = true;

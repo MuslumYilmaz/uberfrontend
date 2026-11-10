@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { AuthService, User } from './auth.service';
 import { AnalyticsService } from './analytics.service';
 import { createTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
+import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
 import {
   SENTRY_BROWSER_LOADER,
   TelemetryBootstrapService,
@@ -48,6 +49,7 @@ describe('TelemetryBootstrapService', () => {
   let authUser: ReturnType<typeof signal<User | null>>;
   let sentry: {
     browserTracingIntegration: jasmine.Spy;
+    captureMessage: jasmine.Spy;
     init: jasmine.Spy;
     setUser: jasmine.Spy;
   };
@@ -75,9 +77,12 @@ describe('TelemetryBootstrapService', () => {
     authUser = signal<User | null>(null);
     sentry = {
       browserTracingIntegration: jasmine.createSpy('browserTracingIntegration').and.returnValue({ name: 'browserTracing' }),
+      captureMessage: jasmine.createSpy('captureMessage'),
       init: jasmine.createSpy('init'),
       setUser: jasmine.createSpy('setUser'),
     };
+    // Keep the page-wide reporter detached from these fake clients.
+    spyOn(userVisibleFailures, 'attachSentry');
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', [
       'ensureInitialized',
       'isInitialized',
@@ -154,6 +159,12 @@ describe('TelemetryBootstrapService', () => {
     expectOnlyUserId(payload);
     expect(payload.id).toMatch(/^anon:[0-9a-f-]{36}$/);
     expect(localStorage.getItem(ANONYMOUS_ID_KEY)).toBe(payload.id);
+  });
+
+  it('hands the loaded Sentry client to the user-visible failure reporter', async () => {
+    await initializeSentry();
+
+    expect(userVisibleFailures.attachSentry).toHaveBeenCalledOnceWith(sentry as any);
   });
 
   it('reuses the stored anonymous user id', async () => {
@@ -492,6 +503,45 @@ describe('TelemetryBootstrapService', () => {
       appEvent,
       { originalException: monacoCancellationError() },
     )).toBe(appEvent);
+  });
+
+  it('keeps errors thrown inside Monaco as editor warnings instead of application errors', () => {
+    const lazyLanguageDownload = monacoThrownEvent(
+      'https://frontendatlas.com/polyfills-Q763KACN.js',
+      'https://frontendatlas.com/assets/monaco/min/vs/loader.js',
+    );
+    const typescriptWorkerAssertion = monacoThrownEvent(
+      'https://frontendatlas.com/assets/monaco/min/vs/base/worker/workerMain.js',
+      '../../../vs/language/typescript/tsWorker.js',
+      '<anonymous>',
+    );
+
+    for (const event of [lazyLanguageDownload, typescriptWorkerAssertion]) {
+      expect(filterAndSanitizeSentryEvent(event, { originalException: new Error('[object Event]') }))
+        .toEqual({ ...event, level: 'warning', tags: { browser: 'Chrome', source: 'editor' } });
+      expect(event.level).toBe('error');
+    }
+  });
+
+  it('keeps application errors raised while Monaco calls application code, and frameless errors', () => {
+    const applicationCallback = monacoThrownEvent(
+      MONACO_EDITOR_MAIN_URL,
+      'https://frontendatlas.com/chunk-APP12345.js',
+    );
+    const frameless = monacoThrownEvent();
+
+    for (const event of [applicationCallback, frameless]) {
+      expect(filterAndSanitizeSentryEvent(event, { originalException: new Error('boom') })).toBe(event);
+    }
+  });
+
+  it('keeps the editor tag beside the Interview scope after sanitizing', () => {
+    const event = monacoThrownEvent('https://frontendatlas.com/assets/monaco/min/vs/loader.js');
+
+    const sanitized = filterAndSanitizeSentryEvent(event, {}, true);
+
+    expect(sanitized?.level).toBe('warning');
+    expect(sanitized?.tags).toEqual({ feature: 'interview', source: 'editor' });
   });
 
   it('drops only opaque errors from a tracked Monaco worker captured by BrowserApiErrors', () => {
@@ -893,6 +943,24 @@ describe('TelemetryBootstrapService', () => {
           mechanism: { type: 'onunhandledrejection', handled: false },
           stacktrace: filenames.length
             ? { frames: filenames.map((filename) => ({ filename, function: 'cancel' })) }
+            : undefined,
+        }],
+      },
+    };
+  }
+
+  function monacoThrownEvent(...filenames: string[]): SentryErrorEvent {
+    return {
+      type: undefined,
+      level: 'error',
+      tags: { browser: 'Chrome' },
+      exception: {
+        values: [{
+          type: 'Error',
+          value: '[object Event]',
+          mechanism: { type: 'auto.browser.global_handlers.onunhandledrejection', handled: false },
+          stacktrace: filenames.length
+            ? { frames: filenames.map((filename) => ({ filename, function: 'frame' })) }
             : undefined,
         }],
       },

@@ -22,9 +22,13 @@ import { AuthService } from './auth.service';
 import { getApiBase, getDeploymentEnvironment } from '../utils/api-base';
 import { isMarketingPath } from '../utils/marketing-route.util';
 import { isTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
+import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
 
 type SentryModule = typeof import('@sentry/browser');
-type SentryBrowserClient = Pick<SentryModule, 'browserTracingIntegration' | 'init' | 'setUser'>;
+type SentryBrowserClient = Pick<
+  SentryModule,
+  'browserTracingIntegration' | 'captureMessage' | 'init' | 'setUser'
+>;
 
 export const SENTRY_BROWSER_LOADER = new InjectionToken<() => Promise<SentryBrowserClient>>(
   'SENTRY_BROWSER_LOADER',
@@ -39,6 +43,11 @@ const BROWSER_API_ERRORS_MECHANISM_PREFIX = 'auto.browser.browserapierrors';
 // Monaco's CancellationError: name and message are both this literal.
 const MONACO_CANCELLATION_NAME = 'Canceled';
 const MONACO_ASSET_PATH_PATTERN = /\/assets\/monaco\//i;
+// Worker stacks name Monaco modules relative to the worker script,
+// e.g. ../../../vs/language/typescript/tsWorker.js.
+const MONACO_WORKER_MODULE_PATTERN = /(?:^|\/)vs\/(?:base|basic-languages|editor|language|platform)\//;
+const UNUSABLE_FRAME_URLS = new Set(['<anonymous>', '[native code]', 'native']);
+const EDITOR_SOURCE_TAG = 'editor';
 const INTERVIEW_ERROR_MESSAGE = 'Interview operation failed';
 const INTERVIEW_SENTRY_SCOPE_TAG = 'interview';
 const INTERVIEW_PAGE_ROUTE_PATTERN = /^\/interview(?:\/|[?#]|$)/i;
@@ -123,9 +132,42 @@ function isMonacoCancellationError(value: unknown): boolean {
 }
 
 /**
+ * Monaco reports its own failures, such as a language module that could not
+ * be downloaded or a TypeScript service assertion, by rethrowing them from a
+ * timer or leaving the rejection unhandled. They degrade the editor without
+ * breaking the page, so an error thrown from a Monaco frame is kept as a
+ * warning tagged source:editor instead of a high-priority application error.
+ * An application callback that throws while Monaco calls it keeps its own
+ * frame on top and stays an error.
+ */
+export function classifyEditorInternalError(event: SentryErrorEvent): SentryErrorEvent {
+  const exceptions = event.exception?.values ?? [];
+  const frames = exceptions[exceptions.length - 1]?.stacktrace?.frames ?? [];
+  // Sentry orders frames from caller to callee, so the last usable frame threw.
+  const throwingFrameUrl = [...frames]
+    .reverse()
+    .map((frame) => frame.filename || frame.abs_path || '')
+    .find((url) => url !== '' && !UNUSABLE_FRAME_URLS.has(url));
+  if (
+    !throwingFrameUrl
+    || (!MONACO_ASSET_PATH_PATTERN.test(throwingFrameUrl)
+      && !MONACO_WORKER_MODULE_PATTERN.test(throwingFrameUrl))
+  ) {
+    return event;
+  }
+
+  return {
+    ...event,
+    level: 'warning',
+    tags: { ...event.tags, source: EDITOR_SOURCE_TAG },
+  };
+}
+
+/**
  * Applies the Monaco suppressions first, then removes Interview data which
- * must never leave the browser. Non-Interview events are returned by
- * reference so their established Sentry behaviour remains unchanged.
+ * must never leave the browser, and marks errors thrown inside Monaco as
+ * editor warnings. Other non-Interview events are returned by reference so
+ * their established Sentry behaviour remains unchanged.
  */
 export function filterAndSanitizeSentryEvent(
   event: SentryErrorEvent,
@@ -137,7 +179,7 @@ export function filterAndSanitizeSentryEvent(
     ? filterExpectedMonacoCancellation(withoutWorkerNoise, hint)
     : null;
   return filteredEvent
-    ? sanitizeInterviewSentryEvent(filteredEvent, interviewRouteActive)
+    ? classifyEditorInternalError(sanitizeInterviewSentryEvent(filteredEvent, interviewRouteActive))
     : null;
 }
 
@@ -616,6 +658,7 @@ export class TelemetryBootstrapService implements OnDestroy {
             });
             this.sentry = sentry;
             this.applySentryUser(this.auth.user()?._id ?? null);
+            userVisibleFailures.attachSentry(sentry);
           })
           .catch(() => {
             // Monitoring should never block app startup.
