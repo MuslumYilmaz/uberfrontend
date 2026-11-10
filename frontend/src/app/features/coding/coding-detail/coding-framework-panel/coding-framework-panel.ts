@@ -42,6 +42,8 @@ import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
+import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
+import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
 import { TestResult } from '../../console-logger/console-logger.component';
 import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
 
@@ -62,7 +64,7 @@ export type FrameworkCheckRunEvent = {
 
 @Component({
     selector: 'app-coding-framework-panel',
-    imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent],
+    imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent],
     templateUrl: './coding-framework-panel.component.html',
     styleUrls: ['./coding-framework-panel.component.css']
 })
@@ -88,6 +90,11 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() clockLabel: string | null = null;
   /** A rehearsal's questions come first: the code and the preview stay out of sight behind this note. */
   @Input() concealedNote: string | null = null;
+  /** 'smoke': the checks cover the core flow only, so a pass leads to the requirements, not to "Solved". */
+  @Input() checkCoverage: FrameworkCheckCoverage = 'full';
+  /** The task's requirements, listed beside a passed smoke check to compare against before marking it solved. */
+  @Input() requirements: readonly string[] = [];
+  @Input() solved = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
   @Output() filesChanged = new EventEmitter<Record<string, string>>();

@@ -202,6 +202,8 @@ export interface Question {
   /** How long each JavaScript test may run before it fails as timed out; the runner's default is 1000 ms. */
   testTimeoutMs?: number;
   frameworkTests?: FrameworkTest[];
+  /** Overrides the default reading of `frameworkTests` (one check or fewer is 'smoke'): framework-check-coverage.util. */
+  checkCoverage?: 'smoke' | 'full';
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
   sources?: QuestionSource[];

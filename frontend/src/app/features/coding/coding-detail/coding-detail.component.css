@@ -220,6 +220,14 @@
   line-height: 1.45;
 }
 
+/* The round's DOM contract: the selectors its checks use, which the constraints above do not name. */
+.pressure-mode__selectors {
+  margin-top: 10px !important;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
 .pressure-mode__success,
 .pressure-mode__complete {
   display: grid;

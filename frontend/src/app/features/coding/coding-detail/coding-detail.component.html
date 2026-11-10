@@ -120,6 +120,10 @@
                 <ul>
                   <li *ngFor="let constraint of round.constraints"><fa-inline-code [text]="constraint"></fa-inline-code></li>
                 </ul>
+                <p *ngIf="pressureRoundSelectors().length" class="pressure-mode__selectors" data-testid="pressure-round-selectors">
+                  This round's checks find elements by
+                  <ng-container *ngFor="let selector of pressureRoundSelectors(); let last = last"><code>{{ selector }}</code>{{ last ? '.' : ', ' }}</ng-container>
+                </p>
                 <p class="pressure-mode__cumulative">
                   Run checks when ready. This round includes every earlier constraint.
                 </p>
@@ -372,6 +376,19 @@
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
                   <li *ngFor="let r of specs.requirements"><fa-inline-code [text]="displayText(r)"></fa-inline-code></li>
                 </ul>
+              </div>
+
+              <!-- The checks' DOM contract: markup that works but names its elements differently would fail them. -->
+              <div *ngIf="checkSelectorList().length" class="mt-3" data-testid="coding-check-selectors">
+                <h3 class="text-sm font-semibold mb-1">What the checks look for</h3>
+                <p class="text-sm opacity-90">
+                  The checks find elements by
+                  <ng-container *ngFor="let selector of checkSelectorList(); let last = last"><code>{{ selector }}</code>{{ last ? '.' : ', ' }}</ng-container>
+                  Keep these in your markup.
+                  <ng-container *ngIf="checkCoverage() === 'smoke'">
+                    They cover the core flow only; compare your work with the requirements before you mark it solved.
+                  </ng-container>
+                </p>
               </div>
 
               <!-- Acceptance criteria -->
@@ -922,7 +939,10 @@
         [locked]="rehearsalLocked() || findLocked()" [lockedLabel]="findLocked() ? 'Find the bug first: the code runs after the comparison' : rehearsalLockedLabel()"
         [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
+        [checkCoverage]="pressureActive() ? 'full' : checkCoverage()" [requirements]="smokeRequirements()"
+        [solved]="uiSolved()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
+        (filesChanged)="onFrameworkFilesChanged()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">
       </app-coding-framework-panel>
     </ng-container>

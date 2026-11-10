@@ -13,6 +13,9 @@ const CANONICAL_BASE = (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://fronte
 
 const CODING_UNLOCK =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
+// A framework task whose one check covers the core flow (framework-check-coverage.util).
+const CODING_SMOKE_UNLOCK =
+  "Premium unlocks the runnable workspace, a check of the core flow with the task's requirement list, implementation walkthrough, and edge-case discussion.";
 // A coding task with an Interview Pressure Mode says so after the usual line.
 const CODING_PRESSURE_UNLOCK =
   `${CODING_UNLOCK} It also runs as an Interview Pressure Mode, in rounds that add requirements the way an interviewer does.`;
@@ -107,7 +110,8 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
     path: '/angular/coding/angular-tabs-switcher',
     h1: 'Angular Tabs / Multi-View Switcher',
-    unlock: CODING_UNLOCK,
+    // One check covers the core flow, so the lock page promises that, not full behavioral checks.
+    unlock: CODING_SMOKE_UNLOCK,
     requiredPracticeCopy: ['typed active-state', 'Angular @if control flow', 'one content panel', 'accessible tab controls'],
   },
 ] as const;

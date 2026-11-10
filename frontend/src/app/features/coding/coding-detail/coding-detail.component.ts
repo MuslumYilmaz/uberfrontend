@@ -34,6 +34,7 @@ import type {
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { checkSelectors, frameworkCheckCoverage } from '../../../core/utils/framework-check-coverage.util';
 import {
   buildLockedPreviewForCoding,
   CodingLockedPreviewQuestion,
@@ -540,6 +541,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       pressureModeAsset: q.pressureModeAsset,
       reviewModeAsset: q.reviewModeAsset,
       previewSample: q.previewSample,
+      // The unlock line promises only the checks the task has; the preview gets the coverage, never the checks.
+      checkCoverage: this.isFrameworkTech() ? frameworkCheckCoverage(q) : undefined,
     };
     const publicCandidates = this.allQuestions.map((candidate) => ({
       id: candidate.id,
@@ -560,6 +563,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
+
+  /** How much of this framework task its checks cover; only 'full' marks it solved on a passing run. */
+  checkCoverage = computed(() => (this.isFrameworkTech() ? frameworkCheckCoverage(this.question()) : 'none'));
+  /** A smoke check passed on the code as it stands, so the footer offers to mark the task solved. */
+  smokeChecksPassed = signal(false);
+  /** What the checks find elements by, shown with the task so the markup can match them. */
+  checkSelectorList = computed(() => (this.isFrameworkTech() ? checkSelectors(this.question()?.frameworkTests) : []));
+  pressureRoundSelectors = computed(() => checkSelectors(this.pressureCurrentRound()?.frameworkTests));
+  /** The requirements as the description shows them, for the list beside a passed smoke check. */
+  smokeRequirements = computed(() => (this.descSpecs()?.requirements ?? []).map((item) => this.displayText(item)));
 
   descSpecs = computed(() => {
     const q = this.question();
@@ -692,6 +705,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const solved = canSave && this.solved();
 
     if (this.hasFrameworkStructuredChecks()) {
+      // A smoke check only shows the core flow works; the visitor marks the task solved once it has passed.
+      if (!solved && this.checkCoverage() === 'smoke' && this.smokeChecksPassed()) return 'Mark as solved';
       return solved ? 'Run checks again' : 'Run checks';
     }
 
@@ -2179,6 +2194,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.markQuickWinEngaged('submit');
 
+    // The smoke check already passed on this code: the visitor has compared it with the requirements and marks it.
+    if (this.checkCoverage() === 'smoke' && this.smokeChecksPassed() && !(this.auth.isLoggedIn() && this.solved())) {
+      await this.markSolvedByHand(q);
+      return;
+    }
+
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
@@ -2201,21 +2222,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Angular/framework preview submissions are manual-complete.
     if (this.isFrameworkTech() || this.isWebTech()) {
-      const attemptNumber = this.trackChallengeAttemptStarted('mark_complete');
-      this.trackChallengeAttemptResult('mark_complete', 'manual', attemptNumber);
-      if (!this.ensureAuthenticated()) {
-        return;
-      }
-      const completed = await this.recordCompletion('submit');
-      if (!completed) {
-        this.solved.set(false);
-        return;
-      }
-      this.solved.set(true);
-      this.trackQuickWinCompleted(q.id, 'submit');
-      this.maybePromptLifecycle('coding_submit', q.id);
-      this.creditDaily();
-      await this.celebrate('submit');
+      await this.markSolvedByHand(q);
       return;
     }
 
@@ -2410,9 +2417,39 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     );
   }
 
+  /** Marks a task solved without a check deciding it: no checks at all, or a smoke check that has passed. */
+  private async markSolvedByHand(q: Question): Promise<void> {
+    const attemptNumber = this.trackChallengeAttemptStarted('mark_complete');
+    this.trackChallengeAttemptResult('mark_complete', 'manual', attemptNumber);
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+    const completed = await this.recordCompletion('submit');
+    if (!completed) {
+      this.solved.set(false);
+      return;
+    }
+    this.solved.set(true);
+    this.trackQuickWinCompleted(q.id, 'submit');
+    this.maybePromptLifecycle('coding_submit', q.id);
+    this.creditDaily();
+    await this.celebrate('submit');
+  }
+
+  /** An edit makes an earlier pass stale: the smoke check has to pass on the new code before it can be marked. */
+  onFrameworkFilesChanged(): void {
+    this.smokeChecksPassed.set(false);
+  }
+
   private async completeFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
     const q = this.question();
-    if (!q || event.questionId !== q.id || !event.passed) {
+    if (!q || event.questionId !== q.id) return;
+    // One check covers the core flow, not the requirements: a pass offers "Mark as solved" instead of solving it.
+    if (this.checkCoverage() === 'smoke') {
+      this.smokeChecksPassed.set(event.passed);
+      return;
+    }
+    if (!event.passed) {
       return;
     }
 

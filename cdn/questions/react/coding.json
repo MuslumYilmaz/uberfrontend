@@ -21,11 +21,14 @@
           "Render a <Counter /> as the main UI.",
           "Display the current count value.",
           "Provide '+' and '-' buttons to increment and decrement.",
-          "Prevent the count from ever going below 0."
+          "Prevent the count from ever going below 0.",
+          "Include a 'Reset' button that sets the count back to 0."
         ],
         "expectedBehavior": [
           "Clicking '+' increases the count by 1.",
           "Clicking '-' decreases the count by 1, but never below 0.",
+          "Clicking 'Reset' sets the count back to 0.",
+          "The '-' button is disabled when the count is 0.",
           "Initial count starts at 0."
         ],
         "implementationNotes": [
@@ -2035,11 +2038,9 @@
           "Give the combobox an explicit accessible name with a visible label associated through `for`/`id` (and `aria-labelledby` when used)."
         ],
         "acceptanceCriteria": [
-          "The first screen explains the challenge goal, 35-45 minute timebox, assessed React skills, and Start coding action.",
-          "The editor preview is meaningful on first load and the page body is useful without waiting for the editor bundle.",
-          "The solution keeps the first implementation in one component and discusses extraction only as a follow-up.",
+          "Keep the first implementation in one component; extract pieces only as a follow-up.",
           "Match highlighting uses React text nodes and mark, not HTML string injection.",
-          "Async explanation distinguishes debounce timer cleanup from cancelling an already-started request."
+          "You can explain how clearing the debounce timer differs from cancelling a request that has already started."
         ],
         "expectedBehaviorIntro": "The autocomplete should behave like an editable combobox with list autocomplete.",
         "expectedBehavior": [

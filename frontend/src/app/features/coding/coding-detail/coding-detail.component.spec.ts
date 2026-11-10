@@ -418,6 +418,46 @@ describe('CodingDetailComponent', () => {
     expect(component.footerSecondaryLabel()).toBeNull();
   });
 
+  it('leads a passed smoke check to "Mark as solved" instead of solving the framework task on its own', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'react';
+    component.kind = 'coding';
+    const addCheck = { id: 'add', name: 'Add', steps: [{ type: 'click', selector: '.primary' }] };
+    const smoke = { id: 'react-todo-list', access: 'free', difficulty: 'easy', frameworkTests: [addCheck] } as any;
+    component.question.set(smoke);
+    const record = spyOn(component as any, 'recordCompletion').and.resolveTo(true);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([{ id: 'add', name: 'Add', passed: true }]),
+    } as any;
+
+    // One check covers adding an item, not the task: a pass does not solve it.
+    await component.submitCode();
+    expect(record).not.toHaveBeenCalled();
+    expect(component.solved()).toBeFalse();
+    expect(component.checkSelectorList()).toEqual(['.primary']);
+    expect(component.submitLabel()).toBe('Mark as solved');
+
+    // An edit makes that pass stale.
+    component.onFrameworkFilesChanged();
+    expect(component.submitLabel()).toBe('Run checks');
+
+    // Passing again, the visitor compares with the requirements and marks it solved.
+    await component.submitCode();
+    await component.submitCode();
+    expect(record).toHaveBeenCalledOnceWith('submit');
+    expect(component.solved()).toBeTrue();
+
+    // Checks that cover the requirements still solve a task on a passing run.
+    component.solved.set(false);
+    record.calls.reset();
+    component.question.set({ ...smoke, id: 'react-autocomplete', frameworkTests: [addCheck, { id: 'b', name: 'B', steps: [] }] });
+    await component.submitCode();
+    expect(record).toHaveBeenCalledOnceWith('tests');
+  });
+
   it('uses mobile reading below 768px and compact workspace layout through 980px', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -1133,6 +1173,8 @@ describe('CodingDetailComponent', () => {
       access: 'free',
       difficulty: 'easy',
       frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      // Stated full coverage: a passing run solves the task (a single check alone would be a smoke check).
+      checkCoverage: 'full',
     } as any);
     component.frameworkPanel = { runFrameworkChecks } as any;
 
@@ -1160,6 +1202,8 @@ describe('CodingDetailComponent', () => {
       access: 'free',
       difficulty: 'easy',
       frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      // Stated full coverage: a passing run solves the task (a single check alone would be a smoke check).
+      checkCoverage: 'full',
     } as any);
 
     await component.onFrameworkCheckRun({
@@ -1528,6 +1572,8 @@ describe('CodingDetailComponent', () => {
       access: 'free',
       difficulty: 'easy',
       frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      // Stated full coverage: a passing run solves the task (a single check alone would be a smoke check).
+      checkCoverage: 'full',
     } as any);
     component.solved.set(true);
     component.frameworkPanel = {
@@ -1554,6 +1600,8 @@ describe('CodingDetailComponent', () => {
       id: 'react-counter',
       access: 'free',
       frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      // Stated full coverage: a passing run solves the task (a single check alone would be a smoke check).
+      checkCoverage: 'full',
     } as any);
     component.frameworkPanel = {
       runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([

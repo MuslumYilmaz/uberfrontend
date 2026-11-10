@@ -189,7 +189,7 @@
             <section *ngIf="frameworkChecksRunning() || frameworkCheckResults().length"
                 class="framework-check-results" data-testid="framework-results-panel" aria-live="polite">
                 <div class="framework-check-results__head">
-                    <span>Checks</span>
+                    <span>Checks<span *ngIf="checkCoverage === 'smoke'" class="framework-check-results__scope"> · core flow only</span></span>
                     <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">
                         {{ frameworkCheckPassedCount() }}/{{ frameworkCheckResults().length }} passed
                     </span>
@@ -207,6 +207,23 @@
                         <div class="framework-check-result__name">{{ result.name }}</div>
                         <div *ngIf="result.error" class="framework-check-result__error">{{ result.error }}</div>
                     </div>
+                </div>
+                <!-- A passed smoke check says the core flow works; the requirements say whether the task is done. -->
+                <div *ngIf="checkCoverage === 'smoke' && !solved && !frameworkChecksRunning() && frameworkCheckResults().length
+                        && frameworkCheckPassedCount() === frameworkCheckResults().length"
+                    class="framework-smoke-note" data-testid="framework-smoke-note">
+                    <p>
+                        This check covers the core flow only. Compare your work with the requirements, then press
+                        <strong>Mark as solved</strong>.
+                    </p>
+                    <ul *ngIf="requirements.length" class="framework-smoke-note__list">
+                        <li *ngFor="let requirement of requirements">
+                            <label>
+                                <input type="checkbox" />
+                                <fa-inline-code [text]="requirement"></fa-inline-code>
+                            </label>
+                        </li>
+                    </ul>
                 </div>
             </section>
         </div>

@@ -1142,6 +1142,45 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
   });
 
+  test('a passed smoke check leads to the requirements and "Mark as solved", not to "Solved"', async ({ page }) => {
+    await page.goto('/react/coding/react-todo-list');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    // The one check's selectors are named with the task, so markup that works can match them.
+    await expect(page.getByTestId('coding-check-selectors')).toContainText('.input-row input');
+    await waitForFrameworkPreview(page, '.input-row input');
+
+    // Adds an item and nothing else: no toggle, remove or clear. The task's one check covers adding.
+    await loadCanonicalFile(page, 'src/App.tsx', [
+      "import React, { useState } from 'react';",
+      "import './App.css';",
+      '',
+      'export default function App() {',
+      "  const [text, setText] = useState('');",
+      '  const [todos, setTodos] = useState<string[]>([]);',
+      '  return (',
+      '    <main>',
+      '      <div className="input-row">',
+      '        <input value={text} onChange={(event) => setText(event.target.value)} />',
+      '        <button className="primary" onClick={() => setTodos([...todos, text])}>Add</button>',
+      '      </div>',
+      '      <ul>{todos.map((todo, index) => <li key={index} className="item">{todo}</li>)}</ul>',
+      '    </main>',
+      '  );',
+      '}',
+      '',
+    ].join('\n'));
+    await rebuildPreview(page, '.input-row input');
+
+    const results = await runChecks(page, 1);
+    await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const note = results.getByTestId('framework-smoke-note');
+    await expect(note).toContainText('core flow only');
+    await expect(note).toContainText('Clear completed');
+    await expect(page.getByTestId('footer-submit')).toContainText('Mark as solved');
+    // The run itself marked nothing, so no account prompt asks to save a result.
+    await expect(page.getByTestId('login-required-dialog')).toBeHidden();
+  });
+
   test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {
     await page.setViewportSize({ width: 834, height: 900 });
     await page.goto('/react/coding/react-counter');
@@ -1373,12 +1412,25 @@ test.describe('Framework checks against the production SSR build', () => {
 
     const runButton = page.getByTestId('js-run-tests');
     const results = page.getByTestId('js-results-panel');
+    // The panel lists failures first, so each status is read by its test's name, in the order the tests file defines.
+    const definitionOrder = [
+      'converts a typed amount to minor units without losing a cent',
+      'keeps zero-decimal currencies whole',
+      'takes an amount-off coupon in minor units',
+      'lists lines largest first without reordering the cart it was given',
+      'retries a timeout with the same idempotency key',
+      'does not retry a declined card',
+    ];
     const run = async () => {
       await expect(runButton).toBeEnabled();
       await runButton.click();
       await expect(results.getByTestId('test-result')).toHaveCount(6, { timeout: 30_000 });
       await expect(runButton).toBeEnabled({ timeout: 10_000 });
-      return (await results.getByTestId('test-status').allTextContents()).map((status) => status.trim());
+      const rows = await results.getByTestId('test-result').evaluateAll((cards) => cards.map((card) => ({
+        name: card.querySelector('.test-name')?.textContent ?? '',
+        status: card.querySelector('[data-testid="test-status"]')?.textContent?.trim() ?? '',
+      })));
+      return definitionOrder.map((name) => rows.find((row) => row.name.includes(name))?.status ?? 'MISSING');
     };
 
     // The four reports fail; the zero-decimal and declined-card guards pass as the repo stands.
