@@ -266,6 +266,27 @@ describe('CodingListComponent', () => {
     expect(text).not.toContain('Importance: High to Low');
   });
 
+  it('names each sort order once and opens the menu toward the free side of its trigger', async () => {
+    const fixture = await createComponent({ items: [question()] });
+    const labels = fixture.componentInstance.sortOptions.map((option) => option.label);
+    expect(new Set(labels).size).toBe(labels.length);
+
+    const host = fixture.nativeElement as HTMLElement;
+    const trigger = host.querySelector<HTMLElement>('[data-testid="coding-list-sort-trigger"]')!;
+    const rect = spyOn(trigger, 'getBoundingClientRect');
+    const openAt = (right: number) => {
+      rect.and.returnValue({ right } as DOMRect);
+      trigger.click();
+      fixture.detectChanges();
+      return host.querySelector('.fa-sort__menu')!.classList.contains('fa-sort__menu--start');
+    };
+
+    // A phone wraps the sort to the start of its row: the 260px menu has no room on the trigger's left.
+    expect(openAt(238)).toBeTrue();
+    trigger.click();
+    expect(openAt(1200)).toBeFalse();
+  });
+
   it('frames the default global coding route as a frontend coding challenge hub', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },

@@ -73,6 +73,10 @@ type SortKey =
   // for compatibility with shared filter panel in other contexts
   | 'diff-asc' | 'diff-desc';
 
+/** `.fa-sort__menu` min-width and the page gutter it must keep (coding-list.component.scss). */
+const SORT_MENU_MIN_WIDTH_PX = 260;
+const SORT_MENU_EDGE_PX = 16;
+
 type SupportedPrepTech = Extract<Tech, 'javascript' | 'react' | 'angular' | 'vue'>;
 
 type FrameworkPrepLink = {
@@ -317,10 +321,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   sort$ = new BehaviorSubject<SortKey>('default');
   sortOpen = false;
+  /** The menu opens toward the free side of the trigger: a phone wraps the sort to the row's start. */
+  sortMenuAlignStart = false;
   sortOptions: Array<{ key: SortKey; label: string; hint?: string }> = [
     {
       key: 'default',
-      label: 'Difficulty: Easy to Hard',
+      label: 'Recommended order',
       hint: 'Easy → Hard, then practice priority High → Low'
     },
     { key: 'title-asc', label: 'Title: A to Z' },
@@ -1041,9 +1047,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // --- UI handlers for sorting ---
   currentSortLabel(k: SortKey | null | undefined): string {
     const opt = this.sortOptions.find(o => o.key === k);
-    return opt?.label || 'Difficulty: Easy to Hard';
+    return opt?.label || 'Recommended order';
   }
-  toggleSort() { this.sortOpen = !this.sortOpen; }
+  toggleSort(event?: Event) {
+    this.sortOpen = !this.sortOpen;
+    // A right-aligned menu needs its full width to the trigger's left; without it, it opens to the right instead.
+    const trigger = event?.currentTarget;
+    if (this.sortOpen && trigger instanceof HTMLElement) {
+      this.sortMenuAlignStart = trigger.getBoundingClientRect().right < SORT_MENU_MIN_WIDTH_PX + SORT_MENU_EDGE_PX;
+    }
+  }
   closeSort() { this.sortOpen = false; }
   setSort(k: SortKey) {
     this.sort$.next(k);

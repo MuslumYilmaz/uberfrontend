@@ -724,8 +724,34 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export function Self(): any;",
               "  export function Host(): any;",
               "  export function forwardRef(fn: () => any): any;",
+              // Signals and the signal-based component API, which current Angular code uses throughout.
+              "  export interface Signal<T> { (): T; }",
+              "  export interface WritableSignal<T> extends Signal<T> { set(value: T): void; update(fn: (value: T) => T): void; asReadonly(): Signal<T>; }",
+              "  export function signal<T>(initialValue: T, options?: any): WritableSignal<T>;",
+              "  export function computed<T>(computation: () => T, options?: any): Signal<T>;",
+              "  export function effect(fn: (onCleanup: (cleanup: () => void) => void) => void, options?: any): { destroy(): void };",
+              "  export function untracked<T>(fn: () => T): T;",
+              "  export interface InputSignal<T> extends Signal<T> {}",
+              "  export interface ModelSignal<T> extends WritableSignal<T> {}",
+              "  export interface OutputEmitterRef<T> { emit(value: T): void; subscribe(fn: (value: T) => void): { unsubscribe(): void }; }",
+              "  export const input: { <T>(initialValue?: T, opts?: any): InputSignal<T>; required<T>(opts?: any): InputSignal<T> };",
+              "  export const model: { <T>(initialValue?: T, opts?: any): ModelSignal<T>; required<T>(opts?: any): ModelSignal<T> };",
+              "  export function output<T = void>(opts?: any): OutputEmitterRef<T>;",
+              "  export const viewChild: { <T = any>(locator: any, opts?: any): Signal<T | undefined>; required<T = any>(locator: any, opts?: any): Signal<T> };",
+              "  export function viewChildren<T = any>(locator: any, opts?: any): Signal<ReadonlyArray<T>>;",
+              "  export const contentChild: { <T = any>(locator: any, opts?: any): Signal<T | undefined>; required<T = any>(locator: any, opts?: any): Signal<T> };",
+              "  export function contentChildren<T = any>(locator: any, opts?: any): Signal<ReadonlyArray<T>>;",
+              "  export class DestroyRef { onDestroy(callback: () => void): () => void; }",
+              "  export enum ChangeDetectionStrategy { OnPush = 0, Default = 1 }",
+              "  export class ChangeDetectorRef { markForCheck(): void; detectChanges(): void; detach(): void; reattach(): void; }",
+              "  export class NgZone { run<T>(fn: () => T): T; runOutsideAngular<T>(fn: () => T): T; }",
+              "  export function afterNextRender(fn: () => void, options?: any): { destroy(): void };",
+              "  export function provideZoneChangeDetection(options?: any): any;",
+              "  export function provideZonelessChangeDetection(): any;",
+              "  export function provideExperimentalZonelessChangeDetection(): any;",
+              "  export const VERSION: { full: string; major: string; minor: string; patch: string };",
               "}",
-            ].join('\\n');
+            ].join('\n');
 
             ts.typescriptDefaults.addExtraLib(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
@@ -825,7 +851,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export class ReactiveFormsModule {}",
               "  export class FormsModule {}",
               "}",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             mAny.__faAngularFormsLib = true;
@@ -844,7 +870,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export type HttpEvent<T = any> = HttpResponse<T>;",
               "  export abstract class HttpBackend { handle(req: HttpRequest<any>): any; }",
               "}",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             mAny.__faAngularHttpLib = true;
@@ -860,7 +886,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare const afterEach: (fn: () => void) => void;",
               "declare const beforeAll: (fn: () => void) => void;",
               "declare const afterAll: (fn: () => void) => void;",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
             mAny.__faTestLib = true;
@@ -874,7 +900,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare var process: { env: Record<string, string | undefined> };",
               "declare var __dirname: string;",
               "declare var __filename: string;",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
             mAny.__faNodeShimLib = true;

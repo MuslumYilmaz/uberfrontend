@@ -2749,6 +2749,49 @@ describe('CodingDetailComponent', () => {
     expect(items.map((item) => item.label)).toEqual(['Coding', 'React', 'Angular', 'System design', 'Guide']);
   });
 
+  it('marks the related tasks this visitor would meet a lock on, and drops the mark once they can open them', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+
+    component.tech = 'javascript';
+    component.kind = 'coding';
+    component.allQuestions = [
+      { id: 'js-throttle', title: 'Implement throttle()', technology: 'javascript', type: 'coding', access: 'premium', difficulty: 'intermediate' },
+      { id: 'js-sleep', title: 'Sleep', technology: 'javascript', type: 'coding', access: 'free', difficulty: 'easy' },
+      { id: 'js-promise-all', title: 'Implement Promise.all', technology: 'javascript', type: 'coding', access: 'premium', difficulty: 'intermediate' },
+    ] as any;
+    component.question.set({
+      id: 'js-debounce',
+      title: 'Debounce Function',
+      type: 'coding',
+      technology: 'javascript',
+      access: 'free',
+      difficulty: 'intermediate',
+      tags: [],
+      importance: 4,
+      solutionBlock: {
+        relatedLinks: [
+          { title: 'Implement throttle() in JavaScript', route: ['/', 'javascript', 'coding', 'js-throttle'], label: 'Coding' },
+          { title: 'Sleep', route: ['/', 'javascript', 'coding', 'js-sleep'], label: 'Coding' },
+          { title: 'JavaScript coding interview questions', route: ['/', 'guides', 'interview-blueprint', 'javascript-interviews'], label: 'Guide' },
+        ],
+        followUpQuestions: ['js-promise-all'],
+      },
+    } as any);
+
+    // Signed out, the Premium tasks open a lock page, so their rows say Premium; a guide is never locked. A related
+    // link to a task in this bank also keeps the similar-task fallback from listing that task a second time.
+    expect(component.followUpItems().map((item) => [item.id, item.locked])).toEqual([
+      ['js-throttle', true],
+      ['js-sleep', false],
+      [jasmine.any(String), false],
+      ['js-promise-all', true],
+    ]);
+
+    authUser.set({ _id: 'premium-user', accessTier: 'premium' });
+    expect(component.followUpItems().every((item) => !item.locked)).toBeTrue();
+  });
+
   it('restores document overflow on destroy', () => {
     spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1366);
     const fixture = TestBed.createComponent(CodingDetailComponent);
@@ -3847,7 +3890,10 @@ describe('CodingDetailComponent', () => {
       expect(find('assist-explain-card')?.textContent).toContain('Explain failure');
       expect(footerLinks().length).toBe(1);
       expect(find('footer-progress')?.textContent?.trim()).toMatch(/^[12] \/ 2$/);
-      expect(find('footer-left')?.textContent).toContain('Incidents hub');
+      // The way out of a task is the task list, not an unrelated hub; the incidents hub keeps a link under Guides.
+      expect(find('footer-left')?.textContent).toContain('All coding tasks');
+      expect(find('footer-left')?.getAttribute('href')).toBe('/coding');
+      expect(find('coding-incidents-link')?.getAttribute('href')).toBe('/incidents');
 
       find('rehearsal-start')!.click();
       fixture.detectChanges();

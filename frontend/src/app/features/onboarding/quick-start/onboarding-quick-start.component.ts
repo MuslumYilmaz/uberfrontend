@@ -61,6 +61,11 @@ export class OnboardingQuickStartComponent implements OnInit {
     { value: 'fullstack_frontend', label: 'Full-stack (frontend-heavy)' },
   ];
 
+  /** An option's own label, not its stored id ("2_4_weeks" read as "2 4_weeks"). */
+  labelFor<T extends string>(options: ReadonlyArray<{ value: T; label: string }>, value: T): string {
+    return options.find((option) => option.value === value)?.label ?? value;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

@@ -39,31 +39,40 @@ function reactImportBindings(clause: string, moduleName: string): string {
   return statements.join('\n');
 }
 
-function rewriteReactModuleToUMD(src: string): string {
+/**
+ * What replaces an import keeps the line breaks the import took (the patterns below also swallow blank lines around
+ * it), so a compile error's line number still points at the line in the editor.
+ */
+function keepLineBreaks(match: string, replacement = ''): string {
+  return replacement.replace(/\n/g, ' ') + '\n'.repeat(match.split('\n').length - 1);
+}
+
+/** Exported for its spec. */
+export function rewriteReactModuleToUMD(src: string): string {
   let s = src;
 
   // 1) React / ReactDOM importlarını UMD global'lerinden okuyan satırlara çevir
   s = s.replace(
     /^\s*import\s+([\w$*\s,{}]+?)\s+from\s+['"](react(?:-dom(?:\/client)?)?)['"];?[ \t]*$/mg,
-    (_match, clause: string, moduleName: string) => reactImportBindings(clause.trim(), moduleName)
+    (match, clause: string, moduleName: string) => keepLineBreaks(match, reactImportBindings(clause.trim(), moduleName))
   );
 
   // Kalanları (örneğin içinde yorum olan importları) sil
   s = s.replace(
     /^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 2) CSS importlarını sil
   s = s.replace(
     /^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 3) Relatif importları (./theme, ../foo vs) sil
   s = s.replace(
     /^\s*import\s+[^;]*from\s+['"]\.{1,2}\/[^'"]+['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 4) TS tip exportlarını normal deklarasyona çevir
@@ -71,7 +80,7 @@ function rewriteReactModuleToUMD(src: string): string {
   //    export interface Foo {...} -> interface Foo {...}
   //    export enum Bar {...}      -> enum Bar {...}
   s = s.replace(
-    /^\s*export\s+(type|interface|enum)\s+/mg,
+    /^[ \t]*export[ \t]+(type|interface|enum)[ \t]+/mg,
     '$1 '
   );
 
@@ -93,11 +102,12 @@ function rewriteReactModuleToUMD(src: string): string {
   // 6) Kalan named export keyword'lerini kaldır
   //    export const x = ...  -> const x = ...
   s = s.replace(
-    /^\s*export\s+(?=(const|let|var|function|class)\b)/mg,
+    /^[ \t]*export[ \t]+(?=(const|let|var|function|class)\b)/mg,
     ''
   );
 
-  return s.trim();
+  // Only the end: trimming the start would move every line up.
+  return s.replace(/\s+$/, '');
 }
 
 

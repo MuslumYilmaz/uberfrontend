@@ -814,7 +814,10 @@
                     <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
                       class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
                       <span class="truncate">{{ f.title | stripInlineMarkup }}</span>
-                      <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.label || f.difficulty || '—' }}</span>
+                      <span class="flex items-center gap-2 ml-4 shrink-0">
+                        <span *ngIf="f.locked" class="fa-chip fa-chip--accent" data-testid="coding-similar-premium">Premium</span>
+                        <span class="text-yellow-300 text-sm capitalize">{{ f.label || f.difficulty || '—' }}</span>
+                      </span>
                     </a>
                   </div>
               </section>
@@ -840,10 +843,17 @@
                       <span class="truncate">JavaScript Problems That Actually Show Up</span>
                       <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
                     </a>
-                    <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5"
+                    <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                       [routerLink]="['/guides/interview-blueprint/ui-interviews']">
                       <span class="truncate">Build Great UI in 60 Minutes</span>
                       <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                    </a>
+                    <!-- The incidents hub kept its link from every task when the footer's left button became the way
+                         back to the task list. -->
+                    <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5" data-testid="coding-incidents-link"
+                      [routerLink]="['/incidents']">
+                      <span class="truncate">Frontend debugging scenarios</span>
+                      <span class="text-yellow-300 text-sm ml-4">Practice</span>
                     </a>
                   </div>
               </section>
@@ -971,8 +981,8 @@
   <app-footer data-nosnippet [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
     [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
     [prevHref]="prevHref()" [nextHref]="nextHref()"
-    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? (rehearsalRunning() ? null : 'Incidents hub'))) : null"
-    [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : (planReturn()?.route ?? ['/incidents'])) : null"
+    [practiceLeftLabel]="!isCourseContext() ? (pressureActive() ? 'Exit pressure mode' : (planReturn()?.label ?? (rehearsalRunning() ? null : 'All coding tasks'))) : null"
+    [practiceLeftRoute]="!isCourseContext() ? (pressureActive() ? ['/', tech, kind, question()?.id] : (planReturn()?.route ?? ['/coding'])) : null"
     [practiceLeftQueryParams]="pressureActive() ? pressureExitQueryParams() : (planReturn()?.queryParams ?? null)"
     [middleSuffixLabel]="pressureActive() ? 'Interview round' : (kind === 'debug' ? 'Debugging challenge' : 'Coding task')" [leftCourseLabel]="leftDrawerLabel"
     [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext() && workspaceAvailable()"

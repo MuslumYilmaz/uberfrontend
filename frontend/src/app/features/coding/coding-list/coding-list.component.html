@@ -178,15 +178,15 @@
           </div>
           <ng-container *ngIf="sort$ | async as currentSort">
             <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
-              <button type="button" faButton variant="ghost" class="fa-sort__trigger sort-btn" (click)="toggleSort()"
-                data-testid="coding-list-sort-trigger">
+              <button type="button" faButton variant="ghost" class="fa-sort__trigger sort-btn"
+                (click)="toggleSort($event)" data-testid="coding-list-sort-trigger">
                 <span class="fa-sort__label">
                   {{ currentSortLabel(currentSort) }}
                 </span>
                 <i class="pi pi-chevron-down" [class.up]="sortOpen"></i>
               </button>
 
-              <div class="fa-sort__menu sort-menu" *ngIf="sortOpen">
+              <div class="fa-sort__menu sort-menu" *ngIf="sortOpen" [class.fa-sort__menu--start]="sortMenuAlignStart">
                 <button *ngFor="let opt of sortOptions" type="button"
                   [attr.data-testid]="'coding-list-sort-' + opt.key"
                   faButton variant="ghost" class="fa-sort__item sort-item" [class.active]="opt.key === currentSort"

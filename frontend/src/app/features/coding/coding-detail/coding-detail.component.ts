@@ -159,7 +159,8 @@ type FASolutionBlock = {
   codeTs?: string;
 };
 
-type FollowUpItem = { id: string; title: string; difficulty: string; to: any[]; label?: string };
+/** `locked`: Premium for this visitor, so the link opens a lock page rather than the task. */
+type FollowUpItem = { id: string; title: string; difficulty: string; to: any[]; label?: string; locked?: boolean };
 type LockedPath = {
   id: string;
   label: string;
@@ -4374,11 +4375,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         if (!title || !route?.length) return null;
 
         const label = String(it?.label || 'Related').trim() || 'Related';
-        const id = String(it?.id || JSON.stringify(route) || `${title}-${index}`).trim();
+        // A link to a task in this bank takes the task's id, so the similar-task fallback cannot list it twice.
+        const target = this.findQuestionById(String(route[route.length - 1] ?? ''));
+        const id = String(it?.id || (target as any)?.id || JSON.stringify(route) || `${title}-${index}`).trim();
         if (!id || seen.has(id)) return null;
 
         seen.add(id);
-        return { id, title, difficulty: label, label, to: route };
+        const locked = target ? isQuestionLockedForTier(target, this.auth.user()) : false;
+        return { id, title, difficulty: label, label, to: route, locked };
       })
       .filter((it): it is FollowUpItem => it !== null);
   }
@@ -4402,7 +4406,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const title = String((target as any).title || id).trim();
     const difficulty = String((target as any).difficulty || '').trim();
     const to = ['/', (target as any).technology ?? this.tech, (target as any).type ?? this.kind, id];
-    return { id, title, difficulty, to };
+    return { id, title, difficulty, to, locked: isQuestionLockedForTier(target, this.auth.user()) };
   }
 
   private buildFallbackFollowUps(current: Question, limit: number, seenIds: Set<string>): FollowUpItem[] {

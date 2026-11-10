@@ -227,6 +227,32 @@ describe('MonacoEditorComponent loader failure handling', () => {
     secondFixture.destroy();
   });
 
+  it('gives the editor typings it can parse, with the Angular signal API a candidate imports', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const fixture = createComponent();
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const libs = new Map<string, string>(
+      fakeMonaco.api.languages.typescript.typescriptDefaults.addExtraLib.calls.allArgs()
+        .map(([content, path]: [string, string]) => [path, content]),
+    );
+    // Lines joined with a literal backslash-n made each file one line of invalid characters for the worker.
+    for (const [path, content] of libs) expect(content).withContext(path).not.toContain('\\n');
+    const angularCore = libs.get('file:///node_modules/@angular/core/index.d.ts') ?? '';
+    expect(angularCore.split('\n').length).toBeGreaterThan(40);
+    for (const name of ['signal', 'computed', 'input', 'output', 'model', 'viewChild', 'ChangeDetectionStrategy']) {
+      expect(angularCore).withContext(name).toMatch(new RegExp(`export (function|const|enum) ${name}\\b`));
+    }
+    fixture.destroy();
+  });
+
   it('applies comments with AA contrast before rendering the default dark editor', async () => {
     const fakeMonaco = makeFakeMonaco();
     (window as any).monaco = fakeMonaco.api;

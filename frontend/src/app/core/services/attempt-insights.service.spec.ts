@@ -274,6 +274,38 @@ describe('AttemptInsightsService', () => {
     expect(state.syncBackoffMs).toBe(30_000);
   });
 
+  it('waits for a sync retry outside the Angular zone, so a failing sync cannot keep the app from turning stable', async () => {
+    localStorage.setItem(AUTH_SESSION_HINT_KEY, '1');
+    writeState(baseState({ runs: [makeRun({ questionId: 'q-zone', signature: 'sig-zone', syncedAt: 0 })] }));
+    const http = {
+      post: jasmine.createSpy('post').and.returnValues(
+        throwError(() => ({ status: 500, message: 'fail' })),
+        of({ runs: [], cursorTs: 1, stats: { received: 1, upserted: 1, deduped: 0, returned: 0 } }),
+      ),
+    };
+    const zone = {
+      runOutsideAngular: jasmine.createSpy('runOutsideAngular').and.callFake((fn: () => unknown) => fn()),
+      run: jasmine.createSpy('run').and.callFake((fn: () => unknown) => fn()),
+    };
+    jasmine.clock().install();
+    // The retry checks its cooldown against Date.now(), so the clock moves the date too.
+    jasmine.clock().mockDate(new Date('2026-11-10T12:00:00Z'));
+    try {
+      const syncService = new AttemptInsightsService(http as any, zone as any);
+      expect(await syncService.triggerSync({ force: true, reason: 'spec_retry_zone' })).toBeFalse();
+
+      // The 30 s retry waits outside the zone; only its callback comes back in to sync.
+      expect(zone.runOutsideAngular).toHaveBeenCalledTimes(1);
+      expect(zone.run).not.toHaveBeenCalled();
+      jasmine.clock().tick(readState().syncBackoffMs);
+      expect(zone.run).toHaveBeenCalledTimes(1);
+      for (let i = 0; i < 5; i += 1) await Promise.resolve();
+      expect(http.post).toHaveBeenCalledTimes(2);
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
+
   it('marks outgoing records synced and updates cursor on successful sync', async () => {
     const baseTs = Math.floor(Date.now() / 60_000) * 60_000 + 1000;
     localStorage.setItem(AUTH_SESSION_HINT_KEY, '1');

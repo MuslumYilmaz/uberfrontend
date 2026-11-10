@@ -602,6 +602,13 @@ app-coding-tech-kind-tabs {
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.5);
   padding: 8px;
   z-index: 10;
+  max-width: calc(100vw - 32px);
+}
+
+// Opened toward the right when the trigger sits near the start of the row (phones wrap it there).
+.fa-sort__menu--start {
+  left: 0;
+  right: auto;
 }
 
 .fa-sort__item {

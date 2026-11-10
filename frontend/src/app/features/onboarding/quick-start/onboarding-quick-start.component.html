@@ -41,7 +41,7 @@
       <div class="next-head">
         <h2>Your personalized next action list</h2>
         <p>
-          Built for {{ form.targetRole.replace('_', ' ') }} with a {{ form.timeline.replace('_', ' ') }} horizon.
+          Built for {{ labelFor(roleOptions, form.targetRole) }}: {{ labelFor(timelineOptions, form.timeline) }}.
         </p>
       </div>
 
