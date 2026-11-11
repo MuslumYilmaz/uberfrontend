@@ -2,19 +2,19 @@
     "template": "angular-cli",
     "openFile": "src/app/app.component.ts",
     "dependencies": {
-        "@angular/core": "17.0.1",
-        "@angular/common": "17.0.1",
-        "@angular/platform-browser": "17.0.1",
-        "@angular/router": "17.0.1",
-        "rxjs": "^7.8.1",
-        "zone.js": "~0.14.2",
-        "tslib": "^2.6.2"
+        "@angular/core": "21.2.25",
+        "@angular/common": "21.2.25",
+        "@angular/platform-browser": "21.2.25",
+        "rxjs": "7.8.2",
+        "zone.js": "0.16.3",
+        "tslib": "2.8.1"
     },
     "files": {
         "src/main.ts": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent);\n",
-        "src/app/app.component.ts": "import { Component } from '@angular/core';\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  count = 0;\n  inc() { this.count += 1; }\n}\n",
-        "src/app/app.component.html": "<button (click)=\"inc()\">Increment</button>\n<p>{{count}}</p>\n",
+        "src/app/app.component.ts": "import { Component } from '@angular/core';\nimport { CounterDisplayComponent } from './counter-display.component';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CounterDisplayComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  stats = { count: 0 };\n\n  inc() {\n    // OnPush compares input references, so hand the display a new object.\n    this.stats = { ...this.stats, count: this.stats.count + 1 };\n  }\n}\n",
+        "src/app/app.component.html": "<button (click)=\"inc()\">Increment</button>\n<app-counter-display [stats]=\"stats\" />\n",
         "src/app/app.component.css": "button {\n  padding: .5rem 1rem;\n  border-radius: .5rem;\n}\n",
+        "src/app/counter-display.component.ts": "import { ChangeDetectionStrategy, Component, input } from '@angular/core';\n\n@Component({\n  selector: 'app-counter-display',\n  standalone: true,\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: '<p>{{ stats().count }}</p>'\n})\nexport class CounterDisplayComponent {\n  readonly stats = input.required<{ count: number }>();\n}\n",
         "index.html": "<!doctype html><html><head><meta charset=\"utf-8\"><title>UF</title><base href=\"/\"/></head><body><app-root></app-root></body></html>"
     }
 }

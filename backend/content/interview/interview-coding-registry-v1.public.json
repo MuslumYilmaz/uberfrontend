@@ -79,11 +79,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "1f193cf1828079f735b253b293440c21289e40d3512107c3bf033e8927bf8f8c",
+      "contentHash": "1511eb189c4c68d3aa88217a6cf7fefacf66e98accd710527bff5fc26d37a36a",
       "enabled": true,
       "id": "int-code-angular-junior-filterable-user-list-v1",
       "level": "junior",
-      "prompt": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe.",
       "publicRequirements": [
         {
           "constraints": [
@@ -152,11 +152,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "cf4846dca9d8b5cc1901b84843017044a18530f56035d2b9362138363253ca89",
+      "contentHash": "9583788eb0e144af3bc49cb60c75701d36eb0bb004a80b29f215596559adc21e",
       "enabled": true,
       "id": "int-code-angular-junior-progress-thresholds-v1",
       "level": "junior",
-      "prompt": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles.",
       "publicRequirements": [
         {
           "constraints": [
@@ -456,11 +456,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "41cec26d76848ee9eddbc23aa9dfd4fa951e6ccb87991b0b8df7efdd566c8b44",
+      "contentHash": "ea5d3683d609bc6b1175306924db6212da1a44f294895ef36725516642dc0573",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "level": "mid",
-      "prompt": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms.",
       "publicRequirements": [
         {
           "constraints": [
@@ -539,11 +539,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
+      "contentHash": "cb1d5b4bb95a8b27663a661cc554cea97cae89a1ae5ddd45db2daa7b6d7a93f3",
       "enabled": true,
       "id": "int-code-angular-mid-pagination-v1",
       "level": "mid",
-      "prompt": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices.",
       "publicRequirements": [
         {
           "constraints": [
@@ -714,11 +714,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "71059fd19aeef7489dd0929a6299035ea1fc745385a9282c8e0135248de4ceb6",
+      "contentHash": "ba70a60299fd831f2c4f8132213e13d984b3c46a706dece52a8cc69a8a581d8c",
       "enabled": true,
       "id": "int-code-angular-mid-theme-toggle-v1",
       "level": "mid",
-      "prompt": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element.",
       "publicRequirements": [
         {
           "constraints": [
@@ -898,11 +898,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "07574fa4e7d39f8ee8ca58f4489249175708acf7690297c58120c5781c5d9e9e",
+      "contentHash": "ed0c45f5e8a61ce4aedf1d6b0962c8d56ddf186898fbe1a210516fc271f78a82",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "level": "senior",
-      "prompt": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
       "publicRequirements": [
         {
           "constraints": [
@@ -994,11 +994,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "73c1c71287964c998c581e2128b941481863a6ef2520604951c07f62f1c4e9e4",
+      "contentHash": "9a7f02d43dd639aa7710d36f4715d4ce42e6c761b49d0e3cee203eeb6e324bfb",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "level": "senior",
-      "prompt": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1091,11 +1091,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "bbdeeb3ca06aa3961b20c48abc1ab22be51cd6e03da0757c18c6e1153f9c0870",
+      "contentHash": "193fe47ccf6cd22418d260c8434ba68d765f3629567ebd8b956f287f1d65b726",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "level": "senior",
-      "prompt": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1188,11 +1188,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "bf076a14611003511894b29d9216d8919c79ab95ed9f1db5338c8644140c591e",
+      "contentHash": "5d603803dfcbef90ab8c10bc7c7595b047be0bf3971641e8ffda77410341300c",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "level": "senior",
-      "prompt": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use @for with checkbox bindings. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use @for with checkbox bindings.",
       "publicRequirements": [
         {
           "constraints": [

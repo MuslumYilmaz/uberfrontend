@@ -5691,43 +5691,73 @@ function assertAngularCounterDebug() {
     (entry) => entry.id === 'ng-debug-counter-change-detection'
   );
   assert.ok(question, 'The published Angular counter debug question must remain available');
-  for (const [reference, expectedCounts] of [
-    [question.sdk.asset, [0, 0, 0]],
-    [question.solutionAsset, [0, 1, 2]],
+  // The bug is change detection, not arithmetic: both workspaces count every click and keep the display OnPush, and
+  // only the solution hands the display a new stats object. The browser check sees the starter's screen stuck at 0.
+  const OnPush = 0;
+  const angularCore = {
+    ChangeDetectionStrategy: { OnPush, Default: 1 },
+    Component: (config) => (component) => Object.assign(component, { config }),
+    input: { required: () => () => undefined },
+  };
+  for (const [reference, replacesStats] of [
+    [question.sdk.asset, false],
+    [question.solutionAsset, true],
   ]) {
     const relative = reference.replace(/^assets\//, '');
     assertMirror(relative);
     const asset = json(`cdn/${relative}`);
-    const source = fileCode(asset, 'src/app/app.component.ts');
-    parseAngularTemplate(fileCode(asset, 'src/app/app.component.html'), relative);
-    const transpiled = ts.transpileModule(source, {
-      compilerOptions: {
-        target: ts.ScriptTarget.ES2022,
-        module: ts.ModuleKind.CommonJS,
-        experimentalDecorators: true,
-      },
-      reportDiagnostics: true,
-    });
-    assert.deepEqual(
-      (transpiled.diagnostics ?? []).filter((entry) => entry.category === ts.DiagnosticCategory.Error),
-      [],
-      `${relative}: component must compile before its behavior can be checked`
+    const template = fileCode(asset, 'src/app/app.component.html');
+    parseAngularTemplate(template, relative);
+    assert.match(template, /<app-counter-display \[stats\]="stats" \/>/, `${relative}: the display must bind the stats object`);
+    const modules = {};
+    const load = (file) => {
+      const transpiled = ts.transpileModule(fileCode(asset, file), {
+        compilerOptions: {
+          target: ts.ScriptTarget.ES2022,
+          module: ts.ModuleKind.CommonJS,
+          experimentalDecorators: true,
+        },
+        reportDiagnostics: true,
+      });
+      assert.deepEqual(
+        (transpiled.diagnostics ?? []).filter((entry) => entry.category === ts.DiagnosticCategory.Error),
+        [],
+        `${relative}: ${file} must compile before its behavior can be checked`
+      );
+      const exports = {};
+      vm.runInNewContext(transpiled.outputText, {
+        exports,
+        require(specifier) {
+          if (specifier === './counter-display.component') return modules.display;
+          assert.equal(specifier, '@angular/core');
+          return angularCore;
+        },
+      }, { filename: `${relative}#${file}` });
+      return exports;
+    };
+    modules.display = load('src/app/counter-display.component.ts');
+    const display = modules.display.CounterDisplayComponent;
+    assert.equal(display.config.changeDetection, OnPush, `${relative}: the counter display must stay OnPush`);
+    assert.match(display.config.template, /\{\{ stats\(\)\.count \}\}/);
+    const { AppComponent } = load('src/app/app.component.ts');
+    // Spread into this realm: the array literal comes from the vm context.
+    assert.deepEqual([...AppComponent.config.imports], [display]);
+    const component = new AppComponent();
+    const references = [component.stats];
+    const counts = [component.stats.count];
+    for (let click = 0; click < 2; click += 1) {
+      component.inc();
+      references.push(component.stats);
+      counts.push(component.stats.count);
+    }
+    assert.deepEqual(counts, [0, 1, 2], `${relative}: inc() must count every click; the bug is in what the display sees`);
+    assert.equal(
+      new Set(references).size,
+      replacesStats ? 3 : 1,
+      replacesStats
+        ? `${relative}: the solution must give the OnPush display a new stats object on every click`
+        : `${relative}: the starter must change stats in place, so the OnPush display misses the update`
     );
-    const exports = {};
-    vm.runInNewContext(transpiled.outputText, {
-      exports,
-      require(specifier) {
-        assert.equal(specifier, '@angular/core');
-        return { Component: () => (component) => component };
-      },
-    }, { filename: relative });
-    const component = new exports.AppComponent();
-    const counts = [component.count];
-    component.inc();
-    counts.push(component.count);
-    component.inc();
-    counts.push(component.count);
-    assert.deepEqual(counts, expectedCounts, `${relative}: starter must reproduce the bug and solution must repair it`);
   }
 }
 

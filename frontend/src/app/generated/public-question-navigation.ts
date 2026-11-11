@@ -34,7 +34,7 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "angular",
     "kind": "debug",
-    "title": "Counter not updating",
+    "title": "Counter stuck at 0 after an OnPush refactor",
     "route": "/angular/debug/ng-debug-counter-change-detection"
   },
   {

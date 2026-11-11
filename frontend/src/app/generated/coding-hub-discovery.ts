@@ -12,11 +12,11 @@ export type CodingHubGeneratedDiscoveryItem = {
 export const CODING_HUB_DEBUG_DISCOVERY = [
   {
     "id": "ng-debug-counter-change-detection",
-    "title": "Counter not updating",
+    "title": "Counter stuck at 0 after an OnPush refactor",
     "route": "/angular/debug/ng-debug-counter-change-detection",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings.",
+    "summary": "The counter display moved into its own OnPush component to save change detection work. Since then, clicking Increment leaves the number on screen at 0, although the click handler runs on every click.",
     "access": "free"
   },
   {

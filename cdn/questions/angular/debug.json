@@ -1,17 +1,18 @@
 [
     {
         "id": "ng-debug-counter-change-detection",
-        "title": "Counter not updating",
+        "title": "Counter stuck at 0 after an OnPush refactor",
         "difficulty": "intermediate",
         "importance": 3,
-        "updatedAt": "2026-10-02",
+        "updatedAt": "2026-11-11",
         "tags": [
+            "change-detection",
+            "onpush",
             "components",
-            "event-binding",
             "state"
         ],
         "description": {
-            "text": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings."
+            "text": "The counter display moved into its own OnPush component to save change detection work. Since then, clicking Increment leaves the number on screen at 0, although the click handler runs on every click. Find why Angular skips the display and fix it so every click shows the new count. Keep CounterDisplayComponent on ChangeDetectionStrategy.OnPush."
         },
         "sdk": {
             "asset": "assets/sb/angular/debug/counter-fix.json",
@@ -19,7 +20,7 @@
         },
         "solutionAsset": "assets/sb/angular/solution/ng-debug-counter-change-detection.solution.json",
         "solutionBlock": {
-            "overview": "The postfix increment expression returns the previous count. Assigning that result back to count overwrites the increment, so the value stays unchanged. Increment the property without assigning the old value back; the existing Angular click binding will update the view."
+            "overview": "`inc()` adds 1 to `stats.count` in place, so the object bound to `[stats]` is the same reference after every click. Angular checks an `OnPush` component only when an input receives a new value (compared by reference), when an event fires in its own template, or when a signal its template reads changes. The mutation meets none of these: the `stats` input signal keeps the same object, so Angular skips `CounterDisplayComponent` and the paragraph keeps its first render while the real count grows.\n\nReplace the object instead of changing it: `this.stats = { ...this.stats, count: this.stats.count + 1 }` gives the binding a new reference, the input updates and the display renders the new count. Passing the number itself (`[count]=\"stats.count\"`) or keeping the count in a signal works too. Turning OnPush off would hide the bug and bring back the work the refactor removed."
         },
         "frameworkTests": [
             {
