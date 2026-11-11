@@ -175,6 +175,97 @@ describe('failure-explain-rules', () => {
     }
   });
 
+  it('explains the new checks of the JavaScript classics by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'js-deep-equal',
+        name: 'deepEqual › treats different types as unequal',
+        errorLine: 'Expected true to be false',
+        ruleId: 'js-deep-equal-kinds-and-keys',
+        action: 'Object.prototype.toString.call(a)',
+      },
+      {
+        questionId: 'js-throttle',
+        name: 'throttle › drops calls made during the interval instead of running them later',
+        errorLine: 'Expected ["first","dropped"] to deeply equal ["first"]',
+        ruleId: 'js-throttle-leading-only',
+        action: 'leading-only',
+      },
+      {
+        questionId: 'js-debounce',
+        name: 'debounce › uses the this value and all arguments of the last call',
+        errorLine: 'Expected [["last","b"]] to deeply equal [["last","b",2]]',
+        ruleId: 'js-debounce-args-this',
+        action: 'whole `args` array',
+      },
+      {
+        questionId: 'js-create-lru-cache',
+        name: 'createLruCache › updating a key at capacity evicts nothing',
+        errorLine: 'Expected ["b"] to deeply equal ["a","b"]',
+        ruleId: 'js-lru-update-recency',
+        action: 'map.size > maxSize',
+      },
+      {
+        questionId: 'js-concurrency-map-limit',
+        name: 'mapAsyncLimit › starts the next item as soon as a slot frees up',
+        errorLine: 'Expected [0,1] to deeply equal [0,1,2]',
+        ruleId: 'js-concurrency-pool-slots',
+        action: '`failed` flag',
+      },
+      {
+        questionId: 'js-implement-bind',
+        name: 'myBind › gives the bound function its own prototype object',
+        errorLine: 'Expected true to be false',
+        ruleId: 'js-bind-own-prototype',
+        action: 'Object.create(fn.prototype)',
+      },
+      {
+        questionId: 'js-once',
+        name: 'once › does not call again when the first call returned undefined',
+        errorLine: 'Expected 2 to be 1',
+        ruleId: 'js-once-called-flag',
+        action: '`called` boolean',
+      },
+      {
+        questionId: 'js-memoize-function',
+        name: 'memoize › caches falsy results such as 0 and undefined',
+        errorLine: 'Expected 4 to be 2',
+        ruleId: 'js-memoize-cache-key',
+        action: 'cache.has(key)',
+      },
+      {
+        questionId: 'js-three-sum',
+        name: 'threeSum › returns each triplet in non-decreasing order',
+        errorLine: 'Expected [2,-1,-1] to deeply equal [-1,-1,2]',
+        ruleId: 'js-three-sum-sorted-triplets',
+        action: 'Sort a copy of the input first',
+      },
+      {
+        questionId: 'js-merge-sorted-arrays',
+        name: 'mergeSortedArrays › merges without sorting the combined array',
+        errorLine: 'mergeSortedArrays must not call sort',
+        ruleId: 'js-merge-without-sort',
+        action: 'two front values',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 3,
+        totalCount: 4,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
   it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
     for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
       const hint = buildFailureHint({

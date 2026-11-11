@@ -1489,6 +1489,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'preserves this context and arguments',
         'passes arguments',
         'preserves this',
+        'all arguments of the last call',
       ]),
     buildHint: (snapshot) => ({
       ruleId: 'js-debounce-args-this',
@@ -1497,7 +1498,193 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Return a regular function wrapper (not arrow) if `this` must be preserved.',
         'Inside timeout use `fn.apply(this, args)`.',
+        'Keep the `this` and the whole `args` array of every call, so the call that fires is the last one, with all of its arguments.',
         'Confirm context-based examples like `search-box:react` still pass after the delay.',
+      ],
+      confidence: 0.9,
+    }),
+  },
+  {
+    ruleId: 'js-deep-equal-kinds-and-keys',
+    questionId: 'js-deep-equal',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'treats different types as unequal',
+        'requires the same set of keys',
+        'compares nan, -0 and regexp details',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-deep-equal-kinds-and-keys',
+      title: 'Compare the kind of each value and its full set of keys',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks compare a Date with `{}`, an array with an object, objects with missing or extra keys, `NaN` inside arrays, and RegExps with different patterns or flags.',
+      ),
+      actions: [
+        'Return `false` when `Object.prototype.toString.call(a)` and `Object.prototype.toString.call(b)` differ, so a Date never equals a plain object.',
+        'Compare `Object.keys` lengths before recursing: an extra key, or a key that holds `undefined`, makes two objects different.',
+        'Treat `NaN` as equal only to `NaN`, keep `0` and `-0` equal as `===` does, and compare RegExp `source` and `flags`. `JSON.stringify` gets all three wrong.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-throttle-leading-only',
+    questionId: 'js-throttle',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['calls fn with the this value', 'drops calls made during the interval']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-throttle-leading-only',
+      title: 'Run the first call at once and drop the rest of the window',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks call the throttled function as a method and expect `this` to be that object, and they expect a call made during the interval never to run, not even when the interval ends.',
+      ),
+      actions: [
+        'Return a regular `function` and call `fn.apply(this, args)`; an arrow wrapper loses the caller\'s `this`.',
+        'Ignore calls while the window is open instead of saving one for later: this throttle is leading-only.',
+        'Measure the window with `Date.now()` or with a cooldown timer; the checks move time with fake timers, so either works.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-lru-update-recency',
+    questionId: 'js-create-lru-cache',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['updating a key makes it the most recent', 'updating a key at capacity']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-lru-update-recency',
+      title: 'Treat an update as a use, and evict only when the size grows',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks update a key and then add another one, expecting the updated key to stay, and update a key at capacity, expecting nothing to be evicted.',
+      ),
+      actions: [
+        'In `set`, delete the key before setting it again, so the `Map` moves it to the most recent end.',
+        'Evict after the write, and only while `map.size > maxSize`; updating a stored key does not grow the size.',
+        '`keys()` lists keys from least to most recently used, and `size()` is a method.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-concurrency-pool-slots',
+    questionId: 'js-concurrency-map-limit',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'starts the next item as soon as a slot frees up',
+        'fail-fast starts no new items',
+        'rejects a limit below 1',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-concurrency-pool-slots',
+      title: 'Refill each slot at once, and stop after a fail-fast error',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks move fake time and look at which items have started: a finished item frees its slot for the next one right away, and after a fail-fast error no new item starts.',
+      ),
+      actions: [
+        'Run `limit` runners that each take the next index as soon as their item settles; waiting for a whole batch leaves slots empty.',
+        'Set a `failed` flag on the first fail-fast error and check it before taking the next index.',
+        'An invalid `limit` may throw or reject, so an `async` function that throws for it passes.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'js-bind-own-prototype',
+    questionId: 'js-implement-bind',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['its own prototype object']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-bind-own-prototype',
+      title: 'Give the bound function a prototype of its own',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds a method to the bound prototype and expects the original prototype to stay untouched, while instances still pass `instanceof`.',
+      ),
+      actions: [
+        'Set `boundFn.prototype = Object.create(fn.prototype)` instead of `boundFn.prototype = fn.prototype`.',
+        'Point the new prototype\'s `constructor` at `boundFn`, so it describes the bound function.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-once-called-flag',
+    questionId: 'js-once',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['first call returned undefined']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-once-called-flag',
+      title: 'Record the first call with a flag, not with the result',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check wraps a function that returns `undefined` and calls the wrapper twice; the function must still run only once.',
+      ),
+      actions: [
+        'Keep a separate `called` boolean and set it the first time.',
+        'Return the cached result on every later call, even when it is `undefined`.',
+      ],
+      confidence: 0.9,
+    }),
+  },
+  {
+    ruleId: 'js-memoize-cache-key',
+    questionId: 'js-memoize-function',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['uses every argument in the cache key', 'caches falsy results']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-memoize-cache-key',
+      title: 'Key the cache by every argument, and trust has()',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks call with arguments that share a first value, and cache functions that return `0` and `undefined`.',
+      ),
+      actions: [
+        'Build the key from all arguments, for example `JSON.stringify(args)`.',
+        'Check `cache.has(key)` before computing; `cache.get(key) || ...` computes falsy results again on every call.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-three-sum-sorted-triplets',
+    questionId: 'js-three-sum',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['triplet in non-decreasing order']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-three-sum-sorted-triplets',
+      title: 'Build each triplet in sorted order',
+      why: buildProgressAwareWhy(snapshot, 'The check expects every returned triplet to be in non-decreasing order, as the task asks.'),
+      actions: [
+        'Sort a copy of the input first: the two-pointer scan then builds each triplet as `[arr[i], arr[l], arr[r]]`, already in order.',
+        'If you collect triplets another way, sort each one before returning it.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-merge-without-sort',
+    questionId: 'js-merge-sorted-arrays',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['without sorting the combined array']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-merge-without-sort',
+      title: 'Merge with two pointers instead of sorting',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check replaces `Array.prototype.sort` with a function that throws, so any call to `sort` fails it.',
+      ),
+      actions: [
+        'Walk both arrays with an index each and push the smaller of the two front values.',
+        'When one array runs out, append what is left of the other.',
       ],
       confidence: 0.9,
     }),

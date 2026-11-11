@@ -27,7 +27,7 @@
             "lineEnd": 5,
             "snippet": "timeoutId = setTimeout(() => fn.apply(this, args), delay);"
           },
-          "why": "The wrapper should not call `fn` synchronously. It schedules one trailing callback that uses the latest arguments and the correct `this` context after the delay.",
+          "why": "The wrapper should not call `fn` synchronously. It schedules one trailing callback that uses the latest arguments and the correct `this` context after the delay. Each call schedules its own arrow function, which keeps that call's `this` and full argument list, so when calls come from different receivers the last one wins.",
           "alternative": "Store `lastArgs` and `lastThis` explicitly, then invoke them in the timeout callback.",
           "tradeoff": "Inline `apply` is compact and easy to read, while explicit state is easier to extend for richer APIs."
         },

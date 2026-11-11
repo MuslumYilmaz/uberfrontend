@@ -1352,7 +1352,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "a8d7c720685c49c9e257668d77e75a98b3532de12f599518f25b514459670022",
+      "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
       "enabled": true,
       "id": "int-code-core-web-junior-once-wrapper-v1",
       "level": "junior",
@@ -1371,7 +1371,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-once",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-once.starterCode",
       "starterFiles": [
@@ -1451,11 +1451,11 @@
       "track": "core-web"
     },
     {
-      "contentHash": "0a0e7b84212755963530aac7e36eca4d5bb1fafe084821ea024ffb1abb4c8ca0",
+      "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
       "enabled": true,
       "id": "int-code-core-web-mid-debounce-v1",
       "level": "mid",
-      "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the latest call in a burst, preserve `this` and arguments, and pass the starter tests. This page includes starter code, tests, timeline examples, edge cases, and follow-ups for cancel/flush and leading behavior.",
+      "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. The wrapper must not call `fn` synchronously, must run only the latest call in a burst, and must pass that call's `this` and all of its arguments to `fn`.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1464,14 +1464,14 @@
             "Return Function: A debounced version of the original function that delays execution until the delay period has elapsed."
           ],
           "id": "implementation-contract",
-          "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the latest call in a burst, preserve `this` and arguments, and pass the starter tests. This page includes starter code, tests, timeline examples, edge cases, and follow-ups for cancel/flush and leading behavior.",
+          "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. The wrapper must not call `fn` synchronously, must run only the latest call in a burst, and must pass that call's `this` and all of its arguments to `fn`.",
           "title": "Debounce Function"
         }
       ],
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-debounce",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-debounce.starterCode",
       "starterFiles": [
@@ -1654,7 +1654,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "323c8d42182631f984dde10faa9d1ce8086a2145b52cc5ec2ca23aa06bd83351",
+      "contentHash": "f85bc3c02dbc05a5aa3e7117f0a62e3f7a709ec580b997daa6459f50f35989c0",
       "enabled": true,
       "id": "int-code-core-web-senior-concurrency-map-v1",
       "level": "senior",
@@ -1663,7 +1663,7 @@
         {
           "constraints": [
             "Input items (T[]): Inputs to process.",
-            "Input limit (number): Max number of concurrent worker calls. Must be ≥ 1.",
+            "Input limit (number): Max number of concurrent worker calls. Must be ≥ 1; a smaller limit is an error, thrown or as a rejected promise.",
             "Input worker ((item: T, index: number) => Promise<R>): Async mapper.",
             "Input strategy ('fail-fast' | 'all-settled'): Optional error handling strategy (default `'fail-fast'`). On error: either reject immediately (`'fail-fast'`) or collect all outcomes (`'all-settled'`).",
             "Return Promise<R[] | Array<{ status: 'fulfilled' | 'rejected'; value?: R; reason?: any }>>: If `'fail-fast'`, resolves to `R[]` or rejects on the first error. If `'all-settled'`, always resolves to settled outcomes in input order."
@@ -1676,7 +1676,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-31",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-concurrency-map-limit",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-concurrency-map-limit.starterCode",
       "starterFiles": [
@@ -1690,7 +1690,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "7d348ec8566efab4c387ec5cdc114af2da13488d2b00d8853ba47a07638b42bc",
+      "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
       "enabled": true,
       "id": "int-code-core-web-senior-deep-equal-v1",
       "level": "senior",
@@ -1710,7 +1710,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-deep-equal",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-deep-equal.starterCode",
       "starterFiles": [
@@ -1724,7 +1724,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
+      "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
       "enabled": true,
       "id": "int-code-core-web-senior-lru-cache-v1",
       "level": "senior",
@@ -1733,7 +1733,7 @@
         {
           "constraints": [
             "Input maxSize (number): Maximum number of entries to retain. Must be a positive integer.",
-            "Return { get, set, has, size, clear, keys }: An LRU cache API backed by Map insertion order."
+            "Return { get, set, has, size, clear, keys }: An object with `get(key)`, `set(key, value)`, `has(key)`, `size()`, `clear()` and `keys()`. `size()` is a method that returns the number of entries, and `keys()` returns an array of the keys from least to most recently used. `get` and `set` make a key the most recent; `has` does not."
           ],
           "id": "implementation-contract",
           "prompt": "Implement createLruCache(maxSize) to keep a bounded, eviction-based cache. This is a classic way to prevent \"memory leaks\" caused by unbounded Maps in long-lived SPAs (analytics, image metadata, computed results).",
@@ -1743,7 +1743,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-02-05",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-create-lru-cache",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-create-lru-cache.starterCode",
       "starterFiles": [

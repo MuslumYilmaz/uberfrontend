@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "37f49076f6fea1c6b612f2ad9b4fc951c917b48a50570a2cd43312eb910f2e98",
+    "registryContentHash": "f74363f019406b73c29e63964830fb0774c251bf917b7a0a233b8d74364e7f0f",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -29,12 +29,13 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the fifteen pinned Angular source questions had their official solutions rewritten with signals (solution assets, Solution-tab text, decision graphs, of which eight are new, implementation notes and update dates), with behavior checked step by step against the previous solutions. The registry reads none of those fields. Four summaries changed with the rewrite (counter, progress thresholds, filterable user list, contact form), and the summary is the variant prompt, so those four public prompts now describe signal state, computed derivation and registering provideHttpClient() in src/main.ts instead of a component property, a getter or pipe, ngStyle/ngClass and a component-only setup; the fifteen sourceContentVersion dates move to 2026-11-11 with the catalog update dates; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to three pinned Angular source questions, approved by the project owner. Pagination: the starter and solution label now reads \"Page X of Y\", as the spec asks (it showed \"X / Y\"), the starter's users field loses a wrong empty-tuple type, and the check reads \"Page 1 of 4\" and \"Page 2 of 4\". Shopping cart: the empty-cart text says \"from above\", matching the one-column layout (starter and solution assets only). Nested comments: Reply toggles its box, as the expected behavior says; the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level instead of compounding, and a new check covers the toggle. Starter asset hashes are re-pinned for all three and question hashes for pagination and nested comments. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after content fixes to six pinned source questions, approved by the project owner (coding-trust step 9). Vue nested checkboxes: the text taught a watcher and a template ref and listed as pitfalls what the solution did; both now derive the parent from the children with a writable computed bound by v-model and bind :indeterminate, the starter carries the same template with computed stubs, and the question gains its first decision graph and a check hint. Vue todo list, shopping cart and transfer list: guidance that called in-place changes to reactive state a pitfall, or said Vue may not update after a Set changes, now says Vue tracks both; their solutions are unchanged. Vue debounced search: an implementation note names the watcher cleanup onCleanup, as the Vue docs do, and adds onWatcherCleanup (Vue 3.5). React todo list: an outdated note against generics and the casts it led to are removed from the starter and solution (useState<Todo[]>). Starter asset hashes are re-pinned for Vue nested checkboxes and React todo list, question hashes for all six. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after the JavaScript test hardening of coding-trust step 10, approved by the project owner. Five pinned source questions gain checks for behavior their text and rubric criteria already describe, and the new checks join the rubric groups that state that behavior. Deep equal: three checks (different kinds of object, the same set of keys, NaN, -0 and RegExp details); the reference solution now compares Object.prototype.toString tags, so a Date no longer equals {}, as its edge cases already said. Debounce: one check for the last call's this and all of its arguments; the summary loses its page copy. LRU cache: two checks (an update makes a key the most recent; an update at capacity evicts nothing); the returns text says that size() is a method and in which order keys() lists the keys. Concurrency map: the limit check is renamed 'rejects a limit below 1' and accepts a rejection as well as a synchronous throw, which the async starter could not meet; two checks cover refilling a slot as soon as it frees up and starting no new items after a fail-fast error, and the concurrency-bound and error-strategies groups each gain one criterion for them. Once: one check for a wrapped function that returns undefined. Question hashes are re-pinned for all five; the debounce prompt loses only the page copy, the other prompts are unchanged; time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "64ccbaf8c26f06a591338c039c3c4db3c01c5c2390873bb1e7949c75c069e91d",
+  "definitionHash": "0d198c7f3c438f4a7c9d11c0a52b7c082445456a56c1bb3fb434a65ffbb873e9",
   "reviewBatch": {
-    "reviewedDefinitionHash": "64ccbaf8c26f06a591338c039c3c4db3c01c5c2390873bb1e7949c75c069e91d",
+    "reviewedDefinitionHash": "0d198c7f3c438f4a7c9d11c0a52b7c082445456a56c1bb3fb434a65ffbb873e9",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -60,7 +61,8 @@
         "2026-11-11 source-pin maintenance review: all fifteen pinned Angular catalog entries (counter, todo list, pagination, shopping cart, debounced search, chips autocomplete, tabs, progress thresholds, filterable user list, theme toggle, multi-step form, nested checkboxes, contact form, nested comments, transfer list) had their official solutions rewritten with signal, computed, input/model/output, toSignal and takeUntilDestroyed under OnPush; each rewrite replayed the same interaction script as the previous solution with identical DOM in a Node harness and in the site's preview. Eight of them (counter, shopping cart, debounced search, chips autocomplete, progress thresholds, theme toggle, nested comments, transfer list) also gain decisionGraphAsset and decisionGraphKey for their first decision graph. The registry reads none of these fields. Four summaries, which are the variant prompts, changed: angular-counter-starter (the count is kept in one signal), angular-progress-bar-thresholds (a signal and a computed class bound with [class] and [style.width.%] instead of ngStyle/ngClass), angular-filterable-user-list (filters in signals and a computed list instead of a getter or pure pipe) and angular-contact-form-starter (the learner registers provideHttpClient() in src/main.ts; HttpClientModule is deprecated). The fifteen variants also carry the new catalog update date as sourceContentVersion (2026-11-11). Starters, markup, classes, checks, rubrics, time limits, pressure rounds and revisions are unchanged, so the existing variant reviews carry forward to the refreshed source pins. This is not a new release approval.",
         "2026-11-11 source-pin maintenance review: angular-pagination-table, angular-shopping-cart-mini and angular-nested-comments changed in their starters and solutions (pagination and nested comments also in their Solution-tab text and checks); see the finalApproval note of the same date. In the production preview every check of the three tasks passes on the official solution and fails on the starter, and the starters and solutions type-check under strict TypeScript with the real Angular types.",
         "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
-        "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error."
+        "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
+        "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites."
       ]
     },
     "editorial": {
@@ -417,7 +419,7 @@
       "level": "senior",
       "catalog": "javascript",
       "sourceQuestionId": "js-create-lru-cache",
-      "expectedQuestionHash": "9d0739b5835abcd83a02b6d311bdc60062f8019201c952a511546da5cee97709",
+      "expectedQuestionHash": "12dc1ca55b713d4c37203ae594bdcadef02e9d719f2ec3f9dad14301e75a1e2b",
       "timeLimitSeconds": 2700,
       "roundLimit": 1,
       "runner": "javascript",
@@ -431,7 +433,8 @@
           ],
           "checkNames": [
             "throws for invalid maxSize",
-            "evicts least-recently-used on overflow"
+            "evicts least-recently-used on overflow",
+            "updating a key at capacity evicts nothing"
           ]
         },
         {
@@ -443,7 +446,8 @@
           ],
           "checkNames": [
             "get refreshes recency",
-            "updating an existing key does not grow size"
+            "updating an existing key does not grow size",
+            "updating a key makes it the most recent"
           ]
         },
         {
@@ -470,7 +474,7 @@
       "level": "senior",
       "catalog": "javascript",
       "sourceQuestionId": "js-concurrency-map-limit",
-      "expectedQuestionHash": "ae0c153138768b365892551b77b58c272a6936db5254d461f4908f49ee9b9392",
+      "expectedQuestionHash": "04dce3a7d6821a503b2c09115ebd468465fdd291da2fe4c884c84621b2ba4506",
       "timeLimitSeconds": 2700,
       "roundLimit": 1,
       "runner": "javascript",
@@ -480,11 +484,13 @@
           "title": "Concurrency bound",
           "criteria": [
             "Reject an invalid limit.",
-            "Never run more workers concurrently than the configured limit."
+            "Never run more workers concurrently than the configured limit.",
+            "Start the next item as soon as a running worker finishes."
           ],
           "checkNames": [
             "respects concurrency limit (no more than limit active)",
-            "throws if limit < 1"
+            "rejects a limit below 1",
+            "starts the next item as soon as a slot frees up"
           ]
         },
         {
@@ -503,11 +509,13 @@
           "title": "Error strategies",
           "criteria": [
             "Reject the fail-fast mode on its first observed worker error.",
-            "Return ordered fulfilled and rejected outcomes in all-settled mode."
+            "Return ordered fulfilled and rejected outcomes in all-settled mode.",
+            "Start no new items after a fail-fast error."
           ],
           "checkNames": [
             "fail-fast rejects on first error",
-            "all-settled aggregates outcomes"
+            "all-settled aggregates outcomes",
+            "fail-fast starts no new items after an error"
           ]
         }
       ],
@@ -604,7 +612,7 @@
       "level": "junior",
       "catalog": "javascript",
       "sourceQuestionId": "js-once",
-      "expectedQuestionHash": "030f034139cb7c587de284f90f0265670e6119d2aa16e4e224729a37725a6409",
+      "expectedQuestionHash": "0c93ce114aa53a343011b4ad92cb7ece781e7abf9fc885a721c7f4ff806d769b",
       "timeLimitSeconds": 1500,
       "roundLimit": 1,
       "runner": "javascript",
@@ -618,7 +626,8 @@
           ],
           "checkNames": [
             "calls the function only once",
-            "returns the first result on later calls"
+            "returns the first result on later calls",
+            "does not call again when the first call returned undefined"
           ]
         },
         {
@@ -646,7 +655,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-debounce",
-      "expectedQuestionHash": "d6c1d9c1c6bc085cbff56c68f055b0de96901045f521e73dbb1811876b5f4cdf",
+      "expectedQuestionHash": "3eb10132f68fdc72fe8dd198086bfbc648290f4b33a8c58f498bd4f749952435",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -670,7 +679,8 @@
             "Forward the latest arguments and receiver when the timer fires."
           ],
           "checkNames": [
-            "preserves this context and arguments"
+            "preserves this context and arguments",
+            "uses the this value and all arguments of the last call"
           ]
         }
       ],
@@ -774,7 +784,7 @@
       "level": "senior",
       "catalog": "javascript",
       "sourceQuestionId": "js-deep-equal",
-      "expectedQuestionHash": "4c8d90d9bafce6f570ee0a3f21a5fd5b274b5a69023acefbe2c5b92dfe2732db",
+      "expectedQuestionHash": "36990b50f1d78ba59546e3294657247e60b7f697a079b7cc7ae2aca47a015854",
       "timeLimitSeconds": 2700,
       "roundLimit": 1,
       "runner": "javascript",
@@ -789,7 +799,9 @@
           "checkNames": [
             "compares primitives",
             "compares nested objects",
-            "compares arrays (order matters)"
+            "compares arrays (order matters)",
+            "treats different types as unequal",
+            "requires the same set of keys"
           ]
         },
         {
@@ -801,7 +813,8 @@
           ],
           "checkNames": [
             "handles Date and RegExp",
-            "null vs undefined"
+            "null vs undefined",
+            "compares NaN, -0 and RegExp details"
           ]
         }
       ],

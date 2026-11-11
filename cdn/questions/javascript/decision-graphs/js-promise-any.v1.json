@@ -39,7 +39,7 @@
             "lineEnd": 20,
             "snippet": "errors[index] = reason;"
           },
-          "why": "Rejections can finish in any order, but AggregateError.errors follows input iteration order.",
+          "why": "Rejections can finish in any order, but AggregateError.errors follows input iteration order. Writing by index keeps that order even when the promises reject in a different order than they were listed.",
           "alternative": "Push reasons as rejections arrive.",
           "tradeoff": "Reserved indexes require O(n) storage but provide stable diagnostics."
         }

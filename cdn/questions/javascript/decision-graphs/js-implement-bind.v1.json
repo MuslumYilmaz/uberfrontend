@@ -39,7 +39,7 @@
             "lineEnd": 18,
             "snippet": "boundFn.prototype = Object.create(fn.prototype);"
           },
-          "why": "For a classic constructor with an object prototype, this keeps instances from `new boundFn()` linked to the original function’s prototype.",
+          "why": "For a classic constructor with an object prototype, this keeps instances from `new boundFn()` linked to the original function’s prototype. The bound function gets its own object that inherits from fn.prototype, so a method added to the bound prototype never leaks into fn.prototype, as it would with `boundFn.prototype = fn.prototype`.",
           "alternative": "Set `boundFn.prototype = fn.prototype` directly.",
           "tradeoff": "Useful for the scoped exercise without reproducing native bind's exotic prototype and Symbol.hasInstance behavior."
         }

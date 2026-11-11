@@ -15,7 +15,7 @@
             "lineEnd": 4,
             "snippet": "const key = JSON.stringify(args);"
           },
-          "why": "We need one stable key per argument list so repeated calls can find the same cached result.",
+          "why": "We need one stable key per argument list so repeated calls can find the same cached result. Every argument goes into the key, so add(1, 2) and add(1, 3) are cached apart.",
           "alternative": "Use only the first argument as the key.",
           "tradeoff": "JSON keys are easy, but they are limited for circular or non-serializable values."
         },
@@ -27,7 +27,7 @@
             "lineEnd": 5,
             "snippet": "if (cache.has(key)) return cache.get(key);"
           },
-          "why": "This is the core speedup: skip recomputation and reuse the previous result.",
+          "why": "This is the core speedup: skip recomputation and reuse the previous result. Asking `has` rather than testing the stored value keeps results like 0 and undefined cached.",
           "alternative": "Always recompute and update cache every time.",
           "tradeoff": "Very fast on repeats, but cache can keep growing if inputs keep changing."
         },

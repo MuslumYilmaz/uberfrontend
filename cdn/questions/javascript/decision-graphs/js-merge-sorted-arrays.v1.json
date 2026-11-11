@@ -39,7 +39,7 @@
             "lineEnd": 10,
             "snippet": "if (a[i] <= b[j]) {"
           },
-          "why": "Picking the smaller head keeps output sorted at every step.",
+          "why": "Picking the smaller head keeps output sorted at every step. Comparing the two fronts is the whole merge: no sort call is needed, which keeps it O(n + m).",
           "alternative": "Push one side blindly and repair order later.",
           "tradeoff": "One comparison per step, but no post-fix sorting needed."
         },

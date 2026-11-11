@@ -15,7 +15,7 @@
             "lineEnd": 3,
             "snippet": "const arr = nums.slice().sort((a, b) => a - b);"
           },
-          "why": "Sorting enables two pointers, and `slice()` avoids mutating the caller input.",
+          "why": "Sorting enables two pointers, and `slice()` avoids mutating the caller input. Sorting first also means every triplet is built as arr[i] <= arr[l] <= arr[r], which is the non-decreasing order the task asks for.",
           "alternative": "Sort `nums` directly in place.",
           "tradeoff": "Uses extra memory for a copy, but keeps function safer to reuse."
         },
