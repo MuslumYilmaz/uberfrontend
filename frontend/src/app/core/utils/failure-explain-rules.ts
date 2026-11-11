@@ -155,6 +155,7 @@ const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
   'angular-chessboard-click-highlight',
   'angular-chips-input-autocomplete',
   'angular-contact-form-starter',
+  'angular-control-value-accessor-stepper',
   'angular-counter-starter',
   'angular-debounced-search',
   'angular-dynamic-counter-buttons',
@@ -268,6 +269,28 @@ const ANGULAR_SIGNAL_READ_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
   ...ANGULAR_SIGNAL_READ_HINT_RULES,
+  {
+    ruleId: 'angular-cva-writes-reach-view',
+    questionId: 'angular-control-value-accessor-stepper',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['starts with', 'reset writes', 'disabling the form control']) ||
+      anyFailingErrorIncludes(snapshot, ['ng01203', 'no value accessor']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-cva-writes-reach-view',
+      title: "Let the form's writes reach the OnPush stepper",
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The form calls writeValue and setDisabledState from outside the stepper's template, so an OnPush view only shows them when they land in signals.",
+      ),
+      actions: [
+        'In `writeValue`, set the `value` signal, falling back to `min()` for `null`; in `setDisabledState`, set the `disabled` signal.',
+        'Keep the `NG_VALUE_ACCESSOR` provider with `useExisting: forwardRef(() => QuantityStepperComponent)` and `multi: true`; without it `formControlName` throws NG01203.',
+        'Store the callbacks from `registerOnChange` and `registerOnTouched`, and call the change callback from `step()` after clamping.',
+      ],
+      confidence: 0.85,
+    }),
+  },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',

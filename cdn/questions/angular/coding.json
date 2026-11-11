@@ -3490,5 +3490,277 @@
         ]
       }
     ]
+  },
+  {
+    "id": "angular-control-value-accessor-stepper",
+    "title": "Quantity Stepper Form Control (ControlValueAccessor)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "forms",
+      "components",
+      "signals",
+      "change-detection"
+    ],
+    "description": {
+      "summary": "Build a quantity stepper that a reactive form can drive like any other control: implement ControlValueAccessor so the form writes its value, hears every change, marks it touched and disables it. The form and its state readout are already set up; you work in `src/app/quantity-stepper.component.ts`.",
+      "specs": {
+        "requirements": [
+          "Implement `ControlValueAccessor` in `QuantityStepperComponent`: `writeValue`, `registerOnChange`, `registerOnTouched` and `setDisabledState`.",
+          "Show the value the form writes, both on start and after the form is reset.",
+          "The − and + buttons move the value by 1 inside the `min` and `max` inputs and report each new value to the form.",
+          "Disable both buttons while the form control is disabled, and disable a button at the bound it cannot pass.",
+          "Tell the form the control was touched when focus leaves the stepper.",
+          "Keep the `NG_VALUE_ACCESSOR` provider: it is how `formControlName` finds the component."
+        ],
+        "expectedBehavior": [
+          "The stepper starts at 2, the form’s starting value, and the Form value readout says 2.",
+          "Clicking + shows 3 in the stepper and in the readout.",
+          "At 1 the − button is disabled; at 5 the + button is disabled.",
+          "Disable sets the status to DISABLED and disables both buttons; Enable turns them back on.",
+          "Reset puts 2 back into the stepper and the readout.",
+          "Moving focus out of the stepper changes Touched to yes."
+        ],
+        "implementationNotes": [
+          "The component is OnPush, and the form calls `writeValue` and `setDisabledState` from outside its template. Store what they receive in signals; a plain field would leave the view showing an old value after `reset()`.",
+          "Keep the two callbacks the form registers in private fields, and call the change callback only when the value really changes.",
+          "Clamp against `min()` and `max()`, which are signal inputs, with `Math.min` and `Math.max`.",
+          "The `(focusout)` host listener is already wired to `markTouched()`."
+        ],
+        "techFocus": [
+          "`ControlValueAccessor` and `NG_VALUE_ACCESSOR`",
+          "Signals in a component the form drives from outside",
+          "Reactive form state: value, status, touched and disabled",
+          "OnPush change detection"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "A custom form control has two directions to cover. The form talks to the component through four methods: `writeValue` hands it a value, `setDisabledState` turns it on or off, and `registerOnChange` and `registerOnTouched` give it the callbacks it reports back with. The `NG_VALUE_ACCESSOR` provider is how `formControlName` finds the component in the first place.\n\nThe solution keeps the value and the disabled flag in signals, because the form calls `writeValue` and `setDisabledState` from outside the template and the component is OnPush: a signal write is what marks the view for check. `canDecrease` and `canIncrease` are computed from the value, the flag and the bounds. `step()` clamps the next value to `min()` and `max()`, writes it and calls the change callback only when it moved, and the `(focusout)` host listener reports a touch.\n\n**Test cases**\n- On start the stepper shows 2, the form’s starting value.\n- + and − change the stepper and the Form value readout together.\n- − is disabled at 1 and + at 5; clicks at a bound change nothing.\n- Disable makes the status DISABLED and disables both buttons; Enable restores them.\n- After a change, Reset shows 2 in the stepper again.\n- Leaving the stepper with the keyboard sets Touched to yes.",
+      "approaches": [
+        {
+          "title": "ControlValueAccessor with signal state under OnPush",
+          "decisionGraphKey": "approach1",
+          "prose": "Register the component with `{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => QuantityStepperComponent), multi: true }`. `useExisting` hands the form this instance rather than a new one, and `forwardRef` covers the class being declared after its decorator.\n\nThe four methods map onto two signals and two stored callbacks:\n1. `writeValue(value)` sets `value`, falling back to `min()` when a nullable form resets to `null`.\n2. `setDisabledState(isDisabled)` sets `disabled`.\n3. `registerOnChange` and `registerOnTouched` keep the callbacks in private fields that start as no-ops, so a click before registration does no harm.\n\n`step(delta)` computes `Math.min(this.max(), Math.max(this.min(), this.value() + delta))`, returns early when nothing changed, then sets the signal and calls `onChange(next)`. The early return keeps a click at a bound from marking the control dirty. The host listener `(focusout)` calls `markTouched()`, which forwards to `onTouched`, the way the built-in accessors report a blur.\n\nSignals matter here because the component is OnPush and two of the four calls come from the form, not from the template. After `form.reset()` the parent template runs, but nothing in it changes the stepper’s inputs, so Angular would skip the stepper and keep the old number on screen if `writeValue` wrote a plain field. `value.set(...)` marks the view for check; the buttons follow through the computed flags.",
+          "codeTs": "// src/app/quantity-stepper.component.ts\nimport { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';\nimport { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';\n\n@Component({\n  selector: 'app-quantity-stepper',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './quantity-stepper.component.html',\n  styleUrls: ['./quantity-stepper.component.css'],\n  providers: [\n    // How formControlName finds this component: it registers as the control's value accessor.\n    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => QuantityStepperComponent), multi: true }\n  ],\n  host: { '(focusout)': 'markTouched()' }\n})\nexport class QuantityStepperComponent implements ControlValueAccessor {\n  readonly min = input(0);\n  readonly max = input(99);\n  readonly label = input('Quantity');\n\n  protected readonly value = signal(0);\n  protected readonly disabled = signal(false);\n  protected readonly canDecrease = computed(() => !this.disabled() && this.value() > this.min());\n  protected readonly canIncrease = computed(() => !this.disabled() && this.value() < this.max());\n\n  private onChange: (value: number) => void = () => {};\n  private onTouched: () => void = () => {};\n\n  writeValue(value: number | null): void {\n    // The form calls this from outside the template; a signal is what lets the OnPush view show it.\n    this.value.set(value ?? this.min());\n  }\n\n  registerOnChange(fn: (value: number) => void): void {\n    this.onChange = fn;\n  }\n\n  registerOnTouched(fn: () => void): void {\n    this.onTouched = fn;\n  }\n\n  setDisabledState(isDisabled: boolean): void {\n    this.disabled.set(isDisabled);\n  }\n\n  step(delta: number): void {\n    const next = Math.min(this.max(), Math.max(this.min(), this.value() + delta));\n    if (next === this.value()) {\n      return;\n    }\n    this.value.set(next);\n    this.onChange(next);\n  }\n\n  markTouched(): void {\n    this.onTouched();\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Writing the value or the disabled flag to plain fields in an OnPush component: the form calls those methods from outside the template, so the view can keep showing an old value after `reset()`.",
+          "Removing the `NG_VALUE_ACCESSOR` provider: `formControlName` then throws NG01203, no value accessor for the control.",
+          "Calling the change callback from `writeValue`, which echoes every form write back as a user change.",
+          "Reporting a change for a click at a bound, which marks the control dirty although the value stayed the same.",
+          "Never calling the touched callback, so touched-based validation messages never appear."
+        ],
+        "techniques": [
+          "Registering a component as a value accessor with `NG_VALUE_ACCESSOR`, `useExisting` and `forwardRef`.",
+          "Holding state the form writes from outside in signals, so an OnPush view stays correct.",
+          "Deriving button states with `computed` from the value, the disabled flag and signal inputs.",
+          "Reporting touches from a `(focusout)` host listener."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-control-value-accessor-stepper.v1.json",
+      "openFile": "/src/app/quantity-stepper.component.ts",
+      "storageKey": "v1:ui:angular:angular-control-value-accessor-stepper"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-control-value-accessor-stepper-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/angular/decision-graphs/angular-control-value-accessor-stepper.v1.json",
+    "access": "premium",
+    "premiumPreview": {
+      "summary": "Build a quantity stepper that a reactive Angular form drives like a built-in control, with its value, touched state and disabled state kept in sync.",
+      "learningOutcomes": [
+        "Register a component as a form control so a reactive form can find it.",
+        "Show the value the form writes, both on start and after a reset.",
+        "Report each new value and each touch back to the form.",
+        "Keep an OnPush control correct when the form changes it from outside."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "updatedAt": "2026-11-11",
+    "seo": {
+      "title": "Build an Angular ControlValueAccessor Form Control",
+      "description": "Implement ControlValueAccessor for a quantity stepper so a reactive form can write, read, touch and disable it, with signals under OnPush."
+    },
+    "frameworkTests": [
+      {
+        "id": "cva-starting-value",
+        "name": "The stepper shows the value the form starts with",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".stepper-value",
+            "text": "2"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-testid=\"form-value\"]",
+            "text": "2"
+          }
+        ]
+      },
+      {
+        "id": "cva-reports-changes",
+        "name": "Each click reports the new value to the form",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "waitForText",
+            "selector": "[data-testid=\"form-value\"]",
+            "text": "3"
+          },
+          {
+            "type": "expectText",
+            "selector": ".stepper-value",
+            "text": "3"
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-decrement"
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-decrement"
+          },
+          {
+            "type": "waitForText",
+            "selector": "[data-testid=\"form-value\"]",
+            "text": "1"
+          },
+          {
+            "type": "expectText",
+            "selector": ".stepper-value",
+            "text": "1"
+          }
+        ]
+      },
+      {
+        "id": "cva-bounds",
+        "name": "The buttons stop at the bounds",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".stepper-decrement"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".stepper-value",
+            "text": "1"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".stepper-decrement",
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".stepper-value",
+            "text": "5"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".stepper-increment",
+            "disabled": true
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-testid=\"form-value\"]",
+            "text": "5"
+          }
+        ]
+      },
+      {
+        "id": "cva-disabled-state",
+        "name": "Disabling the form control disables the stepper",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "[data-testid=\"toggle-disabled\"]"
+          },
+          {
+            "type": "waitForText",
+            "selector": "[data-testid=\"form-status\"]",
+            "text": "DISABLED"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".stepper-increment",
+            "disabled": true
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".stepper-decrement",
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "selector": "[data-testid=\"toggle-disabled\"]"
+          },
+          {
+            "type": "waitForText",
+            "selector": "[data-testid=\"form-status\"]",
+            "text": "VALID"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".stepper-increment",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "cva-reset-writes-value",
+        "name": "Reset writes the starting value back into the stepper",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".stepper-increment"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".stepper-value",
+            "text": "3"
+          },
+          {
+            "type": "click",
+            "selector": "[data-testid=\"reset\"]"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".stepper-value",
+            "text": "2"
+          },
+          {
+            "type": "expectText",
+            "selector": "[data-testid=\"form-value\"]",
+            "text": "2"
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -20,6 +20,15 @@ export const CODING_HUB_DEBUG_DISCOVERY = [
     "access": "free"
   },
   {
+    "id": "ng-debug-zoneless-shipment-board",
+    "title": "Fix a shipment board that stopped updating after going zoneless",
+    "route": "/angular/debug/ng-debug-zoneless-shipment-board",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The shipment board moved to zoneless change detection, and its list to OnPush, in the last release. Three reports came in since. \" Find the root cause of each report and fix all three.",
+    "access": "free"
+  },
+  {
     "id": "js-debug-async-race",
     "title": "Fix async race in `fetchWithCache`",
     "route": "/javascript/debug/js-debug-async-race",

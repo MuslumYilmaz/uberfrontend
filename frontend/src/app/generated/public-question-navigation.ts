@@ -39,6 +39,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   },
   {
     "tech": "angular",
+    "kind": "debug",
+    "title": "Fix a shipment board that stopped updating after going zoneless",
+    "route": "/angular/debug/ng-debug-zoneless-shipment-board"
+  },
+  {
+    "tech": "angular",
     "kind": "trivia",
     "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
     "route": "/angular/trivia/angular-data-binding"

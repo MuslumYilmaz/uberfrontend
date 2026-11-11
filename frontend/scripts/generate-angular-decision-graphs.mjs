@@ -1182,6 +1182,59 @@ const definitions = [
       },
     ],
   },
+  {
+    questionId: 'angular-control-value-accessor-stepper',
+    nodes: [
+      {
+        id: 'd1-register-accessor',
+        title: "Register the component as the control's accessor",
+        snippet: '{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => QuantityStepperComponent), multi: true }',
+        why: 'formControlName looks for NG_VALUE_ACCESSOR on its element; useExisting hands the form this instance, and forwardRef covers the class being declared after its decorator.',
+        alternative: 'Inject NgControl into the component and set ngControl.valueAccessor = this.',
+        tradeoff: "The provider works with every form directive and is the documented pattern; injecting NgControl also exposes the control's validity but needs care to avoid a circular provider.",
+      },
+      {
+        id: 'd2-value-signal',
+        title: 'Keep the shown value in a signal',
+        snippet: 'protected readonly value = signal(0);',
+        why: 'The form writes the value from outside the template, through writeValue; a signal write is what marks this OnPush view for check when that happens.',
+        alternative: 'A plain value field that writeValue assigns.',
+        tradeoff: 'A plain field can look right on the first render, but after form.reset() the OnPush stepper keeps the old number, because nothing in the parent changes its inputs.',
+      },
+      {
+        id: 'd3-derived-buttons',
+        title: 'Derive each button from value, flag and bound',
+        snippet: 'protected readonly canIncrease = computed(() => !this.disabled() && this.value() < this.max());',
+        why: 'The + button depends on the disabled flag, the value and the max input; a computed recalculates it when any of the three changes, and the template only binds the result.',
+        alternative: 'Write the full condition in each disabled binding of the template.',
+        tradeoff: 'Inline conditions are shorter to read once, but the rule would then live in two places, and step() could drift from what the buttons allow.',
+      },
+      {
+        id: 'd4-write-value',
+        title: 'Accept what the form writes, null included',
+        snippet: 'this.value.set(value ?? this.min());',
+        why: 'writeValue runs on start, setValue, patchValue and reset; a nullable form resets to null, which falls back to the minimum instead of rendering an empty stepper.',
+        alternative: 'Ignore null and keep the previous value on screen.',
+        tradeoff: 'Falling back to min shows a number the form does not hold until the next change; keeping the old value would show a number the form already discarded.',
+      },
+      {
+        id: 'd5-report-change',
+        title: 'Report a change only when the value moved',
+        snippet: 'this.onChange(next);',
+        why: 'The form hears about user changes only through the callback it registered; step() calls it after clamping, and the early return keeps a click at a bound from marking the control dirty.',
+        alternative: 'Call the change callback on every click, or from writeValue as well.',
+        tradeoff: 'Calling it from writeValue would echo every form write back as a user edit; skipping no-op clicks costs one comparison.',
+      },
+      {
+        id: 'd6-report-touch',
+        title: 'Report a touch when focus leaves',
+        snippet: 'this.onTouched();',
+        why: 'The (focusout) host listener calls markTouched(), which forwards to the registered callback, so the control becomes touched the way a native input does on blur.',
+        alternative: 'Mark the control touched on the first click instead.',
+        tradeoff: 'Touched on click flags the control earlier, which suits steppers used only by mouse; focusout matches the built-in accessors and keyboard users.',
+      },
+    ],
+  },
 ];
 
 function graphFileName(questionId) {

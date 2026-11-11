@@ -771,6 +771,26 @@
     "assetRef": "questions/angular/debug.json#ng-debug-fleet-status-bug-reports"
   },
   {
+    "id": "ng-debug-zoneless-shipment-board",
+    "family": "question",
+    "title": "Fix a shipment board that stopped updating after going zoneless",
+    "route": "/angular/debug/ng-debug-zoneless-shipment-board",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The shipment board moved to zoneless change detection, and its list to OnPush, in the last release. Three reports came in since. \" Find the root cause of each report and fix all three.",
+    "tags": [
+      "change-detection",
+      "signals",
+      "onpush",
+      "debugging"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-11",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/debug.json#ng-debug-zoneless-shipment-board"
+  },
+  {
     "id": "angular-input-output",
     "family": "question",
     "title": "How do @Input() and @Output() work in Angular, and what pitfalls do seniors mention in interviews?",
@@ -1195,6 +1215,26 @@
     "updatedAt": "2026-10-26",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-observables-rxjs"
+  },
+  {
+    "id": "angular-control-value-accessor-stepper",
+    "family": "question",
+    "title": "Quantity Stepper Form Control (ControlValueAccessor)",
+    "route": "/angular/coding/angular-control-value-accessor-stepper",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Build a quantity stepper that a reactive Angular form drives like a built-in control, with its value, touched state and disabled state kept in sync.",
+    "tags": [
+      "forms",
+      "components",
+      "signals",
+      "change-detection"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-11",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/coding.json#angular-control-value-accessor-stepper"
   },
   {
     "id": "angular-input-output-two-way",

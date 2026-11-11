@@ -1,0 +1,49 @@
+{
+  "version": "v1",
+  "type": "user-interface",
+  "title": "Angular Quantity Stepper (solution)",
+  "openFile": "/src/app/quantity-stepper.component.ts",
+  "dependencies": {
+    "@angular/core": "21.2.25",
+    "@angular/common": "21.2.25",
+    "@angular/forms": "21.2.25",
+    "@angular/platform-browser": "21.2.25",
+    "rxjs": "7.8.2",
+    "zone.js": "0.16.3"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-control-value-accessor-stepper-solution\",\n  \"private\": true\n}\n"
+    },
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Quantity Stepper</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { ChangeDetectionStrategy, Component, inject } from '@angular/core';\nimport { toSignal } from '@angular/core/rxjs-interop';\nimport { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\nimport { map } from 'rxjs';\nimport { QuantityStepperComponent } from './quantity-stepper.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [ReactiveFormsModule, QuantityStepperComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly fb = inject(FormBuilder);\n\n  readonly form = this.fb.nonNullable.group({\n    quantity: [2, [Validators.min(1), Validators.max(5)]]\n  });\n  readonly quantity = this.form.controls.quantity;\n\n  // The control's own streams, read as signals so this OnPush view follows them.\n  readonly value = toSignal(this.quantity.valueChanges, { initialValue: this.quantity.value });\n  readonly status = toSignal(this.quantity.statusChanges, { initialValue: this.quantity.status });\n  readonly touched = toSignal(this.quantity.events.pipe(map(() => this.quantity.touched)), {\n    initialValue: this.quantity.touched\n  });\n\n  toggleDisabled(): void {\n    if (this.quantity.disabled) {\n      this.quantity.enable();\n    } else {\n      this.quantity.disable();\n    }\n  }\n\n  reset(): void {\n    // A non-nullable form resets to its starting value, 2.\n    this.form.reset();\n  }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Quantity</h1>\n    <p class=\"subtitle\">The form owns the value. The stepper shows it, changes it and reports back.</p>\n\n    <form [formGroup]=\"form\" class=\"panel\">\n      <app-quantity-stepper formControlName=\"quantity\" [min]=\"1\" [max]=\"5\" label=\"Quantity\" />\n\n      <dl class=\"state\">\n        <div>\n          <dt>Form value</dt>\n          <dd data-testid=\"form-value\">{{ value() }}</dd>\n        </div>\n        <div>\n          <dt>Status</dt>\n          <dd data-testid=\"form-status\">{{ status() }}</dd>\n        </div>\n        <div>\n          <dt>Touched</dt>\n          <dd data-testid=\"form-touched\">{{ touched() ? 'yes' : 'no' }}</dd>\n        </div>\n      </dl>\n\n      <div class=\"actions\">\n        <button type=\"button\" class=\"ghost\" data-testid=\"toggle-disabled\" (click)=\"toggleDisabled()\">\n          {{ status() === 'DISABLED' ? 'Enable' : 'Disable' }}\n        </button>\n        <button type=\"button\" class=\"ghost\" data-testid=\"reset\" (click)=\"reset()\">Reset</button>\n      </div>\n    </form>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  padding: 24px;\n  color: #e5e7eb;\n}\n\n.card {\n  width: 100%;\n  max-width: 420px;\n  display: grid;\n  gap: 16px;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 14px;\n  line-height: 1.5;\n}\n\n.panel {\n  display: grid;\n  gap: 16px;\n  padding: 16px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n}\n\n.state {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px;\n  margin: 0;\n}\n\n.state div {\n  padding: 8px;\n  border: 1px solid #1f2937;\n  border-radius: 8px;\n}\n\n.state dt {\n  color: #9ca3af;\n  font-size: 12px;\n}\n\n.state dd {\n  margin: 4px 0 0;\n  font-weight: 600;\n}\n\n.actions {\n  display: flex;\n  gap: 8px;\n}\n\n.ghost {\n  padding: 8px 14px;\n  border: 1px solid #374151;\n  border-radius: 10px;\n  background: transparent;\n  color: #e5e7eb;\n  font-weight: 600;\n  cursor: pointer;\n}\n"
+    },
+    "/src/app/quantity-stepper.component.ts": {
+      "code": "import { ChangeDetectionStrategy, Component, computed, forwardRef, input, signal } from '@angular/core';\nimport { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';\n\n@Component({\n  selector: 'app-quantity-stepper',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './quantity-stepper.component.html',\n  styleUrls: ['./quantity-stepper.component.css'],\n  providers: [\n    // How formControlName finds this component: it registers as the control's value accessor.\n    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => QuantityStepperComponent), multi: true }\n  ],\n  host: { '(focusout)': 'markTouched()' }\n})\nexport class QuantityStepperComponent implements ControlValueAccessor {\n  readonly min = input(0);\n  readonly max = input(99);\n  readonly label = input('Quantity');\n\n  protected readonly value = signal(0);\n  protected readonly disabled = signal(false);\n  protected readonly canDecrease = computed(() => !this.disabled() && this.value() > this.min());\n  protected readonly canIncrease = computed(() => !this.disabled() && this.value() < this.max());\n\n  private onChange: (value: number) => void = () => {};\n  private onTouched: () => void = () => {};\n\n  writeValue(value: number | null): void {\n    // The form calls this from outside the template; a signal is what lets the OnPush view show it.\n    this.value.set(value ?? this.min());\n  }\n\n  registerOnChange(fn: (value: number) => void): void {\n    this.onChange = fn;\n  }\n\n  registerOnTouched(fn: () => void): void {\n    this.onTouched = fn;\n  }\n\n  setDisabledState(isDisabled: boolean): void {\n    this.disabled.set(isDisabled);\n  }\n\n  step(delta: number): void {\n    const next = Math.min(this.max(), Math.max(this.min(), this.value() + delta));\n    if (next === this.value()) {\n      return;\n    }\n    this.value.set(next);\n    this.onChange(next);\n  }\n\n  markTouched(): void {\n    this.onTouched();\n  }\n}\n"
+    },
+    "/src/app/quantity-stepper.component.html": {
+      "code": "<div class=\"stepper\" role=\"group\" [attr.aria-label]=\"label()\" [class.is-disabled]=\"disabled()\">\n  <button type=\"button\" class=\"stepper-decrement\" aria-label=\"Decrease\" [disabled]=\"!canDecrease()\" (click)=\"step(-1)\">−</button>\n  <output class=\"stepper-value\" aria-live=\"polite\">{{ value() }}</output>\n  <button type=\"button\" class=\"stepper-increment\" aria-label=\"Increase\" [disabled]=\"!canIncrease()\" (click)=\"step(1)\">+</button>\n</div>\n"
+    },
+    "/src/app/quantity-stepper.component.css": {
+      "code": ":host {\n  display: block;\n}\n\n.stepper {\n  display: inline-flex;\n  align-items: center;\n  gap: 12px;\n}\n\n.stepper button {\n  width: 40px;\n  height: 40px;\n  border: 1px solid #374151;\n  border-radius: 10px;\n  background: #111827;\n  color: #e5e7eb;\n  font-size: 20px;\n  cursor: pointer;\n}\n\n.stepper button:disabled {\n  opacity: 0.4;\n  cursor: not-allowed;\n}\n\n.stepper-value {\n  min-width: 2ch;\n  font-size: 24px;\n  font-weight: 700;\n  text-align: center;\n}\n\n.is-disabled .stepper-value {\n  color: #6b7280;\n}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n}\n\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+    }
+  }
+}
