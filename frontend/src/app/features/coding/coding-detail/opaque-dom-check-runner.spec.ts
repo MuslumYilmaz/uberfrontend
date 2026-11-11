@@ -551,6 +551,54 @@ describe('OpaqueDomCheckRunner', () => {
     });
   }
 
+  // Workspaces where App imports other files, as the snake game imports its engine.
+  const reactWorkspaces: Record<string, Record<string, string>> = {
+    'a helper module and types imported over several lines': {
+      'src/App.tsx': `
+        import React, { useState } from 'react';
+        import './App.css';
+        import {
+          next,
+          type Count,
+        } from './counter';
+        export default function App() {
+          const [n, setN] = useState<Count>(0);
+          return <main><button className="go" onClick={() => setN(next)}>Go</button><p className="out">{n}</p></main>;
+        }`,
+      'src/App.css': '.out { color: inherit; }',
+      'src/counter.ts': `
+        export type Count = number;
+        const STEP = 1;
+        export function next(value: Count): Count { return value + STEP; }`,
+    },
+    'default, renamed and namespace imports from nested files sharing a React import': {
+      'src/App.tsx': `
+        import { memo, useState } from 'react';
+        import Out from './components/Out';
+        import Display from './components/Out';
+        import { step as advance } from './lib/math';
+        import * as labels from './lib/labels';
+        const Shell = memo(({ children }: { children: any }) => <main>{children}</main>);
+        export default function App() {
+          const [n, setN] = useState(0);
+          return <Shell><button className="go" onClick={() => setN((v) => advance(v))}>{labels.GO}</button><Out n={n} />{Display === Out ? null : 'mismatch'}</Shell>;
+        }`,
+      'src/components/Out.tsx': `
+        import { memo } from 'react';
+        const Out = memo(({ n }: { n: number }) => <p className="out">{n}</p>);
+        export default Out;`,
+      'src/lib/math.ts': `export function step(value: number) { return value + 1; }`,
+      'src/lib/labels.ts': `export const GO = 'Go';`,
+    },
+  };
+
+  for (const [label, files] of Object.entries(reactWorkspaces)) {
+    it(`runs a React preview with ${label}`, async () => {
+      const html = makeReactPreviewHtml(files, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
+
   const vueTemplate = `<main><button class="go" @click="inc">Go</button><p class="out">{{ n }}</p></main>`;
   const vueShapes: Record<string, string> = {
     'the Options API': `
