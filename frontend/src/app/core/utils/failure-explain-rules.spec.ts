@@ -112,6 +112,69 @@ describe('failure-explain-rules', () => {
     }
   });
 
+  it('explains the React and Vue star rating, Reply toggle and Vue chessboard checks by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'react-star-rating',
+        name: 'Arrow keys move the rating like a radio group',
+        errorLine: '.star expected tabindex="0" but found ""',
+        ruleId: 'react-star-rating-radio-group',
+        action: 'aria-checked={star === rating}',
+      },
+      {
+        questionId: 'vue-star-rating',
+        name: 'Clicking a star sets the rating',
+        errorLine: '.hint did not contain "Current rating: 4"',
+        ruleId: 'vue-star-rating-radio-group',
+        action: ':aria-checked="star === rating"',
+      },
+      {
+        questionId: 'react-nested-comments',
+        name: 'Reply opens one box and closes it on a second click',
+        errorLine: '.reply expected 0 matches but found 1',
+        ruleId: 'react-nested-comments-reply-toggle',
+        action: 'setActiveReplyId((active) => (active === id ? null : id))',
+      },
+      {
+        questionId: 'vue-nested-comments',
+        name: 'Reply opens one box and closes it on a second click',
+        errorLine: '.reply expected 0 matches but found 1',
+        ruleId: 'vue-nested-comments-reply-toggle',
+        action: 'toggleReply(id)',
+      },
+      {
+        questionId: 'vue-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'vue-chessboard-size-on-change',
+        action: '@change',
+      },
+      {
+        questionId: 'vue-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'vue-chessboard-single-selection',
+        action: 'cellKey(row, col)',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 0,
+        totalCount: 2,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
   it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
     for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
       const hint = buildFailureHint({

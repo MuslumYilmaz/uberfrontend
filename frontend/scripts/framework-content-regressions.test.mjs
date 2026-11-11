@@ -1042,6 +1042,30 @@ function assertPressureSolutions(scenario, solutionMarkers, slug, label) {
   }
 }
 
+// 2026-11-11: the chessboard is a labelled group of toggle buttons, because a grid needs rows, arrow keys and
+// aria-selected; the star ratings are WAI-ARIA radio groups, where aria-pressed would announce every filled star.
+function assertBoardAndRatingRoles() {
+  for (const framework of ['angular', 'react', 'vue']) {
+    const questions = json(`cdn/questions/${framework}/coding.json`);
+    const sources = (id) => {
+      const question = questions.find((entry) => entry.id === id);
+      assert.ok(question, `${id} must exist`);
+      return [question.sdk.asset, question.solutionAsset].map((reference) => [
+        reference,
+        Object.values(normalizedAssetFiles(json(`cdn/${reference.replace(/^assets\//, '')}`), reference)).join('\n'),
+      ]);
+    };
+    for (const [reference, source] of sources(`${framework}-chessboard-click-highlight`)) {
+      assert.doesNotMatch(source, /role="grid|gridcell/, `${reference}: the board has no rows or arrow keys, so it must not claim grid roles`);
+      assert.match(source, /aria-pressed/, `${reference}: the highlighted cell must be exposed with aria-pressed`);
+    }
+    for (const [reference, source] of sources(`${framework}-star-rating`)) {
+      assert.match(source, /role="radio"/, `${reference}: each star must be a radio`);
+      assert.doesNotMatch(source, /aria-pressed/, `${reference}: a star must not be a toggle button`);
+    }
+  }
+}
+
 function assertNestedCommentsPressureMode() {
   const normalCheck = ['comments-add-root-reply'];
   const expectedQuestions = {
@@ -1049,7 +1073,8 @@ function assertNestedCommentsPressureMode() {
       id: 'react-nested-comments',
       starter: 'assets/sb/react/question/react-nested-comments.v1.json',
       solution: 'assets/sb/react/solution/react-nested-comments-solution.v1.json',
-      checks: normalCheck,
+      // Added on 2026-11-11 with the same Reply toggle fix as Angular.
+      checks: [...normalCheck, 'comments-reply-toggles'],
     },
     angular: {
       id: 'angular-nested-comments',
@@ -1062,7 +1087,8 @@ function assertNestedCommentsPressureMode() {
       id: 'vue-nested-comments',
       starter: 'assets/sb/vue/question/vue-nested-comments.v1.json',
       solution: 'assets/sb/vue/solution/vue-nested-comments-solution.v1.json',
-      checks: normalCheck,
+      // Added on 2026-11-11 with the same Reply toggle fix as Angular.
+      checks: [...normalCheck, 'comments-reply-toggles'],
     },
   };
   const starterSources = assertSharedPressureEntries(
@@ -3574,7 +3600,9 @@ function assertChessboardClickHighlightPressureMode() {
       id: 'react-chessboard-click-highlight',
       starter: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-02-09',
+      // 2026-11-11: the board lost its grid roles. React keeps applying the size on each change: its onChange is the
+      // input event, and the pressure rounds expect a set value to resize the board at once.
+      updatedAt: '2026-11-11',
       checks: [],
     },
     angular: {
@@ -3589,8 +3617,9 @@ function assertChessboardClickHighlightPressureMode() {
       id: 'vue-chessboard-click-highlight',
       starter: 'assets/sb/vue/question/vue-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/vue/solution/vue-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-02-09',
-      checks: [],
+      updatedAt: '2026-11-11',
+      // Added on 2026-11-11 with the fix that applies the size on change, as in Angular.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
   };
   const pressureRefs = new Set();
@@ -5795,6 +5824,7 @@ assertPaginationTablePressureMode();
 assertAutocompletePressureMode();
 assertTeamListPressureMode();
 assertNestedCommentsPressureMode();
+assertBoardAndRatingRoles();
 assertContactFormPressureMode();
 assertChatStreamingPressureMode();
 assertUseEffectOncePressureMode();

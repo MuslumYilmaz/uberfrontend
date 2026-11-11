@@ -3207,7 +3207,7 @@
           "Add a numeric size input, apply it when the field changes (Enter, blur or the arrows) rather than on every keystroke, and clamp the size between 2 and 20.",
           "Clicking a cell highlights it and removes highlight from the previously selected cell.",
           "Show selected cell coordinates (row/column) in a status region.",
-          "Keep keyboard focus visibility and proper grid semantics."
+          "Keep keyboard focus visible, and make each cell a button whose `aria-label` names its row and column and whose `aria-pressed` marks the highlighted cell."
         ],
         "expectedBehavior": [
           "Initial board renders at size 8×8.",
@@ -3222,6 +3222,7 @@
           "Compute rows/columns from the current size.",
           "Handle `(change)` rather than `(input)`: clamping on every keystroke turns the 1 of 12 into 2, so sizes 10–19 could never be typed. Write the clamped number back into the field yourself, because `[value]` only updates it when the size changes.",
           "Use class binding for dark, light, and active styles.",
+          "Give the board `role=\"group\"` with an `aria-label` and keep each cell a plain button. `role=\"grid\"` would need `role=\"row\"` elements and arrow-key navigation, and a gridcell does not support `aria-pressed`.",
           "Keep logic deterministic and avoid external libraries."
         ],
         "techFocus": [
@@ -3249,14 +3250,15 @@
           "Clamping on every `input` event: the first digit of 12 is applied alone and rewritten to 2, so sizes 10–19 can never be typed.",
           "Tracking selection by array index alone becomes brittle after size changes.",
           "Forgetting to clear selection on resize can leave stale coordinates.",
-          "Comparing `selectedKey` instead of `selectedKey()` with a cell key, in `cellClass` or in the `aria-pressed` binding: the signal function never equals a string, so no cell is ever highlighted."
+          "Comparing `selectedKey` instead of `selectedKey()` with a cell key, in `cellClass` or in the `aria-pressed` binding: the signal function never equals a string, so no cell is ever highlighted.",
+          "Giving the board `role=\"grid\"` and the buttons `role=\"gridcell\"` without rows or arrow keys: the grid misses its required rows, `aria-pressed` is not allowed on a gridcell, and screen reader users expect the arrow keys to move between cells."
         ],
         "techniques": [
           "Signal state for `size` and `selectedKey`, with `rows` and `selectedLabel` derived by `computed`.",
           "One `computed` index array reused for both grid loops.",
           "Stable key modeling for the selected cell.",
           "A per-cell method that reads a signal, where a `computed` would need arguments.",
-          "Simple ARIA roles for grid and gridcell semantics."
+          "A labelled group of toggle buttons: `aria-pressed` marks the highlighted cell and each `aria-label` names its row and column."
         ]
       }
     },

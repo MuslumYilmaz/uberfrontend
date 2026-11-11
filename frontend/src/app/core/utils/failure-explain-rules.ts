@@ -412,6 +412,128 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       confidence: 0.85,
     }),
   },
+  {
+    ruleId: 'react-star-rating-radio-group',
+    questionId: 'react-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Call `onChange(value)` in `handleRate`, so the parent state and the hint update.',
+        'Render `role="radio"` and `aria-checked={star === rating}` on each star, so exactly one is checked; `aria-pressed` on every filled star does not pass.',
+        'Give the checked star `tabIndex={0}` (the first star while the rating is 0) and the rest `-1`.',
+        'In `handleKeyDown`, map Right and Down to +1 and Left and Up to -1, wrap past either end, call `onChange` and focus the new star through a `useRef` array that ref callbacks fill.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-star-rating-radio-group',
+    questionId: 'vue-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Set `rating.value` in `handleRate` when the value is between 1 and `max`.',
+        'Bind `role="radio"` and `:aria-checked="star === rating"` on each star, so exactly one is checked.',
+        'Bind `:tabindex="star === tabStop ? 0 : -1"`, so only the checked star (the first one while the rating is 0) is in the Tab order.',
+        'In `handleKeydown`, map Right and Down to +1 and Left and Up to -1, wrap past either end, set the rating and focus the new star through a function ref that stores each button at its index.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-nested-comments-reply-toggle',
+    questionId: 'react-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, store `null` when the open id already equals `id`, and `id` otherwise: `setActiveReplyId((active) => (active === id ? null : id))`.',
+        'Render the box only when `activeReplyId === c.id`, so one stored id means at most one open box.',
+        'Bind `aria-expanded` on the Reply button to the same comparison.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-nested-comments-reply-toggle',
+    questionId: 'vue-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, set `activeReplyId.value` to `null` when it already equals `id`, and to `id` otherwise.',
+        'Render the box only when `activeReplyId.value === c.id`, so one stored id means at most one open box.',
+        "Pass `'aria-expanded': activeReplyId.value === c.id` to the Reply button.",
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-chessboard-size-on-change',
+    questionId: 'vue-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-chessboard-size-on-change',
+      title: 'Apply the size on change and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Bind `@change` on the size field rather than `@input`, so a two-digit size is applied once it is complete.',
+        'Clamp with `Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Write the clamped number back into the field: `:value` is written again only when the board re-renders, so 30 on a 20 by 20 board would stay on screen.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-chessboard-single-selection',
+    questionId: 'vue-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onCellClick(row, col)`, store `cellKey(row, col)` in `selectedKey.value`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Set `selectedKey.value` back to `null` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',

@@ -1605,12 +1605,13 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity. Vue focus: use props/emits for a controlled rating component. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
+      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click and with the arrow keys, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity. Vue focus: use props/emits for a controlled rating component. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the star rating UI as the main component.",
           "Display a row of stars (e.g. 5 by default).",
           "Allow the user to select a rating by clicking a star.",
+          "Make the stars a radio group: `role=\"radio\"` and `aria-checked` on each star, one Tab stop for the whole group, and the arrow keys to change the rating.",
           "Visually fill all stars up to the selected rating.",
           "Display the current rating value below the stars (e.g. \"Current rating: 3 / 5\")."
         ],
@@ -1618,42 +1619,51 @@
           "Stars render from 1 up to the configured max (default 5).",
           "Clicking the 3rd star sets the rating to 3 and fills 3 stars.",
           "Clicking the 5th star sets the rating to 5 and fills 5 stars.",
-          "Initial rating starts at 0 (no filled stars)."
+          "Initial rating starts at 0 (no filled stars).",
+          "With a star focused, Right or Down checks the next star and moves focus to it, and Left or Up the previous one; from the last star Right goes to the first, and from the first Left goes to the last.",
+          "Tab reaches the rating once, on the checked star, or on the first star before anything is rated."
         ],
         "implementationNotes": [
           "Use Vue 3's `<script setup>` syntax in `App.vue`.",
           "Store the current rating in a `ref` (e.g. `const rating = ref(0)`).",
           "Optionally store `max` in a `ref` and derive a stars list with `computed` or an inline array.",
           "Use class binding (e.g. `:class=\"{ filled: star <= rating }\"`) to style selected stars.",
-          "Render a small text block under the stars to show the numeric rating."
+          "Render a small text block under the stars to show the numeric rating.",
+          "Follow the WAI-ARIA rating radio group: `role=\"radiogroup\"` with a label on the container, `role=\"radio\"` and `:aria-checked` on each star (true only for the selected one), `tabindex` 0 on the checked star or on the first star before any rating, and -1 on the rest.",
+          "Handle the arrow keys with `@keydown` on each star: call `preventDefault()` so the page does not scroll, set the rating, and move focus to that star. A function ref such as `:ref=\"(element) => setStarButton(element, star)\"` keeps each button at its index; an array ref inside `v-for` does not promise the order."
         ],
         "techFocus": [
           "Vue 3 Composition API (`ref`, `computed`)",
           "Basic component structure with `<script setup>`",
           "Click event handlers",
-          "Deriving UI from reactive state"
+          "Deriving UI from reactive state",
+          "A keyboard-operable radio group with a roving tabindex"
         ]
       }
     },
-    "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked.",
+    "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked, and `handleKeydown`, which moves the rating and focus with the arrow keys.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars. Key concepts: vue, components, reactivity.",
+      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index. The stars form a radio group: each is a `role=\"radio\"` button whose `aria-checked` is true only for the selected star, one star at a time is in the Tab order, and `handleKeydown` moves the rating and focus with the arrow keys, wrapping at the ends.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with reactive rating and computed stars",
-          "prose": "Keep the star-rating logic in a single `App.vue` component. Use `const rating = ref(0)` to hold the value, and `const max = ref(5)` for the number of stars. A `computed` property `stars` returns an array `[1, 2, ..., max]` used in a `v-for` loop. Each star is a button that calls `handleRate(star)` on click. `handleRate` updates `rating.value` to the clicked index. The template binds a `filled` class when `star <= rating` and shows the numeric rating in a `<p>` below the stars."
+          "prose": "Keep the star-rating logic in a single `App.vue` component. Use `const rating = ref(0)` to hold the value, and `const max = ref(5)` for the number of stars. A `computed` property `stars` returns an array `[1, 2, ..., max]` used in a `v-for` loop. Each star is a button that calls `handleRate(star)` on click. `handleRate` updates `rating.value` to the clicked index. The template binds a `filled` class when `star <= rating` and shows the numeric rating in a `<p>` below the stars. Each button is a `role=\"radio\"` with `:aria-checked=\"star === rating\"` and `:tabindex=\"star === tabStop ? 0 : -1\"`, where `tabStop` is the checked star or the first star while the rating is 0. `handleKeydown(event, star)` maps Right and Down to +1 and Left and Up to -1, calls `preventDefault()`, wraps past either end with `((star - 1 + step + count) % count) + 1`, sets the rating and focuses the new star through a function ref that stores each button at its index."
         }
       ],
       "notes": {
         "pitfalls": [
           "Hardcoding stars in the template instead of generating them from data, which makes `max` harder to change.",
           "Forgetting to use `.value` when updating refs in `<script setup>`.",
-          "Not visually differentiating selected vs unselected stars, making the rating unclear."
+          "Not visually differentiating selected vs unselected stars, making the rating unclear.",
+          "Leaving every star in the Tab order: a radio group is one Tab stop, and the arrow keys move inside it.",
+          "Indexing an array ref collected inside `v-for`: Vue does not promise that its order matches the stars, so focus can land on the wrong one."
         ],
         "techniques": [
           "Using `ref` for reactive primitives.",
           "Using `computed` to derive arrays for `v-for`.",
-          "Using class binding for visual state (`filled` vs default)."
+          "Using class binding for visual state (`filled` vs default).",
+          "The WAI-ARIA radio group pattern: `role=\"radio\"` with `aria-checked`, a roving `tabindex`, and arrow keys that wrap at the ends.",
+          "A function ref that stores each element at a known index."
         ]
       }
     },
@@ -1685,11 +1695,132 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Reusable Star Rating in Vue 3",
       "description": "Create a star rating component with configurable max value, click selection, and synced parent-child state using props and emits."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "star-rating-click",
+        "name": "Clicking a star sets the rating",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".star",
+            "count": 5
+          },
+          {
+            "type": "expectCount",
+            "selector": ".star.filled",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".star",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 4",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".star.filled",
+            "count": 4
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 3,
+            "attribute": "aria-checked",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 2,
+            "attribute": "aria-checked",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "star-rating-keyboard",
+        "name": "Arrow keys move the rating like a radio group",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 0,
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 1,
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "click",
+            "selector": ".star",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "selector": ".star",
+            "index": 1,
+            "key": "ArrowRight"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 3",
+            "match": "contains"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".star",
+            "index": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 2,
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 1,
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "key",
+            "selector": ".star",
+            "index": 0,
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 5",
+            "match": "contains"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".star",
+            "index": 4
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-dynamic-table",
@@ -2495,13 +2626,14 @@
           "Render a nested comments UI as the main screen.",
           "Allow adding top-level comments via a textarea + 'Add Comment' button.",
           "Each comment has a 'Reply' button.",
-          "Clicking 'Reply' opens a reply input ONLY under that comment (single active reply at a time).",
+          "Clicking 'Reply' opens a reply input ONLY under that comment (single active reply at a time), and clicking it again closes that input.",
           "Allow infinite depth replies (nested tree).",
           "Render replies hierarchically with indentation."
         ],
         "expectedBehavior": [
           "Top-level 'Add Comment' adds a new comment to the list.",
           "Clicking 'Reply' under a comment shows a reply input under that comment and hides any other open reply input.",
+          "Clicking 'Reply' again on the comment whose input is open closes it.",
           "Posting a reply adds it as a child of the correct parent comment.",
           "Cancel closes the reply input without changes.",
           "Replies can be nested infinitely and indentation increases with depth."
@@ -2509,7 +2641,9 @@
         "implementationNotes": [
           "Use Vue 3 Composition API for state: `ref` for drafts and active id, and a `ref<CommentNode[]>` for the tree.",
           "Keep a single `activeReplyId` + `replyDraft` to ensure only one reply input exists.",
+          "Clicking Reply on the comment whose box is already open closes it: compare the stored id with the clicked one and store `null` when they match. Expose the open state on the Reply button with `aria-expanded`.",
           "Use recursive rendering to display nested comments (a local recursive component is fine).",
+          "Replies render inside their parent, so wrap each comment's replies in a `.children` element with a fixed left margin; the margins add up level by level. A margin of `depth * 16` on each node would add up a second time.",
           "IDs can be simple incrementing strings."
         ],
         "techFocus": [
@@ -2522,18 +2656,20 @@
     },
     "starterCodeHint": "Keep `comments` as a `ref<CommentNode[]>`. Track `topDraft`, `activeReplyId`, and `replyDraft` with `ref`. Implement `findById` (DFS) and recursive rendering with a local component. Make sure text colors are explicitly set for dark UI readability.",
     "solutionBlock": {
-      "overview": "Maintain a comment tree in state. Add top-level comments by unshifting a new node into the root array. For replies, track `activeReplyId` and `replyDraft` so only one reply input is visible. When submitting a reply, find the parent node by id (DFS) and push a new child into `children`. Render the tree recursively and indent each node by `depth * 16`.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
+      "overview": "Maintain a comment tree in state. Add top-level comments by unshifting a new node into the root array. For replies, track `activeReplyId` and `replyDraft` so only one reply input is visible; Reply on the comment whose input is open stores `null` and closes it. When submitting a reply, find the parent node by id (DFS) and push a new child into `children`. Render the tree recursively and put each comment's replies in a `.children` wrapper with a 16px left margin. The wrappers nest, so each level sits 16px further in; a margin of `depth * 16` on each node would add up to 16, 48, 96 and 160px.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single <App.vue> with Composition API + local recursive component",
-          "prose": "1) Store comments in a `ref<CommentNode[]>`.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Create a local recursive component `Tree` (defineComponent) to render nodes and call itself for children.\n6) Apply consistent dark UI styles with explicit text colors. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
+          "prose": "1) Store comments in a `ref<CommentNode[]>`.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `toggleReply`, `cancelReply`, `submitReply`. `toggleReply(id)` stores `null` when `id` is already the active one, so a second click on Reply closes the box, and the Reply button binds `aria-expanded` to the same comparison.\n4) Implement `findById` DFS to locate a node.\n5) Create a local recursive component `Tree` (defineComponent) to render nodes and call itself for each comment's children inside a `div` with the class `children`. That wrapper has `margin-left: 16px`, and each level renders inside its parent's node, so the margins add up to 16px per level without a depth prop.\n6) Apply consistent dark UI styles with explicit text colors. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
         "pitfalls": [
           "Opening multiple reply inputs (keeping per-node reply state).",
           "Not resetting `replyDraft` when switching active comment.",
-          "Forgetting to set readable text colors; default styles may render text too dark on dark backgrounds."
+          "Forgetting to set readable text colors; default styles may render text too dark on dark backgrounds.",
+          "Setting the open id on every Reply click: the box can then only be closed with Cancel, although Reply is expected to toggle it.",
+          "Indenting each node by `depth * 16` while its replies render inside it: the parent's margin is counted again at every level, so deep replies drift right much faster than one step per level."
         ],
         "techniques": [
           "DFS search in a tree (`findById`).",
@@ -2550,7 +2686,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/nested-comments.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Nested Comments with Replies in Vue",
       "description": "Create threaded comments with top-level and reply inputs, support deep nesting, and keep only one active reply editor at a time."
@@ -2574,6 +2710,47 @@
             "selector": ".list",
             "text": "This is a new comment",
             "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "comments-reply-toggles",
+        "name": "Reply opens one box and closes it on a second click",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".composer textarea",
+            "value": "Parent comment"
+          },
+          {
+            "type": "click",
+            "selector": ".composer button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".list",
+            "text": "Parent comment",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".node .meta button",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".reply",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".node .meta button",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".reply",
+            "count": 0
           }
         ]
       }
@@ -2803,14 +2980,15 @@
       "specs": {
         "requirements": [
           "Render an N×N chessboard with alternating light/dark squares.",
-          "Add a numeric size input and clamp size between 2 and 20.",
+          "Add a numeric size input, apply it when the field changes (Enter, blur or the arrows) rather than on every keystroke, and clamp the size between 2 and 20.",
           "Clicking a cell highlights it and removes highlight from the previously selected cell.",
           "Show selected cell coordinates (row/column) in a status region.",
-          "Keep keyboard focus visibility and proper grid semantics."
+          "Keep keyboard focus visible, and make each cell a button whose `aria-label` names its row and column and whose `aria-pressed` marks the highlighted cell."
         ],
         "expectedBehavior": [
           "Initial board renders at size 8×8.",
           "Changing board size updates the grid and clears previous selection.",
+          "Typing 12 and pressing Enter gives a 12×12 board. A size outside 2–20 is clamped, and the field then shows the clamped number.",
           "Clicking one cell activates only that cell.",
           "Status text updates to the selected row/column.",
           "If nothing is selected, status shows no selection."
@@ -2818,7 +2996,9 @@
         "implementationNotes": [
           "Use Vue 3 Composition API with refs/computed for `size` and `selectedKey`.",
           "Compute rows/columns from current size.",
+          "Handle `@change` rather than `@input`: clamping on every keystroke turns the 1 of 12 into 2, so sizes 10–19 could never be typed. Write the clamped number back into the field yourself, because `:value` is written again only when the board re-renders.",
           "Use class binding for dark/light and active styles.",
+          "Give the board `role=\"group\"` with an `aria-label` and keep each cell a plain button. `role=\"grid\"` would need `role=\"row\"` elements and arrow-key navigation, and a gridcell does not support `aria-pressed`.",
           "Keep logic deterministic and avoid external libraries."
         ],
         "techFocus": [
@@ -2829,25 +3009,27 @@
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in <script setup>: clamp size input (2..20), reset selection when size changes, and activate only the clicked cell.",
+    "starterCodeHint": "Implement TODOs in <script setup>: apply the size on change, clamp it to 2..20 and show the clamped value in the field, reset the selection when the size changes, and activate only the clicked cell.",
     "solutionBlock": {
-      "overview": "Track `size` and `selectedKey` in refs. On size change, parse and clamp the input, then clear selection. On cell click, derive a stable key from row/col and store it. Use class bindings to render checkerboard colors and active state.",
+      "overview": "Track `size` and `selectedKey` in refs. The size field calls `onSizeChange` on `@change`, which fires on Enter, on blur and on the arrows rather than on every keystroke, so two-digit sizes can be typed. It parses the field, keeps the current size when the field is empty or not a number, clamps the size to 2–20, writes the result back into the field, and clears the selection when the size changed. On cell click, derive a stable key from row/col and store it. Use class bindings to render checkerboard colors and active state.",
       "approaches": [
         {
           "title": "Single Vue component with derived grid and selected-key state",
-          "prose": "Store `size` and `selectedKey` in refs. Build rows with `Array.from({ length: size.value })`, render nested loops, and map each cell to a unique key like `row-col`. On click, assign the clicked key; on size input, clamp within bounds and reset selection so state is always valid."
+          "prose": "Store `size` and `selectedKey` in refs. Build rows with `Array.from({ length: size.value })`, render nested loops, and map each cell to a unique key like `row-col`. On click, assign the clicked key; on a size change, clamp within bounds, write the clamped number back into the field and reset the selection, so state is always valid. The field uses `@change` rather than `@input`: clamping each keystroke would turn the 1 of 12 into 2."
         }
       ],
       "notes": {
         "pitfalls": [
           "Not clamping board size can break layout and state assumptions.",
+          "Clamping on every `input` event: the first digit of 12 is applied alone and rewritten to 2, so sizes 10–19 can never be typed.",
           "Tracking selection by array index alone becomes brittle after size changes.",
-          "Forgetting to clear selection on resize can leave stale coordinates."
+          "Forgetting to clear selection on resize can leave stale coordinates.",
+          "Giving the board `role=\"grid\"` and the buttons `role=\"gridcell\"` without rows or arrow keys: the grid misses its required rows, `aria-pressed` is not allowed on a gridcell, and screen reader users expect the arrow keys to move between cells."
         ],
         "techniques": [
           "Derived arrays for grid rendering",
           "Stable key modeling for selected cell",
-          "Simple ARIA roles for grid and gridcell semantics"
+          "A labelled group of toggle buttons: `aria-pressed` marks the highlighted cell and each `aria-label` names its row and column."
         ]
       }
     },
@@ -2863,11 +3045,134 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Interactive N x N Chessboard in Vue",
       "description": "Create a grid chessboard where users click to highlight one cell at a time, and resizing the board keeps layout and selection stable."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "chessboard-size-clamps",
+        "name": "Board size applies on change and clamps to 2–20",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".board .cell",
+            "count": 64
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "12"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 144
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "25"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 400
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "30"
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "1"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 4
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "2"
+          }
+        ]
+      },
+      {
+        "id": "chessboard-single-highlight",
+        "name": "Clicking a cell highlights only that cell",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 1, column 1",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 9
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 2, column 2",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "10"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cell--active",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-snake-game",

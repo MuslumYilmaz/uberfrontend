@@ -7708,7 +7708,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-chessboard-click-highlight"
   },
@@ -7926,7 +7926,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-nested-comments"
   },
@@ -8023,7 +8023,7 @@
     "route": "/react/coding/react-star-rating",
     "tech": "react",
     "difficulty": "easy",
-    "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+    "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating with the mouse or the arrow keys, and notify a parent component when the rating changes.",
     "tags": [
       "react",
       "state",
@@ -8033,7 +8033,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-star-rating"
   },
@@ -8118,7 +8118,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-10-19",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-select-compound-api"
   },
@@ -9885,7 +9885,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-chessboard-click-highlight"
   },
@@ -10059,7 +10059,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-nested-comments"
   },
@@ -10159,7 +10159,7 @@
     "route": "/vue/coding/vue-star-rating",
     "tech": "vue",
     "difficulty": "easy",
-    "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity.",
+    "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. max, update on click and with the arrow keys, and reflect the current rating visually. Keep the parent as the source of truth.",
     "tags": [
       "vue",
       "components",
@@ -10169,7 +10169,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-star-rating"
   },

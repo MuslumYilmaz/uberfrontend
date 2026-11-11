@@ -1,0 +1,73 @@
+{
+  "questionId": "react-star-rating",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useMemo, useRef, useState } from 'react';\nimport './App.css';\n\n// The arrow keys move through the stars the way they move through any radio group.\nconst ARROW_STEPS: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };\n\ntype StarRatingProps = {\n  max?: number;\n  rating: number;\n  onChange: (value: number) => void;\n};\n\nfunction StarRating({ max = 5, rating, onChange }: StarRatingProps) {\n  const stars = useMemo(\n    () => Array.from({ length: max }, (_, i) => i + 1),\n    [max]\n  );\n  const starRefs = useRef<Array<HTMLButtonElement | null>>([]);\n  // A radio group is one Tab stop: the checked star, or the first star before anything is rated.\n  const tabStop = rating > 0 ? rating : 1;\n\n  const handleRate = (value: number) => {\n    if (value < 1 || value > max) return;\n    onChange(value);\n  };\n\n  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, star: number) => {\n    const step = ARROW_STEPS[event.key];\n    if (!step) return;\n    // The arrows would otherwise scroll the page.\n    event.preventDefault();\n    const next = ((star - 1 + step + max) % max) + 1;\n    handleRate(next);\n    starRefs.current[next - 1]?.focus();\n  };\n\n  return (\n    <div className=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      {stars.map((star) => (\n        <button\n          key={star}\n          ref={(element) => {\n            starRefs.current[star - 1] = element;\n          }}\n          type=\"button\"\n          role=\"radio\"\n          className={\"star\" + (star <= rating ? \" filled\" : \"\")}\n          onClick={() => handleRate(star)}\n          onKeyDown={(event) => handleKeyDown(event, star)}\n          aria-label={`${star} out of ${max}`}\n          aria-checked={star === rating}\n          tabIndex={star === tabStop ? 0 : -1}\n        >\n          ★\n        </button>\n      ))}\n    </div>\n  );\n}\n\nexport default function App() {\n  const [currentRating, setCurrentRating] = useState(0);\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Star Rating Widget (Solution)</h1>\n\n        <div className=\"panel\">\n          <StarRating rating={currentRating} onChange={setCurrentRating} />\n          <p className=\"hint\">Current rating: {currentRating} / 5</p>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "d1-controlled-rating",
+          "title": "Let the parent own the rating",
+          "anchor": {
+            "snippet": "function StarRating({ max = 5, rating, onChange }: StarRatingProps) {",
+            "lineStart": 13,
+            "lineEnd": 13
+          },
+          "why": "StarRating draws whatever rating it receives and reports clicks and arrow keys through onChange, so the parent can show, store or reject a rating without the widget keeping a second copy.",
+          "alternative": "Keep the rating in useState inside StarRating and report changes to the parent.",
+          "tradeoff": "A local copy saves the parent one prop, but the two copies can disagree when the parent resets or loads a rating."
+        },
+        {
+          "id": "d2-one-tab-stop",
+          "title": "Give the group one Tab stop",
+          "anchor": {
+            "snippet": "const tabStop = rating > 0 ? rating : 1;",
+            "lineStart": 20,
+            "lineEnd": 20
+          },
+          "why": "A radio group is one stop in the Tab order: Tab lands on the checked star, or on the first star before anything is rated, and the next Tab leaves the group.",
+          "alternative": "Leave every star in the Tab order.",
+          "tradeoff": "Five Tab stops cost keyboard users four extra presses to get past the widget, and they behave unlike every native radio group."
+        },
+        {
+          "id": "d3-wrapping-arrows",
+          "title": "Wrap the arrow keys at both ends",
+          "anchor": {
+            "snippet": "const next = ((star - 1 + step + max) % max) + 1;",
+            "lineStart": 32,
+            "lineEnd": 32
+          },
+          "why": "Right and Down add one and Left and Up subtract one; the modulo turns past the last star to the first and past the first to the last, as native radio buttons do.",
+          "alternative": "Stop at the first and the last star.",
+          "tradeoff": "Stopping is easier to reason about, but users who know radio groups expect the arrows to wrap."
+        },
+        {
+          "id": "d4-focus-follows",
+          "title": "Move focus with the rating",
+          "anchor": {
+            "snippet": "starRefs.current[next - 1]?.focus();",
+            "lineStart": 34,
+            "lineEnd": 34
+          },
+          "why": "Focus moves to the star that was checked, so a screen reader announces the new rating and the next arrow press starts from it.",
+          "alternative": "Change the rating and leave focus on the star that received the key.",
+          "tradeoff": "Leaving focus behind is less code, but the focused star and the checked star then disagree and the next arrow press starts from the wrong place."
+        },
+        {
+          "id": "d5-checked-not-pressed",
+          "title": "Check one star instead of pressing several",
+          "anchor": {
+            "snippet": "aria-checked={star === rating}",
+            "lineStart": 51,
+            "lineEnd": 51
+          },
+          "why": "Only the selected star is checked, so assistive technology reads one choice, such as 3 out of 5, while the filled class still colors every star up to it.",
+          "alternative": "Mark every filled star with aria-pressed.",
+          "tradeoff": "aria-pressed describes toggle buttons, so a rating of 3 would be read as three pressed buttons."
+        }
+      ]
+    }
+  }
+}
