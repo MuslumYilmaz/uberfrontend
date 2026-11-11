@@ -447,7 +447,7 @@
       "Render one clickable star for each step up to a configurable maximum.",
       "Fill every star up to the selected rating with class bindings.",
       "Send each new rating back to the parent through two-way binding.",
-      "Give each star an accessible label inside a labelled rating group."
+      "Make the stars a labelled radio group with one Tab stop and arrow keys that move the rating."
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   },

@@ -1062,11 +1062,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "The table needs one piece of state: the index of the current page. The solution keeps it in a signal, `currentPage = signal(0)`, 0-based so it feeds the slice math directly. The 20 users come from `USERS` in `users.data.ts` and never change. Everything else is computed from those two: `totalPages`, the `pagedUsers` slice that fills the table body, and the `isFirstPage` and `isLastPage` flags that disable Previous and Next. The template reads them with call syntax, `@for (user of pagedUsers(); track user.id)` and `[disabled]=\"isFirstPage()\"`, and renders the label as `{{ currentPage() + 1 }} / {{ totalPages() }}`.\n\n**Test cases**\n- Initial render → shows the first 5 users, the label reads `1 / 4`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
+      "overview": "The table needs one piece of state: the index of the current page. The solution keeps it in a signal, `currentPage = signal(0)`, 0-based so it feeds the slice math directly. The 20 users come from `USERS` in `users.data.ts` and never change. Everything else is computed from those two: `totalPages`, the `pagedUsers` slice that fills the table body, and the `isFirstPage` and `isLastPage` flags that disable Previous and Next. The template reads them with call syntax, `@for (user of pagedUsers(); track user.id)` and `[disabled]=\"isFirstPage()\"`, and renders the label as `Page {{ currentPage() + 1 }} of {{ totalPages() }}`.\n\n**Test cases**\n- Initial render → shows the first 5 users, the label reads `Page 1 of 4`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
       "approaches": [
         {
           "title": "Signal page index with computed slice and flags",
-          "prose": "Keep the pagination in `AppComponent`. `users` points at the static `USERS` array and `pageSize` is 5; neither changes, so both stay plain readonly fields. The only state is the page index, `currentPage = signal(0)`.\n\nEach derived value is a `computed`:\n1. `totalPages` is `Math.ceil(this.users.length / this.pageSize) || 1`. The `|| 1` keeps one page, the label `1 / 1` and both buttons disabled if the list is ever empty.\n2. `pagedUsers` slices `users` from `start = currentPage() * pageSize` to `start + pageSize`. `slice` returns a new array and leaves `USERS` as it is.\n3. `isFirstPage` compares `currentPage()` with 0, and `isLastPage` compares it with `totalPages() - 1`.\n\n`goToPrevious()` and `goToNext()` check the matching flag before calling `currentPage.update(...)`, so the index stays inside the page range even when a caller ignores the disabled buttons.\n\nA getter runs every time Angular checks the template; a `computed` keeps its result until a signal it read changes, so the slice is recalculated once per page change. `totalPages` reads no signal and is calculated once. It stays a `computed` so the template needs no change if `users` later becomes a signal fed by a filter or a request. Every value the template reads is a signal or a constant, which makes `OnPush` safe here.",
+          "prose": "Keep the pagination in `AppComponent`. `users` points at the static `USERS` array and `pageSize` is 5; neither changes, so both stay plain readonly fields. The only state is the page index, `currentPage = signal(0)`.\n\nEach derived value is a `computed`:\n1. `totalPages` is `Math.ceil(this.users.length / this.pageSize) || 1`. The `|| 1` keeps one page, the label `Page 1 of 1` and both buttons disabled if the list is ever empty.\n2. `pagedUsers` slices `users` from `start = currentPage() * pageSize` to `start + pageSize`. `slice` returns a new array and leaves `USERS` as it is.\n3. `isFirstPage` compares `currentPage()` with 0, and `isLastPage` compares it with `totalPages() - 1`.\n\n`goToPrevious()` and `goToNext()` check the matching flag before calling `currentPage.update(...)`, so the index stays inside the page range even when a caller ignores the disabled buttons.\n\nA getter runs every time Angular checks the template; a `computed` keeps its result until a signal it read changes, so the slice is recalculated once per page change. `totalPages` reads no signal and is calculated once. It stays a `computed` so the template needs no change if `users` later becomes a signal fed by a filter or a request. Every value the template reads is a signal or a constant, which makes `OnPush` safe here.",
           "codeTs": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\nimport { USERS } from './users.data';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n  readonly currentPage = signal(0);\n\n  readonly totalPages = computed(() => Math.ceil(this.users.length / this.pageSize) || 1);\n\n  readonly pagedUsers = computed(() => {\n    const start = this.currentPage() * this.pageSize;\n    const end = start + this.pageSize;\n    return this.users.slice(start, end);\n  });\n\n  readonly isFirstPage = computed(() => this.currentPage() === 0);\n  readonly isLastPage = computed(() => this.currentPage() >= this.totalPages() - 1);\n\n  goToPrevious(): void {\n    if (!this.isFirstPage()) {\n      this.currentPage.update((page) => page - 1);\n    }\n  }\n\n  goToNext(): void {\n    if (!this.isLastPage()) {\n      this.currentPage.update((page) => page + 1);\n    }\n  }\n}\n"
         }
       ],
@@ -1114,7 +1114,7 @@
           {
             "type": "expectText",
             "selector": ".pagination span",
-            "text": "1",
+            "text": "Page 1 of 4",
             "match": "contains"
           },
           {
@@ -1125,7 +1125,7 @@
           {
             "type": "waitForText",
             "selector": ".pagination span",
-            "text": "2",
+            "text": "Page 2 of 4",
             "match": "contains"
           }
         ]
@@ -1700,43 +1700,47 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding. Angular focus: a controlled rating component that the parent binds with `[(rating)]`, written with `input()` and `model()`.",
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating with the mouse or the arrow keys, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding. Angular focus: a controlled rating component that the parent binds with `[(rating)]`, written with `input()` and `model()`.",
       "specs": {
         "requirements": [
           "Create a standalone `StarRatingComponent` that renders a row of stars.",
           "Support a configurable maximum number of stars through a `max` input (default 5).",
           "Accept the current rating as a `rating` input so the parent controls the value.",
           "Emit `ratingChange` with the new value when the user selects a rating, so the parent can bind `[(rating)]`.",
+          "Make the stars a radio group: `role=\"radio\"` and `aria-checked` on each star, one Tab stop for the whole group, and the arrow keys to change the rating.",
           "Use the widget from a simple `AppComponent` and show the current rating below it."
         ],
         "expectedBehavior": [
           "Stars render from 1 up to the configured `max` (e.g. 5).",
           "Clicking a star sets the rating to that star index (e.g. clicking the 4th star sets rating to 4).",
           "All stars with index less than or equal to the rating appear visually \"filled\".",
-          "The parent component sees the updated rating value (e.g. via `[(rating)]` or an output event)."
+          "The parent component sees the updated rating value (e.g. via `[(rating)]` or an output event).",
+          "With a star focused, Right or Down checks the next star and moves focus to it, and Left or Up the previous one; from the last star Right goes to the first, and from the first Left goes to the last.",
+          "Tab reaches the rating once, on the checked star, or on the first star before anything is rated."
         ],
         "implementationNotes": [
           "Use `@for` in the star-rating template to loop over an array of star indices.",
           "The recommended form is `max = input(5)` and `rating = model(0)`: a model is an input the child can also set, and setting it emits `ratingChange`. The starter's `@Input()` fields with an `@Output()` emitter work as well when `onRate` assigns the rating and emits it.",
           "Use class binding (`[class.filled]`) to fill every star up to the current rating.",
           "Derive the star values (`[1, 2, 3, 4, 5]` for a `max` of 5) in one place: `computed` over `max()` with signals, or the starter's `stars` getter with plain fields.",
-          "Add basic ARIA attributes (e.g. `role=\"radiogroup\"`, `aria-label`) for accessibility."
+          "Follow the WAI-ARIA rating radio group: `role=\"radiogroup\"` with a label on the container, `role=\"radio\"` and `aria-checked` on each star (true only for the selected one), `tabindex=\"0\"` on the checked star or on the first star before any rating, and `tabindex=\"-1\"` on the rest. `aria-pressed` would turn every filled star into a pressed toggle button.",
+          "Handle the arrow keys in a `keydown` listener on each star: call `preventDefault()` so the page does not scroll, set the rating, and move focus to the star you checked. `viewChildren` gives the component its star buttons."
         ],
         "techFocus": [
           "Standalone child components",
           "Signal inputs and `model()` for parent–child two-way binding",
           "Template loops and class binding",
-          "Simple, accessible UI widgets"
+          "A keyboard-operable radio group with a roving tabindex"
         ]
       }
     },
     "solutionBlock": {
-      "overview": "This exercise builds a reusable star rating control whose value belongs to the parent. `StarRatingComponent` reads its scale from a signal input, `max = input(5)`, and its value from a model, `rating = model(0)`. A model is an input that the child can also write: `rating.set(value)` changes the value the child renders and emits `ratingChange`, the event that Angular's `[(rating)]` syntax listens to. `AppComponent` keeps the value in `currentRating = signal(0)` and binds `[(rating)]=\"currentRating\"`, so a click on a star updates the parent's signal and the hint below the widget.\n\n**Test cases**\n- Initial state: rating is `0` → no stars are filled.\n- Click the 3rd star → rating becomes `3` and three stars appear filled.\n- Click the 5th star → rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating.set(2)`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.",
+      "overview": "This exercise builds a reusable star rating control whose value belongs to the parent. `StarRatingComponent` reads its scale from a signal input, `max = input(5)`, and its value from a model, `rating = model(0)`. A model is an input that the child can also write: `rating.set(value)` changes the value the child renders and emits `ratingChange`, the event that Angular's `[(rating)]` syntax listens to. `AppComponent` keeps the value in `currentRating = signal(0)` and binds `[(rating)]=\"currentRating\"`, so a click on a star updates the parent's signal and the hint below the widget. The stars form a radio group: each is a `role=\"radio\"` button whose `aria-checked` is true only for the selected star, one star at a time is in the Tab order, and the arrow keys move the rating the way they move any radio group.\n\n**Test cases**\n- Initial state: rating is `0` → no stars are filled.\n- Click the 3rd star → rating becomes `3` and three stars appear filled.\n- Click the 5th star → rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating.set(2)`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.\n- Focus the 2nd star and press Right → rating becomes `3` and focus moves to the 3rd star.\n- Press Left on the 1st star → rating becomes `5` and focus moves to the 5th star.\n- Before any rating, only the 1st star has `tabindex=\"0\"`; after a rating, only the checked star has it.",
       "approaches": [
         {
           "title": "Child component with a signal input and a `rating` model",
-          "prose": "Keep the stars in `StarRatingComponent` and the value in `AppComponent`.\n\n1. Declare `max = input(5)` and `rating = model(0)` in the child. Its template reads them as `max()` and `rating()`.\n2. Derive `stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1))`. The `[1, 2, …, max]` array is rebuilt only when `max` changes, where a getter builds a new one on every change detection pass. The template loops with `@for (star of stars(); track star)`; each value is unique, so it also serves as the track key.\n3. Each button binds `[class.filled]=\"star <= rating()\"`, `[attr.aria-pressed]=\"star <= rating()\"` and an `aria-label` such as \"3 out of 5\".\n4. `onRate(star)` returns early for values outside `1..max`, then calls `rating.set(value)`. That one call updates the child and emits `ratingChange` with the new value, so the child declares no separate output.\n5. `AppComponent` holds `currentRating = signal(0)` and binds `[(rating)]=\"currentRating\"`, passing the signal without parentheses. Angular reads it for the `rating` input and calls `currentRating.set(...)` when `ratingChange` fires. The hint shows `{{ currentRating() }}`.\n\nBoth components use `OnPush`. The child's bindings read `rating()` and `max()`, and the parent's hint reads `currentRating()`, so a change to any of them marks the view that reads it for checking. One difference from the `@Input()`/`@Output()` version: a model emits only when its value changes, so clicking the star that is already selected sends no `ratingChange`, while the `EventEmitter` version emitted the same value again.",
-          "codeTs": "// src/app/star-rating.component.ts\nimport { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';\n\n@Component({\n  selector: 'app-star-rating',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  readonly max = input(5);\n  readonly rating = model(0);\n  readonly stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max()) {\n      return;\n    }\n    // Setting a model also emits ratingChange, the event [(rating)] in the parent listens to.\n    this.rating.set(value);\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly currentRating = signal(0);\n}\n"
+          "prose": "Keep the stars in `StarRatingComponent` and the value in `AppComponent`.\n\n1. Declare `max = input(5)` and `rating = model(0)` in the child. Its template reads them as `max()` and `rating()`.\n2. Derive `stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1))`. The `[1, 2, …, max]` array is rebuilt only when `max` changes, where a getter builds a new one on every change detection pass. The template loops with `@for (star of stars(); track star)`; each value is unique, so it also serves as the track key.\n3. Each button is a `role=\"radio\"` that binds `[class.filled]=\"star <= rating()\"`, `[attr.aria-checked]=\"star === rating()\"` and an `aria-label` such as \"3 out of 5\". Exactly one star is checked. `aria-pressed` would make every star a toggle button, so a rating of 3 would be read as three pressed buttons.\n4. `onRate(star)` returns early for values outside `1..max`, then calls `rating.set(value)`. That one call updates the child and emits `ratingChange` with the new value, so the child declares no separate output.\n5. `tabStop` is computed from the rating: the checked star, or the first star while the rating is 0. Each button binds `[attr.tabindex]=\"star === tabStop() ? 0 : -1\"`, so Tab enters the group once and leaves it with the next press.\n6. `onKeydown(event, star)` looks the key up in `ARROW_STEPS`, +1 for Right and Down and -1 for Left and Up, and ignores other keys. It calls `preventDefault()` so the page does not scroll, wraps past either end with `((star - 1 + step + count) % count) + 1`, sets the rating through `onRate`, and focuses the new star through `starButtons = viewChildren<ElementRef<HTMLButtonElement>>('starButton')`. Space and Enter need no handler: they click the focused button.\n7. `AppComponent` holds `currentRating = signal(0)` and binds `[(rating)]=\"currentRating\"`, passing the signal without parentheses. Angular reads it for the `rating` input and calls `currentRating.set(...)` when `ratingChange` fires. The hint shows `{{ currentRating() }}`.\n\nBoth components use `OnPush`. The child's bindings read `rating()` and `max()`, and the parent's hint reads `currentRating()`, so a change to any of them marks the view that reads it for checking. One difference from the `@Input()`/`@Output()` version: a model emits only when its value changes, so clicking the star that is already selected sends no `ratingChange`, while the `EventEmitter` version emitted the same value again.",
+          "codeTs": "// src/app/star-rating.component.ts\nimport { ChangeDetectionStrategy, Component, ElementRef, computed, input, model, viewChildren } from '@angular/core';\n\n// The arrow keys move through the stars the way they move through any radio group.\nconst ARROW_STEPS: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };\n\n@Component({\n  selector: 'app-star-rating',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  readonly max = input(5);\n  readonly rating = model(0);\n  readonly stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));\n  // A radio group is one Tab stop: the checked star, or the first star before anything is rated.\n  readonly tabStop = computed(() => (this.rating() > 0 ? this.rating() : 1));\n\n  private readonly starButtons = viewChildren<ElementRef<HTMLButtonElement>>('starButton');\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max()) {\n      return;\n    }\n    // Setting a model also emits ratingChange, the event [(rating)] in the parent listens to.\n    this.rating.set(value);\n  }\n\n  onKeydown(event: KeyboardEvent, star: number): void {\n    const step = ARROW_STEPS[event.key];\n    if (!step) {\n      return;\n    }\n    // The arrows would otherwise scroll the page.\n    event.preventDefault();\n    const count = this.max();\n    const next = ((star - 1 + step + count) % count) + 1;\n    this.onRate(next);\n    this.starButtons()[next - 1]?.nativeElement.focus();\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly currentRating = signal(0);\n}\n"
         }
       ],
       "notes": {
@@ -1745,14 +1749,18 @@
           "Writing `[(rating)]=\"currentRating()\"`: a two-way binding has to write back, so it takes the signal itself, and Angular rejects the call with \"Unsupported expression in a two-way binding\".",
           "Assigning `this.rating = value` out of habit from the decorator version: the field holds a model, so the value goes through `this.rating.set(value)`, which is also what emits `ratingChange`.",
           "Keeping a second copy of the rating in the child: the model already is the child's value, and a copy goes stale when the parent sets a new rating.",
-          "Not visually differentiating filled vs empty stars, making the rating unclear."
+          "Not visually differentiating filled vs empty stars, making the rating unclear.",
+          "Putting `aria-pressed` on every filled star: it describes toggle buttons, so a rating of 3 is announced as three pressed buttons instead of one checked choice.",
+          "Leaving every star in the Tab order: a radio group is one Tab stop, and the arrow keys move inside it."
         ],
         "techniques": [
           "Declaring a two-way bindable value with `model()`, which creates the `rating` input and the `ratingChange` output together.",
           "Reading configuration through a signal input with a default, `max = input(5)`.",
           "Deriving the star list with `computed` instead of a getter.",
           "Binding a parent signal two-way with `[(rating)]=\"currentRating\"`.",
-          "Building a focused, reusable standalone component that can be dropped into other views."
+          "Building a focused, reusable standalone component that can be dropped into other views.",
+          "The WAI-ARIA radio group pattern: `role=\"radio\"` with `aria-checked`, a roving `tabindex`, and arrow keys that wrap at the ends.",
+          "Focusing the newly checked star through a `viewChildren` signal query."
         ]
       }
     },
@@ -1789,7 +1797,128 @@
     "seo": {
       "title": "Build Reusable Star Rating in Angular",
       "description": "Create a star rating component that supports selection, configurable limits, and parent value updates."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "star-rating-click",
+        "name": "Clicking a star sets the rating",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".star",
+            "count": 5
+          },
+          {
+            "type": "expectCount",
+            "selector": ".star.filled",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".star",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 4",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".star.filled",
+            "count": 4
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 3,
+            "attribute": "aria-checked",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 2,
+            "attribute": "aria-checked",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "star-rating-keyboard",
+        "name": "Arrow keys move the rating like a radio group",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 0,
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 1,
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "click",
+            "selector": ".star",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "selector": ".star",
+            "index": 1,
+            "key": "ArrowRight"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 3",
+            "match": "contains"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".star",
+            "index": 2
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 2,
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".star",
+            "index": 1,
+            "attribute": "tabindex",
+            "expected": "-1"
+          },
+          {
+            "type": "key",
+            "selector": ".star",
+            "index": 0,
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".hint",
+            "text": "Current rating: 5",
+            "match": "contains"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".star",
+            "index": 4
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "angular-dynamic-table-starter",
@@ -2717,8 +2846,9 @@
           "Use a tree structure: Comment = { id, text, children: Comment[] }.",
           "Holding the tree in a signal is the recommended approach. A reply then replaces the nodes on the path to its parent instead of being pushed into a nested `children` array, so the signal receives a new tree.",
           "Track which comment is currently being replied to using `activeReplyId` (or similar).",
+          "Clicking Reply on the comment whose box is already open closes it: compare the stored id with the clicked one and store `null` when they match.",
           "Use a single `replyDraft` string bound to the active reply input.",
-          "Render recursively using an `ng-template` and `ngTemplateOutlet`."
+          "Render recursively using an `ng-template` and `ngTemplateOutlet`. Replies render inside their parent, so a fixed left margin on the replies' wrapper adds up level by level; a margin of `depth * 16` on each node would add up a second time."
         ],
         "techFocus": [
           "Standalone component",
@@ -2730,13 +2860,13 @@
       }
     },
     "solutionBlock": {
-      "overview": "The comments form a tree of `{ id, text, children }` nodes held in one signal, `comments`. Three more signals carry the UI state: `topDraft` for the textarea, and `activeReplyId` with `replyDraft` for the single reply box, so only the comment whose id equals `activeReplyId()` shows an input. Adding a top-level comment puts a new node at the front of the array. Posting a reply rebuilds only the path from the top level down to the parent and appends the reply to the parent's copied `children`. The template renders the tree recursively: an `ng-template` lists one level with `@for`, passes each node's children and `depth + 1` back to itself through `ngTemplateOutlet`, and turns `depth` into the left margin.\n\n**Test cases**\n- Add a top-level comment → it appears in the list.\n- Click Reply on comment A → reply input appears only under A.\n- Click Reply on comment B → input moves to B; A’s input disappears.\n- Submit a reply under A → reply is added to A.children.\n- Reply to a reply (depth 2+) → nested indentation increases and tree stays correct.",
+      "overview": "The comments form a tree of `{ id, text, children }` nodes held in one signal, `comments`. Three more signals carry the UI state: `topDraft` for the textarea, and `activeReplyId` with `replyDraft` for the single reply box, so only the comment whose id equals `activeReplyId()` shows an input, and Reply on that same comment closes it. Adding a top-level comment puts a new node at the front of the array. Posting a reply rebuilds only the path from the top level down to the parent and appends the reply to the parent's copied `children`. The template renders the tree recursively: an `ng-template` lists one level with `@for` and passes each node's children back to itself through `ngTemplateOutlet`, inside a `.children` wrapper with a 16px left margin. The wrappers nest, so each level sits 16px further in.\n\n**Test cases**\n- Add a top-level comment → it appears in the list.\n- Click Reply on comment A → reply input appears only under A.\n- Click Reply on comment B → input moves to B; A’s input disappears.\n- Click Reply on B again → B’s input closes.\n- Submit a reply under A → reply is added to A.children.\n- Reply to a reply (depth 2+) → nested indentation increases and tree stays correct.",
       "approaches": [
         {
           "title": "Tree signal with path-copying reply inserts and a recursive template",
           "decisionGraphKey": "approach1",
-          "prose": "Keep everything in `AppComponent`.\n\n1. `comments = signal<CommentNode[]>([])` holds the tree. `topDraft`, `activeReplyId` and `replyDraft` are signals too. The textarea and the reply input keep `[(ngModel)]=\"topDraft\"` and `[(ngModel)]=\"replyDraft\"`, which read and write a signal directly.\n2. `addTop()` trims `topDraft()`, returns on empty text, and calls `comments.update((comments) => [comment, ...comments])`, so the newest top-level comment comes first. `topDraft.set('')` then clears the textarea.\n3. `openReply(id)` sets `activeReplyId` and empties `replyDraft`. One stored id means one open box: opening another comment's box closes the previous one. `cancelReply()` resets both signals.\n4. `submitReply(parentId)` trims the draft, builds the reply node and calls `comments.update((comments) => this.withReply(comments, parentId, reply))`. `withReply` maps one level of the tree: the parent becomes a copy with `[...node.children, reply]`, an ancestor becomes a copy with its rebuilt `children`, and any other node comes back as the same object. A level where nothing changed returns its original array, which is how the recursion tells an ancestor from an unrelated branch.\n5. The template starts the recursion with `*ngTemplateOutlet` and the context `{ $implicit: comments(), depth: 0 }`. Inside `treeTpl`, `@for (comment of nodes; track comment.id)` renders one level, `@if (activeReplyId() === comment.id)` shows the reply box, and a nested `ngTemplateOutlet` passes `comment.children` and `depth + 1`. The component imports `NgTemplateOutlet` on its own instead of `CommonModule`.\n\nThe starter's `findById` suggests finding the parent and calling `parent.children.push(...)`. This template would still repaint after that, because the Post click marks the view for checking. But `comments()` would return the same array, and a signal treats the same reference as no change: a `computed` over the tree, such as a reply count, would keep its old value, and a reply added outside a template event, for example when a save request answers, would never reach the `OnPush` view. Copying only the path gives the signal a new root array while every untouched subtree keeps its object.",
-          "codeTs": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { NgTemplateOutlet } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [NgTemplateOutlet, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly comments = signal<CommentNode[]>([]);\n\n  readonly topDraft = signal('');\n\n  readonly activeReplyId = signal<string | null>(null);\n  readonly replyDraft = signal('');\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft().trim();\n    if (!text) return;\n\n    const comment: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => [comment, ...comments]);\n    this.topDraft.set('');\n  }\n\n  openReply(id: string): void {\n    this.activeReplyId.set(id);\n    this.replyDraft.set('');\n  }\n\n  cancelReply(): void {\n    this.activeReplyId.set(null);\n    this.replyDraft.set('');\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft().trim();\n    if (!text) return;\n\n    const reply: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => this.withReply(comments, parentId, reply));\n    this.cancelReply();\n  }\n\n  // Copy only the path to the parent: the signal gets a new root array, and other subtrees stay the same objects.\n  private withReply(nodes: CommentNode[], parentId: string, reply: CommentNode): CommentNode[] {\n    let changed = false;\n    const next = nodes.map((node) => {\n      const children = node.id === parentId\n        ? [...node.children, reply]\n        : this.withReply(node.children, parentId, reply);\n      if (children === node.children) return node;\n      changed = true;\n      return { ...node, children };\n    });\n    return changed ? next : nodes;\n  }\n}\n"
+          "prose": "Keep everything in `AppComponent`.\n\n1. `comments = signal<CommentNode[]>([])` holds the tree. `topDraft`, `activeReplyId` and `replyDraft` are signals too. The textarea and the reply input keep `[(ngModel)]=\"topDraft\"` and `[(ngModel)]=\"replyDraft\"`, which read and write a signal directly.\n2. `addTop()` trims `topDraft()`, returns on empty text, and calls `comments.update((comments) => [comment, ...comments])`, so the newest top-level comment comes first. `topDraft.set('')` then clears the textarea.\n3. `toggleReply(id)` calls `activeReplyId.update((active) => (active === id ? null : id))` and empties `replyDraft`. One stored id means one open box: opening another comment's box closes the previous one, and Reply on the comment whose box is open stores `null` and closes it. The Reply button binds `[attr.aria-expanded]`, so a screen reader hears whether its box is open. `cancelReply()` resets both signals.\n4. `submitReply(parentId)` trims the draft, builds the reply node and calls `comments.update((comments) => this.withReply(comments, parentId, reply))`. `withReply` maps one level of the tree: the parent becomes a copy with `[...node.children, reply]`, an ancestor becomes a copy with its rebuilt `children`, and any other node comes back as the same object. A level where nothing changed returns its original array, which is how the recursion tells an ancestor from an unrelated branch.\n5. The template starts the recursion with `*ngTemplateOutlet` and the context `{ $implicit: comments() }`. Inside `treeTpl`, `@for (comment of nodes; track comment.id)` renders one level, `@if (activeReplyId() === comment.id)` shows the reply box, and a nested `ngTemplateOutlet` passes `comment.children` inside a `<div class=\"children\">`. That wrapper has `margin-left: 16px`, and each level renders inside its parent's node, so the margins add up to 16px per level without a depth counter. A margin of `depth * 16` on each node would count the parent's offset twice: 16, 48, 96 and 160px for the first four levels. The component imports `NgTemplateOutlet` on its own instead of `CommonModule`.\n\nThe starter's `findById` suggests finding the parent and calling `parent.children.push(...)`. This template would still repaint after that, because the Post click marks the view for checking. But `comments()` would return the same array, and a signal treats the same reference as no change: a `computed` over the tree, such as a reply count, would keep its old value, and a reply added outside a template event, for example when a save request answers, would never reach the `OnPush` view. Copying only the path gives the signal a new root array while every untouched subtree keeps its object.",
+          "codeTs": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { NgTemplateOutlet } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [NgTemplateOutlet, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly comments = signal<CommentNode[]>([]);\n\n  readonly topDraft = signal('');\n\n  readonly activeReplyId = signal<string | null>(null);\n  readonly replyDraft = signal('');\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft().trim();\n    if (!text) return;\n\n    const comment: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => [comment, ...comments]);\n    this.topDraft.set('');\n  }\n\n  // Reply on the comment whose box is open closes it; on any other comment it moves the one box there.\n  toggleReply(id: string): void {\n    this.activeReplyId.update((active) => (active === id ? null : id));\n    this.replyDraft.set('');\n  }\n\n  cancelReply(): void {\n    this.activeReplyId.set(null);\n    this.replyDraft.set('');\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft().trim();\n    if (!text) return;\n\n    const reply: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => this.withReply(comments, parentId, reply));\n    this.cancelReply();\n  }\n\n  // Copy only the path to the parent: the signal gets a new root array, and other subtrees stay the same objects.\n  private withReply(nodes: CommentNode[], parentId: string, reply: CommentNode): CommentNode[] {\n    let changed = false;\n    const next = nodes.map((node) => {\n      const children = node.id === parentId\n        ? [...node.children, reply]\n        : this.withReply(node.children, parentId, reply);\n      if (children === node.children) return node;\n      changed = true;\n      return { ...node, children };\n    });\n    return changed ? next : nodes;\n  }\n}\n"
         }
       ],
       "notes": {
@@ -2745,7 +2875,9 @@
           "Attaching the reply to the wrong branch because the parent lookup compares the wrong id.",
           "Trying to recurse without a template outlet: `AppComponent` holds the whole page and its state, so the tree needs a self-calling `ng-template` like `treeTpl` or a separate comment component that renders its own children.",
           "Pushing the reply into `parent.children`: the click still repaints this template, but `comments()` returns the same array, so a `computed` over the tree or a reply added outside a template event never sees it.",
-          "Copying every node on each reply instead of only the path to the parent: the tree renders the same, but every object in it changes for one new reply."
+          "Copying every node on each reply instead of only the path to the parent: the tree renders the same, but every object in it changes for one new reply.",
+          "Setting the open id on every Reply click: the box can then only be closed with Cancel, although Reply is expected to toggle it.",
+          "Indenting each node by `depth * 16` while its replies render inside it: the parent's margin is counted again at every level, so deep replies drift right much faster than one step per level."
         ],
         "techniques": [
           "Tree state in a signal with a recursive, path-copying insert (`withReply`).",
@@ -2789,6 +2921,47 @@
             "selector": ".list",
             "text": "This is a new comment",
             "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "comments-reply-toggles",
+        "name": "Reply opens one box and closes it on a second click",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".composer textarea",
+            "value": "Parent comment"
+          },
+          {
+            "type": "click",
+            "selector": ".composer button"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".list",
+            "text": "Parent comment",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".node .meta button",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".reply",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".node .meta button",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".reply",
+            "count": 0
           }
         ]
       }
@@ -3031,7 +3204,7 @@
       "specs": {
         "requirements": [
           "Render an N×N chessboard with alternating light/dark squares.",
-          "Add a numeric size input and clamp size between 2 and 20.",
+          "Add a numeric size input, apply it when the field changes (Enter, blur or the arrows) rather than on every keystroke, and clamp the size between 2 and 20.",
           "Clicking a cell highlights it and removes highlight from the previously selected cell.",
           "Show selected cell coordinates (row/column) in a status region.",
           "Keep keyboard focus visibility and proper grid semantics."
@@ -3039,6 +3212,7 @@
         "expectedBehavior": [
           "Initial board renders at size 8×8.",
           "Changing board size updates the grid and clears previous selection.",
+          "Typing 12 and pressing Enter gives a 12×12 board. A size outside 2–20 is clamped, and the field then shows the clamped number.",
           "Clicking one cell activates only that cell.",
           "Status text updates to the selected row/column.",
           "If nothing is selected, status shows no selection."
@@ -3046,6 +3220,7 @@
         "implementationNotes": [
           "Use standalone component state for `size` and `selectedKey`. Holding both in signals (`signal(8)` and `signal<string | null>(null)`) is the recommended form, because the grid and the status text can then be `computed` from them.",
           "Compute rows/columns from the current size.",
+          "Handle `(change)` rather than `(input)`: clamping on every keystroke turns the 1 of 12 into 2, so sizes 10–19 could never be typed. Write the clamped number back into the field yourself, because `[value]` only updates it when the size changes.",
           "Use class binding for dark, light, and active styles.",
           "Keep logic deterministic and avoid external libraries."
         ],
@@ -3057,20 +3232,21 @@
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in app.component.ts: clamp size input (2..20), reset selection when size changes, and activate only the clicked cell.",
+    "starterCodeHint": "Implement TODOs in app.component.ts: apply the size on change, clamp it to 2..20 and show the clamped value in the field, reset the selection when the size changes, and activate only the clicked cell.",
     "solutionBlock": {
-      "overview": "The board has two pieces of state: its size and the selected cell. The solution holds them in signals, `size = signal(8)` and `selectedKey = signal<string | null>(null)`, and computes the row indexes and the status line from them. `onSizeInput()` converts the field's text, ignores results that are not finite numbers, truncates and clamps the size to 2–20, and clears the selection. `onCellClick(row, col)` stores the key `row-col`, so only one cell can match it. Each cell gets its classes from `cellClass(row, col)`, which picks the light or dark square and adds `cell--active` when the cell's key equals `selectedKey()`.",
+      "overview": "The board has two pieces of state: its size and the selected cell. The solution holds them in signals, `size = signal(8)` and `selectedKey = signal<string | null>(null)`, and computes the row indexes and the status line from them. `onSizeChange()` runs when the field changes, not on every keystroke, so two-digit sizes can be typed. It converts the field's text, keeps the current size when the field is empty or not a number, truncates and clamps the size to 2–20, writes the result back into the field, and clears the selection when the size changed. `onCellClick(row, col)` stores the key `row-col`, so only one cell can match it. Each cell gets its classes from `cellClass(row, col)`, which picks the light or dark square and adds `cell--active` when the cell's key equals `selectedKey()`.",
       "approaches": [
         {
           "title": "Size and selected-key signals with computed rows and status",
           "decisionGraphKey": "approach1",
-          "prose": "Keep the board in `AppComponent`.\n\n1. `size = signal(8)` and `selectedKey = signal<string | null>(null)` are the state. `minSize` and `maxSize` never change, so they stay plain `readonly` fields.\n2. `rows = computed(() => Array.from({ length: this.size() }, (_, index) => index))` builds the index list once per size. The template uses it for both loops, `@for (row of rows(); track row)` and `@for (col of rows(); track col)`, and sets the column count with `[style.gridTemplateColumns]` from `size()`.\n3. `selectedLabel` is computed from `selectedKey()`: `Selected: none`, or the row and column stored in the key, counted from 1.\n4. `onSizeInput(raw)` converts the text with `Number`, returns early when the result is not finite, truncates and clamps it between `minSize` and `maxSize`, then calls `size.set(...)` and `selectedKey.set(null)`, so a resize never keeps a selection from the old board.\n5. `onCellClick(row, col)` calls `selectedKey.set(this.cellKey(row, col))`. With a single key there is a single highlighted cell: the previous one loses `cell--active` because its key no longer matches.\n6. `cellClass(row, col)` and the `[attr.aria-pressed]` binding compare a cell's key with `selectedKey()`. A `computed` takes no arguments, so the per-cell check stays a method. Angular still tracks the `selectedKey()` read inside it, because the call runs while the template renders.\n\nEvery value the template reads comes from `size` or `selectedKey`, so the component runs with `OnPush`. When the size changes, `rows` returns a new array and `track row` keeps the DOM of the rows that remain, adding or removing rows and cells at the end.",
-          "codeTs": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly minSize = 2;\n  readonly maxSize = 20;\n\n  readonly size = signal(8);\n  readonly selectedKey = signal<string | null>(null);\n\n  readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));\n  readonly selectedLabel = computed(() => {\n    const key = this.selectedKey();\n    if (!key) return 'Selected: none';\n    const [row, col] = key.split('-').map(Number);\n    return 'Selected: row ' + String(row + 1) + ', column ' + String(col + 1);\n  });\n\n  onSizeInput(raw: string): void {\n    const next = Number(raw);\n    if (!Number.isFinite(next)) return;\n    const clamped = Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)));\n    this.size.set(clamped);\n    this.selectedKey.set(null);\n  }\n\n  onCellClick(row: number, col: number): void {\n    this.selectedKey.set(this.cellKey(row, col));\n  }\n\n  cellKey(row: number, col: number): string {\n    return String(row) + '-' + String(col);\n  }\n\n  // Per cell, so a method rather than a computed; Angular still tracks the selectedKey() read.\n  cellClass(row: number, col: number): string {\n    const dark = (row + col) % 2 === 1;\n    const active = this.selectedKey() === this.cellKey(row, col);\n    return 'cell ' + (dark ? 'cell--dark' : 'cell--light') + (active ? ' cell--active' : '');\n  }\n}\n"
+          "prose": "Keep the board in `AppComponent`.\n\n1. `size = signal(8)` and `selectedKey = signal<string | null>(null)` are the state. `minSize` and `maxSize` never change, so they stay plain `readonly` fields.\n2. `rows = computed(() => Array.from({ length: this.size() }, (_, index) => index))` builds the index list once per size. The template uses it for both loops, `@for (row of rows(); track row)` and `@for (col of rows(); track col)`, and sets the column count with `[style.gridTemplateColumns]` from `size()`.\n3. `selectedLabel` is computed from `selectedKey()`: `Selected: none`, or the row and column stored in the key, counted from 1.\n4. The field binds `(change)=\"onSizeChange(sizeInput)\"`. `change` fires on Enter, on blur and on the arrows rather than on each key, so typing 12 passes through 1 without shrinking the board to 2. `onSizeChange(input)` converts the text with `Number`, keeps the current size when the field is empty or not a number, truncates and clamps the result between `minSize` and `maxSize`, and writes it back with `input.value = String(size)`: `[value]=\"size()\"` updates the field only when the size changes, so 30 typed on a 20 by 20 board would otherwise stay on screen. When the size did change, it calls `size.set(size)` and `selectedKey.set(null)`, so a resize never keeps a selection from the old board.\n5. `onCellClick(row, col)` calls `selectedKey.set(this.cellKey(row, col))`. With a single key there is a single highlighted cell: the previous one loses `cell--active` because its key no longer matches.\n6. `cellClass(row, col)` and the `[attr.aria-pressed]` binding compare a cell's key with `selectedKey()`. A `computed` takes no arguments, so the per-cell check stays a method. Angular still tracks the `selectedKey()` read inside it, because the call runs while the template renders.\n\nEvery value the template reads comes from `size` or `selectedKey`, so the component runs with `OnPush`. When the size changes, `rows` returns a new array and `track row` keeps the DOM of the rows that remain, adding or removing rows and cells at the end.",
+          "codeTs": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly minSize = 2;\n  readonly maxSize = 20;\n\n  readonly size = signal(8);\n  readonly selectedKey = signal<string | null>(null);\n\n  readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));\n  readonly selectedLabel = computed(() => {\n    const key = this.selectedKey();\n    if (!key) return 'Selected: none';\n    const [row, col] = key.split('-').map(Number);\n    return 'Selected: row ' + String(row + 1) + ', column ' + String(col + 1);\n  });\n\n  // Bound to (change), which fires on Enter, on blur and on the arrows, so 12 can be typed through 1.\n  onSizeChange(input: HTMLInputElement): void {\n    const raw = input.value.trim();\n    const next = raw === '' ? Number.NaN : Number(raw);\n    const size = Number.isFinite(next)\n      ? Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)))\n      : this.size();\n    // [value] writes the field only when size() changes, so a value clamped to the current size is put back here.\n    input.value = String(size);\n    if (size === this.size()) return;\n    this.size.set(size);\n    this.selectedKey.set(null);\n  }\n\n  onCellClick(row: number, col: number): void {\n    this.selectedKey.set(this.cellKey(row, col));\n  }\n\n  cellKey(row: number, col: number): string {\n    return String(row) + '-' + String(col);\n  }\n\n  // Per cell, so a method rather than a computed; Angular still tracks the selectedKey() read.\n  cellClass(row: number, col: number): string {\n    const dark = (row + col) % 2 === 1;\n    const active = this.selectedKey() === this.cellKey(row, col);\n    return 'cell ' + (dark ? 'cell--dark' : 'cell--light') + (active ? ' cell--active' : '');\n  }\n}\n"
         }
       ],
       "notes": {
         "pitfalls": [
           "Not clamping board size can break layout and state assumptions.",
+          "Clamping on every `input` event: the first digit of 12 is applied alone and rewritten to 2, so sizes 10–19 can never be typed.",
           "Tracking selection by array index alone becomes brittle after size changes.",
           "Forgetting to clear selection on resize can leave stale coordinates.",
           "Comparing `selectedKey` instead of `selectedKey()` with a cell key, in `cellClass` or in the `aria-pressed` binding: the signal function never equals a string, so no cell is ever highlighted."
@@ -3101,7 +3277,130 @@
     "seo": {
       "title": "Build Interactive N x N Chessboard in Angular",
       "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "chessboard-size-clamps",
+        "name": "Board size applies on change and clamps to 2–20",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".board .cell",
+            "count": 64
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "12"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 144
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "25"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 400
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "30"
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "1"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 4
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "2"
+          }
+        ]
+      },
+      {
+        "id": "chessboard-single-highlight",
+        "name": "Clicking a cell highlights only that cell",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 1, column 1",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 9
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 2, column 2",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "10"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cell--active",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "angular-snake-game",

@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "dc02e4668f82b304a1af8af0f613268dd5d5dca0475f200267ad4e02eb24962f"
+      "sha256": "c1cead53e0630f0e7144647b40fad3a8763e07bf21cc26e8589433b3cbf7f77a"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "edb016b3fe2b9e91197b63701594c1ca787fe3b391175ba19ccb354117c87a45"
+      "sha256": "9b1719d609bc96507d006bbc0f0187135a275c8631b305a1d482fa9087810796"
     }
   },
-  "contentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
-  "definitionHash": "cd0a97b7c0d8a0849826e7c3bb1ca58ecf14835a6140ee2e425c5fd369c3d155",
+  "contentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
+  "definitionHash": "08b38f082fc90a48613d9f20dfaab66ff727c3b3ae0776d6efda33477ec55f8a",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -30,13 +30,14 @@
       "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-10 source-pin maintenance: registryContentHash refreshed after the react-counter source question's requirements named the Reset button its check already presses, and its expected behavior says the minus button is disabled at 0, as the check already asserts. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after nine Angular source questions (pagination, debounced search, progress thresholds, filterable user list, theme toggle, nested checkboxes, contact form, nested comments, transfer list) dropped a stock closing sentence from their summaries, \"Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.\", which named APIs most of these tasks do not use. The summary is the variant prompt, so those nine public prompts lose that sentence; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after the fifteen pinned Angular source questions had their official solutions rewritten with signals (solution assets, Solution-tab text, decision graphs, of which eight are new, implementation notes and update dates), with behavior checked step by step against the previous solutions. The registry reads none of those fields. Four summaries changed with the rewrite (counter, progress thresholds, filterable user list, contact form), and the summary is the variant prompt, so those four public prompts now describe signal state, computed derivation and registering provideHttpClient() in src/main.ts instead of a component property, a getter or pipe, ngStyle/ngClass and a component-only setup; the fifteen sourceContentVersion dates move to 2026-11-11 with the catalog update dates; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after the fifteen pinned Angular source questions had their official solutions rewritten with signals (solution assets, Solution-tab text, decision graphs, of which eight are new, implementation notes and update dates), with behavior checked step by step against the previous solutions. The registry reads none of those fields. Four summaries changed with the rewrite (counter, progress thresholds, filterable user list, contact form), and the summary is the variant prompt, so those four public prompts now describe signal state, computed derivation and registering provideHttpClient() in src/main.ts instead of a component property, a getter or pipe, ngStyle/ngClass and a component-only setup; the fifteen sourceContentVersion dates move to 2026-11-11 with the catalog update dates; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to three pinned Angular source questions, approved by the project owner. Pagination: the starter and solution label now reads \"Page X of Y\", as the spec asks (it showed \"X / Y\"), the starter's users field loses a wrong empty-tuple type, and the check reads \"Page 1 of 4\" and \"Page 2 of 4\". Shopping cart: the empty-cart text says \"from above\", matching the one-column layout (starter and solution assets only). Nested comments: Reply toggles its box, as the expected behavior says; the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level instead of compounding, and a new check covers the toggle. Starter asset hashes are re-pinned for all three and question hashes for pagination and nested comments. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
+    "registryContentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
+  "registryContentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -87,13 +88,13 @@
       "revision": 1
     },
     {
-      "contentHash": "941de07931e267ccb65f2680c7f1cc6281a049a8c6a669553ccd4e02decf9c60",
+      "contentHash": "1f82a23e5394ad38cea2ee28b76852815ddff7a3aa7a91b0db5b9cc2c7e916b5",
       "enabled": true,
       "id": "int-code-angular-mid-pagination-v1",
       "revision": 1
     },
     {
-      "contentHash": "f2dc15c0ab16c3f6a3b428edbb760815bcbf71870a9938d0815af8b982ecb2d4",
+      "contentHash": "9a28ed82f28e33d60c94fdc1f41aa2b6ed1f29bc197545a306ee3073577c81d0",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "revision": 1
@@ -123,7 +124,7 @@
       "revision": 1
     },
     {
-      "contentHash": "9ec386353e5467e9e6dfe7fa324197b741f51eff193c8742248925dc0c7cae3d",
+      "contentHash": "813cae3c241da542c2755804a691e7c964155fcc2abc01daaf92bfacdbee7d4a",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "revision": 1

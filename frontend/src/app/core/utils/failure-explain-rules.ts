@@ -291,6 +291,107 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       confidence: 0.85,
     }),
   },
+  {
+    ruleId: 'angular-pagination-page-label',
+    questionId: 'angular-pagination-table',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['pagination moves to next page']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-pagination-page-label',
+      title: 'Show five rows and a "Page X of Y" label',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check counts five table rows, reads "Page 1 of 4" in the pagination label, clicks Next and then expects "Page 2 of 4".',
+      ),
+      actions: [
+        'Render the label as `Page {{ currentPage() + 1 }} of {{ totalPages() }}`; the page index itself stays 0-based.',
+        'Fill the table from a slice of `pageSize` users that starts at `currentPage() * pageSize`.',
+        'Compute `totalPages` with `Math.ceil(users.length / pageSize)`, so the 20 users give 4 pages.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-star-rating-radio-group',
+    questionId: 'angular-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Set the rating in `onRate`; with `rating = model(0)`, `rating.set(value)` also emits `ratingChange` for `[(rating)]`.',
+        'Bind `role="radio"` and `[attr.aria-checked]="star === rating()"` on each star, so exactly one is checked; `aria-pressed` on every filled star does not pass.',
+        'Give the checked star `tabindex="0"` (the first star while the rating is 0) and the rest `-1`.',
+        'In the keydown handler, map Right and Down to +1 and Left and Up to -1, wrap past either end, set the rating and call `focus()` on the star you checked.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-chessboard-size-on-change',
+    questionId: 'angular-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-chessboard-size-on-change',
+      title: 'Apply the size on change and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Bind `(change)` on the size field rather than `(input)`, so a two-digit size is applied once it is complete.',
+        'Clamp with `Math.max(minSize, Math.min(maxSize, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Write the clamped number back into the field: `[value]` only updates it when the size changes, so 30 on a 20 by 20 board would stay on screen.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-chessboard-single-selection',
+    questionId: 'angular-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onCellClick(row, col)`, store `cellKey(row, col)` in `selectedKey`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Set `selectedKey` back to `null` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'angular-nested-comments-reply-toggle',
+    questionId: 'angular-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, store `null` when `activeReplyId()` already equals `id`, and `id` otherwise: `activeReplyId.update((active) => (active === id ? null : id))`.',
+        'Render the box with `@if (activeReplyId() === comment.id)`, so one stored id means at most one open box.',
+        'Bind `[attr.aria-expanded]` on the Reply button to the same comparison.',
+      ],
+      confidence: 0.85,
+    }),
+  },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',

@@ -5,14 +5,14 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "// src/app/star-rating.component.ts\nimport { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';\n\n@Component({\n  selector: 'app-star-rating',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  readonly max = input(5);\n  readonly rating = model(0);\n  readonly stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max()) {\n      return;\n    }\n    // Setting a model also emits ratingChange, the event [(rating)] in the parent listens to.\n    this.rating.set(value);\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly currentRating = signal(0);\n}\n",
+      "code": "// src/app/star-rating.component.ts\nimport { ChangeDetectionStrategy, Component, ElementRef, computed, input, model, viewChildren } from '@angular/core';\n\n// The arrow keys move through the stars the way they move through any radio group.\nconst ARROW_STEPS: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };\n\n@Component({\n  selector: 'app-star-rating',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  readonly max = input(5);\n  readonly rating = model(0);\n  readonly stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));\n  // A radio group is one Tab stop: the checked star, or the first star before anything is rated.\n  readonly tabStop = computed(() => (this.rating() > 0 ? this.rating() : 1));\n\n  private readonly starButtons = viewChildren<ElementRef<HTMLButtonElement>>('starButton');\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max()) {\n      return;\n    }\n    // Setting a model also emits ratingChange, the event [(rating)] in the parent listens to.\n    this.rating.set(value);\n  }\n\n  onKeydown(event: KeyboardEvent, star: number): void {\n    const step = ARROW_STEPS[event.key];\n    if (!step) {\n      return;\n    }\n    // The arrows would otherwise scroll the page.\n    event.preventDefault();\n    const count = this.max();\n    const next = ((star - 1 + step + count) % count) + 1;\n    this.onRate(next);\n    this.starButtons()[next - 1]?.nativeElement.focus();\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly currentRating = signal(0);\n}\n",
       "nodes": [
         {
           "id": "d1-configurable-max-input",
           "title": "Read the scale from a signal input",
           "anchor": {
-            "lineStart": 11,
-            "lineEnd": 11,
+            "lineStart": 14,
+            "lineEnd": 14,
             "snippet": "readonly max = input(5);"
           },
           "why": "max is configuration a parent may pass as [max]; input(5) gives it a default of 5 and makes it a signal, so the star list and the aria-labels follow it when it changes.",
@@ -23,8 +23,8 @@
           "id": "d4-rating-model",
           "title": "Declare the rating as a model",
           "anchor": {
-            "lineStart": 12,
-            "lineEnd": 12,
+            "lineStart": 15,
+            "lineEnd": 15,
             "snippet": "readonly rating = model(0);"
           },
           "why": "model() creates the rating input and the ratingChange output as one signal the child can read and set, which is the pair [(rating)] binds to.",
@@ -35,8 +35,8 @@
           "id": "d2-derive-configurable-range",
           "title": "Derive the selectable range from max",
           "anchor": {
-            "lineStart": 13,
-            "lineEnd": 13,
+            "lineStart": 16,
+            "lineEnd": 16,
             "snippet": "readonly stars = computed(() => Array.from({ length: this.max() }, (_, i) => i + 1));"
           },
           "why": "The child renders the configured number of one-based choices without hard-coded markup, and the computed rebuilds the array only when max changes.",
@@ -44,11 +44,23 @@
           "tradeoff": "The values double as @for track keys because they are unique, which holds for any one-through-max range."
         },
         {
+          "id": "d6-roving-tab-stop",
+          "title": "Give the radio group one Tab stop",
+          "anchor": {
+            "lineStart": 18,
+            "lineEnd": 18,
+            "snippet": "readonly tabStop = computed(() => (this.rating() > 0 ? this.rating() : 1));"
+          },
+          "why": "A radio group is a single Tab stop: the checked star gets tabindex 0 and the others -1, and before any rating the first star takes the stop, as in the WAI-ARIA rating radio group.",
+          "alternative": "Leave every star a plain button in the Tab order.",
+          "tradeoff": "Five Tab stops need no code, but a keyboard user has to tab past every star to leave the widget, and a screen reader that announces a radio group leads its user to expect the arrow keys inside it."
+        },
+        {
           "id": "d3-emit-two-way-binding-update",
           "title": "Set the model to report the rating",
           "anchor": {
-            "lineStart": 20,
-            "lineEnd": 20,
+            "lineStart": 27,
+            "lineEnd": 27,
             "snippet": "this.rating.set(value);"
           },
           "why": "Setting the model updates the stars the child renders and emits ratingChange, so the parent currentRating follows through [(rating)].",
@@ -56,11 +68,23 @@
           "tradeoff": "The child writes a value the parent owns; that is the contract of a two-way binding, and the parent can still change the rating by setting currentRating."
         },
         {
+          "id": "d7-arrow-keys-wrap",
+          "title": "Move the rating with arrow keys that wrap",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 38,
+            "snippet": "const next = ((star - 1 + step + count) % count) + 1;"
+          },
+          "why": "Right and Down check the next star and Left and Up the previous one. The modulo wraps from the last star to the first and back, the way native radio buttons behave, and the handler then focuses the star it checked.",
+          "alternative": "Stop at the first and the last star instead of wrapping.",
+          "tradeoff": "Stopping at the ends reads naturally for a rating, but the role announces a radio group, and every other radio group wraps; either way the focus call keeps focus and the Tab stop on the same star."
+        },
+        {
           "id": "d5-parent-owns-rating",
           "title": "Keep the parent value in a signal",
           "anchor": {
-            "lineStart": 36,
-            "lineEnd": 36,
+            "lineStart": 56,
+            "lineEnd": 56,
             "snippet": "readonly currentRating = signal(0);"
           },
           "why": "[(rating)]=\"currentRating\" receives the signal itself: Angular reads it for the input and calls set when ratingChange fires, and the hint reads currentRating().",

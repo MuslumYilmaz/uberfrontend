@@ -39,6 +39,62 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('count()');
   });
 
+  it('explains the Angular pagination, star rating, chessboard and Reply toggle checks by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'angular-pagination-table',
+        name: 'Pagination moves to next page',
+        errorLine: '.pagination span expected text "Page 1 of 4" but found "1 / 4"',
+        ruleId: 'angular-pagination-page-label',
+        action: 'Page {{ currentPage() + 1 }} of {{ totalPages() }}',
+      },
+      {
+        questionId: 'angular-star-rating',
+        name: 'Arrow keys move the rating like a radio group',
+        errorLine: '.star expected tabindex="0" but found ""',
+        ruleId: 'angular-star-rating-radio-group',
+        action: 'aria-checked',
+      },
+      {
+        questionId: 'angular-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'angular-chessboard-size-on-change',
+        action: '(change)',
+      },
+      {
+        questionId: 'angular-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'angular-chessboard-single-selection',
+        action: 'cellKey(row, col)',
+      },
+      {
+        questionId: 'angular-nested-comments',
+        name: 'Reply opens one box and closes it on a second click',
+        errorLine: '.reply expected 0 matches but found 1',
+        ruleId: 'angular-nested-comments-reply-toggle',
+        action: 'toggleReply(id)',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 0,
+        totalCount: 2,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
   it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
     for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
       const hint = buildFailureHint({

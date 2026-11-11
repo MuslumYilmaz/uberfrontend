@@ -1055,7 +1055,8 @@ function assertNestedCommentsPressureMode() {
       id: 'angular-nested-comments',
       starter: 'assets/sb/angular/question/angular-nested-comments.v2.json',
       solution: 'assets/sb/angular/solution/angular-nested-comments-solution.v2.json',
-      checks: normalCheck,
+      // Added on 2026-11-11 with the fix that makes Reply toggle its box, as the spec says.
+      checks: [...normalCheck, 'comments-reply-toggles'],
     },
     vue: {
       id: 'vue-nested-comments',
@@ -3565,18 +3566,22 @@ function assertChessboardClickHighlightPressureMode() {
       starter: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json',
       updatedAt: '2026-02-09',
+      checks: [],
     },
     angular: {
       id: 'angular-chessboard-click-highlight',
       starter: 'assets/sb/angular/question/angular-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json',
       updatedAt: '2026-11-11',
+      // Added on 2026-11-11 with the fix that applies the size on change instead of on every keystroke.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
     vue: {
       id: 'vue-chessboard-click-highlight',
       starter: 'assets/sb/vue/question/vue-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/vue/solution/vue-chessboard-click-highlight-solution.v1.json',
       updatedAt: '2026-02-09',
+      checks: [],
     },
   };
   const pressureRefs = new Set();
@@ -3611,10 +3616,10 @@ function assertChessboardClickHighlightPressureMode() {
       expected.solution,
       `${framework}: normal Chessboard solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce normal Chessboard checks`
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((check) => check.id),
+      expected.checks,
+      `${framework}: normal Chessboard checks changed; pressure coverage must not add any`
     );
     assert.equal(
       question.pressureModeAsset,
@@ -4786,6 +4791,8 @@ function assertPaginationTablePressureMode() {
                 : step.selector === '.footer button'
                   ? '.pagination button'
                   : step.selector,
+              // Since 2026-11-11 the Angular label reads "Page X of Y", as the spec asks, and the check reads it whole.
+              ...(step.text ? { text: `Page ${step.text} of 4` } : {}),
             })),
           }))
         : expectedNormalChecks,

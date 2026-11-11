@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { NgTemplateOutlet } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [NgTemplateOutlet, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly comments = signal<CommentNode[]>([]);\n\n  readonly topDraft = signal('');\n\n  readonly activeReplyId = signal<string | null>(null);\n  readonly replyDraft = signal('');\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft().trim();\n    if (!text) return;\n\n    const comment: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => [comment, ...comments]);\n    this.topDraft.set('');\n  }\n\n  openReply(id: string): void {\n    this.activeReplyId.set(id);\n    this.replyDraft.set('');\n  }\n\n  cancelReply(): void {\n    this.activeReplyId.set(null);\n    this.replyDraft.set('');\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft().trim();\n    if (!text) return;\n\n    const reply: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => this.withReply(comments, parentId, reply));\n    this.cancelReply();\n  }\n\n  // Copy only the path to the parent: the signal gets a new root array, and other subtrees stay the same objects.\n  private withReply(nodes: CommentNode[], parentId: string, reply: CommentNode): CommentNode[] {\n    let changed = false;\n    const next = nodes.map((node) => {\n      const children = node.id === parentId\n        ? [...node.children, reply]\n        : this.withReply(node.children, parentId, reply);\n      if (children === node.children) return node;\n      changed = true;\n      return { ...node, children };\n    });\n    return changed ? next : nodes;\n  }\n}\n",
+      "code": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { NgTemplateOutlet } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [NgTemplateOutlet, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly comments = signal<CommentNode[]>([]);\n\n  readonly topDraft = signal('');\n\n  readonly activeReplyId = signal<string | null>(null);\n  readonly replyDraft = signal('');\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft().trim();\n    if (!text) return;\n\n    const comment: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => [comment, ...comments]);\n    this.topDraft.set('');\n  }\n\n  // Reply on the comment whose box is open closes it; on any other comment it moves the one box there.\n  toggleReply(id: string): void {\n    this.activeReplyId.update((active) => (active === id ? null : id));\n    this.replyDraft.set('');\n  }\n\n  cancelReply(): void {\n    this.activeReplyId.set(null);\n    this.replyDraft.set('');\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft().trim();\n    if (!text) return;\n\n    const reply: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => this.withReply(comments, parentId, reply));\n    this.cancelReply();\n  }\n\n  // Copy only the path to the parent: the signal gets a new root array, and other subtrees stay the same objects.\n  private withReply(nodes: CommentNode[], parentId: string, reply: CommentNode): CommentNode[] {\n    let changed = false;\n    const next = nodes.map((node) => {\n      const children = node.id === parentId\n        ? [...node.children, reply]\n        : this.withReply(node.children, parentId, reply);\n      if (children === node.children) return node;\n      changed = true;\n      return { ...node, children };\n    });\n    return changed ? next : nodes;\n  }\n}\n",
       "nodes": [
         {
           "id": "d1-template-outlet-import",
@@ -56,11 +56,23 @@
           "tradeoff": "The copy costs one array per new comment; an in-place insert avoids it but leaves the signal holding the same array, so nothing computed from comments() would see the change."
         },
         {
+          "id": "d7-toggle-reply",
+          "title": "Toggle the box from the stored id",
+          "anchor": {
+            "lineStart": 42,
+            "lineEnd": 42,
+            "snippet": "this.activeReplyId.update((active) => (active === id ? null : id));"
+          },
+          "why": "update reads the open id: Reply on the comment whose box is open stores null and closes it, and Reply on any other comment moves the one box there. The Reply button binds aria-expanded to the same comparison.",
+          "alternative": "Always set the clicked id and leave closing to Cancel.",
+          "tradeoff": "Setting the id is a shorter call, but a second click on Reply then changes nothing, while the spec and aria-expanded both describe Reply as a toggle."
+        },
+        {
           "id": "d5-replace-tree-on-reply",
           "title": "Store a new tree for every reply",
           "anchor": {
-            "lineStart": 55,
-            "lineEnd": 55,
+            "lineStart": 56,
+            "lineEnd": 56,
             "snippet": "this.comments.update((comments) => this.withReply(comments, parentId, reply));"
           },
           "why": "submitReply passes the current tree to withReply and stores the result, so the signal receives a new root array and the branch with the new reply re-renders.",
@@ -71,8 +83,8 @@
           "id": "d6-keep-untouched-branches",
           "title": "Return untouched branches as they are",
           "anchor": {
-            "lineStart": 66,
-            "lineEnd": 66,
+            "lineStart": 67,
+            "lineEnd": 67,
             "snippet": "if (children === node.children) return node;"
           },
           "why": "A branch without the parent gets its original children array back, so its node is returned unchanged and only the parent and its ancestors are copied with { ...node, children }.",
