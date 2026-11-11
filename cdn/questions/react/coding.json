@@ -509,7 +509,7 @@
     "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
     "companies": [],
     "access": "free",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build React Todo List (Add Toggle Delete)",
       "description": "Create a todo list interface that supports adding items, toggling completion, and deleting tasks while keeping UI state consistent."

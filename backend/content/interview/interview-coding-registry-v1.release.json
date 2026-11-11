@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "c1cead53e0630f0e7144647b40fad3a8763e07bf21cc26e8589433b3cbf7f77a"
+      "sha256": "4ca39036e9f607be2d9404429c51f271623fdcf08b1322d6f394a565cca12a09"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "9b1719d609bc96507d006bbc0f0187135a275c8631b305a1d482fa9087810796"
+      "sha256": "29c9c4d36a1efe3b45a83a2ffab881da1c37cb684942e22ca06dad94db0925fc"
     }
   },
-  "contentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
-  "definitionHash": "08b38f082fc90a48613d9f20dfaab66ff727c3b3ae0776d6efda33477ec55f8a",
+  "contentHash": "af48a6caaa4048b6785712412daef44d81263128ef354049833faebc9172f901",
+  "definitionHash": "78f576372bd8f09240fa4ff74d1cd3a050b5410e86d29e8e264e6aa0d722af3f",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -31,13 +31,14 @@
       "2026-11-10 source-pin maintenance: registryContentHash refreshed after the react-counter source question's requirements named the Reset button its check already presses, and its expected behavior says the minus button is disabled at 0, as the check already asserts. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after nine Angular source questions (pagination, debounced search, progress thresholds, filterable user list, theme toggle, nested checkboxes, contact form, nested comments, transfer list) dropped a stock closing sentence from their summaries, \"Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.\", which named APIs most of these tasks do not use. The summary is the variant prompt, so those nine public prompts lose that sentence; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the fifteen pinned Angular source questions had their official solutions rewritten with signals (solution assets, Solution-tab text, decision graphs, of which eight are new, implementation notes and update dates), with behavior checked step by step against the previous solutions. The registry reads none of those fields. Four summaries changed with the rewrite (counter, progress thresholds, filterable user list, contact form), and the summary is the variant prompt, so those four public prompts now describe signal state, computed derivation and registering provideHttpClient() in src/main.ts instead of a component property, a getter or pipe, ngStyle/ngClass and a component-only setup; the fifteen sourceContentVersion dates move to 2026-11-11 with the catalog update dates; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to three pinned Angular source questions, approved by the project owner. Pagination: the starter and solution label now reads \"Page X of Y\", as the spec asks (it showed \"X / Y\"), the starter's users field loses a wrong empty-tuple type, and the check reads \"Page 1 of 4\" and \"Page 2 of 4\". Shopping cart: the empty-cart text says \"from above\", matching the one-column layout (starter and solution assets only). Nested comments: Reply toggles its box, as the expected behavior says; the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level instead of compounding, and a new check covers the toggle. Starter asset hashes are re-pinned for all three and question hashes for pagination and nested comments. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to three pinned Angular source questions, approved by the project owner. Pagination: the starter and solution label now reads \"Page X of Y\", as the spec asks (it showed \"X / Y\"), the starter's users field loses a wrong empty-tuple type, and the check reads \"Page 1 of 4\" and \"Page 2 of 4\". Shopping cart: the empty-cart text says \"from above\", matching the one-column layout (starter and solution assets only). Nested comments: Reply toggles its box, as the expected behavior says; the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level instead of compounding, and a new check covers the toggle. Starter asset hashes are re-pinned for all three and question hashes for pagination and nested comments. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after content fixes to six pinned source questions, approved by the project owner (coding-trust step 9). Vue nested checkboxes: the text taught a watcher and a template ref and listed as pitfalls what the solution did; both now derive the parent from the children with a writable computed bound by v-model and bind :indeterminate, the starter carries the same template with computed stubs, and the question gains its first decision graph and a check hint. Vue todo list, shopping cart and transfer list: guidance that called in-place changes to reactive state a pitfall, or said Vue may not update after a Set changes, now says Vue tracks both; their solutions are unchanged. Vue debounced search: an implementation note names the watcher cleanup onCleanup, as the Vue docs do, and adds onWatcherCleanup (Vue 3.5). React todo list: an outdated note against generics and the casts it led to are removed from the starter and solution (useState<Todo[]>). Starter asset hashes are re-pinned for Vue nested checkboxes and React todo list, question hashes for all six. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
+    "registryContentHash": "af48a6caaa4048b6785712412daef44d81263128ef354049833faebc9172f901",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "fbd181c3cdc272ba6f5e717b3600b1724b48e51139c8b5fc72985aa4209e8f87",
+  "registryContentHash": "af48a6caaa4048b6785712412daef44d81263128ef354049833faebc9172f901",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -250,7 +251,7 @@
       "revision": 1
     },
     {
-      "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
+      "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "revision": 1
@@ -340,7 +341,7 @@
       "revision": 1
     },
     {
-      "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
+      "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "revision": 1
@@ -352,7 +353,7 @@
       "revision": 1
     },
     {
-      "contentHash": "2a61348b980558c00ea034e0bfcc95f7585a7afc6ecc5dab1483e5abc5af917b",
+      "contentHash": "1d849b35c2a9f329b710d0a5c6a33a667129ffbfe49eac15525ceec492691fc3",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "revision": 1
@@ -364,7 +365,7 @@
       "revision": 1
     },
     {
-      "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
+      "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "revision": 1
@@ -388,7 +389,7 @@
       "revision": 1
     },
     {
-      "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
+      "contentHash": "1d5864147d82235e7e7916ce95a31931eafca891f8dd782d0f4182952a303e47",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "revision": 1
@@ -400,7 +401,7 @@
       "revision": 1
     },
     {
-      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
+      "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "revision": 1

@@ -392,6 +392,26 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       confidence: 0.85,
     }),
   },
+  {
+    ruleId: 'vue-nested-checkboxes-parent-setter',
+    questionId: 'vue-nested-checkboxes',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['nested checkbox parent selects children']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-nested-checkboxes-parent-setter',
+      title: "Let a click on the parent check every child",
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks the parent checkbox and expects it and all three children to be checked.',
+      ),
+      actions: [
+        'Make `allChecked` a writable `computed`: `get` compares the checked count with the number of children, and `set(checked)` assigns `child.checked = checked` to every child.',
+        'Bind the parent with `v-model="allChecked"`, so a click calls the setter; Vue tracks the flags changed in place.',
+        'Bind `:indeterminate` to a computed that is true when some but not all children are checked.',
+      ],
+      confidence: 0.85,
+    }),
+  },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',

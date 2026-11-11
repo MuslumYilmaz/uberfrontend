@@ -8182,7 +8182,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-todo-list"
   },
@@ -9818,7 +9818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-16",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-todo-list"
   },
@@ -9841,7 +9841,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-transfer-list"
   },
@@ -9862,7 +9862,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-accordion-faq"
   },
@@ -9928,7 +9928,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-debounced-search"
   },
@@ -9949,7 +9949,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-dynamic-counter-buttons"
   },
@@ -10037,7 +10037,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-nested-checkboxes"
   },
@@ -10125,7 +10125,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-shopping-cart"
   },

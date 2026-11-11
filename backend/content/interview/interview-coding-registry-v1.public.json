@@ -2052,7 +2052,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
+      "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "level": "junior",
@@ -2084,7 +2084,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "react-todo-list",
       "starterAsset": "assets/sb/react/question/react-todo-list.v1.json",
       "starterFiles": [
@@ -2101,7 +2101,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\nexport default function App() {\n  // Controlled input for the new task\n  const [newTask, setNewTask] = useState('');\n\n  // List of todo items\n  // NOTE: no generic type argument here to avoid TS error in this environment\n  const [todos, setTodos] = useState([]);\n\n  // Derived flag for showing list / empty state\n  const hasTodos = (todos as Todo[]).length > 0;\n\n  // TODO: Add a new todo using the current newTask value\n  // - Trim the text\n  // - Ignore empty strings\n  // - Append a new Todo object to the array\n  // - Clear the input afterwards\n  const addTask = () => {\n    // Implement in the solution\n  };\n\n  // TODO: Toggle the \"done\" flag for a given todo (by id)\n  const toggleTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove a single todo (by id)\n  const removeTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove all todos where done === true\n  const clearCompleted = () => {\n    // Implement in the solution\n  };\n\n  const typedTodos = todos as Todo[];\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Todo List</h1>\n\n        <div className=\"panel\">\n          <div className=\"input-row\">\n            <input\n              type=\"text\"\n              placeholder=\"Add a new task...\"\n              value={newTask}\n              onChange={(event) => setNewTask(event.target.value)}\n            />\n            <button type=\"button\" className=\"primary\" onClick={addTask}>\n              Add\n            </button>\n          </div>\n\n          {hasTodos ? (\n            <ul className=\"list\">\n              {typedTodos.map((todo) => (\n                <li key={todo.id} className=\"item\">\n                  <label className=\"item-main\">\n                    <input\n                      type=\"checkbox\"\n                      checked={todo.done}\n                      onChange={() => toggleTask(todo.id)}\n                    />\n                    <span className={todo.done ? 'done' : ''}>{todo.text}</span>\n                  </label>\n\n                  <button\n                    type=\"button\"\n                    className=\"ghost\"\n                    onClick={() => removeTask(todo.id)}\n                  >\n                    Remove\n                  </button>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">No tasks yet. Add your first one above.</p>\n          )}\n\n          {hasTodos && (\n            <div className=\"footer\">\n              <button\n                type=\"button\"\n                className=\"ghost small\"\n                onClick={clearCompleted}\n              >\n                Clear completed\n              </button>\n            </div>\n          )}\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\nexport default function App() {\n  // Controlled input for the new task\n  const [newTask, setNewTask] = useState('');\n\n  // List of todo items\n  const [todos, setTodos] = useState<Todo[]>([]);\n\n  // Derived flag for showing list / empty state\n  const hasTodos = todos.length > 0;\n\n  // TODO: Add a new todo using the current newTask value\n  // - Trim the text\n  // - Ignore empty strings\n  // - Append a new Todo object to the array\n  // - Clear the input afterwards\n  const addTask = () => {\n    // Implement in the solution\n  };\n\n  // TODO: Toggle the \"done\" flag for a given todo (by id)\n  const toggleTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove a single todo (by id)\n  const removeTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove all todos where done === true\n  const clearCompleted = () => {\n    // Implement in the solution\n  };\n\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Todo List</h1>\n\n        <div className=\"panel\">\n          <div className=\"input-row\">\n            <input\n              type=\"text\"\n              placeholder=\"Add a new task...\"\n              value={newTask}\n              onChange={(event) => setNewTask(event.target.value)}\n            />\n            <button type=\"button\" className=\"primary\" onClick={addTask}>\n              Add\n            </button>\n          </div>\n\n          {hasTodos ? (\n            <ul className=\"list\">\n              {todos.map((todo) => (\n                <li key={todo.id} className=\"item\">\n                  <label className=\"item-main\">\n                    <input\n                      type=\"checkbox\"\n                      checked={todo.done}\n                      onChange={() => toggleTask(todo.id)}\n                    />\n                    <span className={todo.done ? 'done' : ''}>{todo.text}</span>\n                  </label>\n\n                  <button\n                    type=\"button\"\n                    className=\"ghost\"\n                    onClick={() => removeTask(todo.id)}\n                  >\n                    Remove\n                  </button>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">No tasks yet. Add your first one above.</p>\n          )}\n\n          {hasTodos && (\n            <div className=\"footer\">\n              <button\n                type=\"button\"\n                className=\"ghost small\"\n                onClick={clearCompleted}\n              >\n                Clear completed\n              </button>\n            </div>\n          )}\n        </div>\n      </section>\n    </main>\n  );\n}\n",
           "path": "src/App.tsx"
         },
         {
@@ -3207,7 +3207,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
+      "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "level": "junior",
@@ -3239,7 +3239,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-16",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-todo-list",
       "starterAsset": "assets/sb/vue/question/vue-todo-list.v2.json",
       "starterFiles": [
@@ -3349,7 +3349,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "2a61348b980558c00ea034e0bfcc95f7585a7afc6ecc5dab1483e5abc5af917b",
+      "contentHash": "1d849b35c2a9f329b710d0a5c6a33a667129ffbfe49eac15525ceec492691fc3",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -3390,7 +3390,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-nested-checkboxes",
       "starterAsset": "assets/sb/vue/question/vue-nested-checkboxes.v1.json",
       "starterFiles": [
@@ -3407,7 +3407,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            :checked=\"parentChecked\"\n            @change=\"onParentChange\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input\n              type=\"checkbox\"\n              :checked=\"child.checked\"\n              @change=\"() => onChildChange(child.id)\"\n            />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Parent checkbox state\n// In the solution, this will control all children when toggled.\nconst parentChecked = ref(false);\n\n// Children list (each child has its own checked flag)\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO (solution): when parent changes, update all children based on parentChecked.\nconst onParentChange = (_event: Event) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n\n// TODO (solution): when a child changes, toggle only that child.\n// Then update the parent: checked, unchecked or indeterminate.\nconst onChildChange = (_id: string) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n</script>\n",
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            v-model=\"allChecked\"\n            :indeterminate=\"someChecked\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input type=\"checkbox\" v-model=\"child.checked\" />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Children list. Each child checkbox writes its own flag through v-model.\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO: the parent has no state of its own: it is checked, unchecked or indeterminate depending on the children.\n// Read it from them (checked when every child is checked); setting it (a click on the parent) checks or unchecks every child.\nconst allChecked = computed({\n  get: () => false,\n  set: (_checked: boolean) => {\n    // starter: no-op so the UI renders\n  }\n});\n\n// TODO: true when some children are checked but not all; the template binds it to the parent's indeterminate.\nconst someChecked = computed(() => false);\n</script>\n",
           "path": "src/App.vue"
         },
         {
@@ -3501,7 +3501,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
+      "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "level": "mid",
@@ -3545,7 +3545,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-shopping-cart",
       "starterAsset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
       "starterFiles": [
@@ -3831,7 +3831,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
+      "contentHash": "1d5864147d82235e7e7916ce95a31931eafca891f8dd782d0f4182952a303e47",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "level": "senior",
@@ -3886,7 +3886,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-debounced-search",
       "starterAsset": "assets/sb/vue/question/vue-debounced-search.v1.json",
       "starterFiles": [
@@ -4009,7 +4009,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
+      "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "level": "senior",
@@ -4063,7 +4063,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-transfer-list",
       "starterAsset": "assets/sb/vue/question/vue-transfer-list.v2.json",
       "starterFiles": [

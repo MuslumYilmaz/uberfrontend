@@ -39,6 +39,23 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('count()');
   });
 
+  it('explains a Vue nested checkbox parent that does not check its children', () => {
+    const errorLine = 'input[type="checkbox"]:checked expected 4 matches but found 1';
+    const hint = buildFailureHint({
+      questionId: 'vue-nested-checkboxes',
+      category: 'assertion-mismatch',
+      errorLine,
+      firstFailName: 'Nested checkbox parent selects children',
+      passCount: 0,
+      totalCount: 1,
+      failCount: 1,
+      failedTests: [{ name: 'Nested checkbox parent selects children', errorLine }],
+    });
+
+    expect(hint.ruleId).toBe('vue-nested-checkboxes-parent-setter');
+    expect(hint.actions.join(' ')).toContain('v-model="allChecked"');
+  });
+
   it('explains the Angular pagination, star rating, chessboard and Reply toggle checks by their names', () => {
     const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
       {

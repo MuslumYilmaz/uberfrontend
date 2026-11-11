@@ -2301,7 +2301,8 @@ function assertShoppingCartPressureMode() {
       id: 'vue-shopping-cart',
       starter: 'assets/sb/vue/question/vue-shopping-cart.v1.json',
       solution: 'assets/sb/vue/solution/vue-shopping-cart-solution.v1.json',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: its guidance no longer calls in-place changes to the reactive cart a pitfall.
+      updatedAt: '2026-11-11',
     },
   };
   const pressureRefs = new Set();
@@ -2878,7 +2879,8 @@ function assertAccordionFaqPressureMode() {
       id: 'vue-accordion-faq',
       starter: 'assets/sb/vue/question/vue-accordion-faq.v1.json',
       solution: 'assets/sb/vue/solution/vue-accordion-faq-solution.v1.json',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: a pitfall that called in-place array changes hard to follow in Vue was removed.
+      updatedAt: '2026-11-11',
     },
   };
   const expectedNormalChecks = [
@@ -4208,7 +4210,8 @@ function assertDynamicCounterButtonsPressureMode() {
       solution: 'assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json',
       openFile: '/src/App.vue',
       storageKey: 'v1:ui:vue:vue-dynamic-counter-buttons',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: its prose now says the steps array is changed in place, as the code does.
+      updatedAt: '2026-11-11',
     },
   };
   const pressureRefs = new Set();

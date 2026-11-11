@@ -444,14 +444,14 @@
         "techFocus": [
           "Vue 3 Composition API with refs and computed",
           "List rendering with v-for and keys",
-          "Immutable style array updates (map/filter) for clarity",
+          "Array updates with map and filter (in-place changes are tracked too)",
           "Basic component-level state management"
         ]
       }
     },
     "starterCodeHint": "Work only inside `<script setup>` in App.vue. Use `const newTask = ref('')` and `const todos = ref([] as Todo[])`. Implement `addTask`, `toggleTask(id)`, `removeTask(id)`, and `clearCompleted()` and wire them to the template via @click / @change.",
     "solutionBlock": {
-      "overview": "Use a single Vue 3 SFC with `<script setup>` to manage the todo list. Track the input value in `newTask` and store todos in a `ref` array with `{ id, text, done }`. A `computed` property `hasTodos` drives the empty state and footer visibility. Actions (`addTask`, `toggleTask`, `removeTask`, `clearCompleted`) update the `todos` array, and the template uses `v-for` to render items plus a checkbox and Remove button.\n\n**Key ideas**\n- Keep all state in refs inside `<script setup>`.\n- Use `v-for` + `:key` for list rendering.\n- Use immutable updates (`map` / `filter`) for clear toggling and removal.\n- Drive simple UI states (empty vs list, footer visibility) from computed values.",
+      "overview": "Use a single Vue 3 SFC with `<script setup>` to manage the todo list. Track the input value in `newTask` and store todos in a `ref` array with `{ id, text, done }`. A `computed` property `hasTodos` drives the empty state and footer visibility. Actions (`addTask`, `toggleTask`, `removeTask`, `clearCompleted`) update the `todos` array, and the template uses `v-for` to render items plus a checkbox and Remove button.\n\n**Key ideas**\n- Keep all state in refs inside `<script setup>`.\n- Use `v-for` + `:key` for list rendering.\n- Toggle and remove with `map` and `filter`, as the solution does; `todo.done = !todo.done` and `splice` on the reactive array would be tracked as well.\n- Drive simple UI states (empty vs list, footer visibility) from computed values.",
       "approaches": [
         {
           "title": "Single component with ref-backed list and immutable updates",
@@ -460,7 +460,7 @@
       ],
       "notes": {
         "pitfalls": [
-          "Mutating todos in place without updating the ref value in a way that keeps the code clear.",
+          "Toggling a copy of a todo, such as one from a spread or a `filter`, and expecting the list to change: change the item in the array, or assign the new array to `todos.value`.",
           "Adding empty or whitespace-only tasks by forgetting to trim the input.",
           "Forgetting to use `:key` in `v-for`, which can lead to odd checkbox behaviour.",
           "Toggling completion without visually reflecting it (missing the `done` class binding)."
@@ -468,7 +468,7 @@
         "techniques": [
           "Using refs for both scalar and array state.",
           "Using computed for derived flags such as `hasTodos`.",
-          "Updating arrays immutably to keep logic simple and predictable.",
+          "Updating the list with `map` and `filter`; Vue tracks in-place changes to the reactive array as well.",
           "Binding classes dynamically with `:class` for completed todos."
         ]
       }
@@ -482,7 +482,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/todo-list.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-07-16",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Vue Todo List (Add Toggle Remove)",
       "description": "Create a todo list that supports adding tasks, toggling completion, removing items, and clearing completed entries."
@@ -920,8 +920,7 @@
       "notes": {
         "pitfalls": [
           "Letting each `<FaqItem>` manage its own open state, which makes it hard to enforce the 'only one open' rule.",
-          "Using a single `ref<number | null>` for `openIndex` and then trying to hack multi-open behavior into it.",
-          "Mutating the `openIndexes.value` array in place instead of assigning a new array (harder to reason about)."
+          "Using a single `ref<number | null>` for `openIndex` and then trying to hack multi-open behavior into it."
         ],
         "techniques": [
           "Using `ref<number[]>` to represent a collection of selected items in Vue 3.",
@@ -938,7 +937,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/accordion-faq.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Vue Accordion FAQ Component",
       "description": "Create an FAQ accordion that expands and collapses items with configurable single-open or multi-open behavior."
@@ -1389,39 +1388,39 @@
         ],
         "implementationNotes": [
           "Use Vue 3's Composition API with `ref` to hold `cartItems` as an array.",
-          "Treat `cartItems` as immutable for updates: create new arrays with `map`, `filter`, and spreads instead of mutating in place.",
+          "Update `cartItems` in either of the ways Vue tracks: in place (`push`, `splice`, `item.quantity += 1` on the reactive array), or by assigning new arrays built with `map`, `filter` and spreads, as the solution does.",
           "Derive `totalQty` and `totalPrice` from `cartItems` using `computed` + `Array.prototype.reduce`.",
           "Keep everything in a single `<App.vue>` component for this exercise; no Vuex or global store is required.",
           "Match the given UI: products card on top, cart card below, same styling as Angular/React versions."
         ],
         "techFocus": [
           "Vue 3 Composition API (`ref`, `computed`)",
-          "Array-based state and immutable-style updates",
+          "Array state in a `ref`, changed in place or replaced",
           "Derived state (total quantity, total price)",
           "List rendering with `v-for` and `:key`",
           "Click handlers for add / increase / decrease / remove"
         ]
       }
     },
-    "starterCodeHint": "Store products in a constant array and `cartItems` in a `ref<CartItem[]>([])`. Use `computed` for `totalQty` and `totalPrice`, and update `cartItems.value` immutably with `map`, `filter`, and `[...prev, newItem]` when handling cart actions.",
+    "starterCodeHint": "Store products in a constant array and `cartItems` in a `ref<CartItem[]>([])`. Use `computed` for `totalQty` and `totalPrice`, and update `cartItems` for each cart action, in place or with new arrays (`map`, `filter`, `[...items, newItem]`): Vue tracks both.",
     "solutionBlock": {
-      "overview": "This exercise focuses on nested, array-based cart state and derived values in Vue 3. Keep `cartItems` in a single `ref` and update it immutably when adding, increasing, decreasing, or removing items. `totalQty` and `totalPrice` are derived via `computed` + `reduce`, so they always stay in sync with the cart.\n\nThe UI is a single column: a \"Products\" card on top and a \"Cart\" card below, with identical layout across Angular, React, and Vue.\n\n**Key ideas**\n- Use `ref` for the cart array and `computed` for totals.\n- Update cart items immutably with `map`/`filter`/spreads.\n- Derive totals instead of storing them separately.\n- Keep all logic inside a single `<App.vue>` using `<script setup>`.",
+      "overview": "This exercise focuses on nested, array-based cart state and derived values in Vue 3. Keep `cartItems` in a single `ref`. The solution assigns a new array when adding, increasing, decreasing or removing items; changing the reactive array in place would update the view as well. `totalQty` and `totalPrice` are derived via `computed` + `reduce`, so they always stay in sync with the cart.\n\nThe UI is a single column: a \"Products\" card on top and a \"Cart\" card below, with identical layout across Angular, React, and Vue.\n\n**Key ideas**\n- Use `ref` for the cart array and `computed` for totals.\n- Update cart items immutably with `map`/`filter`/spreads.\n- Derive totals instead of storing them separately.\n- Keep all logic inside a single `<App.vue>` using `<script setup>`.",
       "approaches": [
         {
           "title": "Single component with immutable cart array (Composition API)",
-          "prose": "Define `PRODUCTS` as a constant array and keep `const cartItems = ref<CartItem[]>([])`. Use `const totalQty = computed(() => ...)` and `const totalPrice = computed(() => ...)` to derive totals from `cartItems.value`. For `addToCart`, `increaseQty`, `decreaseQty`, and `removeItem`, always create a new array rather than mutating the existing one. This keeps updates predictable and mirrors immutable patterns used in React while still playing nicely with Vue's reactivity."
+          "prose": "Define `PRODUCTS` as a constant array and keep `const cartItems = ref<CartItem[]>([])`. Use `const totalQty = computed(() => ...)` and `const totalPrice = computed(() => ...)` to derive totals from `cartItems.value`. For `addToCart`, `increaseQty`, `decreaseQty`, and `removeItem`, the solution assigns a new array built with `map`, `filter` or a spread. Vue would track the same changes made in place on the reactive array, such as `push` or `item.quantity += 1`; new arrays are a style choice here, familiar from React, not a requirement."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Mutating `cartItems.value` in place (e.g. pushing or incrementing `item.quantity` directly) instead of replacing it with a new array.",
+          "Adding a second row for a product that is already in the cart, instead of raising that row's `quantity`.",
           "Computing `totalQty` and `totalPrice` in methods instead of `computed` properties, leading to duplicated logic.",
           "Using the loop index as `:key` instead of a stable `id`, which can cause odd re-render behavior.",
           "Letting items stay in the cart with `quantity` 0 instead of removing them."
         ],
         "techniques": [
           "Composition API with `<script setup>`.",
-          "Immutable-style array updates with `map` and `filter` in Vue.",
+          "Array updates with `map` and `filter`; in-place changes to the reactive array are tracked as well.",
           "Derived state with `computed` and `reduce`.",
           "Consistent UI parity across Angular, React, and Vue implementations."
         ]
@@ -1435,7 +1434,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/shopping-cart.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Vue Shopping Cart Component",
       "description": "Create a shopping cart UI that supports adding items, updating quantities, removing entries, and showing accurate totals."
@@ -1515,7 +1514,7 @@
         ],
         "implementationNotes": [
           "Use Vue 3's Composition API (`ref`) to store `query`, `results`, `isLoading`, and `error`.",
-          "Use `watch(query, ...)` with `setTimeout` and the `onInvalidate` cleanup callback to implement debouncing and cancel stale requests.",
+          "Use `watch(query, ...)` with `setTimeout`, and clear the timer in the watcher's cleanup, which runs before the watcher runs again: the callback's third argument (named `onCleanup` in the Vue docs; the solution calls it `onInvalidate`) or, since Vue 3.5, `onWatcherCleanup()` imported from `vue`.",
           "Guard the empty-query case by clearing results and skipping the API call.",
           "Handle both success and error paths to keep loading and error state in sync."
         ],
@@ -1560,7 +1559,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Debounced Search in Vue 3",
       "description": "Create a search input that delays requests while typing, shows loading and empty states, and prevents stale results from replacing newer ones."
@@ -1809,35 +1808,35 @@
         ],
         "implementationNotes": [
           "Use Vue 3's Composition API in <script setup> with `ref` to store the children list.",
-          "Derive the parent’s checked/indeterminate state from the children and apply `indeterminate` via a template ref.",
-          "Use standard `@change` handlers to wire parent and child events."
+          "Derive the parent from the children with `computed`: a writable computed (`get` and `set`) can drive the parent checkbox through `v-model`, and a second computed says whether the selection is mixed.",
+          "Bind `:indeterminate` on the parent: Vue sets it as a DOM property, so no template ref is needed. Each child checkbox can write its own flag with `v-model=\"child.checked\"`; Vue tracks a change made in place."
         ],
         "techFocus": [
-          "Vue 3 Composition API (`ref`, `watch`)",
+          "Vue 3 Composition API (`ref`, `computed` with `get` and `set`)",
           "Derived state from a list of items",
           "Click/event handlers",
-          "Working with DOM-only properties via `ref` (indeterminate)"
+          "Binding the DOM-only `indeterminate` property"
         ]
       }
     },
-    "starterCodeHint": "Keep the children as an array of `{ id, label, checked }` in a `ref`. Use a template `ref` on the parent `<input>` so you can assign `el.indeterminate = true` when some but not all children are checked.",
+    "starterCodeHint": "Keep the children as an array of `{ id, label, checked }` in a `ref`. Make the parent a writable `computed`: read it from the children and, when it is set, write the value into every child. Bind `:indeterminate` to whether some but not all children are checked.",
     "solutionBlock": {
-      "overview": "The core idea is to store the children as a reactive array and derive the parent state from it. The parent checkbox never has its own independent state; instead, a watcher looks at how many children are checked and sets `checked` and `indeterminate` on the DOM node via a template ref. Toggling the parent sets all children to the same value; toggling a child flips just that one and lets the watcher recompute the parent.",
+      "overview": "The children live in one reactive array, and the parent has no state of its own. `allChecked` is a writable `computed`: its getter compares the number of checked children with the total, and its setter writes the new value into every child. The parent checkbox binds it with `v-model`, so a click on the parent runs the setter. A second computed, `someChecked`, is true when some but not all children are checked, and the template binds it to `:indeterminate`, which Vue sets as a DOM property. Each child checkbox writes its own flag through `v-model=\"child.checked\"`. Vue tracks changes made in place on reactive objects, so nothing copies the array.",
       "approaches": [
         {
-          "title": "Children in a `ref` + parent derived in a watcher",
-          "prose": "Inside `<script setup>`, store the children in `const children = ref([...])`. Attach `ref=\"parentRef\"` to the parent checkbox and use `watch(children, ..., { deep: true, immediate: true })` to update `parentRef.value.checked` and `parentRef.value.indeterminate` whenever the list changes. The parent handler maps all children to the new checked value; the child handler toggles one element by id and reuses the same watcher logic."
+          "title": "Children in a `ref`, the parent as a writable `computed`",
+          "prose": "Inside `<script setup>`, keep the children in `const children = ref([...])` and count the checked ones with `checkedCount = computed(...)`.\n\n1. `allChecked` is a writable computed. `get` returns `checkedCount.value === children.value.length`; `set(checked)` loops over the children and assigns `child.checked = checked`.\n2. `someChecked` is a computed that is true when `checkedCount` is above 0 and below the total.\n3. The parent binds `v-model=\"allChecked\"` and `:indeterminate=\"someChecked\"`. From a mixed state the browser reports a click as checked, so the setter checks every child.\n4. Each child binds `v-model=\"child.checked\"`.\n\nThere is no watcher and no event handler: everything the parent shows is derived from the children, so it cannot drift from them."
         }
       ],
       "notes": {
         "pitfalls": [
-          "Trying to bind `indeterminate` as a normal prop (e.g. `:indeterminate=\"...\"`) instead of assigning it on the DOM element via `ref`.",
+          "Writing `indeterminate` as a plain attribute: it exists only as a DOM property. `:indeterminate` works because Vue sets the property.",
           "Giving the parent its own `ref`-based boolean state instead of deriving from children, which risks desync.",
-          "Forgetting to use `{ deep: true }` in the watcher, so changes inside the array objects are not observed."
+          "Toggling the parent's previous value on click: from a mixed state the browser reports the click as checked, and the setter must apply that value to every child."
         ],
         "techniques": [
           "Using `ref` for local reactive arrays.",
-          "Using `watch` with `{ deep: true, immediate: true }` to derive and keep DOM state in sync.",
+          "A writable `computed` (`get` and `set`) bound with `v-model`, and the DOM property `indeterminate` bound with `:indeterminate`.",
           "Keeping all state and handlers colocated in `<App.vue>` for a focused exercise."
         ]
       }
@@ -1849,8 +1848,9 @@
     },
     "pressureModeAsset": "assets/questions/pressure-modes/nested-checkboxes.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/vue/decision-graphs/vue-nested-checkboxes.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Nested Checkboxes with Parent State in Vue",
       "description": "Implement parent and child checkboxes where parent can toggle all items and parent state reflects checked, unchecked, or mixed selections."
@@ -2112,7 +2112,7 @@
         ],
         "techFocus": [
           "Vue 3 Composition API (`ref`, `computed`)",
-          "Immutable-ish updates with Set cloning",
+          "Selection Sets in refs: Vue 3 tracks `add`, `delete` and `clear` on a reactive Set, and the solution clones them",
           "Checkbox bindings and event handlers",
           "Moving items between lists"
         ]
@@ -2129,7 +2129,7 @@
       ],
       "notes": {
         "pitfalls": [
-          "Mutating the same Set instance (Vue may not update UI as expected).",
+          "Keeping a selection Set outside a `ref` or `reactive`: Vue 3 tracks `add`, `delete` and `clear` only on a reactive Set.",
           "Forgetting to clear selection after moving items.",
           "Removing items incorrectly (e.g., using wrong ids or mixing selections across lists)."
         ],
@@ -2148,7 +2148,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Transfer List in Vue with Multi-Select",
       "description": "Create dual lists where users select items and move them between panels while preserving order and clearing selection after each move."
@@ -2629,7 +2629,7 @@
       "approaches": [
         {
           "title": "Single component with counts[] array",
-          "prose": "Use a controlled input to add steps, update the array immutably, and render buttons from the list. On click, update count.value += step. Validate inputs (e.g., numeric only) to avoid NaN state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
+          "prose": "Use a controlled input to add steps, push each one onto the reactive array (Vue tracks the change in place), and render buttons from the list. On click, update count.value += step. Validate inputs (e.g., numeric only) to avoid NaN state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -2653,7 +2653,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/dynamic-counter-buttons.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "seo": {
       "title": "Build Dynamic Counter Buttons in Vue 3",
       "description": "Create dynamic step buttons users can add or remove, then update one shared counter by each selected step value."
