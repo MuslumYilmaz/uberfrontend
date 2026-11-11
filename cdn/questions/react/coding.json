@@ -4163,7 +4163,7 @@
       "specs": {
         "requirements": [
           "Render an N×N chessboard where light/dark squares alternate correctly.",
-          "Allow changing N via a numeric input (for example 2..20).",
+          "Allow changing N via a numeric input, applied when the field changes (Enter, blur or the arrows) rather than on every keystroke, and clamped to 2..20.",
           "Clicking a square highlights that square.",
           "Only one square can stay highlighted at a time.",
           "Changing board size re-renders the board and resets selection safely.",
@@ -4175,10 +4175,11 @@
           "Clicking row 3 column 5 highlights that square and updates status text.",
           "Clicking a different square removes previous highlight and applies new one.",
           "Entering N=4 re-renders as a 4×4 board and clears previous selection.",
+          "Typing 12 and pressing Enter gives a 12×12 board. A size outside 2–20 is clamped, and the field then shows the clamped number.",
           "Board never renders below min or above max size."
         ],
         "implementationNotes": [
-          "Store board size in state and clamp updates inside input handler.",
+          "Keep the field's text in its own state and apply the size on the native `change` event, through a ref and `addEventListener`. React's `onChange` runs on every keystroke, so clamping there turns the 1 of 12 into 2 and sizes 10–19 can never be typed. Write the clamped number back into the field.",
           "Store selected square as a stable key like `row-col`.",
           "Compute checker pattern with `(row + col) % 2`.",
           "Use CSS classes for light/dark/active state and avoid inline color toggles.",
@@ -4188,17 +4189,18 @@
           "React hooks (useState/useMemo)",
           "Derived grid rendering",
           "Event handling for board interaction",
-          "Accessible interactive UI"
+          "Accessible interactive UI",
+          "The browser's change event versus React's onChange"
         ]
       }
     },
-    "starterCodeHint": "Implement TODOs in App.tsx: clamp board size, keep one active square, and keep selected coordinate text in sync.",
+    "starterCodeHint": "Implement TODOs in App.tsx: apply the size on change and clamp it to 2..20, keep one active square, and keep selected coordinate text in sync.",
     "solutionBlock": {
-      "overview": "Keep `size` and `selectedKey` in state. Render rows/columns from size, compute light/dark classes with parity, and set the selected key on click so only one square is active.",
+      "overview": "Keep `size` and `selectedKey` in state. The size field keeps its own text and applies the size on the native `change` event (Enter, blur or the arrows), because React's `onChange` runs on every keystroke and would apply the 1 of 12 on its own. Render rows/columns from size, compute light/dark classes with parity, and set the selected key on click so only one square is active.",
       "approaches": [
         {
           "title": "State-driven board rendering with a selected-cell key",
-          "prose": "Use one state variable for board size and one for selected cell (`row-col`). Map row/column indices to render buttons. Apply active style based on key equality. Clamp size changes to a safe range and clear selection on resize to avoid stale coordinates."
+          "prose": "Use one state variable for board size and one for selected cell (`row-col`). Map row/column indices to render buttons. Apply active style based on key equality. Apply size changes on the native `change` event, clamp them to a safe range, write the clamped number back into the field, and clear the selection on resize to avoid stale coordinates. A `useEffect` without dependencies attaches the listener again after every render, so it always reads the current size."
         }
       ],
       "notes": {
@@ -4206,13 +4208,15 @@
           "Forgetting to clear selection after size change can reference out-of-range cells.",
           "Using array index alone for keys in nested loops can create unstable highlight behavior.",
           "Inline style branching can make active/dark/light states harder to maintain than CSS classes.",
-          "Giving the board `role=\"grid\"` and the buttons `role=\"gridcell\"` without rows or arrow keys: the grid misses its required rows, `aria-pressed` is not allowed on a gridcell, and screen reader users expect the arrow keys to move between cells."
+          "Giving the board `role=\"grid\"` and the buttons `role=\"gridcell\"` without rows or arrow keys: the grid misses its required rows, `aria-pressed` is not allowed on a gridcell, and screen reader users expect the arrow keys to move between cells.",
+          "Clamping in React's `onChange`: it runs on every keystroke, so the first digit of 12 is applied alone and rewritten to 2, and sizes 10–19 can never be typed."
         ],
         "techniques": [
           "Deterministic cell keys (`row-col`).",
           "Parity-based checker pattern: `(row + col) % 2`.",
           "Input clamping for predictable board constraints.",
-          "A labelled group of toggle buttons: `aria-pressed` marks the highlighted cell and each `aria-label` names its row and column."
+          "A labelled group of toggle buttons: `aria-pressed` marks the highlighted cell and each `aria-label` names its row and column.",
+          "Listening to the native `change` event through a ref, attached again after each render so the handler reads the current size."
         ]
       }
     },
@@ -4232,7 +4236,130 @@
     "seo": {
       "title": "Build Interactive N x N Chessboard in React",
       "description": "Create an n by n chessboard UI where selecting a cell updates highlight state and supports board-size changes."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "chessboard-size-clamps",
+        "name": "Board size applies on change and clamps to 2–20",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".board .cell",
+            "count": 64
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "12"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 144
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "25"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 400
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "30"
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "20"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "1"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".board .cell",
+            "count": 4
+          },
+          {
+            "type": "expectValue",
+            "selector": "#board-size",
+            "value": "2"
+          }
+        ]
+      },
+      {
+        "id": "chessboard-single-highlight",
+        "name": "Clicking a cell highlights only that cell",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 1, column 1",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".board .cell",
+            "index": 9
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--active",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: row 2, column 2",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": "#board-size",
+            "value": "10"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cell--active",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Selected: none",
+            "match": "contains"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-snake-game",

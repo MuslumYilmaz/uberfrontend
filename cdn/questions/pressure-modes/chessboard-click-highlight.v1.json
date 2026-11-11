@@ -402,7 +402,7 @@
       "interviewerPrompt": "Finish with an operable dynamic grid. Focus movement and cell metadata must remain correct without selecting or highlighting queen moves.",
       "constraints": [
         "Expose the board as a grid described by a polite status and keep rowcount and colcount synchronized with size.",
-        "Give every cell a stable row-column id, zero-based data coordinates, one-based ARIA coordinates, pressed state, and dynamic selection or reachability label suffix.",
+        "Put each row of the board in an element with `role=\"row\"` and a one-based `aria-rowindex`, and each cell button in an element with `role=\"gridcell\"` and a one-based `aria-colindex`. A gridcell does not support `aria-pressed`, so the button inside it keeps the pressed state. Give every cell button a stable row-column id, zero-based data coordinates, and a selection or reachability suffix in its label.",
         "Use roving tabindex with one cell in the tab order; Left and Right wrap within a row, Up and Down wrap within a column, and Home and End move to row boundaries.",
         "Keyboard navigation must move focus without changing selection or queen reachability."
       ],
@@ -603,8 +603,18 @@
             },
             {
               "type": "expectCount",
-              "selector": "button.cell[type=\"button\"][role=\"gridcell\"]",
+              "selector": ".board [role=\"row\"]",
+              "count": 8
+            },
+            {
+              "type": "expectCount",
+              "selector": ".board [role=\"row\"] [role=\"gridcell\"] button.cell[type=\"button\"]",
               "count": 64
+            },
+            {
+              "type": "expectCount",
+              "selector": "button.cell[role], button.cell[aria-rowindex], button.cell[aria-colindex]",
+              "count": 0
             },
             {
               "type": "expectCount",
@@ -634,14 +644,14 @@
             },
             {
               "type": "expectAttribute",
-              "selector": ".cell",
+              "selector": ".board [role=\"row\"]",
               "index": 0,
               "attribute": "aria-rowindex",
               "expected": "1"
             },
             {
               "type": "expectAttribute",
-              "selector": ".cell",
+              "selector": ".board [role=\"gridcell\"]",
               "index": 0,
               "attribute": "aria-colindex",
               "expected": "1"
@@ -690,14 +700,14 @@
             },
             {
               "type": "expectAttribute",
-              "selector": ".cell",
-              "index": 63,
+              "selector": ".board [role=\"row\"]",
+              "index": 7,
               "attribute": "aria-rowindex",
               "expected": "8"
             },
             {
               "type": "expectAttribute",
-              "selector": ".cell",
+              "selector": ".board [role=\"gridcell\"]",
               "index": 63,
               "attribute": "aria-colindex",
               "expected": "8"

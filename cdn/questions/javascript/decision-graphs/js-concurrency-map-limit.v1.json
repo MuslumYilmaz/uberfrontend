@@ -8,6 +8,18 @@
       "code": "export default function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');\n  const n = items.length;\n  const allSettled = strategy === 'all-settled';\n  const results = new Array(n);\n  if (n === 0) return Promise.resolve(results);\n\n  let next = 0;\n  let done = 0;\n  let failed = false;\n\n  return new Promise((resolve, reject) => {\n    const runner = async () => {\n      while (true) {\n        const i = next++;\n        if (i >= n || (failed && !allSettled)) break;\n        try {\n          const v = await worker(items[i], i);\n          results[i] = allSettled\n            ? { status: 'fulfilled', value: v }\n            : v;\n        } catch (err) {\n          if (allSettled) {\n            results[i] = { status: 'rejected', reason: err };\n          } else {\n            failed = true;\n            reject(err);\n            return;\n          }\n        } finally {\n          if (++done === n && (!failed || allSettled)) {\n            resolve(results);\n          }\n        }\n      }\n    };\n\n    const k = Math.min(limit, n);\n    for (let j = 0; j < k; j++) {\n      runner();\n    }\n  });\n}\n",
       "nodes": [
         {
+          "id": "d0-reject-invalid-limit",
+          "title": "Reject an invalid limit before any work starts",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');"
+          },
+          "why": "A limit below 1 could never start a runner, so the promise would never settle. This plain function throws before the pool starts; declared async, as the starter is, the same throw becomes a rejected promise, and callers that await the result see the error either way.",
+          "alternative": "Clamp the limit to 1 and carry on.",
+          "tradeoff": "Clamping hides a caller bug; failing fast tells the caller at once."
+        },
+        {
           "id": "d1-shared-index-worker-pool",
           "title": "Use a shared index for worker coordination",
           "anchor": {

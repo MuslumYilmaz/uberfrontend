@@ -2622,7 +2622,9 @@ test.describe('Framework checks against the production SSR build', () => {
 
     const preview = livePreview(page);
     const sizeInput = preview.locator('#board-size');
+    // The size applies on the change event (Enter, blur or the arrows); fill() alone only types.
     await sizeInput.fill('20');
+    await sizeInput.press('Enter');
     await expect(sizeInput).toHaveValue('20');
     await expect(preview.locator('button.cell')).toHaveCount(400);
 
@@ -2634,6 +2636,7 @@ test.describe('Framework checks against the production SSR build', () => {
     }
 
     await sizeInput.fill('8');
+    await sizeInput.press('Enter');
     await expect(sizeInput).toHaveValue('8');
     await expect(preview.locator('button.cell')).toHaveCount(64);
     await exerciseChessboardKeyboardPreview(page);

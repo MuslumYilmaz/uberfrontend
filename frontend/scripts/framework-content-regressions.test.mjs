@@ -3600,10 +3600,10 @@ function assertChessboardClickHighlightPressureMode() {
       id: 'react-chessboard-click-highlight',
       starter: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json',
-      // 2026-11-11: the board lost its grid roles. React keeps applying the size on each change: its onChange is the
-      // input event, and the pressure rounds expect a set value to resize the board at once.
       updatedAt: '2026-11-11',
-      checks: [],
+      // Added on 2026-11-11 with the fix that applies the size on the native change event: React's onChange runs on
+      // every keystroke.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
     angular: {
       id: 'angular-chessboard-click-highlight',
@@ -3998,10 +3998,17 @@ function assertChessboardClickHighlightPressureMode() {
       attribute: 'aria-live',
       expected: 'polite',
     },
+    // 2026-11-11: rows of gridcells hold the cell buttons; aria-pressed stays on the buttons, which a gridcell would not support.
+    { type: 'expectCount', selector: '.board [role="row"]', count: 8 },
     {
       type: 'expectCount',
-      selector: 'button.cell[type="button"][role="gridcell"]',
+      selector: '.board [role="row"] [role="gridcell"] button.cell[type="button"]',
       count: 64,
+    },
+    {
+      type: 'expectCount',
+      selector: 'button.cell[role], button.cell[aria-rowindex], button.cell[aria-colindex]',
+      count: 0,
     },
     { type: 'expectCount', selector: 'button.cell:not([disabled])', count: 64 },
     {
@@ -4027,14 +4034,14 @@ function assertChessboardClickHighlightPressureMode() {
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="row"]',
       index: 0,
       attribute: 'aria-rowindex',
       expected: '1',
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="gridcell"]',
       index: 0,
       attribute: 'aria-colindex',
       expected: '1',
@@ -4076,14 +4083,14 @@ function assertChessboardClickHighlightPressureMode() {
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
-      index: 63,
+      selector: '.board [role="row"]',
+      index: 7,
       attribute: 'aria-rowindex',
       expected: '8',
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="gridcell"]',
       index: 63,
       attribute: 'aria-colindex',
       expected: '8',

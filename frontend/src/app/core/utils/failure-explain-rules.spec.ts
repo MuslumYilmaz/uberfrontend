@@ -112,8 +112,22 @@ describe('failure-explain-rules', () => {
     }
   });
 
-  it('explains the React and Vue star rating, Reply toggle and Vue chessboard checks by their names', () => {
+  it('explains the React and Vue star rating, Reply toggle and chessboard checks by their names', () => {
     const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'react-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'react-chessboard-size-on-change',
+        action: 'setSizeText(String(clamped))',
+      },
+      {
+        questionId: 'react-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'react-chessboard-single-selection',
+        action: 'toKey(row, col)',
+      },
       {
         questionId: 'react-star-rating',
         name: 'Arrow keys move the rating like a radio group',

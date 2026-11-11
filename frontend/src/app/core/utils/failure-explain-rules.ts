@@ -515,6 +515,46 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-chessboard-size-on-change',
+    questionId: 'react-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-chessboard-size-on-change',
+      title: 'Apply the size on the native change event and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Do the work in `applySize`: React\'s `onChange` runs on every keystroke, so the starter already calls `applySize` from the native `change` event (Enter, blur or the arrows).',
+        'Clamp with `Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Call `setSizeText(String(clamped))` every time, so 30 on a 20 by 20 board is rewritten to 20 even though the size does not change.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-chessboard-single-selection',
+    questionId: 'react-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onSelectCell(row, col)`, call `setSelectedKey(toKey(row, col))`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Call `setSelectedKey(null)` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
     ruleId: 'vue-chessboard-single-selection',
     questionId: 'vue-chessboard-click-highlight',
     priority: 100,
@@ -1650,6 +1690,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Build the key from all arguments, for example `JSON.stringify(args)`.',
         'Check `cache.has(key)` before computing; `cache.get(key) || ...` computes falsy results again on every call.',
+        'If you nest one `Map` per argument instead, store the result under a `Symbol` key: a string key such as `\'result\'` can also be an argument.',
       ],
       confidence: 0.88,
     }),

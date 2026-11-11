@@ -47,14 +47,14 @@
     },
     "approach2": {
       "language": "javascript",
-      "code": "export default function memoize(fn) {\n  const root = new Map();\n  return function memoized(...args) {\n    let map = root;\n    for (const arg of args) {\n      if (!map.has(arg)) map.set(arg, new Map());\n      map = map.get(arg);\n    }\n    if (map.has('result')) return map.get('result');\n    const result = fn(...args);\n    map.set('result', result);\n    return result;\n  };\n}\n",
+      "code": "// No argument can be this key, so a cached result never collides with an argument such as 'result'.\nconst RESULT = Symbol('result');\n\nexport default function memoize(fn) {\n  const root = new Map();\n  return function memoized(...args) {\n    let map = root;\n    for (const arg of args) {\n      if (!map.has(arg)) map.set(arg, new Map());\n      map = map.get(arg);\n    }\n    if (map.has(RESULT)) return map.get(RESULT);\n    const result = fn(...args);\n    map.set(RESULT, result);\n    return result;\n  };\n}\n",
       "nodes": [
         {
           "id": "d1-walk-argument-path",
           "title": "Walk one map level per argument",
           "anchor": {
-            "lineStart": 5,
-            "lineEnd": 7,
+            "lineStart": 8,
+            "lineEnd": 8,
             "snippet": "for (const arg of args) {"
           },
           "why": "Each argument moves you deeper into a path, so argument tuples get separate cache branches.",
@@ -65,11 +65,11 @@
           "id": "d2-sentinel-cache-hit",
           "title": "Check terminal sentinel for cached result",
           "anchor": {
-            "lineStart": 9,
-            "lineEnd": 9,
-            "snippet": "if (map.has('result')) return map.get('result');"
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "if (map.has(RESULT)) return map.get(RESULT);"
           },
-          "why": "`'result'` marks the final value at that argument path, so we can return immediately on hits.",
+          "why": "`'result'` marks the final value at that argument path, so we can return immediately on hits. The key is a Symbol, so no argument can reach it: with the string 'result', a call such as memoized('result') after memoized() would read the cached value as if it were the next map.",
           "alternative": "Store a small object like `{ value, hasValue }` at each node.",
           "tradeoff": "Sentinel is lightweight, but it relies on a reserved key convention."
         },
@@ -77,9 +77,9 @@
           "id": "d3-write-result-at-leaf",
           "title": "Write computed value at the leaf node",
           "anchor": {
-            "lineStart": 11,
-            "lineEnd": 11,
-            "snippet": "map.set('result', result);"
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "map.set(RESULT, result);"
           },
           "why": "This stores the result exactly where that argument chain ends, ready for future lookups.",
           "alternative": "Keep a separate map from path ids to results.",
