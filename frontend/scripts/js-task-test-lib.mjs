@@ -10,6 +10,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const securityDir = path.join(scriptDir, '../src/app/core/security');
 const { createSandboxExpect } = loadTsModule(path.join(securityDir, 'user-code-sandbox-matchers.ts'));
 const { createSandboxFakeTimers } = loadTsModule(path.join(securityDir, 'user-code-sandbox-fake-timers.ts'));
+const { createTestSuite } = loadTsModule(path.join(securityDir, 'user-code-sandbox-suite.ts'));
 
 // Taken before any test can swap them for fake ones, like the worker's own timers.
 const realSetTimeout = globalThis.setTimeout;
@@ -94,30 +95,22 @@ export async function runTaskTests(question, language, solution) {
   const source = question[testField];
   assert.equal(typeof source, 'string', `${question.id} is missing ${testField}`);
   const executable = prepareTests(source, language, `${question.id}.${testField}.ts`);
-  const cases = [];
-  const suiteNames = [];
+  const suite = createTestSuite(' > ');
   const register = (name, fn) => {
     assert.equal(typeof fn, 'function', `${question.id}/${language} test "${name}" has no function`);
-    cases.push({ name: String(name), fullName: [...suiteNames, String(name)].join(' > '), fn });
-  };
-  const describe = (name, fn) => {
-    suiteNames.push(String(name));
-    try {
-      fn();
-    } finally {
-      suiteNames.pop();
-    }
+    suite.test(name, fn);
   };
 
   const loadTests = new AsyncFunction(
-    '__solution', 'describe', 'test', 'it', 'expect',
+    '__solution', 'describe', 'test', 'it', 'expect', 'beforeAll', 'afterAll', 'beforeEach', 'afterEach',
     'useFakeTimers', 'useRealTimers', 'advanceTimersByTime', 'advanceTimersByTimeAsync',
     executable,
   );
   await loadTests(
-    solution, describe, register, register, expect,
+    solution, suite.describe, register, register, expect, suite.beforeAll, suite.afterAll, suite.beforeEach, suite.afterEach,
     fakeTimers.useFakeTimers, fakeTimers.useRealTimers, fakeTimers.advanceTimersByTime, fakeTimers.advanceTimersByTimeAsync,
   );
+  const cases = suite.tests();
   assert.ok(cases.length > 0, `${question.id}/${language} registered no tests`);
 
   const asyncErrors = [];

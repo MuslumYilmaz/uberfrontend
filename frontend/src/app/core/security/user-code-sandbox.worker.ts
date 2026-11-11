@@ -7,6 +7,7 @@ import { freezeHardenedPrototypes } from './user-code-sandbox-hardening';
 import { createSandboxExpect } from './user-code-sandbox-matchers';
 import { linkModules } from './user-code-sandbox-modules';
 import { runQueue, timedOutMessage, type QueuedResult, type QueuedTest } from './user-code-sandbox-runner';
+import { createTestSuite } from './user-code-sandbox-suite';
 
 // ---------- message contracts ----------
 type RunMsg = {
@@ -289,16 +290,12 @@ self.addEventListener('unhandledrejection', (e: any) => {
 });
 
 // ---------- tiny test DSL (ORDERED execution) ----------
-type TestCase = { idx: number; name: string; fn: () => any };
-const suiteStack: string[] = [];
-const queue: TestCase[] = [];
+// Each run gets a fresh suite; once the tests have loaded, `queue` holds them in order, wrapped with their hooks.
+let suite = createTestSuite(' › ');
+let queue: QueuedTest[] = [];
 let nextIdx = 0;
 
 const expect = createSandboxExpect(safeStringify);
-function fullName(name: string) { return [...suiteStack, name].join(' › '); }
-function describe(name: string, fn: () => any) { suiteStack.push(name); try { fn(); } finally { suiteStack.pop(); } }
-function test(name: string, fn: () => any) { queue.push({ idx: nextIdx++, name: fullName(name), fn }); }
-function it(name: string, fn: () => any) { test(name, fn); }
 
 const postProgress = (payload: Omit<ProgressMsg, 'type' | 'nonce'>) => {
     if (doneSent) return;
@@ -416,17 +413,21 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     doneSent = false;
     logs.length = 0;
     asyncErrors.length = 0;
-    queue.length = 0;
-    suiteStack.length = 0;
+    suite = createTestSuite(' › ');
+    queue = [];
     nextIdx = 0;
     activeTestIdx = null;
     activeTestName = null;
 
     // expose DSL to tests
-    (self as any).describe = describe;
-    (self as any).test = test;
+    (self as any).describe = suite.describe;
+    (self as any).test = suite.test;
     (self as any).expect = expect;
-    (self as any).it = it;
+    (self as any).it = suite.it;
+    (self as any).beforeAll = suite.beforeAll;
+    (self as any).afterAll = suite.afterAll;
+    (self as any).beforeEach = suite.beforeEach;
+    (self as any).afterEach = suite.afterEach;
     (self as any).useFakeTimers = fakeTimers.useFakeTimers;
     (self as any).useRealTimers = fakeTimers.useRealTimers;
     (self as any).advanceTimersByTime = fakeTimers.advanceTimersByTime;
@@ -467,6 +468,8 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
         }
         if (!timedOut) {
             realClearTimeout(killer);
+            queue = suite.tests().map(({ idx, fullName, fn }) => ({ idx, name: fullName, fn }));
+            nextIdx = queue.length;
             postProgress({ phase: 'registered', tests: queue.map(({ idx, name }) => ({ idx, name })) });
             const ordered = await runQueued(testTimeoutMs, budgetMs); // run in definition order
             sendDone({ entries: logs, results: ordered });
