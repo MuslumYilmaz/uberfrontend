@@ -1,0 +1,85 @@
+{
+  "questionId": "angular-debounced-search",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\nimport { Subject, of, timer, throwError } from 'rxjs';\nimport { catchError, debounceTime, delay, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly query = signal('');\n  // The search pipeline writes these from timer callbacks; as signals they still refresh the OnPush view.\n  readonly results = signal<Result[]>([]);\n  readonly isLoading = signal(false);\n  readonly error = signal<string | null>(null);\n\n  private readonly searchTerm$ = new Subject<string>();\n  private readonly destroyRef = inject(DestroyRef);\n\n  constructor() {\n    this.setupSearchStream();\n  }\n\n  onQueryChange(value: string): void {\n    this.query.set(value);\n    this.searchTerm$.next(value);\n  }\n\n  private setupSearchStream(): void {\n    this.searchTerm$\n      .pipe(\n        debounceTime(500),\n        distinctUntilChanged(),\n        tap((term) => {\n          if (!term.trim()) {\n            this.results.set([]);\n            this.isLoading.set(false);\n          } else {\n            this.isLoading.set(true);\n          }\n          this.error.set(null);\n        }),\n        switchMap((term) => {\n          const trimmed = term.trim();\n          if (!trimmed) {\n            return of([]);\n          }\n\n          return this.fakeApiSearch(trimmed).pipe(\n            catchError((err: unknown) => {\n              this.error.set(err instanceof Error ? err.message : 'Something went wrong.');\n              this.isLoading.set(false);\n              return of([]);\n            })\n          );\n        }),\n        takeUntilDestroyed(this.destroyRef)\n      )\n      .subscribe((results: Result[]) => {\n        this.results.set(results);\n        this.isLoading.set(false);\n      });\n  }\n\n  // Fake API: filters the in-memory array and responds after a delay.\n  private fakeApiSearch(term: string) {\n    const trimmed = term.trim().toLowerCase();\n    const delayMs = 600;\n\n    if (!trimmed) {\n      return of([]).pipe(delay(delayMs));\n    }\n\n    const filtered = FAKE_DATA.filter((item) => {\n      const name = item.name.toLowerCase();\n      const email = item.email.toLowerCase();\n      return name.includes(trimmed) || email.includes(trimmed);\n    });\n\n    // Deliberately fail for the query \"error\" so students can see error handling.\n    if (trimmed === 'error') {\n      return timer(delayMs).pipe(\n        switchMap(() => throwError(() => new Error('Fake API error')))\n      );\n    }\n\n    return of(filtered).pipe(delay(delayMs));\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-search-state-signals",
+          "title": "Hold the search state in signals",
+          "anchor": {
+            "lineStart": 30,
+            "lineEnd": 30,
+            "snippet": "readonly results = signal<Result[]>([]);"
+          },
+          "why": "results, isLoading and error are written from debounce and delay callbacks after the input event is over; a signal write is what marks the OnPush view for refresh at that point.",
+          "alternative": "Plain fields with default change detection, relying on zone.js to run a global check after every timer callback.",
+          "tradeoff": "The template calls results(), isLoading() and error() instead of reading fields, and in return the view stays correct under OnPush and without zone.js."
+        },
+        {
+          "id": "d2-debounce-typing",
+          "title": "Wait for a 500ms pause in typing",
+          "anchor": {
+            "lineStart": 49,
+            "lineEnd": 49,
+            "snippet": "debounceTime(500),"
+          },
+          "why": "A burst of keystrokes reaches the search only once typing stops for 500ms, so fakeApiSearch runs once per pause instead of once per character typed into the box.",
+          "alternative": "Search on every input event, or throttle so the first keystroke of each window searches at once.",
+          "tradeoff": "Results show up at least 500ms after the last keystroke, which is the price for never loading the intermediate prefixes of a name."
+        },
+        {
+          "id": "d3-clear-on-empty-term",
+          "title": "Clear the results for an empty term",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "if (!term.trim()) {"
+          },
+          "why": "A blank or whitespace-only term empties results and stops the loading flag, and the switchMap branch answers with of([]), so fakeApiSearch never receives an empty query.",
+          "alternative": "Pass the empty string to fakeApiSearch and let it decide whether to return everything or nothing.",
+          "tradeoff": "The empty case is checked twice, in tap and in switchMap, but clearing the box resets the list without a 600ms round trip."
+        },
+        {
+          "id": "d4-switch-to-latest-term",
+          "title": "Cancel the request for an older term",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "switchMap((term) => {"
+          },
+          "why": "When a newer term clears the debounce while a request is still in flight, switchMap unsubscribes from it, so a late response for Bob cannot replace the results for Alice.",
+          "alternative": "mergeMap or concatMap, which keep every request alive and let an older response land after a newer one.",
+          "tradeoff": "Work already started for the old term is thrown away, which suits a search box but would be wrong for saves that must all finish."
+        },
+        {
+          "id": "d5-recover-inside-the-request",
+          "title": "Catch errors inside the inner stream",
+          "anchor": {
+            "lineStart": 67,
+            "lineEnd": 67,
+            "snippet": "catchError((err: unknown) => {"
+          },
+          "why": "catchError wraps only the fakeApiSearch call, so a failed search sets error, clears isLoading and yields an empty list while the outer searchTerm$ subscription keeps listening.",
+          "alternative": "Place catchError after switchMap on the outer pipe, where the first failure completes the stream and later typing never searches again.",
+          "tradeoff": "Each request carries its own handler, one more level of nesting in exchange for a box that keeps searching after a failed request, such as the one for the term error."
+        },
+        {
+          "id": "d6-stop-with-destroyref",
+          "title": "End the pipeline with the component",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 74,
+            "snippet": "takeUntilDestroyed(this.destroyRef)"
+          },
+          "why": "takeUntilDestroyed completes the subscription when the component is destroyed, which also drops a pending debounce timer or a fake request that has not answered yet.",
+          "alternative": "A destroy$ Subject completed in ngOnDestroy, or a stored Subscription that ngOnDestroy unsubscribes.",
+          "tradeoff": "The pipeline is built in a method, so DestroyRef has to be injected and passed in, but no lifecycle hook or extra Subject is needed."
+        }
+      ]
+    }
+  }
+}

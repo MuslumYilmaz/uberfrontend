@@ -1,0 +1,85 @@
+{
+  "questionId": "angular-chips-input-autocomplete",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ntype Candidate = {\n  id: string;\n  name: string;\n  email: string;\n};\n\ntype Chip = {\n  id: string;\n  label: string;\n  value: string;\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css'],\n  host: {\n    '(document:mousedown)': 'onDocMouseDown($event)'\n  }\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'invite-suggestions';\n\n  readonly users: Candidate[] = [\n    { id: 'alice', name: 'Alice Johnson', email: 'alice@frontendatlas.dev' },\n    { id: 'bob', name: 'Bob Smith', email: 'bob@frontendatlas.dev' },\n    { id: 'charlie', name: 'Charlie Kim', email: 'charlie@frontendatlas.dev' },\n    { id: 'diana', name: 'Diana Lopez', email: 'diana@frontendatlas.dev' },\n    { id: 'ethan', name: 'Ethan Brown', email: 'ethan@frontendatlas.dev' },\n    { id: 'fiona', name: 'Fiona Patel', email: 'fiona@frontendatlas.dev' },\n    { id: 'george', name: 'George Miller', email: 'george@frontendatlas.dev' }\n  ];\n\n  readonly chips = signal<Chip[]>([]);\n  readonly query = signal('');\n  readonly isOpen = signal(false);\n  readonly activeIndex = signal(-1);\n\n  // Recomputed only when query() or chips() change, so the template and handleKeyDown share one list.\n  readonly suggestions = computed<Chip[]>(() => {\n    const needle = this.normalize(this.query());\n    if (!needle) return [];\n\n    const selectedIds = new Set(this.chips().map((chip) => chip.id));\n\n    return this.users\n      .filter((user) => {\n        if (selectedIds.has(user.id)) return false;\n        const haystack = (user.name + ' ' + user.email).toLowerCase();\n        return haystack.includes(needle);\n      })\n      .slice(0, 6)\n      .map((user) => ({\n        id: user.id,\n        label: user.name,\n        value: user.email\n      }));\n  });\n\n  readonly activeDescendant = computed(() => {\n    const index = this.activeIndex();\n    return index >= 0 ? this.optionId(index) : null;\n  });\n\n  onInput(value: string): void {\n    this.query.set(value);\n    this.activeIndex.set(-1);\n    this.syncOpenState();\n  }\n\n  onFocus(): void {\n    this.syncOpenState();\n  }\n\n  addChip(chip: Chip): void {\n    const hasDuplicate = this.chips().some(\n      (item) => item.id === chip.id || this.normalize(item.value) === this.normalize(chip.value)\n    );\n    if (!hasDuplicate) {\n      this.chips.update((chips) => [...chips, chip]);\n    }\n\n    this.query.set('');\n    this.isOpen.set(false);\n    this.activeIndex.set(-1);\n  }\n\n  addCustomFromQuery(): void {\n    const raw = this.query().trim();\n    if (!raw) return;\n\n    this.addChip({\n      id: 'custom-' + this.normalize(raw),\n      label: raw,\n      value: raw\n    });\n  }\n\n  removeChip(chipId: string): void {\n    this.chips.update((chips) => chips.filter((chip) => chip.id !== chipId));\n    this.syncOpenState();\n  }\n\n  selectSuggestion(chip: Chip): void {\n    this.addChip(chip);\n  }\n\n  handleKeyDown(event: KeyboardEvent): void {\n    const suggestions = this.suggestions();\n    const len = suggestions.length;\n\n    if (event.key === 'ArrowDown') {\n      event.preventDefault();\n      if (!len) return;\n      this.isOpen.set(true);\n      this.activeIndex.update((index) => (index < 0 ? 0 : (index + 1) % len));\n      return;\n    }\n\n    if (event.key === 'ArrowUp') {\n      event.preventDefault();\n      if (!len) return;\n      this.isOpen.set(true);\n      this.activeIndex.update((index) => (index < 0 ? len - 1 : (index - 1 + len) % len));\n      return;\n    }\n\n    if (event.key === 'Enter') {\n      event.preventDefault();\n      const index = this.activeIndex();\n      if (this.isOpen() && index >= 0 && index < len) {\n        this.addChip(suggestions[index]);\n      } else {\n        this.addCustomFromQuery();\n      }\n      return;\n    }\n\n    if (event.key === ',') {\n      event.preventDefault();\n      this.addCustomFromQuery();\n      return;\n    }\n\n    if (event.key === 'Backspace' && !this.query() && this.chips().length > 0) {\n      this.chips.update((chips) => chips.slice(0, -1));\n      this.syncOpenState();\n      return;\n    }\n\n    if (event.key === 'Escape') {\n      this.isOpen.set(false);\n      this.activeIndex.set(-1);\n    }\n  }\n\n  optionId(index: number): string {\n    return 'invite-option-' + String(index);\n  }\n\n  onDocMouseDown(event: MouseEvent): void {\n    const target = event.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen.set(false);\n      this.activeIndex.set(-1);\n    }\n  }\n\n  private syncOpenState(): void {\n    const hasQuery = this.normalize(this.query()).length > 0;\n    const open = hasQuery && this.suggestions().length > 0;\n    this.isOpen.set(open);\n    if (!open) {\n      this.activeIndex.set(-1);\n    }\n  }\n\n  private normalize(value: string): string {\n    return value.trim().toLowerCase();\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-chips-signal",
+          "title": "Keep the selected chips in a signal",
+          "anchor": {
+            "lineStart": 41,
+            "lineEnd": 41,
+            "snippet": "readonly chips = signal<Chip[]>([]);"
+          },
+          "why": "chips holds every invited person and custom entry, and suggestions reads it to hide people who are already invited, so each add or removal has to reach the signal.",
+          "alternative": "A plain Chip[] field changed with push and splice and read through getters on every change detection pass.",
+          "tradeoff": "Every edit must hand the signal a new array through update, but the suggestion list and the OnPush view see each one."
+        },
+        {
+          "id": "d2-computed-suggestions",
+          "title": "Derive suggestions with computed",
+          "anchor": {
+            "lineStart": 47,
+            "lineEnd": 47,
+            "snippet": "readonly suggestions = computed<Chip[]>(() => {"
+          },
+          "why": "It filters users by name or email, skips ids already in chips and caps the list at six; it reruns only when query or chips change, and handleKeyDown reads the same cached list as the template.",
+          "alternative": "A getter that rebuilds the filtered array on each change detection pass and again on every keydown.",
+          "tradeoff": "A computed only notices signal reads, so the users list must stay constant or become a signal, while repeated reads within one pass cost nothing."
+        },
+        {
+          "id": "d3-reject-normalized-duplicates",
+          "title": "Reject duplicates by id or normalized value",
+          "anchor": {
+            "lineStart": 84,
+            "lineEnd": 84,
+            "snippet": "(item) => item.id === chip.id || this.normalize(item.value) === this.normalize(chip.value)"
+          },
+          "why": "addChip compares ids and trimmed lowercase values, so typing zed CUSTOM with stray spaces adds nothing when Zed Custom exists, and the query still clears.",
+          "alternative": "Compare raw labels, which lets casing and extra spaces produce repeated chips for the same person.",
+          "tradeoff": "Normalizing on each comparison is cheap for a few chips, and custom text equal to a user's email counts as that user, which is the intended match."
+        },
+        {
+          "id": "d4-enter-picks-or-creates",
+          "title": "Let Enter pick a suggestion or create a chip",
+          "anchor": {
+            "lineStart": 138,
+            "lineEnd": 138,
+            "snippet": "if (this.isOpen() && index >= 0 && index < len) {"
+          },
+          "why": "Enter adds the highlighted suggestion when the list is open and an option is active; otherwise addCustomFromQuery turns the typed text into a custom chip.",
+          "alternative": "Accept only suggestions on Enter and offer a separate button for inviting an address that is not in the list.",
+          "tradeoff": "One key covers both paths, but after Escape closes the list, Enter creates a custom chip from the text even if an option was highlighted before."
+        },
+        {
+          "id": "d5-backspace-on-empty-input",
+          "title": "Remove the last chip only from an empty input",
+          "anchor": {
+            "lineStart": 152,
+            "lineEnd": 152,
+            "snippet": "if (event.key === 'Backspace' && !this.query() && this.chips().length > 0) {"
+          },
+          "why": "Backspace erases typed text first; only when the query is already empty does it drop the most recent chip, by slicing it off the end of the array.",
+          "alternative": "Remove a chip on every Backspace, which deletes invites while the user is still fixing a typo in the input.",
+          "tradeoff": "Keydown fires before the input updates, so deleting the last letter and removing a chip take separate presses, which is how tag inputs usually behave."
+        },
+        {
+          "id": "d6-close-on-outside-press",
+          "title": "Close the list on presses outside the field",
+          "anchor": {
+            "lineStart": 171,
+            "lineEnd": 171,
+            "snippet": "if (!this.host.nativeElement.contains(target)) {"
+          },
+          "why": "The document-level mouse-down listener in the host metadata closes the list and resets activeIndex only when the press lands outside this component, so pressing an option still adds it.",
+          "alternative": "Close the list on input blur, which runs before a click on an option and can remove the option before the pick lands.",
+          "tradeoff": "Listening on the whole document runs this check for every press on the page, a small cost for dismissal without blur timing races."
+        }
+      ]
+    }
+  }
+}

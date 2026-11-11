@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-progress-bar-thresholds",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly progress = signal(0);\n\n  readonly barClass = computed(() => {\n    const value = this.progress();\n    if (value < 34) return 'bar red';\n    if (value <= 66) return 'bar orange';\n    return 'bar green';\n  });\n\n  inc(): void {\n    this.progress.update((value) => Math.min(100, value + 10));\n  }\n\n  dec(): void {\n    this.progress.update((value) => Math.max(0, value - 10));\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-progress-signal",
+          "title": "Keep one progress number in a signal",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "readonly progress = signal(0);"
+          },
+          "why": "The percentage label, the fill width, aria-valuenow and the color class all read this value, so one update from a button moves every binding together.",
+          "alternative": "Store the width string and the color class in their own fields and set them next to the number in inc() and dec().",
+          "tradeoff": "Deriving everything from one number rules out a label and bar that disagree; the cost is calling progress() in each binding instead of reading a plain field."
+        },
+        {
+          "id": "d2-derive-threshold-class",
+          "title": "Derive the color class from the value",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "readonly barClass = computed(() => {"
+          },
+          "why": "barClass turns the number into bar red, bar orange or bar green in one place, the template binds it with [class], and the string is recalculated only when progress changes.",
+          "alternative": "Write the three conditions inline with [ngClass] in the template, or return the class from a getter that runs on every check.",
+          "tradeoff": "One computed keeps the template to a single binding and caches the result; inline conditions show the thresholds in the markup but repeat them anywhere else the color is needed."
+        },
+        {
+          "id": "d3-ordered-thresholds",
+          "title": "Test the thresholds from low to high",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "if (value <= 66) return 'bar orange';"
+          },
+          "why": "The red check above returns first, so this line only sees values of 34 and up; <= 66 makes 66 orange and 67 green, as the hint under the bar states.",
+          "alternative": "Test each band with both bounds, such as value >= 34 && value <= 66, so the checks can run in any order.",
+          "tradeoff": "Ordered early returns are shorter, but reordering them changes the result; two-sided ranges survive reordering at the cost of repeating every bound."
+        },
+        {
+          "id": "d4-clamp-at-maximum",
+          "title": "Cap the increase at 100 inside the update",
+          "anchor": {
+            "lineStart": 20,
+            "lineEnd": 20,
+            "snippet": "this.progress.update((value) => Math.min(100, value + 10));"
+          },
+          "why": "update reads the current value and Math.min caps the result, so pressing +10% at 100 stores 100 again instead of 110 and the label never reads 110%.",
+          "alternative": "Disable the +10% button at 100 and skip the clamp in inc().",
+          "tradeoff": "The clamp keeps the stored value valid for any caller; disabling the button as well would show that the limit is reached, which this solution leaves out."
+        },
+        {
+          "id": "d5-clamp-at-zero",
+          "title": "Clamp the stored value at zero",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 24,
+            "snippet": "this.progress.update((value) => Math.max(0, value - 10));"
+          },
+          "why": "Math.max holds the value at 0, so -10% at 0 changes nothing, and the label, the width and aria-valuenow never show a negative number.",
+          "alternative": "Let the number go below zero and clamp only the width binding in the template.",
+          "tradeoff": "Clamping the stored number keeps every reader honest; clamping only the display would draw an empty bar while the label and aria-valuenow show -10."
+        }
+      ]
+    }
+  }
+}

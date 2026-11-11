@@ -149,20 +149,34 @@ function buildProgressAwareWhy(snapshot: FailureSnapshot, base: string): string 
   return base;
 }
 
+// Every Angular coding question: all of them use built-in control flow and signal-based solutions.
 const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
   'angular-autocomplete-search-starter',
+  'angular-chessboard-click-highlight',
+  'angular-chips-input-autocomplete',
   'angular-contact-form-starter',
+  'angular-counter-starter',
+  'angular-debounced-search',
+  'angular-dynamic-counter-buttons',
   'angular-dynamic-table-starter',
   'angular-faq-accordion',
   'angular-filterable-user-list',
   'angular-image-slider-starter',
+  'angular-input-output-two-way',
+  'angular-like-button',
   'angular-multi-step-form-starter',
   'angular-nested-checkboxes',
+  'angular-nested-comments',
   'angular-pagination-table',
+  'angular-progress-bar-thresholds',
+  'angular-shopping-cart-mini',
+  'angular-snake-game',
   'angular-star-rating',
   'angular-tabs-switcher',
+  'angular-theme-toggle',
   'angular-tictactoe-starter',
   'angular-todo-list-starter',
+  'angular-transfer-list',
 ] as const;
 
 const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 'vue-autocomplete-search'].map(
@@ -225,8 +239,35 @@ const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.
   }),
 );
 
+// In dev mode an uncalled signal renders as "[Signal: 0]" (or [Computed: …], [Input Signal: …], [Model Signal: …]),
+// so a text check that finds that label points at a template that reads a signal without calling it.
+const ANGULAR_SIGNAL_READ_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'angular-signal-read-in-template',
+    questionId,
+    priority: 120,
+    matches: (snapshot) =>
+      anyFailingErrorIncludes(snapshot, ['[signal', '[computed', '[input signal', '[model signal', '[linkedsignal']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-signal-read-in-template',
+      title: 'Call a signal where the template reads it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The page shows a "[Signal: …]" label, which Angular prints when a template reads a signal without calling it.',
+      ),
+      actions: [
+        'Write `count()` rather than `count` in interpolations: a signal is a function, and the template needs its value.',
+        'Check property bindings as well: `[disabled]="isEmpty"` binds the function, which is always truthy, while `[disabled]="isEmpty()"` binds the boolean.',
+        'Inputs, models and computed values read the same way, for example `rating()`, `value()` or `filteredUsers()` inside `@for`.',
+      ],
+      confidence: 0.9,
+    }),
+  }),
+);
+
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
+  ...ANGULAR_SIGNAL_READ_HINT_RULES,
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',

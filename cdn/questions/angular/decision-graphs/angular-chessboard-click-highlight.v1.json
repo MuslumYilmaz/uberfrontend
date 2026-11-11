@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-chessboard-click-highlight",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly minSize = 2;\n  readonly maxSize = 20;\n\n  readonly size = signal(8);\n  readonly selectedKey = signal<string | null>(null);\n\n  readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));\n  readonly selectedLabel = computed(() => {\n    const key = this.selectedKey();\n    if (!key) return 'Selected: none';\n    const [row, col] = key.split('-').map(Number);\n    return 'Selected: row ' + String(row + 1) + ', column ' + String(col + 1);\n  });\n\n  onSizeInput(raw: string): void {\n    const next = Number(raw);\n    if (!Number.isFinite(next)) return;\n    const clamped = Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)));\n    this.size.set(clamped);\n    this.selectedKey.set(null);\n  }\n\n  onCellClick(row: number, col: number): void {\n    this.selectedKey.set(this.cellKey(row, col));\n  }\n\n  cellKey(row: number, col: number): string {\n    return String(row) + '-' + String(col);\n  }\n\n  // Per cell, so a method rather than a computed; Angular still tracks the selectedKey() read.\n  cellClass(row: number, col: number): string {\n    const dark = (row + col) % 2 === 1;\n    const active = this.selectedKey() === this.cellKey(row, col);\n    return 'cell ' + (dark ? 'cell--dark' : 'cell--light') + (active ? ' cell--active' : '');\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-single-selected-key",
+          "title": "Store the selection as one key",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "readonly selectedKey = signal<string | null>(null);"
+          },
+          "why": "One nullable key models single selection: each click replaces it, so the previous cell loses cell--active with no clearing step, and null is the state the status line shows as Selected: none.",
+          "alternative": "Keep a boolean per cell in a two-dimensional array, or a Set of selected keys.",
+          "tradeoff": "One key cannot express multi-select, but two cells can never be active at once, a rule that a grid of booleans would have to enforce in every click handler."
+        },
+        {
+          "id": "d2-derive-row-indexes",
+          "title": "Derive the row indexes from the size",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));"
+          },
+          "why": "The template loops over rows() for both rows and columns, so one index array drives the whole N by N grid, and the computed rebuilds it only when size changes.",
+          "alternative": "Return a fresh array from a rows getter on every check, or store a two-dimensional array of cell objects that onSizeInput rebuilds.",
+          "tradeoff": "Plain indexes carry no per-cell data, so color and active state are worked out per cell in the template; a grid of cell objects could hold them but would need rebuilding on each resize and click."
+        },
+        {
+          "id": "d3-clamp-typed-size",
+          "title": "Clamp the typed size to 2 through 20",
+          "anchor": {
+            "lineStart": 27,
+            "lineEnd": 27,
+            "snippet": "const clamped = Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)));"
+          },
+          "why": "The value loses its decimals, then the Math.min and Math.max pair keeps the board between 2 and 20 cells per side, so no typed value can render an empty grid or thousands of buttons.",
+          "alternative": "Rely on the input's min and max attributes, which limit the spinner arrows and form validity but not what a user types.",
+          "tradeoff": "Clamping on every input event resizes at once, but the first digit of a two-digit size is applied alone: typing 1 clamps to 2 and rewrites the field. Applying the size on change or blur would avoid that."
+        },
+        {
+          "id": "d4-clear-selection-on-resize",
+          "title": "Clear the selection on every resize",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 29,
+            "snippet": "this.selectedKey.set(null);"
+          },
+          "why": "A key such as 7-7 has no cell on a 5 by 5 board, so onSizeInput sets selectedKey back to null and the status line returns to Selected: none.",
+          "alternative": "Keep the key when its row and column still fit the new size, and clear it only when they fall outside the board.",
+          "tradeoff": "Clearing always is one line and never leaves a stale key, but it also drops a selection that would still fit, including when the same size is typed again."
+        },
+        {
+          "id": "d5-per-cell-signal-read",
+          "title": "Read the selection inside a per-cell method",
+          "anchor": {
+            "lineStart": 43,
+            "lineEnd": 43,
+            "snippet": "const active = this.selectedKey() === this.cellKey(row, col);"
+          },
+          "why": "cellClass needs a row and a column, which a computed cannot take, so it stays a method. Its selectedKey() read runs while the template renders, so the OnPush view still updates the classes when the selection changes.",
+          "alternative": "Build a computed grid of cell view models with ready-made class strings and read them in the template by row and column.",
+          "tradeoff": "The method runs once per cell on each check, at most 400 short calls on a 20 by 20 board; a computed grid would cache the strings but rebuild all of them on every click anyway."
+        }
+      ]
+    }
+  }
+}

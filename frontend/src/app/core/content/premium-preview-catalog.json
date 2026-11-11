@@ -450,5 +450,15 @@
       "Give each star an accessible label inside a labelled rating group."
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "angular/coding/angular-input-output-two-way": {
+    "summary": "Build a reusable Angular child component whose count and liked state the parent controls through two-way bindings.",
+    "learningOutcomes": [
+      "Declare the count and liked state as model signals the parent can bind both ways.",
+      "Report every plus, minus and Like press back to the parent state.",
+      "Show values the parent sets directly without extra wiring in the child.",
+      "Explain how a model signal maps to a matching input and output pair."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   }
 }

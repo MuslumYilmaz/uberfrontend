@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "389ce07f9ae9318e99d611ac44ca82284d795c3067db510543d4531f1ed68962"
+      "sha256": "dc02e4668f82b304a1af8af0f613268dd5d5dca0475f200267ad4e02eb24962f"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "de34c150d016f6e19d8638589c9f3f705135bd19b338a1984ed9847937482dfd"
+      "sha256": "edb016b3fe2b9e91197b63701594c1ca787fe3b391175ba19ccb354117c87a45"
     }
   },
-  "contentHash": "cdf42c43942b72c8b5ab05755ba0dfcb26615e511c24e41684c0613beb437191",
-  "definitionHash": "8534dee88d89da60f065a65c44b8800e914d840111dfc7e0543d21d000ce6117",
+  "contentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
+  "definitionHash": "cd0a97b7c0d8a0849826e7c3bb1ca58ecf14835a6140ee2e425c5fd369c3d155",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -29,13 +29,14 @@
       "2026-11-06 source-pin maintenance: registryContentHash refreshed after the react-nested-comments source question's ServiceNow source changed its date and note wording. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-08 source-pin maintenance: registryContentHash refreshed after the react-contact-form-starter source question's requirements named the 10-character message minimum its solution already enforces. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-10 source-pin maintenance: registryContentHash refreshed after the react-counter source question's requirements named the Reset button its check already presses, and its expected behavior says the minus button is disabled at 0, as the check already asserts. No public variant content changes; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after nine Angular source questions (pagination, debounced search, progress thresholds, filterable user list, theme toggle, nested checkboxes, contact form, nested comments, transfer list) dropped a stock closing sentence from their summaries, \"Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.\", which named APIs most of these tasks do not use. The summary is the variant prompt, so those nine public prompts lose that sentence; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after nine Angular source questions (pagination, debounced search, progress thresholds, filterable user list, theme toggle, nested checkboxes, contact form, nested comments, transfer list) dropped a stock closing sentence from their summaries, \"Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.\", which named APIs most of these tasks do not use. The summary is the variant prompt, so those nine public prompts lose that sentence; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after the fifteen pinned Angular source questions had their official solutions rewritten with signals (solution assets, Solution-tab text, decision graphs, of which eight are new, implementation notes and update dates), with behavior checked step by step against the previous solutions. The registry reads none of those fields. Four summaries changed with the rewrite (counter, progress thresholds, filterable user list, contact form), and the summary is the variant prompt, so those four public prompts now describe signal state, computed derivation and registering provideHttpClient() in src/main.ts instead of a component property, a getter or pipe, ngStyle/ngClass and a component-only setup; the fifteen sourceContentVersion dates move to 2026-11-11 with the catalog update dates; graded fields, rubrics, time limits and revisions are unchanged. Requested by the project owner as pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "cdf42c43942b72c8b5ab05755ba0dfcb26615e511c24e41684c0613beb437191",
+    "registryContentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "cdf42c43942b72c8b5ab05755ba0dfcb26615e511c24e41684c0613beb437191",
+  "registryContentHash": "801a15fbbc3a5292d9e464ab61a45b3661de3c28252a6bc1fb3ef9e59fc1e928",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -44,91 +45,91 @@
   "variantCount": 60,
   "variantRefs": [
     {
-      "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
+      "contentHash": "78fac867ce3eb7172d3305373f742245d48342e7149212e0ee9eee716f356b0d",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "revision": 1
     },
     {
-      "contentHash": "1511eb189c4c68d3aa88217a6cf7fefacf66e98accd710527bff5fc26d37a36a",
+      "contentHash": "a0139f8b4942996690bcce79c3b32be078ac4d62d5d13398a6900ce044a743e7",
       "enabled": true,
       "id": "int-code-angular-junior-filterable-user-list-v1",
       "revision": 1
     },
     {
-      "contentHash": "9583788eb0e144af3bc49cb60c75701d36eb0bb004a80b29f215596559adc21e",
+      "contentHash": "9313ccb1d00a0597996f9dc7c5aa7929989453875bc7794893bb3c604c635189",
       "enabled": true,
       "id": "int-code-angular-junior-progress-thresholds-v1",
       "revision": 1
     },
     {
-      "contentHash": "444dc8bfc48fa84280bf9f108ff32808606f46b22b1f942ca0c325eb10c59b92",
+      "contentHash": "292875f6a3520621c980edc99cc4d59261482d6bbc01b575f6af1084eaafaaf2",
       "enabled": true,
       "id": "int-code-angular-junior-tabs-switcher-v1",
       "revision": 1
     },
     {
-      "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
+      "contentHash": "3412f138522463ec6cd681b1eebce06d1918c68f77b8c494aa16cc1920e9b65c",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "revision": 1
     },
     {
-      "contentHash": "654765839d01289e96b3077699702c70a277daa0470ff4d1407509846ec62ff1",
+      "contentHash": "27d360a381db6c36cb9baab441563c7700ecc6ce433be9ef64287a0c64c6a4a9",
       "enabled": true,
       "id": "int-code-angular-mid-multi-step-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "ea5d3683d609bc6b1175306924db6212da1a44f294895ef36725516642dc0573",
+      "contentHash": "cc96ef7a11908a84ae789fb60f726282b2fdf5bb23dce1b3f3344432e2632590",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "revision": 1
     },
     {
-      "contentHash": "cb1d5b4bb95a8b27663a661cc554cea97cae89a1ae5ddd45db2daa7b6d7a93f3",
+      "contentHash": "941de07931e267ccb65f2680c7f1cc6281a049a8c6a669553ccd4e02decf9c60",
       "enabled": true,
       "id": "int-code-angular-mid-pagination-v1",
       "revision": 1
     },
     {
-      "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
+      "contentHash": "f2dc15c0ab16c3f6a3b428edbb760815bcbf71870a9938d0815af8b982ecb2d4",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "revision": 1
     },
     {
-      "contentHash": "ba70a60299fd831f2c4f8132213e13d984b3c46a706dece52a8cc69a8a581d8c",
+      "contentHash": "1302f0b48ae650473776434ea3aadb82c9054d47d04424025e9dd6dd797a4149",
       "enabled": true,
       "id": "int-code-angular-mid-theme-toggle-v1",
       "revision": 1
     },
     {
-      "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
+      "contentHash": "48161f2df483e9151b978823588e418fcc3a6550bd98598cf6c4bfa4e33eecd8",
       "enabled": true,
       "id": "int-code-angular-senior-chips-autocomplete-v1",
       "revision": 1
     },
     {
-      "contentHash": "ed0c45f5e8a61ce4aedf1d6b0962c8d56ddf186898fbe1a210516fc271f78a82",
+      "contentHash": "89e4e3773c920f7ce756a2a76d2bd349243d635fa3bac5abd3e52163391507f2",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "9a7f02d43dd639aa7710d36f4715d4ce42e6c761b49d0e3cee203eeb6e324bfb",
+      "contentHash": "c5627d98b571dea7fea3c2e0385671241b1bfebea55dfb7ba6f41ec352d23ed4",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "revision": 1
     },
     {
-      "contentHash": "193fe47ccf6cd22418d260c8434ba68d765f3629567ebd8b956f287f1d65b726",
+      "contentHash": "9ec386353e5467e9e6dfe7fa324197b741f51eff193c8742248925dc0c7cae3d",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "revision": 1
     },
     {
-      "contentHash": "5d603803dfcbef90ab8c10bc7c7595b047be0bf3971641e8ffda77410341300c",
+      "contentHash": "e5db84c26d980b9396ef0fe42b0c67127478df93c00e3e48a8e0fe3607e513ec",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "revision": 1

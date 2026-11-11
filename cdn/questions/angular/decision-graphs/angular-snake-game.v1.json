@@ -5,41 +5,41 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';\ntype Point = { x: number; y: number };\ntype Outcome = 'moved' | 'lost' | 'won';\ntype State = {\n  snake: Point[];\n  direction: Direction;\n  bufferedDirection: Direction | null;\n  food: Point | null;\n  score: number;\n};\n\nconst BOARD_SIZE = 14;\nconst STEP_MS = 140;\nconst INITIAL_SNAKE: Point[] = [\n  { x: 6, y: 7 }, { x: 5, y: 7 }, { x: 4, y: 7 }\n];\nconst INITIAL_FOOD: Point = { x: 8, y: 7 };\nconst DELTA: Record<Direction, Point> = {\n  UP: { x: 0, y: -1 }, DOWN: { x: 0, y: 1 },\n  LEFT: { x: -1, y: 0 }, RIGHT: { x: 1, y: 0 }\n};\nconst OPPOSITE: Record<Direction, Direction> = {\n  UP: 'DOWN', DOWN: 'UP', LEFT: 'RIGHT', RIGHT: 'LEFT'\n};\n\nfunction pointKey(point: Point): string {\n  return String(point.x) + ',' + String(point.y);\n}\n\nfunction placeFood(snake: Point[], boardSize: number): Point | null {\n  const occupied = new Set(snake.map(pointKey));\n  const free: Point[] = [];\n  for (let y = 0; y < boardSize; y += 1) {\n    for (let x = 0; x < boardSize; x += 1) {\n      const point = { x, y };\n      if (!occupied.has(pointKey(point))) free.push(point);\n    }\n  }\n  return free.length === 0\n    ? null\n    : free[Math.floor(Math.random() * free.length)];\n}\n\nfunction stepSnake(state: State, boardSize: number): State & { outcome: Outcome } {\n  const direction = state.bufferedDirection ?? state.direction;\n  const delta = DELTA[direction];\n  const nextHead = {\n    x: state.snake[0].x + delta.x,\n    y: state.snake[0].y + delta.y\n  };\n  const base = { ...state, direction, bufferedDirection: null };\n  const outOfBounds = nextHead.x < 0 || nextHead.y < 0 ||\n    nextHead.x >= boardSize || nextHead.y >= boardSize;\n  if (outOfBounds) return { ...base, outcome: 'lost' };\n\n  const ateFood = state.food !== null && pointKey(nextHead) === pointKey(state.food);\n  const bodyToCheck = ateFood ? state.snake : state.snake.slice(0, -1);\n  if (bodyToCheck.some((part) => pointKey(part) === pointKey(nextHead))) {\n    return { ...base, outcome: 'lost' };\n  }\n\n  const nextSnake = [nextHead, ...state.snake];\n  if (!ateFood) {\n    nextSnake.pop();\n    return { ...base, snake: nextSnake, outcome: 'moved' };\n  }\n\n  const food = placeFood(nextSnake, boardSize);\n  return {\n    ...base,\n    snake: nextSnake,\n    food,\n    score: state.score + 1,\n    outcome: food === null ? 'won' : 'moved'\n  };\n}\n\nclass AppComponent {\n  snake: Point[] = INITIAL_SNAKE.map((point) => ({ ...point }));\n  direction: Direction = 'RIGHT';\n  bufferedDirection: Direction | null = null;\n  food: Point | null = { ...INITIAL_FOOD };\n  isRunning = false;\n  isGameOver = false;\n  isWon = false;\n  score = 0;\n  private timerId: ReturnType<typeof setInterval> | null = null;\n\n  onDirection(requested: Direction): void {\n    if (this.bufferedDirection !== null) return;\n    if (requested === this.direction || OPPOSITE[this.direction] === requested) return;\n    this.bufferedDirection = requested;\n  }\n\n  start(): void {\n    if (this.isRunning || this.isGameOver || this.isWon) return;\n    this.isRunning = true;\n    this.clearTimer();\n    this.timerId = setInterval(() => this.tick(), STEP_MS);\n  }\n\n  reset(): void {\n    this.clearTimer();\n    this.snake = INITIAL_SNAKE.map((point) => ({ ...point }));\n    this.direction = 'RIGHT';\n    this.bufferedDirection = null;\n    this.food = { ...INITIAL_FOOD };\n    this.score = 0;\n    this.isRunning = false;\n    this.isGameOver = false;\n    this.isWon = false;\n  }\n\n  private tick(): void {\n    if (!this.isRunning || this.isGameOver || this.isWon) return;\n    const result = stepSnake({\n      snake: this.snake,\n      direction: this.direction,\n      bufferedDirection: this.bufferedDirection,\n      food: this.food,\n      score: this.score\n    }, BOARD_SIZE);\n    this.snake = result.snake;\n    this.direction = result.direction;\n    this.bufferedDirection = result.bufferedDirection;\n    this.food = result.food;\n    this.score = result.score;\n    if (result.outcome === 'lost') {\n      this.isGameOver = true;\n      this.pause();\n    } else if (result.outcome === 'won') {\n      this.isWon = true;\n      this.pause();\n    }\n  }\n\n  private pause(): void {\n    this.isRunning = false;\n    this.clearTimer();\n  }\n\n  private clearTimer(): void {\n    if (this.timerId !== null) {\n      clearInterval(this.timerId);\n      this.timerId = null;\n    }\n  }\n\n  ngOnDestroy(): void {\n    this.clearTimer();\n  }\n}\n",
+      "code": "// src/app/snake-engine.ts\nexport type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';\nexport type Point = { x: number; y: number };\n\nexport interface SnakeSnapshot {\n  snake: Point[];\n  direction: Direction;\n  bufferedDirection: Direction | null;\n  food: Point | null;\n  score: number;\n}\n\nexport interface SnakeStep extends SnakeSnapshot {\n  outcome: 'moved' | 'lost' | 'won';\n}\n\nconst DELTA: Record<Direction, Point> = {\n  UP: { x: 0, y: -1 },\n  DOWN: { x: 0, y: 1 },\n  LEFT: { x: -1, y: 0 },\n  RIGHT: { x: 1, y: 0 }\n};\n\nconst OPPOSITE: Record<Direction, Direction> = {\n  UP: 'DOWN',\n  DOWN: 'UP',\n  LEFT: 'RIGHT',\n  RIGHT: 'LEFT'\n};\n\nfunction key(point: Point): string {\n  return String(point.x) + ',' + String(point.y);\n}\n\nexport function bufferTurn(\n  committed: Direction,\n  buffered: Direction | null,\n  requested: Direction\n): Direction | null {\n  if (buffered !== null) return buffered;\n  if (requested === committed || OPPOSITE[committed] === requested) return null;\n  return requested;\n}\n\nexport function placeFood(\n  snake: Point[],\n  boardSize: number,\n  random: () => number = Math.random\n): Point | null {\n  const occupied = new Set(snake.map(key));\n  const free: Point[] = [];\n\n  for (let y = 0; y < boardSize; y += 1) {\n    for (let x = 0; x < boardSize; x += 1) {\n      const point = { x, y };\n      if (!occupied.has(key(point))) free.push(point);\n    }\n  }\n\n  if (free.length === 0) return null;\n  const index = Math.min(free.length - 1, Math.floor(random() * free.length));\n  return free[index];\n}\n\nexport function stepSnake(\n  state: SnakeSnapshot,\n  boardSize: number,\n  random: () => number = Math.random\n): SnakeStep {\n  const direction = state.bufferedDirection ?? state.direction;\n  const delta = DELTA[direction];\n  const head = state.snake[0];\n  const nextHead = { x: head.x + delta.x, y: head.y + delta.y };\n  const base = { ...state, direction, bufferedDirection: null };\n\n  if (\n    nextHead.x < 0 ||\n    nextHead.y < 0 ||\n    nextHead.x >= boardSize ||\n    nextHead.y >= boardSize\n  ) {\n    return { ...base, outcome: 'lost' };\n  }\n\n  const ateFood = state.food !== null && key(nextHead) === key(state.food);\n  const collisionBody = ateFood ? state.snake : state.snake.slice(0, -1);\n  if (collisionBody.some((part) => key(part) === key(nextHead))) {\n    return { ...base, outcome: 'lost' };\n  }\n\n  const snake = [nextHead, ...state.snake];\n  if (!ateFood) {\n    snake.pop();\n    return { ...base, snake, outcome: 'moved' };\n  }\n\n  const food = placeFood(snake, boardSize, random);\n  return {\n    ...base,\n    snake,\n    food,\n    score: state.score + 1,\n    outcome: food === null ? 'won' : 'moved'\n  };\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';\nimport {\n  bufferTurn,\n  stepSnake,\n  type Direction,\n  type Point\n} from './snake-engine';\n\nconst BOARD_SIZE = 14;\nconst STEP_MS = 140;\nconst INITIAL_SNAKE: Point[] = [\n  { x: 6, y: 7 },\n  { x: 5, y: 7 },\n  { x: 4, y: 7 }\n];\nconst INITIAL_FOOD: Point = { x: 8, y: 7 };\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  host: { '(window:keydown)': 'onKeydown($event)' },\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly boardSize = BOARD_SIZE;\n  readonly boardIndices = Array.from({ length: BOARD_SIZE }, (_, index) => index);\n\n  readonly snake = signal<Point[]>(INITIAL_SNAKE.map((point) => ({ ...point })));\n  readonly direction = signal<Direction>('RIGHT');\n  readonly bufferedDirection = signal<Direction | null>(null);\n  readonly food = signal<Point | null>({ ...INITIAL_FOOD });\n  readonly isRunning = signal(false);\n  readonly isGameOver = signal(false);\n  readonly isWon = signal(false);\n  readonly score = signal(0);\n\n  readonly length = computed(() => this.snake().length);\n  readonly statusLabel = computed(() => {\n    if (this.isWon()) return 'You win';\n    if (this.isGameOver()) return 'Game over';\n    return this.isRunning() ? 'Running' : 'Paused';\n  });\n\n  private timerId: ReturnType<typeof setInterval> | null = null;\n\n  constructor() {\n    inject(DestroyRef).onDestroy(() => this.clearTimer());\n  }\n\n  onKeydown(event: KeyboardEvent): void {\n    const key = String(event.key || '').toLowerCase();\n\n    if (key === ' ') {\n      event.preventDefault();\n      if (!this.isGameOver() && !this.isWon()) this.toggleRunning();\n      return;\n    }\n\n    if (key === 'enter' && (this.isGameOver() || this.isWon())) {\n      event.preventDefault();\n      this.reset();\n      return;\n    }\n\n    const requested = this.directionFromKey(key);\n    if (!requested) return;\n\n    event.preventDefault();\n    this.bufferedDirection.set(bufferTurn(this.direction(), this.bufferedDirection(), requested));\n  }\n\n  toggleRunning(): void {\n    if (this.isGameOver() || this.isWon()) return;\n    this.isRunning() ? this.pause() : this.start();\n  }\n\n  start(): void {\n    if (this.isRunning() || this.isGameOver() || this.isWon()) return;\n    this.isRunning.set(true);\n    this.clearTimer();\n    this.timerId = setInterval(() => this.tick(), STEP_MS);\n  }\n\n  pause(): void {\n    this.isRunning.set(false);\n    this.clearTimer();\n  }\n\n  reset(): void {\n    this.clearTimer();\n    this.snake.set(INITIAL_SNAKE.map((point) => ({ ...point })));\n    this.direction.set('RIGHT');\n    this.bufferedDirection.set(null);\n    this.food.set({ ...INITIAL_FOOD });\n    this.isRunning.set(false);\n    this.isGameOver.set(false);\n    this.isWon.set(false);\n    this.score.set(0);\n  }\n\n  isSnake(x: number, y: number): boolean {\n    return this.snake().some((point) => point.x === x && point.y === y);\n  }\n\n  isHead(x: number, y: number): boolean {\n    const head = this.snake()[0];\n    return head.x === x && head.y === y;\n  }\n\n  isFood(x: number, y: number): boolean {\n    const food = this.food();\n    return food !== null && food.x === x && food.y === y;\n  }\n\n  private tick(): void {\n    if (!this.isRunning() || this.isGameOver() || this.isWon()) return;\n\n    const result = stepSnake({\n      snake: this.snake(),\n      direction: this.direction(),\n      bufferedDirection: this.bufferedDirection(),\n      food: this.food(),\n      score: this.score()\n    }, this.boardSize);\n\n    // stepSnake builds a new array for every move; editing the current array in place would not notify the signal.\n    this.snake.set(result.snake);\n    this.direction.set(result.direction);\n    this.bufferedDirection.set(result.bufferedDirection);\n    this.food.set(result.food);\n    this.score.set(result.score);\n\n    if (result.outcome === 'lost') {\n      this.isGameOver.set(true);\n      this.pause();\n    } else if (result.outcome === 'won') {\n      this.isWon.set(true);\n      this.pause();\n    }\n  }\n\n  private directionFromKey(key: string): Direction | null {\n    if (key === 'arrowup' || key === 'w') return 'UP';\n    if (key === 'arrowdown' || key === 's') return 'DOWN';\n    if (key === 'arrowleft' || key === 'a') return 'LEFT';\n    if (key === 'arrowright' || key === 'd') return 'RIGHT';\n    return null;\n  }\n\n  private clearTimer(): void {\n    if (this.timerId !== null) {\n      clearInterval(this.timerId);\n      this.timerId = null;\n    }\n  }\n}\n",
       "nodes": [
         {
           "id": "d1-model-state",
-          "title": "Keep game state explicit",
+          "title": "Keep game state in signals",
           "anchor": {
-            "lineStart": 81,
-            "lineEnd": 81,
-            "snippet": "bufferedDirection: Direction | null = null;"
+            "lineStart": 138,
+            "lineEnd": 138,
+            "snippet": "readonly bufferedDirection = signal<Direction | null>(null);"
           },
-          "why": "The board rendering, timer loop, keyboard input, and tests all read from the same predictable component state.",
-          "alternative": "Derive game state from DOM classes or mutable element data.",
-          "tradeoff": "Explicit state adds fields, but it keeps Angular rendering and unit tests deterministic."
+          "why": "The snake, both directions, food, score and the three status flags are signals, so the board, the status row and the Start/Pause label update after a key handler or the interval writes them, and tests read the same values through calls like snake() and direction().",
+          "alternative": "Keep plain fields with default change detection, or derive game state from DOM classes.",
+          "tradeoff": "Eight signals take more ceremony than fields, but every write the timer makes reaches the OnPush view without markForCheck()."
         },
         {
           "id": "d2-buffer-direction",
           "title": "Buffer at most one valid turn",
           "anchor": {
-            "lineStart": 90,
-            "lineEnd": 90,
-            "snippet": "if (this.bufferedDirection !== null) return;"
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "if (buffered !== null) return buffered;"
           },
-          "why": "The committed direction remains authoritative until the timer tick. Once a valid perpendicular turn occupies the buffer, later same-tick keys cannot replace it.",
-          "alternative": "Update direction immediately for every key press.",
-          "tradeoff": "One buffered turn makes rapid multi-key input deterministic while intentionally discarding additional turns until the next tick."
+          "why": "Once a valid perpendicular turn occupies the buffer, bufferTurn returns it for every later key in the same tick, and same or opposite keys return null without taking the slot. onKeydown() passes the committed direction, so RIGHT → UP → LEFT commits UP.",
+          "alternative": "Update direction immediately for every key press, or validate each key against the previous key.",
+          "tradeoff": "Keys pressed after the first valid turn in a tick are dropped, which is the price of never reversing into the body."
         },
         {
           "id": "d3-own-single-timer",
           "title": "Start exactly one game loop",
           "anchor": {
-            "lineStart": 99,
-            "lineEnd": 99,
+            "lineStart": 189,
+            "lineEnd": 189,
             "snippet": "this.timerId = setInterval(() => this.tick(), STEP_MS);"
           },
-          "why": "Movement should advance only on scheduled ticks while the game is running and not over.",
+          "why": "start() returns early unless the game is paused and clears any old interval before creating one, so Start and Space never stack loops.",
           "alternative": "Move immediately on start or create a new interval every time Start is clicked.",
           "tradeoff": "Guarding and clearing the timer is a little ceremony, but it prevents duplicate loops and speed drift."
         },
@@ -47,61 +47,85 @@
           "id": "d4-reset-canonical-state",
           "title": "Reset from canonical constants",
           "anchor": {
-            "lineStart": 104,
-            "lineEnd": 104,
-            "snippet": "this.snake = INITIAL_SNAKE.map((point) => ({ ...point }));"
+            "lineStart": 199,
+            "lineEnd": 199,
+            "snippet": "this.snake.set(INITIAL_SNAKE.map((point) => ({ ...point })));"
           },
-          "why": "Reset must restore the same initial snake, direction, food, score, running flag, and game-over flag every time.",
+          "why": "Reset must restore the same initial snake, direction, buffer, food, score and flags every time; copying the constant gives the signal a fresh array and leaves INITIAL_SNAKE untouched.",
           "alternative": "Try to undo the latest moves from the current snake state.",
           "tradeoff": "Constants make reset deterministic, but changing the initial scenario requires updating those constants intentionally."
         },
         {
           "id": "d5-collision-before-mutation",
-          "title": "Check collisions before mutating snake",
+          "title": "Check the next head before changing the snake",
           "anchor": {
-            "lineStart": 54,
-            "lineEnd": 54,
-            "snippet": "if (outOfBounds) return { ...base, outcome: 'lost' };"
+            "lineStart": 73,
+            "lineEnd": 73,
+            "snippet": "const nextHead = { x: head.x + delta.x, y: head.y + delta.y };"
           },
-          "why": "The next head position decides whether the game ends before the component changes snake body or score state.",
+          "why": "stepSnake tests nextHead against the walls and the body first and, on a crash, returns outcome 'lost' with the old snake, so the board stays on the frame before the collision.",
           "alternative": "Move first, then inspect whether the new snake is invalid.",
           "tradeoff": "Pre-checks make the branches more explicit and keep the visible board frozen on the collision frame."
         },
         {
           "id": "d6-grow-or-drop-tail",
-          "title": "Grow on food, otherwise drop tail",
+          "title": "Grow on food, otherwise drop the tail",
           "anchor": {
-            "lineStart": 62,
-            "lineEnd": 62,
-            "snippet": "const nextSnake = [nextHead, ...state.snake];"
+            "lineStart": 91,
+            "lineEnd": 91,
+            "snippet": "const snake = [nextHead, ...state.snake];"
           },
-          "why": "Snake movement is a head prepend plus a tail drop; eating food keeps the tail and increments score.",
-          "alternative": "Mutate the existing snake array in place through several pushes and shifts.",
-          "tradeoff": "Building nextSnake is easy to reason about for tests, though it allocates a small array each tick."
+          "why": "Movement is a head prepend plus a tail drop; eating keeps the tail and adds one to the score. Building a new array is also what lets snake.set() in the component notify the template.",
+          "alternative": "Mutate the existing snake array in place, adding the head and popping the tail.",
+          "tradeoff": "A new array per tick is a small allocation on a 14x14 board; an in-place edit would leave the signal holding the same reference, so the board would not update."
         },
         {
           "id": "d7-spawn-food-outside-snake",
           "title": "Represent a full board explicitly",
           "anchor": {
-            "lineStart": 68,
-            "lineEnd": 68,
-            "snippet": "const food = placeFood(nextSnake, boardSize);"
+            "lineStart": 97,
+            "lineEnd": 97,
+            "snippet": "const food = placeFood(snake, boardSize, random);"
           },
-          "why": "The food helper returns null when no free cell remains, so the component can stop with a win rather than overlap food with the snake.",
+          "why": "placeFood picks only from free cells and returns null when none remain, so stepSnake reports 'won' and the component stops with a win instead of drawing food on the snake.",
           "alternative": "Pick random coordinates until one is not occupied.",
           "tradeoff": "Building a free-cell list is straightforward and bounded on a 14x14 board, while retry loops need extra safeguards."
         },
         {
           "id": "d8-cleanup-on-destroy",
-          "title": "Clear timer on component destroy",
+          "title": "Clear the timer when the component is destroyed",
           "anchor": {
-            "lineStart": 149,
-            "lineEnd": 149,
-            "snippet": "ngOnDestroy(): void"
+            "lineStart": 155,
+            "lineEnd": 155,
+            "snippet": "inject(DestroyRef).onDestroy(() => this.clearTimer());"
           },
-          "why": "Angular can remove the component while an interval is still scheduled, so cleanup prevents state updates after teardown.",
-          "alternative": "Rely on the browser to discard timers eventually.",
-          "tradeoff": "Lifecycle cleanup is an extra method, but it protects navigation and tests from leaked intervals."
+          "why": "Angular can remove the component while the interval is still scheduled; the DestroyRef callback clears it, so no tick writes signals after teardown.",
+          "alternative": "Implement ngOnDestroy, or rely on the browser to discard timers eventually.",
+          "tradeoff": "Registering the cleanup in the constructor needs no lifecycle interface; ngOnDestroy does the same job as a separate method."
+        },
+        {
+          "id": "d9-write-signals-from-tick",
+          "title": "Write the engine result back into signals",
+          "anchor": {
+            "lineStart": 235,
+            "lineEnd": 235,
+            "snippet": "this.snake.set(result.snake);"
+          },
+          "why": "tick() runs in a setInterval callback that no template event triggers. Writing signals marks the OnPush view for check, so the board moves on every tick; a plain field changed here would leave the view stale.",
+          "alternative": "Keep plain fields and call ChangeDetectorRef.markForCheck() after each tick, or drop OnPush.",
+          "tradeoff": "Five set() calls take more lines than one assignment, but a signal notifies only when its value changed, so a tick that only moves the snake does not notify score or food."
+        },
+        {
+          "id": "d10-derive-status-label",
+          "title": "Derive the status label with computed",
+          "anchor": {
+            "lineStart": 146,
+            "lineEnd": 146,
+            "snippet": "readonly statusLabel = computed(() => {"
+          },
+          "why": "The label depends on three flags; computed recalculates it only when one of them changes, and the template reads statusLabel() instead of repeating the order win, game over, running.",
+          "alternative": "Use a getter, which reruns on every change detection pass, or three @if blocks in the template.",
+          "tradeoff": "One more class member, in exchange for a single place that decides a win outranks game over."
         }
       ]
     }

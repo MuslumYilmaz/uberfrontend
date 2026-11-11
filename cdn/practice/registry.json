@@ -211,7 +211,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-faq-accordion"
   },
@@ -234,7 +234,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-chessboard-click-highlight"
   },
@@ -279,7 +279,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-debounced-search"
   },
@@ -321,7 +321,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-dynamic-counter-buttons"
   },
@@ -343,7 +343,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-dynamic-table-starter"
   },
@@ -354,7 +354,7 @@
     "route": "/angular/coding/angular-filterable-user-list",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist.",
+    "summary": "Filter a user list in Angular by search and role without mutating the original array.",
     "tags": [
       "components",
       "state",
@@ -365,7 +365,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-filterable-user-list"
   },
@@ -408,7 +408,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-pagination-table"
   },
@@ -450,7 +450,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-progress-bar-thresholds"
   },
@@ -472,7 +472,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-snake-game"
   },
@@ -494,7 +494,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-star-rating"
   },
@@ -515,7 +515,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-tabs-switcher"
   },
@@ -537,7 +537,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-theme-toggle"
   },
@@ -559,7 +559,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-transfer-list"
   },
@@ -603,7 +603,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-autocomplete-search-starter"
   },
@@ -635,7 +635,7 @@
     "route": "/angular/coding/angular-contact-form-starter",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Build a contact form using an Angular standalone component and reactive forms. ts` – the HTML, CSS, and bootstrapping are already set up.",
+    "summary": "Build a contact form using an Angular standalone component and reactive forms. ts` – the HTML and CSS are already set up.",
     "tags": [
       "forms",
       "http",
@@ -644,7 +644,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-contact-form-starter"
   },
@@ -655,7 +655,7 @@
     "route": "/angular/coding/angular-counter-starter",
     "tech": "angular",
     "difficulty": "easy",
-    "summary": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
+    "summary": "Implement a standalone counter with increment, decrement, and reset.",
     "tags": [
       "components",
       "event-binding",
@@ -663,7 +663,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-counter-starter"
   },
@@ -956,7 +956,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-image-slider-starter"
   },
@@ -1001,7 +1001,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-chips-input-autocomplete"
   },
@@ -1022,7 +1022,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-like-button"
   },
@@ -1044,7 +1044,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-multi-step-form-starter"
   },
@@ -1066,7 +1066,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-nested-checkboxes"
   },
@@ -1087,7 +1087,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-nested-comments"
   },
@@ -1203,7 +1203,7 @@
     "route": "/angular/coding/angular-input-output-two-way",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Expose a value input and a valueChange output to support two-way binding, and keep the child component stateless so the parent owns the source of truth.",
+    "summary": "Build a reusable Angular child component whose count and liked state the parent controls through two-way bindings.",
     "tags": [
       "components",
       "inputs-outputs",
@@ -1213,7 +1213,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-input-output-two-way"
   },
@@ -1257,7 +1257,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-shopping-cart-mini"
   },
@@ -1362,7 +1362,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-tictactoe-starter"
   },
@@ -1383,7 +1383,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-todo-list-starter"
   },

@@ -1,0 +1,85 @@
+{
+  "questionId": "angular-theme-toggle",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "// src/app/theme.service.ts\nimport { Injectable, inject, signal } from '@angular/core';\nimport { DOCUMENT } from '@angular/common';\n\nexport type Theme = 'light' | 'dark';\n\nconst STORAGE_KEY = 'uf-theme';\nlet memoryTheme: Theme = 'light';\n\nfunction safeReadTheme(): Theme | null {\n  try {\n    const raw = window.localStorage.getItem(STORAGE_KEY);\n    if (raw === 'light' || raw === 'dark') return raw;\n  } catch {\n    /* sandboxed iframe */\n  }\n  return null;\n}\n\nfunction safeWriteTheme(theme: Theme): void {\n  memoryTheme = theme;\n  try {\n    window.localStorage.setItem(STORAGE_KEY, theme);\n  } catch {\n    /* sandboxed iframe */\n  }\n}\n\n@Injectable({ providedIn: 'root' })\nexport class ThemeService {\n  private readonly document = inject(DOCUMENT);\n  private readonly theme = signal<Theme>(safeReadTheme() ?? memoryTheme);\n  readonly currentTheme = this.theme.asReadonly();\n\n  constructor() {\n    // The root component's inject() creates this service, so <html> has the theme before the first render.\n    this.applyTheme(this.theme());\n  }\n\n  private applyTheme(theme: Theme): void {\n    this.document.documentElement.setAttribute('data-theme', theme);\n  }\n\n  setTheme(theme: Theme): void {\n    this.theme.set(theme);\n    safeWriteTheme(theme);\n    this.applyTheme(theme);\n  }\n\n  toggleTheme(): void {\n    this.setTheme(this.theme() === 'light' ? 'dark' : 'light');\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';\nimport { ThemeService } from './theme.service';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly themeService = inject(ThemeService);\n\n  readonly isDark = computed(() => this.themeService.currentTheme() === 'dark');\n\n  onToggleClick(): void {\n    this.themeService.toggleTheme();\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-read-storage-defensively",
+          "title": "Read the stored theme defensively",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "const raw = window.localStorage.getItem(STORAGE_KEY);"
+          },
+          "why": "safeReadTheme returns only light or dark and falls back to null when the key is missing, holds another value, or storage access throws, so a blocked or edited store cannot break startup.",
+          "alternative": "Read localStorage directly in the constructor and cast whatever string comes back to Theme.",
+          "tradeoff": "Storage errors are swallowed without a message, but the toggle keeps working for the session instead of failing to bootstrap."
+        },
+        {
+          "id": "d2-theme-signal",
+          "title": "Hold the theme in a private signal",
+          "anchor": {
+            "lineStart": 32,
+            "lineEnd": 32,
+            "snippet": "private readonly theme = signal<Theme>(safeReadTheme() ?? memoryTheme);"
+          },
+          "why": "The service starts from the stored theme, or the in-memory fallback when storage cannot be read, and keeps it in a writable signal that only its own methods change.",
+          "alternative": "A public mutable currentTheme field that any component can reassign.",
+          "tradeoff": "Components cannot set the value directly and must call setTheme or toggleTheme, which is what keeps storage and the page attribute in step."
+        },
+        {
+          "id": "d3-expose-read-only",
+          "title": "Expose the theme as a read-only signal",
+          "anchor": {
+            "lineStart": 33,
+            "lineEnd": 33,
+            "snippet": "readonly currentTheme = this.theme.asReadonly();"
+          },
+          "why": "asReadonly gives components a signal they can read and track but not set, so every change still goes through setTheme and its storage write.",
+          "alternative": "Expose the writable signal itself, which lets any component call set and skip persistence and the data-theme update.",
+          "tradeoff": "The same value has two names, theme inside the service and currentTheme outside, in exchange for a single write path."
+        },
+        {
+          "id": "d4-apply-on-creation",
+          "title": "Apply the theme when the service is created",
+          "anchor": {
+            "lineStart": 37,
+            "lineEnd": 37,
+            "snippet": "this.applyTheme(this.theme());"
+          },
+          "why": "The constructor sets data-theme on the html element as soon as the root component injects the service, so a stored dark theme is in place before that component first renders.",
+          "alternative": "Set data-theme in an afterNextRender callback, which runs after the first render and can show the light colors for a frame.",
+          "tradeoff": "A constructor with a DOM side effect is less pure, but it is the earliest point the app can act; only a script in index.html could run sooner."
+        },
+        {
+          "id": "d5-write-storage-on-change",
+          "title": "Persist and apply in the same method",
+          "anchor": {
+            "lineStart": 46,
+            "lineEnd": 46,
+            "snippet": "safeWriteTheme(theme);"
+          },
+          "why": "setTheme sets the signal, writes storage and updates data-theme in one synchronous call, and toggleTheme goes through it, so the label, the stored key and the page colors cannot drift.",
+          "alternative": "An effect that watches the theme signal and writes storage and the attribute whenever it reruns.",
+          "tradeoff": "The three steps are written out by hand, but they happen on the click itself, while an effect would also write the default theme to storage on the first visit."
+        },
+        {
+          "id": "d6-derive-is-dark",
+          "title": "Derive isDark from the service signal",
+          "anchor": {
+            "lineStart": 68,
+            "lineEnd": 68,
+            "snippet": "readonly isDark = computed(() => this.themeService.currentTheme() === 'dark');"
+          },
+          "why": "isDark recomputes whenever currentTheme changes, whether this button or any other caller of setTheme changed it, and the OnPush template reads it for both the icon and the label.",
+          "alternative": "Copy the theme into a component field on each click, which goes stale when another component switches the theme.",
+          "tradeoff": "The template calls isDark() rather than reading a field, a small syntax change for a label that cannot disagree with the service."
+        }
+      ]
+    }
+  }
+}

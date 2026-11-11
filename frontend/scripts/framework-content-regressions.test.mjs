@@ -2287,7 +2287,7 @@ function assertShoppingCartPressureMode() {
       id: 'angular-shopping-cart-mini',
       starter: 'assets/sb/angular/question/angular-shopping-cart.v2.json',
       solution: 'assets/sb/angular/solution/angular-shopping-cart-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-shopping-cart',
@@ -2542,7 +2542,7 @@ function assertChipsInputPressureMode() {
       id: 'angular-chips-input-autocomplete',
       starter: 'assets/sb/angular/question/angular-chips-input-autocomplete.v1.json',
       solution: 'assets/sb/angular/solution/angular-chips-input-autocomplete-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-chips-input-autocomplete',
@@ -2864,7 +2864,7 @@ function assertAccordionFaqPressureMode() {
       id: 'angular-faq-accordion',
       starter: 'assets/sb/angular/question/angular-faq-accordion.v2.json',
       solution: 'assets/sb/angular/solution/angular-faq-accordion-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-accordion-faq',
@@ -3181,7 +3181,7 @@ function assertTicTacToePressureMode() {
       id: 'angular-tictactoe-starter',
       starter: 'assets/sb/angular/question/angular-tictactoe.v1.json',
       solution: 'assets/sb/angular/solution/angular-tictactoe-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-tictactoe',
@@ -3570,7 +3570,7 @@ function assertChessboardClickHighlightPressureMode() {
       id: 'angular-chessboard-click-highlight',
       starter: 'assets/sb/angular/question/angular-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-chessboard-click-highlight',
@@ -4188,7 +4188,7 @@ function assertDynamicCounterButtonsPressureMode() {
       solution: 'assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json',
       openFile: '/src/app/app.component.ts',
       storageKey: 'v2:ui:angular:angular-dynamic-counter-buttons',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-dynamic-counter-buttons',
@@ -4707,7 +4707,7 @@ function assertPaginationTablePressureMode() {
       id: 'angular-pagination-table',
       starter: 'assets/sb/angular/question/angular-pagination-table.v2.json',
       solution: 'assets/sb/angular/solution/angular-pagination-table-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-pagination-table',
@@ -5368,9 +5368,9 @@ const engines = solutionAssets.map(({ name, relative, component, engine }) => {
   assert.doesNotMatch(componentCode, /pendingDirection/);
 
   if (name === 'Angular') {
-    assert.match(componentCode, /this\.bufferedDirection = null/);
-    assert.match(componentCode, /this\.isWon = false/);
-    assert.match(componentCode, /ngOnDestroy\(\): void \{[\s\S]*this\.clearTimer\(\)/);
+    assert.match(componentCode, /this\.bufferedDirection\.set\(null\)/);
+    assert.match(componentCode, /this\.isWon\.set\(false\)/);
+    assert.match(componentCode, /inject\(DestroyRef\)\.onDestroy\(\(\) => this\.clearTimer\(\)\)/);
     assert.match(componentCode, /outcome === 'won'[\s\S]*this\.pause\(\)/);
   } else if (name === 'React') {
     assert.match(componentCode, /bufferedDirection: null/);
@@ -5617,7 +5617,7 @@ for (const [technology, id] of [
 ]) {
   const question = json(`cdn/questions/${technology}/coding.json`).find((entry) => entry.id === id);
   assert.ok(question, `Missing ${id}`);
-  assert.equal(question.updatedAt, technology === 'angular' ? '2026-07-15' : '2026-07-14');
+  assert.equal(question.updatedAt, technology === 'angular' ? '2026-11-11' : '2026-07-14');
   const renderedContract = JSON.stringify(question);
   assert.match(renderedContract, /at most one valid perpendicular turn per tick/);
   assert.match(renderedContract, /full board|final free cell/);
@@ -5829,7 +5829,8 @@ const modernizedAngularIds = [
 for (const id of modernizedAngularIds) {
   const question = angularCodingQuestions.find((entry) => entry.id === id);
   assert.ok(question, `Missing modernized Angular question ${id}`);
-  assert.equal(question.updatedAt, '2026-07-15', `${id}: stale Angular update date`);
+  // 2026-11-11: the official solutions were rewritten with signals.
+  assert.equal(question.updatedAt, '2026-11-11', `${id}: stale Angular update date`);
 }
 for (const id of [
   'angular-image-slider-starter',
@@ -5852,15 +5853,16 @@ for (const id of [
   );
 }
 
-for (const relative of [
-  'sb/angular/question/angular-todo-list.v2.json',
-  'sb/angular/solution/angular-todo-list-solution.v2.json'
+// The starter keeps plain fields; the solution reads the same state from signals.
+for (const [relative, read] of [
+  ['sb/angular/question/angular-todo-list.v2.json', ''],
+  ['sb/angular/solution/angular-todo-list-solution.v2.json', '\\(\\)']
 ]) {
   const asset = json(`cdn/${relative}`);
   const template = fileCode(asset, '/src/app/app.component.html');
   const component = fileCode(asset, '/src/app/app.component.ts');
-  assert.match(template, /@for \(todo of todos; track todo\.id\)/);
-  assert.match(template, /@if \(hasTodos\)/);
+  assert.match(template, new RegExp(`@for \\(todo of todos${read}; track todo\\.id\\)`));
+  assert.match(template, new RegExp(`@if \\(hasTodos${read}\\)`));
   assert.doesNotMatch(template, deprecatedAngularControlFlow);
   assert.doesNotMatch(component, /CommonModule|trackById/);
 }
@@ -5872,9 +5874,9 @@ assert.ok(todoQuestion);
 assert.equal(todoQuestion.access, 'free');
 assert.equal(todoQuestion.sdk.asset, 'assets/sb/angular/question/angular-todo-list.v2.json');
 assert.equal(todoQuestion.solutionAsset, 'assets/sb/angular/solution/angular-todo-list-solution.v2.json');
-assert.equal(todoQuestion.updatedAt, '2026-07-15');
+assert.equal(todoQuestion.updatedAt, '2026-11-11');
 const todoContract = JSON.stringify(todoQuestion);
-assert.match(todoContract, /@for \(todo of todos; track todo\.id\)/);
+assert.match(todoContract, /@for \(todo of todos\(\); track todo\.id\)/);
 assert.doesNotMatch(todoContract, deprecatedAngularControlFlow);
 const foundationsTrackPreview = read(
   'frontend/src/app/features/tracks/track-preview/track-preview.component.ts'

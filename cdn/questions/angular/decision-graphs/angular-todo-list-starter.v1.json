@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "import { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n}\n",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly newTask = signal('');\n  readonly todos = signal<Todo[]>([]);\n  readonly hasTodos = computed(() => this.todos().length > 0);\n  private nextId = 1;\n\n  addTask(): void {\n    const text = this.newTask().trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos.update((todos) => [...todos, { id: this.nextId++, text, done: false }]);\n    this.newTask.set('');\n  }\n\n  toggleTask(id: number): void {\n    // Replace the changed todo instead of editing it, so everything derived from todos() sees the change.\n    this.todos.update((todos) =>\n      todos.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo))\n    );\n  }\n\n  removeTask(id: number): void {\n    this.todos.update((todos) => todos.filter((todo) => todo.id !== id));\n  }\n\n  clearCompleted(): void {\n    this.todos.update((todos) => todos.filter((todo) => !todo.done));\n  }\n}\n",
       "nodes": [
         {
           "id": "d1-standalone-imports",
@@ -15,40 +15,40 @@
             "lineEnd": 13,
             "snippet": "imports: [FormsModule],"
           },
-          "why": "FormsModule is required for ngModel, while the @for and @if blocks are built into modern Angular templates.",
+          "why": "FormsModule supplies ngModel for the text input, while the @for and @if blocks are built into the template syntax.",
           "alternative": "Keep CommonModule solely for legacy structural directives that the template no longer uses.",
           "tradeoff": "The dependency list stays smaller, but future CommonModule pipes must be imported if they are introduced."
         },
         {
           "id": "d2-local-todo-state",
-          "title": "Keep todo state local and explicit",
+          "title": "Keep todo state in a local signal",
           "anchor": {
             "lineStart": 19,
             "lineEnd": 19,
-            "snippet": "todos: Todo[] = [];"
+            "snippet": "readonly todos = signal<Todo[]>([]);"
           },
-          "why": "A local array plus an id counter is enough for add, toggle, remove, and clear-completed behavior in this component-sized exercise.",
-          "alternative": "Introduce a service, store, or DOM-derived state for a small local interaction.",
-          "tradeoff": "Local component state is easy to test and read, while larger apps may later move shared todo state elsewhere."
+          "why": "A signal holding the array, plus an id counter, covers add, toggle, remove, and clear-completed, and lets hasTodos and the template react to every replacement.",
+          "alternative": "Keep a plain array field and rely on zone-based change detection, or introduce a service or store for one component's list.",
+          "tradeoff": "A local signal is easy to test and works with OnPush; state that other components share would later move into a service that exposes the signal."
         },
         {
           "id": "d3-trim-and-ignore-empty-input",
-          "title": "Reject empty todo text before mutation",
+          "title": "Reject empty todo text before updating the list",
           "anchor": {
-            "lineStart": 28,
-            "lineEnd": 28,
+            "lineStart": 25,
+            "lineEnd": 25,
             "snippet": "if (!text) {"
           },
           "why": "Trimming first prevents whitespace-only todos from entering the rendered list or persisted state.",
-          "alternative": "Push every input value and clean the list later.",
+          "alternative": "Append every input value and clean the list later.",
           "tradeoff": "The early return adds a small branch, but it keeps downstream rendering and tests simpler."
         },
         {
           "id": "d4-append-stable-id",
           "title": "Append items with stable identity",
           "anchor": {
-            "lineStart": 34,
-            "lineEnd": 34,
+            "lineStart": 29,
+            "lineEnd": 29,
             "snippet": "{ id: this.nextId++, text, done: false }"
           },
           "why": "The generated id gives Angular @for track todo.id a stable identity for each row as items are added and removed.",
@@ -57,23 +57,23 @@
         },
         {
           "id": "d5-toggle-completion",
-          "title": "Toggle the selected todo only",
+          "title": "Toggle by replacing the touched todo",
           "anchor": {
-            "lineStart": 41,
-            "lineEnd": 41,
-            "snippet": "todo.done = !todo.done;"
+            "lineStart": 36,
+            "lineEnd": 36,
+            "snippet": "todos.map((todo) => (todo.id === id ? { ...todo, done: !todo.done } : todo))"
           },
-          "why": "The checkbox interaction should change completion for the row the user touched without rebuilding unrelated items.",
-          "alternative": "Infer completion from CSS classes or toggle every item through shared state.",
-          "tradeoff": "Direct mutation is concise for this local model; immutable updates can be preferable when state is shared."
+          "why": "Copying only the matching todo with done flipped gives the signal a new array and the row a new object, so computed values and OnPush views see the change while other rows keep their identity.",
+          "alternative": "Flip todo.done in place or bind the checkbox with [(ngModel)]=\"todo.done\", which edits the object without changing the signal.",
+          "tradeoff": "The map allocates a new array per toggle, which is negligible for a todo list and keeps every change visible to signal consumers."
         },
         {
           "id": "d6-remove-by-id",
           "title": "Remove by stable id",
           "anchor": {
-            "lineStart": 45,
-            "lineEnd": 45,
-            "snippet": "this.todos = this.todos.filter(t => t.id !== todo.id);"
+            "lineStart": 41,
+            "lineEnd": 41,
+            "snippet": "todos.filter((todo) => todo.id !== id)"
           },
           "why": "Filtering by id deletes the exact row even when multiple todos have the same text.",
           "alternative": "Remove by visible label or by current array index.",
@@ -83,9 +83,9 @@
           "id": "d7-clear-completed",
           "title": "Derive the remaining active list",
           "anchor": {
-            "lineStart": 49,
-            "lineEnd": 49,
-            "snippet": "this.todos = this.todos.filter(t => !t.done);"
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "todos.filter((todo) => !todo.done)"
           },
           "why": "Clear completed should preserve active todos and remove only items already marked done.",
           "alternative": "Reset the entire list or manually splice completed rows in place.",

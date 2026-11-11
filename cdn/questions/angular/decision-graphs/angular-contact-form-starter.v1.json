@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "import { Component, inject } from '@angular/core';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient, HttpClientModule } from '@angular/common/http';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [ReactiveFormsModule, HttpClientModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  // Function-based DI to match the SDK environment\n  private fb = inject(FormBuilder);\n  private http = inject(HttpClient);\n\n  // Reactive contact form with basic validation\n  contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(): void {\n    // Clear previous messages\n    this.successMessage = '';\n    this.errorMessage = '';\n\n    // Show validation errors if form is invalid\n    this.contactForm.markAllAsTouched();\n    if (this.contactForm.invalid) {\n      return;\n    }\n\n    this.isSubmitting = true;\n\n    // Fake JSON API endpoint for this exercise\n    this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({\n      next: () => {\n        this.isSubmitting = false;\n        this.successMessage = 'Your message has been sent. Thank you!';\n        this.contactForm.reset();\n      },\n      error: () => {\n        this.isSubmitting = false;\n        this.errorMessage = 'Something went wrong. Please try again.';\n      },\n    });\n  }\n}\n\n// Also export a named AppComponent so the bootstrap import always works\nexport { AppComponent };\n",
+      "code": "import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient } from '@angular/common/http';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  private readonly fb = inject(FormBuilder);\n  private readonly http = inject(HttpClient);\n\n  readonly contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n  readonly f = this.contactForm.controls;\n\n  readonly isSubmitting = signal(false);\n  readonly successMessage = signal('');\n  readonly errorMessage = signal('');\n\n  submit(event?: Event): void {\n    event?.preventDefault();\n    event?.stopPropagation();\n\n    this.successMessage.set('');\n    this.errorMessage.set('');\n    this.contactForm.markAllAsTouched();\n    if (this.contactForm.invalid || this.isSubmitting()) {\n      return;\n    }\n\n    this.isSubmitting.set(true);\n    // The callbacks run after submit() has returned; their signal writes are what refresh the OnPush view.\n    this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({\n      next: () => {\n        this.isSubmitting.set(false);\n        this.successMessage.set('Your message has been sent. Thank you!');\n        this.contactForm.reset();\n      },\n      error: () => {\n        this.isSubmitting.set(false);\n        this.errorMessage.set('Something went wrong. Please try again.');\n      },\n    });\n  }\n}\n\nexport { AppComponent };\n",
       "nodes": [
         {
           "id": "d1-standalone-form-imports",
@@ -13,21 +13,21 @@
           "anchor": {
             "lineStart": 8,
             "lineEnd": 8,
-            "snippet": "imports: [ReactiveFormsModule, HttpClientModule],"
+            "snippet": "imports: [ReactiveFormsModule],"
           },
-          "why": "The standalone component needs reactive-form directives and HttpClient, while Angular built-in control flow does not require CommonModule.",
-          "alternative": "Keep CommonModule in every standalone component even when the template does not use its directives or pipes.",
-          "tradeoff": "Minimal imports make dependencies explicit, but a later template pipe or directive must be added intentionally."
+          "why": "The template needs the reactive-form directives (formGroup, formControlName, ngSubmit). HttpClient is a service registered with provideHttpClient() in bootstrapApplication, so it does not belong in the component imports, and built-in control flow needs no CommonModule.",
+          "alternative": "Import the deprecated HttpClientModule here, or put provideHttpClient() in the component providers, where Angular rejects environment providers with NG0207.",
+          "tradeoff": "The HTTP setup sits in src/main.ts, away from the component that uses it, but one registration serves every component and service in the app."
         },
         {
           "id": "d2-touch-before-validation",
           "title": "Expose validation before returning",
           "anchor": {
-            "lineStart": 38,
-            "lineEnd": 38,
+            "lineStart": 33,
+            "lineEnd": 33,
             "snippet": "this.contactForm.markAllAsTouched();"
           },
-          "why": "Marking controls touched ensures invalid fields reveal feedback before submission exits early.",
+          "why": "Marking every control as touched reveals the inline errors before submit() returns for an invalid form, including fields the user never focused.",
           "alternative": "Return immediately on an invalid form and leave untouched fields without visible guidance.",
           "tradeoff": "Showing every current error is clearer on submit, though quieter validation can be preferable while the user is still typing."
         },
@@ -35,13 +35,25 @@
           "id": "d3-own-request-lifecycle",
           "title": "Own success and error state around the request",
           "anchor": {
-            "lineStart": 46,
-            "lineEnd": 46,
+            "lineStart": 40,
+            "lineEnd": 40,
             "snippet": "this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({"
           },
-          "why": "The component must reset loading state in both request outcomes and only clear the form after success.",
-          "alternative": "Set a success message before the request resolves or leave isSubmitting true after an error.",
-          "tradeoff": "Explicit handlers duplicate a small amount of cleanup, but they keep the UI state deterministic."
+          "why": "Both callbacks clear isSubmitting; only next resets the form, and error keeps the typed values so the user can retry.",
+          "alternative": "Set a success message before the request resolves, or leave isSubmitting true after an error.",
+          "tradeoff": "Each handler repeats isSubmitting.set(false), but every outcome leaves the button and messages in a known state."
+        },
+        {
+          "id": "d4-request-state-in-signals",
+          "title": "Keep the request state in signals",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "readonly isSubmitting = signal(false);"
+          },
+          "why": "The next and error callbacks run after submit() has returned. Writing signals there marks the OnPush view for check, so the button label and the messages follow the request.",
+          "alternative": "Plain fields assigned in the callbacks, which only reach the screen with default change detection and zone.js.",
+          "tradeoff": "The template calls isSubmitting(), successMessage() and errorMessage() instead of reading fields, a small cost for a view that stays correct under OnPush and zoneless change detection."
         }
       ]
     }

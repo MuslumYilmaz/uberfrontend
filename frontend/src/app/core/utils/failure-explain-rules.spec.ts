@@ -23,6 +23,22 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('@for');
   });
 
+  it('explains a template that prints a signal instead of calling it', () => {
+    const hint = buildFailureHint({
+      questionId: 'angular-counter-starter',
+      category: 'assertion-mismatch',
+      errorLine: '.value expected text "1" but found "[Signal: 1]"',
+      firstFailName: 'Counter flow',
+      passCount: 0,
+      totalCount: 1,
+      failCount: 1,
+      failedTests: [{ name: 'Counter flow', errorLine: '.value expected text "1" but found "[Signal: 1]"' }],
+    });
+
+    expect(hint.ruleId).toBe('angular-signal-read-in-template');
+    expect(hint.actions.join(' ')).toContain('count()');
+  });
+
   it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
     for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
       const hint = buildFailureHint({
@@ -878,8 +894,11 @@ describe('listQuestionFailureHints', () => {
     expect(hints[0]).toEqual(runtime);
   });
 
-  it('shares one mapped rule per Angular template question and lists nothing for unknown ids', () => {
-    expect(listQuestionFailureHints('angular-tabs-switcher').map((hint) => hint.ruleId)).toEqual(['angular-modern-template-compile']);
+  it('lists the shared Angular template and signal-read rules for every Angular coding question and nothing for unknown ids', () => {
+    for (const questionId of ['angular-tabs-switcher', 'angular-counter-starter', 'angular-snake-game']) {
+      expect(listQuestionFailureHints(questionId).map((hint) => hint.ruleId))
+        .toEqual(['angular-modern-template-compile', 'angular-signal-read-in-template']);
+    }
     expect(listQuestionFailureHints('question-without-authored-hints')).toEqual([]);
     expect(listQuestionFailureHints('')).toEqual([]);
     expect(listQuestionFailureHints(undefined)).toEqual([]);
