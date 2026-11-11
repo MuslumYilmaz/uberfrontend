@@ -23,6 +23,41 @@ const FRAMEWORK_RUNTIME_RESPONSES = new Map<string, Promise<CachedRuntimeRespons
 const RUNNER_FAILURE =
   /framework checks timed out waiting for preview render|framework assertion execution timed out|preview readiness timed out|infrastructure timeout/i;
 
+// Signal inputs, model and output between two Angular components, plus a field a setTimeout sets: it renders only
+// under zone change detection, which the preview asks for since Angular 21 starts zoneless.
+const ANGULAR_SIGNAL_PROBE = [
+  "import { Component, input, model, output, signal } from '@angular/core';",
+  '',
+  '@Component({',
+  "  selector: 'app-child',",
+  '  template: `<span class="child-label">{{ label() }}</span>',
+  '    <button class="child-inc" (click)="count.set(count() + 1)">inc</button>',
+  '    <button class="child-ping" (click)="ping.emit(label())">ping</button>`,',
+  '})',
+  'export class ChildComponent {',
+  '  label = input.required<string>();',
+  '  count = model(0);',
+  '  ping = output<string>();',
+  '}',
+  '',
+  '@Component({',
+  "  selector: 'app-root',",
+  '  imports: [ChildComponent],',
+  '  template: `<app-child label="probe" [(count)]="total" (ping)="last.set($event)"></app-child>',
+  '    <p class="total">{{ total() }}</p><p class="last">{{ last() }}</p><p class="tick">{{ tick }}</p>`,',
+  '})',
+  'export class AppComponent {',
+  '  total = signal(2);',
+  "  last = signal('none');",
+  "  tick = 'waiting';",
+  '',
+  '  constructor() {',
+  "    setTimeout(() => { this.tick = 'ticked'; }, 50);",
+  '  }',
+  '}',
+  '',
+].join('\n');
+
 const COUNTER_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-counter-solution.v1.json',
   'src/App.tsx',
@@ -2924,6 +2959,54 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(statuses.length).toBeGreaterThan(0);
     expect(statuses.every((status) => /PASS|FAIL/.test(status))).toBe(true);
     expect(normalizeRunnerText(await jsResults.innerText())).not.toMatch(RUNNER_FAILURE);
+  });
+
+  test('Angular 21 runs signal inputs, outputs and models under zone.js, and names its runtime', async ({ page }) => {
+    await page.goto('/angular/coding/angular-counter-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+    await expect(page.getByTestId('framework-runtime-label')).toHaveText('Angular 21 · zone.js');
+
+    await waitForMonacoModel(page, 'src/app/app.component.ts');
+    await loadCanonicalFile(page, 'src/app/app.component.ts', ANGULAR_SIGNAL_PROBE);
+    await rebuildPreview(page, '.total');
+    const preview = livePreview(page);
+    await expect(preview.locator('.child-label')).toHaveText('probe');
+    await expect(preview.locator('.total')).toHaveText('2');
+    await preview.locator('.child-inc').click();
+    await expect(preview.locator('.total')).toHaveText('3');
+    await preview.locator('.child-ping').click();
+    await expect(preview.locator('.last')).toHaveText('probe');
+    // A plain field set in a setTimeout renders only under zone change detection.
+    await expect(preview.locator('.tick')).toHaveText('ticked');
+  });
+
+  test.describe('an Angular template that does not compile', () => {
+    // The preview logs the failure to its console on purpose.
+    test.use({ consoleErrorAllowlist: ['Errors during JIT compilation', 'Unclosed block'] });
+
+    test('shows the error in the preview and its console instead of a quiet blank preview', async ({ page }) => {
+      await page.goto('/angular/coding/angular-counter-starter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+      await waitForMonacoModel(page, 'src/app/app.component.ts');
+      await loadCanonicalFile(page, 'src/app/app.component.ts', [
+        "import { Component } from '@angular/core';",
+        '',
+        '@Component({',
+        "  selector: 'app-root',",
+        "  template: '@if (true) { <p class=\"value\">0</p>',",
+        '})',
+        'export class AppComponent {}',
+        '',
+      ].join('\n'));
+      await page.getByTestId('framework-rebuild-preview').click();
+
+      const error = page.getByTestId('framework-preview-error');
+      await expect(error).toBeVisible({ timeout: 30_000 });
+      await expect(error).toContainText('Unclosed block');
+      await expect(page.getByTestId('framework-console-count')).toContainText('error');
+    });
   });
 
   test.describe('when a Monaco language download drops once', () => {

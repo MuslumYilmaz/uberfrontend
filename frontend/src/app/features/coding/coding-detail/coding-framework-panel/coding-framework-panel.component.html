@@ -85,6 +85,9 @@
                         <div class="text-xs text-white truncate" [title]="currentPath() || 'Select a file'">
                             {{ currentFileLabel() }}
                         </div>
+                        <div *ngIf="tech === 'angular'" class="runtime-label" data-testid="framework-runtime-label">
+                            {{ angularRuntimeLabel }}
+                        </div>
                     </div>
                 </div>
 

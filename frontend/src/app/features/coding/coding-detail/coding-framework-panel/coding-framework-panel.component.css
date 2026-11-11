@@ -513,3 +513,11 @@
   height: 100%;
 }
 
+/* Which Angular the preview runs, under the file name. */
+.runtime-label {
+  color: var(--uf-text-tertiary);
+  font-size: 10px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
