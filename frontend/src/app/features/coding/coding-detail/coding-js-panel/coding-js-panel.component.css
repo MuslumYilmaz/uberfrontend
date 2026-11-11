@@ -116,6 +116,7 @@ app-monaco-editor {
 }
 .horizontal-splitter:hover,
 .horizontal-splitter.dragging{ background-color:#3b82f6; }
+.horizontal-splitter:focus-visible{ outline:2px solid var(--uf-accent); outline-offset:1px; }
 
 /* ===== Smaller Results typography ===== */
 .results-panel { font-size: var(--fa-runner-font); line-height: var(--fa-runner-line); }
@@ -287,6 +288,26 @@ app-monaco-editor {
   font-size:.72rem;
   line-height:1rem;
   padding:.2rem .55rem;
+}
+
+/* The run shortcut under the editor; a narrow panel keeps its buttons and drops the hint. */
+.fa-runner-shell{
+  container-type:inline-size;
+}
+
+.fa-runner-keys{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--uf-text-tertiary);
+  font-size:.72rem;
+}
+
+@container (max-width: 560px){
+  .fa-runner-keys{
+    display:none;
+  }
 }
 
 .fa-runner-interview-controls{
@@ -655,8 +676,10 @@ app-monaco-editor {
   overflow:hidden;
   max-height:0;
   opacity:0;
+  visibility:hidden;
   transform:translateY(4px);
-  transition:max-height .22s ease, opacity .22s ease, transform .22s ease;
+  /* Hidden only once it has faded out, so closing still animates. */
+  transition:max-height .22s ease, opacity .22s ease, transform .22s ease, visibility 0s linear .22s;
   border:1px solid transparent;
   border-radius:10px;
   background:rgba(8,17,32,.96);
@@ -666,6 +689,8 @@ app-monaco-editor {
 .assist-chip.expanded .assist-chip__panel{
   max-height:250px;
   opacity:1;
+  visibility:visible;
+  transition-delay:0s;
   transform:translateY(0);
   padding:10px;
 }

@@ -1,7 +1,7 @@
 // src/app/monaco-editor.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
-  AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges,
+  AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges,
   OnDestroy, Output, PLATFORM_ID, SimpleChanges, ViewChild, inject
 } from '@angular/core';
 import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
@@ -78,6 +78,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Output() ready = new EventEmitter<void>();
   @Output() lineClick = new EventEmitter<MonacoLineClickEvent>();
   @Output() loadFailed = new EventEmitter<MonacoLoadError>();
+  /** Ctrl+Enter (Cmd+Enter on a Mac) inside this editor; the workspace runs its tests or checks. */
+  @Output() runShortcut = new EventEmitter<void>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
 
   // ADD
@@ -94,6 +96,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private static monacoReady = false;
   private static requestedLanguageModules = new Set<string>();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly zone = inject(NgZone);
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
     const baseExt =
@@ -184,6 +187,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           }, whenSuggest);
         }
       } catch { }
+
+      // Ctrl/Cmd+Enter runs the workspace. An action, unlike addCommand, is bound to this editor only: a page with a
+      // code and a tests editor keeps each shortcut on the editor that has the focus.
+      if (this.runShortcut.observed) {
+        const monaco = (window as any).monaco;
+        this.editor.addAction?.({
+          id: 'fa.runWorkspace',
+          label: 'Run tests or checks',
+          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+          run: () => this.zone.run(() => this.runShortcut.emit()),
+        });
+      }
 
       // Mirror -> @Output
       this.editor.onDidChangeModelContent?.(() => {

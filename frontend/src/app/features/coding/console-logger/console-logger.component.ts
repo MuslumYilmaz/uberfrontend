@@ -55,7 +55,7 @@ export interface TestResult {
   `],
     template: `
     <div class="wrap bg-black text-white">
-      <div class="head">
+      <div class="head" *ngIf="showHeader">
         <div class="title">Console</div>
         <div class="ml-auto text-xs opacity-70">{{ processed.length }} line{{ processed.length===1?'':'s' }}</div>
       </div>
@@ -85,6 +85,8 @@ export class ConsoleLoggerComponent implements OnChanges {
   @Input() autoScroll = true;
   /** dev-only stack details */
   @Input() showDetails = isDevMode();
+  /** Off where the host already names the console and counts its lines. */
+  @Input() showHeader = true;
   /** window in ms for deduping identical messages */
   @Input() dedupeWindowMs = 200;
   /** raw entries (can be huge; we’ll trim & coalesce) */

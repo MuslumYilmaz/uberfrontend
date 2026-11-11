@@ -20,6 +20,7 @@ import {
   inject,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -57,6 +58,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
 import { practiceProgressText } from '../../../core/utils/practice-session.util';
+import { splitterKeyRatio } from '../../../core/utils/splitter-keys.util';
 import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { QuestionSourcesComponent } from '../../../shared/components/question-sources/question-sources.component';
@@ -456,6 +458,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   findLocked = computed(() => this.findCaseOpen() && this.reviewPhase() === 'review');
   /** While the case is read, its tests would name the bugs, so the workspace waits behind a note; the code is in the case. */
   findConcealedNote = computed(() => (this.findLocked() ? 'Read the code in the case. The workspace and its tests open after you compare with the sample answer.' : null));
+  /** A merge request is reviewed in writing first: the workspace and its checks open with "Done: implement the top fixes". */
+  reviewWritingLocked = computed(() => this.reviewOpen() && !this.findCaseOpen() && this.reviewPhase() === 'review');
+  /** The workspace is read-only for a step of a mode, with the reason its pill shows. */
+  workspaceLockLabel = computed(() => {
+    if (this.findLocked()) return 'Find the bug first: the code runs after the comparison';
+    if (this.reviewWritingLocked()) return 'Write the review first: fixes and checks open after it';
+    return this.rehearsalLockedLabel();
+  });
   private reviewLoadSeq = 0;
   private reviewPreviousAsideRatio: number | null = null;
 
@@ -507,7 +517,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   });
-  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active' || this.findLocked());
+  /** The JavaScript workspace's timed practice, read from the panel so the Solution tab can close while it runs. */
+  private readonly jsPanelQuery = viewChild(CodingJsPanelComponent);
+  timedPracticeActive = computed(() => this.jsPanelQuery()?.interviewModeEnabled() ?? false);
+  /** Why the Solution tab is closed right now, as its label says it; null while it is open. */
+  solutionLockReason = computed<string | null>(() => {
+    if (this.pressureActive() && !this.pressureCompleted()) return 'Solution locked until all rounds pass';
+    if (this.rehearsalPhase() === 'active') return 'Solution locked until the rehearsal ends';
+    if (this.findLocked()) return 'Solution locked until you compare';
+    // A merge request's fixes would be the solution's: it opens with the sample review.
+    if (this.reviewOpen() && !this.findCaseOpen() && this.reviewPhase() !== 'compare') {
+      return 'Solution locked until you compare with the sample review';
+    }
+    if (this.timedPracticeActive()) return 'Solution locked until timed practice ends';
+    return null;
+  });
+  solutionLocked = computed(() => this.solutionLockReason() !== null);
   private rehearsalLoadSeq = 0;
 
   // Practice session
@@ -1128,6 +1153,13 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         this.solved.set(solvedIds.includes(q.id));
       }
     }, { allowSignalWrites: true });
+
+    // A lock that starts while the solution is open (timed practice, a review step) closes it.
+    effect(() => {
+      if (!this.solutionLocked() || untracked(() => this.activePanel()) !== 1) return;
+      this.activePanel.set(0);
+      this.showSolutionWarning.set(false);
+    });
 
     // A lock page names Premium's price; the checkout config then brings the visitor's regional one.
     effect(() => {
@@ -2311,8 +2343,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
-    // While a rehearsal or a find case keeps the task read-only, there is nothing to submit.
-    if (this.rehearsalLocked() || this.findLocked()) return;
+    // While a rehearsal, a find case or a review being written keeps the task read-only, there is nothing to submit.
+    if (this.rehearsalLocked() || this.findLocked() || this.reviewWritingLocked()) return;
     const epoch = this.workspaceEpoch;
     this.postPass.set(null);
     if (this.pressureActive()) {
@@ -3523,16 +3555,38 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (layoutExtent <= 0) return;
 
     const delta = currentPointer - this.asideDragStart;
-    let newRatio = this.startAsideRatio + delta / layoutExtent;
-
-    // Compact workspaces split into rows, so keep enough height for both the
-    // description and the editor. Desktop retains the existing width bounds.
-    const min = this.asideDragAxis === 'y' ? 0.22 : (this.isWebTech() ? 0.18 : 0.20);
-    const max = this.asideDragAxis === 'y' ? 0.45 : (this.isWebTech() ? 0.45 : 0.80);
-
-    newRatio = Math.max(min, Math.min(max, newRatio));
+    const { min, max } = this.asideRatioBounds(this.asideDragAxis);
+    const newRatio = Math.max(min, Math.min(max, this.startAsideRatio + delta / layoutExtent));
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
+
+  /**
+   * The description's share of the layout. Compact workspaces split into rows, so they keep enough height for both
+   * the description and the editor; desktop keeps the width bounds.
+   */
+  private asideRatioBounds(axis: 'x' | 'y'): { min: number; max: number } {
+    if (axis === 'y') return { min: 0.22, max: 0.45 };
+    return this.isWebTech() ? { min: 0.18, max: 0.45 } : { min: 0.2, max: 0.8 };
+  }
+
+  /** The description splitter's value and limits in percent, for its separator role. */
+  asideSplitterAria(): { now: number; min: number; max: number } {
+    const axis = this.isCompactWorkspace() ? 'y' : 'x';
+    const { min, max } = this.asideRatioBounds(axis);
+    const ratio = axis === 'y' ? this.compactAsideRatio(this.horizontalRatio()) : this.horizontalRatio();
+    return { now: Math.round(ratio * 100), min: Math.round(min * 100), max: Math.round(max * 100) };
+  }
+
+  /** Arrow keys move the description splitter as dragging does. */
+  onAsideSplitterKey(ev: KeyboardEvent): void {
+    if (this.showMobileDesktopGuard()) return;
+    const axis = this.isCompactWorkspace() ? 'y' : 'x';
+    const current = axis === 'y' ? this.compactAsideRatio(this.horizontalRatio()) : this.horizontalRatio();
+    const next = splitterKeyRatio(ev.key, current, this.asideRatioBounds(axis), axis);
+    if (next === null) return;
+    ev.preventDefault();
+    this.horizontalRatio.set(next);
+  }
 
   private compactAsideRatio(ratio: number): number {
     return Math.max(0.22, Math.min(0.45, ratio));
@@ -4366,9 +4420,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   onSolutionTabClick() {
-    if (this.rehearsalPhase() === 'active') return;
+    if (this.solutionLocked()) return;
     if (this.pressureActive()) {
-      if (!this.pressureCompleted()) return;
       if (this.descriptionCollapsed()) this.toggleDescription();
       this.showSolutionWarning.set(false);
       this.activePanel.set(1);

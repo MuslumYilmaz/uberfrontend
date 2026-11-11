@@ -116,9 +116,17 @@
       } @else if (next(); as following) {
         <a faButton variant="primary" [routerLink]="following.path" data-testid="rehearsal-next">Next problem</a>
       }
-      <button faButton variant="ghost" type="button" data-testid="rehearsal-end" (click)="endRehearsal.emit()">
-        End the rehearsal
-      </button>
+      @if (confirmingEnd()) {
+        <div class="rehearsal__confirm" role="group" aria-labelledby="rehearsal-end-question" data-testid="rehearsal-end-confirm">
+          <p id="rehearsal-end-question">End the rehearsal now? The clock stops and the review opens with the solutions.</p>
+          <button faButton variant="danger" type="button" data-testid="rehearsal-end-yes" (click)="confirmEnd()">End now</button>
+          <button faButton variant="ghost" type="button" data-testid="rehearsal-end-no" (click)="keepGoing()">Keep going</button>
+        </div>
+      } @else {
+        <button faButton variant="ghost" type="button" data-testid="rehearsal-end" (click)="askToEnd()">
+          End the rehearsal
+        </button>
+      }
     </div>
   } @else {
     <p class="rehearsal__note">

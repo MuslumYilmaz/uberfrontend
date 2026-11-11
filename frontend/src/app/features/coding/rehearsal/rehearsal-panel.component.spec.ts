@@ -104,9 +104,21 @@ describe('RehearsalPanelComponent', () => {
     ]);
     expect(host.querySelector('[data-testid="rehearsal-next"]')?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
 
+    // Ending early asks once: "Keep going" leaves the clock running, "End now" stops it.
     let ended = false;
     fixture.componentInstance.endRehearsal.subscribe(() => (ended = true));
     (host.querySelector('[data-testid="rehearsal-end"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(ended).toBeFalse();
+    expect(host.querySelector('[data-testid="rehearsal-end-confirm"]')?.textContent).toContain('End the rehearsal now?');
+    (host.querySelector('[data-testid="rehearsal-end-no"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(ended).toBeFalse();
+    expect(host.querySelector('[data-testid="rehearsal-end-confirm"]')).toBeNull();
+
+    (host.querySelector('[data-testid="rehearsal-end"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    (host.querySelector('[data-testid="rehearsal-end-yes"]') as HTMLButtonElement).click();
     expect(ended).toBeTrue();
   });
 

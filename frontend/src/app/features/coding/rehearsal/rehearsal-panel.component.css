@@ -230,6 +230,19 @@
   gap: var(--fa-space-2);
 }
 
+.rehearsal__confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fa-space-2);
+  flex-basis: 100%;
+}
+
+.rehearsal__confirm p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
 .sr-only {
   position: absolute !important;
   width: 1px !important;

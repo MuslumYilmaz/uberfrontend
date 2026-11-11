@@ -92,6 +92,21 @@ test('Free only hides the tasks a guest would meet a lock on, and stays on for t
   await expect(lockedRows).toHaveCount(0);
 });
 
+test('at 1280x720 a free framework task opens on its requirements, with the practice formats after them', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  // The longest of the free React statements above its requirements.
+  await page.goto('/react/coding/react-todo-list');
+  await expect(page.getByTestId('coding-workspace-panel')).toBeVisible({ timeout: 30_000 });
+  const heading = page.getByTestId('coding-requirements').getByRole('heading', { name: 'Requirements' });
+  await expect(heading).toBeVisible();
+  const footerTop = (await page.getByTestId('practice-footer').boundingBox())!.y;
+  const headingBox = (await heading.boundingBox())!;
+  expect(headingBox.y + headingBox.height).toBeLessThanOrEqual(footerTop);
+  const pressure = page.getByTestId('pressure-mode-entry');
+  await expect(pressure).toBeAttached();
+  expect((await pressure.boundingBox())!.y).toBeGreaterThan(headingBox.y);
+});
+
 test('a task opened from a plan day counts through that day and leads back to the plan', async ({ page }) => {
   await page.goto('/tracks/foundations-30d/preview');
   await page.locator('.day-card a[href="/javascript/coding/js-count-vowels"]').click();

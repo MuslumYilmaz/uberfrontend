@@ -94,6 +94,7 @@
                     <button *ngIf="frameworkChecks().length" type="button"
                         class="text-xs px-3 py-1.5 rounded border border-emerald-300/40 text-emerald-100 hover:bg-emerald-300/10 disabled:opacity-60"
                         data-testid="framework-run-checks"
+                        [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run checks (' + keys.run + ')'"
                         [disabled]="frameworkChecksRunning() || locked"
                         (click)="runFrameworkChecks()">
                         {{ frameworkChecksRunning() ? 'Running checks' : 'Run checks' }}
@@ -112,7 +113,7 @@
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions" [readOnly]="locked"
                         [preloadLanguages]="fileLanguages()"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
-                        (loadFailed)="onEditorLoadFailed()">
+                        (runShortcut)="onRunShortcut()" (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
                     <app-code-snapshot
                         *ngIf="!editorReady()"
@@ -144,11 +145,18 @@
                         (activate)="requestEditorUpgrade.emit()"></app-code-snapshot>
                 </ng-template>
             </section>
+            <!-- Under the editor: the run shortcut, and the way out of it, since Tab indents inside it. -->
+            <p class="editor-keys" data-testid="editor-keys-hint">
+                {{ keys.run }} {{ frameworkChecks().length ? 'runs the checks' : 'rebuilds the preview' }} ·
+                {{ keys.tabFocus }}: Tab leaves the editor
+            </p>
         </div>
 
         <!-- VERTICAL SPLITTER (same idea as coding-detail) -->
-        <div class="splitter" [class.dragging]="isDraggingFrameworkCols()"
-            (pointerdown)="startFrameworkColsDrag($event)">
+        <div class="splitter" [class.dragging]="isDraggingFrameworkCols()" data-testid="framework-cols-splitter"
+            role="separator" tabindex="0" aria-orientation="vertical" aria-label="Resize the editor and the preview"
+            [attr.aria-valuenow]="frameworkColsPercent()" aria-valuemin="25" aria-valuemax="80"
+            (pointerdown)="startFrameworkColsDrag($event)" (keydown)="onColsSplitterKey($event)">
         </div>
 
         <!-- RIGHT: Preview iframe -->
@@ -186,8 +194,24 @@
                 </iframe>
             </div>
 
+            <!-- The preview's console: what the code logs, and its uncaught errors, since the last build. -->
+            <section class="framework-console" [class.is-open]="consoleOpen()">
+                <button type="button" class="framework-console__toggle" data-testid="framework-console-toggle"
+                    [attr.aria-expanded]="consoleOpen()" aria-controls="framework-console-body" (click)="toggleConsole()">
+                    <app-fa-glyph class="framework-console__chevron" [icon]="consoleOpen() ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></app-fa-glyph>
+                    <span>Console</span>
+                    <span *ngIf="previewConsole().length" class="framework-console__count"
+                        [class.has-errors]="consoleErrorCount() > 0" data-testid="framework-console-count">{{ consoleSummary() }}</span>
+                </button>
+                <div *ngIf="consoleOpen()" id="framework-console-body" class="framework-console__body" data-testid="framework-console">
+                    <app-console-logger class="fa-results" [entries]="previewConsole()" [max]="200" [autoScroll]="true"
+                        [showHeader]="false"></app-console-logger>
+                </div>
+            </section>
+
             <section *ngIf="frameworkChecksRunning() || frameworkCheckResults().length"
-                class="framework-check-results" data-testid="framework-results-panel" aria-live="polite">
+                class="framework-check-results" data-testid="framework-results-panel" aria-live="polite"
+                [class.has-failures]="frameworkCheckPassedCount() < frameworkCheckResults().length">
                 <div class="framework-check-results__head">
                     <span>Checks<span *ngIf="checkCoverage === 'smoke'" class="framework-check-results__scope"> · core flow only</span></span>
                     <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">

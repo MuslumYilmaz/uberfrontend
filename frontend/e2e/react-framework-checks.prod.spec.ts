@@ -1109,6 +1109,42 @@ test.describe('Framework checks against the production SSR build', () => {
     await pinFrameworkAssetsToSameOrigin(page);
   });
 
+  test.describe('preview console', () => {
+    // The task's own code logs an error on purpose, and the browser console sees it as well.
+    test.use({ consoleErrorAllowlist: ['Missing key for item'] });
+
+    test('the preview console shows what the code logs and its errors, and starts over with each build', async ({ page }) => {
+      await page.goto('/react/coding/react-counter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+
+      await loadCanonicalFile(page, 'src/App.tsx', [
+        "import React from 'react';",
+        '',
+        'export default function App() {',
+        "  console.log('rendered with', { count: 0 });",
+        "  console.error('Missing key for item %s', 'Reset');",
+        '  return <div className="value">0</div>;',
+        '}',
+        '',
+      ].join('\n'));
+      await rebuildPreview(page, '.value');
+
+      const toggle = page.getByTestId('framework-console-toggle');
+      await expect(page.getByTestId('framework-console-count')).toContainText('error');
+      await toggle.click();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      const consolePanel = page.getByTestId('framework-console');
+      await expect(consolePanel).toContainText('rendered with {"count":0}');
+      await expect(consolePanel).toContainText('ERROR: Missing key for item Reset');
+
+      // A new build starts a new console.
+      await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
+      await rebuildPreview(page, '.value');
+      await expect(consolePanel).not.toContainText('rendered with');
+    });
+  });
+
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
@@ -1742,6 +1778,11 @@ test.describe('Framework checks against the production SSR build', () => {
     await page.getByTestId('review-mode-start').click();
     const panel = page.getByTestId('review-mode-panel');
     await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Add label filters to the issue list');
+    // The written review comes first: the checks and the solution wait for it.
+    const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+    await expect(page.getByTestId('framework-run-checks')).toBeDisabled();
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText('Write the review first: fixes and checks open after it');
+    await expect(solutionTab).toBeDisabled();
     // GitLab's written review has up to an hour, finished before the 90-minute interview starts.
     await expect(page.getByTestId('review-mode-timer')).toHaveText('Review: 60 of 60 min left');
     await expect(page.getByTestId('review-mode-file-0')).toContainText('watch(selectedLabel, loadIssues, { immediate: true });');
@@ -1757,6 +1798,9 @@ test.describe('Framework checks against the production SSR build', () => {
 
     await page.getByTestId('review-mode-start-fixes').click();
     await expect(page.getByTestId('review-mode-timer')).toHaveText('Interview: 90 of 90 min left');
+    // The fixes run their checks; the solution still waits for the sample review.
+    await expect(page.getByTestId('framework-run-checks')).toBeEnabled();
+    await expect(solutionTab).toBeDisabled();
     await expect(panel).toContainText('L84: the watch reloads the list on every label');
     await waitForFrameworkPreview(page, '.issue');
     await loadCanonicalBundle(page, REVIEW_FIXES);
@@ -1766,6 +1810,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await dismissPostPassPrompt(page);
 
     await page.getByTestId('review-mode-compare').click();
+    await expect(solutionTab).toBeEnabled();
     const sample = page.getByTestId('review-mode-sample');
     await expect(sample.locator('.review-mode__comment-title').first()).toHaveText('Every label click loads the list again');
     await expect(sample.locator('.review-mode__comment')).toHaveCount(10);

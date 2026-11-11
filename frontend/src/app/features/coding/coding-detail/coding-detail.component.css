@@ -62,6 +62,36 @@
   white-space: normal;
 }
 
+/* A rehearsal a visitor cannot start: one line instead of a ~230 px card above the task. */
+.rehearsal-teaser {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  margin-top: 14px;
+  padding: 8px 12px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 30%, var(--uf-border-subtle));
+  border-radius: 10px;
+}
+
+.rehearsal-teaser p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+  margin: 0;
+  color: var(--uf-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.rehearsal-teaser__title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* A rehearsal's questions come before its problems: the panel stays, and the problem waits out of sight. */
 .rehearsal-answering > :not(app-rehearsal-panel) {
   display: none !important;
@@ -886,6 +916,7 @@
 /* ---------- Splitters ---------- */
 .splitter{ flex:0 0 5px; width:5px; background:transparent; border-radius:25px; cursor:col-resize; touch-action:none; user-select:none; transition:background-color .15s; }
 .splitter:hover, .splitter.dragging{ background-color:#3b82f6; }
+.splitter:focus-visible{ outline:2px solid var(--uf-accent); outline-offset:1px; }
 .horizontal-splitter{ height:5px; z-index:2; background:transparent; border-radius:25px; cursor:row-resize; user-select:none; transition:background-color .15s; }
 .horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color:#3b82f6; }
 

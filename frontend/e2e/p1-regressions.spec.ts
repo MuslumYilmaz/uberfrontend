@@ -334,15 +334,57 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeVisible();
 
+  // Closed, the panels keep their buttons out of the tab order: Shift+Tab from Run tests reaches the splitter, then
+  // the Explain failure chip, never an invisible Dismiss.
+  await expect(jsPanel.locator('#assist-hint-panel')).toHaveAttribute('inert', '');
+  await expect(jsPanel.locator('#assist-explain-panel')).toHaveAttribute('inert', '');
+  await jsPanel.getByTestId('js-run-tests').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(jsPanel.getByTestId('js-editor-splitter')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(jsPanel.getByRole('button', { name: 'Explain failure' })).toBeFocused();
+
   await jsPanel.getByTestId('interview-mode-setup-toggle').click();
   await expect(jsPanel.getByTestId('interview-mode-setup-panel')).toBeVisible();
   await jsPanel.getByTestId('interview-mode-start').click();
   await jsPanel.getByTestId('js-run-tests').click();
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeHidden();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeHidden();
+  // Timed practice closes the solution until it ends.
+  const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+  await expect(solutionTab).toBeDisabled();
+  await expect(solutionTab).toHaveAttribute('title', 'Solution locked until timed practice ends');
 
   await jsPanel.getByTestId('interview-mode-end').click();
   await expect(jsPanel.getByTestId('interview-summary')).toBeVisible();
+  await expect(solutionTab).toBeEnabled();
+});
+
+test('Ctrl+Enter runs the tests from the editor, and the splitter and Run tests work from the keyboard', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+  await waitForMonacoModel(page, `q-${JS_QUESTION.id}-code`);
+  await expect(jsPanel.getByTestId('editor-keys-hint')).toContainText('+Enter runs');
+
+  // Cmd+Enter on a Mac, Ctrl+Enter elsewhere, from inside the code editor. Monaco reads the platform from the user
+  // agent, which the Desktop Chrome profile sets to Windows on every host.
+  const mac = await page.evaluate(() => /Macintosh|iPhone|iPad|iPod/.test(navigator.userAgent));
+  await expect(jsPanel.getByTestId('editor-keys-hint')).toContainText(mac ? 'Cmd+Enter runs' : 'Ctrl+Enter runs');
+  await jsPanel.locator('[data-testid="js-code-editor"] .monaco-editor .view-lines').first().click();
+  await page.keyboard.press(mac ? 'Meta+Enter' : 'Control+Enter');
+  await expect(jsPanel.getByTestId('test-result').first()).toBeVisible({ timeout: 15_000 });
+
+  // The splitter is a separator the arrow keys move; Tab goes on to Run tests, with a visible focus ring.
+  const splitter = jsPanel.getByTestId('js-editor-splitter');
+  await splitter.focus();
+  const before = Number(await splitter.getAttribute('aria-valuenow'));
+  await page.keyboard.press('ArrowUp');
+  await expect(splitter).toHaveAttribute('aria-valuenow', String(before - 2));
+  await page.keyboard.press('Tab');
+  const run = jsPanel.getByTestId('js-run-tests');
+  await expect(run).toBeFocused();
+  expect(await run.evaluate((node) => getComputedStyle(node).outlineStyle)).not.toBe('none');
 });
 
 test('assist experiments apply late_l2 nudge timing and compact explain density', async ({ page }) => {

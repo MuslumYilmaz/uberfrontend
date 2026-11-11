@@ -386,6 +386,36 @@ describe('CodingDetailComponent', () => {
     expect(component.footerNextLabel()).toBe('Next');
   });
 
+  it('keeps a merge request review in order: the workspace waits for the written review, the solution for the sample', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({ id: 'react-mr', access: 'free' } as any);
+    component.reviewScenario.set({ format: 'review' } as any);
+    component.reviewOpen.set(true);
+    component.reviewPhase.set('review');
+
+    expect(component.reviewWritingLocked()).toBeTrue();
+    expect(component.workspaceLockLabel()).toBe('Write the review first: fixes and checks open after it');
+    expect(component.solutionLockReason()).toBe('Solution locked until you compare with the sample review');
+    component.onSolutionTabClick();
+    expect(component.activePanel()).toBe(0);
+
+    // The fixes run their checks; the solution still waits for the comparison.
+    component.reviewPhase.set('fix');
+    expect(component.reviewWritingLocked()).toBeFalse();
+    expect(component.solutionLocked()).toBeTrue();
+    component.reviewPhase.set('compare');
+    expect(component.solutionLocked()).toBeFalse();
+
+    // A find case keeps its own wording.
+    component.reviewScenario.set({ format: 'find' } as any);
+    component.reviewPhase.set('review');
+    expect(component.reviewWritingLocked()).toBeFalse();
+    expect(component.solutionLockReason()).toBe('Solution locked until you compare');
+  });
+
   it('names the task the post-pass Next opens, and counts a plan day in the footer', () => {
     const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
     component.tech = 'javascript';

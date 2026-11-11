@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import type { DecisionGraphBranch, DecisionGraphDocument, DecisionGraphNode } from '../../../../core/models/decision-graph.model';
@@ -19,6 +19,8 @@ import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../..
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
 import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
+import { editorKeys } from '../../../../core/utils/editor-keys.util';
+import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -195,6 +197,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
   editorRatio = signal(0.65); // top editors take 65% of the vertical space
+  editorRatioPercent = computed(() => Math.round(this.editorRatio() * 100));
+  /** Set once the person moves the splitter; a failing run then leaves their split alone. */
+  private userResizedSplit = false;
   private _draggingSplit = signal(false);
   isDraggingSplit = this._draggingSplit.asReadonly();
   private _hydrating = true;
@@ -208,6 +213,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly zone = inject(NgZone);
   private readonly analytics = inject(AnalyticsService, { optional: true });
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   private readonly decisionGraphService = inject(DecisionGraphService, { optional: true });
@@ -603,6 +609,26 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     return [...results.filter((result) => !result.passed), ...results.filter((result) => result.passed)];
   });
 
+  /**
+   * A failing run needs room for its messages: the results take at least half the height (at 1280x720 they had ~190
+   * px). A split the person set by hand stays as they left it.
+   */
+  private growResultsForFailure(): void {
+    if (this.userResizedSplit || this.editorRatio() <= 0.5) return;
+    this.editorRatio.set(0.5);
+    this.scheduleResize();
+  }
+
+  /** Arrow keys move the editor/results splitter as dragging does. */
+  onSplitterKey(ev: KeyboardEvent): void {
+    const next = splitterKeyRatio(ev.key, this.editorRatio(), { min: 0.2, max: 0.9 }, 'y');
+    if (next === null) return;
+    ev.preventDefault();
+    this.userResizedSplit = true;
+    this.editorRatio.set(next);
+    this.scheduleResize();
+  }
+
   startSplitDrag(ev: PointerEvent) {
     ev.preventDefault();
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
@@ -616,6 +642,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       if (!rect) return;
       const y = e.clientY - rect.top;
       const ratio = Math.min(0.9, Math.max(0.2, y / rect.height)); // clamp 20%–90%
+      this.userResizedSplit = true;
       this.editorRatio.set(ratio);
       this.scheduleResize();
     };
@@ -1478,7 +1505,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private startInterviewTicker(): void {
     this.stopInterviewTicker();
     if (!this.isBrowser || !this.interviewModeEnabled()) return;
-    this.interviewTicker = window.setInterval(() => this.syncInterviewRemaining(), 1000);
+    // Outside the zone, as AttemptInsightsService's sync timer: a session restored while the page loads would
+    // otherwise keep the app from turning stable, and hydration would leave the prerendered markup in place.
+    this.interviewTicker = this.zone.runOutsideAngular(() =>
+      window.setInterval(() => this.zone.run(() => this.syncInterviewRemaining()), 1000));
   }
 
   private stopInterviewTicker(): void {
@@ -1824,6 +1854,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.pendingTestsPersist = null;
   }
 
+  readonly keys = editorKeys();
+
+  /** The Run tests button's own condition, shared with Ctrl/Cmd+Enter in either editor. */
+  canRunTests(): boolean {
+    return !this.locked && !!(this.testCode() || '').trim() && !this.isRunningTests();
+  }
+
+  onRunShortcut(): void {
+    if (this.canRunTests()) this.onRunTestsClick();
+  }
+
   /** Without a host listening, the panel runs the tests on its own. */
   onRunTestsClick(): void {
     if (this.requestRunTests.observed) this.requestRunTests.emit();
@@ -1903,6 +1944,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.consoleEntriesChange.emit(this.consoleEntries());
       this.processAssistAfterRun(q, rawUserSnapshot, this.testResults());
       this.subTab.set('tests');
+      if (!passing) this.growResultsForFailure();
     } finally {
       if (runId === this._runSeq) this.isRunningTests.set(false);
     }

@@ -42,9 +42,11 @@ import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
+import { editorKeys } from '../../../../core/utils/editor-keys.util';
+import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
-import { TestResult } from '../../console-logger/console-logger.component';
+import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
 
 type TreeNode =
@@ -62,9 +64,41 @@ export type FrameworkCheckRunEvent = {
   results: TestResult[];
 };
 
+/** The preview console keeps the latest entries, as a browser console does. */
+const PREVIEW_CONSOLE_MAX = 200;
+/** A preview logging in a loop stops reporting after this many messages, with one line saying so. */
+const PREVIEW_CONSOLE_POST_LIMIT = 300;
+
+/**
+ * Injected first into the preview document: console.log/info/warn/error/debug and uncaught errors are posted to this
+ * panel with the preview's token, then go on to the browser console as before. Values are written as a console writes
+ * them (strings bare, objects as JSON, %s and %c in a first string argument filled in), 2,000 characters at most.
+ */
+export function previewConsoleBridge(token: string): string {
+  return `(function(){var token=${JSON.stringify(token)};var sent=0;var LIMIT=${PREVIEW_CONSOLE_POST_LIMIT};`
+    + `function fmt(v){try{if(typeof v==='string')return v;if(v===undefined)return 'undefined';`
+    + `if(typeof v==='function')return '[Function'+(v.name?' '+v.name:'')+']';if(typeof v==='bigint')return String(v)+'n';`
+    + `if(typeof v==='symbol')return String(v);if(v instanceof Error)return (v.name||'Error')+': '+v.message;`
+    + `if(v&&v.nodeType===1)return '<'+String(v.tagName).toLowerCase()+'>';var seen=[];`
+    + `return JSON.stringify(v,function(k,x){if(typeof x==='bigint')return String(x)+'n';if(x===undefined)return 'undefined';`
+    + `if(typeof x==='function')return '[Function]';if(x&&typeof x==='object'){if(seen.indexOf(x)!==-1)return '[Circular]';seen.push(x);}return x;});`
+    + `}catch(e){try{return String(v);}catch(_e){return '[value]';}}}`
+    + `function text(args){var list=Array.prototype.slice.call(args);var head='';`
+    + `if(typeof list[0]==='string'&&list[0].indexOf('%')!==-1){head=list.shift().replace(/%[sdifoOc%]/g,function(m){`
+    + `if(m==='%%')return '%';if(!list.length)return m;var a=list.shift();if(m==='%c')return '';`
+    + `if(m==='%d'||m==='%i')return String(parseInt(a,10));if(m==='%f')return String(parseFloat(a));return fmt(a);});}`
+    + `var rest=list.map(fmt).join(' ');return (head&&rest?head+' '+rest:head||rest).slice(0,2000);}`
+    + `function send(level,message){try{window.parent.postMessage({type:'FA_PREVIEW_CONSOLE',version:2,token:token,level:level,message:message},'*');}catch(_e){}}`
+    + `function post(level,message){if(sent>=LIMIT){if(sent===LIMIT){sent++;send('warn','The preview logged more than '+LIMIT+' messages; the rest are not shown here.');}return;}sent++;send(level,message);}`
+    + `['log','info','warn','error','debug'].forEach(function(name){var original=console[name];if(typeof original!=='function')return;`
+    + `console[name]=function(){try{post(name==='debug'?'log':name,text(arguments));}catch(_e){}return original.apply(console,arguments);};});`
+    + `window.addEventListener('error',function(e){var err=e&&e.error;post('error',err&&err.message?(err.name||'Error')+': '+err.message:String((e&&e.message)||'Script error'));});`
+    + `window.addEventListener('unhandledrejection',function(e){post('error','Unhandled promise rejection: '+fmt(e&&e.reason));});})();`;
+}
+
 @Component({
     selector: 'app-coding-framework-panel',
-    imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent],
+    imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent, ConsoleLoggerComponent],
     templateUrl: './coding-framework-panel.component.html',
     styleUrls: ['./coding-framework-panel.component.css']
 })
@@ -141,6 +175,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private previewNavId = 0;
   private previewBuildGeneration = 0;
   private expectedPreviewReadyToken: string | null = null;
+  /** The preview's console: what its code logs, and its uncaught errors, since the last build of the preview. */
+  readonly previewConsole = signal<ConsoleEntry[]>([]);
+  readonly consoleOpen = signal(false);
+  readonly consoleErrorCount = computed(() => this.previewConsole().filter((entry) => entry.level === 'error').length);
+  /** The current preview's token: a message from an earlier build, or from a check run, is not this console's. */
+  private previewConsoleToken: string | null = null;
+  private pendingConsole: ConsoleEntry[] = [];
+  private consoleFlushScheduled = false;
   private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
@@ -195,6 +237,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   // editor | preview oranı (0–1)
   frameworkColsRatio = signal(0.55); // editor ~%55
+  frameworkColsPercent = computed(() => Math.round(this.frameworkColsRatio() * 100));
   frameworkEditorFlex = computed(
     () => `0 0 ${this.frameworkColsRatio() * 100}%`
   );
@@ -937,6 +980,15 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
   }
 
+  readonly keys = editorKeys();
+
+  /** Ctrl/Cmd+Enter in the editor: the checks when the task has them and they can run, else a fresh preview. */
+  onRunShortcut(): void {
+    if (this.locked || this.frameworkChecksRunning()) return;
+    if (this.frameworkChecks().length) void this.runFrameworkChecks();
+    else void this.rebuildFrameworkPreview().catch(() => undefined);
+  }
+
   async runFrameworkChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
     const q = this.question;
     const activeTech = this.tech;
@@ -1136,6 +1188,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this._previewUrl.set(null);
       this.previewObjectUrl = null;
       this.expectedPreviewReadyToken = null;
+      this.resetPreviewConsole(null);
       this.previewFailure.set(failure);
       this.loadingPreview.set(false);
       if (prevUrl) {
@@ -1148,6 +1201,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.previewFailure.set(null);
     const bridged = this.injectPreviewReadyBridge(html, navId);
     this.expectedPreviewReadyToken = bridged.token;
+    this.resetPreviewConsole(bridged.token);
 
     const blob = new Blob([bridged.html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
@@ -1218,7 +1272,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
     const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridge = `<script>(function(){var token=${JSON.stringify(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
+    const bridge = `<script>${previewConsoleBridge(token)}(function(){var token=${JSON.stringify(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
 
     if (/<head[^>]*>/i.test(html)) {
       return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };
@@ -1231,7 +1285,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private onPreviewMessage = (ev: MessageEvent) => {
     if (!this.isBrowser || this.destroy) return;
-    if (!this.loadingPreview()) return;
     const frameWindow = this.previewFrame?.nativeElement?.contentWindow;
     if (!frameWindow || ev.source !== frameWindow) return;
     const payload = ev.data as {
@@ -1240,7 +1293,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       token?: unknown;
       state?: unknown;
       error?: unknown;
+      level?: unknown;
+      message?: unknown;
     } | null;
+    if (payload?.type === 'FA_PREVIEW_CONSOLE' && payload.version === 2) {
+      this.onPreviewConsole(payload);
+      return;
+    }
+    if (!this.loadingPreview()) return;
     if (!payload || payload.type !== 'FA_PREVIEW_LIFECYCLE' || payload.version !== 2) return;
     const token = typeof payload.token === 'string' ? payload.token : '';
     if (!this.expectedPreviewReadyToken || token !== this.expectedPreviewReadyToken) return;
@@ -1268,6 +1328,39 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       message: `${prefix}${detail ? `: ${detail}` : ''}`,
     });
   };
+
+  toggleConsole(): void {
+    this.consoleOpen.update((open) => !open);
+  }
+
+  /** "3 messages · 1 error" beside the Console toggle. */
+  consoleSummary(): string {
+    const count = this.previewConsole().length;
+    const errors = this.consoleErrorCount();
+    const messages = `${count} ${count === 1 ? 'message' : 'messages'}`;
+    return errors ? `${messages} · ${errors} ${errors === 1 ? 'error' : 'errors'}` : messages;
+  }
+
+  private resetPreviewConsole(token: string | null): void {
+    this.previewConsoleToken = token;
+    this.pendingConsole = [];
+    if (this.previewConsole().length) this.zone.run(() => this.previewConsole.set([]));
+  }
+
+  /** Messages arrive outside the zone and in bursts; they join the console once a frame. */
+  private onPreviewConsole(payload: { token?: unknown; level?: unknown; message?: unknown }): void {
+    if (!this.previewConsoleToken || payload.token !== this.previewConsoleToken) return;
+    const level = payload.level === 'error' || payload.level === 'warn' || payload.level === 'info' ? payload.level : 'log';
+    this.pendingConsole.push({ level, message: String(payload.message ?? '').slice(0, 2000), timestamp: Date.now() });
+    if (this.consoleFlushScheduled) return;
+    this.consoleFlushScheduled = true;
+    requestAnimationFrame(() => {
+      this.consoleFlushScheduled = false;
+      const batch = this.pendingConsole.splice(0);
+      if (!batch.length || this.destroy) return;
+      this.zone.run(() => this.previewConsole.update((entries) => [...entries, ...batch].slice(-PREVIEW_CONSOLE_MAX)));
+    });
+  }
 
   // ---------- helpers ----------
 
@@ -1410,6 +1503,14 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   // --- VERTICAL SPLITTER (editor | preview) ---
+
+  /** Arrow keys move the editor/preview splitter as dragging does. */
+  onColsSplitterKey(ev: KeyboardEvent): void {
+    const next = splitterKeyRatio(ev.key, this.frameworkColsRatio(), { min: 0.25, max: 0.8 }, 'x');
+    if (next === null) return;
+    ev.preventDefault();
+    this.frameworkColsRatio.set(next);
+  }
 
   startFrameworkColsDrag = (ev: PointerEvent) => {
     ev.preventDefault();

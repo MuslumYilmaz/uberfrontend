@@ -215,6 +215,11 @@
   background: transparent;
 }
 
+.splitter:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: -2px;
+}
+
 /* Başta gizli */
 .splitter::before {
   content: '';
@@ -257,6 +262,7 @@
 
 /* Hover / drag state – parlak mavi */
 .splitter:hover::before,
+.splitter:focus-visible::before,
 .splitter.dragging::before {
   opacity: 1;
   background: rgba(59, 130, 246, 0.9);
@@ -334,6 +340,11 @@
   background: color-mix(in srgb, var(--uf-surface) 92%, transparent);
   padding: 10px 12px;
   color: var(--fa-text);
+}
+
+/* Failures need room for their messages: up to 45% of the screen height, the preview keeps the rest. */
+.framework-check-results.has-failures {
+  max-height: min(45vh, 360px);
 }
 
 .framework-check-results__head {
@@ -435,3 +446,70 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* The run shortcut under the editor. */
+.editor-keys {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 3px 10px;
+  overflow: hidden;
+  border-top: 1px solid var(--framework-preview-border);
+  color: var(--uf-text-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The preview's console, under the preview and above the check results. */
+.framework-console {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--framework-preview-border);
+  background: color-mix(in srgb, var(--uf-surface) 92%, transparent);
+}
+
+.framework-console__toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--fa-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.framework-console__toggle:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: -2px;
+}
+
+.framework-console__chevron {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.framework-console__count {
+  color: var(--uf-text-tertiary);
+  font-weight: 500;
+}
+
+.framework-console__count.has-errors {
+  color: var(--uf-status-danger-text);
+}
+
+.framework-console__body {
+  height: 160px;
+  border-top: 1px solid var(--framework-preview-border);
+}
+
+.framework-console__body app-console-logger {
+  min-height: 0;
+  height: 100%;
+}
+
