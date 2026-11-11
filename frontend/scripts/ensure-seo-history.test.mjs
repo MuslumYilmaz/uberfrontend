@@ -7,6 +7,13 @@ import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 import { ensureSeoHistory } from './ensure-seo-history.mjs';
 
+// Git gives a hook run from a linked worktree an absolute GIT_DIR, and `git -C <fixture>` then acts on the real
+// repository: the pre-push hook once committed these fixtures to its branches and could remove its origin. Clear the
+// repository variables so every git call in this file, the script's own included, stays in its temporary fixture.
+for (const name of execFileSync('git', ['rev-parse', '--local-env-vars'], { encoding: 'utf8' }).split('\n')) {
+  if (name) delete process.env[name];
+}
+
 const vercelEnv = {
   ...process.env,
   VERCEL: '1',
