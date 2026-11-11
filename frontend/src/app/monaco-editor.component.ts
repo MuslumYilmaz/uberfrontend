@@ -82,10 +82,16 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   /** Ctrl+Enter (Cmd+Enter on a Mac) inside this editor; the workspace runs its tests or checks. */
   @Output() runShortcut = new EventEmitter<void>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
+  /**
+   * The workspace's other files by path. TypeScript gets the .ts and .tsx ones, so a type that the open file imports
+   * from a sibling resolves instead of falling to the `declare module "*"` stub (TS2709).
+   */
+  @Input() siblingFiles: Readonly<Record<string, string>> | null = null;
 
   // ADD
   private editor!: any;
   private model?: any;                  // NEW: keep a handle to the model
+  private readonly siblingLibs = new Map<string, { content: string; lib?: { dispose(): void } }>();
   private decorationIds: string[] = [];
   private suppressNextModelUpdate = false;
   private disposed = false;
@@ -165,7 +171,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         (this.container.nativeElement.parentElement as HTMLElement)?.classList.add('fixed-height');
       }
 
-      // Create the model first with a deterministic URI/extension.
+      // Create the model first with a deterministic URI/extension, after the files it may import from.
+      this.syncSiblingLibs();
       this.createOrSwapModel(langNorm, this.code ?? '');
 
       // Then create the editor bound to that model.
@@ -263,6 +270,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   ngOnChanges(changes: SimpleChanges) {
     if (!this.editor && !this.model) return;
 
+    // Before a model swap, so the file that opens leaves the siblings and the file that closes joins them.
+    if (changes['siblingFiles'] || changes['modelKey']) this.syncSiblingLibs();
+
     if (changes['modelKey'] && !changes['modelKey'].isFirstChange()) {
       const langNorm = this.normalizeLanguage(this.language);
       this.createOrSwapModel(langNorm, this.code ?? '');
@@ -332,6 +342,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     try { this.resizeObs?.disconnect(); } catch { }
     try { this.editor?.dispose?.(); } catch { }
     try { this.model?.dispose?.(); } catch { }  // keep this
+    for (const { lib } of this.siblingLibs.values()) {
+      try { lib?.dispose(); } catch { }
+    }
+    this.siblingLibs.clear();
   }
 
   getValue(): string {
@@ -1319,13 +1333,39 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     });
   }
 
+  private static fileUri(path: string): string {
+    return `file:///${path.replace(/^file:\/\//, '').replace(/^\/+/, '')}`;
+  }
+
+  // Each sibling .ts or .tsx file is an extra lib at its own path, where relative imports find it. The open file never
+  // is one: it is the model, and a lib at the same path would declare its contents a second time.
+  private syncSiblingLibs(): void {
+    const defaults = (window as any).monaco?.languages?.typescript?.typescriptDefaults;
+    if (!defaults?.addExtraLib) return;
+    const open = this.modelKey ? MonacoEditorComponent.fileUri(this._modelId) : '';
+    const next = new Map<string, string>();
+    for (const [path, content] of Object.entries(this.siblingFiles ?? {})) {
+      const uri = MonacoEditorComponent.fileUri(path);
+      if (uri !== open && /\.tsx?$/i.test(uri)) next.set(uri, content ?? '');
+    }
+    for (const [uri, { lib }] of this.siblingLibs) {
+      if (next.has(uri)) continue;
+      try { lib?.dispose(); } catch { }
+      this.siblingLibs.delete(uri);
+    }
+    for (const [uri, content] of next) {
+      if (this.siblingLibs.get(uri)?.content === content) continue;
+      // Adding a path again replaces its content, and the older disposable no longer removes it.
+      this.siblingLibs.set(uri, { content, lib: defaults.addExtraLib(content, uri) });
+    }
+  }
+
   private createOrSwapModel(langNorm: string, code: string) {
     const rawId = this._modelId; // src/App.tsx, fa-1.ts, vs.
     const previousModel = this.model;
 
     // Dosya path’ini düzgün bir file:// URI’sine çevir
-    const normalizedPath = rawId.replace(/^file:\/\//, '').replace(/^\/+/, '');
-    const uri = window.monaco.Uri.parse(`file:///${normalizedPath}`);
+    const uri = window.monaco.Uri.parse(MonacoEditorComponent.fileUri(rawId));
 
     let existing = window.monaco.editor.getModel(uri);
     if (existing) {

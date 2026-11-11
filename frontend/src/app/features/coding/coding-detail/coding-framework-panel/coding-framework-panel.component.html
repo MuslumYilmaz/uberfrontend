@@ -113,8 +113,8 @@
             <section class="min-w-0 min-h-0 flex-1 flex editor-shell">
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
                     <app-monaco-editor #frameworkEditor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
-                        [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions" [readOnly]="locked"
-                        [preloadLanguages]="fileLanguages()"
+                        [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [siblingFiles]="siblingFiles()"
+                        [options]="editorOptions" [readOnly]="locked" [preloadLanguages]="fileLanguages()"
                         (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()"
                         (runShortcut)="onRunShortcut()" (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>

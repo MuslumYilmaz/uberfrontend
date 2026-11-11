@@ -229,6 +229,11 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   fileLanguages = computed(() => [...new Set(this.fileList().map((path) => this.langFromPath(path)))]);
 
   currentPath = computed(() => this.openPath() || this.frameworkEntryFile || '');
+  // The editor shows one file; its TypeScript service reads the others, edits included, to resolve imported types.
+  siblingFiles = computed(() => {
+    const open = this.currentPath();
+    return Object.fromEntries(Object.entries(this.filesMap()).filter(([path]) => path !== open));
+  });
   currentFileLabel = computed(() => {
     const p = this.currentPath();
     if (!p) return 'Select a file';

@@ -337,6 +337,59 @@ describe('MonacoEditorComponent loader failure handling', () => {
     expect(fakeMonaco.model.dispose).toHaveBeenCalledTimes(1);
   });
 
+  it('gives TypeScript the workspace files around the open one at their own paths, and follows file switches and edits', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+    const addExtraLib = fakeMonaco.api.languages.typescript.typescriptDefaults.addExtraLib;
+    const removed: string[] = [];
+    addExtraLib.and.callFake((_content: string, path: string) => ({ dispose: () => removed.push(path) }));
+    const added = () => addExtraLib.calls.allArgs()
+      .filter(([, path]: [string, string]) => path.startsWith('file:///src/'))
+      .map(([content, path]: [string, string]) => `${path}: ${content}`);
+    const types = 'export type Point = { x: number; y: number };';
+
+    const fixture = createComponent();
+    fixture.componentRef.setInput('language', 'typescript');
+    fixture.componentRef.setInput('modelKey', '/src/app/snake.component.ts');
+    fixture.componentRef.setInput('siblingFiles', {
+      '/src/app/types.ts': types,
+      '/src/app/snake.component.html': '<canvas></canvas>',
+    });
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    // Only TypeScript files go to the worker, and before the model that imports them.
+    expect(added()).toEqual([`file:///src/app/types.ts: ${types}`]);
+    const siblingCall = addExtraLib.calls.all().find((call: any) => call.args[1] === 'file:///src/app/types.ts');
+    expect(siblingCall?.invocationOrder)
+      .toBeLessThan(fakeMonaco.api.editor.createModel.calls.first().invocationOrder);
+
+    // Opening types.ts takes it out of the siblings and puts the edited component in.
+    fixture.componentRef.setInput('modelKey', '/src/app/types.ts');
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited component' });
+    fixture.detectChanges();
+    expect(removed).toEqual(['file:///src/app/types.ts']);
+    expect(added()).toEqual([
+      `file:///src/app/types.ts: ${types}`,
+      'file:///src/app/snake.component.ts: edited component',
+    ]);
+
+    // The same sibling content adds nothing; new content replaces the lib.
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited component' });
+    fixture.detectChanges();
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited again' });
+    fixture.detectChanges();
+    expect(added().length).toBe(3);
+    expect(added()[2]).toBe('file:///src/app/snake.component.ts: edited again');
+
+    fixture.destroy();
+    expect(removed).toEqual(['file:///src/app/types.ts', 'file:///src/app/snake.component.ts']);
+  });
+
   it('attaches a replacement model before disposing the previous model', () => {
     const fakeMonaco = makeFakeMonaco();
     const order: string[] = [];
