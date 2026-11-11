@@ -2,6 +2,7 @@
 
 import { normalizeError } from '../utils/console-normalize';
 import type { BundleFile } from '../utils/file-bundle.util';
+import { createSandboxFakeTimers } from './user-code-sandbox-fake-timers';
 import { freezeHardenedPrototypes } from './user-code-sandbox-hardening';
 import { createSandboxExpect } from './user-code-sandbox-matchers';
 import { linkModules } from './user-code-sandbox-modules';
@@ -56,11 +57,12 @@ const asyncErrors: SandboxAsyncError[] = [];
 let logLimitHit = false;
 let activeTestIdx: number | null = null;
 let activeTestName: string | null = null;
-const now = () => Date.now();
 // The runner's own clock and timers, taken before any user code runs: a task or its tests may replace them.
+const now = Date.now.bind(Date);
 const realSetTimeout = self.setTimeout.bind(self);
 const realClearTimeout = self.clearTimeout.bind(self);
 const realNow = performance.now.bind(performance);
+const fakeTimers = createSandboxFakeTimers(self);
 const DEFAULT_TEST_TIMEOUT_MS = 1000;
 const DEFAULT_RUN_BUDGET_MS = 4000;
 
@@ -323,6 +325,8 @@ async function runQueued(perTestMs: number, budgetMs: number): Promise<TestResul
             postProgress({ phase: 'start', test: { idx: t.idx, name: t.name } });
         },
         finish: (t, outcome) => {
+            // A test that left fake timers on must not hand them to the next one.
+            fakeTimers.useRealTimers();
             activeTestIdx = null;
             activeTestName = null;
             // An error thrown from a callback names the bug better than the timeout or rejection it led to.
@@ -423,6 +427,10 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     (self as any).test = test;
     (self as any).expect = expect;
     (self as any).it = it;
+    (self as any).useFakeTimers = fakeTimers.useFakeTimers;
+    (self as any).useRealTimers = fakeTimers.useRealTimers;
+    (self as any).advanceTimersByTime = fakeTimers.advanceTimersByTime;
+    (self as any).advanceTimersByTimeAsync = fakeTimers.advanceTimersByTimeAsync;
 
     // hard reset per-run log cap
     logLimitHit = false;

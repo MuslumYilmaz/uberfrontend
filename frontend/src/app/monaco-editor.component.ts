@@ -984,6 +984,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare const afterEach: (fn: () => void) => void;",
               "declare const beforeAll: (fn: () => void) => void;",
               "declare const afterAll: (fn: () => void) => void;",
+              "declare function useFakeTimers(): void;",
+              "declare function useRealTimers(): void;",
+              "declare function advanceTimersByTime(ms: number): void;",
+              "declare function advanceTimersByTimeAsync(ms: number): Promise<void>;",
             ].join('\n');
             ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
