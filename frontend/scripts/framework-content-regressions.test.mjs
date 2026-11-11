@@ -2268,11 +2268,18 @@ function assertTodoListPressureMode() {
     }
   }
 
+  // Since 2026-11-11 the preview compiles real modules: every import from 'vue', in a .vue file or a .ts module, is
+  // linked to one module that re-exports each export of the Vue build, nextTick included. The Karma spec runs one.
   const vuePreviewBuilder = read('frontend/src/app/core/utils/vue-preview-builder.ts');
-  assert.equal(
-    (vuePreviewBuilder.match(/const \{[^}\n]*\bnextTick\b[^}\n]*\} = Vue;/g) ?? []).length,
-    2,
-    'Vue preview must expose nextTick for both script-setup and module-style imports'
+  assert.match(
+    vuePreviewBuilder,
+    /Object\.keys\(Vue\)/,
+    'Vue preview must re-export every export of the Vue build, nextTick included, to compiled modules'
+  );
+  assert.match(
+    vuePreviewBuilder,
+    /if \(spec === 'vue'\) return head \+ quote \+ vueModuleUrl\(\) \+ quote;/,
+    'Vue preview must link imports from vue to the module that re-exports the Vue build'
   );
 }
 

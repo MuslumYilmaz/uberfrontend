@@ -664,6 +664,29 @@ describe('OpaqueDomCheckRunner', () => {
     });
   }
 
+  it('runs a Vue workspace of several files in the sandboxed frame', async () => {
+    const html = makeVuePreviewHtml({
+      'src/main.ts': "import { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\ncreateApp(App).mount('#app');",
+      'src/App.css': '.out { font-weight: 600; }',
+      'src/App.vue': `
+        <template><main><Counter v-model="n" /><p class="out">{{ show(n) }}</p></main></template>
+        <script setup lang="ts">
+        import { ref } from 'vue';
+        import Counter from './components/Counter.vue';
+        import { show } from './show';
+        const n = ref(0);
+        </script>`,
+      'src/components/Counter.vue': `
+        <template><button class="go" @click="model += 1">Go</button></template>
+        <script setup lang="ts">
+        const model = defineModel<number>({ required: true });
+        </script>
+        <style scoped>.go { cursor: pointer; }</style>`,
+      'src/show.ts': 'export const show = (value: number): string => String(value);',
+    }, window.location.origin);
+    expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+  });
+
   it('removes the frame and rejects promptly when a run is cancelled', async () => {
     const run = runner.runFramework(
       '<!doctype html><html><body><div>never ready</div></body></html>',

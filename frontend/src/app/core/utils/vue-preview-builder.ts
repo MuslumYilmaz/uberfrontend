@@ -1,10 +1,17 @@
-/** Minimal Vue 3 preview (v1)
- *  Supports:
- *   - src/App.vue  (SFC with <template> + <script setup> or normal <script>)
- *   - src/App.ts   (module)
- *   - src/App.js   (module)
- *  The produced module must define:  const App = { ... }
+/**
+ * Vue 3 preview. Every .vue file the app imports is compiled in the preview frame by @vue/compiler-sfc, as a Vue build
+ * does it: <script setup> with defineProps, defineEmits and defineModel, the template compiled into setup, template and
+ * script errors that point at a line of the file, and scoped styles. Babel strips TypeScript. Each file becomes an ES
+ * module behind a blob URL, imports between files and from 'vue' are linked to those URLs, and the default export of
+ * src/App.vue is mounted on #app. Vue is the development build, so its warnings reach the preview console.
+ *
+ * The frame is sandboxed with an opaque origin, where a module script from the site would need CORS headers that local
+ * servers do not send, so Vue, the compiler (scripts/vendor-vue-preview.mjs) and Babel load as classic scripts.
+ * src/main.ts does not run: the preview mounts App itself, so a check can unmount it.
  */
+const ENTRY_FILES = ['src/App.vue', 'src/App.ts', 'src/App.js'];
+const FALLBACK_APP = '<template><div style="padding:12px">Hello Vue 👋</div></template>';
+
 export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: string): string {
   const base =
     assetBase ||
@@ -14,34 +21,17 @@ export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: st
   const assetUrl = (path: string) =>
     base ? new URL(path, base).toString() : path;
 
-  // --- 1) Try SFC first ------------------------------------------------------
-  let user: string | undefined;
-
-  if (files['src/App.vue']) {
-    const sfc = parseSfc(files['src/App.vue']!);
-    // parseSfc zaten App tanımını üretiyor; burada ekstra bir şey yapmıyoruz
-    user = sfc.script;
-  }
-
-  // --- 2) TS/JS module fallback ----------------------------------------------
-  user =
-    user ||
-    files['src/App.ts'] ||
-    files['src/App.js'] ||
-    `export default { template: '<div style="padding:12px">Hello Vue 👋</div>' }`;
-
-  // --- 3) Load CSS -----------------------------------------------------------
+  const entry = ENTRY_FILES.find((path) => files[path] != null);
+  const sources: Record<string, string> = entry ? { ...files } : { ...files, 'src/App.vue': FALLBACK_APP };
   const css =
     files['src/styles.css'] ??
     files['src/App.css'] ??
     files['public/styles.css'] ??
     '';
+  // Inside a script element, "<" is escaped so that no file can close it.
+  const filesJson = JSON.stringify(sources).replace(/</g, '\\u003c');
 
-  // --- 4) Transform module to UMD-style script ------------------------------
-  const appModuleSrc = rewriteVueModuleToUMD(user);
-
-  // --- 5) Produce the full HTML preview -------------------------------------
-  return `<!doctype html>
+  return String.raw`<!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -51,16 +41,21 @@ export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: st
   <style>
     html,body,#app{height:100%}
     body{margin:16px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
-    ${css || ''}
+    ${css}
     #_fa_overlay{position:fixed;inset:0;background:#2b0000;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
     #_fa_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
     #_fa_overlay pre{white-space:pre-wrap;margin:0}
     #_fa_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
 
-  <!-- Vue 3 (global build with compiler) -->
-  <script src="${assetUrl('/assets/vendor/vue/vue.global.prod.js')}"></script>
-  <!-- Babel for TS -> JS -->
+  <script>
+    // Without devtools, Vue's development build starts a 3-second timer at mount to drop its event buffer, and a check
+    // for timers still running after unmount would count it. A hook that ignores the events avoids it; a real devtools
+    // hook, when the extension injects one, is kept.
+    if (!window.__VUE_DEVTOOLS_GLOBAL_HOOK__) window.__VUE_DEVTOOLS_GLOBAL_HOOK__ = { emit: function(){} };
+  </script>
+  <script src="${assetUrl('/assets/vendor/vue/vue.global.js')}"></script>
+  <script src="${assetUrl('/assets/vendor/vue/compiler-sfc.global.js')}"></script>
   <script src="${assetUrl('/assets/vendor/babel/babel.min.js')}"></script>
 </head>
 <body>
@@ -71,16 +66,12 @@ export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: st
     <div id="_fa_overlay_meta" class="meta"></div>
   </div>
 
-  <!-- user code -->
-  <script id="_fa_user_src" type="text/plain">
-${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
-  </script>
+  <script id="_fa_files" type="application/json">${filesJson}</script>
 
   <script>
   (function(){
     // Strip common network APIs in the sandboxed preview (keep navigator for libs)
     ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
-
 
     (function(){
       function isSubmitter(el){
@@ -139,7 +130,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         const form = target.closest ? target.closest('form') : null;
         if (!form) return;
         try{ e.preventDefault(); }catch(_e){}
-        const submitter = form.querySelector('button[type=\"submit\"], button:not([type]), input[type=\"submit\"], input[type=\"image\"]');
+        const submitter = form.querySelector('button[type="submit"], button:not([type]), input[type="submit"], input[type="image"]');
         dispatchSyntheticSubmit(form, submitter);
       }, true);
     })();
@@ -237,13 +228,13 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
       tick();
     }
 
-    function showOverlay(msg, meta){
+    function showOverlay(msg, meta, lifecycleState){
       try {
         overlayMsg.textContent = msg || 'Unknown error';
         overlayMeta.textContent = meta || '';
         overlay.style.display = 'block';
       } catch {}
-      notifyReady('error');
+      notifyReady(lifecycleState || 'runtime-error');
     }
 
     function hideOverlay(){
@@ -257,64 +248,232 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
     window.addEventListener('error', (e) => {
       const msg = String(e && (e.message || e.error || 'Error'));
       const loc = e?.filename ? e.filename + (e.lineno ? ':'+e.lineno : '') : '';
-      const stack = e?.error?.stack ? '\\n\\n' + e.error.stack : '';
-      showOverlay(msg + stack, loc);
+      const stack = e?.error?.stack ? '\n\n' + e.error.stack : '';
+      showOverlay(msg + stack, loc, 'runtime-error');
     });
     window.addEventListener('unhandledrejection', (e) => {
       const r = e?.reason || e?.message || 'Unhandled promise rejection';
-      const stack = r?.stack ? '\\n\\n' + r.stack : '';
-      showOverlay(String(r) + stack, '');
+      const stack = r?.stack ? '\n\n' + r.stack : '';
+      showOverlay(String(r) + stack, '', 'runtime-error');
     });
 
-    function compileTS(src){
-      try{
-        const out = Babel.transform(src, {
-          filename: 'App.ts',
-          sourceType: 'script',
-          presets: [['typescript', { isTSX:false, allExtensions:true }]],
+    // ---------- Compile the workspace into ES modules ----------
+    const FILES = JSON.parse(document.getElementById('_fa_files').textContent || '{}');
+    const ENTRY = ${JSON.stringify(entry ?? 'src/App.vue')};
+    const SFC = self.VueCompilerSFC;
+    const urls = new Map();
+    const loading = new Set();
+    let collectedCss = '';
+    let vueUrl = '';
+    let emptyUrl = '';
+
+    function PreviewCompileError(file, message, line, column){
+      this.file = file;
+      this.message = message;
+      this.line = line || 0;
+      this.column = column || 0;
+    }
+
+    function blobUrl(code){
+      return URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    }
+
+    // Every module imports 'vue' from this one, which re-exports the development build's global.
+    function vueModuleUrl(){
+      if (!vueUrl) {
+        const names = Object.keys(Vue).filter(function(name){ return /^[A-Za-z_$][\w$]*$/.test(name) && name !== 'default'; });
+        vueUrl = blobUrl('const V = self.Vue;\n' + names.map(function(name){ return 'export const ' + name + ' = V.' + name + ';'; }).join('\n') + '\nexport default V;');
+      }
+      return vueUrl;
+    }
+
+    function hashId(text){
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i += 1) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(16).padStart(8, '0');
+    }
+
+    function positionOf(source, offset){
+      const before = source.slice(0, offset);
+      return { line: before.split('\n').length, column: offset - before.lastIndexOf('\n') };
+    }
+
+    function resolveFile(from, spec){
+      const parts = from.split('/').slice(0, -1);
+      spec.split('/').forEach(function(part){
+        if (part === '..') parts.pop();
+        else if (part && part !== '.') parts.push(part);
+      });
+      const base = parts.join('/');
+      const candidates = [base, base + '.vue', base + '.ts', base + '.js', base + '/index.ts', base + '/index.js', base + '/index.vue'];
+      for (let i = 0; i < candidates.length; i += 1) {
+        if (Object.prototype.hasOwnProperty.call(FILES, candidates[i])) return candidates[i];
+      }
+      return null;
+    }
+
+    // Import and export statements start a line in compiled code; a phrase such as "data from 'the API'" in a string
+    // does not.
+    function linkImports(code, from){
+      return code.replace(/^([ \t]*(?:import|export)\b[^'";]*?\bfrom\s*|[ \t]*import\s*)(['"])([^'"\n]+)\2/gm, function(_m, head, quote, spec){
+        if (spec === 'vue') return head + quote + vueModuleUrl() + quote;
+        if (!/^\.{1,2}\//.test(spec)) {
+          throw new PreviewCompileError(from, 'The preview loads "vue" and the files of this workspace; it cannot load "' + spec + '".');
+        }
+        const target = resolveFile(from, spec);
+        if (!target) throw new PreviewCompileError(from, 'Cannot find "' + spec + '", imported by ' + from + '.');
+        if (/\.css$/.test(target)) {
+          collectedCss += '\n' + FILES[target];
+          if (!emptyUrl) emptyUrl = blobUrl('export {};');
+          return head + quote + emptyUrl + quote;
+        }
+        return head + quote + moduleUrl(target) + quote;
+      });
+    }
+
+    function stripTypes(path, code, keepsLines){
+      try {
+        return Babel.transform(code, {
+          filename: path.split('/').pop() + (/\.vue$/.test(path) ? '.ts' : ''),
+          sourceType: 'module',
+          presets: [['typescript', { allExtensions: true }]],
           retainLines: true,
-          sourceMaps: 'inline',
           comments: false,
-          compact: false
-        });
-        return (out && out.code) ? (out.code + '\\n//# sourceURL=App.ts') : src;
-      }catch(e){
-        showOverlay(e?.message || e, 'App.ts');
-        throw e;
+        }).code;
+      } catch (e) {
+        const loc = e && e.loc;
+        const message = String((e && e.message) || e).replace(/^[^:\n]*:\s*/, '');
+        // A .ts or .js file keeps its lines through Babel; code compiled from a .vue file does not.
+        throw new PreviewCompileError(path, message, keepsLines && loc ? loc.line : 0, keepsLines && loc ? loc.column + 1 : 0);
       }
     }
 
-    function start(){
-      const raw = document.getElementById('_fa_user_src').textContent || '';
+    function sfcError(path, source, error, descriptor){
+      let message = String((error && error.message) || error).replace(/^\[vue\/compiler-sfc\]\s*/, '');
+      const start = error && error.loc && error.loc.start;
+      if (start && typeof start.line === 'number') {
+        if (typeof start.offset === 'number' && message.indexOf('\n') < 0 && SFC.generateCodeFrame) {
+          message += '\n\n' + SFC.generateCodeFrame(source, start.offset, (error.loc.end && error.loc.end.offset) || start.offset + 1);
+        }
+        return new PreviewCompileError(path, message, start.line, start.column);
+      }
+      // Babel counts a script parse error from the start of the script block.
+      const block = descriptor && (descriptor.scriptSetup || descriptor.script);
+      if (block && error && typeof error.pos === 'number') {
+        const where = positionOf(source, block.loc.start.offset + error.pos);
+        return new PreviewCompileError(path, message, where.line, where.column);
+      }
+      return new PreviewCompileError(path, message, 0, 0);
+    }
 
-      const compiled =
-        /:\\s*[A-Za-z_$]/.test(raw) || /interface\\b|type\\b/.test(raw)
-          ? compileTS(raw)
-          : raw;
+    function compileSfc(path, source){
+      const parsed = SFC.parse(source, { filename: path, sourceMap: false });
+      if (parsed.errors.length) throw sfcError(path, source, parsed.errors[0], null);
+      const descriptor = parsed.descriptor;
+      const id = hashId(path);
+      const scoped = descriptor.styles.some(function(style){ return style.scoped; });
+      const scriptBlock = descriptor.scriptSetup || descriptor.script;
+      const isTs = !!scriptBlock && (scriptBlock.lang === 'ts' || scriptBlock.lang === 'tsx');
+      const expressionPlugins = isTs ? ['typescript'] : [];
+      let code = 'const __sfc__ = {};';
+      let bindings;
+      if (scriptBlock) {
+        let script;
+        try {
+          script = SFC.compileScript(descriptor, {
+            id: id,
+            inlineTemplate: true,
+            genDefaultAs: '__sfc__',
+            templateOptions: { compilerOptions: { expressionPlugins: expressionPlugins } },
+          });
+        } catch (e) {
+          throw sfcError(path, source, e, descriptor);
+        }
+        code = script.content;
+        bindings = script.bindings;
+      }
+      if (descriptor.template && !descriptor.scriptSetup) {
+        const template = SFC.compileTemplate({
+          source: descriptor.template.content,
+          ast: descriptor.template.ast,
+          filename: path,
+          id: id,
+          scoped: scoped,
+          slotted: descriptor.slotted,
+          compilerOptions: { bindingMetadata: bindings, expressionPlugins: expressionPlugins },
+        });
+        if (template.errors.length) throw sfcError(path, source, template.errors[0], descriptor);
+        code += '\n' + template.code.replace(/\nexport (function|const) render/, '\n$1 render') + '\n__sfc__.render = render;';
+      }
+      if (scoped) code += '\n__sfc__.__scopeId = "data-v-' + id + '";';
+      code += '\n__sfc__.__file = ' + JSON.stringify(path) + ';\nexport default __sfc__;';
+      descriptor.styles.forEach(function(style){
+        const line = style.loc.start.line;
+        if (style.lang) throw new PreviewCompileError(path, '<style lang="' + style.lang + '"> is not supported in the preview; write plain CSS.', line, 1);
+        if (style.module) throw new PreviewCompileError(path, '<style module> is not supported in the preview.', line, 1);
+        const compiled = SFC.compileStyle({ source: style.content, filename: path, id: 'data-v-' + id, scoped: !!style.scoped });
+        if (compiled.errors.length) throw new PreviewCompileError(path, String(compiled.errors[0].message || compiled.errors[0]), line, 1);
+        collectedCss += '\n' + compiled.code;
+      });
+      return stripTypes(path, code, false);
+    }
 
-      try{
+    function moduleUrl(path){
+      if (urls.has(path)) return urls.get(path);
+      if (loading.has(path)) throw new PreviewCompileError(path, 'Files that import each other in a circle cannot run in the preview.');
+      loading.add(path);
+      let source = String(FILES[path] == null ? '' : FILES[path]);
+      // An App.ts that only declares const App = { ... } still renders, as the earlier preview allowed.
+      if (path === ENTRY && !/\.vue$/.test(path) && !/\bexport\s+default\b/.test(source)) {
+        source += '\nexport default (typeof App !== "undefined" ? App : undefined);';
+      }
+      const code = /\.vue$/.test(path) ? compileSfc(path, source) : stripTypes(path, source, true);
+      const url = blobUrl(linkImports(code, path) + '\n//# sourceURL=' + path);
+      loading.delete(path);
+      urls.set(path, url);
+      return url;
+    }
+
+    async function start(){
+      if (!self.Vue || !SFC || !self.Babel) {
+        showOverlay('The preview could not load Vue, its compiler or Babel.', 'boot', 'boot-error');
+        return;
+      }
+      let entryUrl;
+      try {
+        entryUrl = moduleUrl(ENTRY);
+      } catch (e) {
+        if (e instanceof PreviewCompileError) {
+          showOverlay(e.message, e.file + (e.line ? ':' + e.line + ':' + e.column : ''), 'compile-error');
+        } else {
+          showOverlay(String((e && e.stack) || e), ENTRY, 'compile-error');
+        }
+        return;
+      }
+      if (collectedCss) {
+        const style = document.createElement('style');
+        style.textContent = collectedCss;
+        document.head.appendChild(style);
+      }
+      try {
         hideOverlay();
-        const run = new Function('Vue', compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;');
-        const AppRef = run(Vue);
-        if (!AppRef) {
-          const q = String.fromCharCode(96);
-          showOverlay(
-            'No App component found. In v1, make sure your code defines ' +
-            q + 'const App = { ... }' + q + ' or ' +
-            q + 'export default { ... }' + q + '.',
-            'App'
-          );
+        const entryModule = await import(entryUrl);
+        const App = entryModule.default;
+        if (!App) {
+          showOverlay('No App component: make it the default export of ' + ENTRY + '.', ENTRY, 'runtime-error');
           return;
         }
-        const app = Vue.createApp(AppRef);
+        const app = Vue.createApp(App);
         window.__FA_UNMOUNT_PREVIEW = function(){
           try { app.unmount(); } catch (_e) {}
         };
         app.mount('#app');
         waitForHostPaint('#app', 10000);
-      }catch(e){
-        const stack = e?.stack ? '\\n\\n'+e.stack : '';
-        showOverlay(String(e) + stack, 'App');
+      } catch (e) {
+        showOverlay(String((e && e.stack) || e), ENTRY, 'runtime-error');
       }
     }
 
@@ -323,216 +482,4 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
   </script>
 </body>
 </html>`;
-}
-
-// The names each generated script already reads from the Vue global.
-const VUE_MODULE_PRELUDE = new Set([
-  'ref',
-  'reactive',
-  'computed',
-  'watch',
-  'watchEffect',
-  'nextTick',
-  'onMounted',
-  'onUnmounted',
-  'onBeforeMount',
-  'onBeforeUnmount',
-  'onUpdated',
-  'onBeforeUpdate',
-]);
-const VUE_SETUP_PRELUDE = new Set([...VUE_MODULE_PRELUDE, 'defineComponent', 'h']);
-
-/** Reads any other import from vue, such as toRefs or shallowRef, from the global too. */
-function vueImportBindings(src: string, provided: Set<string>): string {
-  const named: string[] = [];
-  for (const [, clause] of src.matchAll(/^\s*import\s+(?!type\b)([\w$\s,{}]+?)\s+from\s+['"]vue['"]/mg)) {
-    for (const part of (clause.match(/\{([\s\S]*)\}/)?.[1] ?? '').split(',')) {
-      const trimmed = part.trim();
-      if (!trimmed || /^type\s/.test(trimmed)) continue;
-      const [imported, local] = trimmed.split(/\s+as\s+/);
-      if (local) named.push(`${imported}: ${local}`);
-      else if (!provided.has(imported)) named.push(imported);
-    }
-  }
-  return named.length ? `const { ${named.join(', ')} } = Vue;` : '';
-}
-
-/** -----------------------------------------------------------------------
- *  Parse SFC to extract <template> and <script> (supports <script setup>)
- * --------------------------------------------------------------------- */
-function parseSfc(src: string): {
-  template: string;
-  script: string;
-  scriptExports: string;
-} {
-  // 1) <template> bloğunu yakala. Greedy, because the block can hold nested <template v-if> tags.
-  const templateRE = /<template>([\s\S]*)<\/template>/;
-  const tplMatch = src.match(templateRE);
-  let template = tplMatch?.[1]?.trim() ?? '';
-
-  // 2) <script ...> bloğunu yakala (setup veya normal fark etmez)
-  const scriptRE = /<script([^>]*)>([\s\S]*?)<\/script>/;
-  const scriptMatch = src.match(scriptRE);
-  const scriptAttrs = scriptMatch?.[1] ?? '';
-  const scriptRaw = scriptMatch?.[2]?.trim() ?? '';
-
-  const isSetup = /\bsetup\b/.test(scriptAttrs);
-
-  if (isSetup) {
-    // ---------- <script setup> yolu ----------
-    // vue importlarını ve css importlarını at
-    const body = scriptRaw
-      .replace(/^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg, '')
-      .replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '')
-      .trim();
-
-    // 1) Tüm tanımları (count, isZero, inc, dec, reset vs.) topla
-    const bindings = new Set<string>();
-    body.replace(/\b(const|let|var|function)\s+([A-Za-z_$][\w$]*)/g, (_m, _k, name) => {
-      bindings.add(String(name));
-      return _m;
-    });
-    // const { a, b: c, d = 1 } = useThing() and const [x, y] = useThing() declare names too.
-    body.replace(/\b(?:const|let|var)\s*[{[]([^}\]]*)[}\]]\s*(?::[^=]+)?=/g, (_m, list) => {
-      for (const part of String(list).split(',')) {
-        const name = part.split('=')[0].split(':').pop()!.replace('...', '').trim();
-        if (/^[A-Za-z_$][\w$]*$/.test(name)) bindings.add(name);
-      }
-      return _m;
-    });
-
-    // Replace component tags (<Tree />) with dynamic component usage (<component :is="Tree" />)
-    const componentTags = new Set<string>();
-    const componentTagRE = /<([A-Z][A-Za-z0-9_]*)\b/g;
-    let m: RegExpExecArray | null;
-    while ((m = componentTagRE.exec(template)) !== null) {
-      componentTags.add(m[1]);
-    }
-    if (componentTags.size) {
-      template = rewriteComponentTags(template, componentTags);
-    }
-
-    // 2) Template içinde gerçekten kullanılan identifier'ları bul
-    const templateIds = new Set<string>();
-
-    // {{ ... }}, :prop="...", v-foo:bar.baz="...", @click.prevent="...", ref="..." içindeki expression'lar
-    const exprRE = /{{([^}]*)}}|:[^\s=>"]+="([^"]+)"|v-[^\s=>"]+="([^"]+)"|@[^\s=>"]+="([^"]+)"|\sref="([^"]+)"/g;
-    const identRE = /[A-Za-z_$][\w$]*/g;
-    const reserved = new Set([
-      'true', 'false', 'null', 'undefined',
-      'if', 'for', 'in', 'of', 'let', 'const', 'var', 'return',
-      'Math', 'Date', 'Number', 'String', 'Boolean', 'Array', 'Object'
-    ]);
-
-    m = null;
-    while ((m = exprRE.exec(template)) !== null) {
-      const expr = m[1] || m[2] || m[3] || m[4] || m[5] || '';
-      let idm: RegExpExecArray | null;
-      while ((idm = identRE.exec(expr)) !== null) {
-        const name = idm[0];
-        if (!reserved.has(name)) {
-          templateIds.add(name);
-        }
-      }
-    }
-
-    // 3) Sadece template'te kullanılan binding'leri expose et
-    const exportedNames = Array.from(bindings).filter(name =>
-      templateIds.has(name)
-    );
-
-    // Binding detection also sees locals of nested functions, which do not exist at this scope.
-    const returned = exportedNames
-      .map((name) => `...(typeof ${name} !== 'undefined' ? { ${name} } : {})`)
-      .join(', ');
-
-    const indentedBody = body
-      ? body.split('\n').map(line => '      ' + line).join('\n')
-      : '';
-
-    const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
-
-    const script = `
-const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate, defineComponent, h } = Vue;
-${vueImportBindings(scriptRaw, VUE_SETUP_PRELUDE)}
-
-const App = {
-  template: \`${escTemplate}\`,
-  setup() {
-${indentedBody}
-    return { ${returned} };
-  }
-};
-`.trim();
-
-    return { template, script, scriptExports: '' };
-  }
-
-
-  // ---------- Normal <script> yolu (options / composition) ----------
-  // A regex cannot find where the options object ends, so it stays whole under a name.
-  const defaultExportRE = /\bexport\s+default\s+/;
-  const hasDefaultExport = defaultExportRE.test(scriptRaw);
-  const script = scriptRaw.replace(defaultExportRE, 'const __faOptions = ');
-
-  const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
-
-  const fullScript = `
-${script}
-export default {
-  template: \`${escTemplate}\`,
-  ${hasDefaultExport ? '...__faOptions' : ''}
-};
-`.trim();
-
-  return { template, script: fullScript, scriptExports: '' };
-}
-
-function rewriteComponentTags(template: string, tags: Set<string>): string {
-  let out = template;
-  for (const tag of tags) {
-    const selfClosing = new RegExp(`<${tag}(\\s[^>]*)?\\s*/>`, 'g');
-    out = out.replace(selfClosing, `<component :is="${tag}"$1 />`);
-    const openTag = new RegExp(`<${tag}(\\s[^>/]*)?>`, 'g');
-    out = out.replace(openTag, `<component :is="${tag}"$1>`);
-    const closeTag = new RegExp(`</${tag}>`, 'g');
-    out = out.replace(closeTag, `</component>`);
-  }
-  return out;
-}
-
-/** Turn a module-style Vue component into a plain script with `App` in scope */
-function rewriteVueModuleToUMD(src: string): string {
-  let s = src;
-
-  // 1) Remove pure CSS imports
-  s = s.replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '');
-
-  // 2) Detect and strip imports from 'vue'
-  const vueImportRE = /^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg;
-  const hadVueImport = vueImportRE.test(s);
-  const importedHelpers = vueImportBindings(s, VUE_MODULE_PRELUDE);
-  s = s.replace(vueImportRE, '');
-
-  // 3) Rewrite export default → const App =
-  s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, 'const App = function ');
-  s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, 'const App = class ');
-  s = s.replace(/\bexport\s+default\s+/m, 'const App = ');
-
-  // 4) Remove named exports
-  s = s.replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/mg, '');
-
-  // 5) defineComponent( → Vue.defineComponent(
-  s = s.replace(/\bdefineComponent\s*\(/g, 'Vue.defineComponent(');
-
-  // 6) If there *was* an import from 'vue', inject helpers from global Vue
-  if (hadVueImport) {
-    const helpers =
-      `const { ref, reactive, computed, watch, watchEffect, nextTick, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
-${importedHelpers}
-`;
-    s = helpers + s;
-  }
-
-  return s.trim();
 }
