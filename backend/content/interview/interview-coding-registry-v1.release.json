@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "516167691fd7990676f6695c541636cae19ee4131d919525a182db66522d4305"
+      "sha256": "240f64c057de44e096d08ae524955baa9c36a1bb240260eba7125b860d3f4401"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "22b8250bf1aea2f359bef719baf853d1464e4e453c957144ed2d304c4b85531b"
+      "sha256": "bb7e02942c6bf7781f2d6433574bd375ee2b8148513d3bd98a63205770dddbf8"
     }
   },
-  "contentHash": "63e57a0409edd63872008e89ef0436011ef3f0b2e986017ab4470c4708a4269e",
-  "definitionHash": "02f7442684ff16f63cacd37ab827516d7fd78486127644cb126defcbbac08b64",
+  "contentHash": "586f25626b87cb54d479d596989e49baf6901107983a04671ad0613e0308c6cf",
+  "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -41,13 +41,14 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the second batch of coding-trust step 12, approved by the project owner. Progress bar (React, Angular, Vue): steps of 10 from 0%, clamping at 0% and 100%, and the bar's red, orange and green at 20%, 50% and 80%, read from its rendered color. Chips input: suggestions by name or email, a click that adds a chip and empties the input, chosen users left out, ArrowDown, ArrowUp and Enter, aria-activedescendant, custom chips from Enter and comma, Backspace on an empty input, a remove button, and no duplicates. Nested checkboxes: the parent checks and clears every child, a mixed selection makes it indeterminate, and the children set it. Multi-step form: Next blocked on a step with a missing required field, the optional postal code, and a read-only summary with Submit; React and Angular also keep Next disabled, React checks Back and the step count, Angular the email format. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the third batch of coding-trust step 12, approved by the project owner. Pagination (React, Angular, Vue): Page 1 of 4 with the first five users and Previous disabled, Next moving five users at a time with the label following, a disabled Next on the last page and a disabled Previous on the first. Nested comments: top-level comments with their own Reply, one reply box at a time that a second click closes, replies nested and indented level by level; React and Vue also check Cancel and aria-expanded, which the Angular text does not ask for. Filterable user list: case-insensitive search by name only, the role dropdown, the active-only checkbox, all three together, and the empty state. Theme toggle: <html data-theme> and the label switch at once, the choice is saved under the starter's uf-theme key, and a stored dark theme applies on load. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the fourth batch of coding-trust step 12, approved by the project owner. Six pinned Premium questions gained full framework checks: shopping cart (React, Angular, Vue) for Add to cart once and again, + and −, Remove, a row's name, unit price, quantity and line total, and the item count and total price; transfer list for buttons that follow their own list's selection, ↓ and ↑ appending in order, moved items arriving unselected, and per-list selection. Six pressure pins move with the counter and todo scenarios, whose rounds now find what their text names: counter rounds 2 to 4 find the step selector as a select box, the focusable container by tabindex, its keyboard instructions by any aria-describedby, and the Start/Pause button by aria-pressed; todo round 1 finds the Add button and the text box by role and reads task text from the starters' rows. The round texts, order, time limits and solutions are unchanged. Question hashes are re-pinned; starters are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "63e57a0409edd63872008e89ef0436011ef3f0b2e986017ab4470c4708a4269e",
+    "registryContentHash": "586f25626b87cb54d479d596989e49baf6901107983a04671ad0613e0308c6cf",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "63e57a0409edd63872008e89ef0436011ef3f0b2e986017ab4470c4708a4269e",
+  "registryContentHash": "586f25626b87cb54d479d596989e49baf6901107983a04671ad0613e0308c6cf",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -260,7 +261,7 @@
       "revision": 1
     },
     {
-      "contentHash": "2976408dc8e5f51232569d5adc5037d3b2f0cdb3a8efabb6e16416b10e45da96",
+      "contentHash": "d6817bc43609365647e02312e4e58eda189a4373c92b8df28fcabd3e4c2de82b",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "revision": 1

@@ -818,7 +818,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "summary": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly.",
       "specs": {
         "requirements": [
           "Render a Todo List UI as the main component.",
