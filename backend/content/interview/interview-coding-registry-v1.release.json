@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "54ccd957c741023823350b0d6159bbb60db3109ea806a658a7c1dcfd4af9fbea"
+      "sha256": "4617b78a7e6b22982f69ec439693b8c4b86e6ac4d4878938b0652f62fd52821e"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "dbf75367f9b934fb2fe843b6e11b42d910a7176ccde74ccc0bad7f1b689e42ba"
+      "sha256": "ac539a49d375ee515383202241421e52f79a2326eed3a5f9257b3927e8cdfaab"
     }
   },
-  "contentHash": "f728d4ec6b469f3a4f2175965fd3fcede09544a790e404a9251a385c84c0fdbf",
-  "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+  "contentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
+  "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -35,13 +35,14 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after content fixes to six pinned source questions, approved by the project owner (coding-trust step 9). Vue nested checkboxes: the text taught a watcher and a template ref and listed as pitfalls what the solution did; both now derive the parent from the children with a writable computed bound by v-model and bind :indeterminate, the starter carries the same template with computed stubs, and the question gains its first decision graph and a check hint. Vue todo list, shopping cart and transfer list: guidance that called in-place changes to reactive state a pitfall, or said Vue may not update after a Set changes, now says Vue tracks both; their solutions are unchanged. Vue debounced search: an implementation note names the watcher cleanup onCleanup, as the Vue docs do, and adds onWatcherCleanup (Vue 3.5). React todo list: an outdated note against generics and the casts it led to are removed from the starter and solution (useState<Todo[]>). Starter asset hashes are re-pinned for Vue nested checkboxes and React todo list, question hashes for all six. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the JavaScript test hardening of coding-trust step 10, approved by the project owner. Five pinned source questions gain checks for behavior their text and rubric criteria already describe, and the new checks join the rubric groups that state that behavior. Deep equal: three checks (different kinds of object, the same set of keys, NaN, -0 and RegExp details); the reference solution now compares Object.prototype.toString tags, so a Date no longer equals {}, as its edge cases already said. Debounce: one check for the last call's this and all of its arguments; the summary loses its page copy. LRU cache: two checks (an update makes a key the most recent; an update at capacity evicts nothing); the returns text says that size() is a method and in which order keys() lists the keys. Concurrency map: the limit check is renamed 'rejects a limit below 1' and accepts a rejection as well as a synchronous throw, which the async starter could not meet; two checks cover refilling a slot as soon as it frees up and starting no new items after a fail-fast error, and the concurrency-bound and error-strategies groups each gain one criterion for them. Once: one check for a wrapped function that returns undefined. Question hashes are re-pinned for all five; the debounce prompt loses only the page copy, the other prompts are unchanged; time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "f728d4ec6b469f3a4f2175965fd3fcede09544a790e404a9251a385c84c0fdbf",
+    "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "f728d4ec6b469f3a4f2175965fd3fcede09544a790e404a9251a385c84c0fdbf",
+  "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -50,7 +51,7 @@
   "variantCount": 60,
   "variantRefs": [
     {
-      "contentHash": "78fac867ce3eb7172d3305373f742245d48342e7149212e0ee9eee716f356b0d",
+      "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "revision": 1
@@ -74,7 +75,7 @@
       "revision": 1
     },
     {
-      "contentHash": "3412f138522463ec6cd681b1eebce06d1918c68f77b8c494aa16cc1920e9b65c",
+      "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "revision": 1
@@ -230,7 +231,7 @@
       "revision": 1
     },
     {
-      "contentHash": "9452c74042a22fd634e2fd0e059d1be7a63d020c57735eea62ec88756b190b74",
+      "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "revision": 1
@@ -254,7 +255,7 @@
       "revision": 1
     },
     {
-      "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
+      "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "revision": 1
@@ -320,7 +321,7 @@
       "revision": 1
     },
     {
-      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
+      "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "revision": 1
@@ -344,7 +345,7 @@
       "revision": 1
     },
     {
-      "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
+      "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "revision": 1

@@ -76,8 +76,8 @@
     },
     "frameworkTests": [
       {
-        "id": "counter-basic-flow",
-        "name": "Counter flow",
+        "id": "counter-starts-at-zero",
+        "name": "Starts at 0 with '-' disabled and '+' enabled",
         "steps": [
           {
             "type": "expectText",
@@ -86,14 +86,32 @@
           },
           {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": true
           },
           {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "+"
+            },
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "counter-increment",
+        "name": "'+' adds 1 on every click",
+        "steps": [
+          {
             "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
           },
           {
             "type": "waitForText",
@@ -101,25 +119,68 @@
             "text": "1"
           },
           {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "2"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "3"
+          }
+        ]
+      },
+      {
+        "id": "counter-decrement",
+        "name": "'-' subtracts 1, and is enabled only above 0",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "2"
+          },
+          {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": false
           },
           {
             "type": "click",
-            "selector": ".actions button",
-            "index": 0
-          },
-          {
-            "type": "waitForText",
-            "selector": ".value",
-            "text": "0"
-          },
-          {
-            "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
           },
           {
             "type": "waitForText",
@@ -128,8 +189,10 @@
           },
           {
             "type": "click",
-            "selector": ".actions button",
-            "index": 2
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
           },
           {
             "type": "waitForText",
@@ -138,8 +201,123 @@
           },
           {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "counter-floor",
+        "name": "The count never goes below 0",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0"
+          }
+        ]
+      },
+      {
+        "id": "counter-reset",
+        "name": "'Reset' returns to 0 from any count",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "3"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reset"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": true
           }
         ]
@@ -516,33 +694,493 @@
     },
     "frameworkTests": [
       {
-        "id": "todo-add-item",
-        "name": "Todo add item",
+        "id": "todo-add",
+        "name": "Add puts the text at the end of the list and clears the input",
         "steps": [
           {
             "type": "expectCount",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
             "count": 0
           },
           {
             "type": "setValue",
-            "selector": ".input-row input",
+            "by": {
+              "role": "textbox"
+            },
             "value": "Buy milk"
           },
           {
             "type": "click",
-            "selector": ".primary"
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
           },
           {
             "type": "waitForCount",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
             "count": 1
           },
           {
             "type": "expectText",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
             "text": "Buy milk",
             "match": "contains"
+          },
+          {
+            "type": "expectValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": ""
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Walk the dog"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 1,
+            "text": "Walk the dog",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-ignore-empty",
+        "name": "An empty input adds nothing, and the next real task still adds",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-toggle",
+        "name": "Checking a task strikes it through, and unchecking it restores it",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0,
+            "expected": true
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0,
+            "expected": false
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "todo-remove",
+        "name": "'Remove' deletes its own task and no other",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Walk the dog"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Read a book"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 3
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Remove"
+            },
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 1,
+            "text": "Read a book",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-clear-completed",
+        "name": "'Clear completed' removes the checked tasks and keeps the rest in order",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Walk the dog"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Read a book"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 3
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Clear completed"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 1,
+            "text": "Read a book",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-empty-state",
+        "name": "The empty message shows only while the list is empty",
+        "steps": [
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "No tasks yet. Add your first one above."
+            }
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "No tasks yet. Add your first one above."
+            },
+            "count": 0
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Remove"
+            },
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "No tasks yet. Add your first one above."
+            }
           }
         ]
       }
@@ -2156,6 +2794,7 @@
           "Render a single App component as the main UI for this first version.",
           "Use a controlled query input and keep the query as React state.",
           "Debounce search work before filtering suggestions.",
+          "Simulate latency in searchCities: 900 ms for the query san and 50 ms for every other query.",
           "Filter suggestions case-insensitively by substring match.",
           "Show a loading state while the debounced async search is pending.",
           "Close the popup and clear results for an empty or whitespace-only query.",
@@ -2184,7 +2823,7 @@
           "Enter selects the active option, writes it to the input, and closes the popup.",
           "Escape closes the popup while preserving the current query.",
           "Pointer selection works for mouse, pen, and touch even when the input would otherwise blur.",
-          "If san is slow and se is faster, the later se results remain visible when the old san response finishes.",
+          "Typing san and then se makes the old 900 ms san response finish after the 50 ms se results; the se results stay visible.",
           "When a new non-empty query enters loading, old options disappear immediately and Arrow/Enter cannot select them."
         ],
         "implementationNotes": [
@@ -2437,7 +3076,7 @@
       },
       {
         "id": "autocomplete-debounce-final-query",
-        "name": "Debounce waits for final query",
+        "name": "Debounce waits for the final query, and san answers only after 900 ms",
         "steps": [
           {
             "type": "setValue",
@@ -2479,10 +3118,19 @@
             "timeoutMs": 500
           },
           {
+            "type": "wait",
+            "durationMs": 600
+          },
+          {
+            "type": "expectCount",
+            "selector": ".option",
+            "count": 0
+          },
+          {
             "type": "waitForCount",
             "selector": ".option",
             "count": 3,
-            "timeoutMs": 1200
+            "timeoutMs": 2000
           },
           {
             "type": "expectText",
@@ -2519,7 +3167,7 @@
           },
           {
             "type": "wait",
-            "durationMs": 250
+            "durationMs": 600
           },
           {
             "type": "expectText",
@@ -2548,7 +3196,7 @@
             "type": "waitForCount",
             "selector": ".option",
             "count": 3,
-            "timeoutMs": 1200
+            "timeoutMs": 2000
           },
           {
             "type": "key",
@@ -2627,6 +3275,35 @@
         ]
       },
       {
+        "id": "autocomplete-substring-match",
+        "name": "Matches anywhere in a city name, ignoring case, and marks the match",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "ARI"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".option",
+            "count": 1,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".option",
+            "text": "Paris"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "mark"
+            },
+            "text": "ari"
+          }
+        ]
+      },
+      {
         "id": "autocomplete-error-and-no-results",
         "name": "Error and no-results states are distinct",
         "steps": [
@@ -2681,7 +3358,7 @@
             "type": "waitForCount",
             "selector": ".option",
             "count": 3,
-            "timeoutMs": 1200
+            "timeoutMs": 2000
           },
           {
             "type": "key",
@@ -2893,7 +3570,7 @@
             "type": "waitForCount",
             "selector": ".option",
             "count": 3,
-            "timeoutMs": 1200
+            "timeoutMs": 2000
           },
           {
             "type": "key",
@@ -4451,7 +5128,580 @@
     "seo": {
       "title": "Build Snake Game in React",
       "description": "Create a snake game interface with movement, food collection, scoring, and clear game-over behavior for collisions."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "snake-initial-state",
+        "name": "Starts paused with a 3-cell snake, one food cell and score 0",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell",
+            "count": 196
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--snake",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food",
+            "count": 1
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Score: 0"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Length: 3"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Paused"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-moves-each-tick",
+        "name": "Start moves the head one cell per tick",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Running"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 106,
+            "className": "cell--head",
+            "expected": false
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--snake",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "id": "snake-pause",
+        "name": "Pause stops the snake until Start",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Pause"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Paused"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 400
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-arrow-turn",
+        "name": "An arrow key turns the snake on the next tick",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 90,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-first-turn-wins",
+        "name": "Right, then Up, then Left within one tick commits Up",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 90,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Game over"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "snake-opposite-key-ignored",
+        "name": "A reverse key is ignored and does not use up the turn",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 118,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Game over"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "snake-eats-food",
+        "name": "Eating food adds a point and grows the snake, and new food never lands on it",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.55,
+              0.55,
+              0.55,
+              0.3,
+              0.8,
+              0.1
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Score: 1"
+            },
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Length: 4"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--snake",
+            "count": 4
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food.cell--snake",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "snake-wall-ends-game",
+        "name": "Hitting a wall ends the game and the snake stops",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Game over"
+            },
+            "count": 1,
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
+            "className": "cell--head"
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
+            "className": "cell--head"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 111,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-reset",
+        "name": "Reset brings back the starting snake, score, direction and pause",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.55,
+              0.55,
+              0.55,
+              0.3,
+              0.8,
+              0.1
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Score: 1"
+            },
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reset"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Score: 0"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Length: 3"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Paused"
+            }
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--snake",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": ".cell--food.cell--snake",
+            "count": 0
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-cleanup",
+        "name": "Removing the game stops its timer",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectNoPreviewTimers"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "react-countdown-timer",
@@ -4786,8 +6036,14 @@
     "frameworkTests": [
       {
         "id": "fetch-list-initial-load",
-        "name": "Initial load renders the six team members",
+        "name": "Initial load shows the loading line, then six rows with name and role",
         "steps": [
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading team",
+            "match": "contains"
+          },
           {
             "type": "waitForCount",
             "selector": ".user-row",
@@ -4798,6 +6054,12 @@
             "type": "expectText",
             "selector": ".user-row",
             "text": "Alice",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".user-row",
+            "text": "Frontend engineer",
             "match": "contains"
           }
         ]
@@ -4862,7 +6124,7 @@
       },
       {
         "id": "fetch-list-error-retry",
-        "name": "Failed request shows an error and Retry recovers",
+        "name": "A failed request shows its error message, and Retry recovers",
         "steps": [
           {
             "type": "setValue",
@@ -4877,6 +6139,12 @@
             "timeoutMs": 2500
           },
           {
+            "type": "expectText",
+            "selector": ".status--error",
+            "text": "Network timeout",
+            "match": "contains"
+          },
+          {
             "type": "click",
             "selector": ".retry"
           },
@@ -4885,6 +6153,48 @@
             "selector": ".user-row",
             "count": 6,
             "timeoutMs": 2500
+          }
+        ]
+      },
+      {
+        "id": "fetch-list-ignores-stale-response",
+        "name": "A response for the previous source never shows its rows",
+        "steps": [
+          {
+            "type": "wait",
+            "durationMs": 300
+          },
+          {
+            "type": "setValue",
+            "selector": ".mode",
+            "value": "empty"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "expectCount",
+            "selector": ".user-row",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading team",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No team members",
+            "match": "contains",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectCount",
+            "selector": ".user-row",
+            "count": 0
           }
         ]
       }

@@ -1,5 +1,5 @@
 {
-  "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+  "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
@@ -23,9 +23,10 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after content fixes to six pinned source questions, approved by the project owner (coding-trust step 9). Vue nested checkboxes: the text taught a watcher and a template ref and listed as pitfalls what the solution did; both now derive the parent from the children with a writable computed bound by v-model and bind :indeterminate, the starter carries the same template with computed stubs, and the question gains its first decision graph and a check hint. Vue todo list, shopping cart and transfer list: guidance that called in-place changes to reactive state a pitfall, or said Vue may not update after a Set changes, now says Vue tracks both; their solutions are unchanged. Vue debounced search: an implementation note names the watcher cleanup onCleanup, as the Vue docs do, and adds onWatcherCleanup (Vue 3.5). React todo list: an outdated note against generics and the casts it led to are removed from the starter and solution (useState<Todo[]>). Starter asset hashes are re-pinned for Vue nested checkboxes and React todo list, question hashes for all six. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the JavaScript test hardening of coding-trust step 10, approved by the project owner. Five pinned source questions gain checks for behavior their text and rubric criteria already describe, and the new checks join the rubric groups that state that behavior. Deep equal: three checks (different kinds of object, the same set of keys, NaN, -0 and RegExp details); the reference solution now compares Object.prototype.toString tags, so a Date no longer equals {}, as its edge cases already said. Debounce: one check for the last call's this and all of its arguments; the summary loses its page copy. LRU cache: two checks (an update makes a key the most recent; an update at capacity evicts nothing); the returns text says that size() is a method and in which order keys() lists the keys. Concurrency map: the limit check is renamed 'rejects a limit below 1' and accepts a rejection as well as a synchronous throw, which the async starter could not meet; two checks cover refilling a slot as soon as it frees up and starting no new items after a fail-fast error, and the concurrency-bound and error-strategies groups each gain one criterion for them. Once: one check for a wrapped function that returns undefined. Question hashes are re-pinned for all five; the debounce prompt loses only the page copy, the other prompts are unchanged; time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "f728d4ec6b469f3a4f2175965fd3fcede09544a790e404a9251a385c84c0fdbf",
+    "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
@@ -37,7 +38,7 @@
   "variants": [
     {
       "conceptId": "coding-ui-counter",
-      "contentHash": "78fac867ce3eb7172d3305373f742245d48342e7149212e0ee9eee716f356b0d",
+      "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
       "id": "int-code-angular-junior-counter-v1",
       "remediationTopics": [
         "Angular component state transitions",
@@ -45,8 +46,8 @@
         "Template-bound step updates"
       ],
       "review": {
-        "contentHash": "78fac867ce3eb7172d3305373f742245d48342e7149212e0ee9eee716f356b0d",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -91,7 +92,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -265,7 +267,7 @@
         "pressureAsset": "assets/questions/pressure-modes/counter.v1.json",
         "pressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
-        "sourceQuestionHash": "43fad1c525d0e9bc3446872cbc900d536a466a1641459b5cadf664970d208a5e",
+        "sourceQuestionHash": "a17092236a2aab4c4fb123c0d9d7a0baabe5174ea2cabf43125266109a63353d",
         "starterAsset": "assets/sb/angular/question/angular-counter.v2.json",
         "starterAssetHash": "9dcf646a224777f79a6d261189f4bc44a56820f6bf779a8ba2ed4309728c5091"
       }
@@ -281,7 +283,7 @@
       ],
       "review": {
         "contentHash": "a0139f8b4942996690bcce79c3b32be078ac4d62d5d13398a6900ce044a743e7",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -326,7 +328,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -470,7 +473,7 @@
       ],
       "review": {
         "contentHash": "9313ccb1d00a0597996f9dc7c5aa7929989453875bc7794893bb3c604c635189",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -515,7 +518,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -659,7 +663,7 @@
       ],
       "review": {
         "contentHash": "292875f6a3520621c980edc99cc4d59261482d6bbc01b575f6af1084eaafaaf2",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -704,7 +708,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -851,7 +856,7 @@
     },
     {
       "conceptId": "coding-ui-todo",
-      "contentHash": "3412f138522463ec6cd681b1eebce06d1918c68f77b8c494aa16cc1920e9b65c",
+      "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
       "id": "int-code-angular-junior-todo-v1",
       "remediationTopics": [
         "Stable Angular list identity",
@@ -859,8 +864,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "3412f138522463ec6cd681b1eebce06d1918c68f77b8c494aa16cc1920e9b65c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -905,7 +910,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1179,7 +1185,7 @@
         "pressureAsset": "assets/questions/pressure-modes/todo-list.v1.json",
         "pressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
-        "sourceQuestionHash": "51eb548820cf83a48e541e9b662fff069fe057d2b62bcd9be8078cd899fc466d",
+        "sourceQuestionHash": "8539b82b07efca481f9f05c090d7727d60b510744f2f69c3d12e014fef306c63",
         "starterAsset": "assets/sb/angular/question/angular-todo-list.v2.json",
         "starterAssetHash": "9f8fac808a689a9a03ad2a21f3004803e651600529280d9aa3bab3e94e897e06"
       }
@@ -1195,7 +1201,7 @@
       ],
       "review": {
         "contentHash": "27d360a381db6c36cb9baab441563c7700ecc6ce433be9ef64287a0c64c6a4a9",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1240,7 +1246,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1454,7 +1461,7 @@
       ],
       "review": {
         "contentHash": "cc96ef7a11908a84ae789fb60f726282b2fdf5bb23dce1b3f3344432e2632590",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1499,7 +1506,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1671,7 +1679,7 @@
       ],
       "review": {
         "contentHash": "1f82a23e5394ad38cea2ee28b76852815ddff7a3aa7a91b0db5b9cc2c7e916b5",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1716,7 +1724,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2227,7 +2236,7 @@
       ],
       "review": {
         "contentHash": "9a28ed82f28e33d60c94fdc1f41aa2b6ed1f29bc197545a306ee3073577c81d0",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2272,7 +2281,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2808,7 +2818,7 @@
       ],
       "review": {
         "contentHash": "1302f0b48ae650473776434ea3aadb82c9054d47d04424025e9dd6dd797a4149",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2853,7 +2863,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3046,7 +3057,7 @@
       ],
       "review": {
         "contentHash": "48161f2df483e9151b978823588e418fcc3a6550bd98598cf6c4bfa4e33eecd8",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3091,7 +3102,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3887,7 +3899,7 @@
       ],
       "review": {
         "contentHash": "89e4e3773c920f7ce756a2a76d2bd349243d635fa3bac5abd3e52163391507f2",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3932,7 +3944,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4233,7 +4246,7 @@
       ],
       "review": {
         "contentHash": "c5627d98b571dea7fea3c2e0385671241b1bfebea55dfb7ba6f41ec352d23ed4",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4278,7 +4291,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4673,7 +4687,7 @@
       ],
       "review": {
         "contentHash": "813cae3c241da542c2755804a691e7c964155fcc2abc01daaf92bfacdbee7d4a",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4718,7 +4732,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5012,7 +5027,7 @@
       ],
       "review": {
         "contentHash": "e5db84c26d980b9396ef0fe42b0c67127478df93c00e3e48a8e0fe3607e513ec",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5057,7 +5072,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5323,7 +5339,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5368,7 +5384,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5443,7 +5460,7 @@
       ],
       "review": {
         "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5488,7 +5505,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5558,7 +5576,7 @@
       ],
       "review": {
         "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5603,7 +5621,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5683,7 +5702,7 @@
       ],
       "review": {
         "contentHash": "db1aae580d6682ac9511fe1a29adb028c143764b6d42654e21d583820ab1954a",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5728,7 +5747,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5814,7 +5834,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5859,7 +5879,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5945,7 +5966,7 @@
       ],
       "review": {
         "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5990,7 +6011,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6070,7 +6092,7 @@
       ],
       "review": {
         "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6115,7 +6137,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6195,7 +6218,7 @@
       ],
       "review": {
         "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6240,7 +6263,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6337,7 +6361,7 @@
       ],
       "review": {
         "contentHash": "caf53fbd4e5424501c9302aefe7edb62e9b2ab7fa9005c5e1c7b89474736b615",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6382,7 +6406,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6462,7 +6487,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6507,7 +6532,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6604,7 +6630,7 @@
       ],
       "review": {
         "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6649,7 +6675,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6751,7 +6778,7 @@
       ],
       "review": {
         "contentHash": "f6b60b1ad0b4af9ceddc5294a97543800bfc2ca9f822f4a416102345f8c1d2fb",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6796,7 +6823,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6905,7 +6933,7 @@
       ],
       "review": {
         "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6950,7 +6978,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7051,7 +7080,7 @@
       ],
       "review": {
         "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7096,7 +7125,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7197,7 +7227,7 @@
       ],
       "review": {
         "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7242,7 +7272,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7314,7 +7345,7 @@
     },
     {
       "conceptId": "coding-ui-counter",
-      "contentHash": "9452c74042a22fd634e2fd0e059d1be7a63d020c57735eea62ec88756b190b74",
+      "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
       "id": "int-code-react-junior-counter-v1",
       "remediationTopics": [
         "React state transitions",
@@ -7322,8 +7353,8 @@
         "Configurable update steps"
       ],
       "review": {
-        "contentHash": "9452c74042a22fd634e2fd0e059d1be7a63d020c57735eea62ec88756b190b74",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7368,7 +7399,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7542,7 +7574,7 @@
         "pressureAsset": "assets/questions/pressure-modes/counter.v1.json",
         "pressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
-        "sourceQuestionHash": "7220b83aaffc6d51d3a2ef90c095b5838147438204b50ba7e17bbeebf0b289cb",
+        "sourceQuestionHash": "6b99e513ebc10eca6edba8c015d5a5e0a3b1a815fda2a457539742d5a9e69b43",
         "starterAsset": "assets/sb/react/question/react-counter.v1.json",
         "starterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6"
       }
@@ -7558,7 +7590,7 @@
       ],
       "review": {
         "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7603,7 +7635,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7747,7 +7780,7 @@
       ],
       "review": {
         "contentHash": "c31eb3ce2a84c639ebb430bc78e44b340047f8c73fd6ccd4de1c8cbbcb039d63",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7792,7 +7825,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7936,7 +7970,7 @@
       ],
       "review": {
         "contentHash": "ca44eda57c9de30d494d3ce094167b85059dbb2cfc5b237e1948973d80986dd0",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7981,7 +8015,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8128,7 +8163,7 @@
     },
     {
       "conceptId": "coding-ui-todo",
-      "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
+      "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
       "id": "int-code-react-junior-todo-v1",
       "remediationTopics": [
         "Stable React list identity",
@@ -8136,8 +8171,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8182,7 +8217,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8456,7 +8492,7 @@
         "pressureAsset": "assets/questions/pressure-modes/todo-list.v1.json",
         "pressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
-        "sourceQuestionHash": "ac0e7b42ec94f5d0e48cc2ea197d05f294e1ca3e9dc326332e432d90b47fcb5a",
+        "sourceQuestionHash": "356a4fd2b2a26519d55713be530108e7762a3c1825db0c542d1a8e85a0402a9d",
         "starterAsset": "assets/sb/react/question/react-todo-list.v1.json",
         "starterAssetHash": "b12a6a1e27693a30e398b1ceeaed33e25b8a52318d19e8b6d7363e7997afe325"
       }
@@ -8472,7 +8508,7 @@
       ],
       "review": {
         "contentHash": "34adde6b1f3d7a2953981a4c233306534b2db7461cf752e804cc3a70eab3616b",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8517,7 +8553,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8731,7 +8768,7 @@
       ],
       "review": {
         "contentHash": "fb5b766311f41d2fe44a96e38a4d0c03f2fffc6178366450704bb612d144be29",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8776,7 +8813,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8948,7 +8986,7 @@
       ],
       "review": {
         "contentHash": "1a8eb5cb671366c35c672498a253ad80f210a8b75010a107c775faf6e38014e9",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8993,7 +9031,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9504,7 +9543,7 @@
       ],
       "review": {
         "contentHash": "439ca7a01b517f613faf047c84ce8d9b841fbef793d0c219239105d9a7f9c09c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9549,7 +9588,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10085,7 +10125,7 @@
       ],
       "review": {
         "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10130,7 +10170,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10323,7 +10364,7 @@
       ],
       "review": {
         "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10368,7 +10409,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11164,7 +11206,7 @@
       ],
       "review": {
         "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11209,7 +11251,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11510,7 +11553,7 @@
       ],
       "review": {
         "contentHash": "a64b16a8d119050e0bef30688dba9f74e8c0a9dfc1dc8615d3db678fc33783de",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11555,7 +11598,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11950,7 +11994,7 @@
       ],
       "review": {
         "contentHash": "896afc6e6ad0018b4f4040bb41506632c1a8fa7468b8704563374f2752b798cd",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11995,7 +12039,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12289,7 +12334,7 @@
       ],
       "review": {
         "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12334,7 +12379,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12591,7 +12637,7 @@
     },
     {
       "conceptId": "coding-ui-counter",
-      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
+      "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
       "id": "int-code-vue-junior-counter-v1",
       "remediationTopics": [
         "Vue reactive state transitions",
@@ -12599,8 +12645,8 @@
         "Configurable update steps"
       ],
       "review": {
-        "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12645,7 +12691,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12819,7 +12866,7 @@
         "pressureAsset": "assets/questions/pressure-modes/counter.v1.json",
         "pressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
         "selectedCheckContractHash": "2739e4c8fac1b694f081c8a7aabd6caa618c7f7abe75340f19cfce9c3cc6e86f",
-        "sourceQuestionHash": "15b53480ffd43eef02041d41afffe13ccb5d26012c1347eb652c0959cd41fad1",
+        "sourceQuestionHash": "f59f3d53994024bffd7915795572d31fa0e637eb79cdc96818843d17bb29f1bf",
         "starterAsset": "assets/sb/vue/question/vue-counter.v1.json",
         "starterAssetHash": "a831a35106511af976f71bdc90f73c8dfe4bbe7646097b291c707fccf90303c2"
       }
@@ -12835,7 +12882,7 @@
       ],
       "review": {
         "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12880,7 +12927,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13024,7 +13072,7 @@
       ],
       "review": {
         "contentHash": "44cd2098db8de6d16f4541ecf2a2ae264f22886e75551d3395c6d0a57679a462",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13069,7 +13117,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13213,7 +13262,7 @@
       ],
       "review": {
         "contentHash": "0ab86958f85e94753bca1502f5a6e6b419f80b6580b06dae6454a412333aaa5c",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13258,7 +13307,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13405,7 +13455,7 @@
     },
     {
       "conceptId": "coding-ui-todo",
-      "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
+      "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
       "id": "int-code-vue-junior-todo-v1",
       "remediationTopics": [
         "Stable Vue list identity",
@@ -13413,8 +13463,8 @@
         "Derived list filters"
       ],
       "review": {
-        "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13459,7 +13509,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13733,7 +13784,7 @@
         "pressureAsset": "assets/questions/pressure-modes/todo-list.v1.json",
         "pressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
         "selectedCheckContractHash": "cec240824a721630d1d4d06b530419b8a767d005d95eceacbbc1dfbf5f9a89ca",
-        "sourceQuestionHash": "d0165a6363a14c3ee2fc7e94236bf0c8d9687093819376f0d65d2c9b66468914",
+        "sourceQuestionHash": "88c0aba81ddda9b16d1a9cdc8569b1ecdc865f77c983f89a2db6a8679416454a",
         "starterAsset": "assets/sb/vue/question/vue-todo-list.v2.json",
         "starterAssetHash": "dd85d5916d99dd54c6e675e6fff76a95f2226b133b65f42882b5b8059d163a8b"
       }
@@ -13749,7 +13800,7 @@
       ],
       "review": {
         "contentHash": "c19e0b8c590a8c8341af87417f0a6475928457bf515ccbc2490fbc544c02d2de",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13794,7 +13845,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14008,7 +14060,7 @@
       ],
       "review": {
         "contentHash": "1d849b35c2a9f329b710d0a5c6a33a667129ffbfe49eac15525ceec492691fc3",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14053,7 +14105,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14225,7 +14278,7 @@
       ],
       "review": {
         "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14270,7 +14323,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14781,7 +14835,7 @@
       ],
       "review": {
         "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14826,7 +14880,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15362,7 +15417,7 @@
       ],
       "review": {
         "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15407,7 +15462,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15600,7 +15656,7 @@
       ],
       "review": {
         "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15645,7 +15701,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16441,7 +16498,7 @@
       ],
       "review": {
         "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16486,7 +16543,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16787,7 +16845,7 @@
       ],
       "review": {
         "contentHash": "1d5864147d82235e7e7916ce95a31931eafca891f8dd782d0f4182952a303e47",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16832,7 +16890,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17227,7 +17286,7 @@
       ],
       "review": {
         "contentHash": "a8328459c3226153b777a698babe8486a6b3fe8c194129e835675565e7b28ee7",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17272,7 +17331,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17566,7 +17626,7 @@
       ],
       "review": {
         "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
-        "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+        "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17611,7 +17671,8 @@
             "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
             "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+            "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+            "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",

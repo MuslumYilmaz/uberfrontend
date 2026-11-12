@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "f728d4ec6b469f3a4f2175965fd3fcede09544a790e404a9251a385c84c0fdbf",
+    "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -31,12 +31,13 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after content fixes to six pinned source questions, approved by the project owner (coding-trust step 9). Vue nested checkboxes: the text taught a watcher and a template ref and listed as pitfalls what the solution did; both now derive the parent from the children with a writable computed bound by v-model and bind :indeterminate, the starter carries the same template with computed stubs, and the question gains its first decision graph and a check hint. Vue todo list, shopping cart and transfer list: guidance that called in-place changes to reactive state a pitfall, or said Vue may not update after a Set changes, now says Vue tracks both; their solutions are unchanged. Vue debounced search: an implementation note names the watcher cleanup onCleanup, as the Vue docs do, and adds onWatcherCleanup (Vue 3.5). React todo list: an outdated note against generics and the casts it led to are removed from the starter and solution (useState<Todo[]>). Starter asset hashes are re-pinned for Vue nested checkboxes and React todo list, question hashes for all six. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the JavaScript test hardening of coding-trust step 10, approved by the project owner. Five pinned source questions gain checks for behavior their text and rubric criteria already describe, and the new checks join the rubric groups that state that behavior. Deep equal: three checks (different kinds of object, the same set of keys, NaN, -0 and RegExp details); the reference solution now compares Object.prototype.toString tags, so a Date no longer equals {}, as its edge cases already said. Debounce: one check for the last call's this and all of its arguments; the summary loses its page copy. LRU cache: two checks (an update makes a key the most recent; an update at capacity evicts nothing); the returns text says that size() is a method and in which order keys() lists the keys. Concurrency map: the limit check is renamed 'rejects a limit below 1' and accepts a rejection as well as a synchronous throw, which the async starter could not meet; two checks cover refilling a slot as soon as it frees up and starting no new items after a fail-fast error, and the concurrency-bound and error-strategies groups each gain one criterion for them. Once: one check for a wrapped function that returns undefined. Question hashes are re-pinned for all five; the debounce prompt loses only the page copy, the other prompts are unchanged; time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ]
   },
-  "definitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+  "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
   "reviewBatch": {
-    "reviewedDefinitionHash": "b13c21e0777dbef9e095bcd36037d324d6726001720048c68eb1ac7003fb6e1d",
+    "reviewedDefinitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -64,7 +65,8 @@
         "2026-11-11 source-pin maintenance review: vue-nested-checkboxes, vue-todo-list, vue-shopping-cart, vue-transfer-list, vue-debounced-search and react-todo-list changed as the finalApproval note of the same date describes. The Vue preview now compiles each workspace with @vue/compiler-sfc. In the production preview every check of the six tasks passes on the official solution and fails on the starter, every Vue starter and solution renders without an error or a Vue warning, and the React todo starter and solution show no editor error.",
         "2026-11-11 source-pin maintenance review: react-nested-comments and vue-nested-comments changed in their starters, solutions, Solution-tab text and checks; see the finalApproval note of the same date. In the production preview both checks of each task pass on the official solution and fail on the starter, and the React starter and solution show no editor error.",
         "2026-11-11 source-pin maintenance review: js-deep-equal, js-debounce, js-create-lru-cache, js-concurrency-map-limit and js-once changed as the finalApproval note of the same date describes. Every reference solution passes every JavaScript and TypeScript check in a Node harness that uses the sandbox's own matchers and fake timers, and 29 known wrong solutions each fail the checks written for them, in both suites.",
-        "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does."
+        "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
+        "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug."
       ]
     },
     "editorial": {
@@ -934,7 +936,7 @@
       "level": "junior",
       "catalog": "react",
       "sourceQuestionId": "react-counter",
-      "expectedQuestionHash": "7220b83aaffc6d51d3a2ef90c095b5838147438204b50ba7e17bbeebf0b289cb",
+      "expectedQuestionHash": "6b99e513ebc10eca6edba8c015d5a5e0a3b1a815fda2a457539742d5a9e69b43",
       "expectedStarterAssetHash": "957987d105a3eb4186b964dafe98c3218328dea87c01e2e0e7167d06265d0db6",
       "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
       "timeLimitSeconds": 1500,
@@ -954,7 +956,7 @@
       "level": "junior",
       "catalog": "react",
       "sourceQuestionId": "react-todo-list",
-      "expectedQuestionHash": "ac0e7b42ec94f5d0e48cc2ea197d05f294e1ca3e9dc326332e432d90b47fcb5a",
+      "expectedQuestionHash": "356a4fd2b2a26519d55713be530108e7762a3c1825db0c542d1a8e85a0402a9d",
       "expectedStarterAssetHash": "b12a6a1e27693a30e398b1ceeaed33e25b8a52318d19e8b6d7363e7997afe325",
       "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
       "timeLimitSeconds": 1500,
@@ -1054,7 +1056,7 @@
       "level": "junior",
       "catalog": "angular",
       "sourceQuestionId": "angular-counter-starter",
-      "expectedQuestionHash": "43fad1c525d0e9bc3446872cbc900d536a466a1641459b5cadf664970d208a5e",
+      "expectedQuestionHash": "a17092236a2aab4c4fb123c0d9d7a0baabe5174ea2cabf43125266109a63353d",
       "expectedStarterAssetHash": "9dcf646a224777f79a6d261189f4bc44a56820f6bf779a8ba2ed4309728c5091",
       "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
       "timeLimitSeconds": 1500,
@@ -1074,7 +1076,7 @@
       "level": "junior",
       "catalog": "angular",
       "sourceQuestionId": "angular-todo-list-starter",
-      "expectedQuestionHash": "51eb548820cf83a48e541e9b662fff069fe057d2b62bcd9be8078cd899fc466d",
+      "expectedQuestionHash": "8539b82b07efca481f9f05c090d7727d60b510744f2f69c3d12e014fef306c63",
       "expectedStarterAssetHash": "9f8fac808a689a9a03ad2a21f3004803e651600529280d9aa3bab3e94e897e06",
       "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
       "timeLimitSeconds": 1500,
@@ -1174,7 +1176,7 @@
       "level": "junior",
       "catalog": "vue",
       "sourceQuestionId": "vue-counter",
-      "expectedQuestionHash": "15b53480ffd43eef02041d41afffe13ccb5d26012c1347eb652c0959cd41fad1",
+      "expectedQuestionHash": "f59f3d53994024bffd7915795572d31fa0e637eb79cdc96818843d17bb29f1bf",
       "expectedStarterAssetHash": "a831a35106511af976f71bdc90f73c8dfe4bbe7646097b291c707fccf90303c2",
       "expectedPressureAssetHash": "bc1d05a14201d35e8d8aaafcc5ffd28b701bc9c7f35611559091d60ca1bb71d9",
       "timeLimitSeconds": 1500,
@@ -1194,7 +1196,7 @@
       "level": "junior",
       "catalog": "vue",
       "sourceQuestionId": "vue-todo-list",
-      "expectedQuestionHash": "d0165a6363a14c3ee2fc7e94236bf0c8d9687093819376f0d65d2c9b66468914",
+      "expectedQuestionHash": "88c0aba81ddda9b16d1a9cdc8569b1ecdc865f77c983f89a2db6a8679416454a",
       "expectedStarterAssetHash": "dd85d5916d99dd54c6e675e6fff76a95f2226b133b65f42882b5b8059d163a8b",
       "expectedPressureAssetHash": "9875cea6c9509c137ebbaf4f684ab277d777f2159b7679118feffb4647bf78ce",
       "timeLimitSeconds": 1500,

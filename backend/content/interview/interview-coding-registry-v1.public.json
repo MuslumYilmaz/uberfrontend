@@ -5,7 +5,7 @@
   "status": "editorial-gold",
   "variants": [
     {
-      "contentHash": "78fac867ce3eb7172d3305373f742245d48342e7149212e0ee9eee716f356b0d",
+      "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "level": "junior",
@@ -298,7 +298,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "3412f138522463ec6cd681b1eebce06d1918c68f77b8c494aa16cc1920e9b65c",
+      "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "level": "junior",
@@ -1791,7 +1791,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "9452c74042a22fd634e2fd0e059d1be7a63d020c57735eea62ec88756b190b74",
+      "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "level": "junior",
@@ -2052,7 +2052,7 @@
       "track": "react"
     },
     {
-      "contentHash": "628940e2b9658fdf3f2910c37aeb8c47d0eadf80cc6b55ddc5c0563c1ac5aee4",
+      "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "level": "junior",
@@ -2946,7 +2946,7 @@
       "track": "react"
     },
     {
-      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
+      "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "level": "junior",
@@ -3207,7 +3207,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "8a8670e4f02cc6fdd54a7b1989fa355cd3a15a99ea5052252030a8bf60a916bf",
+      "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "level": "junior",

@@ -704,8 +704,21 @@ function readCanonicalFiles(assetPath: string): Record<string, string> {
   return files;
 }
 
+// The Counter checks every framework shares (framework-shared-checks.test.mjs keeps them equal).
+const COUNTER_CHECKS = [
+  "Starts at 0 with '-' disabled and '+' enabled",
+  "'+' adds 1 on every click",
+  "'-' subtracts 1, and is enabled only above 0",
+  'The count never goes below 0',
+  "'Reset' returns to 0 from any count",
+];
+
 function livePreview(page: Page) {
   return page.frameLocator('iframe[title="Framework live preview"]');
+}
+
+function failureKinds(page: Page): Promise<Array<string | null>> {
+  return checkRows(page).evaluateAll((rows) => rows.map((row) => row.getAttribute('data-failure-kind')));
 }
 
 function checkRows(page: Page): Locator {
@@ -1186,11 +1199,12 @@ test.describe('Framework checks against the production SSR build', () => {
     await waitForFrameworkPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const starterResults = await runChecks(page, 1);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/1 passed');
-    await expect(checkResults(page)).toHaveText(['Counter flow']);
-    await expect(checkRows(page)).toHaveAttribute('data-failure-kind', 'assertion');
-    await expect(checkRows(page).locator('.framework-check-result__error')).toBeVisible();
+    // The starter already renders 0 with '-' disabled; every check that clicks fails.
+    const starterResults = await runChecks(page, 5);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('1/5 passed');
+    await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
+    expect(await failureKinds(page)).toEqual([null, 'assertion', 'assertion', 'assertion', 'assertion']);
+    await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(4);
     await expectAssertionLayer(starterResults);
 
     await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
@@ -1202,55 +1216,59 @@ test.describe('Framework checks against the production SSR build', () => {
     await counterButtons.nth(2).click();
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const firstPassingRun = await runChecks(page, 1);
-    await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const firstPassingRun = await runChecks(page, 5);
+    await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(firstPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
-    await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
+    expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
     await dismissPostPassPrompt(page);
 
     await rebuildPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const repeatedPassingRun = await runChecks(page, 1);
-    await expect(repeatedPassingRun.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const repeatedPassingRun = await runChecks(page, 5);
+    await expect(repeatedPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(repeatedPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
-    await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
+    expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
   });
 
-  test('a passed smoke check leads to the requirements and "Mark as solved", not to "Solved"', async ({ page }) => {
-    await page.goto('/react/coding/react-todo-list');
+  test('a passed smoke check leads to the requirements and "Mark as solved", not to "Solved"', async ({ page, baseURL }) => {
+    // Every free React task checks all of its requirements since step 11; this Premium task still has one check.
+    // Step 12 gives it full checks, and this test then needs another one-check task.
+    if (!baseURL) throw new Error('Playwright baseURL is required for the Premium smoke test');
+    await seedPremiumSession(page, baseURL);
+    await page.goto('/react/coding/react-tabs-switcher');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     // The one check's selectors are named with the task, so markup that works can match them.
-    await expect(page.getByTestId('coding-check-selectors')).toContainText('.input-row input');
-    await waitForFrameworkPreview(page, '.input-row input');
+    await expect(page.getByTestId('coding-check-selectors')).toContainText('.tabs button');
+    await waitForFrameworkPreview(page, '.tabs button');
 
-    // Adds an item and nothing else: no toggle, remove or clear. The task's one check covers adding.
+    // Switches the panel and nothing else: no tab is highlighted. The task's one check covers switching.
     await loadCanonicalFile(page, 'src/App.tsx', [
       "import React, { useState } from 'react';",
       "import './App.css';",
       '',
       'export default function App() {',
-      "  const [text, setText] = useState('');",
-      '  const [todos, setTodos] = useState<string[]>([]);',
+      "  const [tab, setTab] = useState('Overview');",
       '  return (',
       '    <main>',
-      '      <div className="input-row">',
-      '        <input value={text} onChange={(event) => setText(event.target.value)} />',
-      '        <button className="primary" onClick={() => setTodos([...todos, text])}>Add</button>',
-      '      </div>',
-      '      <ul>{todos.map((todo, index) => <li key={index} className="item">{todo}</li>)}</ul>',
+      '      <nav className="tabs">',
+      "        {['Overview', 'Details', 'Settings'].map((name) => (",
+      '          <button key={name} onClick={() => setTab(name)}>{name}</button>',
+      '        ))}',
+      '      </nav>',
+      '      <section className="panel"><h2>{tab}</h2></section>',
       '    </main>',
       '  );',
       '}',
       '',
     ].join('\n'));
-    await rebuildPreview(page, '.input-row input');
+    await rebuildPreview(page, '.tabs button');
 
     const results = await runChecks(page, 1);
     await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
     const note = results.getByTestId('framework-smoke-note');
     await expect(note).toContainText('core flow only');
-    await expect(note).toContainText('Clear completed');
+    await expect(note).toContainText('visually highlight');
     await expect(page.getByTestId('footer-submit')).toContainText('Mark as solved');
     // The run itself marked nothing, so nothing asks to save a result.
     await expect(page.getByTestId('login-required-dialog')).toBeHidden();
@@ -2801,18 +2819,19 @@ test.describe('Framework checks against the production SSR build', () => {
     }
   });
 
-  test('Autocomplete runs all thirteen assertions and passes them with its canonical solution', async ({ page }) => {
+  test('Autocomplete runs all fourteen assertions and passes them with its canonical solution', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.input');
 
-    const starterResults = await runChecks(page, 13);
+    const starterResults = await runChecks(page, 14);
     await expect(checkResults(page)).toHaveText([
       'Empty query closes popup',
-      'Debounce waits for final query',
+      'Debounce waits for the final query, and san answers only after 900 ms',
       'Stale response cannot overwrite newer results',
       'New query cannot select stale options while pending',
       'Loading opens and closes correctly',
+      'Matches anywhere in a city name, ignoring case, and marks the match',
       'Error and no-results states are distinct',
       'Arrow navigation wraps and keeps input focus',
       'Enter selects active option',
@@ -2822,7 +2841,7 @@ test.describe('Framework checks against the production SSR build', () => {
       'ARIA combobox relationships are wired',
       'Unmount cleans pending timer and document listener',
     ]);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/(?:[0-9]|1[0-2])\/13 passed/);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/(?:[0-9]|1[0-3])\/14 passed/);
     await expect(starterResults.locator('[data-failure-kind="assertion"]')).not.toHaveCount(0);
     await expectAssertionLayer(starterResults);
 
@@ -2833,8 +2852,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await input.fill('par');
     await expect(livePreview(page).locator('.option')).toContainText('Paris', { timeout: 3_000 });
 
-    const passingResults = await runChecks(page, 13);
-    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('13/13 passed');
+    const passingResults = await runChecks(page, 14);
+    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('14/14 passed');
     await expect(passingResults.locator('.framework-check-result__error')).toHaveCount(0);
     await expect(
       passingResults.locator('[data-testid="framework-check-result"][data-failure-kind]'),
@@ -2851,8 +2870,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page.locator('#demo-choice-active strong')).toHaveText('React');
     await waitForFrameworkPreview(page, '.value');
 
-    const embeddedResults = await runChecks(page, 1);
-    await expect(checkResults(page)).toHaveText(['Counter flow']);
+    const embeddedResults = await runChecks(page, 5);
+    await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
     await expectAssertionLayer(embeddedResults);
 
     await openLive.click();
@@ -2869,10 +2888,10 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(VUE_TODO_STARTER).toContain('TODO: Add a trimmed, non-empty task');
     expect(VUE_TODO_STARTER).not.toBe(VUE_TODO_SOLUTION);
 
-    const starterResults = await runChecks(page, 1);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/1 passed');
-    await expect(checkResults(page)).toHaveText(['Todo add item']);
-    await expect(checkRows(page)).toHaveAttribute('data-failure-kind', 'assertion');
+    const starterResults = await runChecks(page, 7);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/7 passed');
+    await expect(checkResults(page).first()).toHaveText('Add puts the text at the end of the list and clears the input');
+    expect(await failureKinds(page)).toEqual(Array(7).fill('assertion'));
     await expectAssertionLayer(starterResults);
 
     await page.getByTestId('coding-solution-tab').click();
@@ -2894,8 +2913,8 @@ test.describe('Framework checks against the production SSR build', () => {
       substring: 'if (!newTask.value.trim())',
     });
 
-    const solutionResults = await runChecks(page, 1);
-    await expect(solutionResults.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const solutionResults = await runChecks(page, 7);
+    await expect(solutionResults.locator('.framework-check-results__summary')).toHaveText('7/7 passed');
     await expect(solutionResults.locator('.framework-check-result__error')).toHaveCount(0);
     await dismissPostPassPrompt(page);
 
@@ -2933,8 +2952,8 @@ test.describe('Framework checks against the production SSR build', () => {
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await waitForFrameworkPreview(page, '.value');
 
-      const results = await runChecks(page, 1);
-      await expect(checkResults(page)).toHaveText(['Counter flow']);
+      const results = await runChecks(page, 5);
+      await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
       await expectAssertionLayer(results);
       await dismissPostPassPrompt(page);
     }

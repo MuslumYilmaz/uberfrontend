@@ -435,11 +435,7 @@ function assertCounterPressureMode() {
     assert.ok(question, `${framework}: Counter question must exist`);
     assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal Counter starter changed`);
     assert.equal(question.solutionAsset, expected.solution, `${framework}: normal Counter solution changed`);
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['counter-basic-flow'],
-      `${framework}: normal Counter checks must stay unchanged`
-    );
+    // The normal Counter checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/counter.v1.json',
@@ -798,22 +794,18 @@ function assertAutocompletePressureMode() {
     ).join('\n');
 
     if (framework !== 'react') {
-      assert.deepEqual(
-        question.frameworkTests.map((test) => test.id),
-        ['autocomplete-selects-option', 'autocomplete-outside-click-closes'],
-        `${framework}: normal Autocomplete checks must cover the pick and the outside click`
-      );
-      const pickSteps = question.frameworkTests.find(
-        (test) => test.id === 'autocomplete-selects-option'
-      )?.steps;
-      assert.deepEqual(
-        pickSteps?.slice(-2),
-        [
-          { type: 'wait', durationMs: 500 },
-          { type: 'expectCount', selector: '.list', count: 0 },
-        ],
-        `${framework}: the normal check must prove that a pick does not reopen the list`
-      );
+      // The full list of the normal checks lives in framework-shared-checks.test.mjs.
+      for (const id of ['autocomplete-selects-option', 'autocomplete-enter-selects']) {
+        const pickSteps = question.frameworkTests.find((test) => test.id === id)?.steps;
+        assert.deepEqual(
+          pickSteps?.slice(-2),
+          [
+            { type: 'wait', durationMs: 500 },
+            { type: 'expectCount', by: { role: 'listbox' }, count: 0 },
+          ],
+          `${framework}: ${id} must prove that a pick does not reopen the list`
+        );
+      }
     }
   }
 
@@ -926,6 +918,7 @@ function assertTeamListPressureMode() {
       'fetch-list-empty-state',
       'fetch-list-loading-state',
       'fetch-list-error-retry',
+      'fetch-list-ignores-stale-response',
     ],
     'Normal Team List checks must stay unchanged'
   );
@@ -2011,11 +2004,7 @@ function assertTodoListPressureMode() {
       expected.solution,
       `${framework}: normal Todo List solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['todo-add-item'],
-      `${framework}: normal Todo List checks must stay unchanged`
-    );
+    // The normal Todo List checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/todo-list.v1.json',
@@ -6069,8 +6058,30 @@ assert.ok(
   'Pending ArrowDown/Enter must not select an option from the previous query'
 );
 
+// The task states the fake latency, so a stale-response check means the same thing for every candidate: san takes
+// 900 ms and anything else 50 ms in the text, the starter's TODO, the solution and the checks' timing.
+assert.ok(
+  autocompleteQuestion.description.specs.requirements.includes(
+    'Simulate latency in searchCities: 900 ms for the query san and 50 ms for every other query.'
+  )
+);
+assert.match(autocompleteStarterCode, /simulate abortable latency \(900 ms for "san", 50 ms for any other query\)/);
+assert.match(autocompleteSolutionCode, /const delay = query === 'san' \? 900 : 50;/);
+const debounceAutocompleteTest = autocompleteTests.get('autocomplete-debounce-final-query');
+const slowSanWait = debounceAutocompleteTest.steps.findIndex((step) => step.type === 'wait' && step.durationMs === 600);
+assert.deepEqual(
+  debounceAutocompleteTest.steps.slice(slowSanWait, slowSanWait + 2),
+  [{ type: 'wait', durationMs: 600 }, { type: 'expectCount', selector: '.option', count: 0 }],
+  'The debounce check must also prove that san answers only after its 900 ms'
+);
+
 const staleAutocompleteTest = autocompleteTests.get('autocomplete-stale-response-ignored');
 assert.ok(staleAutocompleteTest);
+assert.deepEqual(
+  staleAutocompleteTest.steps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+  [340, 600],
+  'The stale-response check must type se while san runs and wait past the late san response'
+);
 assert.ok(
   staleAutocompleteTest.steps
     .filter((step) => step.text === 'Seattle')
@@ -6192,7 +6203,7 @@ try {
 
   // Do not flush the query render yet. The old request cannot be cancelled and its
   // effect cleanup has not run, so requestSeqRef is the only active stale-result guard.
-  await clock.advanceBy(450);
+  await clock.advanceBy(900);
   assert.equal(harness.state(5), 'loading');
   assert.deepEqual(
     Array.from(harness.state(8)),
@@ -6202,7 +6213,7 @@ try {
 
   harness.flush();
   await clock.advanceBy(300);
-  await clock.advanceBy(80);
+  await clock.advanceBy(50);
   harness.flush();
   assert.equal(harness.state(5), 'success');
   assert.deepEqual(Array.from(harness.state(8)), ['Brussels', 'San Jose', 'Seattle', 'Seoul']);
@@ -6690,7 +6701,7 @@ for (const node of vanillaPortVariant.nodes) {
 const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
-  'expectNoPreviewTimers', 'expectNoPreviewLeaks']);
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

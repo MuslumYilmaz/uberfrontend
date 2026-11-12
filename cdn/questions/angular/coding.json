@@ -64,8 +64,8 @@
     },
     "frameworkTests": [
       {
-        "id": "counter-basic-flow",
-        "name": "Counter flow",
+        "id": "counter-starts-at-zero",
+        "name": "Starts at 0 with '-' disabled and '+' enabled",
         "steps": [
           {
             "type": "expectText",
@@ -74,14 +74,32 @@
           },
           {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": true
           },
           {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "+"
+            },
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "counter-increment",
+        "name": "'+' adds 1 on every click",
+        "steps": [
+          {
             "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
           },
           {
             "type": "waitForText",
@@ -89,25 +107,68 @@
             "text": "1"
           },
           {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "2"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "3"
+          }
+        ]
+      },
+      {
+        "id": "counter-decrement",
+        "name": "'-' subtracts 1, and is enabled only above 0",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "2"
+          },
+          {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": false
           },
           {
             "type": "click",
-            "selector": ".actions button",
-            "index": 0
-          },
-          {
-            "type": "waitForText",
-            "selector": ".value",
-            "text": "0"
-          },
-          {
-            "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
           },
           {
             "type": "waitForText",
@@ -116,8 +177,10 @@
           },
           {
             "type": "click",
-            "selector": ".actions button",
-            "index": 2
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
           },
           {
             "type": "waitForText",
@@ -126,8 +189,123 @@
           },
           {
             "type": "expectDisabled",
-            "selector": ".actions button",
-            "index": 0,
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "counter-floor",
+        "name": "The count never goes below 0",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "1"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-"
+            }
+          },
+          {
+            "type": "expectText",
+            "selector": ".value",
+            "text": "0"
+          }
+        ]
+      },
+      {
+        "id": "counter-reset",
+        "name": "'Reset' returns to 0 from any count",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "3"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reset"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "0"
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "-"
+            },
             "disabled": true
           }
         ]
@@ -499,32 +677,380 @@
     },
     "frameworkTests": [
       {
-        "id": "todo-add-item",
-        "name": "Todo add item",
+        "id": "todo-add",
+        "name": "Add puts the text at the end of the list and clears the input",
         "steps": [
           {
             "type": "expectCount",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
             "count": 0
           },
           {
             "type": "setValue",
-            "selector": ".input-row input",
+            "by": {
+              "role": "textbox"
+            },
             "value": "Buy milk"
           },
           {
             "type": "click",
-            "selector": ".primary"
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
           },
           {
             "type": "waitForCount",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
             "count": 1
           },
           {
             "type": "expectText",
-            "selector": ".item",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
             "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": ""
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Walk the dog"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 1,
+            "text": "Walk the dog",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-ignore-empty",
+        "name": "An empty input adds nothing, and the next real task still adds",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-ignore-whitespace",
+        "name": "An input of only spaces adds nothing, and the next real task still adds",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "   "
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "todo-toggle",
+        "name": "Checking a task strikes it through, and unchecking it restores it",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0,
+            "expected": true
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox"
+            },
+            "index": 0,
+            "expected": false
+          },
+          {
+            "type": "expectLineThrough",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "todo-remove",
+        "name": "'Remove' deletes its own task and no other",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Buy milk"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Walk the dog"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "value": "Read a book"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 3
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Remove"
+            },
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 0,
+            "text": "Buy milk",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem"
+            },
+            "index": 1,
+            "text": "Read a book",
             "match": "contains"
           }
         ]
@@ -2232,29 +2758,141 @@
     },
     "frameworkTests": [
       {
-        "id": "autocomplete-selects-option",
-        "name": "Autocomplete selects option",
+        "id": "autocomplete-shows-matches",
+        "name": "Typing shows the matching cities once typing stops, ignoring case and position",
         "steps": [
           {
             "type": "setValue",
-            "selector": ".input",
-            "value": "Lond"
+            "by": {
+              "label": "Search"
+            },
+            "value": "O"
+          },
+          {
+            "type": "wait",
+            "durationMs": 60
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "ON"
+          },
+          {
+            "type": "wait",
+            "durationMs": 60
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "OND"
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 0
           },
           {
             "type": "waitForCount",
-            "selector": ".option",
+            "by": {
+              "role": "option"
+            },
             "count": 1,
-            "timeoutMs": 800
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "option"
+            },
+            "text": "London"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-blank-query-closes",
+        "name": "A blank query closes the list",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "lond"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "   "
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listbox"
+            },
+            "count": 0,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-selects-option",
+        "name": "Clicking a city fills the input and closes the list for good",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "lond"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 1500
           },
           {
             "type": "mouseDown",
-            "selector": ".option"
+            "by": {
+              "role": "option"
+            },
+            "index": 0
           },
           {
             "type": "expectValue",
-            "selector": ".input",
-            "value": "London",
-            "match": "contains"
+            "by": {
+              "label": "Search"
+            },
+            "value": "London"
           },
           {
             "type": "wait",
@@ -2262,25 +2900,234 @@
           },
           {
             "type": "expectCount",
-            "selector": ".list",
+            "by": {
+              "role": "listbox"
+            },
             "count": 0
           }
         ]
       },
       {
-        "id": "autocomplete-outside-click-closes",
-        "name": "Clicking outside closes the dropdown",
+        "id": "autocomplete-arrow-down",
+        "name": "ArrowDown makes the first city active, then the next",
         "steps": [
           {
             "type": "setValue",
-            "selector": ".input",
-            "value": "Lond"
+            "by": {
+              "label": "Search"
+            },
+            "value": "san"
           },
           {
             "type": "waitForCount",
-            "selector": ".option",
+            "by": {
+              "role": "option"
+            },
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "option"
+            },
+            "index": 1,
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "attribute": "aria-selected",
+            "expected": "false"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-arrow-up-last",
+        "name": "ArrowUp with no active city makes the last one active",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "ArrowUp"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "option"
+            },
+            "index": 2,
+            "attribute": "aria-selected",
+            "expected": "true"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-enter-selects",
+        "name": "Enter picks the active city and closes the list for good",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "Enter"
+          },
+          {
+            "type": "expectValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "San Diego"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listbox"
+            },
+            "count": 0,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listbox"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-escape-closes",
+        "name": "Escape closes the list and keeps what was typed",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "lond"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
             "count": 1,
-            "timeoutMs": 800
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "Escape"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listbox"
+            },
+            "count": 0,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "lond"
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-outside-click-closes",
+        "name": "Clicking outside closes the list",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "lond"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 1500
           },
           {
             "type": "mouseDown",
@@ -2288,9 +3135,86 @@
           },
           {
             "type": "waitForCount",
-            "selector": ".list",
+            "by": {
+              "role": "listbox"
+            },
             "count": 0,
             "timeoutMs": 500
+          }
+        ]
+      },
+      {
+        "id": "autocomplete-aria-state",
+        "name": "The combobox reports aria-expanded and aria-activedescendant",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "combobox"
+            },
+            "attribute": "aria-expanded",
+            "expected": "false"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "label": "Search"
+            },
+            "value": "san"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 3,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "combobox"
+            },
+            "attribute": "aria-expanded",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "combobox"
+            },
+            "attribute": "aria-activedescendant",
+            "expected": false
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "combobox"
+            },
+            "attribute": "aria-activedescendant",
+            "expected": "opt-0"
+          },
+          {
+            "type": "key",
+            "by": {
+              "label": "Search"
+            },
+            "key": "Escape"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "combobox"
+            },
+            "attribute": "aria-expanded",
+            "expected": "false"
           }
         ]
       }
@@ -3787,6 +4711,250 @@
             "type": "expectCount",
             "selector": ".cell--snake",
             "count": 3
+          }
+        ]
+      },
+      {
+        "id": "snake-pause",
+        "name": "Pause stops the snake until Start",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Pause"
+            }
+          },
+          {
+            "type": "expectExists",
+            "by": {
+              "text": "Paused"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 400
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 104,
+            "className": "cell--head"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 105,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-first-turn-wins",
+        "name": "Right, then Up, then Left within one tick commits Up",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 90,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Game over"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "snake-opposite-key-ignored",
+        "name": "A reverse key is ignored and does not use up the turn",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowLeft"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 118,
+            "className": "cell--head"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Game over"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "snake-wasd",
+        "name": "W, A, S and D steer like the arrow keys",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "w"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 90,
+            "className": "cell--head"
+          },
+          {
+            "type": "key",
+            "selector": "body",
+            "key": "a"
+          },
+          {
+            "type": "wait",
+            "durationMs": 80
+          },
+          {
+            "type": "expectClass",
+            "selector": ".cell",
+            "index": 89,
+            "className": "cell--head"
+          }
+        ]
+      },
+      {
+        "id": "snake-cleanup",
+        "name": "Removing the game stops its timer",
+        "steps": [
+          {
+            "type": "mockRandom",
+            "values": [
+              0.1,
+              0.1,
+              0.1,
+              0.9
+            ]
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Start"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 50
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectNoPreviewTimers"
           }
         ]
       }
