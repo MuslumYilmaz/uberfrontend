@@ -306,6 +306,10 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </div>
       </div>
 
+      <!-- The pricing page projects its counted table here, so the counts ship with that page only; the compact
+           homepage section projects nothing. -->
+      <ng-container *ngIf="countedLayout()"><ng-content select="[pricingCountedTable]"></ng-content></ng-container>
+
       <section
         class="pr-discounts"
         *ngIf="variant === 'full'"
@@ -423,7 +427,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         Checkout is temporarily unavailable. Please try again shortly.
       </p>
 
-      <section class="plan-compare" *ngIf="variant === 'full'">
+      <section class="plan-compare" *ngIf="variant === 'full' && !countedLayout()">
         <h2 class="pr-section-title">Free vs Premium</h2>
         <p class="muted pr-section-subtitle">What each side of the paywall contains today, with a locked example you can open.</p>
         <table>

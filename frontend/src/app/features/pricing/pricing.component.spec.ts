@@ -1,4 +1,6 @@
 import { WritableSignal, signal } from '@angular/core';
+import { PricingCountedTableComponent } from './components/pricing-counted-table/pricing-counted-table.component';
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -180,6 +182,53 @@ describe('PricingComponent', () => {
       offer_version: 'interview_sprint_v2',
       checkout_surface: 'overlay',
     }));
+  });
+
+  it('shows the counted table under the assurance line on a sprint offer and tracks a locked example with the plans context', async () => {
+    fixture = TestBed.createComponent(PricingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const table = page.querySelector('[data-testid="pricing-counted-table"]') as HTMLElement;
+    expect(table).toBeTruthy();
+    expect(table.closest('app-pricing-plans-section')).toBeTruthy();
+    expect(page.querySelector('[data-testid="pricing-assurance"]')!.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(page.querySelector('.plan-compare')).toBeNull();
+
+    fixture.debugElement.query(By.directive(PricingCountedTableComponent)).componentInstance.exampleClick.emit({
+      previewType: 'counted_react',
+      destination: '/react/coding/react-pagination-table',
+    });
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_unlock_preview_clicked', jasmine.objectContaining({
+      preview_type: 'counted_react',
+      destination: '/react/coding/react-pagination-table',
+      surface: 'pricing_page',
+    }));
+  });
+
+  it('keeps the old Free vs Premium table, and no counted table, when the backend selects the baseline offer', async () => {
+    billingCheckoutStub.getCheckoutConfig.and.resolveTo({
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      planDetails: {
+        monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+        quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+        annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+        lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      },
+      offerVersion: 'pricing_baseline_v1',
+      checkoutSurface: 'hosted_new_tab',
+    } as any);
+    fixture = TestBed.createComponent(PricingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('.plan-compare')).toBeTruthy();
+    expect(page.querySelector('[data-testid="pricing-counted-table"]')).toBeNull();
   });
 
   describe('with a company plan waiting', () => {

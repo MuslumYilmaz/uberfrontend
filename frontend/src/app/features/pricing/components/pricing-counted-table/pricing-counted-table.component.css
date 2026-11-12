@@ -1,0 +1,73 @@
+:host{display:block;margin-top:28px}
+.pct__title{margin:0 0 12px;font-size:28px;font-weight:var(--uf-heading-weight);line-height:1.15;color:var(--uf-text-primary)}
+.pct__frame{border:1px solid var(--uf-border-subtle);border-radius:16px;overflow:hidden;background:var(--uf-surface)}
+.pct__table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+.pct__table thead th{
+  padding:12px 16px;
+  text-align:left;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--uf-text-tertiary);
+  background:color-mix(in srgb,var(--uf-surface) 82%,var(--uf-text-primary) 18%);
+}
+.pct__table tbody th,
+.pct__table tbody td{
+  padding:14px 16px;
+  text-align:left;
+  vertical-align:top;
+  border-top:1px solid color-mix(in srgb,var(--uf-border-subtle) 70%,transparent);
+}
+.pct__table tbody th{font-weight:700;color:var(--uf-text-primary)}
+.pct__table td{color:var(--uf-text-secondary)}
+.pct__table .pct__premium{color:var(--uf-text-primary);font-weight:600}
+.pct__examples{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:4px 0}
+.pct__examples li:not(:last-child)::after{content:',';margin-right:6px;color:var(--uf-text-secondary)}
+.pct__examples a{
+  color:var(--uf-text-primary);
+  text-decoration:underline;
+  text-decoration-color:color-mix(in srgb,var(--uf-accent) 60%,transparent);
+  text-underline-offset:3px;
+}
+.pct__examples a:hover{color:var(--uf-accent)}
+.pct__note{margin:10px 0 0;font-size:12px;line-height:1.5;color:var(--uf-text-tertiary)}
+/* Fixed column shares leave the locked examples the widest column on a desktop and a tablet. */
+@media (min-width:641px){
+  .pct__table{table-layout:fixed}
+  .pct__table thead th:nth-child(1){width:18%}
+  .pct__table thead th:nth-child(2){width:20%}
+  .pct__table thead th:nth-child(3){width:26%}
+}
+/* On a tablet each example takes its own line instead of breaking mid-name. */
+@media (min-width:641px) and (max-width:960px){
+  .pct__examples{flex-direction:column;gap:4px}
+  .pct__examples li:not(:last-child)::after{content:none}
+}
+/* On a phone each area becomes a block with labelled lines, so no column is pushed off screen. */
+@media (max-width:640px){
+  .pct__title{font-size:24px}
+  .pct__table,
+  .pct__table tbody{display:block;width:100%}
+  .pct__table thead{display:none}
+  .pct__table tbody tr{
+    display:grid;
+    gap:8px;
+    padding:14px 16px;
+    border-top:1px solid color-mix(in srgb,var(--uf-border-subtle) 70%,transparent);
+  }
+  .pct__table tbody tr:first-child{border-top:0}
+  .pct__table tbody th,
+  .pct__table tbody td{display:block;width:auto;padding:0;border:0}
+  .pct__table tbody th{font-size:15px}
+  .pct__table tbody td::before{
+    content:attr(data-label);
+    display:block;
+    margin-bottom:2px;
+    color:var(--uf-text-tertiary);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+}

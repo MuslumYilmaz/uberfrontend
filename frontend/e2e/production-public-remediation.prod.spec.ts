@@ -1,5 +1,7 @@
 import { PUBLIC_CHANGELOG_ENTRIES } from '../src/app/core/content/public-changelog';
 import { PRERENDER_PLAN_DETAILS } from '../src/app/generated/pricing-defaults';
+import { PREMIUM_QUESTION_ROUTES } from '../src/app/generated/premium-question-routes';
+import { PRICING_COUNTS } from '../src/app/generated/pricing-counts';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { APIRequestContext, Page } from '@playwright/test';
@@ -113,10 +115,6 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   },
 ] as const;
 
-const PRICING_PREVIEW_PATHS = [
-  '/react/coding/react-contact-form-starter',
-  '/system-design/multi-step-form-autosave',
-] as const;
 
 const FREE_REACT_ROUTES = [
   '/react/coding/react-counter',
@@ -401,10 +399,13 @@ test.describe('production/SSR public remediation smoke', () => {
     expect(jsonLd || '').not.toMatch(/"companies?"\s*:/i);
   });
 
-  test('pricing keeps the exact Premium evidence links and offers no locked task as a free preview', async ({ page }) => {
-    // The shared fixture answers the checkout config with the baseline offer, which has no
-    // product-proof block; production answers the sprint offer. Pin the sprint layout here so
-    // the hydrated page matches what production serves.
+  test('pricing counts the catalog in its prerendered HTML and names only locked examples that are locked', async ({ page }) => {
+    // The prerendered page carries the counted table, so search engines and a slow first load read the counts.
+    const raw = await (await page.request.get('/pricing')).text();
+    expect(raw).toContain('What you get, counted');
+    expect(raw).toContain(`${PRICING_COUNTS.areas.react.premium} tasks`);
+    // The shared fixture answers the checkout config with the baseline offer; production answers the
+    // sprint offer. Pin the sprint layout here so the hydrated page matches what production serves.
     await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {
       await route.fulfill({
         status: 200,
@@ -422,19 +423,24 @@ test.describe('production/SSR public remediation smoke', () => {
       });
     });
     await openHydratedRoute(page, '/pricing', 'One library. Choose how long.');
-    const table = page.locator('.plan-compare');
-    await expect(table).toContainText('Free vs Premium');
+    const counted = page.getByTestId('pricing-counted-table');
+    await expect(counted).toContainText('What you get, counted');
+    await expect(page.locator('.plan-compare')).toHaveCount(0);
+    await expect(page.getByTestId('pricing-counted-row-react')).toContainText(`${PRICING_COUNTS.areas.react.free} tasks`);
+    await expect(page.getByTestId('pricing-counted-row-react')).toContainText(`${PRICING_COUNTS.areas.react.premium} tasks`);
 
-    const tableHrefs = await table.locator('a.plan-compare__preview').evaluateAll((links) =>
-      links.map((link) => link.getAttribute('href')),
+    const hrefs = await counted.locator('.pct__examples a').evaluateAll((links) =>
+      links.map((link) => link.getAttribute('href') || ''),
     );
-    expect(tableHrefs).toEqual([...PRICING_PREVIEW_PATHS]);
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      // Rehearsals lead to their company guide; tradeoff battles and incidents are checked against the registry when
+      // the counts are generated. Every question page named as locked must be one the paywall locks.
+      if (/^\/(companies|tradeoffs|incidents)\//.test(href)) continue;
+      expect(PREMIUM_QUESTION_ROUTES, href).toContain(href);
+    }
     // The old "Preview a guided solution" link opened a Premium-locked task as if it were a free preview.
     await expect(page.getByTestId('pricing-product-proof')).toHaveCount(0);
-    await expect(page.locator('main a[href^="/javascript/coding/js-throttle"]')).toHaveCount(0);
-    for (const path of PRICING_PREVIEW_PATHS) {
-      await expect(page.locator(`main a[href^="${path}"]`)).toHaveCount(1);
-    }
   });
 
   test('Foundations preview presents 113 unique prompts and explicitly explains overlap', async ({ page }) => {

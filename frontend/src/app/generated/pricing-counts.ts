@@ -2,7 +2,7 @@
 // scripts/pricing-counted-examples.json. Do not edit by hand: run `node scripts/gen-pricing-counts.mjs`.
 // The areas cover every practice route, so their Premium counts add up to the site's Premium total.
 export type PricingCountArea = 'react' | 'angular' | 'vue' | 'javascript' | 'debug' | 'htmlCss' | 'systemDesign' | 'trivia' | 'tradeoffBattles' | 'incidents';
-export type PricingExampleRow = 'react' | 'angular' | 'vue' | 'javascript' | 'debug' | 'systemDesign' | 'companyGuides' | 'formats';
+export type PricingExampleRow = 'react' | 'angular' | 'vue' | 'javascript' | 'debug' | 'systemDesign' | 'tradeoffsIncidents' | 'companyGuides' | 'formats';
 
 export interface PricingAreaCount {
   readonly total: number;
@@ -191,6 +191,24 @@ export const PRICING_COUNTS: PricingCounts = {
       {
         "label": "Multi-step Form Autosave",
         "route": "/system-design/multi-step-form-autosave"
+      }
+    ],
+    "tradeoffsIncidents": [
+      {
+        "label": "CSR vs SSR vs RSC",
+        "route": "/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering"
+      },
+      {
+        "label": "Web Worker vs main thread",
+        "route": "/tradeoffs/web-worker-vs-main-thread-heavy-compute"
+      },
+      {
+        "label": "Context rerender storm",
+        "route": "/incidents/context-rerender-storm"
+      },
+      {
+        "label": "Autosave overwrites the latest draft",
+        "route": "/incidents/autosave-overwrites-latest-edit"
       }
     ],
     "companyGuides": [

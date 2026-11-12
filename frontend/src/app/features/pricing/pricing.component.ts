@@ -8,6 +8,7 @@ import {
   PricingPlanDetails,
   PricingPlansSectionComponent,
 } from './components/pricing-plans-section/pricing-plans-section.component';
+import { PricingCountedTableComponent } from './components/pricing-counted-table/pricing-counted-table.component';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingCheckoutService, CheckoutSurface, RegionalPricing } from '../../core/services/billing-checkout.service';
@@ -26,7 +27,7 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
 
 @Component({
     selector: 'app-pricing',
-    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, CompanyPlanPricingStripComponent],
+    imports: [CommonModule, RouterModule, PricingPlansSectionComponent, PricingCountedTableComponent, CompanyPlanPricingStripComponent],
     styleUrls: ['./pricing.component.css'],
     template: `
     <section class="pricing-page">
@@ -34,6 +35,7 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
         <app-company-plan-pricing-strip [copy]="waiting"></app-company-plan-pricing-strip>
       }
       <app-pricing-plans-section
+        #plans
         variant="full"
         [paymentsEnabled]="paymentsEnabled"
         [paymentsConfigReady]="paymentsConfigReady"
@@ -48,6 +50,11 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
         ctaMode="checkout"
         [recommendedPlan]="waitingPlan()?.recommendedPlan ?? defaultRecommendedPlan"
         [featureLead]="waitingPlan()?.lead ?? null">
+        <!-- Shown under the plan cards on a sprint offer; a locked example's click is tracked with the plans' context. -->
+        <app-pricing-counted-table
+          pricingCountedTable
+          (exampleClick)="plans.trackUnlockPreviewClick($event)">
+        </app-pricing-counted-table>
       </app-pricing-plans-section>
     </section>
   `

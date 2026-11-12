@@ -66,9 +66,10 @@ describe('PricingPlansSectionComponent', () => {
 
   afterEach(() => sessionStorage.removeItem('fa:checkout:intent:v1'));
 
-  it('uses the same changing catalog count in both offers and falls back for old payloads', () => {
-    for (const offer of ['pricing_baseline_v1', 'interview_sprint_v2']) {
+  it('uses the same changing catalog count on the baseline page and the compact sprint section, and falls back for old payloads', () => {
+    for (const [offer, variant] of [['pricing_baseline_v1', 'full'], ['interview_sprint_v2', 'compact']] as const) {
       component.offerVersion = offer;
+      component.variant = variant;
       component.premiumPracticeCount = 171;
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('171 Premium practice prompts');
@@ -80,6 +81,11 @@ describe('PricingPlansSectionComponent', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
     }
+    // The full sprint page counts per area in the table the pricing page projects, so it names no single total.
+    component.offerVersion = 'interview_sprint_v2';
+    component.variant = 'full';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain('Premium practice prompts');
   });
 
   it('disables plans that backend checkout config marks unavailable', () => {
@@ -261,7 +267,8 @@ describe('PricingPlansSectionComponent', () => {
     );
     expect(page.querySelector('[data-testid="pricing-cta-lifetime"]')).toBeTruthy();
     // The product proof (its "guided solution" link opened a locked task), the trust strip and the lifetime card are gone.
-    for (const removed of ['[data-testid="pricing-product-proof"]', '[data-testid="pricing-trust-strip"]', '.lifetime-offer', '.pr-grid:not(.pr-grid--counted)']) {
+    // The old Free vs Premium table gives way to the counted table the pricing page projects.
+    for (const removed of ['[data-testid="pricing-product-proof"]', '[data-testid="pricing-trust-strip"]', '.lifetime-offer', '.pr-grid:not(.pr-grid--counted)', '.plan-compare']) {
       expect(page.querySelector(removed)).withContext(removed).toBeNull();
     }
 

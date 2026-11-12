@@ -34,6 +34,12 @@
     { "route": "/system-design/netflix-scale-expansion", "label": "Netflix Continue Watching" },
     { "route": "/system-design/multi-step-form-autosave", "label": "Multi-step Form Autosave" }
   ],
+  "tradeoffsIncidents": [
+    { "route": "/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering", "label": "CSR vs SSR vs RSC" },
+    { "route": "/tradeoffs/web-worker-vs-main-thread-heavy-compute", "label": "Web Worker vs main thread" },
+    { "route": "/incidents/context-rerender-storm", "label": "Context rerender storm" },
+    { "route": "/incidents/autosave-overwrites-latest-edit", "label": "Autosave overwrites the latest draft" }
+  ],
   "companyGuides": [
     { "route": "/javascript/debug/js-debug-bug-squash-invoices", "label": "Stripe invoicing bug squash", "company": "stripe" },
     { "route": "/react/coding/react-chat-streaming-ui", "label": "OpenAI streaming chat UI", "company": "openai" },

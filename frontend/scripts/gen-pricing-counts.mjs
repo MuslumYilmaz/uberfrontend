@@ -49,6 +49,7 @@ export const EXAMPLE_ROWS = {
   javascript: ['javascript'],
   debug: ['debug'],
   systemDesign: ['systemDesign'],
+  tradeoffsIncidents: ['tradeoffBattles', 'incidents'],
   companyGuides: 'company',
   formats: 'rehearsal',
 };

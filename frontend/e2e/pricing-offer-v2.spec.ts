@@ -1,3 +1,4 @@
+import { PRICING_COUNTS } from '../src/app/generated/pricing-counts';
 import { expect, test } from './fixtures';
 
 const V2_CHECKOUT_CONFIG = {
@@ -57,9 +58,18 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   await expect(page.getByTestId('pricing-discounts')).toContainText('40% off');
   await expect(page.getByTestId('pricing-student-action')).toHaveAttribute('href', '/auth/signup?src=pricing_student_discount');
   await expect(page.locator('app-sidebar')).toHaveCount(0);
-  // The product proof block is gone: its "Preview a guided solution" link opened a Premium-locked task.
+  // The counted table replaces the Free vs Premium table: catalog counts per area and locked examples.
+  const counted = page.getByTestId('pricing-counted-table');
+  await expect(counted.getByRole('heading', { name: 'What you get, counted' })).toBeVisible();
+  await expect(counted.locator('tbody tr')).toHaveCount(9);
+  await expect(page.getByTestId('pricing-counted-row-react')).toContainText(`${PRICING_COUNTS.areas.react.premium} tasks`);
+  await expect(page.getByTestId('pricing-counted-row-tradeoffsIncidents')).toContainText('Tradeoff battles and incidents');
+  await expect(page.locator('.plan-compare')).toHaveCount(0);
+  // The product proof block is gone: its "Preview a guided solution" link opened a Premium-locked task. A locked task
+  // is now linked only from the counted table, where it is named as a locked example.
   await expect(page.getByTestId('pricing-product-proof')).toHaveCount(0);
-  await expect(page.locator('main a[href^="/javascript/coding/js-throttle"]')).toHaveCount(0);
+  const throttleLinks = page.locator('main a[href^="/javascript/coding/js-throttle"]');
+  await expect(throttleLinks).toHaveCount(await counted.locator('a[href^="/javascript/coding/js-throttle"]').count());
 
   const desktopBoxes = await Promise.all([
     monthly.boundingBox(),
