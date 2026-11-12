@@ -34,7 +34,7 @@ describe('PressureModeService', () => {
     ).toBe(5);
   });
 
-  it('keeps role, label and text locators, the checked, line-through and mockRandom steps, and drops unknown fields', () => {
+  it('keeps role, label and text locators, the newer step types and their fields, and drops unknown fields', () => {
     const payload = validScenario();
     payload.rounds[0].frameworkTests[0].steps = [
       { type: 'click', by: { role: 'button', name: 'Add', css: '.primary' } },
@@ -43,6 +43,7 @@ describe('PressureModeService', () => {
       { type: 'expectExists', by: { text: 'No tasks yet.' } },
       { type: 'expectExists', by: 'button' },
       { type: 'mockRandom', values: [0.55, 'x', 0.1] },
+      { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab', css: 'x' } },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -52,6 +53,7 @@ describe('PressureModeService', () => {
       { type: 'expectExists', by: { text: 'No tasks yet.' } },
       { type: 'expectExists' },
       { type: 'mockRandom', values: [0.55, 0.1] },
+      { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab' } },
     ]);
   });
 

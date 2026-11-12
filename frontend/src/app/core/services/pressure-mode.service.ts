@@ -41,6 +41,7 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectChecked',
   'expectLineThrough',
   'mockRandom',
+  'expectStandsOut',
 ]);
 
 @Injectable({ providedIn: 'root' })
@@ -182,6 +183,15 @@ export class PressureModeService {
     }
     const by = this.normalizeLocator(source['by']);
     if (by) step.by = by;
+    const among = source['among'];
+    if (among && typeof among === 'object' && !Array.isArray(among)) {
+      const group: NonNullable<FrameworkTestStep['among']> = {};
+      const selector = (among as Record<string, unknown>)['selector'];
+      if (typeof selector === 'string') group.selector = selector;
+      const groupBy = this.normalizeLocator((among as Record<string, unknown>)['by']);
+      if (groupBy) group.by = groupBy;
+      if (group.selector || group.by) step.among = group;
+    }
     if (Array.isArray(source['values'])) {
       const values = source['values'].filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
       if (values.length) step.values = values;

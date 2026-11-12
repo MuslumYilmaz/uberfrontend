@@ -225,7 +225,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "292875f6a3520621c980edc99cc4d59261482d6bbc01b575f6af1084eaafaaf2",
+      "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
       "enabled": true,
       "id": "int-code-angular-junior-tabs-switcher-v1",
       "level": "junior",
@@ -898,7 +898,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "89e4e3773c920f7ce756a2a76d2bd349243d635fa3bac5abd3e52163391507f2",
+      "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "level": "senior",
@@ -994,7 +994,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "c5627d98b571dea7fea3c2e0385671241b1bfebea55dfb7ba6f41ec352d23ed4",
+      "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "level": "senior",
@@ -1987,7 +1987,7 @@
       "track": "react"
     },
     {
-      "contentHash": "ca44eda57c9de30d494d3ce094167b85059dbb2cfc5b237e1948973d80986dd0",
+      "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
       "enabled": true,
       "id": "int-code-react-junior-tabs-switcher-v1",
       "level": "junior",
@@ -2592,7 +2592,7 @@
       "track": "react"
     },
     {
-      "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
+      "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "level": "senior",
@@ -2680,7 +2680,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a64b16a8d119050e0bef30688dba9f74e8c0a9dfc1dc8615d3db678fc33783de",
+      "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "level": "senior",
@@ -3142,7 +3142,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "0ab86958f85e94753bca1502f5a6e6b419f80b6580b06dae6454a412333aaa5c",
+      "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
       "enabled": true,
       "id": "int-code-vue-junior-tabs-switcher-v1",
       "level": "junior",
@@ -3743,7 +3743,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
+      "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
       "enabled": true,
       "id": "int-code-vue-senior-contact-form-v1",
       "level": "senior",
@@ -3831,7 +3831,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "1d5864147d82235e7e7916ce95a31931eafca891f8dd782d0f4182952a303e47",
+      "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "level": "senior",
@@ -3886,7 +3886,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-11-11",
+      "sourceContentVersion": "2026-11-12",
       "sourceQuestionId": "vue-debounced-search",
       "starterAsset": "assets/sb/vue/question/vue-debounced-search.v1.json",
       "starterFiles": [

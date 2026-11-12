@@ -56,6 +56,31 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('v-model="allChecked"');
   });
 
+  it('explains a late answer to an older query in each Debounced Search task, the way its framework ignores it', () => {
+    const name = 'An older search that ends late does not replace the newer results';
+    const errorLine = 'text "Alice Johnson" expected 0 matches but found 1';
+    const cases: Array<[string, string]> = [
+      ['react-debounced-search', 'isCurrent'],
+      ['angular-debounced-search', 'switchMap'],
+      ['vue-debounced-search', 'stale = true'],
+    ];
+    for (const [questionId, action] of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 5,
+        totalCount: 6,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(questionId).toBe('debounced-search-late-answer');
+      expect(hint.actions.join(' ')).withContext(questionId).toContain(action);
+    }
+  });
+
   it('explains the Angular pagination, star rating, chessboard and Reply toggle checks by their names', () => {
     const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
       {

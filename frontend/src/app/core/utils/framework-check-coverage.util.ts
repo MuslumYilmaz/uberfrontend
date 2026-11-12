@@ -29,8 +29,10 @@ export function checkSelectors(tests: readonly FrameworkTest[] | null | undefine
   const seen = new Set<string>();
   for (const test of tests ?? []) {
     for (const step of test?.steps ?? []) {
-      const target = step?.by ? describeLocator(step.by) : String(step?.selector ?? '').trim();
-      if (target) seen.add(target);
+      for (const part of [step, step?.among]) {
+        const target = part?.by ? describeLocator(part.by) : String(part?.selector ?? '').trim();
+        if (target) seen.add(target);
+      }
     }
   }
   return [...seen];

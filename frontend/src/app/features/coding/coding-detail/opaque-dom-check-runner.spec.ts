@@ -425,6 +425,36 @@ describe('OpaqueDomCheckRunner', () => {
       }]);
   });
 
+  it('tells a highlighted element from its group once transitions end, and a stuck highlight from a real one', async () => {
+    const page = (stuck: boolean) => `<!doctype html><html><head><style>
+        .tab { background: transparent; color: #999; transition: background-color 150ms, color 150ms; }
+        .tab.active { background: #eee; color: #000; }
+      </style></head><body>
+      <nav><button class="tab active">One</button><button class="tab">Two</button><button class="tab">Three</button></nav>
+      <script>
+        const tabs = Array.from(document.querySelectorAll('.tab'));
+        tabs.forEach((tab) => tab.addEventListener('click', () => {
+          tabs.forEach((other) => { if (!${stuck} || other === tab) other.classList.toggle('active', other === tab); });
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'expectStandsOut', selector: '.tab', index: 0, among: { selector: '.tab' } },
+      { type: 'click', by: { role: 'button', name: 'Two' } },
+      { type: 'expectStandsOut', by: { role: 'button', name: 'Two' }, among: { by: { role: 'button' } } },
+    ];
+
+    expect(await runner.runFramework(page(false), [{ id: 'highlight', name: 'Highlight', steps }] as any))
+      .toEqual([{ name: 'Highlight', passed: true }]);
+    expect(await runner.runFramework(page(true), [{ id: 'highlight', name: 'Highlight', steps }] as any))
+      .toEqual([{
+        name: 'Highlight',
+        passed: false,
+        error: 'button "Two" looks the same as 1 other element of its group',
+        failureKind: 'assertion',
+      }]);
+  });
+
   it('fixes Math.random before the preview boots when a check asks for it, repeating the values in turn', async () => {
     const page = `<!doctype html><html><head><script>
         window.drawn = [Math.random(), Math.random(), Math.random()];

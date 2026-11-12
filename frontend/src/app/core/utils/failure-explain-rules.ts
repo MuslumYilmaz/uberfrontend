@@ -203,6 +203,45 @@ const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 
   }),
 );
 
+// The React, Angular and Vue Debounced Search tasks share the late-answer check; each framework ignores that answer its
+// own way.
+const DEBOUNCED_SEARCH_LATE_ANSWER_ACTIONS: ReadonlyArray<readonly [string, string[]]> = [
+  ['react-debounced-search', [
+    'Give each effect run its own `let isCurrent = true`, and set it to `false` in the cleanup the effect returns.',
+    'Return early from the `then` and `catch` of `fakeApiSearch` while `isCurrent` is `false`, before any state is set.',
+    'Clear the timeout in the same cleanup, so a search that has not started yet never starts.',
+  ]],
+  ['angular-debounced-search', [
+    'Map each debounced term to its request with `switchMap`: a newer term unsubscribes from the request still running for the older one.',
+    '`mergeMap` and `concatMap` keep every request alive, so the older answer still arrives and shows results for a query that was replaced.',
+    'Without a pipeline, unsubscribe from the previous request before starting the next one.',
+  ]],
+  ['vue-debounced-search', [
+    'Declare `let stale = false` inside the watcher callback, so each run has a flag of its own.',
+    'Set `stale = true` in the cleanup the watcher callback receives as its third argument (`onInvalidate` in the starter, `onCleanup` in the Vue docs), next to `clearTimeout`.',
+    'Return early from the `then` and `catch` of `fakeApiSearch` while `stale` is `true`.',
+  ]],
+];
+
+const DEBOUNCED_SEARCH_LATE_ANSWER_HINT_RULES = DEBOUNCED_SEARCH_LATE_ANSWER_ACTIONS.map(
+  ([questionId, actions]): QuestionHintRule => ({
+    ruleId: 'debounced-search-late-answer',
+    questionId,
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['older search that ends late']),
+    buildHint: (snapshot) => ({
+      ruleId: 'debounced-search-late-answer',
+      title: 'Ignore the answer to a query that was already replaced',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check types bob while the search for alice is still running. The alice answer arrives first, and it must not show, because only the bob search is current.',
+      ),
+      actions: [...actions],
+      confidence: 0.85,
+    }),
+  }),
+);
+
 const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
   (questionId): QuestionHintRule => ({
     ruleId: 'angular-modern-template-compile',
@@ -575,6 +614,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
+  ...DEBOUNCED_SEARCH_LATE_ANSWER_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',
     questionId: 'react-fetch-list-states',

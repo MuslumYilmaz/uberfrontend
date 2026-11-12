@@ -48,6 +48,48 @@ const FAMILIES = {
       'snake-opposite-key-ignored', 'snake-eats-food', 'snake-wall-ends-game', 'snake-reset', 'snake-cleanup',
     ]],
   },
+  tabs: {
+    react: ['react-tabs-switcher', ['tabs-start-on-overview', 'tabs-click-switches']],
+    // Angular's text also asks for tab roles, aria-selected and labelled panels.
+    angular: ['angular-tabs-switcher', ['tabs-start-on-overview', 'tabs-click-switches', 'tabs-aria']],
+    vue: ['vue-tabs-switcher', ['tabs-start-on-overview', 'tabs-click-switches']],
+  },
+  accordion: {
+    react: ['react-accordion-faq', ['accordion-toggle', 'accordion-single-open', 'accordion-multiple-open', 'accordion-multiple-close']],
+    angular: ['angular-faq-accordion', ['accordion-toggle', 'accordion-single-open', 'accordion-multiple-open', 'accordion-multiple-close']],
+    vue: ['vue-accordion-faq', ['accordion-toggle', 'accordion-single-open', 'accordion-multiple-open', 'accordion-multiple-close']],
+  },
+  contactForm: {
+    // React and Vue ask for a 10-character message (React without the spaces around it); Angular's (ngSubmit) runs
+    // while the button is disabled, so only its text guards a second request; React and Angular clear the old result.
+    react: ['react-contact-form-starter', [
+      'contact-form-validation', 'contact-form-invalid-email', 'contact-form-message-length', 'contact-form-message-trimmed',
+      'contact-form-field-errors', 'contact-form-submit-success', 'contact-form-submit-error', 'contact-form-clears-old-result',
+    ]],
+    angular: ['angular-contact-form-starter', [
+      'contact-form-validation', 'contact-form-invalid-email', 'contact-form-field-errors', 'contact-form-submit-success',
+      'contact-form-single-request', 'contact-form-submit-error', 'contact-form-clears-old-result',
+    ]],
+    vue: ['vue-contact-form-starter', [
+      'contact-form-validation', 'contact-form-invalid-email', 'contact-form-message-length', 'contact-form-field-errors',
+      'contact-form-submit-success', 'contact-form-submit-error',
+    ]],
+  },
+  debouncedSearch: {
+    // Angular's text has no no-results message.
+    react: ['react-debounced-search', [
+      'debounced-search-results', 'debounced-search-waits-500ms', 'debounced-search-error', 'debounced-search-empty',
+      'debounced-search-clear', 'debounced-search-stale', 'debounced-search-cleanup',
+    ]],
+    angular: ['angular-debounced-search', [
+      'debounced-search-results', 'debounced-search-waits-500ms', 'debounced-search-error', 'debounced-search-clear',
+      'debounced-search-stale', 'debounced-search-cleanup',
+    ]],
+    vue: ['vue-debounced-search', [
+      'debounced-search-results', 'debounced-search-waits-500ms', 'debounced-search-error', 'debounced-search-empty',
+      'debounced-search-clear', 'debounced-search-stale', 'debounced-search-cleanup',
+    ]],
+  },
 };
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');

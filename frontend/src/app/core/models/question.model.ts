@@ -117,7 +117,8 @@ export type FrameworkTestStepType =
   | 'expectNoPreviewLeaks'
   | 'expectChecked'
   | 'expectLineThrough'
-  | 'mockRandom';
+  | 'mockRandom'
+  | 'expectStandsOut';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -154,6 +155,8 @@ export type FrameworkTestStep = {
   expected?: string | boolean | number;
   /** mockRandom: Math.random returns these in turn, from before the preview boots. */
   values?: number[];
+  /** expectStandsOut: the group the target must look different from. */
+  among?: { selector?: string; by?: FrameworkTestLocator };
 };
 
 export type FrameworkTest = {

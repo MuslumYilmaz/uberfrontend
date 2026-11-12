@@ -453,6 +453,81 @@
         ]
       },
       {
+        "id": "contact-form-invalid-email",
+        "name": "An email without an @ keeps Send disabled",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane.example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "contact-form-field-errors",
+        "name": "Submitting an incomplete form shows the missing fields' errors and sends nothing",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "status": 201,
+            "durationMs": 50
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectExists",
+            "selector": ".field:nth-child(2) .error"
+          },
+          {
+            "type": "expectExists",
+            "selector": ".field:nth-child(3) .error"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".field:nth-child(1) .error",
+            "count": 0
+          },
+          {
+            "type": "expectHttpRequest",
+            "method": "POST",
+            "url": "https://jsonplaceholder.typicode.com/posts",
+            "count": 0
+          }
+        ]
+      },
+      {
         "id": "contact-form-submit-success",
         "name": "Contact form handles loading and success",
         "steps": [
@@ -532,6 +607,52 @@
         ]
       },
       {
+        "id": "contact-form-single-request",
+        "name": "Submitting again while sending sends no second request",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "status": 201,
+            "durationMs": 500
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectHttpRequest",
+            "method": "POST",
+            "url": "https://jsonplaceholder.typicode.com/posts",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".success",
+            "text": "Your message has been sent. Thank you!",
+            "timeoutMs": 1500
+          }
+        ]
+      },
+      {
         "id": "contact-form-submit-error",
         "name": "Contact form handles request errors",
         "steps": [
@@ -581,6 +702,64 @@
             "type": "expectDisabled",
             "selector": ".primary",
             "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "contact-form-clears-old-result",
+        "name": "A new submit clears the old error before its own result",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "error": "Network failed",
+            "durationMs": 50
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".error",
+            "text": "Something went wrong. Please try again.",
+            "timeoutMs": 1000
+          },
+          {
+            "type": "mockHttp",
+            "status": 201,
+            "durationMs": 300
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Something went wrong. Please try again."
+            },
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".success",
+            "text": "Your message has been sent. Thank you!",
+            "timeoutMs": 1500
           }
         ]
       }
@@ -1252,8 +1431,8 @@
     },
     "frameworkTests": [
       {
-        "id": "tabs-switch-panel",
-        "name": "Tabs keep exactly one active panel",
+        "id": "tabs-start-on-overview",
+        "name": "Starts on Overview: its panel is the only one shown and its tab stands out",
         "steps": [
           {
             "type": "expectCount",
@@ -1266,6 +1445,20 @@
             "text": "Overview",
             "match": "contains"
           },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 0,
+            "among": {
+              "selector": ".tabs button"
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs-click-switches",
+        "name": "Clicking a tab shows only its panel and highlights only that tab",
+        "steps": [
           {
             "type": "click",
             "selector": ".tabs button",
@@ -1283,6 +1476,14 @@
             "count": 1
           },
           {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 1,
+            "among": {
+              "selector": ".tabs button"
+            }
+          },
+          {
             "type": "click",
             "selector": ".tabs button",
             "index": 2
@@ -1297,6 +1498,118 @@
             "type": "expectCount",
             "selector": ".panel",
             "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 2,
+            "among": {
+              "selector": ".tabs button"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".tabs button",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".panel",
+            "text": "Overview",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".panel",
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 0,
+            "among": {
+              "selector": ".tabs button"
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs-aria",
+        "name": "Tabs carry aria-selected and aria-controls, and the shown panel is labelled by its tab",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tab",
+              "name": "Overview"
+            },
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tab",
+              "name": "Details"
+            },
+            "attribute": "aria-selected",
+            "expected": "false"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "tab",
+              "name": "Details"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".panel",
+            "text": "Details",
+            "match": "contains"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tab",
+              "name": "Details"
+            },
+            "attribute": "aria-selected",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tab",
+              "name": "Overview"
+            },
+            "attribute": "aria-selected",
+            "expected": "false"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tab",
+              "name": "Details"
+            },
+            "attribute": "aria-controls",
+            "expected": "panel-details"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tabpanel"
+            },
+            "attribute": "id",
+            "expected": "panel-details"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "tabpanel"
+            },
+            "attribute": "aria-labelledby",
+            "expected": "tab-details"
           }
         ]
       }
@@ -1517,8 +1830,8 @@
     },
     "frameworkTests": [
       {
-        "id": "accordion-toggle-answer",
-        "name": "Accordion toggles answer",
+        "id": "accordion-toggle",
+        "name": "Answers start closed; a question opens its own answer and a second click closes it",
         "steps": [
           {
             "type": "expectCount",
@@ -1527,12 +1840,160 @@
           },
           {
             "type": "click",
-            "selector": ".faq-header"
+            "selector": ".faq-header",
+            "index": 0
           },
           {
             "type": "waitForCount",
             "selector": ".faq-body",
             "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".faq-body",
+            "text": "Lorem ipsum dolor sit amet, consectetur",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "accordion-single-open",
+        "name": "By default, opening a question closes the one that was open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".faq-body",
+            "text": "Curabitur blandit tempus porttitor. Integer",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".faq-body",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "accordion-multiple-open",
+        "name": "With 'Allow multiple open' on, open answers stay open and more can open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "id": "accordion-multiple-close",
+        "name": "In multiple mode, a click closes only its own answer",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".faq-body",
+            "text": "Curabitur blandit tempus porttitor. Integer",
+            "match": "contains"
           }
         ]
       }
@@ -2205,6 +2666,189 @@
             "selector": ".result-row",
             "text": "Alice",
             "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-waits-500ms",
+        "name": "Typing quickly searches only the last query, 500 ms after the last keystroke",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "A"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Al"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Ali"
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Alice",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-error",
+        "name": "The query error shows an error message and no results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "error"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".status--error",
+            "count": 1,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-clear",
+        "name": "Clearing the query clears the results and starts no search",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": ""
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 0,
+            "timeoutMs": 800
+          },
+          {
+            "type": "wait",
+            "durationMs": 650
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-stale",
+        "name": "An older search that ends late does not replace the newer results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "bob"
+          },
+          {
+            "type": "wait",
+            "durationMs": 700
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Alice Johnson"
+            },
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Bob",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-cleanup",
+        "name": "Removing the search stops its pending timer",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectNoPreviewTimers"
           }
         ]
       }

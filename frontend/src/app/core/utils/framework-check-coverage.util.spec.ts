@@ -41,6 +41,8 @@ describe('checkSelectors', () => {
         { type: 'setValue', by: { label: 'Board size' }, value: '8' },
         { type: 'expectExists', by: { text: 'No tasks yet.' } },
         { type: 'click', by: { role: 'button', name: 'Add' }, index: 1 },
+        { type: 'expectStandsOut', selector: '.tabs button', index: 1, among: { selector: '.tabs button' } },
+        { type: 'expectStandsOut', by: { role: 'tab', name: 'Details' }, among: { by: { role: 'tab' } } },
       ],
     };
 
@@ -51,6 +53,9 @@ describe('checkSelectors', () => {
       'combobox labelled "City"',
       'control labelled "Board size"',
       'text "No tasks yet."',
+      '.tabs button',
+      'tab "Details"',
+      'tab',
     ]);
   });
 });

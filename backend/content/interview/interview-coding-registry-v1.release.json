@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "4617b78a7e6b22982f69ec439693b8c4b86e6ac4d4878938b0652f62fd52821e"
+      "sha256": "f0b6b032492de38b20afbaca03a36ad91eb3e88dfa850bb5813dafc2abf3030e"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "ac539a49d375ee515383202241421e52f79a2326eed3a5f9257b3927e8cdfaab"
+      "sha256": "04cd124180d23181c684286a92124353075b7f93bc64e6f0dceac32c8cdee843"
     }
   },
-  "contentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
-  "definitionHash": "64a885f0358269d5d6fd1738c1888b1f297fba1ca10ed4f56382fd285b517847",
+  "contentHash": "32b9656cc5aea76c22f17e558b67437fc9aa1ca00f3e72a2688f84c2ecb6d47a",
+  "definitionHash": "d53ae1377060eef211ed48b1d047653b68216a5a5df1afccdf6c7c52aebbbe31",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -36,13 +36,14 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after fixes to two pinned source questions, approved by the project owner (coding-trust open findings). React and Vue nested comments get the fix Angular got earlier the same day: Reply toggles its box, the starter's stub is renamed toggleReply, the Reply button exposes aria-expanded, replies indent 16px per level through a .children wrapper instead of compounding a depth * 16 margin, and a new check covers the toggle. Starter asset hashes and question hashes are re-pinned for both. The summaries, which are the variant prompts, and the pressure assets are unchanged; graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after the JavaScript test hardening of coding-trust step 10, approved by the project owner. Five pinned source questions gain checks for behavior their text and rubric criteria already describe, and the new checks join the rubric groups that state that behavior. Deep equal: three checks (different kinds of object, the same set of keys, NaN, -0 and RegExp details); the reference solution now compares Object.prototype.toString tags, so a Date no longer equals {}, as its edge cases already said. Debounce: one check for the last call's this and all of its arguments; the summary loses its page copy. LRU cache: two checks (an update makes a key the most recent; an update at capacity evicts nothing); the returns text says that size() is a method and in which order keys() lists the keys. Concurrency map: the limit check is renamed 'rejects a limit below 1' and accepts a rejection as well as a synchronous throw, which the async starter could not meet; two checks cover refilling a slot as soon as it frees up and starting no new items after a fail-fast error, and the concurrency-bound and error-strategies groups each gain one criterion for them. Once: one check for a wrapped function that returns undefined. Question hashes are re-pinned for all five; the debounce prompt loses only the page copy, the other prompts are unchanged; time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after nine pinned Premium questions gained full framework checks in the first batch of coding-trust step 12, approved by the project owner. Debounced search (React, Angular, Vue): a search only for the last query 500 ms after typing stops, the error query, clearing, an older search that ends late, and timer cleanup, plus the no-results message where the text asks. Tabs: the start state, one panel and one highlighted tab after every click, and for Angular aria-selected and labelled panels. Contact form: an invalid email, the message length where the text asks, field errors on an incomplete submit, and a cleared old result; Angular also refuses a second request while sending. The Vue debounced search solution and its Solution tab now ignore a late response for an older query, as its text promised; the question also gains a decision graph of that solution and its updatedAt moves to 2026-11-12, and the three debounced search tasks get a hint for the late-response check. Question hashes are re-pinned; starters and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
+    "registryContentHash": "32b9656cc5aea76c22f17e558b67437fc9aa1ca00f3e72a2688f84c2ecb6d47a",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "c9faced8f32d9e3438bae120981a3156ab9d3ff5584ad0b5d5fcebb98881ee75",
+  "registryContentHash": "32b9656cc5aea76c22f17e558b67437fc9aa1ca00f3e72a2688f84c2ecb6d47a",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -69,7 +70,7 @@
       "revision": 1
     },
     {
-      "contentHash": "292875f6a3520621c980edc99cc4d59261482d6bbc01b575f6af1084eaafaaf2",
+      "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
       "enabled": true,
       "id": "int-code-angular-junior-tabs-switcher-v1",
       "revision": 1
@@ -117,13 +118,13 @@
       "revision": 1
     },
     {
-      "contentHash": "89e4e3773c920f7ce756a2a76d2bd349243d635fa3bac5abd3e52163391507f2",
+      "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "c5627d98b571dea7fea3c2e0385671241b1bfebea55dfb7ba6f41ec352d23ed4",
+      "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "revision": 1
@@ -249,7 +250,7 @@
       "revision": 1
     },
     {
-      "contentHash": "ca44eda57c9de30d494d3ce094167b85059dbb2cfc5b237e1948973d80986dd0",
+      "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
       "enabled": true,
       "id": "int-code-react-junior-tabs-switcher-v1",
       "revision": 1
@@ -297,13 +298,13 @@
       "revision": 1
     },
     {
-      "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
+      "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "a64b16a8d119050e0bef30688dba9f74e8c0a9dfc1dc8615d3db678fc33783de",
+      "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "revision": 1
@@ -339,7 +340,7 @@
       "revision": 1
     },
     {
-      "contentHash": "0ab86958f85e94753bca1502f5a6e6b419f80b6580b06dae6454a412333aaa5c",
+      "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
       "enabled": true,
       "id": "int-code-vue-junior-tabs-switcher-v1",
       "revision": 1
@@ -387,13 +388,13 @@
       "revision": 1
     },
     {
-      "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
+      "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
       "enabled": true,
       "id": "int-code-vue-senior-contact-form-v1",
       "revision": 1
     },
     {
-      "contentHash": "1d5864147d82235e7e7916ce95a31931eafca891f8dd782d0f4182952a303e47",
+      "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "revision": 1

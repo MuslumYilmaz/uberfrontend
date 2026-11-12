@@ -551,11 +551,7 @@ function assertDebouncedSearchPressureMode() {
       expected.solution,
       `${framework}: normal Debounced Search solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['debounced-search-results'],
-      `${framework}: normal Debounced Search checks must stay unchanged`
-    );
+    // The normal Debounced Search checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/debounced-search.v1.json',
@@ -1002,11 +998,14 @@ function assertSharedPressureEntries(expectedQuestions, assetPath, label) {
     assert.equal(question.access, 'premium', `${framework}: ${label} pressure entry must stay premium`);
     assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal ${label} starter changed`);
     assert.equal(question.solutionAsset, expected.solution, `${framework}: normal ${label} solution changed`);
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      expected.checks,
-      `${framework}: normal ${label} checks must stay unchanged`
-    );
+    // A family whose normal checks framework-shared-checks.test.mjs pins passes no `checks` here.
+    if (expected.checks) {
+      assert.deepEqual(
+        (question.frameworkTests ?? []).map((test) => test.id),
+        expected.checks,
+        `${framework}: normal ${label} checks must stay unchanged`
+      );
+    }
     assert.equal(question.pressureModeAsset, assetPath, `${framework}: ${label} must reference the shared scenario`);
     starterSources[framework] = Object.values(
       normalizedAssetFiles(json(`cdn/${expected.starter.replace(/^assets\//, '')}`), `${framework}:${label}-starter`)
@@ -1156,25 +1155,21 @@ function assertNestedCommentsPressureMode() {
 }
 
 function assertContactFormPressureMode() {
-  const normalChecks = ['contact-form-validation', 'contact-form-submit-success', 'contact-form-submit-error'];
-  const expectedQuestions = {
+    const expectedQuestions = {
     react: {
       id: 'react-contact-form-starter',
       starter: 'assets/sb/react/question/react-contact-form.v1.json',
       solution: 'assets/sb/react/solution/react-contact-form-solution.v1.json',
-      checks: normalChecks,
     },
     angular: {
       id: 'angular-contact-form-starter',
       starter: 'assets/sb/angular/question/angular-contact-form.v2.json',
       solution: 'assets/sb/angular/solution/angular-contact-form-solution.v2.json',
-      checks: normalChecks,
     },
     vue: {
       id: 'vue-contact-form-starter',
       starter: 'assets/sb/vue/question/vue-contact-form.v1.json',
       solution: 'assets/sb/vue/solution/vue-contact-form-solution.v1.json',
-      checks: normalChecks,
     },
   };
   const starterSources = assertSharedPressureEntries(
@@ -2898,28 +2893,6 @@ function assertAccordionFaqPressureMode() {
       updatedAt: '2026-11-11',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'accordion-toggle-answer',
-      name: 'Accordion toggles answer',
-      steps: [
-        {
-          type: 'expectCount',
-          selector: '.faq-body',
-          count: 0,
-        },
-        {
-          type: 'click',
-          selector: '.faq-header',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.faq-body',
-          count: 1,
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -2948,11 +2921,7 @@ function assertAccordionFaqPressureMode() {
       expected.solution,
       `${framework}: normal Accordion FAQ solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      expectedNormalChecks,
-      `${framework}: normal Accordion FAQ check must stay unchanged`
-    );
+    // The normal Accordion FAQ checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/accordion-faq.v1.json',
@@ -5942,10 +5911,10 @@ assert.deepEqual(tabsQuestion.premiumPreview, {
   ],
   unlockDescription: 'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.'
 });
-const tabsPanelCounts = tabsQuestion.frameworkTests[0].steps.filter(
+const tabsPanelCounts = tabsQuestion.frameworkTests.flatMap((test) => test.steps).filter(
   (step) => step.type === 'expectCount' && step.selector === '.panel' && step.count === 1
 );
-assert.equal(tabsPanelCounts.length, 3, 'Tabs must assert exactly one panel initially and after both tab changes');
+assert.ok(tabsPanelCounts.length >= 3, 'Tabs must assert exactly one panel initially and after the tab changes');
 for (const relative of [
   'sb/angular/question/angular-tabs.v2.json',
   'sb/angular/solution/angular-tabs-solution.v2.json'
@@ -6241,6 +6210,24 @@ for (const node of autocompleteGraphVariant.nodes) {
     autocompleteGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet),
     `${node.id}: autocomplete anchor range must contain its snippet`
   );
+}
+
+// The Vue Debounced Search graph explains the solution's script line by line, the stale flag included.
+const vueDebounceQuestion = json('cdn/questions/vue/coding.json').find((entry) => entry.id === 'vue-debounced-search');
+assert.equal(vueDebounceQuestion.decisionGraphAsset, 'assets/questions/vue/decision-graphs/vue-debounced-search.v1.json');
+const vueDebounceGraph = json('cdn/questions/vue/decision-graphs/vue-debounced-search.v1.json').variants.approach1;
+const vueDebounceSolution = fileCode(json('cdn/sb/vue/solution/vue-debounced-search-solution.v1.json'), 'src/App.vue');
+assert.equal(
+  vueDebounceGraph.code,
+  vueDebounceSolution.match(/<script setup lang="ts">\n([\s\S]*?)<\/script>/)[1],
+  'the Vue Debounced Search graph shows the solution script'
+);
+assert.match(vueDebounceGraph.code, /onInvalidate\(\(\) => \{\n\s+stale = true;/);
+const vueDebounceGraphLines = vueDebounceGraph.code.split('\n');
+for (const node of vueDebounceGraph.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= vueDebounceGraphLines.length, `${node.id}: invalid anchor range`);
+  assert.ok(vueDebounceGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: anchor range must contain its snippet`);
 }
 
 const apiMisuseQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-debug-api-misuse');
@@ -6701,7 +6688,7 @@ for (const node of vanillaPortVariant.nodes) {
 const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
-  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom']);
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

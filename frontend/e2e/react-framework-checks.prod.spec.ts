@@ -1232,43 +1232,45 @@ test.describe('Framework checks against the production SSR build', () => {
   });
 
   test('a passed smoke check leads to the requirements and "Mark as solved", not to "Solved"', async ({ page, baseURL }) => {
-    // Every free React task checks all of its requirements since step 11; this Premium task still has one check.
-    // Step 12 gives it full checks, and this test then needs another one-check task.
+    // Every free React task and step 12's first batch check all of their requirements; this Premium task, in the
+    // last batch, still has one check. When that batch gives it full checks, this test needs a new one-check task.
     if (!baseURL) throw new Error('Playwright baseURL is required for the Premium smoke test');
     await seedPremiumSession(page, baseURL);
-    await page.goto('/react/coding/react-tabs-switcher');
+    await page.goto('/react/coding/react-shopping-cart');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     // The one check's selectors are named with the task, so markup that works can match them.
-    await expect(page.getByTestId('coding-check-selectors')).toContainText('.tabs button');
-    await waitForFrameworkPreview(page, '.tabs button');
+    await expect(page.getByTestId('coding-check-selectors')).toContainText('.product-card button');
+    await waitForFrameworkPreview(page, '.product-card button');
 
-    // Switches the panel and nothing else: no tab is highlighted. The task's one check covers switching.
+    // Adds a row and counts it, and nothing else: no prices, quantities or removing. The task's one check covers adding.
     await loadCanonicalFile(page, 'src/App.tsx', [
       "import React, { useState } from 'react';",
       "import './App.css';",
       '',
       'export default function App() {',
-      "  const [tab, setTab] = useState('Overview');",
+      '  const [cart, setCart] = useState<string[]>([]);',
       '  return (',
       '    <main>',
-      '      <nav className="tabs">',
-      "        {['Overview', 'Details', 'Settings'].map((name) => (",
-      '          <button key={name} onClick={() => setTab(name)}>{name}</button>',
-      '        ))}',
-      '      </nav>',
-      '      <section className="panel"><h2>{tab}</h2></section>',
+      '      <ul>',
+      '        <li className="product-card">',
+      "          <span>Keyboard</span>",
+      "          <button onClick={() => setCart([...cart, 'Keyboard'])}>Add to cart</button>",
+      '        </li>',
+      '      </ul>',
+      '      <header className="cart-header"><p className="subtitle">Total items: {cart.length}</p></header>',
+      '      <ul>{cart.map((name, index) => <li key={index} className="cart-row">{name}</li>)}</ul>',
       '    </main>',
       '  );',
       '}',
       '',
     ].join('\n'));
-    await rebuildPreview(page, '.tabs button');
+    await rebuildPreview(page, '.product-card button');
 
     const results = await runChecks(page, 1);
     await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
     const note = results.getByTestId('framework-smoke-note');
     await expect(note).toContainText('core flow only');
-    await expect(note).toContainText('visually highlight');
+    await expect(note).toContainText('removing an item');
     await expect(page.getByTestId('footer-submit')).toContainText('Mark as solved');
     // The run itself marked nothing, so nothing asks to save a result.
     await expect(page.getByTestId('login-required-dialog')).toBeHidden();
@@ -1770,8 +1772,8 @@ test.describe('Framework checks against the production SSR build', () => {
     const runChecks = page.getByTestId('framework-run-checks');
     await expect(runChecks).toBeEnabled({ timeout: 30_000 });
     await runChecks.click();
-    await expect(page.getByTestId('framework-check-result')).toHaveCount(3, { timeout: 60_000 });
-    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 3|All 3) tests pass/);
+    await expect(page.getByTestId('framework-check-result')).toHaveCount(8, { timeout: 60_000 });
+    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 8|All 8) tests pass/);
 
     // When the time is up, the React editor turns read-only and its checks stop.
     await page.clock.fastForward('01:30:00');

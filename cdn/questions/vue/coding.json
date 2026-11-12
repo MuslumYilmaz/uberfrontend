@@ -448,6 +448,117 @@
         ]
       },
       {
+        "id": "contact-form-invalid-email",
+        "name": "An email without an @ keeps Send disabled",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane.example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Hello from tests"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "contact-form-message-length",
+        "name": "A message under 10 characters keeps Send disabled",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "setValue",
+            "selector": "#email",
+            "value": "jane@example.com"
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Too short"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": true
+          },
+          {
+            "type": "setValue",
+            "selector": "#message",
+            "value": "Long enough"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".primary",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "contact-form-field-errors",
+        "name": "Submitting an incomplete form shows the missing fields' errors and sends nothing",
+        "steps": [
+          {
+            "type": "mockHttp",
+            "status": 201,
+            "durationMs": 50
+          },
+          {
+            "type": "setValue",
+            "selector": "#name",
+            "value": "Jane Doe"
+          },
+          {
+            "type": "submit",
+            "selector": ".panel"
+          },
+          {
+            "type": "expectExists",
+            "selector": ".field:nth-child(2) .error"
+          },
+          {
+            "type": "expectExists",
+            "selector": ".field:nth-child(3) .error"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".field:nth-child(1) .error",
+            "count": 0
+          },
+          {
+            "type": "expectHttpRequest",
+            "method": "POST",
+            "url": "https://jsonplaceholder.typicode.com/posts",
+            "count": 0
+          }
+        ]
+      },
+      {
         "id": "contact-form-submit-success",
         "name": "Contact form handles loading and success",
         "steps": [
@@ -1405,15 +1516,34 @@
     },
     "frameworkTests": [
       {
-        "id": "tabs-switch-panel",
-        "name": "Tabs switch panel",
+        "id": "tabs-start-on-overview",
+        "name": "Starts on Overview: its panel is the only one shown and its tab stands out",
         "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".panel",
+            "count": 1
+          },
           {
             "type": "expectText",
             "selector": ".panel",
             "text": "Overview",
             "match": "contains"
           },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 0,
+            "among": {
+              "selector": ".tabs button"
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs-click-switches",
+        "name": "Clicking a tab shows only its panel and highlights only that tab",
+        "steps": [
           {
             "type": "click",
             "selector": ".tabs button",
@@ -1426,6 +1556,19 @@
             "match": "contains"
           },
           {
+            "type": "expectCount",
+            "selector": ".panel",
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 1,
+            "among": {
+              "selector": ".tabs button"
+            }
+          },
+          {
             "type": "click",
             "selector": ".tabs button",
             "index": 2
@@ -1435,6 +1578,43 @@
             "selector": ".panel",
             "text": "Settings",
             "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".panel",
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 2,
+            "among": {
+              "selector": ".tabs button"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".tabs button",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".panel",
+            "text": "Overview",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".panel",
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".tabs button",
+            "index": 0,
+            "among": {
+              "selector": ".tabs button"
+            }
           }
         ]
       }
@@ -1639,8 +1819,8 @@
     },
     "frameworkTests": [
       {
-        "id": "accordion-toggle-answer",
-        "name": "Accordion toggles answer",
+        "id": "accordion-toggle",
+        "name": "Answers start closed; a question opens its own answer and a second click closes it",
         "steps": [
           {
             "type": "expectCount",
@@ -1649,12 +1829,160 @@
           },
           {
             "type": "click",
-            "selector": ".faq-header"
+            "selector": ".faq-header",
+            "index": 0
           },
           {
             "type": "waitForCount",
             "selector": ".faq-body",
             "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".faq-body",
+            "text": "Lorem ipsum dolor sit amet, consectetur",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "accordion-single-open",
+        "name": "By default, opening a question closes the one that was open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".faq-body",
+            "text": "Curabitur blandit tempus porttitor. Integer",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".faq-body",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "accordion-multiple-open",
+        "name": "With 'Allow multiple open' on, open answers stay open and more can open",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "id": "accordion-multiple-close",
+        "name": "In multiple mode, a click closes only its own answer",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Allow multiple open"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "selector": ".faq-header",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".faq-body",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".faq-body",
+            "text": "Curabitur blandit tempus porttitor. Integer",
+            "match": "contains"
           }
         ]
       }
@@ -2223,12 +2551,12 @@
     },
     "starterCodeHint": "Use `ref('')` for `query`, `ref([])` for `results`, and a `watch(query, ...)` that starts a 500ms `setTimeout` and clears it in `onInvalidate`. Inside the timeout, call `fakeApiSearch(trimmedQuery)` and update loading, error, and results accordingly.",
     "solutionBlock": {
-      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown. Key concepts: vue, composition-api, watch.",
+      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout and mark the run as stale, so older changes cannot trigger stale API calls and a late response cannot replace newer results.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown. Key concepts: vue, composition-api, watch.",
       "approaches": [
         {
           "title": "Single component with `watch` and debounced API call",
-          "prose": "Use Composition API state (`ref`) inside `<script setup>`. Implement a `watch(query, ...)` that debounces the search.\n\n1. Declare `query`, `results`, `isLoading`, and `error` as refs.\n2. Inside `watch(query, (value, _old, onInvalidate) => { ... })`:\n   - Clear any previous timeout.\n   - If `value.trim()` is empty: reset results, `isLoading`, and `error`, then return.\n   - Otherwise, set `isLoading` and clear `error`, then start a 500ms timeout.\n   - In the timeout, call `fakeApiSearch(trimmed)` and update `results` / `error` / `isLoading`.\n3. Use `onInvalidate` to clear the timeout so that intermediate keystrokes don't leak timeouts and stale responses.\n\nThis mirrors how you might use `useEffect` + cleanup in React, but using Vue's `watch` API.",
-          "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
+          "prose": "Use Composition API state (`ref`) inside `<script setup>`. Implement a `watch(query, ...)` that debounces the search.\n\n1. Declare `query`, `results`, `isLoading`, and `error` as refs.\n2. Inside `watch(query, (value, _old, onInvalidate) => { ... })`:\n   - Clear any previous timeout.\n   - If `value.trim()` is empty: reset results, `isLoading`, and `error`, then return.\n   - Otherwise, set `isLoading` and clear `error`, then start a 500ms timeout.\n   - In the timeout, call `fakeApiSearch(trimmed)` and update `results` / `error` / `isLoading`.\n3. Use `onInvalidate` to clear the timeout and mark the run as stale, so intermediate keystrokes leak neither timeouts nor late responses.\n\nThis mirrors how you might use `useEffect` + cleanup in React, but using Vue's `watch` API.",
+          "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    // A response that arrives after the query changed again is ignored.\n    let stale = false;\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          if (stale) return;\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          if (stale) return;\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      stale = true;\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
         }
       ],
       "notes": {
@@ -2253,8 +2581,9 @@
     },
     "pressureModeAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/vue/decision-graphs/vue-debounced-search.v1.json",
     "access": "premium",
-    "updatedAt": "2026-11-11",
+    "updatedAt": "2026-11-12",
     "seo": {
       "title": "Build Debounced Search in Vue 3",
       "description": "Create a search input that delays requests while typing, shows loading and empty states, and prevents stale results from replacing newer ones."
@@ -2280,6 +2609,224 @@
             "selector": ".result-row",
             "text": "Alice",
             "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-waits-500ms",
+        "name": "Typing quickly searches only the last query, 500 ms after the last keystroke",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "A"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Al"
+          },
+          {
+            "type": "wait",
+            "durationMs": 200
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "Ali"
+          },
+          {
+            "type": "wait",
+            "durationMs": 900
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 1000
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Alice",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-error",
+        "name": "The query error shows an error message and no results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "error"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".status--error",
+            "count": 1,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-empty",
+        "name": "A query with no match shows the no-results message once its search ends",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "zzz"
+          },
+          {
+            "type": "wait",
+            "durationMs": 1300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          },
+          {
+            "type": "expectExists",
+            "selector": ".empty"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-clear",
+        "name": "Clearing the query clears the results and starts no search",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": ""
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 0,
+            "timeoutMs": 800
+          },
+          {
+            "type": "wait",
+            "durationMs": 650
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".result-row",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-stale",
+        "name": "An older search that ends late does not replace the newer results",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "wait",
+            "durationMs": 500
+          },
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "bob"
+          },
+          {
+            "type": "wait",
+            "durationMs": 700
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Alice Johnson"
+            },
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".result-row",
+            "count": 1,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".result-row",
+            "text": "Bob",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "debounced-search-cleanup",
+        "name": "Removing the search stops its pending timer",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".input",
+            "value": "alice"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectNoPreviewTimers"
           }
         ]
       }

@@ -1009,6 +1009,29 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       if (actual !== expected) throw new Error(`${target} expected ${expected ? 'checked' : 'unchecked'} but was ${actual ? 'checked' : 'unchecked'}`);
       return Promise.resolve();
     }
+    if (type === 'expectStandsOut') {
+      // The target must look different from every other element of its group (an active tab among tabs). Running
+      // transitions are jumped to their end first: the hidden check frame may not advance them, and a style still
+      // fading out must not pass for a highlight.
+      const others = findAll({ selector: step.among?.selector, by: step.among?.by } as FrameworkTestStep)
+        .filter((node) => node !== element);
+      if (!others.length) throw new Error(`${target} has no group to stand out from`);
+      for (const node of [element, ...others]) {
+        for (const animation of typeof node.getAnimations === 'function' ? node.getAnimations() : []) {
+          try { animation.finish(); } catch { }
+        }
+      }
+      const look = (node: Element) => {
+        const style = getComputedStyle(node);
+        return ['background-color', 'background-image', 'color', 'border-top-color', 'border-bottom-color',
+          'border-left-color', 'border-right-color', 'border-bottom-width', 'font-weight', 'text-decoration-line',
+          'box-shadow', 'outline-style', 'outline-color', 'opacity'].map((name) => style.getPropertyValue(name)).join('|');
+      };
+      const own = look(element);
+      const alike = others.filter((node) => look(node) === own).length;
+      if (alike) throw new Error(`${target} looks the same as ${alike} other element${alike === 1 ? '' : 's'} of its group`);
+      return Promise.resolve();
+    }
     if (type === 'expectLineThrough') {
       // A line-through drawn by an ancestor shows on its text too, so each piece of text looks up its ancestors.
       const expected = step.expected !== false;
