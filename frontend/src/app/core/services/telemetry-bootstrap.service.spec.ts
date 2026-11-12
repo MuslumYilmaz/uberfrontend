@@ -85,9 +85,11 @@ describe('TelemetryBootstrapService', () => {
     spyOn(userVisibleFailures, 'attachSentry');
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', [
       'ensureInitialized',
+      'getVisitorClass',
       'isInitialized',
       'trackDecisionSessionQualified',
     ]);
+    analytics.getVisitorClass.and.returnValue('human');
     analytics.isInitialized.and.returnValue(true);
     analytics.trackDecisionSessionQualified.and.returnValue(true);
 
@@ -161,10 +163,12 @@ describe('TelemetryBootstrapService', () => {
     expect(localStorage.getItem(ANONYMOUS_ID_KEY)).toBe(payload.id);
   });
 
-  it('hands the loaded Sentry client to the user-visible failure reporter', async () => {
+  it('hands the loaded Sentry client and the visitor class to the user-visible failure reporter', async () => {
+    analytics.getVisitorClass.and.returnValue('suspect');
+
     await initializeSentry();
 
-    expect(userVisibleFailures.attachSentry).toHaveBeenCalledOnceWith(sentry as any);
+    expect(userVisibleFailures.attachSentry).toHaveBeenCalledOnceWith(sentry as any, { visitorClass: 'suspect' });
   });
 
   it('reuses the stored anonymous user id', async () => {

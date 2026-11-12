@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { EDITOR_RXJS_TYPINGS } from './generated/editor-rxjs-typings';
 import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
+import { STYLESHEET_LOADER } from './core/utils/stylesheet-loader';
 import { userVisibleFailures } from './core/utils/user-visible-failure-reporter';
 
 const DEFAULT_EDITOR_THEME = 'fa-dark';
@@ -104,6 +105,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private static requestedLanguageModules = new Set<string>();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
+  private readonly loadStylesheet = inject(STYLESHEET_LOADER);
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
     const baseExt =
@@ -559,6 +561,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   private extractLoadUrl(error: any, moduleId?: string): string | undefined {
+    if (typeof error?.url === 'string' && error.url) return error.url;
     const target = error?.target || error?.currentTarget || error?.srcElement;
     const targetSrc = typeof target?.src === 'string' ? target.src : '';
     if (targetSrc) return targetSrc;
@@ -654,6 +657,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               // base twice downloads a module a second time when the first
               // attempt fails, including the ones Monaco loads later.
               paths: { vs: [this.vsBasePath, this.vsBasePath] },
+              // ensureMonaco loads editor.main.css itself (see below).
+              'vs/css': { disabled: true },
               onError: (error: unknown) => fail(error),
             });
             req.configuredForVs = true;
@@ -1008,7 +1013,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             mAny.__faNodeShimLib = true;
           }
 
-              succeed();
+              // If the stylesheet failed, the load has already failed and succeed() does nothing.
+              void stylesheetLoaded.then(succeed);
             } catch (error) {
               fail(error, 'Monaco editor setup failed.');
             }
@@ -1017,6 +1023,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           fail(error, 'Monaco editor bootstrap failed.');
         }
       };
+
+      // Monaco's own CSS plugin requests editor.main.css only once, so one
+      // dropped request left the visitor with the plain text area. The
+      // stylesheet is loaded here instead, alongside the scripts, with one
+      // retry; the editor is created only once it has loaded.
+      const stylesheetUrl = new URL(`${this.vsBasePath}/editor/editor.main.css`, document.baseURI).toString();
+      const stylesheetLoaded = this.loadStylesheet(stylesheetUrl, 'vs/editor/editor.main').catch(() => fail({
+        message: 'Monaco editor stylesheet failed to load.',
+        phase: 'loading',
+        moduleId: 'vs/css!vs/editor/editor.main',
+        url: stylesheetUrl,
+      }));
 
       // If AMD loader already present, start immediately; otherwise load it
       if ((window as any).require && typeof (window as any).require === 'function') {

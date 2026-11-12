@@ -658,7 +658,7 @@ export class TelemetryBootstrapService implements OnDestroy {
             });
             this.sentry = sentry;
             this.applySentryUser(this.auth.user()?._id ?? null);
-            userVisibleFailures.attachSentry(sentry);
+            userVisibleFailures.attachSentry(sentry, { visitorClass: this.analytics.getVisitorClass() });
           })
           .catch(() => {
             // Monitoring should never block app startup.
