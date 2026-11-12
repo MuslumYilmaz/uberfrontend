@@ -43,6 +43,18 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['vue', 'vue-accordion-faq', 'premium'],
   ['vue', 'vue-contact-form-starter', 'premium'],
   ['vue', 'vue-debounced-search', 'premium'],
+  ['react', 'react-progress-bar-thresholds', 'premium'],
+  ['react', 'react-chips-input-autocomplete', 'premium'],
+  ['react', 'react-nested-checkboxes', 'premium'],
+  ['react', 'react-multi-step-signup', 'premium'],
+  ['angular', 'angular-progress-bar-thresholds', 'premium'],
+  ['angular', 'angular-chips-input-autocomplete', 'premium'],
+  ['angular', 'angular-nested-checkboxes', 'premium'],
+  ['angular', 'angular-multi-step-form-starter', 'premium'],
+  ['vue', 'vue-progress-bar-thresholds', 'premium'],
+  ['vue', 'vue-chips-input-autocomplete', 'premium'],
+  ['vue', 'vue-nested-checkboxes', 'premium'],
+  ['vue', 'vue-multi-step-form', 'premium'],
 ];
 const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-todo-list', fixture: 'react-todo-wrong.tsx', fails: ['todo-toggle', 'todo-remove', 'todo-clear-completed'] },

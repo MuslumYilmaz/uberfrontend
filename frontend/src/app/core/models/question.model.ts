@@ -118,7 +118,9 @@ export type FrameworkTestStepType =
   | 'expectChecked'
   | 'expectLineThrough'
   | 'mockRandom'
-  | 'expectStandsOut';
+  | 'expectStandsOut'
+  | 'expectColor'
+  | 'expectReferenced';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -152,11 +154,16 @@ export type FrameworkTestStep = {
   status?: number;
   error?: string;
   bodyContains?: string;
+  /** expectChecked takes true, false or 'mixed' (an indeterminate checkbox). */
   expected?: string | boolean | number;
   /** mockRandom: Math.random returns these in turn, from before the preview boots. */
   values?: number[];
   /** expectStandsOut: the group the target must look different from. */
   among?: { selector?: string; by?: FrameworkTestLocator };
+  /** expectColor: the color family the target shows, named as a person would. */
+  hue?: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'grey' | 'transparent';
+  /** expectColor: the CSS color property read, background-color unless set. */
+  property?: string;
 };
 
 export type FrameworkTest = {

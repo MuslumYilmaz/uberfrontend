@@ -152,7 +152,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "9313ccb1d00a0597996f9dc7c5aa7929989453875bc7794893bb3c604c635189",
+      "contentHash": "ea778ac4634cba4f696a04b56b985cd60b30b9344a776167730b38bfb6eea3d6",
       "enabled": true,
       "id": "int-code-angular-junior-progress-thresholds-v1",
       "level": "junior",
@@ -372,7 +372,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "27d360a381db6c36cb9baab441563c7700ecc6ce433be9ef64287a0c64c6a4a9",
+      "contentHash": "6b6ddfe1e55adfc9540056804b004ac71a0f0b3b247c99a5a5796fd2ccb4925b",
       "enabled": true,
       "id": "int-code-angular-mid-multi-step-form-v1",
       "level": "mid",
@@ -456,7 +456,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "cc96ef7a11908a84ae789fb60f726282b2fdf5bb23dce1b3f3344432e2632590",
+      "contentHash": "402d34231441ad60ce9498e0f98fa7640445816109941b1cc5dbab8766519f97",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -802,7 +802,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "48161f2df483e9151b978823588e418fcc3a6550bd98598cf6c4bfa4e33eecd8",
+      "contentHash": "c5617bb01c6ef9ede077f55b7a26a279ab25a9232d917f1e764f287e18262aec",
       "enabled": true,
       "id": "int-code-angular-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -1922,7 +1922,7 @@
       "track": "react"
     },
     {
-      "contentHash": "c31eb3ce2a84c639ebb430bc78e44b340047f8c73fd6ccd4de1c8cbbcb039d63",
+      "contentHash": "1547295f1cd60baa8e9242753aca443ca84b5fff19bc83594e1c80148c80b757",
       "enabled": true,
       "id": "int-code-react-junior-progress-thresholds-v1",
       "level": "junior",
@@ -2118,7 +2118,7 @@
       "track": "react"
     },
     {
-      "contentHash": "34adde6b1f3d7a2953981a4c233306534b2db7461cf752e804cc3a70eab3616b",
+      "contentHash": "a9a0f1679b841f91ef793c0ba0d21215fed4c32580a062b6e3d69e56246aeefb",
       "enabled": true,
       "id": "int-code-react-mid-multi-step-form-v1",
       "level": "mid",
@@ -2194,7 +2194,7 @@
       "track": "react"
     },
     {
-      "contentHash": "fb5b766311f41d2fe44a96e38a4d0c03f2fffc6178366450704bb612d144be29",
+      "contentHash": "7ce775f9ab2ea9c33a5a47cd0ba8836b7a9185c67402ae5479416701f81db9cb",
       "enabled": true,
       "id": "int-code-react-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -2504,7 +2504,7 @@
       "track": "react"
     },
     {
-      "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
+      "contentHash": "4cc51a1e8c3b4aa74bb7fec592b4c468bc7a6273214a6dada542b499698779aa",
       "enabled": true,
       "id": "int-code-react-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -3077,7 +3077,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "44cd2098db8de6d16f4541ecf2a2ae264f22886e75551d3395c6d0a57679a462",
+      "contentHash": "6dabb50817df425dc92a71b6b4224ad384ec1e4df078c5a1ea937bfbfe13cb56",
       "enabled": true,
       "id": "int-code-vue-junior-progress-thresholds-v1",
       "level": "junior",
@@ -3273,7 +3273,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "c19e0b8c590a8c8341af87417f0a6475928457bf515ccbc2490fbc544c02d2de",
+      "contentHash": "2e53cfd96c5296ebae7b48fe8790a7184b7607b439ac31d47b2dc021fdcfd5c8",
       "enabled": true,
       "id": "int-code-vue-mid-multi-step-form-v1",
       "level": "mid",
@@ -3349,7 +3349,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "1d849b35c2a9f329b710d0a5c6a33a667129ffbfe49eac15525ceec492691fc3",
+      "contentHash": "ce1501c079c2b7ff0990968b44af9f7ef25ee39b5334d439a7679164e7e7d497",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -3655,7 +3655,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
+      "contentHash": "d1be6ae6691a1fff1ebd5ebfb6be71d05f886da12d1c973ad3a0164906352fe3",
       "enabled": true,
       "id": "int-code-vue-senior-chips-autocomplete-v1",
       "level": "senior",

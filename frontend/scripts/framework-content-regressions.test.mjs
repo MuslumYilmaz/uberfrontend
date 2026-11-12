@@ -1155,7 +1155,8 @@ function assertNestedCommentsPressureMode() {
 }
 
 function assertContactFormPressureMode() {
-    const expectedQuestions = {
+  // The normal Contact Form checks are pinned in framework-shared-checks.test.mjs.
+  const expectedQuestions = {
     react: {
       id: 'react-contact-form-starter',
       starter: 'assets/sb/react/question/react-contact-form.v1.json',
@@ -1488,7 +1489,7 @@ function assertTwoWayControlPressureMode() {
 }
 
 function assertMultiStepFormPressureMode() {
-  const normalChecks = ['multi-step-form-advances'];
+  // The normal Multi-step Signup checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'multi-step-form',
     label: 'Multi-step Signup',
@@ -1497,19 +1498,16 @@ function assertMultiStepFormPressureMode() {
         id: 'react-multi-step-signup',
         starter: 'assets/sb/react/question/react-multi-step-form.v1.json',
         solution: 'assets/sb/react/solution/react-multi-step-form-solution.v1.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-multi-step-form-starter',
         starter: 'assets/sb/angular/question/angular-multi-step-form.v2.json',
         solution: 'assets/sb/angular/solution/angular-multi-step-form-solution.v2.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-multi-step-form',
         starter: 'assets/sb/vue/question/vue-multi-step-form.v1.json',
         solution: 'assets/sb/vue/solution/vue-multi-step-form-solution.v1.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['valid-navigation', 'edit-from-summary', 'company-step', 'finish-and-focus'],
@@ -1564,7 +1562,7 @@ function assertMultiStepFormPressureMode() {
 }
 
 function assertNestedCheckboxesPressureMode() {
-  const normalChecks = ['nested-checkbox-parent-sync'];
+  // The normal Checkbox Tree checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'nested-checkboxes',
     label: 'Checkbox Tree',
@@ -1573,19 +1571,16 @@ function assertNestedCheckboxesPressureMode() {
         id: 'react-nested-checkboxes',
         starter: 'assets/sb/react/question/react-nested-checkboxes.v1.json',
         solution: 'assets/sb/react/solution/react-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-nested-checkboxes',
         starter: 'assets/sb/angular/question/angular-nested-checkboxes.v1.json',
         solution: 'assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-nested-checkboxes',
         starter: 'assets/sb/vue/question/vue-nested-checkboxes.v1.json',
         solution: 'assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['parent-child-sync', 'deep-tree', 'locked-items', 'selection-summary'],
@@ -2570,34 +2565,6 @@ function assertChipsInputPressureMode() {
       updatedAt: '2026-02-09',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'chips-add-suggestion',
-      name: 'Chips input adds suggestion',
-      steps: [
-        {
-          type: 'setValue',
-          selector: '.chip-input input',
-          value: 'Alice',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.suggestion',
-          count: 1,
-          timeoutMs: 800,
-        },
-        {
-          type: 'mouseDown',
-          selector: '.suggestion',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.chip',
-          count: 1,
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -2626,11 +2593,7 @@ function assertChipsInputPressureMode() {
       expected.solution,
       `${framework}: normal Invite Chips Input solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      expectedNormalChecks,
-      `${framework}: normal Invite Chips Input check must stay unchanged`
-    );
+    // The normal Invite Chips Input checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/chips-input-autocomplete.v1.json',
@@ -6688,7 +6651,8 @@ for (const node of vanillaPortVariant.nodes) {
 const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
-  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut']);
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
+  'expectColor', 'expectReferenced']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

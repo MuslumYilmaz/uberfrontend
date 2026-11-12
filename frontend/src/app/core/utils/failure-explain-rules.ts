@@ -435,7 +435,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'vue-nested-checkboxes-parent-setter',
     questionId: 'vue-nested-checkboxes',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['nested checkbox parent selects children']),
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['checking the parent checks every child']),
     buildHint: (snapshot) => ({
       ruleId: 'vue-nested-checkboxes-parent-setter',
       title: "Let a click on the parent check every child",

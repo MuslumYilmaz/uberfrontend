@@ -42,7 +42,11 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectLineThrough',
   'mockRandom',
   'expectStandsOut',
+  'expectColor',
+  'expectReferenced',
 ]);
+
+const FRAMEWORK_STEP_HUES = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey', 'transparent']);
 
 @Injectable({ providedIn: 'root' })
 export class PressureModeService {
@@ -171,6 +175,7 @@ export class PressureModeService {
       'method',
       'error',
       'bodyContains',
+      'property',
     ] as const) {
       if (typeof source[key] === 'string') {
         (step as Record<string, unknown>)[key] = source[key];
@@ -197,6 +202,9 @@ export class PressureModeService {
       if (values.length) step.values = values;
     }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
+    if (typeof source['hue'] === 'string' && FRAMEWORK_STEP_HUES.has(source['hue'])) {
+      step.hue = source['hue'] as FrameworkTestStep['hue'];
+    }
     if (
       typeof source['expected'] === 'string'
       || typeof source['expected'] === 'number'

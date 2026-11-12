@@ -90,6 +90,53 @@ const FAMILIES = {
       'debounced-search-clear', 'debounced-search-stale', 'debounced-search-cleanup',
     ]],
   },
+  progressBar: {
+    react: ['react-progress-bar-thresholds', ['progress-steps-by-ten', 'progress-clamps', 'progress-threshold-colors']],
+    angular: ['angular-progress-bar-thresholds', ['progress-steps-by-ten', 'progress-clamps', 'progress-threshold-colors']],
+    vue: ['vue-progress-bar-thresholds', ['progress-steps-by-ten', 'progress-clamps', 'progress-threshold-colors']],
+  },
+  chipsInput: {
+    react: ['react-chips-input-autocomplete', [
+      'chips-suggest-by-name-or-email', 'chips-click-suggestion', 'chips-chosen-not-suggested', 'chips-arrow-keys-enter',
+      'chips-active-descendant', 'chips-enter-custom', 'chips-comma-custom', 'chips-backspace-removes-last',
+      'chips-remove-button', 'chips-no-duplicates',
+    ]],
+    angular: ['angular-chips-input-autocomplete', [
+      'chips-suggest-by-name-or-email', 'chips-click-suggestion', 'chips-chosen-not-suggested', 'chips-arrow-keys-enter',
+      'chips-active-descendant', 'chips-enter-custom', 'chips-comma-custom', 'chips-backspace-removes-last',
+      'chips-remove-button', 'chips-no-duplicates',
+    ]],
+    vue: ['vue-chips-input-autocomplete', [
+      'chips-suggest-by-name-or-email', 'chips-click-suggestion', 'chips-chosen-not-suggested', 'chips-arrow-keys-enter',
+      'chips-active-descendant', 'chips-enter-custom', 'chips-comma-custom', 'chips-backspace-removes-last',
+      'chips-remove-button', 'chips-no-duplicates',
+    ]],
+  },
+  nestedCheckboxes: {
+    react: ['react-nested-checkboxes', [
+      'nested-checkbox-parent-checks-all', 'nested-checkbox-parent-clears-all', 'nested-checkbox-some-mixed',
+      'nested-checkbox-children-set-parent',
+    ]],
+    angular: ['angular-nested-checkboxes', [
+      'nested-checkbox-parent-checks-all', 'nested-checkbox-parent-clears-all', 'nested-checkbox-some-mixed',
+      'nested-checkbox-children-set-parent',
+    ]],
+    vue: ['vue-nested-checkboxes', [
+      'nested-checkbox-parent-checks-all', 'nested-checkbox-parent-clears-all', 'nested-checkbox-some-mixed',
+      'nested-checkbox-children-set-parent',
+    ]],
+  },
+  multiStepForm: {
+    // React asks for a disabled Back on Step 1, Back keeping values and "Step 1 of 3", React and Angular for a
+    // disabled Next, Angular for a valid email. Angular and Vue make Back optional, and Vue lets Next show errors.
+    react: ['react-multi-step-signup', [
+      'multi-step-next-blocked', 'multi-step-next-disabled', 'multi-step-back', 'multi-step-step-count', 'multi-step-summary',
+    ]],
+    angular: ['angular-multi-step-form-starter', [
+      'multi-step-next-blocked', 'multi-step-next-disabled', 'multi-step-email-format', 'multi-step-summary',
+    ]],
+    vue: ['vue-multi-step-form', ['multi-step-next-blocked', 'multi-step-summary']],
+  },
 };
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');

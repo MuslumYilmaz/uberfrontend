@@ -44,6 +44,10 @@ describe('PressureModeService', () => {
       { type: 'expectExists', by: 'button' },
       { type: 'mockRandom', values: [0.55, 'x', 0.1] },
       { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab', css: 'x' } },
+      { type: 'expectColor', selector: '.bar', property: 'color', hue: 'orange' },
+      { type: 'expectColor', selector: '.bar', hue: 'teal' },
+      { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -54,6 +58,10 @@ describe('PressureModeService', () => {
       { type: 'expectExists' },
       { type: 'mockRandom', values: [0.55, 0.1] },
       { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab' } },
+      { type: 'expectColor', selector: '.bar', property: 'color', hue: 'orange' },
+      { type: 'expectColor', selector: '.bar' },
+      { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
     ]);
   });
 

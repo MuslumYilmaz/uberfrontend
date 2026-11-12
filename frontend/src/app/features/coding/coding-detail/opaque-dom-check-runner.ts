@@ -795,6 +795,56 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     return findAll(step)[index] || null;
   };
   const textOf = (element: Element | null) => String((element?.textContent || '').replace(/\s+/g, ' ')).trim();
+  // The hidden check frame may not advance transitions, so a style still fading in or out is jumped to its end
+  // before it is read.
+  const finishAnimations = (nodes: Element[]) => {
+    for (const node of nodes) {
+      for (const animation of typeof node.getAnimations === 'function' ? node.getAnimations() : []) {
+        try { animation.finish(); } catch { }
+      }
+    }
+  };
+  // Names a CSS color the way a person would (red, orange, yellow, green, blue, purple), whatever syntax produced
+  // it: a canvas turns any color the browser understands into sRGB pixels.
+  let colorProbe: CanvasRenderingContext2D | null | undefined;
+  const colorName = (cssColor: string) => {
+    colorProbe ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    if (!colorProbe) return 'unreadable';
+    colorProbe.clearRect(0, 0, 1, 1);
+    colorProbe.fillStyle = '#000';
+    colorProbe.fillStyle = cssColor;
+    colorProbe.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = Array.from(colorProbe.getImageData(0, 0, 1, 1).data).map((channel) => channel / 255);
+    if (!cssColor.trim() || a < 0.1) return 'transparent';
+    const max = Math.max(r, g, b);
+    const chroma = max - Math.min(r, g, b);
+    if (chroma < 0.15) return 'grey';
+    const sector = max === r ? ((g - b) / chroma + 6) % 6 : max === g ? (b - r) / chroma + 2 : (r - g) / chroma + 4;
+    const hue = sector * 60;
+    if (hue < 15 || hue >= 340) return 'red';
+    if (hue < 50) return 'orange';
+    if (hue < 70) return 'yellow';
+    if (hue < 170) return 'green';
+    return hue < 255 ? 'blue' : 'purple';
+  };
+  const isTextField = (element: Element) => {
+    if (element instanceof HTMLTextAreaElement) return !element.readOnly && !element.disabled;
+    return element instanceof HTMLInputElement && !element.readOnly && !element.disabled
+      && ['text', 'search', 'email', 'url', 'tel', 'password'].includes(element.type);
+  };
+  const typeCharacter = (field: HTMLInputElement | HTMLTextAreaElement, character: string) => {
+    let start = field.value.length;
+    let end = start;
+    try {
+      start = field.selectionStart ?? start;
+      end = field.selectionEnd ?? start;
+    } catch { }
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(field), 'value');
+    const value = field.value.slice(0, start) + character + field.value.slice(end);
+    if (descriptor?.set) descriptor.set.call(field, value); else field.value = value;
+    try { field.setSelectionRange(start + 1, start + 1); } catch { }
+    field.dispatchEvent(new InputEvent('input', { bubbles: true, data: character, inputType: 'insertText' }));
+  };
   const describeElement = (element: Element | null) => {
     if (!element) return 'none';
     const id = element.id ? `#${element.id}` : '';
@@ -992,9 +1042,15 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (type === 'key') {
       const key = String(step.key || step.value || 'Enter');
       (element as HTMLElement).focus?.();
-      element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-      element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
-      return delay(50);
+      const typed = element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+        && key.length === 1 && isTextField(element);
+      // A printable key the page does not cancel types its character into a text field, as a real keypress does,
+      // once the page has handled the keydown and re-rendered.
+      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key)) : Promise.resolve())
+        .then(() => {
+          element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
+          return delay(50);
+        });
     }
     if (type === 'expectFocused') {
       if (document.activeElement !== element && lastRequestedFocus !== element) {
@@ -1003,24 +1059,46 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return Promise.resolve();
     }
     if (type === 'expectChecked') {
+      // An indeterminate checkbox (or aria-checked="mixed") is mixed, neither checked nor unchecked.
+      const expected = step.expected === 'mixed' ? 'mixed' : step.expected === false ? 'unchecked' : 'checked';
+      const input = element as HTMLInputElement;
+      const aria = element.getAttribute('aria-checked');
+      const checked = typeof input.checked === 'boolean' ? input.checked : aria === 'true';
+      const actual = input.indeterminate === true || aria === 'mixed' ? 'mixed' : checked ? 'checked' : 'unchecked';
+      if (actual !== expected) throw new Error(`${target} expected ${expected} but was ${actual}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectColor') {
+      const property = String(step.property || 'background-color');
+      const expected = String(step.hue || '').trim().toLowerCase();
+      finishAnimations([element]);
+      const actual = colorName(getComputedStyle(element).getPropertyValue(property));
+      if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectReferenced') {
+      // Another element names the target in an id-reference attribute (aria-activedescendant on the active option),
+      // whatever the id is.
+      const attribute = String(step.attribute || '').trim();
+      if (!attribute) throw new Error(`${target} is missing an attribute name`);
       const expected = step.expected !== false;
-      const checked = (element as HTMLInputElement).checked;
-      const actual = typeof checked === 'boolean' ? checked : element.getAttribute('aria-checked') === 'true';
-      if (actual !== expected) throw new Error(`${target} expected ${expected ? 'checked' : 'unchecked'} but was ${actual ? 'checked' : 'unchecked'}`);
+      const id = element.id;
+      const named = !!id && Array.from(document.querySelectorAll(`[${CSS.escape(attribute)}]`))
+        .some((node) => (node.getAttribute(attribute) || '').split(/\s+/).includes(id));
+      if (named !== expected) {
+        throw new Error(expected
+          ? `${target} expected an element's ${attribute} to name it${id ? '' : ', but it has no id'}`
+          : `${target} expected no element's ${attribute} to name it`);
+      }
       return Promise.resolve();
     }
     if (type === 'expectStandsOut') {
-      // The target must look different from every other element of its group (an active tab among tabs). Running
-      // transitions are jumped to their end first: the hidden check frame may not advance them, and a style still
-      // fading out must not pass for a highlight.
+      // The target must look different from every other element of its group (an active tab among tabs). A
+      // highlight still fading out must not pass for one.
       const others = findAll({ selector: step.among?.selector, by: step.among?.by } as FrameworkTestStep)
         .filter((node) => node !== element);
       if (!others.length) throw new Error(`${target} has no group to stand out from`);
-      for (const node of [element, ...others]) {
-        for (const animation of typeof node.getAnimations === 'function' ? node.getAnimations() : []) {
-          try { animation.finish(); } catch { }
-        }
-      }
+      finishAnimations([element, ...others]);
       const look = (node: Element) => {
         const style = getComputedStyle(node);
         return ['background-color', 'background-image', 'color', 'border-top-color', 'border-bottom-color',

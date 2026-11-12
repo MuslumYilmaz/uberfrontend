@@ -2308,15 +2308,128 @@
     },
     "frameworkTests": [
       {
-        "id": "multi-step-form-advances",
-        "name": "Multi-step form advances through steps",
+        "id": "multi-step-next-blocked",
+        "name": "Next does not leave a step while a required field is empty; the postal code is optional",
         "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".step-title",
+            "text": "Basic",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
           {
             "type": "expectText",
             "selector": ".step-title",
-            "text": "Basic info",
+            "text": "Basic",
             "match": "contains"
           },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 0,
+            "value": "Jane Doe"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectText",
+            "selector": ".step-title",
+            "text": "Basic",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 1,
+            "value": "jane@example.com"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".step-title",
+            "text": "Address",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 0,
+            "value": "123 Main St"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 1,
+            "value": "Istanbul"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectText",
+            "selector": ".step-title",
+            "text": "Address",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 2,
+            "value": "Türkiye"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".step-title",
+            "text": "Summary",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "multi-step-summary",
+        "name": "The summary shows every value, read-only, with a Submit button",
+        "steps": [
           {
             "type": "setValue",
             "selector": ".field input",
@@ -2331,8 +2444,10 @@
           },
           {
             "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
           },
           {
             "type": "waitForText",
@@ -2359,15 +2474,74 @@
             "value": "Türkiye"
           },
           {
+            "type": "setValue",
+            "selector": ".field input",
+            "index": 3,
+            "value": "34000"
+          },
+          {
             "type": "click",
-            "selector": ".actions button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
           },
           {
             "type": "waitForText",
             "selector": ".step-title",
             "text": "Summary",
             "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "Jane Doe",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "jane@example.com",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "123 Main St",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "Istanbul",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "Türkiye",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "main",
+            "text": "34000",
+            "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "textbox"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Submit"
+            },
+            "disabled": false
           }
         ]
       }
@@ -3230,22 +3404,272 @@
     },
     "frameworkTests": [
       {
-        "id": "nested-checkbox-parent-sync",
-        "name": "Nested checkbox parent selects children",
+        "id": "nested-checkbox-parent-checks-all",
+        "name": "Checking the parent checks every child",
         "steps": [
           {
-            "type": "expectCount",
-            "selector": "input[type=\"checkbox\"]:checked",
-            "count": 0
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            },
+            "expected": false
           },
           {
             "type": "click",
-            "selector": ".parent input[type=\"checkbox\"]"
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            }
           },
           {
-            "type": "waitForCount",
-            "selector": "input[type=\"checkbox\"]:checked",
-            "count": 4
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            }
+          }
+        ]
+      },
+      {
+        "id": "nested-checkbox-parent-clears-all",
+        "name": "Unchecking the parent clears every child",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "nested-checkbox-some-mixed",
+        "name": "With some children checked, the parent is indeterminate",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": "mixed"
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            },
+            "expected": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": "mixed"
+          }
+        ]
+      },
+      {
+        "id": "nested-checkbox-children-set-parent",
+        "name": "Checking every child checks the parent, and unchecking them all clears it",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 1"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": "mixed"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 2"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": "mixed"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Child 3"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Parent"
+            },
+            "expected": false
           }
         ]
       }
@@ -4349,34 +4773,295 @@
     },
     "frameworkTests": [
       {
-        "id": "progress-increase-decrease",
-        "name": "Progress increases and decreases",
+        "id": "progress-steps-by-ten",
+        "name": "Starts at 0%, and +10% and −10% move it by 10",
         "steps": [
           {
             "type": "expectText",
             "selector": ".value",
-            "text": "0",
-            "match": "contains"
+            "text": "0%",
+            "match": "equals"
           },
           {
             "type": "click",
-            "selector": "[aria-label=\"increase\"]"
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
           },
           {
             "type": "waitForText",
             "selector": ".value",
-            "text": "10",
-            "match": "contains"
+            "text": "10%",
+            "match": "equals"
           },
           {
             "type": "click",
-            "selector": "[aria-label=\"decrease\"]"
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
           },
           {
             "type": "waitForText",
             "selector": ".value",
-            "text": "0",
-            "match": "contains"
+            "text": "20%",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "10%",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "progress-clamps",
+        "name": "The value stays between 0% and 100%",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "10%",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "100%",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "90%",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "progress-threshold-colors",
+        "name": "The bar is red at 20%, orange at 50% and green at 80%, and follows the value back down",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "20%",
+            "match": "equals"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".bar",
+            "hue": "red"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "50%",
+            "match": "equals"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".bar",
+            "hue": "orange"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "80%",
+            "match": "equals"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".bar",
+            "hue": "green"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-10%"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".value",
+            "text": "50%",
+            "match": "equals"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".bar",
+            "hue": "orange"
           }
         ]
       }
@@ -4710,26 +5395,629 @@
     },
     "frameworkTests": [
       {
-        "id": "chips-add-suggestion",
-        "name": "Chips input adds suggestion",
+        "id": "chips-suggest-by-name-or-email",
+        "name": "Typing shows the users whose name or email contains the text",
         "steps": [
           {
             "type": "setValue",
             "selector": ".chip-input input",
-            "value": "Alice"
+            "value": "al"
           },
           {
             "type": "waitForCount",
-            "selector": ".suggestion",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "text": "Alice Johnson",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "bob@front"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "text": "Bob Smith",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "chips-click-suggestion",
+        "name": "Clicking a suggestion adds its chip and empties the input",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "al"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
             "count": 1,
             "timeoutMs": 800
           },
           {
             "type": "mouseDown",
-            "selector": ".suggestion"
+            "by": {
+              "role": "option"
+            }
           },
           {
             "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 0,
+            "text": "Alice Johnson",
+            "match": "contains"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".chip-input input",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "chips-chosen-not-suggested",
+        "name": "A chosen user is no longer suggested, and the others still are",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "an"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "by": {
+              "role": "option"
+            },
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 0,
+            "text": "Diana Lopez",
+            "match": "contains"
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "an"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "text": "Ethan Brown",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "chips-arrow-keys-enter",
+        "name": "ArrowDown and ArrowUp move the active suggestion, and Enter adds it",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "li"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 0,
+            "text": "Charlie Kim",
+            "match": "contains"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".chip-input input",
+            "value": ""
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "an"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowUp"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 1,
+            "text": "Diana Lopez",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "chips-active-descendant",
+        "name": "The combobox's aria-activedescendant names the active suggestion",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "an"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectReferenced",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "attribute": "aria-activedescendant"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "ArrowDown"
+          },
+          {
+            "type": "expectReferenced",
+            "by": {
+              "role": "option"
+            },
+            "index": 1,
+            "attribute": "aria-activedescendant"
+          },
+          {
+            "type": "expectReferenced",
+            "by": {
+              "role": "option"
+            },
+            "index": 0,
+            "attribute": "aria-activedescendant",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "chips-enter-custom",
+        "name": "Enter with no active suggestion adds the typed text as a chip",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "al"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "al"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Alice Johnson"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".chip-input input",
+            "value": ""
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "Design team"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Design team"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectValue",
+            "selector": ".chip-input input",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "chips-comma-custom",
+        "name": "A comma adds the typed text as a chip and leaves no comma behind",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "QA crew"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": ","
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "QA crew"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectValue",
+            "selector": ".chip-input input",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "id": "chips-backspace-removes-last",
+        "name": "Backspace removes the last chip, and only when the input is empty",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "al"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "by": {
+              "role": "option"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "Design team"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "x"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Backspace"
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
+            "selector": ".chip",
+            "count": 2
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": ""
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Backspace"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 0,
+            "text": "Alice Johnson",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "chips-remove-button",
+        "name": "A chip's remove button removes only that chip",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "al"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "option"
+            },
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "mouseDown",
+            "by": {
+              "role": "option"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "Design team"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "QA crew"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 3,
+            "timeoutMs": 800
+          },
+          {
+            "type": "click",
+            "selector": ".chip button",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 2,
+            "timeoutMs": 800
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 0,
+            "text": "Alice Johnson",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".chip",
+            "index": 1,
+            "text": "QA crew",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "chips-no-duplicates",
+        "name": "The same text twice, in any case, makes one chip",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "Design team"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".chip",
+            "count": 1,
+            "timeoutMs": 800
+          },
+          {
+            "type": "setValue",
+            "selector": ".chip-input input",
+            "value": "design TEAM"
+          },
+          {
+            "type": "key",
+            "selector": ".chip-input input",
+            "key": "Enter"
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
             "selector": ".chip",
             "count": 1
           }

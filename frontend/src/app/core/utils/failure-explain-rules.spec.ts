@@ -40,16 +40,16 @@ describe('failure-explain-rules', () => {
   });
 
   it('explains a Vue nested checkbox parent that does not check its children', () => {
-    const errorLine = 'input[type="checkbox"]:checked expected 4 matches but found 1';
+    const errorLine = 'checkbox "Child 1" expected checked but was unchecked';
     const hint = buildFailureHint({
       questionId: 'vue-nested-checkboxes',
       category: 'assertion-mismatch',
       errorLine,
-      firstFailName: 'Nested checkbox parent selects children',
-      passCount: 0,
-      totalCount: 1,
+      firstFailName: 'Checking the parent checks every child',
+      passCount: 3,
+      totalCount: 4,
       failCount: 1,
-      failedTests: [{ name: 'Nested checkbox parent selects children', errorLine }],
+      failedTests: [{ name: 'Checking the parent checks every child', errorLine }],
     });
 
     expect(hint.ruleId).toBe('vue-nested-checkboxes-parent-setter');

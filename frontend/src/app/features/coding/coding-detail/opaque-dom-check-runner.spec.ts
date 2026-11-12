@@ -455,6 +455,128 @@ describe('OpaqueDomCheckRunner', () => {
       }]);
   });
 
+  it('reads a checkbox as mixed while it is indeterminate, and as checked only once it is not', async () => {
+    const page = (clearsMixed: boolean) => `<!doctype html><html><body>
+      <label><input type="checkbox" class="parent"> Parent</label>
+      <label><input type="checkbox" class="child"> Child</label>
+      <label><input type="checkbox" class="child"> Child two</label>
+      <script>
+        const parent = document.querySelector('.parent');
+        const children = Array.from(document.querySelectorAll('.child'));
+        children.forEach((child) => child.addEventListener('change', () => {
+          const count = children.filter((box) => box.checked).length;
+          parent.checked = count === children.length;
+          if (${clearsMixed} || count < children.length) parent.indeterminate = count > 0 && count < children.length;
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'click', by: { role: 'checkbox', name: 'Child' } },
+      { type: 'expectChecked', by: { role: 'checkbox', name: 'Parent' }, expected: 'mixed' },
+      { type: 'click', by: { role: 'checkbox', name: 'Child two' } },
+      { type: 'expectChecked', by: { role: 'checkbox', name: 'Parent' } },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'mixed', name: 'Mixed', steps }] as any))
+      .toEqual([{ name: 'Mixed', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'mixed', name: 'Mixed', steps }] as any))
+      .toEqual([{
+        name: 'Mixed',
+        passed: false,
+        error: 'checkbox "Parent" expected checked but was mixed',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('names an element\'s color by its family, whatever CSS syntax set it', async () => {
+    const page = `<!doctype html><html><head><style>
+        .a { background: #ef4444; } .b { background: oklch(0.77 0.17 65); } .c { background-color: rgb(34 197 94 / 0.8); }
+        .d { color: hsl(220 90% 55%); } .e { background: #888; }
+      </style></head><body>
+      <div class="a">a</div><div class="b">b</div><div class="c">c</div><div class="d">d</div><div class="e">e</div><div class="f">f</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'colors',
+        name: 'Colors',
+        steps: [
+          { type: 'expectColor', selector: '.a', hue: 'red' },
+          { type: 'expectColor', selector: '.b', hue: 'orange' },
+          { type: 'expectColor', selector: '.c', hue: 'green' },
+          { type: 'expectColor', selector: '.d', property: 'color', hue: 'blue' },
+          { type: 'expectColor', selector: '.e', hue: 'grey' },
+          { type: 'expectColor', selector: '.f', hue: 'transparent' },
+        ],
+      },
+      { id: 'wrong', name: 'Wrong', steps: [{ type: 'expectColor', selector: '.b', hue: 'green' }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Colors', passed: true },
+      { name: 'Wrong', passed: false, error: '.b expected background-color to be green but it was orange', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('finds the element that names a target in an id-reference attribute, whatever its id', async () => {
+    const page = (wired: boolean) => `<!doctype html><html><body>
+      <div role="combobox"><input type="text"></div>
+      <ul role="listbox"><li role="option" id="opt-a">Ada</li><li role="option" id="opt-b">Bea</li></ul>
+      <script>
+        const input = document.querySelector('input');
+        let active = -1;
+        input.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowDown') return;
+          active = (active + 1) % 2;
+          if (${wired}) document.querySelector('[role=combobox]').setAttribute('aria-activedescendant', ['opt-a', 'opt-b'][active]);
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'key', selector: 'input', key: 'ArrowDown' },
+      { type: 'key', selector: 'input', key: 'ArrowDown' },
+      { type: 'expectReferenced', by: { role: 'option' }, index: 1, attribute: 'aria-activedescendant' },
+      { type: 'expectReferenced', by: { role: 'option' }, index: 0, attribute: 'aria-activedescendant', expected: false },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'ref', name: 'Ref', steps }] as any))
+      .toEqual([{ name: 'Ref', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'ref', name: 'Ref', steps }] as any))
+      .toEqual([{
+        name: 'Ref',
+        passed: false,
+        error: 'option #2 expected an element\'s aria-activedescendant to name it',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('types a printable key into a text field unless the page cancels it, after the page handled the keydown', async () => {
+    const page = (cancels: boolean) => `<!doctype html><html><body>
+      <input type="text"><ul class="chips"></ul>
+      <script>
+        const input = document.querySelector('input');
+        const add = (label) => { if (label.trim()) document.querySelector('.chips').insertAdjacentHTML('beforeend', '<li>' + label.trim() + '</li>'); };
+        input.addEventListener('keydown', (event) => {
+          if (${cancels} && event.key === ',') { event.preventDefault(); add(input.value); input.value = ''; }
+        });
+        input.addEventListener('input', () => {
+          if (!${cancels} && input.value.endsWith(',')) { add(input.value.slice(0, -1)); input.value = ''; }
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'setValue', selector: 'input', value: 'Design team' },
+      { type: 'key', selector: 'input', key: ',' },
+      { type: 'expectCount', by: { text: 'Design team' }, count: 1 },
+      { type: 'expectValue', selector: 'input', value: '' },
+    ];
+
+    for (const cancels of [true, false]) {
+      expect(await runner.runFramework(page(cancels), [{ id: 'comma', name: 'Comma', steps }] as any))
+        .withContext(cancels ? 'keydown handler' : 'input handler')
+        .toEqual([{ name: 'Comma', passed: true }]);
+    }
+  });
+
   it('fixes Math.random before the preview boots when a check asks for it, repeating the values in turn', async () => {
     const page = `<!doctype html><html><head><script>
         window.drawn = [Math.random(), Math.random(), Math.random()];
