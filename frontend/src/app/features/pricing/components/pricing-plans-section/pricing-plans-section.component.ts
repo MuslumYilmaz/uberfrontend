@@ -82,6 +82,8 @@ type PricingPlan = {
 };
 
 export const PRICING_PAGE_LAYOUT = 'interview_sprint_v1';
+/** The full pricing page on a sprint offer (the counted layout). Its numbers start fresh under this label. */
+export const PRICING_COUNTED_PAGE_LAYOUT = 'counted_v1';
 export { PRICING_BASELINE_OFFER_VERSION, PRICING_V2_OFFER_VERSION };
 export const RECOMMENDED_PRICING_PLAN: PlanId = 'quarterly';
 // Mirrors backend/services/billing/checkout-pricing.js: 40% off the annual plan
@@ -1393,7 +1395,9 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     return PricingPlansSectionComponent.CAMPAIGN_ID_PATTERN.test(normalized) ? normalized : undefined;
   }
 
+  /** The counted page reports its own layout; the compact homepage section and the baseline offer keep theirs. */
   private pageLayout(): string {
+    if (this.countedLayout()) return PRICING_COUNTED_PAGE_LAYOUT;
     return this.isOfferV2() ? PRICING_V2_OFFER_VERSION : PRICING_PAGE_LAYOUT;
   }
 

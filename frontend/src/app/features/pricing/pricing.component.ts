@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
+  PRICING_COUNTED_PAGE_LAYOUT,
   PRICING_PAGE_LAYOUT,
   RECOMMENDED_PRICING_PLAN,
   PricingPlanDetails,
@@ -140,12 +141,13 @@ export class PricingComponent implements OnInit {
   private trackPricingPageViewed(): void {
     if (this.pageViewTracked) return;
     this.pageViewTracked = true;
+    // The page is always the full layout, so a sprint offer means the counted layout; offer_version names the offer.
     const isSprintLayout = isSprintOfferVersion(this.offerVersion);
     this.analytics.track('pricing_page_viewed', {
       src: this.analyticsSource,
       surface: 'pricing_page',
       page: 'pricing',
-      page_layout: isSprintLayout ? this.offerVersion : PRICING_PAGE_LAYOUT,
+      page_layout: isSprintLayout ? PRICING_COUNTED_PAGE_LAYOUT : PRICING_PAGE_LAYOUT,
       offer_version: this.offerVersion,
       checkout_surface: this.checkoutSurface,
       recommended_plan: this.waitingPlan()?.recommendedPlan ?? RECOMMENDED_PRICING_PLAN,

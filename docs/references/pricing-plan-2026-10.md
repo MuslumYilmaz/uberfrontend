@@ -233,6 +233,18 @@ Amended the same day at the user's request, after comparing GreatFrontEnd from T
 
 Measurement: GA4's web UI returned 403 to the browser extension on 2026-10-18, so the baseline minimum-volume check in `ga4-conversion-baseline.md` was not read. The Step 6 readout around 2026-11-13 now measures the new prices and these visibility changes together.
 
+## Step 12 (2026-11-12): the counted pricing page
+
+Why: walking through the full page on 2026-11-11 showed three cards that read as three products although every plan opens the same library, a "guided solution" preview that opened a locked task, student and employer terms in a block of their own above the comparison, and an account prompt that did not say what the account was for or which plan it led to.
+
+Built on the branch `feat/pricing-counted` (commits 501f0d0b, 1d03859b, d58fcfa2, dfc0a659 and 7f30b16a, then the measurement commit), for the full page on sprint offers only; the compact homepage section and the baseline offer keep their layout:
+- Counts come from the practice registry: `scripts/gen-pricing-counts.mjs` writes `src/app/generated/pricing-counts.ts`, checks that every named locked example is Premium, and `lint:questions:check` fails when the file is stale.
+- The page leads with "One library. Choose how long." Each card names the situation it fits, the charge with its monthly equivalent, "Billed as … today. Renews … Cancel anytime." and, on the longer plans, what the same months cost month to month. One assurance block holds the refund, tax and price lines and the one-time plan; a regional visitor reads "The regional price is the same every day, with no countdowns."
+- "What you get, counted" has nine rows with free and Premium counts and up to four locked examples each; its note counts HTML and CSS and the concept questions, so every Premium item is accounted for. The table is a page component projected into the plans section, so the homepage bundle does not carry the counts.
+- A help line under the table gives the pre-sales address, a link to the billing FAQ and the changelog. The discounts block is gone: its student and employer terms are FAQ answers, next to new answers on whether the free plan is a trial, which plan fits which timeline, and which payment methods checkout takes (checked on the live checkout on 2026-11-12: cards and PayPal on every plan, Alipay on the one-time plan, no UPI). The solutions answer no longer promises a guided solution for the short JavaScript debug tasks, which show the fixed code.
+- A guest who picks a plan sees the account step: "Step 1 of 2 · Quarterly · $49 USD today", "One step before checkout" and "Checkout opens right after you sign in or create a free account." `e2e/pricing-account-step.spec.ts` holds that sentence for Google, GitHub, email sign-up and email sign-in.
+- Measurement: the page reports `page_layout=counted_v1` and `pricing_free_path_clicked` is retired; see the pricing counted layout exception in `ga4-conversion-baseline.md`. The same commit sends the application's `page_view` after the router's title update, and the runbook's **Page Views** section records the duplicate automatic page view that GA4's history-change setting adds to every in-app navigation.
+
 ## Status
 
 | Step | Status | Date | Note |
@@ -251,3 +263,4 @@ Measurement: GA4's web UI returned 403 to the browser extension on 2026-10-18, s
 | 2d | done | 2026-10-16 | visual hierarchy: full-width page, 46 px h1, monthly-equivalent prices at 44 to 48 px, one filled CTA, discounts block with a 40% tile, stacked mobile comparison; compact homepage section unchanged |
 | 10 | done | 2026-10-17 | site footer with 20 links in three groups plus a legal row on every public page; coding workspaces and private routes excluded; homepage ghost buttons folded in |
 | 11 | done | 2026-10-18 | homepage section shows regional prices and monthly equivalents; signed-out desktop header gets a Pricing link; locked pages show View pricing inside the unlock box |
+| 12 | built | 2026-11-12 | counted pricing page on `feat/pricing-counted`; verification, pull request and deployment pending |

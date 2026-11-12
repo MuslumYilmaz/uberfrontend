@@ -1,6 +1,6 @@
 import { DeferBlockBehavior, DeferBlockState, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Router, UrlTree } from '@angular/router';
+import { Router, RouterStateSnapshot, TitleStrategy, UrlTree } from '@angular/router';
 import { Component, DOCUMENT, NgZone } from '@angular/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { BugReportService } from './core/services/bug-report.service';
 import { AuthService, User } from './core/services/auth.service';
 import { AppSidebarDrawerService } from './core/services/app-sidebar-drawer.service';
+import { AnalyticsService } from './core/services/analytics.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @Component({
@@ -15,6 +16,15 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
   template: '',
 })
 class DummyDashboardComponent {}
+
+/** Records the title the router would set, without touching the test document. */
+class RecordingTitleStrategy extends TitleStrategy {
+  title = 'Previous page';
+
+  override updateTitle(snapshot: RouterStateSnapshot): void {
+    this.title = this.buildTitle(snapshot) ?? this.title;
+  }
+}
 
 function createDocumentAt(pathname: string): Document {
   const testLocation = {
@@ -68,6 +78,7 @@ describe('AppComponent', () => {
             { path: 'javascript/trivia/:slug', component: DummyDashboardComponent },
             { path: 'javascript/coding/:slug', component: DummyDashboardComponent },
             { path: 'system-design/:id', component: DummyDashboardComponent },
+            { path: 'titled', component: DummyDashboardComponent, title: 'Titled page' },
         ]),
         ],
     providers: [
@@ -175,6 +186,26 @@ describe('AppComponent', () => {
         expect(navigate).not.toHaveBeenCalled();
       });
     });
+  });
+
+  it('reports an in-app page view after the router sets the new page title', async () => {
+    // The router updates the title right after NavigationEnd; a page view sent inside NavigationEnd carried the
+    // previous page's title.
+    const titles = new RecordingTitleStrategy();
+    TestBed.overrideProvider(TitleStrategy, { useValue: titles });
+    const analytics = TestBed.inject(AnalyticsService);
+    const reported: Array<{ url: string; title: string }> = [];
+    spyOn(analytics, 'trackPageView').and.callFake((url?: string) => {
+      reported.push({ url: String(url), title: titles.title });
+    });
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const router = TestBed.inject(Router);
+    await fixture.ngZone!.run(() => router.navigateByUrl('/titled'));
+    await Promise.resolve();
+
+    expect(reported.filter((entry) => entry.url === '/titled')).toEqual([{ url: '/titled', title: 'Titled page' }]);
   });
 
   it('does not mount bug report dialog until requested', () => {

@@ -85,7 +85,7 @@ describe('PricingComponent', () => {
       src: 'pricing_page',
       surface: 'pricing_page',
       page: 'pricing',
-      page_layout: 'interview_sprint_v3',
+      page_layout: 'counted_v1',
       offer_version: 'interview_sprint_v3',
       checkout_surface: 'hosted_new_tab',
       recommended_plan: 'quarterly',
@@ -179,7 +179,7 @@ describe('PricingComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
-      page_layout: 'interview_sprint_v2',
+      page_layout: 'counted_v1',
       offer_version: 'interview_sprint_v2',
       checkout_surface: 'overlay',
     }));
@@ -239,6 +239,10 @@ describe('PricingComponent', () => {
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelector('.plan-compare')).toBeTruthy();
     expect(page.querySelector('[data-testid="pricing-counted-table"]')).toBeNull();
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
+      page_layout: 'interview_sprint_v1',
+      offer_version: 'pricing_baseline_v1',
+    }));
   });
 
   describe('with a company plan waiting', () => {

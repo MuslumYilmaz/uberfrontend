@@ -822,6 +822,28 @@ describe('PricingPlansSectionComponent', () => {
     expect(analytics.track).not.toHaveBeenCalledWith('pricing_value_anchor_seen', jasmine.anything());
   });
 
+  it('labels pricing events with the layout the visitor saw, and keeps the offer in offer_version', () => {
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    const lastParams = () => analytics.track.calls.mostRecent().args[1] as Record<string, unknown>;
+    const click = { previewType: 'counted_react', destination: '/react/coding/react-pagination-table' };
+
+    // The full page on any sprint offer is the counted layout.
+    for (const offer of [PRICING_V2_OFFER_VERSION, 'interview_sprint_v3']) {
+      component.offerVersion = offer;
+      component.trackUnlockPreviewClick(click);
+      expect(lastParams()).toEqual(jasmine.objectContaining({ page_layout: 'counted_v1', offer_version: offer, variant: 'full' }));
+    }
+
+    // The homepage section on a sprint offer and the baseline offer keep the labels their earlier numbers use.
+    component.variant = 'compact';
+    component.trackUnlockPreviewClick(click);
+    expect(lastParams()['page_layout']).toBe('interview_sprint_v2');
+    component.variant = 'full';
+    component.offerVersion = 'pricing_baseline_v1';
+    component.trackUnlockPreviewClick(click);
+    expect(lastParams()['page_layout']).toBe('interview_sprint_v1');
+  });
+
   it('tracks premium unlock preview clicks with pricing context', () => {
     const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
 

@@ -15,6 +15,26 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'pricing-page-counts-what-premium-opens',
+    weekOf: '2026-11-12',
+    title: 'The pricing page counts what Premium opens',
+    summary: 'Each plan says who it suits and what you pay today, a table counts the free and Premium tasks in every area, and choosing a plan before signing in names the plan and its price.',
+    category: 'Improved',
+    area: 'Pricing and billing',
+    changes: [
+      'Every plan opens the same Premium library, so each plan now says who it suits, what you pay today and when it renews. The quarterly and annual plans also show what the same months cost month to month.',
+      'A new table counts the free and Premium tasks for React, Angular, Vue, JavaScript, debugging, system design, tradeoff battles and incidents, company guides and interview formats, with locked examples linked by name.',
+      'The FAQ now holds the student and employer terms, and answers whether the free plan is a trial, which plan fits your timeline and which payment methods checkout accepts.',
+      'Choosing a plan before signing in shows the plan and the price you will pay, and checkout opens right after you sign in or create a free account.',
+      'Questions before buying go to support@frontendatlas.com, and a person answers.',
+    ],
+    cta: {
+      label: 'Compare plans',
+      route: '/pricing',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'new-plan-prices-regional-prices-and-annual-student-pricing',
     weekOf: '2026-10-16',
     title: 'New plan prices, regional prices and a redesigned pricing page',
