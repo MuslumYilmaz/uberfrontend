@@ -31,7 +31,7 @@ import {
 import { isLemonSqueezyCheckoutUrl, PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
-import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
+import { FaqLink, FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { premiumPracticeLabel, resolvePremiumPracticeCount } from '../../../../core/utils/premium-practice-count.util';
 import {
@@ -42,7 +42,9 @@ import {
 import { SHOWCASE_STATS } from '../../../../generated/content-metadata';
 
 type PricingVariant = 'full' | 'compact';
-type PricingFaqGroup = { id: string; title: string; items: { id: string; q: string; a: string }[] };
+type PricingFaqItem = { id: string; q: string; a: string; link?: FaqLink };
+type PricingFaqGroup = { id: string; title: string; items: PricingFaqItem[] };
+type StudentDiscountAction = { to: string[]; label: string; destination: string; queryParams?: Record<string, string> };
 
 // An estimate reads as one: whole units under 100, two significant digits above (808 → 810, 14,900 → 15,000).
 function roundAbout(value: number): number {
@@ -283,6 +285,18 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <a [routerLink]="['/legal/refund']">First purchase: full refund within 14 days</a>, no usage test.
           {{ taxTrustCopy() }}. {{ priceStabilityLine() }}
         </p>
+        <!-- A signed-in student's price status sits with the price terms; the terms themselves are in the FAQ. -->
+        <p
+          class="student-pricing-line"
+          *ngIf="studentPricingNotice() as notice"
+          role="status"
+          data-testid="student-pricing-line">
+          {{ notice.text }}
+          <a
+            *ngIf="notice.link"
+            [routerLink]="notice.link.to"
+            (click)="trackStudentDiscountClick('/profile')">{{ notice.link.label }}</a>
+        </p>
         <div class="pr-assurance__lifetime" data-testid="pricing-lifetime-secondary">
           <p>
             Prefer one payment?
@@ -306,13 +320,9 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </div>
       </div>
 
-      <!-- The pricing page projects its counted table here, so the counts ship with that page only; the compact
-           homepage section projects nothing. -->
-      <ng-container *ngIf="countedLayout()"><ng-content select="[pricingCountedTable]"></ng-content></ng-container>
-
       <section
         class="pr-discounts"
-        *ngIf="variant === 'full'"
+        *ngIf="variant === 'full' && !countedLayout()"
         data-testid="pricing-discounts"
         aria-labelledby="pricing-discounts-title">
         <h2 id="pricing-discounts-title" class="pr-discounts__title">Discounts and reimbursement</h2>
@@ -427,6 +437,27 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         Checkout is temporarily unavailable. Please try again shortly.
       </p>
 
+      <!-- The pricing page projects its counted table here, under the checkout notices so a notice stays next to the
+           buttons that raised it. The counts ship with that page only; the compact homepage section projects nothing. -->
+      <ng-container *ngIf="countedLayout()"><ng-content select="[pricingCountedTable]"></ng-content></ng-container>
+
+      <!-- Counted layout: who answers before a purchase, where the billing answers are, and the changelog. -->
+      <div class="pr-help" *ngIf="countedLayout()" data-testid="pricing-help-line">
+        <p>Pre-sales question? Email <a href="mailto:support@frontendatlas.com">support@frontendatlas.com</a>. A person answers.</p>
+        <p>
+          Refunds, invoices, cancelling:
+          <a
+            [routerLink]="[]"
+            fragment="pricing-faq"
+            queryParamsHandling="preserve"
+            data-testid="pricing-billing-faq-link">billing FAQ</a>
+        </p>
+        <p class="pr-help__updates" data-testid="pricing-updates-line">
+          Product and content updates:
+          <a [routerLink]="['/changelog']" (click)="trackChangelogClick('pricing_changelog_link')">changelog</a>
+        </p>
+      </div>
+
       <section class="plan-compare" *ngIf="variant === 'full' && !countedLayout()">
         <h2 class="pr-section-title">Free vs Premium</h2>
         <p class="muted pr-section-subtitle">What each side of the paywall contains today, with a locked example you can open.</p>
@@ -458,15 +489,16 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </table>
       </section>
 
-      <section class="pr-faq" *ngIf="variant === 'full'" aria-labelledby="pricing-faq-title">
+      <section id="pricing-faq" class="pr-faq" *ngIf="variant === 'full'" aria-labelledby="pricing-faq-title">
         <h2 id="pricing-faq-title" class="pr-section-title pr-faq__title">Frequently asked questions</h2>
         <app-faq-section
           [groups]="faqGroups"
-          [singleOpen]="false">
+          [singleOpen]="false"
+          (linkClick)="onFaqLinkClick($event)">
         </app-faq-section>
       </section>
 
-      <p class="pricing-updates-line" *ngIf="variant === 'full'" data-testid="pricing-updates-line">
+      <p class="pricing-updates-line" *ngIf="variant === 'full' && !countedLayout()" data-testid="pricing-updates-line">
         Product updates and content changes are published in the
         <a [routerLink]="['/changelog']" (click)="trackChangelogClick('pricing_changelog_link')">changelog</a>.
       </p>
@@ -636,26 +668,68 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       },
     ];
 
-  // The student answer names a regional price only for a visitor who has one; the groups are rebuilt once it is known.
-  private faqGroupsCache: { regional: boolean; groups: PricingFaqGroup[] } | null = null;
+  // The student answer names a regional price only for a visitor who has one, and on the counted layout links this
+  // account's next step; the groups are rebuilt when either changes.
+  private faqGroupsCache: { key: string; groups: PricingFaqGroup[] } | null = null;
   get faqGroups(): PricingFaqGroup[] {
     const regional = !!this.regionalPricing;
-    if (!this.faqGroupsCache || this.faqGroupsCache.regional !== regional) {
-      this.faqGroupsCache = { regional, groups: PricingPlansSectionComponent.faqGroupsFor(regional) };
+    const counted = this.countedLayout();
+    // The counted layout has no discounts block, so the student answer carries this account's next step.
+    const studentAction = counted ? this.studentDiscountAction() : null;
+    const key = `${regional}|${counted}|${studentAction?.destination ?? ''}`;
+    if (this.faqGroupsCache?.key !== key) {
+      this.faqGroupsCache = { key, groups: PricingPlansSectionComponent.faqGroupsFor({ regional, counted, studentAction }) };
     }
     return this.faqGroupsCache.groups;
   }
 
-  private static faqGroupsFor(regional: boolean): PricingFaqGroup[] {
-    return [
-    {
-      id: 'plans-billing',
-      title: 'Plans & Billing',
-      items: [
-        {
-          id: 'premium-includes',
-          q: 'What’s included in Premium?',
-          a: `Premium unlocks the deeper half of the library and the material behind it:<br>
+  /** The student answer's link routes by itself; this records the click the way the discounts block did. */
+  onFaqLinkClick(itemId: string): void {
+    if (itemId !== 'student-discount') return;
+    const action = this.studentDiscountAction();
+    if (action) this.trackStudentDiscountClick(action.destination);
+  }
+
+  private static faqGroupsFor(options: {
+    regional: boolean;
+    counted: boolean;
+    studentAction: StudentDiscountAction | null;
+  }): PricingFaqGroup[] {
+    const { regional, counted, studentAction } = options;
+    const support = '<code>support@frontendatlas.com</code>';
+    const student: PricingFaqItem = {
+      id: 'student-discount',
+      q: 'Is there a student discount?',
+      a: [
+        'Yes: 40% off the annual plan on your first purchase.',
+        'Sign up with your school email address, or set it as your account email, and verify it from your profile. The price is applied at checkout automatically, and the pricing page says so once your address is verified.',
+        ...(regional ? ['Student pricing is never combined with the regional price; you get the better of the two.'] : []),
+        `If your school address does not end in .edu or .ac, email ${support} from that address and we switch student pricing on for your account.`,
+      ].join('<br><br>'),
+    };
+    if (studentAction) {
+      student.link = {
+        label: studentAction.label,
+        to: studentAction.to,
+        queryParams: studentAction.queryParams,
+        testId: 'pricing-faq-student-action',
+      };
+    }
+    // The counted table already lists what Premium holds, so there the question is which access period to pick.
+    const planChoice: PricingFaqItem = counted
+      ? {
+        id: 'which-plan',
+        q: 'Which plan is right for me?',
+        a: `Every plan opens the same library, so choose by how long you need it.<br><br>
+An interview in 1–2 weeks: Monthly.<br>
+A hiring round this quarter: Quarterly.<br>
+Changing jobs this year: Annual.<br><br>
+Prefer to pay once? The one-time plan never renews.`,
+      }
+      : {
+        id: 'premium-includes',
+        q: 'What’s included in Premium?',
+        a: `Premium unlocks the deeper half of the library and the material behind it:<br>
 - the Premium coding prompts, each with a guided solution<br>
 - front-end system design walkthroughs with official-source checks<br>
 - debug scenarios and tradeoff battles<br>
@@ -663,7 +737,18 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
 - interview formats: timed rehearsals of company rounds on one clock, the merge request review, the find-the-bug case and the multi-file bug squash<br>
 - content updates while your plan is active<br><br>
 Every paid plan unlocks the same library; only the access period changes.`,
+      };
+    return [
+    {
+      id: 'plans-billing',
+      title: 'Plans & Billing',
+      items: [
+        {
+          id: 'free-plan',
+          q: 'Is the free plan a trial?',
+          a: 'No. The free plan has no end date and needs no card. Premium adds the locked tasks, walkthroughs and rehearsals on top of it.',
         },
+        planChoice,
         {
           id: 'cancel-anytime',
           q: 'Can I cancel a subscription anytime?',
@@ -681,31 +766,27 @@ For the exact terms, see <code>/legal/refund</code>.<br>
 To request a refund or report a wrong charge, email <code>support@frontendatlas.com</code> with your order ID.`,
         },
         {
-          id: 'employer-reimbursement',
-          q: 'Can my employer reimburse this?',
-          a: `Often, yes. Interview prep usually fits a learning or development budget.<br><br>
-Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.<br><br>
-If your employer needs anything else, email <code>support@frontendatlas.com</code>.`,
+          id: 'payment-methods',
+          q: 'Which payment methods work?',
+          a: `Checkout runs on Lemon Squeezy, our payment provider, and charges in US dollars. Every plan takes Visa, Mastercard, American Express and Discover cards, and PayPal; the one-time plan also takes Alipay.<br><br>
+UPI is not available.`,
         },
         {
-          id: 'student-discount',
-          q: 'Is there a student discount?',
-          a: [
-            'Yes: 40% off the annual plan on your first purchase.',
-            'Sign up with your school email address, or set it as your account email, and verify it from your profile. The price is applied at checkout automatically, and the pricing page says so once your address is verified.',
-            ...(regional ? ['Student pricing is never combined with the regional price; you get the better of the two.'] : []),
-            'If your school address does not end in .edu or .ac, email <code>support@frontendatlas.com</code> from that address and we switch student pricing on for your account.',
-          ].join('<br><br>'),
+          id: 'employer-reimbursement',
+          q: 'Can my employer pay?',
+          a: `Often, yes: interview prep usually fits a learning or development budget.<br><br>
+Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.<br><br>
+Buying for a team? Email ${support} for a multi-seat invoice.`,
         },
+        student,
         {
           id: 'payment-declined',
-          q: 'Checkout failed / payment was declined — what should I try first?',
-          a: `Quick checklist (most issues are one of these):<br><br>
-- Re-check billing details (name, address, ZIP/postal code if required)<br>
-- Try a different card (or a virtual card)<br>
-- Disable VPN/ad blockers that can break checkout flows<br>
-- Make sure your bank allows online/international payments<br><br>
-If it still fails: email <code>support@frontendatlas.com</code> with the time of the attempt + your account email.`,
+          q: 'My payment was declined. What should I try?',
+          a: `Most declines come from one of these:<br>
+- billing details that do not match the card: name, address or postal code<br>
+- a bank that blocks online or international payments<br>
+- a VPN or ad blocker that breaks the checkout<br><br>
+Try another card or PayPal. If it still fails, email ${support} with the time of the attempt and your account email.`,
         },
       ],
     },
@@ -715,13 +796,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
       items: [
         {
           id: 'solutions-and-explanations',
-          q: 'Do exercises include solutions and explanations?',
-          a: `Yes. Every coding question, free or Premium, includes a guided solution.<br><br>
-Solutions focus on what matters in interviews:<br>
-- a clean baseline implementation<br>
-- edge cases and common mistakes<br>
-- tradeoffs between approaches when there is more than one right answer<br><br>
-Concept questions carry worked answers, and system design walkthroughs are the solution itself. Some prompts stay open-ended on purpose to mirror real interview discussion.`,
+          q: 'Do tasks include solutions and explanations?',
+          a: `Yes. Every coding task, free or Premium, comes with a solution.<br><br>
+The JavaScript, React, Angular, Vue, HTML and CSS solutions are guided: a clean baseline, the edge cases and common mistakes, and the tradeoffs when more than one approach works. The short JavaScript debug tasks show the fixed code.<br><br>
+Concept questions carry worked answers, and the system design walkthroughs are the solution themselves. Some prompts stay open-ended on purpose, as real interview discussions do.`,
         },
         {
           id: 'run-tests',
@@ -1071,12 +1149,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   // A guest signs up with the school address; a signed-in account adds it in
   // the profile. Eligible and pending accounts are covered by studentPricingNotice().
-  studentDiscountAction(): {
-    to: string[];
-    label: string;
-    destination: string;
-    queryParams?: Record<string, string>;
-  } | null {
+  studentDiscountAction(): StudentDiscountAction | null {
     if (this.variant !== 'full' || this.studentPricingNotice()) return null;
     const user = this.auth.user();
     if (!user) {

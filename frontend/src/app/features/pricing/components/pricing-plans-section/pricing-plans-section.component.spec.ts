@@ -282,6 +282,75 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
   });
 
+  it('moves the student and employer terms into the FAQ on the counted layout and points to them from one help line', () => {
+    const auth = TestBed.inject(AuthService) as unknown as { user: jasmine.Spy };
+    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
+    const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const squash = (value: string | null | undefined) => (value || '').replace(/\s+/g, ' ').trim();
+    const items = () => component.faqGroups.flatMap((group) => group.items);
+    const answer = (id: string) => items().find((item) => item.id === id)?.a || '';
+    const faqLink = () => page.querySelector('[data-testid="pricing-faq-student-action"]') as HTMLAnchorElement | null;
+
+    // No discounts block and no second changelog line: one help line under the table points to the FAQ.
+    expect(page.querySelector('[data-testid="pricing-discounts"]')).toBeNull();
+    const help = page.querySelector('[data-testid="pricing-help-line"]') as HTMLElement;
+    expect(squash(help.textContent)).toContain('Pre-sales question? Email support@frontendatlas.com. A person answers.');
+    expect(help.querySelector('a[href="mailto:support@frontendatlas.com"]')).toBeTruthy();
+    expect(help.querySelector('[data-testid="pricing-billing-faq-link"]')?.getAttribute('href')).toMatch(/#pricing-faq$/);
+    expect(page.querySelector('section#pricing-faq')).toBeTruthy();
+    expect(page.querySelectorAll('[data-testid="pricing-updates-line"]').length).toBe(1);
+    expect(help.querySelector('[data-testid="pricing-updates-line"] a')?.getAttribute('href')).toBe('/changelog');
+
+    // The table already lists what Premium holds, so the FAQ asks which access period fits instead.
+    expect(items().map((item) => item.id)).toEqual([
+      'free-plan', 'which-plan', 'cancel-anytime', 'refunds', 'payment-methods', 'employer-reimbursement',
+      'student-discount', 'payment-declined', 'solutions-and-explanations', 'run-tests',
+    ]);
+    expect(answer('employer-reimbursement')).toContain('emails a receipt for every order');
+    expect(answer('employer-reimbursement')).toContain('Buying for a team?');
+    expect(answer('student-discount')).toContain('40% off the annual plan on your first purchase');
+    expect(answer('student-discount')).not.toContain('regional price');
+
+    // A guest finds the signup link under the student answer. It stays out of the tab order until the answer
+    // opens, and a click is tracked as the discounts block tracked it.
+    expect(faqLink()?.getAttribute('href')).toBe('/auth/signup?src=pricing_student_discount');
+    expect(faqLink()?.getAttribute('tabindex')).toBe('-1');
+    const studentQuestion = Array.from(page.querySelectorAll('.faq-q'))
+      .find((button) => squash(button.textContent) === 'Is there a student discount?') as HTMLButtonElement;
+    studentQuestion.click();
+    fixture.detectChanges();
+    expect(faqLink()?.hasAttribute('tabindex')).toBeFalse();
+    faqLink()!.click();
+    expect(analytics.track).toHaveBeenCalledWith('pricing_student_discount_clicked', jasmine.objectContaining({
+      destination: '/auth/signup',
+      auth_state: 'guest',
+    }));
+    expect(navigate).toHaveBeenCalled();
+
+    // A verified student reads the price status beside the price terms, and the answer needs no link.
+    const baseUser = { _id: 'u1', username: 'student', email: 'ada@university.edu', role: 'user', prefs: {}, createdAt: '2026-01-01T00:00:00Z' };
+    auth.user.and.returnValue({ ...baseUser, studentDiscountEligible: true } as any);
+    fixture.detectChanges();
+    expect(squash(page.querySelector('[data-testid="pricing-assurance"] [data-testid="student-pricing-line"]')?.textContent))
+      .toContain('40% off the annual plan is applied at checkout on your first purchase');
+    expect(faqLink()).toBeNull();
+
+    // A signed-in free account without a school email is sent to the profile.
+    auth.user.and.returnValue({ ...baseUser } as any);
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="student-pricing-line"]')).toBeNull();
+    expect(faqLink()?.getAttribute('href')).toBe('/profile');
+
+    // Only a visitor with a regional price reads how the two prices combine.
+    component.regionalPricing = { countryCode: 'TR', countryName: 'Türkiye', multiplier: 0.5, prices: { annual: 3950 } };
+    fixture.detectChanges();
+    expect(answer('student-discount')).toContain('Student pricing is never combined with the regional price; you get the better of the two.');
+  });
+
   it('puts the lines of a waiting company plan on the card it recommends, and moves the highlight with it', () => {
     component.offerVersion = PRICING_V2_OFFER_VERSION;
     fixture.componentRef.setInput('featureLead', ['Your full ElevenLabs plan', '31 Premium React tasks with a live preview']);
@@ -621,7 +690,10 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.querySelector('.plan-compare')?.textContent || '')).toContain('Timed rehearsals of company rounds');
     expect(premiumIncludes?.a || '').not.toContain('Typically');
     expect(runTests?.a || '').toContain('Every JavaScript and debugging task has runnable checks');
-    expect(solutions?.a || '').toContain('Every coding question, free or Premium, includes a guided solution');
+    // The short JavaScript debug tasks show the fixed code only, so the answer must not promise a guided solution for every task.
+    expect(solutions?.a || '').toContain('Every coding task, free or Premium, comes with a solution.');
+    expect(solutions?.a || '').toContain('The short JavaScript debug tasks show the fixed code.');
+    expect(solutions?.a || '').not.toContain('includes a guided solution');
     for (const item of faqItems) {
       expect((item.a || '').toLowerCase()).not.toContain('where available');
       expect((item.a || '').toLowerCase()).not.toContain('supported question sets');
@@ -637,6 +709,10 @@ describe('PricingPlansSectionComponent', () => {
     expect(student?.a || '').not.toContain('regional price');
     expect(student?.a || '').toContain('verify it from your profile');
     expect(student?.a || '').toContain('applied at checkout automatically');
+    // The baseline page keeps its discounts block, which carries the student link, and its own question about Premium.
+    expect(student && 'link' in student).toBeFalse();
+    expect(premiumIncludes).toBeTruthy();
+    expect(faqItems.find((item) => item.id === 'which-plan')).toBeUndefined();
   });
 
   it('keeps the real workspace proof out of the baseline offer', () => {

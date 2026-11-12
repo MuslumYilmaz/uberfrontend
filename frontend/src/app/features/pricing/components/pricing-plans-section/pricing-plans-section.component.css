@@ -974,6 +974,30 @@
   .pr-grid--counted .pr-plan--rec{order:-1}
   .pr-wrap--full .pr-assurance__lifetime .btn{width:100%}
 }
+/* Counted layout: the pre-sales contact and the billing FAQ on one row, the changelog in small type under them. */
+.pr-help{
+  margin-top:24px;
+  padding-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:8px 24px;
+  border-top:1px solid var(--uf-border-subtle);
+  color:var(--uf-text-secondary);
+  font-size:14px;
+  line-height:1.5;
+}
+.pr-help p{margin:0;min-width:0}
+.pr-help__updates{flex-basis:100%;font-size:13px}
+/* Gold on grey body text needs the underline to pass axe's link-in-text-block rule. */
+.pr-help a{
+  color:var(--uf-accent);
+  font-weight:600;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  text-decoration-thickness:1.5px;
+  overflow-wrap:anywhere;
+}
 .pr-discounts{margin-top:18px;display:grid;gap:12px}
 .pr-discounts__title{
   margin:0;

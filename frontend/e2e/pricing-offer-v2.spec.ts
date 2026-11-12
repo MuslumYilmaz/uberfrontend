@@ -55,8 +55,11 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   );
   await expect(quarterly.locator('.btn')).not.toHaveClass(/btn--outline/);
   await expect(monthly.locator('.btn')).toHaveClass(/btn--outline/);
-  await expect(page.getByTestId('pricing-discounts')).toContainText('40% off');
-  await expect(page.getByTestId('pricing-student-action')).toHaveAttribute('href', '/auth/signup?src=pricing_student_discount');
+  // The student and employer terms moved into the FAQ; one help line under the table points there.
+  await expect(page.getByTestId('pricing-discounts')).toHaveCount(0);
+  const help = page.getByTestId('pricing-help-line');
+  await expect(help).toContainText('Pre-sales question? Email support@frontendatlas.com. A person answers.');
+  await expect(help.getByRole('link', { name: 'support@frontendatlas.com' })).toHaveAttribute('href', 'mailto:support@frontendatlas.com');
   await expect(page.locator('app-sidebar')).toHaveCount(0);
   // The counted table replaces the Free vs Premium table: catalog counts per area and locked examples.
   const counted = page.getByTestId('pricing-counted-table');
@@ -80,6 +83,14 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   expect(desktopBoxes[0]!.x).toBeLessThan(desktopBoxes[1]!.x);
   expect(desktopBoxes[1]!.x).toBeLessThan(desktopBoxes[2]!.x);
 
+  // "billing FAQ" stays on /pricing and lands on the FAQ, where the student answer carries the signup link.
+  await help.getByRole('link', { name: 'billing FAQ' }).click();
+  await expect(page).toHaveURL(/\/pricing#pricing-faq$/);
+  await expect(page.getByRole('heading', { name: 'Frequently asked questions' })).toBeInViewport();
+  await page.getByRole('button', { name: 'Is there a student discount?' }).click();
+  await expect(page.getByTestId('pricing-faq-student-action')).toBeVisible();
+  await expect(page.getByTestId('pricing-faq-student-action')).toHaveAttribute('href', '/auth/signup?src=pricing_student_discount');
+
   for (const width of [834, 390, 360]) {
     await page.setViewportSize({ width, height: 900 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
@@ -95,10 +106,10 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   expect(mobileMonthly!.y).toBeLessThan(mobileAnnual!.y);
   // On a phone the plan cards are the page: no sticky bar covers the terms below them, and without a regional
   // price for this visitor none is mentioned.
-  await page.getByTestId('pricing-discounts').scrollIntoViewIfNeeded();
-  await expect(page.getByTestId('pricing-discounts')).toBeInViewport();
+  await page.getByTestId('pricing-help-line').scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('pricing-help-line')).toBeInViewport();
   await expect(page.getByTestId('conversion-mobile-sticky')).toHaveCount(0);
-  await expect(page.getByTestId('pricing-discounts')).not.toContainText('regional price');
+  await expect(page.locator('#faq-a-student-discount')).not.toContainText('regional price');
   await expect(primaryCards).toHaveCount(3);
   expect(await primaryCards.evaluateAll((cards) => cards.map((card) => (
     card.classList.contains('pr-card--quarterly')
@@ -157,7 +168,7 @@ test('regional pricing shows the list price struck through next to the regional 
   await expect(page.getByTestId('pricing-lifetime-secondary')).toContainText('$99.50');
   await expect(page.locator('body')).not.toContainText(/limited time|offer ending|was \$/i);
   // The student terms name the regional price only for a visitor who has one.
-  await expect(page.getByTestId('pricing-discounts')).toContainText('Never combined with the regional price: you get the better of the two.');
+  await expect(page.locator('#faq-a-student-discount')).toContainText('Student pricing is never combined with the regional price; you get the better of the two.');
 
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);

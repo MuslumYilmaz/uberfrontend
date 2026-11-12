@@ -1,5 +1,6 @@
 import { WritableSignal, signal } from '@angular/core';
 import { PricingCountedTableComponent } from './components/pricing-counted-table/pricing-counted-table.component';
+import { PricingPlansSectionComponent } from './components/pricing-plans-section/pricing-plans-section.component';
 import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -196,6 +197,15 @@ describe('PricingComponent', () => {
     expect(table.closest('app-pricing-plans-section')).toBeTruthy();
     expect(page.querySelector('[data-testid="pricing-assurance"]')!.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(page.querySelector('.plan-compare')).toBeNull();
+    // Table, then the help line, then the FAQ it links to.
+    const help = page.querySelector('[data-testid="pricing-help-line"]') as HTMLElement;
+    expect(table.compareDocumentPosition(help) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(help.compareDocumentPosition(page.querySelector('#pricing-faq')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // A checkout notice (a blocked window, a retry) stays next to the buttons that raised it, above the table.
+    const plans = fixture.debugElement.query(By.directive(PricingPlansSectionComponent)).componentInstance as PricingPlansSectionComponent;
+    plans.checkoutNotice = 'Your browser blocked the checkout window.';
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="checkout-notice"]')!.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     fixture.debugElement.query(By.directive(PricingCountedTableComponent)).componentInstance.exampleClick.emit({
       previewType: 'counted_react',
