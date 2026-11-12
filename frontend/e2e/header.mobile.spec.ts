@@ -100,6 +100,26 @@ async function openMobileMenuStable(page: import('@playwright/test').Page) {
   throw new Error('Unable to open stable mobile header menu.');
 }
 
+// The header closes its menus on every NavigationEnd. On a cold load a click can land before the first navigation ends,
+// so the prep menu opens and closes again a moment later. Wait for the route's heading, then retry like the helpers above.
+async function openStudyMenuStable(page: import('@playwright/test').Page) {
+  const menu = page.getByRole('navigation', { name: 'Interview prep', exact: true });
+  const toggle = page.getByTestId('header-mobile-study-button');
+  await expect(page.locator('main h1').first()).toBeVisible();
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (!(await menu.isVisible().catch(() => false))) await toggle.click();
+    try {
+      await expect(menu).toBeVisible({ timeout: 2500 });
+      return;
+    } catch {
+      await page.keyboard.press('Escape');
+    }
+  }
+
+  throw new Error('Unable to open stable mobile prep menu.');
+}
+
 async function closeMarketingMobileMenuIfOpen(page: import('@playwright/test').Page) {
   const menu = page.getByTestId('marketing-header-mobile-menu');
   if ((await menu.count()) === 0) return;
@@ -159,8 +179,7 @@ test.describe('header mobile layout', () => {
         await openMobileMenuStable(page);
         await closeMobileMenuIfOpen(page);
 
-        await page.getByTestId('header-mobile-study-button').click();
-        await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toBeVisible();
+        await openStudyMenuStable(page);
         await expect(page.getByTestId('header-study-interview_questions')).toHaveAttribute('href', '/interview-questions');
         await page.keyboard.press('Escape');
         await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toHaveCount(0);
@@ -229,7 +248,7 @@ test.describe('header mobile layout', () => {
         const mobile = viewport.width <= 980;
         if (mobile) {
           await expect(page.getByTestId('header-interview-hub')).toBeHidden();
-          await page.getByTestId('header-mobile-study-button').click();
+          await openStudyMenuStable(page);
           await page.getByTestId('header-study-tab-practice').click();
           await page.getByTestId('header-study-interview_questions').click();
           await expect(page.getByRole('navigation', { name: 'Interview prep', exact: true })).toHaveCount(0);
