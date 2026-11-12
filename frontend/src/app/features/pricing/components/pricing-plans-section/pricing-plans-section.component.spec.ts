@@ -311,7 +311,6 @@ describe('PricingPlansSectionComponent', () => {
       'student-discount', 'payment-declined', 'solutions-and-explanations', 'run-tests',
     ]);
     expect(answer('employer-reimbursement')).toContain('emails a receipt for every order');
-    expect(answer('employer-reimbursement')).toContain('Buying for a team?');
     expect(answer('student-discount')).toContain('40% off the annual plan on your first purchase');
     expect(answer('student-discount')).not.toContain('regional price');
 
@@ -880,6 +879,45 @@ describe('PricingPlansSectionComponent', () => {
     const storedIntent = sessionStorage.getItem('fa:checkout:intent:v1') || '';
     expect(storedIntent).toContain('quarterly');
     expect(storedIntent).toContain('interview_august');
+    // The baseline offer keeps the plain prompt.
+    expect(component.loginAccountStep).toBeNull();
+  });
+
+  it('opens the account step of a sprint offer with the plan and the price this visitor pays today', async () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    component.checkoutSurface = 'overlay';
+    component.paymentsEnabled = true;
+    component.paymentsConfigReady = true;
+    component.checkoutAvailability = { monthly: true, quarterly: true, annual: true, lifetime: true };
+    fixture.detectChanges();
+
+    await component.onCta('quarterly');
+    fixture.detectChanges();
+    expect(component.loginRequiredOpen).toBeTrue();
+    expect(component.loginAccountStep).toEqual({
+      title: 'One step before checkout',
+      body: 'Checkout opens right after you sign in or create a free account.',
+      kicker: 'Step 1 of 2 · Quarterly · $29 USD today',
+      reason: 'Why an account first: your Premium access, saved plan and solved tasks attach to it.',
+      assurance: '14-day refund on your first purchase, no usage test. Secure checkout by Lemon Squeezy. Taxes included.',
+    });
+    const squash = (selector: string) => (document.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    expect(squash('[data-testid="login-required-kicker"]')).toBe('Step 1 of 2 · Quarterly · $29 USD today');
+    expect(squash('[data-testid="login-required-title"]')).toBe('One step before checkout');
+
+    // A visitor with a regional price reads the price checkout will charge; the one-time plan is paid once.
+    component.loginRequiredOpen = false;
+    component.regionalPricing = { countryCode: 'IN', countryName: 'India', multiplier: 0.4, prices: { quarterly: 1160, lifetime: 7960 } };
+    await component.onCta('quarterly');
+    expect(component.loginAccountStep?.kicker).toBe('Step 1 of 2 · Quarterly · $11.60 USD today');
+    await component.onCta('lifetime');
+    expect(component.loginAccountStep?.kicker).toBe('Step 1 of 2 · Lifetime · $79.60 USD once');
+
+    // A new-tab checkout waits for a click after sign-in, so that surface does not promise it opens by itself.
+    component.checkoutSurface = 'hosted_new_tab';
+    await component.onCta('annual');
+    expect(component.loginAccountStep?.body).toBe('Sign in or create a free account. Your plan is kept for checkout when you are back.');
+    document.querySelectorAll('.p-dialog-mask').forEach((node) => node.remove());
   });
 
   it('auto-continues a valid post-auth checkout intent only for offer v2', async () => {

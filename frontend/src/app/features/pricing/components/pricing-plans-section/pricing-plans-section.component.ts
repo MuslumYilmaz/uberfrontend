@@ -30,7 +30,10 @@ import {
 } from '../../../../core/utils/external-window.util';
 import { isLemonSqueezyCheckoutUrl, PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
-import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
+import {
+  AuthPromptAccountStep,
+  LoginRequiredDialogComponent,
+} from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqLink, FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { premiumPracticeLabel, resolvePremiumPracticeCount } from '../../../../core/utils/premium-practice-count.util';
@@ -510,8 +513,9 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         [directAuthActions]="isOfferV2()"
         [offerVersion]="normalizedOfferVersion()"
         [checkoutSurface]="normalizedCheckoutSurface()"
-        [title]="loginRequiredTitle"
-        [body]="loginRequiredBody"
+        [title]="loginAccountStep?.title ?? loginRequiredTitle"
+        [body]="loginAccountStep?.body ?? loginRequiredBody"
+        [accountStep]="loginAccountStep"
         [signupLabel]="loginRequiredSignupLabel"
         [loginLabel]="loginRequiredLoginLabel"
         [redirectTo]="loginRedirectTo">
@@ -553,6 +557,8 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
   loginRequiredBody = 'Create a free account to keep your purchase connected to your progress. Already have an account? Sign in.';
   loginRequiredSignupLabel = 'Create free account';
   loginRequiredLoginLabel = 'Sign in';
+  /** Sprint offers: the account step for the plan a guest picked. The baseline offer keeps the plain prompt. */
+  loginAccountStep: (AuthPromptAccountStep & { title: string; body: string }) | null = null;
   checkoutNotice: string | null = null;
   pendingCheckoutIntent: CheckoutIntent | null = null;
   retryCheckout: {
@@ -775,8 +781,7 @@ UPI is not available.`,
           id: 'employer-reimbursement',
           q: 'Can my employer pay?',
           a: `Often, yes: interview prep usually fits a learning or development budget.<br><br>
-Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.<br><br>
-Buying for a team? Email ${support} for a multi-seat invoice.`,
+Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.`,
         },
         student,
         {
@@ -1595,6 +1600,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
           // Return to a visible continuation banner after authentication. The
           // original plan/source remain in sessionStorage, not the public URL.
           this.loginRedirectTo = '/pricing';
+          this.loginAccountStep = this.isOfferV2() ? this.accountStepFor(planId) : null;
           this.loginRequiredOpen = true;
           return;
         }
@@ -1609,6 +1615,26 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
     this.trackPlanClick(planId, 'checkout_unavailable');
     this.setCheckoutNotice('Checkout is temporarily unavailable. Please try again shortly.');
+  }
+
+  /**
+   * The account step names the plan and what this visitor pays today (the regional price where one applies), says why
+   * the account comes first, and repeats the purchase terms. Back on /pricing after any sign-in, the saved intent opens
+   * an overlay checkout by itself; a new-tab checkout needs a click there, so that surface promises less.
+   */
+  private accountStepFor(planId: PlanId): AuthPromptAccountStep & { title: string; body: string } {
+    const plan = this.plans.find((item) => item.id === planId);
+    const detail = this.planDetailForDisplay(planId);
+    const when = detail?.interval === 'one_time' ? 'once' : 'today';
+    return {
+      title: 'One step before checkout',
+      body: this.normalizedCheckoutSurface() === 'overlay'
+        ? 'Checkout opens right after you sign in or create a free account.'
+        : 'Sign in or create a free account. Your plan is kept for checkout when you are back.',
+      kicker: `Step 1 of 2 · ${plan?.title ?? 'Premium'} · ${this.displayPrice(planId)} ${detail?.currency || 'USD'} ${when}`,
+      reason: 'Why an account first: your Premium access, saved plan and solved tasks attach to it.',
+      assurance: `14-day refund on your first purchase, no usage test. Secure checkout by Lemon Squeezy. ${this.taxTrustCopy()}.`,
+    };
   }
 
   canShowPendingCheckoutIntent(): boolean {
