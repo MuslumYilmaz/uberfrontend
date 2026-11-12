@@ -180,6 +180,42 @@ const FAMILIES = {
       'cart-add', 'cart-plus-minus', 'cart-minus-removes', 'cart-remove', 'cart-row-details', 'cart-totals',
     ]],
   },
+  likeButton: {
+    react: ['react-like-button', ['like-toggles', 'like-count-follows-each-click']],
+    angular: ['angular-like-button', ['like-toggles', 'like-count-follows-each-click']],
+    vue: ['vue-like-button', ['like-toggles', 'like-count-follows-each-click']],
+  },
+  counterButtons: {
+    react: ['react-dynamic-counter-buttons', ['counter-buttons-click-appends', 'counter-buttons-values-kept']],
+    angular: ['angular-dynamic-counter-buttons', ['counter-buttons-click-appends', 'counter-buttons-values-kept']],
+    vue: ['vue-dynamic-counter-buttons', ['counter-buttons-click-appends', 'counter-buttons-values-kept']],
+  },
+  imageSlider: {
+    react: ['react-image-slider', ['slider-first-slide', 'slider-next-previous', 'slider-dots']],
+    angular: ['angular-image-slider-starter', ['slider-first-slide', 'slider-next-previous', 'slider-dots']],
+    vue: ['vue-image-slider', ['slider-first-slide', 'slider-next-previous', 'slider-dots']],
+  },
+  dynamicTable: {
+    // The texts let 0 or a negative number either empty the table or clamp to 1, so no check decides that.
+    react: ['react-dynamic-table', ['table-generate', 'table-updates-on-generate']],
+    angular: ['angular-dynamic-table-starter', ['table-generate', 'table-updates-on-generate']],
+    vue: ['vue-dynamic-table', ['table-generate', 'table-updates-on-generate']],
+  },
+  ticTacToe: {
+    react: ['react-tictactoe', ['ttt-start', 'ttt-turns', 'ttt-win', 'ttt-draw', 'ttt-reset']],
+    angular: ['angular-tictactoe-starter', ['ttt-start', 'ttt-turns', 'ttt-win', 'ttt-draw', 'ttt-reset']],
+    vue: ['vue-tictactoe', ['ttt-start', 'ttt-turns', 'ttt-win', 'ttt-draw', 'ttt-reset']],
+  },
+  // Tasks written for one framework only.
+  debugDoubleRender: {
+    react: ['react-debug-double-render', ['double-render-count-parity', 'double-render-one-per-click', 'double-render-reset']],
+  },
+  chatStreaming: {
+    react: ['react-chat-streaming-ui', ['chat-send', 'chat-streams-reply', 'chat-stop', 'chat-cleanup']],
+  },
+  inputOutputTwoWay: {
+    angular: ['angular-input-output-two-way', ['two-way-value', 'two-way-liked']],
+  },
   transferList: {
     react: ['react-transfer-list', [
       'transfer-buttons-follow-selection', 'transfer-move-down', 'transfer-move-up', 'transfer-moved-unselected',

@@ -1423,7 +1423,252 @@
     "seo": {
       "title": "Build Vue Image Slider with Navigation Controls",
       "description": "Create an image slider with previous and next navigation, boundary-aware controls, and current-slide display updates."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "slider-first-slide",
+        "name": "Starts on Slide 1 of 3 with its title, Previous disabled and Next enabled",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 1 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Snowflakes glowing under city lights"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": true
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            },
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "slider-next-previous",
+        "name": "Next and Previous move one slide at a time and stop at the ends",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 2 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Forest trail in the morning"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 3 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "City lights at night"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            },
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 3 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "City lights at night"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 2 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Forest trail in the morning"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 1 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Snowflakes glowing under city lights"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "slider-dots",
+        "name": "A dot jumps to its slide, and the current slide's dot stands out",
+        "steps": [
+          {
+            "type": "expectStandsOut",
+            "selector": ".dots button",
+            "index": 0,
+            "among": {
+              "selector": ".dots button"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".dots button",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 3 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "City lights at night"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".dots button",
+            "index": 2,
+            "among": {
+              "selector": ".dots button"
+            }
+          },
+          {
+            "type": "click",
+            "selector": ".dots button",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Slide 1 of 3"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Snowflakes glowing under city lights"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectStandsOut",
+            "selector": ".dots button",
+            "index": 0,
+            "among": {
+              "selector": ".dots button"
+            }
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-tabs-switcher",
@@ -4264,7 +4509,126 @@
     "seo": {
       "title": "Build Dynamic Rows and Columns Table in Vue 3",
       "description": "Generate a table from user-defined row and column counts, render stable labels, and handle missing or invalid cell values safely."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "table-generate",
+        "name": "Generate builds a table with the typed number of rows and columns",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 0,
+            "value": "3"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 1,
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": "table td",
+            "count": 12
+          },
+          {
+            "type": "expectCount",
+            "selector": "table tr:has(td)",
+            "count": 3
+          }
+        ]
+      },
+      {
+        "id": "table-updates-on-generate",
+        "name": "New numbers change the table only when Generate is clicked",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 0,
+            "value": "3"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 1,
+            "value": "4"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": "table td",
+            "count": 12
+          },
+          {
+            "type": "expectCount",
+            "selector": "table tr:has(td)",
+            "count": 3
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 0,
+            "value": "2"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "spinbutton"
+            },
+            "index": 1,
+            "value": "5"
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
+            "selector": "table td",
+            "count": 12
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": "table td",
+            "count": 10
+          },
+          {
+            "type": "expectCount",
+            "selector": "table tr:has(td)",
+            "count": 2
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-nested-checkboxes",
@@ -5925,7 +6289,322 @@
     "seo": {
       "title": "Build Tic Tac Toe Game in Vue",
       "description": "Create a 3x3 game board with turn-based moves, blocked occupied cells, winner-or-draw status, and reset behavior."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "ttt-start",
+        "name": "Starts with nine empty cells and Next: X",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".cell",
+            "count": 9
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "X"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "O"
+            },
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: X"
+            },
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "ttt-turns",
+        "name": "Turns alternate X and O, and a filled cell keeps its mark",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".cell",
+            "index": 0,
+            "text": "X",
+            "match": "equals"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: O"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".cell",
+            "index": 0,
+            "text": "X",
+            "match": "equals"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: O"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 4
+          },
+          {
+            "type": "expectText",
+            "selector": ".cell",
+            "index": 4,
+            "text": "O",
+            "match": "equals"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: X"
+            },
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "ttt-win",
+        "name": "Three in a row wins, and no move counts after it",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 3
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 4
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Winner: X"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 5
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectText",
+            "selector": ".cell",
+            "index": 5,
+            "text": "",
+            "match": "equals"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Winner: X"
+            },
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "ttt-draw",
+        "name": "A full board without a line is a draw",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 2
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 4
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 3
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 5
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 7
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 6
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 8
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Draw"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Winner: X"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Winner: O"
+            },
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "ttt-reset",
+        "name": "Reset clears the board and gives X the first move, after a win too",
+        "steps": [
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 0
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 3
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 4
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Winner: X"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reset"
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "X"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "O"
+            },
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: X"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".cell",
+            "index": 4
+          },
+          {
+            "type": "expectText",
+            "selector": ".cell",
+            "index": 4,
+            "text": "X",
+            "match": "equals"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Next: O"
+            },
+            "count": 1
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-like-button",
@@ -6010,7 +6689,128 @@
     "seo": {
       "title": "Build Like Button Toggle in Vue 3",
       "description": "Create a like button that toggles state, updates the visible count correctly on each click, and prevents the displayed total from going below zero."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "like-toggles",
+        "name": "A click likes: Liked, one more, and the active style; a second click undoes all three",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Like",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".count",
+            "text": "120",
+            "match": "equals"
+          },
+          {
+            "type": "expectClass",
+            "by": {
+              "role": "button"
+            },
+            "className": "active",
+            "expected": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Liked",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".count",
+            "text": "121",
+            "match": "equals"
+          },
+          {
+            "type": "expectClass",
+            "by": {
+              "role": "button"
+            },
+            "className": "active"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Like",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".count",
+            "text": "120",
+            "match": "equals"
+          },
+          {
+            "type": "expectClass",
+            "by": {
+              "role": "button"
+            },
+            "className": "active",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "like-count-follows-each-click",
+        "name": "Each click moves the count one step in its own direction",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "121",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "120",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".count",
+            "text": "121",
+            "match": "equals"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-progress-bar-thresholds",
@@ -7119,7 +7919,283 @@
     "seo": {
       "title": "Build Dynamic Counter Buttons in Vue 3",
       "description": "Create dynamic step buttons users can add or remove, then update one shared counter by each selected step value."
-    }
+    },
+    "frameworkTests": [
+      {
+        "id": "counter-buttons-click-appends",
+        "name": "Starts with one 0 button; a click adds 1 to that button only and appends a new 0",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 1,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 3
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 1,
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 2,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 1,
+            "text": "2",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 2,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 3,
+            "text": "0",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "counter-buttons-values-kept",
+        "name": "Earlier buttons keep their values as new ones appear",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 0
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 0
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "3",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 1,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 2,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 3,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button"
+            },
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "button"
+            },
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 0,
+            "text": "3",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 1,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 2,
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 3,
+            "text": "0",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "button"
+            },
+            "index": 4,
+            "text": "0",
+            "match": "equals"
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "vue-chips-input-autocomplete",

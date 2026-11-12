@@ -1273,6 +1273,7 @@ function assertPremiumPressureScenario({ family, expectedQuestions, roundIds, ch
 }
 
 function assertChatStreamingPressureMode() {
+  // The normal Chat Streaming checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'chat-streaming-ui',
     label: 'Chat Streaming',
@@ -1281,7 +1282,6 @@ function assertChatStreamingPressureMode() {
         id: 'react-chat-streaming-ui',
         starter: 'assets/sb/react/question/react-chat-streaming-ui.v1.json',
         solution: 'assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['stream-the-answer', 'stop-keeps-the-text', 'failure-and-retry', 'announcements-and-cleanup'],
@@ -1388,6 +1388,7 @@ function assertUseEffectOncePressureMode() {
 }
 
 function assertDebugDoubleRenderPressureMode() {
+  // The normal Debug Double Render checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'debug-double-render',
     label: 'Debug Double Render',
@@ -1396,7 +1397,6 @@ function assertDebugDoubleRenderPressureMode() {
         id: 'react-debug-double-render',
         starter: 'assets/sb/react/question/react-debug-double-render.v1.json',
         solution: 'assets/sb/react/solution/react-debug-double-render-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['one-click-one-render', 'do-not-copy-props', 'typing-leaves-the-badge-alone', 'many-updates-one-render'],
@@ -1427,6 +1427,7 @@ function assertDebugDoubleRenderPressureMode() {
 }
 
 function assertTwoWayControlPressureMode() {
+  // The normal Two-way Control checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'input-output-two-way',
     label: 'Two-way Control',
@@ -1435,7 +1436,6 @@ function assertTwoWayControlPressureMode() {
         id: 'angular-input-output-two-way',
         starter: 'assets/sb/angular/question/angular-input-output-two-way.v2.json',
         solution: 'assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json',
-        checks: [],
       },
     },
     roundIds: ['parent-owns-the-value', 'changes-from-the-parent', 'work-inside-a-form', 'keyboard-and-names'],
@@ -1635,6 +1635,7 @@ function assertNestedCheckboxesPressureMode() {
 }
 
 function assertImageSliderPressureMode() {
+  // The normal Image Slider checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'image-slider',
     label: 'Image Carousel',
@@ -1643,19 +1644,16 @@ function assertImageSliderPressureMode() {
         id: 'react-image-slider',
         starter: 'assets/sb/react/question/react-image-slider.v1.json',
         solution: 'assets/sb/react/solution/react-image-slider-solution.v1.json',
-        checks: [],
       },
       angular: {
         id: 'angular-image-slider-starter',
         starter: 'assets/sb/angular/question/angular-image-slider.v2.json',
         solution: 'assets/sb/angular/solution/angular-image-slider-solution.v2.json',
-        checks: [],
       },
       vue: {
         id: 'vue-image-slider',
         starter: 'assets/sb/vue/question/vue-image-slider.v1.json',
         solution: 'assets/sb/vue/solution/vue-image-slider-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['one-current-slide', 'autoplay', 'keyboard-and-screen-readers', 'slides-can-disappear'],
@@ -1792,6 +1790,7 @@ function assertFileExplorerPressureMode() {
 }
 
 function assertLikeButtonPressureMode() {
+  // The normal Like Button checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'like-button',
     label: 'Like Button',
@@ -1800,19 +1799,16 @@ function assertLikeButtonPressureMode() {
         id: 'react-like-button',
         starter: 'assets/sb/react/question/react-like-button.v1.json',
         solution: 'assets/sb/react/solution/react-like-button-solution.v2.json',
-        checks: [],
       },
       angular: {
         id: 'angular-like-button',
         starter: 'assets/sb/angular/question/angular-like-button.v2.json',
         solution: 'assets/sb/angular/solution/angular-like-button-solution.v2.json',
-        checks: [],
       },
       vue: {
         id: 'vue-like-button',
         starter: 'assets/sb/vue/question/vue-like-button.v2.json',
         solution: 'assets/sb/vue/solution/vue-like-button-solution.v2.json',
-        checks: [],
       },
     },
     roundIds: ['update-first', 'server-says-no', 'fast-clicks', 'say-what-happened'],
@@ -3168,11 +3164,7 @@ function assertTicTacToePressureMode() {
       expected.solution,
       `${framework}: normal Tic-Tac-Toe solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce or rewrite normal Tic-Tac-Toe checks`
-    );
+    // The normal Tic-Tac-Toe checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/tic-tac-toe.v1.json',
@@ -4210,11 +4202,7 @@ function assertDynamicCounterButtonsPressureMode() {
       expected.solution,
       `${framework}: normal Dynamic Counter solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce normal Dynamic Counter checks`
-    );
+    // The normal Dynamic Counter checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/dynamic-counter-buttons.v1.json',
