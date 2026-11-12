@@ -35,6 +35,8 @@ export class FooterComponent {
   @Input() prevHref: string | null = null;
   @Input() nextHref: string | null = null;
   @Input() nextDisabledTooltip: string | null = null;
+  /** The visible Next label; a page whose Next steps over locked items says so ("Next free task"). */
+  @Input() nextLabel = 'Next';
   @Input() practiceLeftLabel?: string | null;
   @Input() practiceLeftRoute?: string | any[] | null;
   @Input() practiceLeftQueryParams?: Params | null;

@@ -5,17 +5,17 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { Subject, of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl<string>('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  private pickedValue: string | null = null;\n  private readonly searchTerm$ = new Subject<string>();\n\n  readonly results$ = this.searchTerm$.pipe(\n    startWith(this.queryControl.value ?? ''),\n    map((v: string) => String(v ?? '').trim()),\n    debounceTime(300),\n    distinctUntilChanged(),\n    tap((q: string) => {\n      // A pick fills the input, but it is not a new search.\n      this.isOpen = !!q && q !== this.pickedValue;\n      this.activeIndex = -1;\n    }),\n    switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n  );\n\n  onInput(value: string): void {\n    this.pickedValue = null;\n    this.queryControl.setValue(value);\n    this.searchTerm$.next(value);\n  }\n\n  onFocus(): void {\n    const q = String(this.queryControl.value ?? '').trim();\n    if (q) this.isOpen = true;\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen = false;\n      this.activeIndex = -1;\n      return;\n    }\n\n    if (!this.isOpen && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      const q = String(this.queryControl.value ?? '').trim();\n      this.isOpen = !!q;\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? 0 : (this.activeIndex + 1) % len;\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex = this.activeIndex < 0 ? len - 1 : (this.activeIndex - 1 + len) % len;\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      if (this.activeIndex >= 0 && this.activeIndex < len) {\n        ev.preventDefault();\n        const el = options[this.activeIndex] as HTMLElement;\n        const text = el.textContent ?? '';\n        this.select(text);\n      }\n      return;\n    }\n  }\n\n  select(value: string): void {\n    this.pickedValue = value;\n    this.queryControl.setValue(value);\n    this.isOpen = false;\n    this.activeIndex = -1;\n    this.searchTerm$.next(value);\n  }\n\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen = false;\n      this.activeIndex = -1;\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter(c => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\\\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n",
+      "code": "import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';\nimport { toSignal } from '@angular/core/rxjs-interop';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css'],\n  host: {\n    '(document:mousedown)': 'onDocMouseDown($event)'\n  }\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  readonly queryControl = new FormControl('', { nonNullable: true });\n  readonly query = toSignal(this.queryControl.valueChanges, { initialValue: this.queryControl.value });\n\n  readonly isOpen = signal(false);\n  readonly activeIndex = signal(-1);\n\n  private pickedValue: string | null = null;\n\n  // Typing (via [formControl]) and select() both set the control, so valueChanges carries every query.\n  readonly results = toSignal(\n    this.queryControl.valueChanges.pipe(\n      startWith(this.queryControl.value),\n      map((v: string) => v.trim()),\n      debounceTime(300),\n      distinctUntilChanged(),\n      tap((q: string) => {\n        // A pick fills the input, but it is not a new search.\n        this.isOpen.set(!!q && q !== this.pickedValue);\n        this.activeIndex.set(-1);\n      }),\n      switchMap((q: string) => (q ? this.search(q) : of([] as string[])))\n    )\n  );\n\n  onInput(): void {\n    this.pickedValue = null;\n  }\n\n  onFocus(): void {\n    if (this.queryControl.value.trim()) this.isOpen.set(true);\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    if (ev.key === 'Escape') {\n      this.isOpen.set(false);\n      this.activeIndex.set(-1);\n      return;\n    }\n\n    // On a closed list the first arrow key only opens it: its options are not in the DOM until the next render.\n    if (!this.isOpen() && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) {\n      this.isOpen.set(!!this.queryControl.value.trim());\n    }\n\n    const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');\n    const len = options.length;\n    if (!this.isOpen() || len === 0) return;\n\n    if (ev.key === 'ArrowDown') {\n      ev.preventDefault();\n      this.activeIndex.update((i) => (i < 0 ? 0 : (i + 1) % len));\n      return;\n    }\n\n    if (ev.key === 'ArrowUp') {\n      ev.preventDefault();\n      this.activeIndex.update((i) => (i < 0 ? len - 1 : (i - 1 + len) % len));\n      return;\n    }\n\n    if (ev.key === 'Enter') {\n      const index = this.activeIndex();\n      if (index >= 0 && index < len) {\n        ev.preventDefault();\n        const el = options[index] as HTMLElement;\n        this.select(el.textContent ?? '');\n      }\n    }\n  }\n\n  select(value: string): void {\n    this.pickedValue = value;\n    this.queryControl.setValue(value);\n    this.isOpen.set(false);\n    this.activeIndex.set(-1);\n  }\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    const q = String(queryRaw ?? '').trim();\n    if (!q) return this.escapeHtml(item);\n\n    const idx = item.toLowerCase().indexOf(q.toLowerCase());\n    if (idx < 0) return this.escapeHtml(item);\n\n    const before = this.escapeHtml(item.slice(0, idx));\n    const mid = this.escapeHtml(item.slice(idx, idx + q.length));\n    const after = this.escapeHtml(item.slice(idx + q.length));\n    return `${before}<mark>${mid}</mark>${after}`;\n  }\n\n  onDocMouseDown(ev: MouseEvent): void {\n    const target = ev.target as Node | null;\n    if (!target) return;\n    if (!this.host.nativeElement.contains(target)) {\n      this.isOpen.set(false);\n      this.activeIndex.set(-1);\n    }\n  }\n\n  private search(q: string) {\n    const needle = q.toLowerCase();\n    const filtered = this.cities\n      .filter((c) => c.toLowerCase().includes(needle))\n      .slice(0, 8);\n\n    return of(filtered).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n",
       "nodes": [
         {
           "id": "d1-debounce-query-input",
           "title": "Debounce search work",
           "anchor": {
-            "lineStart": 51,
-            "lineEnd": 51,
+            "lineStart": 56,
+            "lineEnd": 56,
             "snippet": "debounceTime(300),"
           },
-          "why": "The stream waits for a short pause so rapid keystrokes do not trigger a search for every input event.",
+          "why": "The stream waits for a short pause, so rapid keystrokes do not start a search for every valueChanges emission.",
           "alternative": "Run the filter and delayed result pipeline immediately for every keypress.",
           "tradeoff": "Debouncing reduces churn but intentionally delays visible suggestions."
         },
@@ -23,11 +23,11 @@
           "id": "d2-switch-to-latest-query",
           "title": "Keep only the latest query stream",
           "anchor": {
-            "lineStart": 58,
-            "lineEnd": 58,
+            "lineStart": 63,
+            "lineEnd": 63,
             "snippet": "switchMap((q: string) => (q ? this.search(q) : of([] as string[])))"
           },
-          "why": "switchMap discards stale delayed searches when a newer query arrives.",
+          "why": "switchMap unsubscribes from the previous search when a new query passes the debounce. With a 150ms fake search that only happens once search() is slower than the 300ms debounce, as a real request can be, and the stream stays correct then.",
           "alternative": "Merge every pending search and allow older results to arrive after newer input.",
           "tradeoff": "Previous work is abandoned, which is correct for autocomplete but not for operations that must all complete."
         },
@@ -35,23 +35,23 @@
           "id": "d3-read-rendered-options",
           "title": "Navigate the currently rendered options",
           "anchor": {
-            "lineStart": 84,
-            "lineEnd": 84,
+            "lineStart": 87,
+            "lineEnd": 87,
             "snippet": "const options = this.host.nativeElement.querySelectorAll('[role=\"option\"]');"
           },
           "why": "Keyboard movement uses the actual option count after filtering and empty-state changes.",
           "alternative": "Navigate against the full city dataset regardless of what is rendered.",
-          "tradeoff": "DOM lookup couples navigation to rendered roles, but it keeps activeIndex inside the visible list."
+          "tradeoff": "DOM lookup couples navigation to rendered roles, and the first arrow key on a closed list finds no options yet, but activeIndex stays inside the visible list."
         },
         {
           "id": "d4-close-on-outside-pointer",
           "title": "Close when interaction leaves the component",
           "anchor": {
-            "lineStart": 141,
-            "lineEnd": 141,
+            "lineStart": 140,
+            "lineEnd": 140,
             "snippet": "if (!this.host.nativeElement.contains(target)) {"
           },
-          "why": "The document listener dismisses suggestions without closing when the click remains inside the autocomplete.",
+          "why": "The document:mousedown listener from the component's host metadata dismisses suggestions, but not when the press lands inside the autocomplete, such as on an option.",
           "alternative": "Close on every document mousedown, including option selection.",
           "tradeoff": "Containment checking adds DOM awareness, but it preserves mouse selection behavior."
         },
@@ -59,13 +59,37 @@
           "id": "d5-escape-highlighted-content",
           "title": "Escape text before adding highlight markup",
           "anchor": {
-            "lineStart": 156,
-            "lineEnd": 156,
+            "lineStart": 155,
+            "lineEnd": 155,
             "snippet": "private escapeHtml(s: string): string {"
           },
           "why": "Suggestion text is escaped before a mark element is introduced, preventing source strings from becoming executable HTML.",
           "alternative": "Interpolate raw suggestion text into an innerHTML highlight string.",
           "tradeoff": "Manual escaping adds code, but it keeps highlighted output safe."
+        },
+        {
+          "id": "d6-bridge-results-with-tosignal",
+          "title": "Read the results through a signal",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "readonly results = toSignal("
+          },
+          "why": "toSignal subscribes once and exposes the latest suggestions as results(); it stays undefined until the first debounced value, which @if (results(); as list) treats the way it treated the async pipe's null.",
+          "alternative": "The async pipe with a CommonModule or AsyncPipe import, or a manual subscribe that writes a field.",
+          "tradeoff": "The subscription starts when the component is created rather than at first render, and it ends with the component without extra cleanup code."
+        },
+        {
+          "id": "d7-search-from-value-changes",
+          "title": "Drive the search from the FormControl",
+          "anchor": {
+            "lineStart": 53,
+            "lineEnd": 53,
+            "snippet": "this.queryControl.valueChanges.pipe("
+          },
+          "why": "Typing through [formControl] and select() through setValue both emit valueChanges, so one stream sees every query and no separate Subject has to be kept in sync.",
+          "alternative": "A Subject fed from an (input) handler and from select(), which repeats what the FormControl already reports.",
+          "tradeoff": "Picks reach the stream too, so the tap needs the pickedValue check to keep a picked city from reopening the list."
         }
       ]
     }

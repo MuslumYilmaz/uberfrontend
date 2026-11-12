@@ -1,4 +1,5 @@
 import type { SeverityLevel } from '@sentry/browser';
+import type { AnalyticsVisitorClass } from '../services/analytics.service';
 
 type SentryMessageClient = Pick<typeof import('@sentry/browser'), 'captureMessage'>;
 
@@ -22,6 +23,41 @@ const FAILURES: Record<UserVisibleFailureKind, { message: string; level: Severit
 const MAX_PENDING_REPORTS = 10;
 
 /**
+ * True when none of the page's own stylesheets loaded: scrapers that skip
+ * CSS, fonts and images look like this, and with no stylesheet the editor
+ * cannot load either. Until the page has finished loading a stylesheet may
+ * still be on its way, so the answer is false.
+ */
+export function siteStylesheetsBlocked(doc: Document): boolean {
+  if (doc.readyState !== 'complete') return false;
+  let origin: string;
+  try {
+    origin = new URL(doc.baseURI).origin;
+  } catch {
+    return false;
+  }
+  const ownStylesheets = Array.from(doc.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]'))
+    .filter((link) => {
+      try {
+        return new URL(link.href).origin === origin;
+      } catch {
+        return false;
+      }
+    });
+  return ownStylesheets.length > 0 && ownStylesheets.every((link) => !hasRules(link));
+}
+
+// Chrome gives a stylesheet that failed to load a sheet whose rules cannot be
+// read, so only readable rules show that a stylesheet loaded.
+function hasRules(link: HTMLLinkElement): boolean {
+  try {
+    return (link.sheet?.cssRules.length ?? 0) > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * The UI already handles these failures (the editor falls back to a plain
  * text area, the runner shows an error), so Sentry never sees them unless
  * they are reported here. Reports carry no user code. A report made before
@@ -29,11 +65,18 @@ const MAX_PENDING_REPORTS = 10;
  */
 export class UserVisibleFailureReporter {
   private client: SentryMessageClient | null = null;
+  private visitorClass: AnalyticsVisitorClass | null = null;
   private readonly pending: Array<{ kind: UserVisibleFailureKind; details: UserVisibleFailureDetails }> = [];
   private readonly reported = new Set<string>();
 
-  attachSentry(client: SentryMessageClient): void {
+  constructor(
+    private readonly stylesheetsBlocked: () => boolean = () =>
+      typeof document !== 'undefined' && siteStylesheetsBlocked(document),
+  ) {}
+
+  attachSentry(client: SentryMessageClient, context: { visitorClass?: AnalyticsVisitorClass } = {}): void {
     this.client = client;
+    this.visitorClass = context.visitorClass ?? null;
     for (const { kind, details } of this.pending.splice(0)) this.send(kind, details);
   }
 
@@ -54,9 +97,22 @@ export class UserVisibleFailureReporter {
   private send(kind: UserVisibleFailureKind, details: UserVisibleFailureDetails): void {
     const { message, level } = FAILURES[kind];
     try {
+      const visitorClass = this.visitorClass ?? 'unknown';
+      const stylesheetsBlocked = this.stylesheetsBlocked();
+      // Reports from bots, and from browsers that block the site's own
+      // stylesheets (scrapers do, people practically never do), stay
+      // countable as warnings in an issue of their own, so they neither page
+      // anyone nor bury a person's failure in an issue that already exists.
+      const likelyBot = visitorClass === 'automation' || visitorClass === 'suspect' || stylesheetsBlocked;
       this.client?.captureMessage(message, {
-        level,
-        tags: { source: 'user_visible', failure: kind },
+        level: likelyBot ? 'warning' : level,
+        tags: {
+          source: 'user_visible',
+          failure: kind,
+          visitor_class: visitorClass,
+          stylesheets_blocked: String(stylesheetsBlocked),
+        },
+        ...(likelyBot ? { fingerprint: ['{{ default }}', 'likely-bot'] } : {}),
         extra: details,
       });
     } catch {

@@ -1,0 +1,97 @@
+{
+  "questionId": "angular-chessboard-click-highlight",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly minSize = 2;\n  readonly maxSize = 20;\n\n  readonly size = signal(8);\n  readonly selectedKey = signal<string | null>(null);\n\n  readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));\n  readonly selectedLabel = computed(() => {\n    const key = this.selectedKey();\n    if (!key) return 'Selected: none';\n    const [row, col] = key.split('-').map(Number);\n    return 'Selected: row ' + String(row + 1) + ', column ' + String(col + 1);\n  });\n\n  // Bound to (change), which fires on Enter, on blur and on the arrows, so 12 can be typed through 1.\n  onSizeChange(input: HTMLInputElement): void {\n    const raw = input.value.trim();\n    const next = raw === '' ? Number.NaN : Number(raw);\n    const size = Number.isFinite(next)\n      ? Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)))\n      : this.size();\n    // [value] writes the field only when size() changes, so a value clamped to the current size is put back here.\n    input.value = String(size);\n    if (size === this.size()) return;\n    this.size.set(size);\n    this.selectedKey.set(null);\n  }\n\n  onCellClick(row: number, col: number): void {\n    this.selectedKey.set(this.cellKey(row, col));\n  }\n\n  cellKey(row: number, col: number): string {\n    return String(row) + '-' + String(col);\n  }\n\n  // Per cell, so a method rather than a computed; Angular still tracks the selectedKey() read.\n  cellClass(row: number, col: number): string {\n    const dark = (row + col) % 2 === 1;\n    const active = this.selectedKey() === this.cellKey(row, col);\n    return 'cell ' + (dark ? 'cell--dark' : 'cell--light') + (active ? ' cell--active' : '');\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-single-selected-key",
+          "title": "Store the selection as one key",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "readonly selectedKey = signal<string | null>(null);"
+          },
+          "why": "One nullable key models single selection: each click replaces it, so the previous cell loses cell--active with no clearing step, and null is the state the status line shows as Selected: none.",
+          "alternative": "Keep a boolean per cell in a two-dimensional array, or a Set of selected keys.",
+          "tradeoff": "One key cannot express multi-select, but two cells can never be active at once, a rule that a grid of booleans would have to enforce in every click handler."
+        },
+        {
+          "id": "d2-derive-row-indexes",
+          "title": "Derive the row indexes from the size",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "readonly rows = computed(() => Array.from({ length: this.size() }, (_, index) => index));"
+          },
+          "why": "The template loops over rows() for both rows and columns, so one index array drives the whole N by N grid, and the computed rebuilds it only when size changes.",
+          "alternative": "Return a fresh array from a rows getter on every check, or store a two-dimensional array of cell objects that onSizeChange rebuilds.",
+          "tradeoff": "Plain indexes carry no per-cell data, so color and active state are worked out per cell in the template; a grid of cell objects could hold them but would need rebuilding on each resize and click."
+        },
+        {
+          "id": "d6-apply-size-on-change",
+          "title": "Apply the size on change, not on every key",
+          "anchor": {
+            "lineStart": 25,
+            "lineEnd": 25,
+            "snippet": "onSizeChange(input: HTMLInputElement): void {"
+          },
+          "why": "The field binds (change), which fires on Enter, on blur and on the arrows, so typing 12 passes through 1 without resizing the board. Clamping on every input event turned that 1 into 2 and rewrote the field, so sizes 10 to 19 could not be typed.",
+          "alternative": "Handle (input) and apply only whole numbers that are already inside 2 to 20, leaving other keystrokes alone.",
+          "tradeoff": "A change waits for Enter or blur, so a typed size shows one step later; live updates on input redraw sooner but pass through boards nobody asked for, such as 2 by 2 on the way to 25."
+        },
+        {
+          "id": "d3-clamp-typed-size",
+          "title": "Clamp the committed size to 2 through 20",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 29,
+            "snippet": "? Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)))"
+          },
+          "why": "The value loses its decimals, then the Math.min and Math.max pair keeps the board between 2 and 20 cells per side, so no typed value can render an empty grid or thousands of buttons. An empty or non-numeric field keeps the current size.",
+          "alternative": "Rely on the input's min and max attributes, which limit the spinner arrows and form validity but not what a user types.",
+          "tradeoff": "The attributes still help, since the spinner stops at the bounds and the field reports itself invalid, but only the clamp guarantees the size the grid renders."
+        },
+        {
+          "id": "d7-write-clamped-value-back",
+          "title": "Write the clamped size back into the field",
+          "anchor": {
+            "lineStart": 32,
+            "lineEnd": 32,
+            "snippet": "input.value = String(size);"
+          },
+          "why": "[value]=\"size()\" writes the field only when size() changes. Typing 30 on a 20 by 20 board clamps to the same 20, so without this line the field would keep showing 30 beside a 20 by 20 board.",
+          "alternative": "Keep the typed text in its own signal bound to [value] and set it again after each change.",
+          "tradeoff": "Writing the element is one line in the handler. A text signal keeps the template in charge of the field but has the same blind spot: setting it to the value it already holds changes nothing, so the typed 30 would stay."
+        },
+        {
+          "id": "d4-clear-selection-on-resize",
+          "title": "Clear the selection on every resize",
+          "anchor": {
+            "lineStart": 35,
+            "lineEnd": 35,
+            "snippet": "this.selectedKey.set(null);"
+          },
+          "why": "A key such as 7-7 has no cell on a 5 by 5 board, so onSizeChange sets selectedKey back to null when the size changes, and the status line returns to Selected: none.",
+          "alternative": "Keep the key when its row and column still fit the new size, and clear it only when they fall outside the board.",
+          "tradeoff": "Clearing on every resize is one line and never leaves a stale key, but it also drops a selection that would still fit; committing the size the board already has returns early and keeps the selection."
+        },
+        {
+          "id": "d5-per-cell-signal-read",
+          "title": "Read the selection inside a per-cell method",
+          "anchor": {
+            "lineStart": 49,
+            "lineEnd": 49,
+            "snippet": "const active = this.selectedKey() === this.cellKey(row, col);"
+          },
+          "why": "cellClass needs a row and a column, which a computed cannot take, so it stays a method. Its selectedKey() read runs while the template renders, so the OnPush view still updates the classes when the selection changes.",
+          "alternative": "Build a computed grid of cell view models with ready-made class strings and read them in the template by row and column.",
+          "tradeoff": "The method runs once per cell on each check, at most 400 short calls on a 20 by 20 board; a computed grid would cache the strings but rebuild all of them on every click anyway."
+        }
+      ]
+    }
+  }
+}

@@ -23,6 +23,41 @@ const FRAMEWORK_RUNTIME_RESPONSES = new Map<string, Promise<CachedRuntimeRespons
 const RUNNER_FAILURE =
   /framework checks timed out waiting for preview render|framework assertion execution timed out|preview readiness timed out|infrastructure timeout/i;
 
+// Signal inputs, model and output between two Angular components, plus a field a setTimeout sets: it renders only
+// under zone change detection, which the preview asks for since Angular 21 starts zoneless.
+const ANGULAR_SIGNAL_PROBE = [
+  "import { Component, input, model, output, signal } from '@angular/core';",
+  '',
+  '@Component({',
+  "  selector: 'app-child',",
+  '  template: `<span class="child-label">{{ label() }}</span>',
+  '    <button class="child-inc" (click)="count.set(count() + 1)">inc</button>',
+  '    <button class="child-ping" (click)="ping.emit(label())">ping</button>`,',
+  '})',
+  'export class ChildComponent {',
+  '  label = input.required<string>();',
+  '  count = model(0);',
+  '  ping = output<string>();',
+  '}',
+  '',
+  '@Component({',
+  "  selector: 'app-root',",
+  '  imports: [ChildComponent],',
+  '  template: `<app-child label="probe" [(count)]="total" (ping)="last.set($event)"></app-child>',
+  '    <p class="total">{{ total() }}</p><p class="last">{{ last() }}</p><p class="tick">{{ tick }}</p>`,',
+  '})',
+  'export class AppComponent {',
+  '  total = signal(2);',
+  "  last = signal('none');",
+  "  tick = 'waiting';",
+  '',
+  '  constructor() {',
+  "    setTimeout(() => { this.tick = 'ticked'; }, 50);",
+  '  }',
+  '}',
+  '',
+].join('\n');
+
 const COUNTER_SOLUTION = readCanonicalFile(
   '../cdn/sb/react/solution/react-counter-solution.v1.json',
   'src/App.tsx',
@@ -669,8 +704,21 @@ function readCanonicalFiles(assetPath: string): Record<string, string> {
   return files;
 }
 
+// The Counter checks every framework shares (framework-shared-checks.test.mjs keeps them equal).
+const COUNTER_CHECKS = [
+  "Starts at 0 with '-' disabled and '+' enabled",
+  "'+' adds 1 on every click",
+  "'-' subtracts 1, and is enabled only above 0",
+  'The count never goes below 0',
+  "'Reset' returns to 0 from any count",
+];
+
 function livePreview(page: Page) {
   return page.frameLocator('iframe[title="Framework live preview"]');
+}
+
+function failureKinds(page: Page): Promise<Array<string | null>> {
+  return checkRows(page).evaluateAll((rows) => rows.map((row) => row.getAttribute('data-failure-kind')));
 }
 
 function checkRows(page: Page): Locator {
@@ -1018,16 +1066,20 @@ async function expectAssertionLayer(resultsPanel: Locator): Promise<void> {
 }
 
 async function dismissPostPassPrompt(page: Page): Promise<void> {
-  // Anonymous visitors receive the sign-in prompt; signed-in visitors can receive
-  // the progress prompt. Both are deliberately dismissible before rebuilding.
+  // A pass leaves a card in the results, which blocks nothing; Pressure Mode still asks a guest in a dialog, and a
+  // signed-in visitor can receive the progress prompt. Both dialogs are dismissible before rebuilding.
   const accountPrompt = page.getByTestId('login-required-dialog');
   const closeAccountPrompt = page.getByRole('button', { name: 'Close account prompt' });
-  await closeAccountPrompt.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
+  const card = page.getByTestId('coding-post-pass');
+  await expect(card.or(closeAccountPrompt).first())
+    .toBeVisible({ timeout: 5_000 })
+    .catch(() => undefined);
   if (await closeAccountPrompt.isVisible().catch(() => false)) {
     await closeAccountPrompt.click();
     await expect(accountPrompt).toBeHidden();
     return;
   }
+  if (await card.isVisible().catch(() => false)) return;
 
   const cancel = page.getByRole('button', { name: 'Cancel', exact: true }).last();
   await cancel.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined);
@@ -1105,17 +1157,54 @@ test.describe('Framework checks against the production SSR build', () => {
     await pinFrameworkAssetsToSameOrigin(page);
   });
 
+  test.describe('preview console', () => {
+    // The task's own code logs an error on purpose, and the browser console sees it as well.
+    test.use({ consoleErrorAllowlist: ['Missing key for item'] });
+
+    test('the preview console shows what the code logs and its errors, and starts over with each build', async ({ page }) => {
+      await page.goto('/react/coding/react-counter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+
+      await loadCanonicalFile(page, 'src/App.tsx', [
+        "import React from 'react';",
+        '',
+        'export default function App() {',
+        "  console.log('rendered with', { count: 0 });",
+        "  console.error('Missing key for item %s', 'Reset');",
+        '  return <div className="value">0</div>;',
+        '}',
+        '',
+      ].join('\n'));
+      await rebuildPreview(page, '.value');
+
+      const toggle = page.getByTestId('framework-console-toggle');
+      await expect(page.getByTestId('framework-console-count')).toContainText('error');
+      await toggle.click();
+      await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      const consolePanel = page.getByTestId('framework-console');
+      await expect(consolePanel).toContainText('rendered with {"count":0}');
+      await expect(consolePanel).toContainText('ERROR: Missing key for item Reset');
+
+      // A new build starts a new console.
+      await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
+      await rebuildPreview(page, '.value');
+      await expect(consolePanel).not.toContainText('rendered with');
+    });
+  });
+
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const starterResults = await runChecks(page, 1);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/1 passed');
-    await expect(checkResults(page)).toHaveText(['Counter flow']);
-    await expect(checkRows(page)).toHaveAttribute('data-failure-kind', 'assertion');
-    await expect(checkRows(page).locator('.framework-check-result__error')).toBeVisible();
+    // The starter already renders 0 with '-' disabled; every check that clicks fails.
+    const starterResults = await runChecks(page, 5);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('1/5 passed');
+    await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
+    expect(await failureKinds(page)).toEqual([null, 'assertion', 'assertion', 'assertion', 'assertion']);
+    await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(4);
     await expectAssertionLayer(starterResults);
 
     await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
@@ -1127,19 +1216,19 @@ test.describe('Framework checks against the production SSR build', () => {
     await counterButtons.nth(2).click();
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const firstPassingRun = await runChecks(page, 1);
-    await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const firstPassingRun = await runChecks(page, 5);
+    await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(firstPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
-    await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
+    expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
     await dismissPostPassPrompt(page);
 
     await rebuildPreview(page, '.value');
     await expect(livePreview(page).locator('.value')).toHaveText('0');
 
-    const repeatedPassingRun = await runChecks(page, 1);
-    await expect(repeatedPassingRun.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const repeatedPassingRun = await runChecks(page, 5);
+    await expect(repeatedPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(repeatedPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
-    await expect(checkRows(page)).not.toHaveAttribute('data-failure-kind', /.+/);
+    expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
   });
 
   test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {
@@ -1373,12 +1462,25 @@ test.describe('Framework checks against the production SSR build', () => {
 
     const runButton = page.getByTestId('js-run-tests');
     const results = page.getByTestId('js-results-panel');
+    // The panel lists failures first, so each status is read by its test's name, in the order the tests file defines.
+    const definitionOrder = [
+      'converts a typed amount to minor units without losing a cent',
+      'keeps zero-decimal currencies whole',
+      'takes an amount-off coupon in minor units',
+      'lists lines largest first without reordering the cart it was given',
+      'retries a timeout with the same idempotency key',
+      'does not retry a declined card',
+    ];
     const run = async () => {
       await expect(runButton).toBeEnabled();
       await runButton.click();
       await expect(results.getByTestId('test-result')).toHaveCount(6, { timeout: 30_000 });
       await expect(runButton).toBeEnabled({ timeout: 10_000 });
-      return (await results.getByTestId('test-status').allTextContents()).map((status) => status.trim());
+      const rows = await results.getByTestId('test-result').evaluateAll((cards) => cards.map((card) => ({
+        name: card.querySelector('.test-name')?.textContent ?? '',
+        status: card.querySelector('[data-testid="test-status"]')?.textContent?.trim() ?? '',
+      })));
+      return definitionOrder.map((name) => rows.find((row) => row.name.includes(name))?.status ?? 'MISSING');
     };
 
     // The four reports fail; the zero-decimal and declined-card guards pass as the repo stands.
@@ -1624,8 +1726,8 @@ test.describe('Framework checks against the production SSR build', () => {
     const runChecks = page.getByTestId('framework-run-checks');
     await expect(runChecks).toBeEnabled({ timeout: 30_000 });
     await runChecks.click();
-    await expect(page.getByTestId('framework-check-result')).toHaveCount(3, { timeout: 60_000 });
-    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 3|All 3) tests pass/);
+    await expect(page.getByTestId('framework-check-result')).toHaveCount(8, { timeout: 60_000 });
+    await expect(panel.getByTestId('rehearsal-item').nth(2)).toContainText(/(\d of 8|All 8) tests pass/);
 
     // When the time is up, the React editor turns read-only and its checks stop.
     await page.clock.fastForward('01:30:00');
@@ -1685,6 +1787,11 @@ test.describe('Framework checks against the production SSR build', () => {
     await page.getByTestId('review-mode-start').click();
     const panel = page.getByTestId('review-mode-panel');
     await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Add label filters to the issue list');
+    // The written review comes first: the checks and the solution wait for it.
+    const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+    await expect(page.getByTestId('framework-run-checks')).toBeDisabled();
+    await expect(page.getByTestId('framework-rehearsal-clock')).toHaveText('Write the review first: fixes and checks open after it');
+    await expect(solutionTab).toBeDisabled();
     // GitLab's written review has up to an hour, finished before the 90-minute interview starts.
     await expect(page.getByTestId('review-mode-timer')).toHaveText('Review: 60 of 60 min left');
     await expect(page.getByTestId('review-mode-file-0')).toContainText('watch(selectedLabel, loadIssues, { immediate: true });');
@@ -1700,6 +1807,9 @@ test.describe('Framework checks against the production SSR build', () => {
 
     await page.getByTestId('review-mode-start-fixes').click();
     await expect(page.getByTestId('review-mode-timer')).toHaveText('Interview: 90 of 90 min left');
+    // The fixes run their checks; the solution still waits for the sample review.
+    await expect(page.getByTestId('framework-run-checks')).toBeEnabled();
+    await expect(solutionTab).toBeDisabled();
     await expect(panel).toContainText('L84: the watch reloads the list on every label');
     await waitForFrameworkPreview(page, '.issue');
     await loadCanonicalBundle(page, REVIEW_FIXES);
@@ -1709,6 +1819,7 @@ test.describe('Framework checks against the production SSR build', () => {
     await dismissPostPassPrompt(page);
 
     await page.getByTestId('review-mode-compare').click();
+    await expect(solutionTab).toBeEnabled();
     const sample = page.getByTestId('review-mode-sample');
     await expect(sample.locator('.review-mode__comment-title').first()).toHaveText('Every label click loads the list again');
     await expect(sample.locator('.review-mode__comment')).toHaveCount(10);
@@ -2485,7 +2596,9 @@ test.describe('Framework checks against the production SSR build', () => {
 
     const preview = livePreview(page);
     const sizeInput = preview.locator('#board-size');
+    // The size applies on the change event (Enter, blur or the arrows); fill() alone only types.
     await sizeInput.fill('20');
+    await sizeInput.press('Enter');
     await expect(sizeInput).toHaveValue('20');
     await expect(preview.locator('button.cell')).toHaveCount(400);
 
@@ -2497,6 +2610,7 @@ test.describe('Framework checks against the production SSR build', () => {
     }
 
     await sizeInput.fill('8');
+    await sizeInput.press('Enter');
     await expect(sizeInput).toHaveValue('8');
     await expect(preview.locator('button.cell')).toHaveCount(64);
     await exerciseChessboardKeyboardPreview(page);
@@ -2661,18 +2775,19 @@ test.describe('Framework checks against the production SSR build', () => {
     }
   });
 
-  test('Autocomplete runs all thirteen assertions and passes them with its canonical solution', async ({ page }) => {
+  test('Autocomplete runs all fourteen assertions and passes them with its canonical solution', async ({ page }) => {
     await page.goto('/react/coding/react-autocomplete-search-starter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
     await waitForFrameworkPreview(page, '.input');
 
-    const starterResults = await runChecks(page, 13);
+    const starterResults = await runChecks(page, 14);
     await expect(checkResults(page)).toHaveText([
       'Empty query closes popup',
-      'Debounce waits for final query',
+      'Debounce waits for the final query, and san answers only after 900 ms',
       'Stale response cannot overwrite newer results',
       'New query cannot select stale options while pending',
       'Loading opens and closes correctly',
+      'Matches anywhere in a city name, ignoring case, and marks the match',
       'Error and no-results states are distinct',
       'Arrow navigation wraps and keeps input focus',
       'Enter selects active option',
@@ -2682,7 +2797,7 @@ test.describe('Framework checks against the production SSR build', () => {
       'ARIA combobox relationships are wired',
       'Unmount cleans pending timer and document listener',
     ]);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/(?:[0-9]|1[0-2])\/13 passed/);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText(/(?:[0-9]|1[0-3])\/14 passed/);
     await expect(starterResults.locator('[data-failure-kind="assertion"]')).not.toHaveCount(0);
     await expectAssertionLayer(starterResults);
 
@@ -2693,8 +2808,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await input.fill('par');
     await expect(livePreview(page).locator('.option')).toContainText('Paris', { timeout: 3_000 });
 
-    const passingResults = await runChecks(page, 13);
-    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('13/13 passed');
+    const passingResults = await runChecks(page, 14);
+    await expect(passingResults.locator('.framework-check-results__summary')).toHaveText('14/14 passed');
     await expect(passingResults.locator('.framework-check-result__error')).toHaveCount(0);
     await expect(
       passingResults.locator('[data-testid="framework-check-result"][data-failure-kind]'),
@@ -2711,8 +2826,8 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(page.locator('#demo-choice-active strong')).toHaveText('React');
     await waitForFrameworkPreview(page, '.value');
 
-    const embeddedResults = await runChecks(page, 1);
-    await expect(checkResults(page)).toHaveText(['Counter flow']);
+    const embeddedResults = await runChecks(page, 5);
+    await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
     await expectAssertionLayer(embeddedResults);
 
     await openLive.click();
@@ -2729,10 +2844,10 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(VUE_TODO_STARTER).toContain('TODO: Add a trimmed, non-empty task');
     expect(VUE_TODO_STARTER).not.toBe(VUE_TODO_SOLUTION);
 
-    const starterResults = await runChecks(page, 1);
-    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/1 passed');
-    await expect(checkResults(page)).toHaveText(['Todo add item']);
-    await expect(checkRows(page)).toHaveAttribute('data-failure-kind', 'assertion');
+    const starterResults = await runChecks(page, 7);
+    await expect(starterResults.locator('.framework-check-results__summary')).toHaveText('0/7 passed');
+    await expect(checkResults(page).first()).toHaveText('Add puts the text at the end of the list and clears the input');
+    expect(await failureKinds(page)).toEqual(Array(7).fill('assertion'));
     await expectAssertionLayer(starterResults);
 
     await page.getByTestId('coding-solution-tab').click();
@@ -2754,8 +2869,8 @@ test.describe('Framework checks against the production SSR build', () => {
       substring: 'if (!newTask.value.trim())',
     });
 
-    const solutionResults = await runChecks(page, 1);
-    await expect(solutionResults.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
+    const solutionResults = await runChecks(page, 7);
+    await expect(solutionResults.locator('.framework-check-results__summary')).toHaveText('7/7 passed');
     await expect(solutionResults.locator('.framework-check-result__error')).toHaveCount(0);
     await dismissPostPassPrompt(page);
 
@@ -2793,8 +2908,8 @@ test.describe('Framework checks against the production SSR build', () => {
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await waitForFrameworkPreview(page, '.value');
 
-      const results = await runChecks(page, 1);
-      await expect(checkResults(page)).toHaveText(['Counter flow']);
+      const results = await runChecks(page, 5);
+      await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
       await expectAssertionLayer(results);
       await dismissPostPassPrompt(page);
     }
@@ -2822,6 +2937,54 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(statuses.length).toBeGreaterThan(0);
     expect(statuses.every((status) => /PASS|FAIL/.test(status))).toBe(true);
     expect(normalizeRunnerText(await jsResults.innerText())).not.toMatch(RUNNER_FAILURE);
+  });
+
+  test('Angular 21 runs signal inputs, outputs and models under zone.js, and names its runtime', async ({ page }) => {
+    await page.goto('/angular/coding/angular-counter-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+    await expect(page.getByTestId('framework-runtime-label')).toHaveText('Angular 21 · zone.js');
+
+    await waitForMonacoModel(page, 'src/app/app.component.ts');
+    await loadCanonicalFile(page, 'src/app/app.component.ts', ANGULAR_SIGNAL_PROBE);
+    await rebuildPreview(page, '.total');
+    const preview = livePreview(page);
+    await expect(preview.locator('.child-label')).toHaveText('probe');
+    await expect(preview.locator('.total')).toHaveText('2');
+    await preview.locator('.child-inc').click();
+    await expect(preview.locator('.total')).toHaveText('3');
+    await preview.locator('.child-ping').click();
+    await expect(preview.locator('.last')).toHaveText('probe');
+    // A plain field set in a setTimeout renders only under zone change detection.
+    await expect(preview.locator('.tick')).toHaveText('ticked');
+  });
+
+  test.describe('an Angular template that does not compile', () => {
+    // The preview logs the failure to its console on purpose.
+    test.use({ consoleErrorAllowlist: ['Errors during JIT compilation', 'Unclosed block'] });
+
+    test('shows the error in the preview and its console instead of a quiet blank preview', async ({ page }) => {
+      await page.goto('/angular/coding/angular-counter-starter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+      await waitForMonacoModel(page, 'src/app/app.component.ts');
+      await loadCanonicalFile(page, 'src/app/app.component.ts', [
+        "import { Component } from '@angular/core';",
+        '',
+        '@Component({',
+        "  selector: 'app-root',",
+        "  template: '@if (true) { <p class=\"value\">0</p>',",
+        '})',
+        'export class AppComponent {}',
+        '',
+      ].join('\n'));
+      await page.getByTestId('framework-rebuild-preview').click();
+
+      const error = page.getByTestId('framework-preview-error');
+      await expect(error).toBeVisible({ timeout: 30_000 });
+      await expect(error).toContainText('Unclosed block');
+      await expect(page.getByTestId('framework-console-count')).toContainText('error');
+    });
   });
 
   test.describe('when a Monaco language download drops once', () => {

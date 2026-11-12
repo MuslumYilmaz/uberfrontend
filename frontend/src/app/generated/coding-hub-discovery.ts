@@ -12,11 +12,20 @@ export type CodingHubGeneratedDiscoveryItem = {
 export const CODING_HUB_DEBUG_DISCOVERY = [
   {
     "id": "ng-debug-counter-change-detection",
-    "title": "Counter not updating",
+    "title": "Counter stuck at 0 after an OnPush refactor",
     "route": "/angular/debug/ng-debug-counter-change-detection",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings.",
+    "summary": "The counter display moved into its own OnPush component to save change detection work. Since then, clicking Increment leaves the number on screen at 0, although the click handler runs on every click.",
+    "access": "free"
+  },
+  {
+    "id": "ng-debug-zoneless-shipment-board",
+    "title": "Fix a shipment board that stopped updating after going zoneless",
+    "route": "/angular/debug/ng-debug-zoneless-shipment-board",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The shipment board moved to zoneless change detection, and its list to OnPush, in the last release. Three reports came in since. \" Find the root cause of each report and fix all three.",
     "access": "free"
   },
   {

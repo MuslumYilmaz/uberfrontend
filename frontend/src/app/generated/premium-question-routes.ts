@@ -4,6 +4,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/angular/coding/angular-chessboard-click-highlight",
   "/angular/coding/angular-chips-input-autocomplete",
   "/angular/coding/angular-contact-form-starter",
+  "/angular/coding/angular-control-value-accessor-stepper",
   "/angular/coding/angular-debounced-search",
   "/angular/coding/angular-dynamic-counter-buttons",
   "/angular/coding/angular-dynamic-table-starter",

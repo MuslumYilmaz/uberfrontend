@@ -8,6 +8,18 @@
       "code": "export default function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');\n  const n = items.length;\n  const allSettled = strategy === 'all-settled';\n  const results = new Array(n);\n  if (n === 0) return Promise.resolve(results);\n\n  let next = 0;\n  let done = 0;\n  let failed = false;\n\n  return new Promise((resolve, reject) => {\n    const runner = async () => {\n      while (true) {\n        const i = next++;\n        if (i >= n || (failed && !allSettled)) break;\n        try {\n          const v = await worker(items[i], i);\n          results[i] = allSettled\n            ? { status: 'fulfilled', value: v }\n            : v;\n        } catch (err) {\n          if (allSettled) {\n            results[i] = { status: 'rejected', reason: err };\n          } else {\n            failed = true;\n            reject(err);\n            return;\n          }\n        } finally {\n          if (++done === n && (!failed || allSettled)) {\n            resolve(results);\n          }\n        }\n      }\n    };\n\n    const k = Math.min(limit, n);\n    for (let j = 0; j < k; j++) {\n      runner();\n    }\n  });\n}\n",
       "nodes": [
         {
+          "id": "d0-reject-invalid-limit",
+          "title": "Reject an invalid limit before any work starts",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');"
+          },
+          "why": "A limit below 1 could never start a runner, so the promise would never settle. This plain function throws before the pool starts; declared async, as the starter is, the same throw becomes a rejected promise, and callers that await the result see the error either way.",
+          "alternative": "Clamp the limit to 1 and carry on.",
+          "tradeoff": "Clamping hides a caller bug; failing fast tells the caller at once."
+        },
+        {
           "id": "d1-shared-index-worker-pool",
           "title": "Use a shared index for worker coordination",
           "anchor": {
@@ -15,7 +27,7 @@
             "lineEnd": 8,
             "snippet": "let next = 0;"
           },
-          "why": "Each runner grabs the next item index, so workers stay busy without duplicating work.",
+          "why": "Each runner grabs the next item index, so workers stay busy without duplicating work. A runner takes the next index as soon as its current item settles, so a slot never waits for the slowest item of a batch.",
           "alternative": "Pre-split items into fixed chunks per worker.",
           "tradeoff": "Simple dynamic load balancing, but relies on shared mutable state."
         },
@@ -39,7 +51,7 @@
             "lineEnd": 30,
             "snippet": "if (allSettled) {"
           },
-          "why": "This supports two useful modes: fail immediately, or collect all outcomes.",
+          "why": "This supports two useful modes: fail immediately, or collect all outcomes. After a fail-fast error each runner checks `failed` before taking the next index, so the pool starts no new items; work already running finishes on its own.",
           "alternative": "Always use one fixed behavior.",
           "tradeoff": "More flexible API, with extra branching logic."
         }
@@ -47,17 +59,17 @@
     },
     "approach2": {
       "language": "javascript",
-      "code": "export default function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');\n\n  const allSettled = strategy === 'all-settled';\n  const results = new Array(items.length);\n  let current = 0;\n\n  const run = async () => {\n    const i = current++;\n    if (i >= items.length) return;\n\n    try {\n      const val = await worker(items[i], i);\n      results[i] = allSettled\n        ? { status: 'fulfilled', value: val }\n        : val;\n    } catch (err) {\n      if (!allSettled) throw err;\n      results[i] = { status: 'rejected', reason: err };\n    }\n\n    return run(); // refill this slot with the next item\n  };\n\n  const k = Math.min(limit, items.length);\n  const runners = Array.from({ length: k }, () => run());\n\n  return allSettled\n    ? Promise.allSettled(runners).then(() => results)\n    : Promise.all(runners).then(() => results);\n}\n",
+      "code": "export default function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');\n\n  const allSettled = strategy === 'all-settled';\n  const results = new Array(items.length);\n  let current = 0;\n  let failed = false;\n\n  const run = async () => {\n    const i = current++;\n    // After a fail-fast error, no runner starts another item.\n    if (i >= items.length || failed) return;\n\n    try {\n      const val = await worker(items[i], i);\n      results[i] = allSettled\n        ? { status: 'fulfilled', value: val }\n        : val;\n    } catch (err) {\n      if (!allSettled) {\n        failed = true;\n        throw err;\n      }\n      results[i] = { status: 'rejected', reason: err };\n    }\n\n    return run(); // refill this slot with the next item\n  };\n\n  const k = Math.min(limit, items.length);\n  const runners = Array.from({ length: k }, () => run());\n\n  return allSettled\n    ? Promise.allSettled(runners).then(() => results)\n    : Promise.all(runners).then(() => results);\n}\n",
       "nodes": [
         {
           "id": "d1-recursive-runner-refill",
           "title": "Refill each runner recursively",
           "anchor": {
-            "lineStart": 22,
-            "lineEnd": 22,
+            "lineStart": 27,
+            "lineEnd": 27,
             "snippet": "return run(); // refill this slot with the next item"
           },
-          "why": "After finishing one task, the same runner immediately picks up the next item.",
+          "why": "After finishing one task, the same runner immediately picks up the next item. In fail-fast mode a `failed` flag stops the refill, so after the first error no runner starts a new item.",
           "alternative": "Use a `while` loop inside each runner.",
           "tradeoff": "Compact control flow, though recursion style can be less familiar."
         },
@@ -65,8 +77,8 @@
           "id": "d2-start-k-runners-upfront",
           "title": "Spawn exactly `k` concurrent runners",
           "anchor": {
-            "lineStart": 25,
-            "lineEnd": 26,
+            "lineStart": 31,
+            "lineEnd": 32,
             "snippet": "const runners = Array.from({ length: k }, () => run());"
           },
           "why": "This caps concurrency and keeps at most `limit` tasks in flight.",
@@ -77,8 +89,8 @@
           "id": "d3-finish-with-all-or-allsettled",
           "title": "Resolve final result based on strategy",
           "anchor": {
-            "lineStart": 28,
-            "lineEnd": 30,
+            "lineStart": 33,
+            "lineEnd": 35,
             "snippet": "return allSettled"
           },
           "why": "`Promise.all` gives fail-fast semantics, while `Promise.allSettled` waits for all runners.",

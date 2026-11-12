@@ -1,0 +1,73 @@
+{
+  "questionId": "vue-nested-checkboxes",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { computed, ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\nconst checkedCount = computed(() => children.value.filter((child) => child.checked).length);\n\n// The parent keeps no state: reading it derives from the children, and setting it (a click) writes every child.\nconst allChecked = computed({\n  get: () => checkedCount.value === children.value.length,\n  set: (checked: boolean) => {\n    // Vue tracks changes made in place on reactive objects, so each child is updated directly.\n    for (const child of children.value) {\n      child.checked = checked;\n    }\n  }\n});\n\n// Some but not all: bound to the parent's indeterminate, which Vue sets as a DOM property.\nconst someChecked = computed(() => checkedCount.value > 0 && !allChecked.value);\n",
+      "nodes": [
+        {
+          "id": "d1-children-hold-the-state",
+          "title": "Keep the state in the children only",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "const children = ref<ChildNode[]>(["
+          },
+          "why": "Each child carries its own checked flag, and the parent stores nothing. The parent can then never disagree with the children, because everything it shows is read from them.",
+          "alternative": "Give the parent its own checked and indeterminate refs and update them from every handler.",
+          "tradeoff": "Separate refs need a sync step after every change and drift when one is missed; deriving costs a count over three children on each change."
+        },
+        {
+          "id": "d2-count-checked",
+          "title": "Count the checked children once",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "const checkedCount = computed(() => children.value.filter((child) => child.checked).length);"
+          },
+          "why": "Both parent states depend on how many children are checked. One computed counts them and caches the number until a flag changes.",
+          "alternative": "Count inside each computed or in the template.",
+          "tradeoff": "Repeating the count is harmless for three children, but a shared computed keeps the rule in one place."
+        },
+        {
+          "id": "d3-writable-parent",
+          "title": "Make the parent a writable computed",
+          "anchor": {
+            "lineStart": 18,
+            "lineEnd": 18,
+            "snippet": "const allChecked = computed({"
+          },
+          "why": "v-model on the parent checkbox reads the getter for checked and calls the setter on a click, so one binding covers both directions without a change handler.",
+          "alternative": "Bind :checked to a read-only computed and handle @change to set the children.",
+          "tradeoff": "The handler version is just as valid and shows the event explicitly; the writable computed keeps reading and writing next to each other."
+        },
+        {
+          "id": "d4-setter-writes-children",
+          "title": "Write every child in place",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "child.checked = checked;"
+          },
+          "why": "Vue tracks changes made in place on reactive objects, so assigning each child flag updates the children, the count and the parent in one pass. From a mixed state the browser reports the click as checked, so every child becomes checked.",
+          "alternative": "Build a new array of copied children and assign it to children.value.",
+          "tradeoff": "A new array is tracked as well; in Vue it is a style choice, not something reactivity needs."
+        },
+        {
+          "id": "d5-mixed-state",
+          "title": "Derive the mixed state for :indeterminate",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 29,
+            "snippet": "const someChecked = computed(() => checkedCount.value > 0 && !allChecked.value);"
+          },
+          "why": "indeterminate exists only as a DOM property. The template binds :indeterminate=\"someChecked\", and Vue sets the property, so no template ref is needed.",
+          "alternative": "Keep a template ref on the parent input and assign el.indeterminate in a watcher.",
+          "tradeoff": "The ref and watcher work too, but they duplicate what the binding does and add a step that can run late."
+        }
+      ]
+    }
+  }
+}

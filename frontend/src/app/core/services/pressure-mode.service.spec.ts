@@ -34,6 +34,49 @@ describe('PressureModeService', () => {
     ).toBe(5);
   });
 
+  it('keeps role, label and text locators, the newer step types and their fields, and drops unknown fields', () => {
+    const payload = validScenario();
+    payload.rounds[0].frameworkTests[0].steps = [
+      { type: 'click', by: { role: 'button', name: 'Add', css: '.primary' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, index: 1, expected: false },
+      { type: 'expectLineThrough', by: { label: 'Milk' } },
+      { type: 'expectExists', by: { text: 'No tasks yet.' } },
+      { type: 'expectExists', by: 'button' },
+      { type: 'mockRandom', values: [0.55, 'x', 0.1] },
+      { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab', css: 'x' } },
+      { type: 'expectColor', selector: '.bar', property: 'color', hue: 'orange' },
+      { type: 'expectColor', selector: '.bar', hue: 'teal' },
+      { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
+      { type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' }, css: 'x' } },
+      { type: 'mockStorage', entries: { theme: 'dark', count: 3 } },
+      { type: 'expectStorage', key: 'theme', value: 'dark' },
+      { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root', css: 'x' } } },
+      { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk', match: 'contains' },
+      { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite', atomic: 'yes' },
+    ];
+
+    expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
+      { type: 'click', by: { role: 'button', name: 'Add' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, index: 1, expected: false },
+      { type: 'expectLineThrough', by: { label: 'Milk' } },
+      { type: 'expectExists', by: { text: 'No tasks yet.' } },
+      { type: 'expectExists' },
+      { type: 'mockRandom', values: [0.55, 0.1] },
+      { type: 'expectStandsOut', selector: '.tab', index: 1, among: { selector: '.tab' } },
+      { type: 'expectColor', selector: '.bar', property: 'color', hue: 'orange' },
+      { type: 'expectColor', selector: '.bar' },
+      { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
+      { type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' } } },
+      { type: 'mockStorage', entries: { theme: 'dark' } },
+      { type: 'expectStorage', key: 'theme', value: 'dark' },
+      { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root' } } },
+      { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk', match: 'contains' },
+      { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite' },
+    ]);
+  });
+
   it('rejects scenarios that exceed the six-check runner budget', () => {
     const payload = validScenario();
     payload.rounds[3].frameworkTests.push(

@@ -32,6 +32,11 @@
   background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
 }
 .fa-runner-run-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.fa-runner-run-btn:focus-visible,
+.fa-runner-tab-btn:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 2px;
+}
 .fa-runner-run-btn:active:not(:disabled) { transform: translateY(1px); }
 
 .fa-runner-tab-btn {

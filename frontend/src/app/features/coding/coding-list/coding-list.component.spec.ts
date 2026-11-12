@@ -201,8 +201,9 @@ describe('CodingListComponent', () => {
     expect(urlTree instanceof UrlTree).toBeTrue();
     expect(router.serializeUrl(urlTree as UrlTree)).toBe('/javascript/coding/js-number-clamp');
     expect(extras?.state).toEqual(jasmine.objectContaining({
+      // Each item carries its access, so the task page's Next can step over the Premium ones.
       session: {
-        items: [{ tech: 'javascript', kind: 'coding', id: 'js-number-clamp' }],
+        items: [{ tech: 'javascript', kind: 'coding', id: 'js-number-clamp', access: 'free' }],
         index: 0,
       },
       returnToUrl: '/coding?tech=javascript',
@@ -264,6 +265,27 @@ describe('CodingListComponent', () => {
     );
     expect(host.querySelector('[aria-label="Practice priority: High"]')?.textContent).toContain('Priority: High');
     expect(text).not.toContain('Importance: High to Low');
+  });
+
+  it('names each sort order once and opens the menu toward the free side of its trigger', async () => {
+    const fixture = await createComponent({ items: [question()] });
+    const labels = fixture.componentInstance.sortOptions.map((option) => option.label);
+    expect(new Set(labels).size).toBe(labels.length);
+
+    const host = fixture.nativeElement as HTMLElement;
+    const trigger = host.querySelector<HTMLElement>('[data-testid="coding-list-sort-trigger"]')!;
+    const rect = spyOn(trigger, 'getBoundingClientRect');
+    const openAt = (right: number) => {
+      rect.and.returnValue({ right } as DOMRect);
+      trigger.click();
+      fixture.detectChanges();
+      return host.querySelector('.fa-sort__menu')!.classList.contains('fa-sort__menu--start');
+    };
+
+    // A phone wraps the sort to the start of its row: the 260px menu has no room on the trigger's left.
+    expect(openAt(238)).toBeTrue();
+    trigger.click();
+    expect(openAt(1200)).toBeFalse();
   });
 
   it('frames the default global coding route as a frontend coding challenge hub', async () => {
@@ -401,6 +423,42 @@ describe('CodingListComponent', () => {
     fixture.componentInstance.openFirstVisible();
 
     expect(navigate).toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
+  });
+
+  it('lets a guest hide the tasks behind a lock with Free only, and a filter reset shows them again', async () => {
+    const fixture = await createComponent({
+      items: [
+        question({ id: 'js-free-task', title: 'Free task' }),
+        question({ id: 'js-locked-task', title: 'Locked task', access: 'premium' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const toggle = host.querySelector<HTMLButtonElement>('[data-testid="coding-list-free-only"]')!;
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).not.toBeNull();
+
+    toggle.click();
+    fixture.detectChanges();
+
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
+    expect(host.querySelector('[data-testid="question-card-js-free-task"]')).not.toBeNull();
+    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('1 matches');
+
+    fixture.componentInstance.resetAllFilters();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).not.toBeNull();
+
+    // A choice made before upgrading hides nothing once the member's account arrives.
+    fixture.componentInstance.toggleFreeOnly();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
+    (TestBed.inject(AuthService).user as any).set({ _id: 'premium-user', accessTier: 'premium' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).not.toBeNull();
+    expect(host.querySelector('[data-testid="coding-list-free-only"]')).toBeNull();
   });
 
   it('keeps filtered library start actions tied to the first visible unlocked row', async () => {

@@ -171,6 +171,60 @@ describe('UserCodeSandboxService', () => {
     expect(worker.terminate).toHaveBeenCalledTimes(1);
   }));
 
+  it('keeps the tests that finished when a later test blocks the worker, and names the blocked one', fakeAsync(() => {
+    const service = new UserCodeSandboxService();
+    let resolved: RunnerOutput | undefined;
+    void service.runWithTests({ userCode: '', testCode: '', timeoutMs: 1500, testTimeoutMs: 1000 })
+      .then((result) => { resolved = result; });
+    const worker = MockWorker.instances[0];
+    const progress = (data: Record<string, unknown>) =>
+      worker.emitMessage({ type: 'progress', nonce: worker.lastPostedMessage.nonce, ...data });
+    expect(worker.lastPostedMessage.testTimeoutMs).toBe(1000);
+
+    progress({ phase: 'registered', tests: [{ idx: 0, name: 'first' }, { idx: 1, name: 'loops' }, { idx: 2, name: 'last' }] });
+    progress({ phase: 'start', test: { idx: 0, name: 'first' } });
+    progress({ phase: 'result', result: { name: 'first', passed: true, order: 0 } });
+    progress({ phase: 'start', test: { idx: 1, name: 'loops' } });
+    // The second test spins: no progress for the length of one test plus the watchdog's margin.
+    tick(1499);
+    flushMicrotasks();
+    expect(resolved).toBeUndefined();
+    tick(1);
+    flushMicrotasks();
+
+    expect(resolved?.timedOut).toBeTrue();
+    expect(resolved?.results).toEqual([
+      { name: 'first', passed: true, error: undefined },
+      { name: 'loops', passed: false, error: 'Stopped after 1500 ms: this test kept the runner busy, as an endless loop does.' },
+      { name: 'last', passed: false, error: 'Not run: the runner was stopped before this test.' },
+    ]);
+    expect(worker.terminate).toHaveBeenCalledTimes(1);
+  }));
+
+  it('lets a worker that keeps reporting progress run past the first deadline', fakeAsync(() => {
+    const service = new UserCodeSandboxService();
+    let resolved: RunnerOutput | undefined;
+    void service.runWithTests({ userCode: '', testCode: '', timeoutMs: 1500, testTimeoutMs: 1000 })
+      .then((result) => { resolved = result; });
+    const worker = MockWorker.instances[0];
+    const nonce = worker.lastPostedMessage.nonce;
+
+    worker.emitMessage({ type: 'progress', nonce, phase: 'registered', tests: [0, 1, 2, 3].map((idx) => ({ idx, name: `t${idx}` })) });
+    // Four tests of 900 ms each: 3.6 s in all, past the 2 s the loading phase allows, but never 1.5 s without news.
+    for (const idx of [0, 1, 2, 3]) {
+      worker.emitMessage({ type: 'progress', nonce, phase: 'start', test: { idx, name: `t${idx}` } });
+      tick(900);
+      worker.emitMessage({ type: 'progress', nonce, phase: 'result', result: { name: `t${idx}`, passed: true, order: idx } });
+    }
+    flushMicrotasks();
+    expect(resolved).toBeUndefined();
+
+    worker.emitMessage({ type: 'done', nonce, entries: [], results: [{ name: 't0', passed: true }] });
+    flushMicrotasks();
+    expect(resolved?.timedOut).toBeFalse();
+    expect(userVisibleFailures.report).not.toHaveBeenCalled();
+  }));
+
   it('prevents default propagation when the sandbox worker emits an error', fakeAsync(() => {
     const service = new UserCodeSandboxService();
     let resolved: RunnerOutput | undefined;
@@ -235,6 +289,16 @@ describe('UserCodeSandboxService matcher DSL', () => {
     } catch {
       return String(value);
     }
+  });
+
+  it('writes failed values as the test author would: undefined, holes, -0 and quoted strings', () => {
+    // eslint-disable-next-line no-sparse-arrays
+    const withHole = [1, undefined, 2, , 3];
+    expect(() => sandboxExpect(withHole).toEqual([1, 2, 3]))
+      .toThrowError('Expected [1,undefined,2,<empty>,3] to deeply equal [1,2,3]');
+    expect(() => sandboxExpect(undefined).toBe('Ada')).toThrowError('Expected undefined to be "Ada"');
+    expect(() => sandboxExpect(-0).toBe(0)).toThrowError('Expected -0 to be 0');
+    expect(() => sandboxExpect({ a: undefined, b: NaN }).toEqual({})).toThrowError('Expected {"a":undefined,"b":NaN} to deeply equal {}');
   });
 
   it('supports async error matchers used by catalog tests', async () => {

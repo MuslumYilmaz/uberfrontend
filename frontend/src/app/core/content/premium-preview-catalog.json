@@ -440,5 +440,25 @@
       "Render the active step with modern Angular control flow."
     ],
     "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "angular/coding/angular-star-rating": {
+    "summary": "Build a reusable Angular star-rating component that its parent controls through a two-way rating binding.",
+    "learningOutcomes": [
+      "Render one clickable star for each step up to a configurable maximum.",
+      "Fill every star up to the selected rating with class bindings.",
+      "Send each new rating back to the parent through two-way binding.",
+      "Make the stars a labelled radio group with one Tab stop and arrow keys that move the rating."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+  },
+  "angular/coding/angular-input-output-two-way": {
+    "summary": "Build a reusable Angular child component whose count and liked state the parent controls through two-way bindings.",
+    "learningOutcomes": [
+      "Declare the count and liked state as model signals the parent can bind both ways.",
+      "Report every plus, minus and Like press back to the parent state.",
+      "Show values the parent sets directly without extra wiring in the child.",
+      "Explain how a model signal maps to a matching input and output pair."
+    ],
+    "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
   }
 }

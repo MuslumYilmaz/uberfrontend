@@ -19,13 +19,13 @@
     "registryId": "frontend-interview-coding-registry-v1",
     "registryVersion": "1.1.0",
     "status": "editorial-gold",
-    "registryContentHash": "c90892b88cef6ff6ccda62e3bb23064fd5bc4106fb2d7fc3e0275270f219c0d9",
+    "registryContentHash": "586f25626b87cb54d479d596989e49baf6901107983a04671ad0613e0308c6cf",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
-    "definitionHash": "21872caf5b519c6620bbb5c379314031ad59ac650dba88734dbf9d3d2fa92792",
+    "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
     "artifactSha256": {
-      "public": "39d85a177fa3ed0409fb81b76a99323f6e03f1661c80663d602e48bece439711",
-      "private": "4373094a486770411e3906355da068ef4d9b4df42960b10f573127af8107ee4d",
-      "release": "0bcd60a7dbd5bcbb7ec9c3cc903dd6e39e4b4b0b2f721257ba9d2f92eaca756b"
+      "public": "bb7e02942c6bf7781f2d6433574bd375ee2b8148513d3bd98a63205770dddbf8",
+      "private": "240f64c057de44e096d08ae524955baa9c36a1bb240260eba7125b860d3f4401",
+      "release": "15bb4065a05f21fd9f74f7c927746a9dc5927e0800d8bb0943124246fb1f3277"
     }
   }
 }

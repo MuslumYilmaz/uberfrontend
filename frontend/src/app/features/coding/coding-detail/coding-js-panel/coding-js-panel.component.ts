@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import type { DecisionGraphBranch, DecisionGraphDocument, DecisionGraphNode } from '../../../../core/models/decision-graph.model';
@@ -19,6 +19,8 @@ import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../..
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
 import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
+import { editorKeys } from '../../../../core/utils/editor-keys.util';
+import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -44,9 +46,13 @@ import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-co
 declare const monaco: any;
 
 export type JsLang = 'js' | 'ts';
+/** 'editor': the Test cases tab as the visitor left it (Run). 'shipped': the task's own tests (Submit). */
+export type JsTestSuite = 'editor' | 'shipped';
 type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 type Runner = {
-  runWithTests(args: { userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number }): Promise<RunnerOutput>;
+  runWithTests(args: {
+    userCode: string; testCode: string; files?: readonly BundleFile[]; timeoutMs?: number; testTimeoutMs?: number;
+  }): Promise<RunnerOutput>;
 };
 type ApplySolutionOptions = {
   decisionGraphAsset?: string | null;
@@ -115,6 +121,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   get rehearsing(): boolean {
     return !!this.clockLabel || this.locked;
   }
+  /** The task is already marked solved, so a passing run needs no nudge toward Submit. */
+  @Input() solved = false;
   private _solutionPanelOpen = false;
   @Input() set solutionPanelOpen(value: boolean) {
     this._solutionPanelOpen = !!value;
@@ -172,6 +180,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
+  /** The tests the last run used: the editable Test cases tab (Run), or the task's own tests (Submit). */
+  readonly lastRunSuite = signal<JsTestSuite>('editor');
 
   // A multi-file task keeps its files in the one code string (file-bundle.util); the editor shows one file.
   readonly bundleFiles = computed(() => parseFileBundle(this.editorContent()));
@@ -187,6 +197,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
   editorRatio = signal(0.65); // top editors take 65% of the vertical space
+  editorRatioPercent = computed(() => Math.round(this.editorRatio() * 100));
+  /** Set once the person moves the splitter; a failing run then leaves their split alone. */
+  private userResizedSplit = false;
   private _draggingSplit = signal(false);
   isDraggingSplit = this._draggingSplit.asReadonly();
   private _hydrating = true;
@@ -200,6 +213,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly zone = inject(NgZone);
   private readonly analytics = inject(AnalyticsService, { optional: true });
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
   private readonly decisionGraphService = inject(DecisionGraphService, { optional: true });
@@ -587,7 +601,33 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   passedCount = computed(() => this.testResults().filter(r => r.passed).length);
   totalCount = computed(() => this.testResults().length);
+  failedCount = computed(() => this.totalCount() - this.passedCount());
   allPassing = computed(() => this.totalCount() > 0 && this.passedCount() === this.totalCount());
+  /** Failures first, each group in the order the tests ran: the row worth reading sits at the top of a short panel. */
+  orderedResults = computed(() => {
+    const results = this.testResults();
+    return [...results.filter((result) => !result.passed), ...results.filter((result) => result.passed)];
+  });
+
+  /**
+   * A failing run needs room for its messages: the results take at least half the height (at 1280x720 they had ~190
+   * px). A split the person set by hand stays as they left it.
+   */
+  private growResultsForFailure(): void {
+    if (this.userResizedSplit || this.editorRatio() <= 0.5) return;
+    this.editorRatio.set(0.5);
+    this.scheduleResize();
+  }
+
+  /** Arrow keys move the editor/results splitter as dragging does. */
+  onSplitterKey(ev: KeyboardEvent): void {
+    const next = splitterKeyRatio(ev.key, this.editorRatio(), { min: 0.2, max: 0.9 }, 'y');
+    if (next === null) return;
+    ev.preventDefault();
+    this.userResizedSplit = true;
+    this.editorRatio.set(next);
+    this.scheduleResize();
+  }
 
   startSplitDrag(ev: PointerEvent) {
     ev.preventDefault();
@@ -602,6 +642,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       if (!rect) return;
       const y = e.clientY - rect.top;
       const ratio = Math.min(0.9, Math.max(0.2, y / rect.height)); // clamp 20%–90%
+      this.userResizedSplit = true;
       this.editorRatio.set(ratio);
       this.scheduleResize();
     };
@@ -1464,7 +1505,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private startInterviewTicker(): void {
     this.stopInterviewTicker();
     if (!this.isBrowser || !this.interviewModeEnabled()) return;
-    this.interviewTicker = window.setInterval(() => this.syncInterviewRemaining(), 1000);
+    // Outside the zone, as AttemptInsightsService's sync timer: a session restored while the page loads would
+    // otherwise keep the app from turning stable, and hydration would leave the prerendered markup in place.
+    this.interviewTicker = this.zone.runOutsideAngular(() =>
+      window.setInterval(() => this.zone.run(() => this.syncInterviewRemaining()), 1000));
   }
 
   private stopInterviewTicker(): void {
@@ -1810,18 +1854,39 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.pendingTestsPersist = null;
   }
 
+  readonly keys = editorKeys();
+
+  /** The Run tests button's own condition, shared with Ctrl/Cmd+Enter in either editor. */
+  canRunTests(): boolean {
+    return !this.locked && !!(this.testCode() || '').trim() && !this.isRunningTests();
+  }
+
+  onRunShortcut(): void {
+    if (this.canRunTests()) this.onRunTestsClick();
+  }
+
   /** Without a host listening, the panel runs the tests on its own. */
   onRunTestsClick(): void {
     if (this.requestRunTests.observed) this.requestRunTests.emit();
     else void this.runTests();
   }
 
-  // Run tests
-  async runTests() {
+  /** True when the Test cases tab no longer holds the task's own tests for the current language. */
+  testsEdited(): boolean {
+    const q = this.question;
+    if (!q) return false;
+    const normalize = (code: string) => String(code ?? '').replace(/\r\n/g, '\n').trim();
+    return normalize(this.testCode()) !== normalize(this.pickTests(q as any, this.jsLang()));
+  }
+
+  // Run tests. A submission runs the task's own tests: tests edited in the Test cases tab never grade it.
+  async runTests(options: { suite?: JsTestSuite } = {}) {
     const q = this.question; if (!q || this.destroyed || this.locked) return;
     let rawUserSnapshot = this.editorContent();
+    const suite = options.suite ?? 'editor';
 
     const runId = ++this._runSeq;
+    this.lastRunSuite.set(suite);
     this.isRunningTests.set(true);
     this.hasRunTests.set(false);
     this.testResults.set([]);
@@ -1833,8 +1898,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       if (runId !== this._runSeq) return;
       const rawUser = this.withEditorCode(this.codeEditor?.getValue?.() ?? this.editorCode());
       rawUserSnapshot = rawUser;
-      const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
-      this.syncEditorBuffers(rawUser, rawTests);
+      const editorTests = this.testsEditor?.getValue?.() ?? this.testCode();
+      const rawTests = suite === 'shipped' ? this.pickTests(q as any, this.jsLang()) : editorTests;
+      // The Test cases tab keeps what the visitor wrote, whichever tests this run used.
+      this.syncEditorBuffers(rawUser, editorTests);
       // A multi-file task runs its files as modules that the tests import, in JavaScript only.
       const files = parseFileBundle(rawUser);
       const userSrc = files ? '' : await this.ensureJs(rawUser, `${q.id}.ts`);
@@ -1846,9 +1913,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       try {
         const runner = await this.loadRunner();
         if (runId !== this._runSeq) return;
+        // 1500 ms to load the code and the tests, then each test on its own clock (the task may ask for more).
+        const testTimeoutMs = Number(q.testTimeoutMs) > 0 ? Number(q.testTimeoutMs) : undefined;
         const out = await runner.runWithTests(files
-          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500 }
-          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500 });
+          ? { userCode: '', testCode: testsSrc, files, timeoutMs: 1500, testTimeoutMs }
+          : { userCode: this.wrapExportDefault(userSrc), testCode: this.transformTestCode(testsSrc), timeoutMs: 1500, testTimeoutMs });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         const sandboxResults = out?.results || [];
@@ -1875,6 +1944,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.consoleEntriesChange.emit(this.consoleEntries());
       this.processAssistAfterRun(q, rawUserSnapshot, this.testResults());
       this.subTab.set('tests');
+      if (!passing) this.growResultsForFailure();
     } finally {
       if (runId === this._runSeq) this.isRunningTests.set(false);
     }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, NgZone, Optional } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type {
@@ -70,7 +70,10 @@ export class AttemptInsightsService {
   private syncInFlight = false;
   private pendingSyncAfterCurrent = false;
 
-  constructor(@Optional() private http: HttpClient | null = null) {
+  constructor(
+    @Optional() private http: HttpClient | null = null,
+    @Optional() private zone: NgZone | null = null,
+  ) {
     if (this.hasWindow()) {
       window.addEventListener('online', this.onOnline);
     }
@@ -376,10 +379,21 @@ export class AttemptInsightsService {
     }
 
     const wait = Math.max(0, Math.floor(delayMs));
-    this.syncTimer = setTimeout(() => {
+    const fire = () => {
       this.syncTimer = null;
       void this.triggerSync({ force, reason });
-    }, wait);
+    };
+    const zone = this.zone;
+    if (!zone) {
+      this.syncTimer = setTimeout(fire, wait);
+      return;
+    }
+    // Outside the zone, as AppComponent.scheduleToNextMidnight: a retry or cooldown timer pending inside it keeps the
+    // app from turning stable, and hydration then leaves the prerendered DOM in place (stale /coding rows and chips
+    // while a failed sync retries).
+    zone.runOutsideAngular(() => {
+      this.syncTimer = setTimeout(() => zone.run(fire), wait);
+    });
   }
 
   private buildSyncPayload(runs: AttemptRunRecord[]): AttemptRunRecord[] {

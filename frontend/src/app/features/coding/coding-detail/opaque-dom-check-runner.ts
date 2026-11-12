@@ -1,4 +1,4 @@
-import type { FrameworkTest, FrameworkTestStep } from '../../../core/models/question.model';
+import type { FrameworkTest, FrameworkTestLocator, FrameworkTestStep } from '../../../core/models/question.model';
 import type { TestResult } from '../console-logger/console-logger.component';
 
 const OPAQUE_CHECK_CHANNEL = 'FA_OPAQUE_CHECK';
@@ -393,6 +393,34 @@ export class OpaqueDomCheckRunner {
 
 /** Runs inside a sandboxed opaque-origin iframe. Keep this function self-contained. */
 function opaqueChildBootstrap(config: ChildConfig): void {
+  // A check with a mockRandom step fixes Math.random before the app's own scripts run, so content placed at random
+  // (a snake's food) lands where the check expects it. The values repeat in turn.
+  const randomStep = (config.check?.steps || []).find((step) => String(step?.type || step?.action || '') === 'mockRandom');
+  const randomValues = (Array.isArray(randomStep?.values) ? randomStep!.values : [])
+    .map(Number)
+    .filter((value) => Number.isFinite(value) && value >= 0 && value < 1);
+  if (randomValues.length) {
+    let nextRandom = 0;
+    Math.random = () => randomValues[nextRandom++ % randomValues.length];
+  }
+  // The sandboxed frame has no storage of its own (localStorage throws), so each check gets fresh in-memory
+  // localStorage and sessionStorage, which a mockStorage step fills before the app's own scripts run.
+  const memoryStorage = (entries: Record<string, unknown>) => {
+    const items = new Map(Object.entries(entries).map(([key, value]) => [key, String(value)]));
+    return {
+      get length() { return items.size; },
+      key: (index: number) => Array.from(items.keys())[index] ?? null,
+      getItem: (key: string) => items.get(String(key)) ?? null,
+      setItem: (key: string, value: unknown) => { items.set(String(key), String(value)); },
+      removeItem: (key: string) => { items.delete(String(key)); },
+      clear: () => { items.clear(); },
+    } as Storage;
+  };
+  const storageStep = (config.check?.steps || []).find((step) => String(step?.type || step?.action || '') === 'mockStorage');
+  const pageStorage = memoryStorage(storageStep?.entries && typeof storageStep.entries === 'object' ? storageStep.entries : {});
+  for (const [name, storage] of [['localStorage', pageStorage], ['sessionStorage', memoryStorage({})]] as const) {
+    try { Object.defineProperty(window, name, { configurable: true, get: () => storage }); } catch { }
+  }
   const channel = 'FA_OPAQUE_CHECK';
   const version = 2;
   const maxErrorLength = 4000;
@@ -662,13 +690,203 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     }
     return chain;
   };
+  // A `by` locator finds elements the way a user or a screen reader does: by role and accessible name, by label, or
+  // by an element's own text. A name also matches the visible text, so a "+" button with aria-label="increment" is
+  // found as "+" too. Dashes and the minus sign compare equal, and hidden elements never match.
+  const normalizeName = (value: unknown) => String(value ?? '')
+    .replace(/[\u2010-\u2015\u2212]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const isHidden = (element: Element) => {
+    for (let node: Element | null = element; node; node = node.parentElement) {
+      if ((node as HTMLElement).hidden || node.getAttribute('aria-hidden') === 'true') return true;
+      if (getComputedStyle(node).display === 'none') return true;
+    }
+    const visibility = getComputedStyle(element).visibility;
+    return visibility === 'hidden' || visibility === 'collapse';
+  };
+  const implicitRole = (element: Element): string => {
+    const tag = element.tagName.toLowerCase();
+    const type = (element.getAttribute('type') || '').toLowerCase();
+    if (tag === 'button') return 'button';
+    if (tag === 'a' || tag === 'area') return element.hasAttribute('href') ? 'link' : '';
+    if (tag === 'input') {
+      if (['button', 'submit', 'reset', 'image'].includes(type)) return 'button';
+      if (type === 'checkbox' || type === 'radio') return type;
+      if (type === 'range') return 'slider';
+      if (type === 'number') return 'spinbutton';
+      if (['', 'text', 'search', 'email', 'tel', 'url'].includes(type)) {
+        if (element.hasAttribute('list')) return 'combobox';
+        return type === 'search' ? 'searchbox' : 'textbox';
+      }
+      return '';
+    }
+    if (tag === 'textarea') return 'textbox';
+    if (tag === 'select') {
+      const select = element as HTMLSelectElement;
+      return select.multiple || select.size > 1 ? 'listbox' : 'combobox';
+    }
+    if (/^h[1-6]$/.test(tag)) return 'heading';
+    if (tag === 'img') return element.getAttribute('alt') === '' ? 'presentation' : 'img';
+    const roles: Record<string, string> = {
+      option: 'option', ul: 'list', ol: 'list', menu: 'list', li: 'listitem', table: 'table', tr: 'row', td: 'cell',
+      th: 'columnheader', dialog: 'dialog', form: 'form', nav: 'navigation', main: 'main', progress: 'progressbar',
+      output: 'status', mark: 'mark',
+    };
+    return roles[tag] || '';
+  };
+  const roleOf = (element: Element) => {
+    const explicit = (element.getAttribute('role') || '').trim().split(/\s+/)[0].toLowerCase();
+    return explicit || implicitRole(element);
+  };
+  const visibleText = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent || '';
+    if (node.nodeType !== Node.ELEMENT_NODE) return '';
+    const element = node as Element;
+    if (['SCRIPT', 'STYLE', 'TEMPLATE'].includes(element.tagName)) return '';
+    if ((element as HTMLElement).hidden || element.getAttribute('aria-hidden') === 'true') return '';
+    const display = getComputedStyle(element).display;
+    if (display === 'none') return '';
+    let text = '';
+    element.childNodes.forEach((child) => { text += visibleText(child); });
+    return display.startsWith('inline') ? text : ` ${text} `;
+  };
+  const ownText = (element: Element) => normalizeName(Array.from(element.childNodes)
+    .filter((child) => child.nodeType === Node.TEXT_NODE)
+    .map((child) => child.textContent || '')
+    .join(''));
+  const labelledByText = (element: Element) => normalizeName((element.getAttribute('aria-labelledby') || '')
+    .split(/\s+/)
+    .map((id) => {
+      const target = id ? document.getElementById(id) : null;
+      return target ? visibleText(target) : '';
+    })
+    .join(' '));
+  const labelsText = (element: Element) => {
+    const labels = (element as HTMLInputElement).labels;
+    return labels ? normalizeName(Array.from(labels).map((label) => visibleText(label)).join(' ')) : '';
+  };
+  const NAME_FROM_CONTENT = new Set(['button', 'link', 'heading', 'option', 'checkbox', 'radio', 'switch', 'tab',
+    'menuitem', 'menuitemcheckbox', 'menuitemradio', 'treeitem', 'cell', 'gridcell', 'columnheader', 'rowheader', 'row',
+    'tooltip']);
+  const accessibleName = (element: Element) => {
+    const name = labelledByText(element) || normalizeName(element.getAttribute('aria-label')) || labelsText(element);
+    if (name) return name;
+    if (element.tagName === 'IMG') return normalizeName(element.getAttribute('alt'));
+    const input = element as HTMLInputElement;
+    if (element.tagName === 'INPUT' && ['button', 'submit', 'reset'].includes(input.type)) return normalizeName(input.value);
+    const content = NAME_FROM_CONTENT.has(roleOf(element)) ? normalizeName(visibleText(element)) : '';
+    return content || normalizeName(element.getAttribute('title')) || normalizeName(element.getAttribute('placeholder'));
+  };
+  const findAll = (step: FrameworkTestStep): Element[] => {
+    const by = step?.by;
+    if (!by) {
+      const selector = String(step?.selector || '').trim();
+      return selector ? Array.from(document.querySelectorAll(selector)) : [];
+    }
+    const role = by.role === undefined ? undefined : String(by.role).trim().toLowerCase();
+    const name = by.name === undefined ? undefined : normalizeName(by.name);
+    const label = by.label === undefined ? undefined : normalizeName(by.label);
+    const text = by.text === undefined ? undefined : normalizeName(by.text);
+    const matches = Array.from(document.body.querySelectorAll('*')).filter((element) => {
+      if (['SCRIPT', 'STYLE', 'TEMPLATE'].includes(element.tagName)) return false;
+      if (role !== undefined && roleOf(element) !== role) return false;
+      if (name !== undefined && accessibleName(element) !== name && normalizeName(visibleText(element)) !== name) return false;
+      if (label !== undefined && labelledByText(element) !== label
+        && normalizeName(element.getAttribute('aria-label')) !== label && labelsText(element) !== label) return false;
+      if (text !== undefined && ownText(element) !== text) return false;
+      return !isHidden(element);
+    });
+    if (!by.near) return matches;
+    // Near another element: the matches inside its closest ancestor that holds any, as a comment's own Reply button
+    // shares a wrapper with its text before the replies' buttons do. When the other element shows more than once
+    // (a product's name in its card and in the cart), the occurrence with the closest matches wins.
+    let nearest: Element[] = [];
+    let nearestDepth = Infinity;
+    for (const anchor of findAll({ by: by.near } as FrameworkTestStep)) {
+      let depth = 0;
+      for (let scope = anchor.parentElement; scope && depth < nearestDepth; scope = scope.parentElement, depth += 1) {
+        const inside = matches.filter((element) => scope!.contains(element));
+        if (inside.length) {
+          nearest = inside;
+          nearestDepth = depth;
+          break;
+        }
+      }
+    }
+    return nearest;
+  };
+  const describeLocator = (by: FrameworkTestLocator): string => {
+    const own = by.text !== undefined
+      ? `text "${by.text}"`
+      : by.label !== undefined
+        ? `${by.role || 'control'} labelled "${by.label}"`
+        : `${by.role || 'element'}${by.name === undefined ? '' : ` "${by.name}"`}`;
+    return by.near ? `${own} near ${describeLocator(by.near)}` : own;
+  };
+  const describeTarget = (step: FrameworkTestStep) => {
+    const by = step?.by;
+    if (!by) return String(step?.selector || '').trim();
+    const rawIndex = Number(step?.index);
+    const nth = Number.isFinite(rawIndex) && rawIndex > 0 ? ` #${rawIndex + 1}` : '';
+    return `${describeLocator(by)}${nth}`;
+  };
   const queryElement = (step: FrameworkTestStep) => {
-    const selector = String(step?.selector || '').trim();
     const rawIndex = Number(step?.index);
     const index = Math.max(0, Number.isFinite(rawIndex) ? rawIndex : 0);
-    return Array.from(document.querySelectorAll(selector))[index] || null;
+    return findAll(step)[index] || null;
   };
   const textOf = (element: Element | null) => String((element?.textContent || '').replace(/\s+/g, ' ')).trim();
+  // The hidden check frame may not advance transitions, so a style still fading in or out is jumped to its end
+  // before it is read.
+  const finishAnimations = (nodes: Element[]) => {
+    for (const node of nodes) {
+      for (const animation of typeof node.getAnimations === 'function' ? node.getAnimations() : []) {
+        try { animation.finish(); } catch { }
+      }
+    }
+  };
+  // Names a CSS color the way a person would (red, orange, yellow, green, blue, purple), whatever syntax produced
+  // it: a canvas turns any color the browser understands into sRGB pixels.
+  let colorProbe: CanvasRenderingContext2D | null | undefined;
+  const colorName = (cssColor: string) => {
+    colorProbe ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    if (!colorProbe) return 'unreadable';
+    colorProbe.clearRect(0, 0, 1, 1);
+    colorProbe.fillStyle = '#000';
+    colorProbe.fillStyle = cssColor;
+    colorProbe.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = Array.from(colorProbe.getImageData(0, 0, 1, 1).data).map((channel) => channel / 255);
+    if (!cssColor.trim() || a < 0.1) return 'transparent';
+    const max = Math.max(r, g, b);
+    const chroma = max - Math.min(r, g, b);
+    if (chroma < 0.15) return 'grey';
+    const sector = max === r ? ((g - b) / chroma + 6) % 6 : max === g ? (b - r) / chroma + 2 : (r - g) / chroma + 4;
+    const hue = sector * 60;
+    if (hue < 15 || hue >= 340) return 'red';
+    if (hue < 50) return 'orange';
+    if (hue < 70) return 'yellow';
+    if (hue < 170) return 'green';
+    return hue < 255 ? 'blue' : 'purple';
+  };
+  const isTextField = (element: Element) => {
+    if (element instanceof HTMLTextAreaElement) return !element.readOnly && !element.disabled;
+    return element instanceof HTMLInputElement && !element.readOnly && !element.disabled
+      && ['text', 'search', 'email', 'url', 'tel', 'password'].includes(element.type);
+  };
+  const typeCharacter = (field: HTMLInputElement | HTMLTextAreaElement, character: string) => {
+    let start = field.value.length;
+    let end = start;
+    try {
+      start = field.selectionStart ?? start;
+      end = field.selectionEnd ?? start;
+    } catch { }
+    const descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(field), 'value');
+    const value = field.value.slice(0, start) + character + field.value.slice(end);
+    if (descriptor?.set) descriptor.set.call(field, value); else field.value = value;
+    try { field.setSelectionRange(start + 1, start + 1); } catch { }
+    field.dispatchEvent(new InputEvent('input', { bubbles: true, data: character, inputType: 'insertText' }));
+  };
   const describeElement = (element: Element | null) => {
     if (!element) return 'none';
     const id = element.id ? `#${element.id}` : '';
@@ -683,8 +901,8 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     const passed = step.match === 'contains' ? actual.includes(expected) : actual === expected;
     if (negate ? passed : !passed) {
       throw new Error(negate
-        ? `${step.selector} expected not to contain text "${expected}" but found "${actual}"`
-        : `${step.selector} expected text "${expected}" but found "${actual}"`);
+        ? `${describeTarget(step)} expected not to contain text "${expected}" but found "${actual}"`
+        : `${describeTarget(step)} expected text "${expected}" but found "${actual}"`);
     }
   };
   const waitForText = (step: FrameworkTestStep): Promise<void> => {
@@ -699,7 +917,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         try { assertText(element, step); return Promise.resolve(); } catch { }
       }
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${step.selector} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`));
+        return Promise.reject(new Error(`${describeTarget(step)} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`));
       }
       return delay(25).then(poll);
     };
@@ -712,10 +930,10 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     const startedAt = nativeNow();
     let lastCount = 0;
     const poll = (): Promise<void> => {
-      lastCount = document.querySelectorAll(String(step.selector || '').trim()).length;
+      lastCount = findAll(step).length;
       if (lastCount === expected) return Promise.resolve();
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${step.selector} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`));
+        return Promise.reject(new Error(`${describeTarget(step)} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`));
       }
       return delay(25).then(poll);
     };
@@ -723,7 +941,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   };
   const executeStep = (step: FrameworkTestStep): Promise<void> => {
     const type = String(step?.type || step?.action || '').trim();
-    const selector = String(step?.selector || '').trim();
+    const target = describeTarget(step);
     if (type === 'mockHttp') {
       installHttpMock(step);
       configureHttpMock(step);
@@ -750,6 +968,17 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return Promise.resolve();
     }
     if (type === 'wait') return delay(Math.max(0, Number(step.durationMs ?? step.timeoutMs ?? 0)));
+    if (type === 'mockRandom' || type === 'mockStorage') return Promise.resolve();
+    if (type === 'expectStorage') {
+      const key = String(step.key || '');
+      const expected = step.value === undefined ? null : String(step.value);
+      const actual = pageStorage.getItem(key);
+      if (actual !== expected) {
+        const show = (value: string | null) => (value === null ? 'nothing' : `"${value}"`);
+        throw new Error(`localStorage "${key}" expected ${show(expected)} but held ${show(actual)}`);
+      }
+      return Promise.resolve();
+    }
     if (type === 'unmountPreview') {
       const hook = (window as Window & { __FA_UNMOUNT_PREVIEW?: () => void }).__FA_UNMOUNT_PREVIEW;
       if (typeof hook !== 'function') throw new Error('Preview did not expose an unmount hook');
@@ -780,18 +1009,18 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }
       return Promise.resolve();
     }
-    if (!selector) throw new Error(`${type || 'step'} is missing a selector`);
+    if (!target) throw new Error(`${type || 'step'} is missing a selector`);
     if (type === 'waitForText') return waitForText(step);
     if (type === 'waitForCount') return waitForCount(step);
     if (type === 'expectCount') {
       const expected = Math.max(0, Number(step.count ?? step.expected ?? 0));
-      const actual = document.querySelectorAll(selector).length;
-      if (actual !== expected) throw new Error(`${selector} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${actual}`);
+      const actual = findAll(step).length;
+      if (actual !== expected) throw new Error(`${target} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${actual}`);
       return Promise.resolve();
     }
 
     const element = queryElement(step);
-    if (!element) throw new Error(`${selector} was not found`);
+    if (!element) throw new Error(`${target} was not found`);
     if (type === 'expectExists') return Promise.resolve();
     if (type === 'expectText') { assertText(element, step); return Promise.resolve(); }
     if (type === 'expectNoText') { assertText(element, step, true); return Promise.resolve(); }
@@ -808,7 +1037,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const expected = String(step.value ?? step.text ?? '').trim();
       const actual = String((element as HTMLInputElement).value ?? '').trim();
       const passed = step.match === 'contains' ? actual.includes(expected) : actual === expected;
-      if (!passed) throw new Error(`${selector} expected value "${expected}" but found "${actual}"`);
+      if (!passed) throw new Error(`${target} expected value "${expected}" but found "${actual}"`);
       return Promise.resolve();
     }
     if (type === 'expectDisabled') {
@@ -817,36 +1046,36 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const actual = typeof control.disabled === 'boolean'
         ? control.disabled
         : element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true';
-      if (actual !== expected) throw new Error(`${selector} expected ${expected ? 'disabled' : 'enabled'} but was ${actual ? 'disabled' : 'enabled'}`);
+      if (actual !== expected) throw new Error(`${target} expected ${expected ? 'disabled' : 'enabled'} but was ${actual ? 'disabled' : 'enabled'}`);
       return Promise.resolve();
     }
     if (type === 'expectAttribute') {
       const attribute = String(step.attribute || '').trim();
-      if (!attribute) throw new Error(`${selector} is missing an attribute name`);
+      if (!attribute) throw new Error(`${target} is missing an attribute name`);
       const actual = element.getAttribute(attribute);
-      if (step.expected === false && actual !== null) throw new Error(`${selector} expected ${attribute} to be absent`);
-      if ((step.expected === undefined || step.expected === true) && actual === null) throw new Error(`${selector} expected ${attribute} to exist`);
+      if (step.expected === false && actual !== null) throw new Error(`${target} expected ${attribute} to be absent`);
+      if ((step.expected === undefined || step.expected === true) && actual === null) throw new Error(`${target} expected ${attribute} to exist`);
       if (step.expected !== undefined && step.expected !== true && step.expected !== false && actual !== String(step.expected)) {
-        throw new Error(`${selector} expected ${attribute}="${String(step.expected)}" but found "${actual ?? ''}"`);
+        throw new Error(`${target} expected ${attribute}="${String(step.expected)}" but found "${actual ?? ''}"`);
       }
       return Promise.resolve();
     }
     if (type === 'expectClass') {
       const className = String(step.className || step.value || '').trim();
-      if (!className) throw new Error(`${selector} is missing a className`);
+      if (!className) throw new Error(`${target} is missing a className`);
       const expected = step.expected !== false;
-      if (element.classList.contains(className) !== expected) throw new Error(`${selector} expected class "${className}" to be ${expected ? 'present' : 'absent'}`);
+      if (element.classList.contains(className) !== expected) throw new Error(`${target} expected class "${className}" to be ${expected ? 'present' : 'absent'}`);
       return Promise.resolve();
     }
     if (type === 'click') {
       const clickable = element as HTMLElement;
-      if (typeof clickable.click !== 'function') throw new Error(`${selector} is not clickable`);
+      if (typeof clickable.click !== 'function') throw new Error(`${target} is not clickable`);
       clickable.click();
       return delay(50);
     }
     if (type === 'submit') {
       const form = element as HTMLFormElement;
-      if (!(form instanceof HTMLFormElement)) throw new Error(`${selector} is not a form`);
+      if (!(form instanceof HTMLFormElement)) throw new Error(`${target} is not a form`);
       const SubmitEventCtor = window.SubmitEvent || Event;
       form.dispatchEvent(new SubmitEventCtor('submit', { bubbles: true, cancelable: true }));
       return delay(50);
@@ -865,14 +1094,130 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (type === 'key') {
       const key = String(step.key || step.value || 'Enter');
       (element as HTMLElement).focus?.();
-      element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-      element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
-      return delay(50);
+      const typed = element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+        && key.length === 1 && isTextField(element);
+      // A printable key the page does not cancel types its character into a text field, as a real keypress does,
+      // once the page has handled the keydown and re-rendered.
+      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key)) : Promise.resolve())
+        .then(() => {
+          element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
+          return delay(50);
+        });
     }
     if (type === 'expectFocused') {
       if (document.activeElement !== element && lastRequestedFocus !== element) {
-        throw new Error(`${selector} expected focus but active element was ${describeElement(document.activeElement)}`);
+        throw new Error(`${target} expected focus but active element was ${describeElement(document.activeElement)}`);
       }
+      return Promise.resolve();
+    }
+    if (type === 'expectChecked') {
+      // An indeterminate checkbox (or aria-checked="mixed") is mixed, neither checked nor unchecked.
+      const expected = step.expected === 'mixed' ? 'mixed' : step.expected === false ? 'unchecked' : 'checked';
+      const input = element as HTMLInputElement;
+      const aria = element.getAttribute('aria-checked');
+      const checked = typeof input.checked === 'boolean' ? input.checked : aria === 'true';
+      const actual = input.indeterminate === true || aria === 'mixed' ? 'mixed' : checked ? 'checked' : 'unchecked';
+      if (actual !== expected) throw new Error(`${target} expected ${expected} but was ${actual}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectColor') {
+      const property = String(step.property || 'background-color');
+      const expected = String(step.hue || '').trim().toLowerCase();
+      finishAnimations([element]);
+      const actual = colorName(getComputedStyle(element).getPropertyValue(property));
+      if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectName') {
+      // The accessible name a screen reader announces: present, or holding the given text.
+      const actual = accessibleName(element);
+      const expected = normalizeName(step.text);
+      if (!actual) throw new Error(`${target} has no accessible name`);
+      if (expected && !(step.match === 'equals' ? actual === expected : actual.includes(expected))) {
+        throw new Error(`${target} expected an accessible name ${step.match === 'equals' ? 'of' : 'with'} "${expected}" but it was "${actual}"`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectLiveRegion') {
+      // The live region the target sits in, itself included, announces the way the step says. role="status" is
+      // polite and atomic on its own, so it passes without aria-live or aria-atomic.
+      const roleDefaults = new Map<string, [string, boolean]>([
+        ['status', ['polite', true]], ['alert', ['assertive', true]], ['log', ['polite', false]],
+        ['marquee', ['off', false]], ['timer', ['off', false]],
+      ]);
+      let region: Element | null = element;
+      while (region && !region.hasAttribute('aria-live') && !roleDefaults.has(roleOf(region))) region = region.parentElement;
+      if (!region) throw new Error(`${target} is not inside a live region`);
+      const [rolePoliteness, roleAtomic] = roleDefaults.get(roleOf(region)) ?? ['off', false];
+      const politeness = region.getAttribute('aria-live')?.trim() || rolePoliteness;
+      const atomicAttribute = region.getAttribute('aria-atomic');
+      const atomic = atomicAttribute === null ? roleAtomic : atomicAttribute === 'true';
+      if (step.politeness && politeness !== step.politeness) {
+        throw new Error(`${target} sits in a live region that is ${politeness}, expected ${step.politeness}`);
+      }
+      if (step.atomic !== undefined && atomic !== step.atomic) {
+        throw new Error(`${target} sits in a live region that is ${atomic ? '' : 'not '}atomic, expected ${step.atomic ? '' : 'not '}atomic`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectIndented') {
+      // The target starts further right than another element, as a reply sits indented under its comment.
+      const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
+      const other = queryElement(reference);
+      if (!other) throw new Error(`${describeTarget(reference)} was not found`);
+      const shift = Math.round(element.getBoundingClientRect().left - other.getBoundingClientRect().left);
+      if (shift < 8) throw new Error(`${target} starts ${shift}px right of ${describeTarget(reference)}; expected it indented further`);
+      return Promise.resolve();
+    }
+    if (type === 'expectReferenced') {
+      // Another element names the target in an id-reference attribute (aria-activedescendant on the active option),
+      // whatever the id is.
+      const attribute = String(step.attribute || '').trim();
+      if (!attribute) throw new Error(`${target} is missing an attribute name`);
+      const expected = step.expected !== false;
+      const id = element.id;
+      const named = !!id && Array.from(document.querySelectorAll(`[${CSS.escape(attribute)}]`))
+        .some((node) => (node.getAttribute(attribute) || '').split(/\s+/).includes(id));
+      if (named !== expected) {
+        throw new Error(expected
+          ? `${target} expected an element's ${attribute} to name it${id ? '' : ', but it has no id'}`
+          : `${target} expected no element's ${attribute} to name it`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectStandsOut') {
+      // The target must look different from every other element of its group (an active tab among tabs). A
+      // highlight still fading out must not pass for one.
+      const others = findAll({ selector: step.among?.selector, by: step.among?.by } as FrameworkTestStep)
+        .filter((node) => node !== element);
+      if (!others.length) throw new Error(`${target} has no group to stand out from`);
+      finishAnimations([element, ...others]);
+      const look = (node: Element) => {
+        const style = getComputedStyle(node);
+        return ['background-color', 'background-image', 'color', 'border-top-color', 'border-bottom-color',
+          'border-left-color', 'border-right-color', 'border-bottom-width', 'font-weight', 'text-decoration-line',
+          'box-shadow', 'outline-style', 'outline-color', 'opacity'].map((name) => style.getPropertyValue(name)).join('|');
+      };
+      const own = look(element);
+      const alike = others.filter((node) => look(node) === own).length;
+      if (alike) throw new Error(`${target} looks the same as ${alike} other element${alike === 1 ? '' : 's'} of its group`);
+      return Promise.resolve();
+    }
+    if (type === 'expectLineThrough') {
+      // A line-through drawn by an ancestor shows on its text too, so each piece of text looks up its ancestors.
+      const expected = step.expected !== false;
+      const struck = (node: Element) => {
+        for (let current: Element | null = node; current; current = current.parentElement) {
+          const style = getComputedStyle(current);
+          const line = style.getPropertyValue('text-decoration-line') || style.getPropertyValue('text-decoration');
+          if (line.includes('line-through')) return true;
+        }
+        return false;
+      };
+      const texts = [element, ...Array.from(element.querySelectorAll('*'))]
+        .filter((node) => ownText(node) && !isHidden(node));
+      const actual = texts.some(struck);
+      if (actual !== expected) throw new Error(`${target} expected its text ${expected ? '' : 'not '}to be struck through`);
       return Promise.resolve();
     }
     throw new Error(`Unsupported framework check step: ${type || 'unknown'}`);

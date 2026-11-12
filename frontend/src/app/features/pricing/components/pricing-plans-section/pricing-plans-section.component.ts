@@ -549,7 +549,8 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
     },
     {
       label: 'Interview formats',
-      freeValue: 'Timed practice on any task you can open, and Pressure Mode on some free React, Angular and Vue tasks',
+      // The timer lives in the JavaScript workspace only (coding-js-panel); framework tasks have none yet.
+      freeValue: 'Timed practice on any JavaScript task you can open, and Pressure Mode on some free React, Angular and Vue tasks',
       premiumValue: 'Timed rehearsals of company rounds, the merge request review, the find-the-bug case and multi-file bug squash formats, and Pressure Mode on Premium tasks',
     },
     {

@@ -53,7 +53,7 @@ import {
   SystemDesignQuestion as SDQuestion,
   SystemDesignRadioSection as RadioSection,
 } from '../../../core/models/system-design.model';
-import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
+import { CompanyPlanReturnLink, planReturnLink } from '../../../core/utils/company-plan-return.util';
 
 type RelatedItem = {
   id: string;
@@ -441,7 +441,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       | null;
     const url = typeof state?.returnToUrl === 'string' ? state.returnToUrl : null;
     const label = typeof state?.returnLabel === 'string' ? state.returnLabel : null;
-    this.planReturn.set(companyPlanReturnLink(this.router, url, label));
+    this.planReturn.set(planReturnLink(this.router, url, label));
   }
 
   ngAfterViewInit(): void {

@@ -1,19 +1,26 @@
 import { PLATFORM_ID } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { STYLESHEET_LOADER } from './core/utils/stylesheet-loader';
 import { userVisibleFailures } from './core/utils/user-visible-failure-reporter';
 import { MonacoEditorComponent, MonacoLoadError } from './monaco-editor.component';
 
 describe('MonacoEditorComponent loader failure handling', () => {
+  const STYLESHEET_URL = new URL('assets/monaco/min/vs/editor/editor.main.css', document.baseURI).toString();
   let previousGlobals: ReturnType<typeof captureMonacoGlobals>;
+  let loadStylesheet: jasmine.Spy;
 
   beforeEach(() => {
     previousGlobals = captureMonacoGlobals();
     resetMonacoGlobals();
     spyOn(userVisibleFailures, 'report');
+    loadStylesheet = jasmine.createSpy('loadStylesheet').and.resolveTo();
 
     TestBed.configureTestingModule({
       imports: [MonacoEditorComponent],
-      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+      providers: [
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: STYLESHEET_LOADER, useValue: loadStylesheet },
+      ],
     });
   });
 
@@ -35,7 +42,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     fixture.componentInstance.loadFailed.subscribe((error) => failed.push(error));
 
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(failed.length).toBe(1);
     expect(failed[0]).toEqual(jasmine.objectContaining({
@@ -62,11 +69,71 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     const fixture = createComponent();
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     const { paths } = (window as any).require.config.calls.mostRecent().args[0];
     expect(paths.vs).toEqual(['assets/monaco/min/vs', 'assets/monaco/min/vs']);
     expect(userVisibleFailures.report).not.toHaveBeenCalled();
+  });
+
+  it('loads the editor stylesheet itself and creates the editor only once it has loaded', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+    let stylesheetLoaded!: () => void;
+    loadStylesheet.and.returnValue(new Promise<void>((resolve) => { stylesheetLoaded = resolve; }));
+
+    const fixture = createComponent({ width: 320, height: 180 });
+    let readyCount = 0;
+    fixture.componentInstance.ready.subscribe(() => { readyCount += 1; });
+    fixture.detectChanges();
+    await settle();
+
+    // Monaco's own CSS plugin would request the stylesheet once, with no retry.
+    expect((window as any).require.config.calls.mostRecent().args[0]['vs/css']).toEqual({ disabled: true });
+    expect(loadStylesheet).toHaveBeenCalledOnceWith(STYLESHEET_URL, 'vs/editor/editor.main');
+    expect(fakeMonaco.api.editor.create).not.toHaveBeenCalled();
+
+    stylesheetLoaded();
+    await settle();
+
+    expect(fakeMonaco.api.editor.create).toHaveBeenCalledTimes(1);
+    expect(readyCount).toBe(1);
+    expect(userVisibleFailures.report).not.toHaveBeenCalled();
+  });
+
+  it('falls back and reports the stylesheet without waiting for the scripts when the stylesheet cannot load', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    // The scripts are still downloading.
+    (window as any).require = jasmine.createSpy('require');
+    (window as any).require.config = jasmine.createSpy('config');
+    loadStylesheet.and.rejectWith(new Error(`Could not load the stylesheet ${STYLESHEET_URL}.`));
+
+    const fixture = createComponent();
+    const failed: MonacoLoadError[] = [];
+    fixture.componentInstance.loadFailed.subscribe((error) => failed.push(error));
+    fixture.detectChanges();
+    await settle();
+
+    const stylesheetFailure = {
+      message: 'Monaco editor stylesheet failed to load.',
+      phase: 'loading',
+      moduleId: 'vs/css!vs/editor/editor.main',
+      url: STYLESHEET_URL,
+    };
+    expect(failed).toEqual([stylesheetFailure]);
+    expect(userVisibleFailures.report).toHaveBeenCalledOnceWith('editor_load_failed', {
+      reason: stylesheetFailure.message,
+      phase: stylesheetFailure.phase,
+      moduleId: stylesheetFailure.moduleId,
+      url: STYLESHEET_URL,
+    });
+    expect(fakeMonaco.api.editor.create).not.toHaveBeenCalled();
+    expect((MonacoEditorComponent as any).loaderPromise).toBeNull();
   });
 
   it('loads the tokenizers of files opened later once per module, without surfacing failures', async () => {
@@ -88,7 +155,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     const firstFixture = createComponent();
     firstFixture.componentRef.setInput('preloadLanguages', ['typescript', 'html', 'css', 'json', 'plaintext']);
     firstFixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(requests).toEqual([[
       'vs/basic-languages/typescript/typescript',
@@ -101,7 +168,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     const secondFixture = createComponent();
     secondFixture.componentRef.setInput('preloadLanguages', ['html', 'scss']);
     secondFixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(requests).toEqual([
       jasmine.any(Array),
@@ -121,7 +188,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     expect(firstScript).not.toBeNull();
 
     firstScript!.dispatchEvent(new Event('error'));
-    await Promise.resolve();
+    await settle();
 
     expect(firstFailures.length).toBe(1);
     expect(firstFailures[0]).toEqual(jasmine.objectContaining({
@@ -141,7 +208,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     expect(secondScript).not.toBe(firstScript);
 
     secondScript!.dispatchEvent(new Event('error'));
-    await Promise.resolve();
+    await settle();
     secondFixture.destroy();
   });
 
@@ -162,7 +229,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
     fixture.componentInstance.loadFailed.subscribe((error) => failures.push(error));
 
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(failures).toEqual([]);
     expect(readyCount).toBe(1);
@@ -184,7 +251,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     const fixture = createComponent();
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     const createdWorker = (window as any).MonacoEnvironment.getWorker('workerMain.js', 'css');
 
@@ -205,7 +272,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     const firstFixture = createComponent();
     firstFixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     const customWorkerPath = new URL('assets/monaco/signature-help-worker.js', document.baseURI).toString();
     const { typescriptDefaults, javascriptDefaults } = fakeMonaco.api.languages.typescript;
@@ -218,13 +285,39 @@ describe('MonacoEditorComponent loader failure handling', () => {
     firstFixture.destroy();
     const secondFixture = createComponent();
     secondFixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(fakeMonaco.api.editor.create).toHaveBeenCalledTimes(2);
     for (const defaults of [typescriptDefaults, javascriptDefaults]) {
       expect(defaults.setWorkerOptions).toHaveBeenCalledTimes(1);
     }
     secondFixture.destroy();
+  });
+
+  it('gives the editor typings it can parse, with the Angular signal API a candidate imports', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+
+    const fixture = createComponent();
+    fixture.detectChanges();
+    await settle();
+
+    const libs = new Map<string, string>(
+      fakeMonaco.api.languages.typescript.typescriptDefaults.addExtraLib.calls.allArgs()
+        .map(([content, path]: [string, string]) => [path, content]),
+    );
+    // Lines joined with a literal backslash-n made each file one line of invalid characters for the worker.
+    for (const [path, content] of libs) expect(content).withContext(path).not.toContain('\\n');
+    const angularCore = libs.get('file:///node_modules/@angular/core/index.d.ts') ?? '';
+    expect(angularCore.split('\n').length).toBeGreaterThan(40);
+    for (const name of ['signal', 'computed', 'input', 'output', 'model', 'viewChild', 'ChangeDetectionStrategy']) {
+      expect(angularCore).withContext(name).toMatch(new RegExp(`export (function|const|enum) ${name}\\b`));
+    }
+    fixture.destroy();
   });
 
   it('applies comments with AA contrast before rendering the default dark editor', async () => {
@@ -234,7 +327,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     const fixture = createComponent({ width: 320, height: 180 });
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     const [themeName, theme] = fakeMonaco.api.editor.defineTheme.calls.mostRecent().args;
     const commentColor = theme.rules.find((rule: { token: string }) => rule.token === 'comment').foreground;
@@ -258,7 +351,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
       const fixture = createComponent({ width: 320, height: 180 });
       fixture.componentRef.setInput(source, source === 'theme' ? 'fa-interview-dark' : { theme: 'fa-interview-dark' });
       fixture.detectChanges();
-      await Promise.resolve();
+      await settle();
       const [name, theme] = fakeMonaco.api.editor.defineTheme.calls.mostRecent().args;
       expect(name).toBe('fa-interview-dark');
       expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1].theme).toBe(name);
@@ -277,7 +370,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
       const defaultTheme = fixture.componentInstance.theme;
       fixture.componentRef.setInput('theme', customTheme);
       fixture.detectChanges();
-      await Promise.resolve();
+      await settle();
 
       expect(fakeMonaco.api.editor.create.calls.mostRecent().args[1].theme).toBe(customTheme);
       expect(fakeMonaco.api.editor.setTheme).toHaveBeenCalledWith(customTheme);
@@ -300,7 +393,7 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     const fixture = createComponent();
     fixture.detectChanges();
-    await Promise.resolve();
+    await settle();
 
     expect(fakeMonaco.api.editor.create).toHaveBeenCalledTimes(1);
     expect(fakeMonaco.api.editor.createModel).toHaveBeenCalledTimes(1);
@@ -309,6 +402,59 @@ describe('MonacoEditorComponent loader failure handling', () => {
 
     expect(fakeMonaco.editor.dispose).toHaveBeenCalledTimes(1);
     expect(fakeMonaco.model.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('gives TypeScript the workspace files around the open one at their own paths, and follows file switches and edits', async () => {
+    const fakeMonaco = makeFakeMonaco();
+    (window as any).monaco = fakeMonaco.api;
+    (window as any).require = jasmine.createSpy('require').and.callFake((_deps: string[], ok: () => void) => {
+      ok();
+    });
+    (window as any).require.config = jasmine.createSpy('config');
+    const addExtraLib = fakeMonaco.api.languages.typescript.typescriptDefaults.addExtraLib;
+    const removed: string[] = [];
+    addExtraLib.and.callFake((_content: string, path: string) => ({ dispose: () => removed.push(path) }));
+    const added = () => addExtraLib.calls.allArgs()
+      .filter(([, path]: [string, string]) => path.startsWith('file:///src/'))
+      .map(([content, path]: [string, string]) => `${path}: ${content}`);
+    const types = 'export type Point = { x: number; y: number };';
+
+    const fixture = createComponent();
+    fixture.componentRef.setInput('language', 'typescript');
+    fixture.componentRef.setInput('modelKey', '/src/app/snake.component.ts');
+    fixture.componentRef.setInput('siblingFiles', {
+      '/src/app/types.ts': types,
+      '/src/app/snake.component.html': '<canvas></canvas>',
+    });
+    fixture.detectChanges();
+    await settle();
+
+    // Only TypeScript files go to the worker, and before the model that imports them.
+    expect(added()).toEqual([`file:///src/app/types.ts: ${types}`]);
+    const siblingCall = addExtraLib.calls.all().find((call: any) => call.args[1] === 'file:///src/app/types.ts');
+    expect(siblingCall?.invocationOrder)
+      .toBeLessThan(fakeMonaco.api.editor.createModel.calls.first().invocationOrder);
+
+    // Opening types.ts takes it out of the siblings and puts the edited component in.
+    fixture.componentRef.setInput('modelKey', '/src/app/types.ts');
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited component' });
+    fixture.detectChanges();
+    expect(removed).toEqual(['file:///src/app/types.ts']);
+    expect(added()).toEqual([
+      `file:///src/app/types.ts: ${types}`,
+      'file:///src/app/snake.component.ts: edited component',
+    ]);
+
+    // The same sibling content adds nothing; new content replaces the lib.
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited component' });
+    fixture.detectChanges();
+    fixture.componentRef.setInput('siblingFiles', { '/src/app/snake.component.ts': 'edited again' });
+    fixture.detectChanges();
+    expect(added().length).toBe(3);
+    expect(added()[2]).toBe('file:///src/app/snake.component.ts: edited again');
+
+    fixture.destroy();
+    expect(removed).toEqual(['file:///src/app/types.ts', 'file:///src/app/snake.component.ts']);
   });
 
   it('attaches a replacement model before disposing the previous model', () => {
@@ -341,6 +487,11 @@ describe('MonacoEditorComponent loader failure handling', () => {
     expect(previousModel.dispose).toHaveBeenCalledTimes(1);
     expect(order).toEqual(['attach', 'dispose']);
   });
+
+  // The editor waits for its scripts and its stylesheet, a few promise hops apart.
+  async function settle(): Promise<void> {
+    for (let tick = 0; tick < 10; tick += 1) await Promise.resolve();
+  }
 
   function createComponent(size: { width?: number; height?: number } = {}): ComponentFixture<MonacoEditorComponent> {
     const fixture = TestBed.createComponent(MonacoEditorComponent);

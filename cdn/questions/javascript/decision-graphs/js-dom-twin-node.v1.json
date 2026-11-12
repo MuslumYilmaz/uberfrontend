@@ -40,7 +40,7 @@
             "snippet": "const childrenA = rootA.children;"
           },
           "why": "Keeping paired child arrays ensures each recursive call compares equivalent positions.",
-          "alternative": "Search tree B independently using selectors or node values.",
+          "alternative": "Search tree B independently using selectors or node values. Or walk up from targetA with parentNode, record the child index at each level, and replay that path down from rootB.",
           "tradeoff": "Lockstep traversal is reliable for twin trees, but depends on the trees staying structurally identical."
         },
         {

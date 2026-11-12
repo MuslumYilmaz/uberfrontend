@@ -1,0 +1,85 @@
+{
+  "questionId": "angular-transfer-list",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\ntype Item = { id: string; label: string };\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly topItems = signal<Item[]>([\n    { id: 'a', label: 'Alpha' },\n    { id: 'b', label: 'Beta' },\n    { id: 'c', label: 'Gamma' },\n    { id: 'd', label: 'Delta' },\n    { id: 'e', label: 'Epsilon' }\n  ]);\n\n  readonly bottomItems = signal<Item[]>([\n    { id: 'x', label: 'Xenon' },\n    { id: 'y', label: 'Yttrium' },\n    { id: 'z', label: 'Zinc' }\n  ]);\n\n  readonly topSelected = signal<ReadonlySet<string>>(new Set());\n  readonly bottomSelected = signal<ReadonlySet<string>>(new Set());\n\n  readonly canMoveDown = computed(() => this.topSelected().size > 0);\n  readonly canMoveUp = computed(() => this.bottomSelected().size > 0);\n\n  isTopSelected(id: string): boolean {\n    return this.topSelected().has(id);\n  }\n\n  isBottomSelected(id: string): boolean {\n    return this.bottomSelected().has(id);\n  }\n\n  toggleTop(id: string, checked: boolean): void {\n    this.topSelected.update((selected) => toggled(selected, id, checked));\n  }\n\n  toggleBottom(id: string, checked: boolean): void {\n    this.bottomSelected.update((selected) => toggled(selected, id, checked));\n  }\n\n  moveDown(): void {\n    if (!this.canMoveDown()) {\n      return;\n    }\n\n    const { moved, remaining } = split(this.topItems(), this.topSelected());\n    this.topItems.set(remaining);\n    this.bottomItems.update((items) => [...items, ...moved]);\n    this.topSelected.set(new Set());\n  }\n\n  moveUp(): void {\n    if (!this.canMoveUp()) {\n      return;\n    }\n\n    const { moved, remaining } = split(this.bottomItems(), this.bottomSelected());\n    this.bottomItems.set(remaining);\n    this.topItems.update((items) => [...items, ...moved]);\n    this.bottomSelected.set(new Set());\n  }\n}\n\n// Copy the Set: add or delete on the one the signal holds keeps its reference, and the signal would not notify.\nfunction toggled(selected: ReadonlySet<string>, id: string, checked: boolean): ReadonlySet<string> {\n  const next = new Set(selected);\n  if (checked) {\n    next.add(id);\n  } else {\n    next.delete(id);\n  }\n  return next;\n}\n\n// Both parts keep the source order, so moved items arrive in list order rather than in the order they were checked.\nfunction split(items: Item[], selected: ReadonlySet<string>): { moved: Item[]; remaining: Item[] } {\n  return {\n    moved: items.filter((item) => selected.has(item.id)),\n    remaining: items.filter((item) => !selected.has(item.id))\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "d1-selection-ids",
+          "title": "Store each selection as a set of ids",
+          "anchor": {
+            "lineStart": 26,
+            "lineEnd": 26,
+            "snippet": "readonly topSelected = signal<ReadonlySet<string>>(new Set());"
+          },
+          "why": "The top selection is a set of item ids in a signal, typed ReadonlySet so code cannot add to it in place; ids stay valid when moves shift item positions.",
+          "alternative": "Keep a selected flag on each item, or store the indexes of the checked rows.",
+          "tradeoff": "A separate set keeps items plain and lookups constant time, but it must be cleared when its items leave the list; flags on items would travel with them and need resetting instead."
+        },
+        {
+          "id": "d2-derive-button-state",
+          "title": "Derive the arrow button state",
+          "anchor": {
+            "lineStart": 29,
+            "lineEnd": 29,
+            "snippet": "readonly canMoveDown = computed(() => this.topSelected().size > 0);"
+          },
+          "why": "The down arrow is enabled exactly when the top selection is not empty; the computed updates whenever toggleTop or moveDown sets a new set.",
+          "alternative": "Keep canMoveDown as a boolean field and flip it in every toggle and move handler.",
+          "tradeoff": "The computed cannot fall out of step with the selection, but it only notices new sets, which is why toggles copy the set instead of editing it."
+        },
+        {
+          "id": "d3-append-to-destination",
+          "title": "Append moved items to the end of the other list",
+          "anchor": {
+            "lineStart": 55,
+            "lineEnd": 55,
+            "snippet": "this.bottomItems.update((items) => [...items, ...moved]);"
+          },
+          "why": "Moved items go after the existing bottom items in a new array, so Bottom keeps its order and its rows, and @for creates rows only for the arrivals.",
+          "alternative": "Insert moved items at the top, or re-sort the destination by label after every move.",
+          "tradeoff": "Appending follows the spec and leaves existing rows where they are; sorted insertion would read better in long lists but shifts rows the user was looking at."
+        },
+        {
+          "id": "d4-reset-source-selection",
+          "title": "Clear the source selection after a move",
+          "anchor": {
+            "lineStart": 56,
+            "lineEnd": 56,
+            "snippet": "this.topSelected.set(new Set());"
+          },
+          "why": "The moved ids no longer belong to Top, so the top selection becomes a new empty set, which also disables the down arrow; the bottom selection is left as it was.",
+          "alternative": "Delete only the moved ids from the set, or carry the selection over so moved items arrive checked.",
+          "tradeoff": "Every selected top item moves, so clearing the whole set is exact here; carrying the selection over would let users move items straight back but breaks the spec."
+        },
+        {
+          "id": "d5-copy-set-on-toggle",
+          "title": "Copy the set on every toggle",
+          "anchor": {
+            "lineStart": 73,
+            "lineEnd": 73,
+            "snippet": "const next = new Set(selected);"
+          },
+          "why": "toggled() builds a new Set before adding or deleting the id, so the selection signal receives a new reference and canMoveDown and canMoveUp recompute.",
+          "alternative": "Call add or delete on the set the signal already holds.",
+          "tradeoff": "Copying costs one new set per click, while in-place edits keep the reference: the signal never notifies and the arrow button stays disabled after the first check."
+        },
+        {
+          "id": "d6-keep-source-order",
+          "title": "Split in list order, not click order",
+          "anchor": {
+            "lineStart": 85,
+            "lineEnd": 85,
+            "snippet": "moved: items.filter((item) => selected.has(item.id)),"
+          },
+          "why": "Filtering the source list keeps its order, so items checked as Gamma then Alpha still arrive as Alpha, Gamma; the second filter keeps the remaining items in order too.",
+          "alternative": "Build moved by iterating the selection set, which follows the order the boxes were checked.",
+          "tradeoff": "Two filter passes read each item twice, which only matters for very long lists; one loop that fills two arrays avoids it but takes more code to read."
+        }
+      ]
+    }
+  }
+}

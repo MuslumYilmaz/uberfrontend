@@ -211,7 +211,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-faq-accordion"
   },
@@ -234,7 +234,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-chessboard-click-highlight"
   },
@@ -279,7 +279,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-debounced-search"
   },
@@ -321,7 +321,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-dynamic-counter-buttons"
   },
@@ -343,7 +343,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-dynamic-table-starter"
   },
@@ -354,7 +354,7 @@
     "route": "/angular/coding/angular-filterable-user-list",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist.",
+    "summary": "Filter a user list in Angular by search and role without mutating the original array.",
     "tags": [
       "components",
       "state",
@@ -365,7 +365,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-filterable-user-list"
   },
@@ -408,7 +408,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-pagination-table"
   },
@@ -450,7 +450,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-progress-bar-thresholds"
   },
@@ -472,7 +472,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-snake-game"
   },
@@ -483,7 +483,7 @@
     "route": "/angular/coding/angular-star-rating",
     "tech": "angular",
     "difficulty": "easy",
-    "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes.",
+    "summary": "Build a reusable Angular star-rating component that its parent controls through a two-way rating binding.",
     "tags": [
       "components",
       "inputs-outputs",
@@ -494,7 +494,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-star-rating"
   },
@@ -515,7 +515,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-tabs-switcher"
   },
@@ -537,7 +537,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-theme-toggle"
   },
@@ -559,7 +559,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-transfer-list"
   },
@@ -603,7 +603,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-autocomplete-search-starter"
   },
@@ -635,7 +635,7 @@
     "route": "/angular/coding/angular-contact-form-starter",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Build a contact form using an Angular standalone component and reactive forms. ts` – the HTML, CSS, and bootstrapping are already set up.",
+    "summary": "Build a contact form using an Angular standalone component and reactive forms. ts` – the HTML and CSS are already set up.",
     "tags": [
       "forms",
       "http",
@@ -644,7 +644,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-contact-form-starter"
   },
@@ -655,7 +655,7 @@
     "route": "/angular/coding/angular-counter-starter",
     "tech": "angular",
     "difficulty": "easy",
-    "summary": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
+    "summary": "Implement a standalone counter with increment, decrement, and reset.",
     "tags": [
       "components",
       "event-binding",
@@ -663,26 +663,27 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-counter-starter"
   },
   {
     "id": "ng-debug-counter-change-detection",
     "family": "question",
-    "title": "Counter not updating",
+    "title": "Counter stuck at 0 after an OnPush refactor",
     "route": "/angular/debug/ng-debug-counter-change-detection",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings.",
+    "summary": "The counter display moved into its own OnPush component to save change detection work. Since then, clicking Increment leaves the number on screen at 0, although the click handler runs on every click.",
     "tags": [
+      "change-detection",
+      "onpush",
       "components",
-      "event-binding",
       "state"
     ],
     "access": "free",
     "estimatedMinutes": 12,
-    "updatedAt": "2026-10-02",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/debug.json#ng-debug-counter-change-detection"
   },
@@ -768,6 +769,26 @@
     "updatedAt": "2026-10-14",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/debug.json#ng-debug-fleet-status-bug-reports"
+  },
+  {
+    "id": "ng-debug-zoneless-shipment-board",
+    "family": "question",
+    "title": "Fix a shipment board that stopped updating after going zoneless",
+    "route": "/angular/debug/ng-debug-zoneless-shipment-board",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "The shipment board moved to zoneless change detection, and its list to OnPush, in the last release. Three reports came in since. \" Find the root cause of each report and fix all three.",
+    "tags": [
+      "change-detection",
+      "signals",
+      "onpush",
+      "debugging"
+    ],
+    "access": "free",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-11",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/debug.json#ng-debug-zoneless-shipment-board"
   },
   {
     "id": "angular-input-output",
@@ -955,7 +976,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-image-slider-starter"
   },
@@ -1000,7 +1021,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-chips-input-autocomplete"
   },
@@ -1021,7 +1042,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-like-button"
   },
@@ -1043,7 +1064,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-multi-step-form-starter"
   },
@@ -1065,7 +1086,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-nested-checkboxes"
   },
@@ -1086,7 +1107,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-nested-comments"
   },
@@ -1196,13 +1217,33 @@
     "assetRef": "questions/angular/trivia.json#angular-observables-rxjs"
   },
   {
+    "id": "angular-control-value-accessor-stepper",
+    "family": "question",
+    "title": "Quantity Stepper Form Control (ControlValueAccessor)",
+    "route": "/angular/coding/angular-control-value-accessor-stepper",
+    "tech": "angular",
+    "difficulty": "intermediate",
+    "summary": "Build a quantity stepper that a reactive Angular form drives like a built-in control, with its value, touched state and disabled state kept in sync.",
+    "tags": [
+      "forms",
+      "components",
+      "signals",
+      "change-detection"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-11",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/angular/coding.json#angular-control-value-accessor-stepper"
+  },
+  {
     "id": "angular-input-output-two-way",
     "family": "question",
     "title": "Reusable Child Component with @Input/@Output (Two-way Binding)",
     "route": "/angular/coding/angular-input-output-two-way",
     "tech": "angular",
     "difficulty": "intermediate",
-    "summary": "Expose a value input and a valueChange output to support two-way binding, and keep the child component stateless so the parent owns the source of truth.",
+    "summary": "Build a reusable Angular child component whose count and liked state the parent controls through two-way bindings.",
     "tags": [
       "components",
       "inputs-outputs",
@@ -1212,7 +1253,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-input-output-two-way"
   },
@@ -1256,7 +1297,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-shopping-cart-mini"
   },
@@ -1361,7 +1402,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-tictactoe-starter"
   },
@@ -1382,7 +1423,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/coding.json#angular-todo-list-starter"
   },
@@ -3126,7 +3167,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-three-sum"
   },
@@ -3626,7 +3667,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-31",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-concurrency-map-limit"
   },
@@ -3658,7 +3699,7 @@
     "route": "/javascript/coding/js-create-counter",
     "tech": "javascript",
     "difficulty": "easy",
-    "summary": "Support an optional initial value and keep the API simple so consumers can call inc/dec/get without exposing the internal state.",
+    "summary": "Implement `createCounter(n)`, which returns a counter function. Its first call returns `n`, and each later call returns one more than the call before.",
     "tags": [
       "closure",
       "functions",
@@ -3667,7 +3708,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-create-counter"
   },
@@ -3737,7 +3778,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-create-lru-cache"
   },
@@ -3879,7 +3920,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-debounce"
   },
@@ -3924,7 +3965,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-deep-clone"
   },
@@ -3944,7 +3985,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-deep-equal"
   },
@@ -4364,7 +4405,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-dom-twin-node"
   },
@@ -4921,7 +4962,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-implement-bind"
   },
@@ -5280,7 +5321,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-memoize-function"
   },
@@ -5300,7 +5341,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-01",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-merge-sorted-arrays"
   },
@@ -5388,7 +5429,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-once"
   },
@@ -5582,7 +5623,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-promise-any"
   },
@@ -6212,7 +6253,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-15",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-throttle"
   },
@@ -7667,7 +7708,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-chessboard-click-highlight"
   },
@@ -7885,7 +7926,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-nested-comments"
   },
@@ -7982,7 +8023,7 @@
     "route": "/react/coding/react-star-rating",
     "tech": "react",
     "difficulty": "easy",
-    "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+    "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating with the mouse or the arrow keys, and notify a parent component when the rating changes.",
     "tags": [
       "react",
       "state",
@@ -7992,7 +8033,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-star-rating"
   },
@@ -8077,7 +8118,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-10-19",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-select-compound-api"
   },
@@ -8141,7 +8182,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-todo-list"
   },
@@ -9777,7 +9818,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-16",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-todo-list"
   },
@@ -9800,7 +9841,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-transfer-list"
   },
@@ -9821,7 +9862,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-accordion-faq"
   },
@@ -9844,7 +9885,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-02-09",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-chessboard-click-highlight"
   },
@@ -9887,7 +9928,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-debounced-search"
   },
@@ -9908,7 +9949,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-dynamic-counter-buttons"
   },
@@ -9996,7 +10037,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-nested-checkboxes"
   },
@@ -10018,7 +10059,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-nested-comments"
   },
@@ -10084,7 +10125,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-shopping-cart"
   },
@@ -10118,7 +10159,7 @@
     "route": "/vue/coding/vue-star-rating",
     "tech": "vue",
     "difficulty": "easy",
-    "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity.",
+    "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. max, update on click and with the arrow keys, and reflect the current rating visually. Keep the parent as the source of truth.",
     "tags": [
       "vue",
       "components",
@@ -10128,7 +10169,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-11",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-star-rating"
   },

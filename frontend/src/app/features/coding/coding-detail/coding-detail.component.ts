@@ -20,6 +20,7 @@ import {
   inject,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -33,7 +34,12 @@ import type {
 } from '../../../core/models/pressure-mode.model';
 import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../core/content/public-editorial-facts';
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
-import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { AccessLevel, isQuestionLockedForTier } from '../../../core/models/question.model';
+import { checkSelectors, frameworkCheckCoverage } from '../../../core/utils/framework-check-coverage.util';
+import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
+import type { PlanId } from '../../../core/utils/payments-provider.util';
+import { premiumPriceLine } from '../../../core/utils/plan-price.util';
+import { PRERENDER_PLAN_DETAILS } from '../../../generated/pricing-defaults';
 import {
   buildLockedPreviewForCoding,
   CodingLockedPreviewQuestion,
@@ -44,13 +50,16 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
-import { CompanyPlanReturnLink, companyPlanReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
+import { CompanyPlanReturnLink, planReturnLink, companyReturnLink } from '../../../core/utils/company-plan-return.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
+import { practiceProgressText } from '../../../core/utils/practice-session.util';
+import { splitterKeyRatio } from '../../../core/utils/splitter-keys.util';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { QuestionSourcesComponent } from '../../../shared/components/question-sources/question-sources.component';
 import { buildQuestionSourceCitations, normalizeQuestionSources } from '../../../core/utils/question-sources.util';
@@ -97,11 +106,12 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
+import { CodingPostPassComponent, type PostPassCard } from './coding-post-pass/coding-post-pass.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent, FrameworkCheckRunEvent } from './coding-framework-panel/coding-framework-panel';
-import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
+import { CodingJsPanelComponent, JsLang, JsTestSuite } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 
 type CourseNavState =
@@ -123,8 +133,10 @@ type ChallengeAccessState = 'available' | 'premium_locked' | 'mobile_blocked';
 type ChallengeActionType = 'run_tests' | 'run_checks' | 'mark_complete';
 type ChallengeOutcome = 'passed' | 'failed' | 'manual';
 type ChallengeAuthState = 'guest' | 'free' | 'premium';
-type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
-type PracticeSession = { items: PracticeItem[]; index: number } | null;
+/** `access`: carried from the list, so Next can step over a Premium task in another tech's bank. */
+type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string; access?: AccessLevel };
+/** A list the task was opened from; `label` names the part of a plan it covers ("Day 1"). */
+type PracticeSession = { items: PracticeItem[]; index: number; label?: string | null } | null;
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -159,7 +171,8 @@ type FASolutionBlock = {
   codeTs?: string;
 };
 
-type FollowUpItem = { id: string; title: string; difficulty: string; to: any[]; label?: string };
+/** `locked`: Premium for this visitor, so the link opens a lock page rather than the task. */
+type FollowUpItem = { id: string; title: string; difficulty: string; to: any[]; label?: string; locked?: boolean };
 type LockedPath = {
   id: string;
   label: string;
@@ -185,6 +198,7 @@ const SEO_DESCRIPTION_MAX_LEN = 240;
         FaButtonComponent,
         FaDialogComponent,
         FaGlyphComponent,
+        CodingPostPassComponent,
         InlineCodeComponent,
         StripInlineMarkupPipe,
         SafeHtmlPipe,
@@ -206,6 +220,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly previewBuilder = inject(PreviewBuilderService);
+  private readonly billingCheckout = inject(BillingCheckoutService);
+  /** Premium's price on a lock page: the prerendered list price, then the visitor's regional one. */
+  private readonly lockedPlanDetails = signal<Partial<Record<PlanId, { amountCents?: number }>>>(PRERENDER_PLAN_DETAILS);
+  private readonly lockedRegionalPricing = signal<RegionalPricing | null>(null);
+  private lockedPricingRequested = false;
+  lockedPriceLine = computed(() => premiumPriceLine(this.lockedPlanDetails(), this.lockedRegionalPricing()));
   private readonly analytics = inject(AnalyticsService);
 
   tech!: Tech;
@@ -438,6 +458,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   findLocked = computed(() => this.findCaseOpen() && this.reviewPhase() === 'review');
   /** While the case is read, its tests would name the bugs, so the workspace waits behind a note; the code is in the case. */
   findConcealedNote = computed(() => (this.findLocked() ? 'Read the code in the case. The workspace and its tests open after you compare with the sample answer.' : null));
+  /** A merge request is reviewed in writing first: the workspace and its checks open with "Done: implement the top fixes". */
+  reviewWritingLocked = computed(() => this.reviewOpen() && !this.findCaseOpen() && this.reviewPhase() === 'review');
+  /** The workspace is read-only for a step of a mode, with the reason its pill shows. */
+  workspaceLockLabel = computed(() => {
+    if (this.findLocked()) return 'Find the bug first: the code runs after the comparison';
+    if (this.reviewWritingLocked()) return 'Write the review first: fixes and checks open after it';
+    return this.rehearsalLockedLabel();
+  });
   private reviewLoadSeq = 0;
   private reviewPreviousAsideRatio: number | null = null;
 
@@ -489,7 +517,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   });
-  solutionLocked = computed(() => (this.pressureActive() && !this.pressureCompleted()) || this.rehearsalPhase() === 'active' || this.findLocked());
+  /** The JavaScript workspace's timed practice, read from the panel so the Solution tab can close while it runs. */
+  private readonly jsPanelQuery = viewChild(CodingJsPanelComponent);
+  timedPracticeActive = computed(() => this.jsPanelQuery()?.interviewModeEnabled() ?? false);
+  /** Why the Solution tab is closed right now, as its label says it; null while it is open. */
+  solutionLockReason = computed<string | null>(() => {
+    if (this.pressureActive() && !this.pressureCompleted()) return 'Solution locked until all rounds pass';
+    if (this.rehearsalPhase() === 'active') return 'Solution locked until the rehearsal ends';
+    if (this.findLocked()) return 'Solution locked until you compare';
+    // A merge request's fixes would be the solution's: it opens with the sample review.
+    if (this.reviewOpen() && !this.findCaseOpen() && this.reviewPhase() !== 'compare') {
+      return 'Solution locked until you compare with the sample review';
+    }
+    if (this.timedPracticeActive()) return 'Solution locked until timed practice ends';
+    return null;
+  });
+  solutionLocked = computed(() => this.solutionLockReason() !== null);
   private rehearsalLoadSeq = 0;
 
   // Practice session
@@ -539,6 +582,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       pressureModeAsset: q.pressureModeAsset,
       reviewModeAsset: q.reviewModeAsset,
       previewSample: q.previewSample,
+      // The unlock line promises only the checks the task has; the preview gets the coverage, never the checks.
+      checkCoverage: this.isFrameworkTech() ? frameworkCheckCoverage(q) : undefined,
     };
     const publicCandidates = this.allQuestions.map((candidate) => ({
       id: candidate.id,
@@ -559,6 +604,16 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
+
+  /** How much of this framework task its checks cover; only 'full' marks it solved on a passing run. */
+  checkCoverage = computed(() => (this.isFrameworkTech() ? frameworkCheckCoverage(this.question()) : 'none'));
+  /** A smoke check passed on the code as it stands, so the footer offers to mark the task solved. */
+  smokeChecksPassed = signal(false);
+  /** What the checks find elements by, shown with the task so the markup can match them. */
+  checkSelectorList = computed(() => (this.isFrameworkTech() ? checkSelectors(this.question()?.frameworkTests) : []));
+  pressureRoundSelectors = computed(() => checkSelectors(this.pressureCurrentRound()?.frameworkTests));
+  /** The requirements as the description shows them, for the list beside a passed smoke check. */
+  smokeRequirements = computed(() => (this.descSpecs()?.requirements ?? []).map((item) => this.displayText(item)));
 
   descSpecs = computed(() => {
     const q = this.question();
@@ -647,6 +702,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private previewCloseTimer?: ReturnType<typeof setTimeout>;
   loginPromptOpen = false;
   onboardingPromptOpen = false;
+  /**
+   * After a pass the results say what comes next, under the work instead of a dialog over it: a guest is asked to save
+   * the result, an account without a plan is offered one, and everyone gets the next task.
+   */
+  readonly postPass = signal<PostPassCard | null>(null);
   lifecyclePromptOpen = false;
   lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
   lifecyclePromptSolvedTotal = 0;
@@ -691,6 +751,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const solved = canSave && this.solved();
 
     if (this.hasFrameworkStructuredChecks()) {
+      // A smoke check only shows the core flow works; the visitor marks the task solved once it has passed.
+      if (!solved && this.checkCoverage() === 'smoke' && this.smokeChecksPassed()) return 'Mark as solved';
       return solved ? 'Run checks again' : 'Run checks';
     }
 
@@ -732,6 +794,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       itemId,
     }));
     this.solved.set(false);
+    this.postPass.set(null);
     // A later passing run must record again instead of trusting the stale flag.
     this.recorded = false;
   }
@@ -740,8 +803,76 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.auth.isLoggedIn()) return true;
     this.configureAuthPrompt(context);
     this.onboarding.markPending('save_prompt');
+    // A pass in the JavaScript or framework workspace asks in its results; Pressure Mode and HTML/CSS keep the dialog.
+    if (context === 'coding_submit' && !this.isWebTech()) {
+      this.showPostPass('guest');
+      return false;
+    }
     this.loginPromptOpen = true;
     return false;
+  }
+
+  /** The guest card's buttons: the same sign-up and sign-in pages the dialog opens, back to this task afterwards. */
+  postPassAuth(action: 'sign_up' | 'login'): void {
+    this.analytics.track('auth_prompt_action', {
+      prompt_context: 'coding_submit',
+      src: 'coding_submit',
+      primary_action: 'sign_up',
+      auth_action: action,
+      auth_state: 'guest',
+      prompt_surface: 'post_pass_card',
+    });
+    this.router.navigate([action === 'sign_up' ? '/auth/signup' : '/auth/login'], {
+      queryParams: { redirectTo: sanitizeRedirectTarget(this.router.url || '/'), src: 'coding_submit' },
+    });
+  }
+
+  dismissPostPass(): void {
+    this.postPass.set(null);
+  }
+
+  /**
+   * "Next: Throttle", or a plain label when the next task belongs to another bank; "(Premium)" when it opens on a lock
+   * page; none where Next has nowhere to go.
+   */
+  postPassNextLabel(): string | null {
+    if (this.isCourseContext() || !this.hasNext()) return null;
+    const index = this.stepIndex(1);
+    const id = index === null ? null : (this.practice ? this.practice.items[index]?.id : this.allQuestions[index]?.id);
+    const title = id ? this.findQuestionById(id)?.title : null;
+    const premium = index !== null && this.lockedAt(index) ? ' (Premium)' : '';
+    return title ? `Next: ${title}${premium}` : `Next task${premium}`;
+  }
+
+  private showPostPass(card: PostPassCard): void {
+    const q = this.question();
+    // Only the JavaScript and framework workspaces show the card; Pressure Mode and rehearsals end on their own screens.
+    if (!q || this.isWebTech() || this.pressureActive() || this.rehearsalPhase()) return;
+    this.postPass.set(card);
+    if (card === 'guest') {
+      this.analytics.track('auth_prompt', {
+        prompt_context: 'coding_submit',
+        src: 'coding_submit',
+        primary_action: 'sign_up',
+        auth_state: 'guest',
+        prompt_surface: 'post_pass_card',
+      });
+    } else if (card === 'personalize') {
+      this.onboardingPromptReason = 'first_pass';
+      this.analytics.track('onboarding_prompt_shown', {
+        src: this.challengeSource,
+        trigger: 'first_pass',
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        prompt_surface: 'post_pass_card',
+      });
+    }
+  }
+
+  /** A saved pass offers the plan questions until the account has answered them. */
+  private showSavedPostPass(): void {
+    this.showPostPass(this.onboarding.isCompleted() ? 'saved' : 'personalize');
   }
 
   goToLogin() {
@@ -864,17 +995,23 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       const items = rehearsal.definition.items;
       return `Problem ${items.findIndex((item) => item.questionId === this.question()?.id) + 1} of ${items.length}`;
     }
-    if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
+    if (this.practice) return practiceProgressText(this.practice);
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
   hasPrev(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
+    return this.stepIndex(-1) !== null;
   }
   hasNext(): boolean {
     if (this.pressureActive() || this.rehearsalRunning()) return false;
-    return this.practice ? (this.practice.index + 1 < this.practice.items.length)
-      : (this.currentIndex + 1 < this.allQuestions.length);
+    return this.stepIndex(1) !== null;
+  }
+
+  /** A visitor who would meet locks is told where Next goes: the next free task, or a Premium one once none is left. */
+  footerNextLabel(): string {
+    const index = this.stepIndex(1);
+    if (index === null || !isQuestionLockedForTier({ access: 'premium' }, this.auth.user())) return 'Next';
+    return this.lockedAt(index) ? 'Next Premium task' : 'Next free task';
   }
 
   prevHref(): string | null {
@@ -885,9 +1022,34 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return !this.isCourseContext() && this.hasNext() ? publicQuestionHref(this.adjacentPracticeItem(1)) : null;
   }
 
-  private adjacentPracticeItem(offset: number) {
-    if (this.practice) return this.practice.items[this.practice.index + offset];
-    const question = this.allQuestions[this.currentIndex + offset];
+  /**
+   * Where Prev or Next goes. A guest or a free account steps over Premium tasks to the nearest one they can open; once
+   * none is left that way, the button opens the task right next door, lock page and price included, instead of going
+   * dead (react-counter is the last free React task in this order).
+   */
+  private stepIndex(offset: 1 | -1): number | null {
+    const from = this.practice ? this.practice.index : this.currentIndex;
+    const length = this.practice ? this.practice.items.length : this.allQuestions.length;
+    for (let index = from + offset; index >= 0 && index < length; index += offset) {
+      if (!this.lockedAt(index)) return index;
+    }
+    const neighbor = from + offset;
+    return neighbor >= 0 && neighbor < length ? neighbor : null;
+  }
+
+  /** Whether this visitor meets a lock on the list's task at that index. */
+  private lockedAt(index: number): boolean {
+    const access = this.practice
+      ? this.practice.items[index]?.access ?? this.findQuestionById(this.practice.items[index]?.id ?? '')?.access
+      : this.allQuestions[index]?.access;
+    return !!access && isQuestionLockedForTier({ access }, this.auth.user());
+  }
+
+  private adjacentPracticeItem(offset: 1 | -1) {
+    const index = this.stepIndex(offset);
+    if (index === null) return undefined;
+    if (this.practice) return this.practice.items[index];
+    const question = this.allQuestions[index];
     return question ? { tech: this.tech, kind: this.kind, id: question.id } : undefined;
   }
 
@@ -991,6 +1153,25 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         this.solved.set(solvedIds.includes(q.id));
       }
     }, { allowSignalWrites: true });
+
+    // A lock that starts while the solution is open (timed practice, a review step) closes it.
+    effect(() => {
+      if (!this.solutionLocked() || untracked(() => this.activePanel()) !== 1) return;
+      this.activePanel.set(0);
+      this.showSolutionWarning.set(false);
+    });
+
+    // A lock page names Premium's price; the checkout config then brings the visitor's regional one.
+    effect(() => {
+      if (!this.locked() || !this.isBrowser || this.lockedPricingRequested) return;
+      this.lockedPricingRequested = true;
+      void this.billingCheckout.getCheckoutConfig()
+        .then((config) => {
+          if (config?.planDetails) this.lockedPlanDetails.set(config.planDetails);
+          this.lockedRegionalPricing.set(config?.pricing?.regional ?? null);
+        })
+        .catch(() => undefined);
+    });
 
     // A new task closes the review; a review left open on this device reopens where it was.
     effect(() => {
@@ -1106,7 +1287,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.returnToUrl = null;
       this.returnLabel.set(null);
     }
-    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
+    this.planReturn.set(planReturnLink(this.router, this.returnToUrl, this.returnLabel()));
     this.lockedReturn.set(companyReturnLink(this.router, this.returnToUrl, this.returnLabel()));
 
     this.courseIdFromState = s?.courseId ?? null;
@@ -1814,6 +1995,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.pressureRequested.set(routeRequestsPressure);
     this.pressureLoading.set(routeRequestsPressure && !!q.pressureModeAsset);
     this.question.set(q);
+    this.postPass.set(null);
     this.loadState.set('loaded');
     this.challengeSource = this.readChallengeSource();
     this.syncQuickWinContextFromRoute();
@@ -2052,7 +2234,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       index: clamped,
     };
 
-    const it = this.adjacentPracticeItem(0);
+    const it = this.practice.items[clamped];
     if (!it) return;
 
     this.router.navigate(['/', it.tech, it.kind, it.id], {
@@ -2066,24 +2248,22 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   prev() {
-    if (this.practice) {
-      if (this.practice.index > 0) this.navToPracticeIndex(this.practice.index - 1);
-      return;
-    }
-    if (this.currentIndex > 0) {
-      const item = this.adjacentPracticeItem(-1);
-      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
-    }
+    this.stepTo(-1);
   }
   next() {
+    this.stepTo(1);
+  }
+
+  /** Opens the task Prev or Next points at (stepIndex). */
+  private stepTo(offset: 1 | -1) {
+    const index = this.stepIndex(offset);
+    if (index === null) return;
     if (this.practice) {
-      if (this.practice.index + 1 < this.practice.items.length) this.navToPracticeIndex(this.practice.index + 1);
+      this.navToPracticeIndex(index);
       return;
     }
-    if (this.currentIndex + 1 < this.allQuestions.length) {
-      const item = this.adjacentPracticeItem(1);
-      if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
-    }
+    const item = this.adjacentPracticeItem(offset);
+    if (item) this.router.navigate(['/', item.tech, item.kind, item.id]);
   }
 
   // ---------- course navigations ----------
@@ -2117,7 +2297,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   // ---------- run tests (JS/TS) ----------
-  async runTests(): Promise<boolean> {
+  /** Run practises against the Test cases tab; Submit passes `suite: 'shipped'` to grade with the task's own tests. */
+  async runTests(options: { suite?: JsTestSuite } = {}): Promise<boolean> {
     const q = this.question();
     if (!q || this.showMobileDesktopGuard()) return false;
     const epoch = this.workspaceEpoch;
@@ -2128,11 +2309,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Plain JS/TS -> delegate to child panel
     const run = ++this.jsRunSequence;
+    this.postPass.set(null);
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-    await this.jsPanel?.runTests();
+    await this.jsPanel?.runTests(options);
     if (run !== this.jsRunSequence || !this.isCurrentWorkspaceRun(epoch, q)) return false;
     this.hasRunTests = true;
 
@@ -2161,9 +2343,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     const q = this.question();
     if (!q) return;
-    // While a rehearsal or a find case keeps the task read-only, there is nothing to submit.
-    if (this.rehearsalLocked() || this.findLocked()) return;
+    // While a rehearsal, a find case or a review being written keeps the task read-only, there is nothing to submit.
+    if (this.rehearsalLocked() || this.findLocked() || this.reviewWritingLocked()) return;
     const epoch = this.workspaceEpoch;
+    this.postPass.set(null);
     if (this.pressureActive()) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
@@ -2176,6 +2359,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
     this.markQuickWinEngaged('submit');
+
+    // The smoke check already passed on this code: the visitor has compared it with the requirements and marks it.
+    if (this.checkCoverage() === 'smoke' && this.smokeChecksPassed() && !(this.auth.isLoggedIn() && this.solved())) {
+      await this.markSolvedByHand(q);
+      return;
+    }
 
     if (this.hasFrameworkStructuredChecks(q)) {
       const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
@@ -2199,34 +2388,19 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     // Angular/framework preview submissions are manual-complete.
     if (this.isFrameworkTech() || this.isWebTech()) {
-      const attemptNumber = this.trackChallengeAttemptStarted('mark_complete');
-      this.trackChallengeAttemptResult('mark_complete', 'manual', attemptNumber);
-      if (!this.ensureAuthenticated()) {
-        return;
-      }
-      const completed = await this.recordCompletion('submit');
-      if (!completed) {
-        this.solved.set(false);
-        return;
-      }
-      this.solved.set(true);
-      this.trackQuickWinCompleted(q.id, 'submit');
-      this.maybePromptLifecycle('coding_submit', q.id);
-      this.creditDaily();
-      await this.celebrate('submit');
+      await this.markSolvedByHand(q);
       return;
     }
 
     // JS/TS: always run tests (delegates to the panel).
-    const passing = await this.runTests();
+    // The task's own tests decide a submission: edits in the Test cases tab only shape practice runs.
+    const passing = await this.runTests({ suite: 'shipped' });
     if (!this.isCurrentWorkspaceRun(epoch, q)) return;
     this.solved.set(passing);
 
     if (!passing) {
       return;
     }
-    // Asked on a passing submit only: the prompt has no "seen" record, so a plain run would reopen it every time.
-    this.maybePromptOnboarding('first_pass', q.id);
 
     if (!this.ensureAuthenticated()) {
       this.solved.set(false);
@@ -2240,6 +2414,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'submit');
+    this.showSavedPostPass();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('submit');
@@ -2258,7 +2433,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
     const q = this.question();
-    if (q && event.questionId === q.id) this.recordRehearsalChecks(q.id, event.results);
+    if (q && event.questionId === q.id) {
+      this.recordRehearsalChecks(q.id, event.results);
+      this.postPass.set(null);
+    }
     this.trackFrameworkCheckAnalytics(event);
     await this.completeFrameworkCheckRun(event);
   }
@@ -2407,9 +2585,40 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     );
   }
 
+  /** Marks a task solved without a check deciding it: no checks at all, or a smoke check that has passed. */
+  private async markSolvedByHand(q: Question): Promise<void> {
+    const attemptNumber = this.trackChallengeAttemptStarted('mark_complete');
+    this.trackChallengeAttemptResult('mark_complete', 'manual', attemptNumber);
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+    const completed = await this.recordCompletion('submit');
+    if (!completed) {
+      this.solved.set(false);
+      return;
+    }
+    this.solved.set(true);
+    this.trackQuickWinCompleted(q.id, 'submit');
+    this.showSavedPostPass();
+    this.maybePromptLifecycle('coding_submit', q.id);
+    this.creditDaily();
+    await this.celebrate('submit');
+  }
+
+  /** An edit makes an earlier pass stale: the smoke check has to pass on the new code before it can be marked. */
+  onFrameworkFilesChanged(): void {
+    this.smokeChecksPassed.set(false);
+  }
+
   private async completeFrameworkCheckRun(event: FrameworkCheckRunEvent): Promise<void> {
     const q = this.question();
-    if (!q || event.questionId !== q.id || !event.passed) {
+    if (!q || event.questionId !== q.id) return;
+    // One check covers the core flow, not the requirements: a pass offers "Mark as solved" instead of solving it.
+    if (this.checkCoverage() === 'smoke') {
+      this.smokeChecksPassed.set(event.passed);
+      return;
+    }
+    if (!event.passed) {
       return;
     }
 
@@ -2425,6 +2634,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.solved.set(true);
     this.trackQuickWinCompleted(q.id, 'first_pass');
+    this.showSavedPostPass();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('tests');
@@ -3345,16 +3555,38 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (layoutExtent <= 0) return;
 
     const delta = currentPointer - this.asideDragStart;
-    let newRatio = this.startAsideRatio + delta / layoutExtent;
-
-    // Compact workspaces split into rows, so keep enough height for both the
-    // description and the editor. Desktop retains the existing width bounds.
-    const min = this.asideDragAxis === 'y' ? 0.22 : (this.isWebTech() ? 0.18 : 0.20);
-    const max = this.asideDragAxis === 'y' ? 0.45 : (this.isWebTech() ? 0.45 : 0.80);
-
-    newRatio = Math.max(min, Math.min(max, newRatio));
+    const { min, max } = this.asideRatioBounds(this.asideDragAxis);
+    const newRatio = Math.max(min, Math.min(max, this.startAsideRatio + delta / layoutExtent));
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
+
+  /**
+   * The description's share of the layout. Compact workspaces split into rows, so they keep enough height for both
+   * the description and the editor; desktop keeps the width bounds.
+   */
+  private asideRatioBounds(axis: 'x' | 'y'): { min: number; max: number } {
+    if (axis === 'y') return { min: 0.22, max: 0.45 };
+    return this.isWebTech() ? { min: 0.18, max: 0.45 } : { min: 0.2, max: 0.8 };
+  }
+
+  /** The description splitter's value and limits in percent, for its separator role. */
+  asideSplitterAria(): { now: number; min: number; max: number } {
+    const axis = this.isCompactWorkspace() ? 'y' : 'x';
+    const { min, max } = this.asideRatioBounds(axis);
+    const ratio = axis === 'y' ? this.compactAsideRatio(this.horizontalRatio()) : this.horizontalRatio();
+    return { now: Math.round(ratio * 100), min: Math.round(min * 100), max: Math.round(max * 100) };
+  }
+
+  /** Arrow keys move the description splitter as dragging does. */
+  onAsideSplitterKey(ev: KeyboardEvent): void {
+    if (this.showMobileDesktopGuard()) return;
+    const axis = this.isCompactWorkspace() ? 'y' : 'x';
+    const current = axis === 'y' ? this.compactAsideRatio(this.horizontalRatio()) : this.horizontalRatio();
+    const next = splitterKeyRatio(ev.key, current, this.asideRatioBounds(axis), axis);
+    if (next === null) return;
+    ev.preventDefault();
+    this.horizontalRatio.set(next);
+  }
 
   private compactAsideRatio(ratio: number): number {
     return Math.max(0.22, Math.min(0.45, ratio));
@@ -4188,9 +4420,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
 
   onSolutionTabClick() {
-    if (this.rehearsalPhase() === 'active') return;
+    if (this.solutionLocked()) return;
     if (this.pressureActive()) {
-      if (!this.pressureCompleted()) return;
       if (this.descriptionCollapsed()) this.toggleDescription();
       this.showSolutionWarning.set(false);
       this.activePanel.set(1);
@@ -4374,11 +4605,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         if (!title || !route?.length) return null;
 
         const label = String(it?.label || 'Related').trim() || 'Related';
-        const id = String(it?.id || JSON.stringify(route) || `${title}-${index}`).trim();
+        // A link to a task in this bank takes the task's id, so the similar-task fallback cannot list it twice.
+        const target = this.findQuestionById(String(route[route.length - 1] ?? ''));
+        const id = String(it?.id || (target as any)?.id || JSON.stringify(route) || `${title}-${index}`).trim();
         if (!id || seen.has(id)) return null;
 
         seen.add(id);
-        return { id, title, difficulty: label, label, to: route };
+        const locked = target ? isQuestionLockedForTier(target, this.auth.user()) : false;
+        return { id, title, difficulty: label, label, to: route, locked };
       })
       .filter((it): it is FollowUpItem => it !== null);
   }
@@ -4402,7 +4636,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const title = String((target as any).title || id).trim();
     const difficulty = String((target as any).difficulty || '').trim();
     const to = ['/', (target as any).technology ?? this.tech, (target as any).type ?? this.kind, id];
-    return { id, title, difficulty, to };
+    return { id, title, difficulty, to, locked: isQuestionLockedForTier(target, this.auth.user()) };
   }
 
   private buildFallbackFollowUps(current: Question, limit: number, seenIds: Set<string>): FollowUpItem[] {

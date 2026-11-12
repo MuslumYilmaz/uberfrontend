@@ -105,6 +105,7 @@
                     <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
                         [code]="editorCode()" [language]="jsLang()==='ts' ? 'typescript':'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()"
+                        (runShortcut)="onRunShortcut()"
                         (lineClick)="onCodeEditorLineClick($event)"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
@@ -147,6 +148,7 @@
                     <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
                         [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="locked"
                         [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()"
+                        (runShortcut)="onRunShortcut()"
                         (loadFailed)="onEditorLoadFailed()">
                     </app-monaco-editor>
                     <app-code-snapshot
@@ -296,12 +298,14 @@
                         class="assist-chip__trigger"
                         [class.active]="hintExpanded()"
                         [attr.aria-expanded]="hintExpanded()"
+                        aria-controls="assist-hint-panel"
                         (click)="toggleHintExpanded()"
                     >
                         <app-fa-glyph icon="pi pi-info-circle" aria-hidden="true"></app-fa-glyph>
                         <span>Hint</span>
                     </button>
-                    <div class="assist-chip__panel">
+                    <!-- Closed, it is out of the tab order and the accessibility tree, not only transparent. -->
+                    <div class="assist-chip__panel" id="assist-hint-panel" [attr.inert]="hintExpanded() ? null : ''">
                         <div class="assist-chip__panel-head">
                             <strong>{{ assistNudgeTitle() }}</strong>
                             <div class="assist-chip__panel-actions">
@@ -319,12 +323,13 @@
                         class="assist-chip__trigger"
                         [class.active]="explainExpanded()"
                         [attr.aria-expanded]="explainExpanded()"
+                        aria-controls="assist-explain-panel"
                         (click)="toggleExplainExpanded()"
                     >
                         <app-fa-glyph icon="pi pi-search" aria-hidden="true"></app-fa-glyph>
                         <span>Explain failure</span>
                     </button>
-                    <div class="assist-chip__panel">
+                    <div class="assist-chip__panel" id="assist-explain-panel" [attr.inert]="explainExpanded() ? null : ''">
                         <div class="assist-chip__panel-head">
                             <strong>{{ explainHint()?.title }}</strong>
                             <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
@@ -339,18 +344,24 @@
         </div>
 
         <!-- SPLITTER between editors and results -->
-        <div class="horizontal-splitter" data-testid="js-editor-splitter" [class.dragging]="isDraggingSplit()" (pointerdown)="startSplitDrag($event)">
+        <div class="horizontal-splitter" data-testid="js-editor-splitter" [class.dragging]="isDraggingSplit()"
+            role="separator" tabindex="0" aria-orientation="horizontal" aria-label="Resize the editor and the results"
+            [attr.aria-valuenow]="editorRatioPercent()" aria-valuemin="20" aria-valuemax="90"
+            (pointerdown)="startSplitDrag($event)" (keydown)="onSplitterKey($event)">
         </div>
 
         <!-- BOTTOM: Actions + Results/Console -->
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell" data-nosnippet>
             <div class="fa-runner-topbar">
                 <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="onRunTestsClick()"
-                    [disabled]="locked || !(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
+                    [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run tests (' + keys.run + ')'"
+                    [disabled]="!canRunTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
                 <button *ngIf="!interviewModeEnabled()" class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
+                <!-- Under the editor: the run shortcut, and the way out of it, since Tab indents inside it. -->
+                <span class="fa-runner-keys" data-testid="editor-keys-hint">{{ keys.run }} runs · {{ keys.tabFocus }}: Tab leaves the editor</span>
                 <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
                 <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
                 <div class="fa-runner-interview-controls" *ngIf="clockLabel || locked">
@@ -409,11 +420,23 @@
                             <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
                             <ng-container *ngIf="totalCount() > 0">
                                 <span *ngIf="allPassing()" class="summary-pass">All tests passed ✓</span>
-                                <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
+                                <span *ngIf="!allPassing()" class="summary-fail" data-testid="js-failed-count">{{ failedCount() }} failed</span>
                             </ng-container>
                         </div>
+                        <ng-content select="[postPassCard]"></ng-content>
+                        <!-- Which tests graded this run: Submit always uses the task's own, whatever the Test cases tab holds. -->
+                        <p *ngIf="lastRunSuite() === 'shipped'" class="suite-note" data-testid="js-suite-note">
+                            Checked against the task's own tests.
+                        </p>
+                        <p *ngIf="lastRunSuite() === 'editor' && testsEdited()" class="suite-note" data-testid="js-suite-note">
+                            These are your edited tests. Submit runs the task's own tests.
+                        </p>
+                        <p *ngIf="lastRunSuite() === 'editor' && !testsEdited() && allPassing() && !solved && !rehearsing"
+                            class="suite-note suite-note--next" data-testid="js-submit-hint">
+                            All tests pass. Submit to save it as solved.
+                        </p>
 
-                        <div *ngFor="let t of testResults()" class="test-card" data-testid="test-result"
+                        <div *ngFor="let t of orderedResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                             <div class="test-name">
                                 <app-fa-glyph class="test-status-icon" [icon]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></app-fa-glyph>

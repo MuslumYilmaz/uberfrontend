@@ -1,0 +1,97 @@
+{
+  "questionId": "angular-nested-comments",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { NgTemplateOutlet } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [NgTemplateOutlet, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly comments = signal<CommentNode[]>([]);\n\n  readonly topDraft = signal('');\n\n  readonly activeReplyId = signal<string | null>(null);\n  readonly replyDraft = signal('');\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft().trim();\n    if (!text) return;\n\n    const comment: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => [comment, ...comments]);\n    this.topDraft.set('');\n  }\n\n  // Reply on the comment whose box is open closes it; on any other comment it moves the one box there.\n  toggleReply(id: string): void {\n    this.activeReplyId.update((active) => (active === id ? null : id));\n    this.replyDraft.set('');\n  }\n\n  cancelReply(): void {\n    this.activeReplyId.set(null);\n    this.replyDraft.set('');\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft().trim();\n    if (!text) return;\n\n    const reply: CommentNode = { id: this.makeId(), text, children: [] };\n    this.comments.update((comments) => this.withReply(comments, parentId, reply));\n    this.cancelReply();\n  }\n\n  // Copy only the path to the parent: the signal gets a new root array, and other subtrees stay the same objects.\n  private withReply(nodes: CommentNode[], parentId: string, reply: CommentNode): CommentNode[] {\n    let changed = false;\n    const next = nodes.map((node) => {\n      const children = node.id === parentId\n        ? [...node.children, reply]\n        : this.withReply(node.children, parentId, reply);\n      if (children === node.children) return node;\n      changed = true;\n      return { ...node, children };\n    });\n    return changed ? next : nodes;\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-template-outlet-import",
+          "title": "Import the template outlet for recursion",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "imports: [NgTemplateOutlet, FormsModule],"
+          },
+          "why": "treeTpl renders one level and calls itself for each node's children through ngTemplateOutlet; FormsModule serves the two ngModel drafts, and @for and @if need no import.",
+          "alternative": "Import CommonModule for the outlet, or move each comment into a child component that renders its own replies.",
+          "tradeoff": "Importing NgTemplateOutlet alone keeps the dependency list exact and the state in one component; a recursive child component would isolate each comment's markup but need inputs and outputs for every action."
+        },
+        {
+          "id": "d2-tree-signal",
+          "title": "Hold the whole tree in one signal",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "readonly comments = signal<CommentNode[]>([]);"
+          },
+          "why": "Top-level comments and every nested reply live in this one array of nodes, so each add or reply is a single update, and the template starts its recursion from comments().",
+          "alternative": "Keep a flat list of comments with a parentId on each and group the replies by parent while rendering.",
+          "tradeoff": "A nested tree matches the rendering, but a deep insert must copy its path; a flat list turns every insert into an append and moves the work into grouping replies by parentId."
+        },
+        {
+          "id": "d3-single-active-reply",
+          "title": "Store one active reply id",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "readonly activeReplyId = signal<string | null>(null);"
+          },
+          "why": "Only the comment whose id equals activeReplyId() shows the reply box, so opening a box on another comment closes the previous one without touching the tree.",
+          "alternative": "Give every node an isReplying flag and reset the others whenever one opens.",
+          "tradeoff": "One id cannot hold two open drafts, which this UI does not want; per-node flags could, but closing the rest would need a walk over the whole tree on every Reply click."
+        },
+        {
+          "id": "d4-prepend-new-comment",
+          "title": "Put new top-level comments first",
+          "anchor": {
+            "lineStart": 36,
+            "lineEnd": 36,
+            "snippet": "this.comments.update((comments) => [comment, ...comments]);"
+          },
+          "why": "The spread builds a new array with the new comment at the front, so the signal sees a new value while every existing comment object keeps its identity for track comment.id.",
+          "alternative": "Insert the comment in place at the front of the array that comments() returns.",
+          "tradeoff": "The copy costs one array per new comment; an in-place insert avoids it but leaves the signal holding the same array, so nothing computed from comments() would see the change."
+        },
+        {
+          "id": "d7-toggle-reply",
+          "title": "Toggle the box from the stored id",
+          "anchor": {
+            "lineStart": 42,
+            "lineEnd": 42,
+            "snippet": "this.activeReplyId.update((active) => (active === id ? null : id));"
+          },
+          "why": "update reads the open id: Reply on the comment whose box is open stores null and closes it, and Reply on any other comment moves the one box there. The Reply button binds aria-expanded to the same comparison.",
+          "alternative": "Always set the clicked id and leave closing to Cancel.",
+          "tradeoff": "Setting the id is a shorter call, but a second click on Reply then changes nothing, while the spec and aria-expanded both describe Reply as a toggle."
+        },
+        {
+          "id": "d5-replace-tree-on-reply",
+          "title": "Store a new tree for every reply",
+          "anchor": {
+            "lineStart": 56,
+            "lineEnd": 56,
+            "snippet": "this.comments.update((comments) => this.withReply(comments, parentId, reply));"
+          },
+          "why": "submitReply passes the current tree to withReply and stores the result, so the signal receives a new root array and the branch with the new reply re-renders.",
+          "alternative": "Find the parent with a findById search and push the reply into parent.children.",
+          "tradeoff": "withReply is longer than a push; the push repaints only because the Post click marks the view, so a computed over the tree or a reply that arrives from a request would never see it."
+        },
+        {
+          "id": "d6-keep-untouched-branches",
+          "title": "Return untouched branches as they are",
+          "anchor": {
+            "lineStart": 67,
+            "lineEnd": 67,
+            "snippet": "if (children === node.children) return node;"
+          },
+          "why": "A branch without the parent gets its original children array back, so its node is returned unchanged and only the parent and its ancestors are copied with { ...node, children }.",
+          "alternative": "Spread every node on the way down, rebuilding the whole tree for one reply.",
+          "tradeoff": "The recursion still visits every node, but it allocates only along one path; copying everything is simpler to write but replaces objects that did not change."
+        }
+      ]
+    }
+  }
+}

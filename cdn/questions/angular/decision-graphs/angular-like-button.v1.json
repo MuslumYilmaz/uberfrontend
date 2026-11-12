@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-like-button",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly liked = signal(false);\n  readonly count = signal(120);\n\n  toggleLike(): void {\n    if (!this.liked()) {\n      this.liked.set(true);\n      this.count.update((count) => count + 1);\n      return;\n    }\n\n    this.liked.set(false);\n    this.count.update((count) => Math.max(0, count - 1));\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-liked-signal",
+          "title": "Hold the like state in a signal",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "readonly liked = signal(false);"
+          },
+          "why": "liked drives three bindings at once, the active class, aria-pressed and the Like or Liked label, so one signal keeps all three in step under OnPush.",
+          "alternative": "A plain liked field, which still updates here because only the button's click changes it.",
+          "tradeoff": "Each binding pays a function call; a plain field would stop updating under OnPush once something outside the click handler, such as a server reply, set it."
+        },
+        {
+          "id": "d2-count-beside-like",
+          "title": "Store the count next to the like",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "readonly count = signal(120);"
+          },
+          "why": "count is its own state starting at 120, moved by one on every toggle, and the number beside the button reads count().",
+          "alternative": "Derive it with computed(() => 120 + (this.liked() ? 1 : 0)), so the count can never disagree with liked.",
+          "tradeoff": "Two signals mirror the starter and the spec's clamp but must always change together; a computed removes that risk but hard-codes the starting number."
+        },
+        {
+          "id": "d3-branch-on-current-like",
+          "title": "Branch on the current like state",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "if (!this.liked()) {"
+          },
+          "why": "Reading liked() once decides both writes, the new like state and the direction of the count, so the label, the style and the number cannot disagree after a click.",
+          "alternative": "Flip liked first and read it back to decide the count, or render separate Like and Unlike buttons.",
+          "tradeoff": "One handler with an early return is easy to follow; flipping first and re-reading also works but makes the order of the two writes matter."
+        },
+        {
+          "id": "d4-write-both-in-the-handler",
+          "title": "Change both signals in the same handler",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "this.liked.set(true);"
+          },
+          "why": "Both writes finish before Angular renders again, so the active style, the label and 121 appear together after the click.",
+          "alternative": "Set only liked and let an effect that watches it adjust count.",
+          "tradeoff": "An effect would keep count in sync without the handler's help but runs later and hides the cause; two explicit writes keep the whole rule in toggleLike()."
+        },
+        {
+          "id": "d5-clamp-on-unlike",
+          "title": "Never let the count drop below zero",
+          "anchor": {
+            "lineStart": 21,
+            "lineEnd": 21,
+            "snippet": "Math.max(0, count - 1)"
+          },
+          "why": "Taking a like back subtracts one through Math.max, the guard the spec asks for; starting from 120 it never triggers, but it holds for a post whose count starts at 0 while already liked.",
+          "alternative": "Subtract without a guard and trust the toggle to keep the count consistent.",
+          "tradeoff": "The guard is unreachable from this UI and costs one call; it keeps the rule true if the starting count or the initial like state ever changes."
+        }
+      ]
+    }
+  }
+}

@@ -120,11 +120,6 @@ jobs:
         env:
           CI: true
 
-      - name: Run canonical framework solution catalog
-        run: npm run test:e2e:framework-catalog:prod
-        env:
-          CI: true
-
       - name: Run production public remediation smoke
         run: npm run test:e2e:public:prod
         env:
@@ -140,6 +135,59 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: playwright-artifacts
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
+
+  e2e-framework-catalog:
+    name: Playwright Framework Catalog
+    runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
+    # Moved out of Playwright Critical: every framework task's official solution and known wrong solutions against its
+    # checks is about 180 cases and 25 minutes, so the suite runs beside Critical instead of after it.
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (production)
+        run: npm run build
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run canonical framework solution catalog
+        run: npm run test:e2e:framework-catalog:prod
+        env:
+          CI: true
+
+      - name: Upload Playwright artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-framework-catalog-artifacts
           path: |
             frontend/playwright-report
             frontend/test-results

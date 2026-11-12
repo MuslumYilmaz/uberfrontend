@@ -1,3 +1,9 @@
+import { faSignalJitTransformer } from './angular-signal-jit-transform';
+import { ANGULAR_PREVIEW_VERSION } from './angular-preview-version';
+
+const ZONE_JS_VERSION = '0.16.3';
+const TSLIB_VERSION = '2.8.1';
+
 export function makeAngularPreviewHtmlV1(files: Record<string, any>, assetBase?: string): string {
   const base =
     assetBase ||
@@ -31,29 +37,38 @@ export function makeAngularPreviewHtmlV1(files: Record<string, any>, assetBase?:
     return fallback;
   }
 
+  const ng = (pkg: string, file: string) =>
+    `https://cdn.jsdelivr.net/npm/@angular/${pkg}@${ANGULAR_PREVIEW_VERSION}/fesm2022/${file}`;
   const importMap = {
     imports: {
-      '@angular/core': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/core.mjs',
-      '@angular/core/rxjs-interop': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/rxjs-interop.mjs',
-      '@angular/core/primitives/signals': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/signals.mjs',
-      '@angular/core/primitives/event-dispatch': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/event-dispatch.mjs',
-      '@angular/common': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/common.mjs',
-      '@angular/common/http': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/http.mjs',
-      '@angular/forms': 'https://cdn.jsdelivr.net/npm/@angular/forms@18.2.14/fesm2022/forms.mjs',
-      '@angular/platform-browser': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser@18.2.14/fesm2022/platform-browser.mjs',
-      '@angular/platform-browser-dynamic': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser-dynamic@18.2.14/fesm2022/platform-browser-dynamic.mjs',
-      '@angular/compiler': 'https://cdn.jsdelivr.net/npm/@angular/compiler@18.2.14/fesm2022/compiler.mjs',
-      '@angular/router': 'https://cdn.jsdelivr.net/npm/@angular/router@18.2.14/fesm2022/router.mjs',
-      'tslib': 'https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.es6.js',
+      '@angular/core': ng('core', 'core.mjs'),
+      '@angular/core/rxjs-interop': ng('core', 'rxjs-interop.mjs'),
+      '@angular/core/primitives/di': ng('core', 'primitives-di.mjs'),
+      '@angular/core/primitives/signals': ng('core', 'primitives-signals.mjs'),
+      '@angular/core/primitives/event-dispatch': ng('core', 'primitives-event-dispatch.mjs'),
+      '@angular/common': ng('common', 'common.mjs'),
+      '@angular/common/http': ng('common', 'http.mjs'),
+      '@angular/forms': ng('forms', 'forms.mjs'),
+      '@angular/platform-browser': ng('platform-browser', 'platform-browser.mjs'),
+      '@angular/platform-browser-dynamic': ng('platform-browser-dynamic', 'platform-browser-dynamic.mjs'),
+      '@angular/compiler': ng('compiler', 'compiler.mjs'),
+      '@angular/router': ng('router', 'router.mjs'),
+      'tslib': `https://cdn.jsdelivr.net/npm/tslib@${TSLIB_VERSION}/tslib.es6.mjs`,
       'rxjs': 'https://cdn.jsdelivr.net/npm/rxjs@7.8.2/+esm',
       'rxjs/operators': 'https://cdn.jsdelivr.net/npm/rxjs@7.8.2/+esm',
-      'zone.js': 'https://cdn.jsdelivr.net/npm/zone.js@0.14.10/fesm2015/zone.js'
+      'zone.js': `https://cdn.jsdelivr.net/npm/zone.js@${ZONE_JS_VERSION}/fesm2015/zone.js`
     }
   };
+
+  // Angular 21 starts zoneless unless the app asks for zone change detection. The tasks are written for zone.js, so the
+  // preview asks for it, except in an app that chooses its own change detection.
+  const choosesChangeDetection = Object.keys(files).some((path) =>
+    /provide(?:Experimental)?Zone(?:less)?ChangeDetection/.test(String(getCode(path.replace(/^\//, '')))));
 
   const esc = (s: string) => String(s || '').replace(/<\/script>/g, '<\\/script>');
 
   const TS = `
+var faSignalJitTransformer = (${faSignalJitTransformer.toString()});
 function compileTS(src, filename){
   const clean = String(src||'')
     .replace(/\\r\\n?/g, '\\n')
@@ -78,7 +93,9 @@ function compileTS(src, filename){
         importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove
       },
       fileName: filename,
-      reportDiagnostics:true
+      reportDiagnostics:true,
+      // input(), model(), output() and signal queries get the decorators the JIT compiler reads.
+      transformers: { before: [faSignalJitTransformer(ts)] }
     });
     const diagnostics = (out && out.diagnostics) || [];
     if (diagnostics.length) {
@@ -191,10 +208,9 @@ function compileTS(src, filename){
     if (!src) throw new Error('File not found: ' + path);
 
     if (path === 'src/main.ts') {
-      src = src.replace(
-        /bootstrapApplication\\s*\\(/,
-        'globalThis.__FA_BOOTSTRAP_PROMISE = bootstrapApplication('
-      );
+      // The starter's .catch(console.error) would turn a failed bootstrap into a quiet success: the preview keeps the
+      // bootstrap promise itself and reports the failure.
+      src = src.replace(/bootstrapApplication\\s*\\(/, 'globalThis.__FA_bootstrap(bootstrapApplication, ');
     }
 
     // Inline external resources BEFORE compiling
@@ -215,6 +231,18 @@ function compileTS(src, filename){
   }
 
   self.FA_emit = FA_emit;
+
+  globalThis.__FA_bootstrap = function(bootstrap, component, options){
+    var rest = Array.prototype.slice.call(arguments, 3);
+    var config = options || {};
+    var provide = globalThis.__FA_provideZoneChangeDetection;
+    if (provide && !${JSON.stringify(choosesChangeDetection)}) {
+      config = Object.assign({}, config, { providers: [provide()].concat(config.providers || []) });
+    }
+    var promise = bootstrap.apply(null, [component, config].concat(rest));
+    globalThis.__FA_BOOTSTRAP_PROMISE = promise;
+    return promise;
+  };
 })();
 `;
 
@@ -443,6 +471,7 @@ function compileTS(src, filename){
       // ESM Angular deps
       await import('zone.js');
       await import('@angular/compiler');
+      globalThis.__FA_provideZoneChangeDetection = (await import('@angular/core')).provideZoneChangeDetection;
       if (typeof window.__FA_PREPARE_ANGULAR_HTTP_CHECK === 'function') {
         const [{ HttpClient }, { Observable }] = await Promise.all([
           import('@angular/common/http'),
@@ -462,6 +491,8 @@ function compileTS(src, filename){
       notifyReady('render');
     }catch(e){
       const isSyntax = !!(e && e.name === 'SyntaxError');
+      // Also in the workspace's Console, where a template error can be read in full.
+      try{ console.error(e); }catch{}
       try{ showOverlay(e?.message || e, isSyntax ? 'compile' : 'bootstrap', isSyntax ? 'compile-error' : 'error'); }catch{}
     }
   </script>

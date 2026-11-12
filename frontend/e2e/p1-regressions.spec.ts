@@ -73,9 +73,9 @@ test('Monaco keyboard listener tolerates generic keydown after SPA navigation to
     '',
   ].join('\n'));
 
+  // The pass asks to save in the results; its Sign in leads to the login page and back to this task.
   await page.getByTestId('footer-submit').click();
-  await expect(page.getByTestId('login-required-title')).toBeVisible();
-  await page.getByTestId('login-required-login').click();
+  await page.getByTestId('coding-post-pass-login').click();
 
   await expect(page).toHaveURL((url) => (
     url.pathname === '/auth/login'
@@ -91,6 +91,115 @@ test('Monaco keyboard listener tolerates generic keydown after SPA navigation to
   const typedEmail = 'monaco-keydown@example.com';
   await email.pressSequentially(typedEmail);
   await expect(email).toHaveValue(typedEmail);
+});
+
+test("Submit grades with the task's own tests, not with tests edited to pass", async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  const testsModelKey = `q-${JS_QUESTION.id}-tests`;
+  await waitForMonacoModel(page, codeModelKey);
+  await waitForMonacoModel(page, testsModelKey);
+
+  // Code that ignores the bounds, and a Test cases tab rewritten to one test that cannot fail.
+  await setMonacoModelValue(page, codeModelKey, 'export default function clamp(value) {\n  return value;\n}\n');
+  await setMonacoModelValue(page, testsModelKey, "test('always passes', () => expect(1).toBe(1));\n");
+
+  await page.getByTestId('js-run-tests').click();
+  const results = page.getByTestId('js-results-panel');
+  await expect(results.getByTestId('test-status')).toHaveText(['PASS']);
+  await expect(results.getByTestId('js-suite-note')).toContainText("Submit runs the task's own tests");
+
+  // A pass would ask a signed-out visitor to log in and save it; the task's own tests fail this code instead.
+  await page.getByTestId('footer-submit').click();
+  await expect(results.getByTestId('js-suite-note')).toContainText("Checked against the task's own tests");
+  await expect(results.getByTestId('test-status').filter({ hasText: 'FAIL' }).first()).toBeAttached();
+  await expect(page.getByTestId('login-required-title')).toBeHidden();
+  // The rewritten Test cases tab is still the visitor's own.
+  await expect.poll(() => getMonacoModelValue(page, testsModelKey)).toContain('always passes');
+});
+
+test('a passing Submit asks a guest to save in the results, not in a dialog, and names the next task', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, codeModelKey);
+  await setMonacoModelValue(
+    page,
+    codeModelKey,
+    'export default function clamp(value, lower, upper) {\n  return Math.min(Math.max(value, lower), upper);\n}\n',
+  );
+
+  await page.getByTestId('footer-submit').click();
+  const card = page.getByTestId('js-results-panel').getByTestId('coding-post-pass');
+  await expect(card).toHaveAttribute('data-card', 'guest', { timeout: 15_000 });
+  await expect(card.getByTestId('coding-post-pass-signup')).toBeVisible();
+  await expect(page.getByTestId('login-required-title')).toBeHidden();
+
+  const next = card.getByTestId('coding-post-pass-next');
+  await expect(next).toHaveText(/^\s*Next: \S/);
+  await next.click();
+  await expect(page).not.toHaveURL(new RegExp(`/${JS_QUESTION.id}$`));
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  // The next task starts clean: no card from the last one.
+  await expect(page.getByTestId('coding-post-pass')).toHaveCount(0);
+});
+
+test('a test that never settles fails on its own, and the tests around it keep their results', async ({ page }) => {
+  await page.goto('/javascript/coding/js-promise-any');
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = 'q-js-promise-any-code';
+  await waitForMonacoModel(page, codeModelKey);
+  // Right for every input except an empty one, where the promise never settles.
+  await setMonacoModelValue(page, codeModelKey, [
+    'export default function promiseAny(iterable) {',
+    '  const items = Array.from(iterable);',
+    '  return new Promise((resolve, reject) => {',
+    '    const errors = new Array(items.length);',
+    '    let rejected = 0;',
+    '    items.forEach((item, index) => {',
+    '      Promise.resolve(item).then(resolve, (reason) => {',
+    '        errors[index] = reason;',
+    '        rejected += 1;',
+    "        if (rejected === items.length) reject(new AggregateError(errors, 'All promises were rejected'));",
+    '      });',
+    '    });',
+    '  });',
+    '}',
+    '',
+  ].join('\n'));
+
+  await page.getByTestId('js-run-tests').click();
+  const rows = page.getByTestId('js-results-panel').getByTestId('test-result');
+  const timedOut = rows.filter({ hasText: 'Timed out after 1000 ms' });
+  await expect(timedOut).toHaveCount(1, { timeout: 10_000 });
+  await expect(timedOut).toContainText('empty');
+  // The failure is listed first, and the tests after the hang still ran and passed.
+  await expect(rows.first()).toContainText('Timed out after 1000 ms');
+  await expect.poll(async () => (await rows.filter({ hasText: 'PASS' }).count())).toBeGreaterThanOrEqual(4);
+});
+
+test('a test stuck in an endless loop is named, and the tests before it keep their results', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await waitForMonacoModel(page, codeModelKey);
+  // Fine for values inside the range; a value above it spins forever and blocks the worker.
+  await setMonacoModelValue(page, codeModelKey, [
+    'export default function clamp(value, lower, upper) {',
+    '  while (value > upper) {}',
+    '  return Math.max(value, lower);',
+    '}',
+    '',
+  ].join('\n'));
+
+  await page.getByTestId('js-run-tests').click();
+  const results = page.getByTestId('js-results-panel');
+  const rows = results.getByTestId('test-result');
+  await expect(rows.filter({ hasText: 'kept the runner busy' })).toHaveCount(1, { timeout: 10_000 });
+  await expect(rows.filter({ hasText: 'kept the runner busy' })).toContainText('above upper');
+  await expect(rows.filter({ hasText: 'Not run' })).toContainText('on bounds');
+  await expect(rows.filter({ hasText: 'PASS' })).toHaveCount(2);
 });
 
 test('filter empty state shows reset option and recovers', async ({ page }) => {
@@ -225,15 +334,57 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeVisible();
 
+  // Closed, the panels keep their buttons out of the tab order: Shift+Tab from Run tests reaches the splitter, then
+  // the Explain failure chip, never an invisible Dismiss.
+  await expect(jsPanel.locator('#assist-hint-panel')).toHaveAttribute('inert', '');
+  await expect(jsPanel.locator('#assist-explain-panel')).toHaveAttribute('inert', '');
+  await jsPanel.getByTestId('js-run-tests').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(jsPanel.getByTestId('js-editor-splitter')).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(jsPanel.getByRole('button', { name: 'Explain failure' })).toBeFocused();
+
   await jsPanel.getByTestId('interview-mode-setup-toggle').click();
   await expect(jsPanel.getByTestId('interview-mode-setup-panel')).toBeVisible();
   await jsPanel.getByTestId('interview-mode-start').click();
   await jsPanel.getByTestId('js-run-tests').click();
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeHidden();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeHidden();
+  // Timed practice closes the solution until it ends.
+  const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+  await expect(solutionTab).toBeDisabled();
+  await expect(solutionTab).toHaveAttribute('title', 'Solution locked until timed practice ends');
 
   await jsPanel.getByTestId('interview-mode-end').click();
   await expect(jsPanel.getByTestId('interview-summary')).toBeVisible();
+  await expect(solutionTab).toBeEnabled();
+});
+
+test('Ctrl+Enter runs the tests from the editor, and the splitter and Run tests work from the keyboard', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+  await waitForMonacoModel(page, `q-${JS_QUESTION.id}-code`);
+  await expect(jsPanel.getByTestId('editor-keys-hint')).toContainText('+Enter runs');
+
+  // Cmd+Enter on a Mac, Ctrl+Enter elsewhere, from inside the code editor. Monaco reads the platform from the user
+  // agent, which the Desktop Chrome profile sets to Windows on every host.
+  const mac = await page.evaluate(() => /Macintosh|iPhone|iPad|iPod/.test(navigator.userAgent));
+  await expect(jsPanel.getByTestId('editor-keys-hint')).toContainText(mac ? 'Cmd+Enter runs' : 'Ctrl+Enter runs');
+  await jsPanel.locator('[data-testid="js-code-editor"] .monaco-editor .view-lines').first().click();
+  await page.keyboard.press(mac ? 'Meta+Enter' : 'Control+Enter');
+  await expect(jsPanel.getByTestId('test-result').first()).toBeVisible({ timeout: 15_000 });
+
+  // The splitter is a separator the arrow keys move; Tab goes on to Run tests, with a visible focus ring.
+  const splitter = jsPanel.getByTestId('js-editor-splitter');
+  await splitter.focus();
+  const before = Number(await splitter.getAttribute('aria-valuenow'));
+  await page.keyboard.press('ArrowUp');
+  await expect(splitter).toHaveAttribute('aria-valuenow', String(before - 2));
+  await page.keyboard.press('Tab');
+  const run = jsPanel.getByTestId('js-run-tests');
+  await expect(run).toBeFocused();
+  expect(await run.evaluate((node) => getComputedStyle(node).outlineStyle)).not.toBe('none');
 });
 
 test('assist experiments apply late_l2 nudge timing and compact explain density', async ({ page }) => {

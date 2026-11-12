@@ -5,7 +5,7 @@
   "variants": {
     "approach1": {
       "language": "javascript",
-      "code": "export default function deepEqual(a, b) {\n  if (a === b) return true;\n  if (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a) && Number.isNaN(b)) return true;\n  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return false;\n\n  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();\n\n  if (a instanceof RegExp && b instanceof RegExp) {\n    const same = a.source === b.source && a.flags === b.flags;\n    return same && a.lastIndex === b.lastIndex;\n  }\n\n  const aIsArr = Array.isArray(a);\n  const bIsArr = Array.isArray(b);\n  if (aIsArr || bIsArr) {\n    if (!(aIsArr && bIsArr)) return false;\n    if (a.length !== b.length) return false;\n    for (let i = 0; i < a.length; i++) {\n      if (!deepEqual(a[i], b[i])) return false;\n    }\n    return true;\n  }\n\n  const aKeys = Object.keys(a);\n  const bKeys = Object.keys(b);\n  if (aKeys.length !== bKeys.length) return false;\n  for (const k of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(b, k)) return false;\n    if (!deepEqual(a[k], b[k])) return false;\n  }\n  return true;\n}\n",
+      "code": "export default function deepEqual(a, b) {\n  if (a === b) return true;\n  if (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a) && Number.isNaN(b)) return true;\n  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return false;\n  // Different kinds of object (a Date and a plain object, an array and an object) are never equal.\n  if (Object.prototype.toString.call(a) !== Object.prototype.toString.call(b)) return false;\n\n  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();\n\n  if (a instanceof RegExp && b instanceof RegExp) {\n    const same = a.source === b.source && a.flags === b.flags;\n    return same && a.lastIndex === b.lastIndex;\n  }\n\n  const aIsArr = Array.isArray(a);\n  const bIsArr = Array.isArray(b);\n  if (aIsArr || bIsArr) {\n    if (!(aIsArr && bIsArr)) return false;\n    if (a.length !== b.length) return false;\n    for (let i = 0; i < a.length; i++) {\n      if (!deepEqual(a[i], b[i])) return false;\n    }\n    return true;\n  }\n\n  const aKeys = Object.keys(a);\n  const bKeys = Object.keys(b);\n  if (aKeys.length !== bKeys.length) return false;\n  for (const k of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(b, k)) return false;\n    if (!deepEqual(a[k], b[k])) return false;\n  }\n  return true;\n}\n",
       "nodes": [
         {
           "id": "d1-early-primitive-and-nan-checks",
@@ -20,11 +20,23 @@
           "tradeoff": "Much faster and clearer for common inputs, but adds a few upfront branches."
         },
         {
+          "id": "d1b-reject-different-kinds",
+          "title": "Reject values of different kinds",
+          "anchor": {
+            "lineStart": 6,
+            "lineEnd": 6,
+            "snippet": "if (Object.prototype.toString.call(a) !== Object.prototype.toString.call(b)) return false;"
+          },
+          "why": "Object.prototype.toString gives every built-in kind its own tag, so a Date and an empty object, or an array and an object with the same keys, are told apart before any key is compared.",
+          "alternative": "Compare constructors or prototypes.",
+          "tradeoff": "Prototypes would also separate class instances, which this exercise leaves out of scope; the tag is enough for the built-in kinds it covers."
+        },
+        {
           "id": "d2-special-type-handling",
           "title": "Compare Date and RegExp with type-specific rules",
           "anchor": {
-            "lineStart": 6,
-            "lineEnd": 10,
+            "lineStart": 8,
+            "lineEnd": 12,
             "snippet": "if (a instanceof Date && b instanceof Date)"
           },
           "why": "Dates and regexps need custom comparisons; plain object recursion is not enough.",
@@ -35,8 +47,8 @@
           "id": "d3-structural-recursion",
           "title": "Recurse through arrays and object keys",
           "anchor": {
-            "lineStart": 15,
-            "lineEnd": 30,
+            "lineStart": 17,
+            "lineEnd": 32,
             "snippet": "if (aIsArr || bIsArr) {"
           },
           "why": "Deep equality is about structure, so we compare lengths/keys and recurse value-by-value.",

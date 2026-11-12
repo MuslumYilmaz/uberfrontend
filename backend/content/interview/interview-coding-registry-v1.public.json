@@ -5,11 +5,11 @@
   "status": "editorial-gold",
   "variants": [
     {
-      "contentHash": "04797a7d03d8affd6a13ae07171976abdd209f2a4693df5de93d45597ac56a66",
+      "contentHash": "5e27716aedeb7133cc473e7bd896ddddeebf3f6f55523eba9d9f0e09d5891174",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "level": "junior",
-      "prompt": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
+      "prompt": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep the count in one signal so every binding that shows it updates with it.",
       "publicRequirements": [
         {
           "constraints": [
@@ -37,7 +37,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-counter-starter",
       "starterAsset": "assets/sb/angular/question/angular-counter.v2.json",
       "starterFiles": [
@@ -79,11 +79,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "1f193cf1828079f735b253b293440c21289e40d3512107c3bf033e8927bf8f8c",
+      "contentHash": "09547d65125f7970f60947811f9cdc3ea1d406434d486d45c238dec7c82f91fa",
       "enabled": true,
       "id": "int-code-angular-junior-filterable-user-list-v1",
       "level": "junior",
-      "prompt": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Filter a user list in Angular by search and role without mutating the original array. Keep the search text, role and active-only toggle in signals, derive the matching users with computed, and show an empty state when no matches exist. Angular focus: derive filtered lists with computed signals.",
       "publicRequirements": [
         {
           "constraints": [
@@ -110,7 +110,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-filterable-user-list",
       "starterAsset": "assets/sb/angular/question/angular-filterable-user-list.v2.json",
       "starterFiles": [
@@ -152,11 +152,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "cf4846dca9d8b5cc1901b84843017044a18530f56035d2b9362138363253ca89",
+      "contentHash": "ea778ac4634cba4f696a04b56b985cd60b30b9344a776167730b38bfb6eea3d6",
       "enabled": true,
       "id": "int-code-angular-junior-progress-thresholds-v1",
       "level": "junior",
-      "prompt": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: hold the value in a signal, derive the threshold class with computed, and bind it with [class] and [style.width.%].",
       "publicRequirements": [
         {
           "constraints": [
@@ -183,7 +183,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-progress-bar-thresholds",
       "starterAsset": "assets/sb/angular/question/angular-progress-bar-thresholds.v2.json",
       "starterFiles": [
@@ -225,7 +225,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "444dc8bfc48fa84280bf9f108ff32808606f46b22b1f942ca0c325eb10c59b92",
+      "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
       "enabled": true,
       "id": "int-code-angular-junior-tabs-switcher-v1",
       "level": "junior",
@@ -256,7 +256,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-tabs-switcher",
       "starterAsset": "assets/sb/angular/question/angular-tabs.v2.json",
       "starterFiles": [
@@ -298,7 +298,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "18de554492733266341bd37fa07776ad0242dd41a81ee7649c874d7432e6d497",
+      "contentHash": "711e65df4010e82e469b94453046e3d31c6ce091253128603a8004a40c3022fb",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "level": "junior",
@@ -319,7 +319,7 @@
           "constraints": [
             "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
             "Expose the selected filter with aria-pressed.",
-            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Announce the remaining active-task count with correct singular and plural copy: \"1 item left\", \"2 items left\".",
             "Clear completed tasks without removing active tasks."
           ],
           "id": "derived-filters",
@@ -330,7 +330,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-todo-list-starter",
       "starterAsset": "assets/sb/angular/question/angular-todo-list.v2.json",
       "starterFiles": [
@@ -372,7 +372,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "654765839d01289e96b3077699702c70a277daa0470ff4d1407509846ec62ff1",
+      "contentHash": "6b6ddfe1e55adfc9540056804b004ac71a0f0b3b247c99a5a5796fd2ccb4925b",
       "enabled": true,
       "id": "int-code-angular-mid-multi-step-form-v1",
       "level": "mid",
@@ -414,7 +414,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-multi-step-form-starter",
       "starterAsset": "assets/sb/angular/question/angular-multi-step-form.v2.json",
       "starterFiles": [
@@ -456,11 +456,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "41cec26d76848ee9eddbc23aa9dfd4fa951e6ccb87991b0b8df7efdd566c8b44",
+      "contentHash": "402d34231441ad60ce9498e0f98fa7640445816109941b1cc5dbab8766519f97",
       "enabled": true,
       "id": "int-code-angular-mid-nested-checkboxes-v1",
       "level": "mid",
-      "prompt": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms.",
       "publicRequirements": [
         {
           "constraints": [
@@ -497,7 +497,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-nested-checkboxes",
       "starterAsset": "assets/sb/angular/question/angular-nested-checkboxes.v1.json",
       "starterFiles": [
@@ -539,11 +539,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "b4baf4a74d743f215d81551801598d745f6580dc71d5b37eba92e6f9d44d4dab",
+      "contentHash": "190be8d191c9d32978f8460435efa740412b5e4a386e894c6a321a89aff8433c",
       "enabled": true,
       "id": "int-code-angular-mid-pagination-v1",
       "level": "mid",
-      "prompt": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices.",
       "publicRequirements": [
         {
           "constraints": [
@@ -582,7 +582,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-pagination-table",
       "starterAsset": "assets/sb/angular/question/angular-pagination-table.v2.json",
       "starterFiles": [
@@ -595,11 +595,11 @@
           "path": "src/app/app.component.css"
         },
         {
-          "content": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:520px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Users (Pagination)</h1>\n\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <th>ID</th>\n          <th>Name</th>\n          <th>Email</th>\n          <th>Role</th>\n        </tr>\n      </thead>\n      <tbody>\n        @for (user of pagedUsers; track user.id) {\n          <tr>\n          <td>{{ user.id }}</td>\n          <td>{{ user.name }}</td>\n          <td>{{ user.email }}</td>\n          <td>{{ user.role }}</td>\n          </tr>\n        }\n      </tbody>\n    </table>\n\n    <div class=\"pagination\">\n      <button (click)=\"goToPrevious()\" [disabled]=\"isFirstPage\">Previous</button>\n      <span>{{ currentPage + 1 }} / {{ totalPages }}</span>\n      <button (click)=\"goToNext()\" [disabled]=\"isLastPage\">Next</button>\n    </div>\n  </section>\n</main>\n",
+          "content": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:520px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Users (Pagination)</h1>\n\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <th>ID</th>\n          <th>Name</th>\n          <th>Email</th>\n          <th>Role</th>\n        </tr>\n      </thead>\n      <tbody>\n        @for (user of pagedUsers; track user.id) {\n          <tr>\n          <td>{{ user.id }}</td>\n          <td>{{ user.name }}</td>\n          <td>{{ user.email }}</td>\n          <td>{{ user.role }}</td>\n          </tr>\n        }\n      </tbody>\n    </table>\n\n    <div class=\"pagination\">\n      <button (click)=\"goToPrevious()\" [disabled]=\"isFirstPage\">Previous</button>\n      <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>\n      <button (click)=\"goToNext()\" [disabled]=\"isLastPage\">Next</button>\n    </div>\n  </section>\n</main>\n",
           "path": "src/app/app.component.html"
         },
         {
-          "content": "import { Component } from '@angular/core';\nimport { User, USERS } from './users.data';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users: [] = USERS;\n  readonly pageSize = 5;\n\n  // TODO: Hold current page index (0-based)\n  currentPage = 0;\n\n  // TODO: Total number of pages\n  get totalPages(): number {\n    return 1;\n  }\n\n  // TODO: Slice the current 5 items\n  get pagedUsers() {\n    return this.users;\n  }\n\n  // TODO: First page check\n  get isFirstPage(): boolean {\n    return false;\n  }\n\n  // TODO: Last page check\n  get isLastPage(): boolean {\n    return false;\n  }\n\n  // TODO: Previous page\n  goToPrevious(): void {}\n\n  // TODO: Next page\n  goToNext(): void {}\n}\n",
+          "content": "import { Component } from '@angular/core';\nimport { USERS } from './users.data';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n\n  // TODO: Hold current page index (0-based)\n  currentPage = 0;\n\n  // TODO: Total number of pages\n  get totalPages(): number {\n    return 1;\n  }\n\n  // TODO: Slice the current 5 items\n  get pagedUsers() {\n    return this.users;\n  }\n\n  // TODO: First page check\n  get isFirstPage(): boolean {\n    return false;\n  }\n\n  // TODO: Last page check\n  get isLastPage(): boolean {\n    return false;\n  }\n\n  // TODO: Previous page\n  goToPrevious(): void {}\n\n  // TODO: Next page\n  goToNext(): void {}\n}\n",
           "path": "src/app/app.component.ts"
         },
         {
@@ -628,7 +628,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "7c28ac1b8fc4ff421b5bff288f7b49dc4c66b1a5811aeaaa9c4f40869a7c9825",
+      "contentHash": "f2f969e2602cc42682f67110350e06924e86b28f4c5e795b26c7e29b5225a667",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "level": "mid",
@@ -672,7 +672,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-shopping-cart-mini",
       "starterAsset": "assets/sb/angular/question/angular-shopping-cart.v2.json",
       "starterFiles": [
@@ -685,7 +685,7 @@
           "path": "src/app/app.component.css"
         },
         {
-          "content": "<main class=\"app\">\n  <section class=\"layout\">\n    <!-- Products -->\n    <section class=\"column\">\n      <h1 class=\"title\">Products</h1>\n      <ul class=\"product-list\">\n        @for (product of products; track product.id) {\n          <li\n          class=\"product-card\"\n        >\n          <div class=\"product-main\">\n            <div class=\"product-name\">{{ product.name }}</div>\n            <div class=\"product-price\">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</div>\n          </div>\n          <button type=\"button\" (click)=\"addToCart(product)\">\n            Add to cart\n          </button>\n          </li>\n        }\n      </ul>\n    </section>\n\n    <!-- Cart -->\n    <section class=\"column\">\n      <header class=\"cart-header\">\n        <h1 class=\"title\">Cart</h1>\n        <p class=\"subtitle\">\n          Total items: <strong>{{ totalQty }}</strong>\n          ·\n          Total: <strong>{{ totalPrice | currency:'USD':'symbol':'1.2-2' }}</strong>\n        </p>\n      </header>\n\n      @if (cartItems.length) {\n        <ul class=\"cart-list\">\n          @for (item of cartItems; track item.id) {\n            <li\n            class=\"cart-row\"\n          >\n            <div class=\"cart-info\">\n              <div class=\"cart-name\">{{ item.name }}</div>\n              <div class=\"cart-meta\">\n                <span class=\"unit-price\">{{ item.price | currency:'USD':'symbol':'1.2-2' }}</span>\n                <span class=\"times\">x</span>\n                <span class=\"qty\">{{ item.quantity }}</span>\n                <span class=\"equals\">=</span>\n                <span class=\"line-total\">\n                  {{ item.price * item.quantity | currency:'USD':'symbol':'1.2-2' }}\n                </span>\n              </div>\n            </div>\n\n            <div class=\"cart-actions\">\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"decreaseQty(item)\"\n                aria-label=\"decrease quantity\"\n              >\n                −\n              </button>\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"increaseQty(item)\"\n                aria-label=\"increase quantity\"\n              >\n                +\n              </button>\n              <button\n                type=\"button\"\n                class=\"danger\"\n                (click)=\"removeItem(item)\"\n              >\n                Remove\n              </button>\n            </div>\n            </li>\n          }\n        </ul>\n      } @else {\n        <p class=\"empty\">Your cart is empty. Add something from the left.</p>\n      }\n    </section>\n  </section>\n</main>\n",
+          "content": "<main class=\"app\">\n  <section class=\"layout\">\n    <!-- Products -->\n    <section class=\"column\">\n      <h1 class=\"title\">Products</h1>\n      <ul class=\"product-list\">\n        @for (product of products; track product.id) {\n          <li\n          class=\"product-card\"\n        >\n          <div class=\"product-main\">\n            <div class=\"product-name\">{{ product.name }}</div>\n            <div class=\"product-price\">{{ product.price | currency:'USD':'symbol':'1.2-2' }}</div>\n          </div>\n          <button type=\"button\" (click)=\"addToCart(product)\">\n            Add to cart\n          </button>\n          </li>\n        }\n      </ul>\n    </section>\n\n    <!-- Cart -->\n    <section class=\"column\">\n      <header class=\"cart-header\">\n        <h1 class=\"title\">Cart</h1>\n        <p class=\"subtitle\">\n          Total items: <strong>{{ totalQty }}</strong>\n          ·\n          Total: <strong>{{ totalPrice | currency:'USD':'symbol':'1.2-2' }}</strong>\n        </p>\n      </header>\n\n      @if (cartItems.length) {\n        <ul class=\"cart-list\">\n          @for (item of cartItems; track item.id) {\n            <li\n            class=\"cart-row\"\n          >\n            <div class=\"cart-info\">\n              <div class=\"cart-name\">{{ item.name }}</div>\n              <div class=\"cart-meta\">\n                <span class=\"unit-price\">{{ item.price | currency:'USD':'symbol':'1.2-2' }}</span>\n                <span class=\"times\">x</span>\n                <span class=\"qty\">{{ item.quantity }}</span>\n                <span class=\"equals\">=</span>\n                <span class=\"line-total\">\n                  {{ item.price * item.quantity | currency:'USD':'symbol':'1.2-2' }}\n                </span>\n              </div>\n            </div>\n\n            <div class=\"cart-actions\">\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"decreaseQty(item)\"\n                aria-label=\"decrease quantity\"\n              >\n                −\n              </button>\n              <button\n                type=\"button\"\n                class=\"ghost\"\n                (click)=\"increaseQty(item)\"\n                aria-label=\"increase quantity\"\n              >\n                +\n              </button>\n              <button\n                type=\"button\"\n                class=\"danger\"\n                (click)=\"removeItem(item)\"\n              >\n                Remove\n              </button>\n            </div>\n            </li>\n          }\n        </ul>\n      } @else {\n        <p class=\"empty\">Your cart is empty. Add something from above.</p>\n      }\n    </section>\n  </section>\n</main>\n",
           "path": "src/app/app.component.html"
         },
         {
@@ -714,11 +714,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "71059fd19aeef7489dd0929a6299035ea1fc745385a9282c8e0135248de4ceb6",
+      "contentHash": "9afbcc1c69e0f8787c23301c0dd6dcc4f11aec0e4c94b14c58e1e9ad7efc2b84",
       "enabled": true,
       "id": "int-code-angular-mid-theme-toggle-v1",
       "level": "mid",
-      "prompt": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element.",
       "publicRequirements": [
         {
           "constraints": [
@@ -756,7 +756,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-theme-toggle",
       "starterAsset": "assets/sb/angular/question/angular-theme-toggle.v2.json",
       "starterFiles": [
@@ -802,7 +802,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "b59941489c364a0e5c383461688868814c724b881c7850856acb0b0f9f5fd43a",
+      "contentHash": "c5617bb01c6ef9ede077f55b7a26a279ab25a9232d917f1e764f287e18262aec",
       "enabled": true,
       "id": "int-code-angular-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -856,7 +856,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-chips-input-autocomplete",
       "starterAsset": "assets/sb/angular/question/angular-chips-input-autocomplete.v1.json",
       "starterFiles": [
@@ -898,11 +898,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "07574fa4e7d39f8ee8ca58f4489249175708acf7690297c58120c5781c5d9e9e",
+      "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
       "enabled": true,
       "id": "int-code-angular-senior-contact-form-v1",
       "level": "senior",
-      "prompt": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a contact form using an Angular standalone component and reactive forms. You will work in `src/app/app.component.ts` and register `provideHttpClient()` in `src/main.ts` – the HTML and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
       "publicRequirements": [
         {
           "constraints": [
@@ -952,7 +952,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-contact-form-starter",
       "starterAsset": "assets/sb/angular/question/angular-contact-form.v2.json",
       "starterFiles": [
@@ -994,11 +994,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "73c1c71287964c998c581e2128b941481863a6ef2520604951c07f62f1c4e9e4",
+      "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
       "enabled": true,
       "id": "int-code-angular-senior-debounced-search-v1",
       "level": "senior",
-      "prompt": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1049,7 +1049,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-debounced-search",
       "starterAsset": "assets/sb/angular/question/angular-debounced-search.v2.json",
       "starterFiles": [
@@ -1091,11 +1091,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "bbdeeb3ca06aa3961b20c48abc1ab22be51cd6e03da0757c18c6e1153f9c0870",
+      "contentHash": "0d20ad1a0360ee919cf5a3e206ce891db57e077325ca321150dcb519cf622880",
       "enabled": true,
       "id": "int-code-angular-senior-nested-comments-v1",
       "level": "senior",
-      "prompt": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1146,7 +1146,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-nested-comments",
       "starterAsset": "assets/sb/angular/question/angular-nested-comments.v2.json",
       "starterFiles": [
@@ -1155,15 +1155,15 @@
           "path": "package.json"
         },
         {
-          "content": ".page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
+          "content": ".page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.children {\n  display: grid;\n  gap: 8px;\n  margin-left: 16px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
           "path": "src/app/app.component.css"
         },
         {
-          "content": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Nested Comments</h1>\n    <p class=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n    <div class=\"composer\">\n      <textarea [(ngModel)]=\"topDraft\" rows=\"3\" placeholder=\"Write a comment...\"></textarea>\n      <button (click)=\"addTop()\">Add Comment</button>\n    </div>\n\n    <div class=\"list\">\n      <ng-container\n        *ngTemplateOutlet=\"treeTpl; context: { $implicit: comments, depth: 0 }\"\n      ></ng-container>\n\n      <ng-template #treeTpl let-nodes let-depth=\"depth\">\n        @for (comment of nodes; track comment.id) {\n          <div class=\"node\" [style.marginLeft.px]=\"depth * 16\">\n          <div class=\"bubble\">\n            <div class=\"text\">{{ comment.text }}</div>\n            <div class=\"meta\">\n              <button class=\"ghost\" (click)=\"openReply(comment.id)\">Reply</button>\n            </div>\n\n            <!-- Reply box: should open ONLY for the active comment -->\n            @if (activeReplyId === comment.id) {\n              <div class=\"reply\">\n              <input [(ngModel)]=\"replyDraft\" placeholder=\"Write a reply...\" />\n              <div class=\"replyActions\">\n                <button (click)=\"submitReply(comment.id)\">Post</button>\n                <button class=\"ghost\" (click)=\"cancelReply()\">Cancel</button>\n              </div>\n              </div>\n            }\n          </div>\n\n          @if (comment.children.length) {\n            <ng-container\n              [ngTemplateOutlet]=\"treeTpl\"\n              [ngTemplateOutletContext]=\"{ $implicit: comment.children, depth: depth + 1 }\"\n            ></ng-container>\n          }\n          </div>\n        }\n      </ng-template>\n    </div>\n\n    <div class=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n  </section>\n</main>\n",
+          "content": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Nested Comments</h1>\n    <p class=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n    <div class=\"composer\">\n      <textarea [(ngModel)]=\"topDraft\" rows=\"3\" placeholder=\"Write a comment...\"></textarea>\n      <button (click)=\"addTop()\">Add Comment</button>\n    </div>\n\n    <div class=\"list\">\n      <ng-container\n        *ngTemplateOutlet=\"treeTpl; context: { $implicit: comments }\"\n      ></ng-container>\n\n      <ng-template #treeTpl let-nodes>\n        @for (comment of nodes; track comment.id) {\n          <div class=\"node\">\n          <div class=\"bubble\">\n            <div class=\"text\">{{ comment.text }}</div>\n            <div class=\"meta\">\n              <button class=\"ghost\" (click)=\"toggleReply(comment.id)\" [attr.aria-expanded]=\"activeReplyId === comment.id\">Reply</button>\n            </div>\n\n            <!-- Reply box: should open ONLY for the active comment -->\n            @if (activeReplyId === comment.id) {\n              <div class=\"reply\">\n              <input [(ngModel)]=\"replyDraft\" placeholder=\"Write a reply...\" />\n              <div class=\"replyActions\">\n                <button (click)=\"submitReply(comment.id)\">Post</button>\n                <button class=\"ghost\" (click)=\"cancelReply()\">Cancel</button>\n              </div>\n              </div>\n            }\n          </div>\n\n          @if (comment.children.length) {\n            <!-- Replies render inside their parent's node, so one fixed margin adds up to 16px per level. -->\n            <div class=\"children\">\n              <ng-container\n                [ngTemplateOutlet]=\"treeTpl\"\n                [ngTemplateOutletContext]=\"{ $implicit: comment.children }\"\n              ></ng-container>\n            </div>\n          }\n          </div>\n        }\n      </ng-template>\n    </div>\n\n    <div class=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n  </section>\n</main>\n",
           "path": "src/app/app.component.html"
         },
         {
-          "content": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // TODO: store a nested tree of comments\n  comments: CommentNode[] = [\n    { id: '1', text: 'First comment', children: [] }\n  ];\n\n  // TODO: top-level draft\n  topDraft = '';\n\n  // TODO: reply UI state\n  activeReplyId: string | null = null;\n  replyDraft = '';\n\n  // TODO: add a top-level comment\n  addTop(): void {\n  }\n\n  // TODO: open reply input ONLY for the given comment\n  openReply(_id: string): void {\n  }\n\n  // TODO: cancel reply\n  cancelReply(): void {\n  }\n\n  // TODO: submit reply under the correct parent\n  submitReply(_parentId: string): void {\n  }\n\n  // TODO: find node by id in a tree\n  private findById(_nodes: CommentNode[], _id: string): CommentNode | null {\n    return null;\n  }\n}\n",
+          "content": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // TODO: store a nested tree of comments\n  comments: CommentNode[] = [\n    { id: '1', text: 'First comment', children: [] }\n  ];\n\n  // TODO: top-level draft\n  topDraft = '';\n\n  // TODO: reply UI state\n  activeReplyId: string | null = null;\n  replyDraft = '';\n\n  // TODO: add a top-level comment\n  addTop(): void {\n  }\n\n  // TODO: open the reply input ONLY for the given comment, or close it when it is already open there\n  toggleReply(_id: string): void {\n  }\n\n  // TODO: cancel reply\n  cancelReply(): void {\n  }\n\n  // TODO: submit reply under the correct parent\n  submitReply(_parentId: string): void {\n  }\n\n  // TODO: find node by id in a tree\n  private findById(_nodes: CommentNode[], _id: string): CommentNode | null {\n    return null;\n  }\n}\n",
           "path": "src/app/app.component.ts"
         },
         {
@@ -1188,11 +1188,11 @@
       "track": "angular"
     },
     {
-      "contentHash": "bf076a14611003511894b29d9216d8919c79ab95ed9f1db5338c8644140c591e",
+      "contentHash": "42ece01188f1debda2182c60e99242bfc9e1a40f62a0490561ecd95452412cf5",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "level": "senior",
-      "prompt": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use @for with checkbox bindings. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "prompt": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use @for with checkbox bindings.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1242,7 +1242,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-15",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "angular-transfer-list",
       "starterAsset": "assets/sb/angular/question/angular-transfer-list.v2.json",
       "starterFiles": [
@@ -1352,7 +1352,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "a8d7c720685c49c9e257668d77e75a98b3532de12f599518f25b514459670022",
+      "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
       "enabled": true,
       "id": "int-code-core-web-junior-once-wrapper-v1",
       "level": "junior",
@@ -1371,7 +1371,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-once",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-once.starterCode",
       "starterFiles": [
@@ -1451,11 +1451,11 @@
       "track": "core-web"
     },
     {
-      "contentHash": "0a0e7b84212755963530aac7e36eca4d5bb1fafe084821ea024ffb1abb4c8ca0",
+      "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
       "enabled": true,
       "id": "int-code-core-web-mid-debounce-v1",
       "level": "mid",
-      "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the latest call in a burst, preserve `this` and arguments, and pass the starter tests. This page includes starter code, tests, timeline examples, edge cases, and follow-ups for cancel/flush and leading behavior.",
+      "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. The wrapper must not call `fn` synchronously, must run only the latest call in a burst, and must pass that call's `this` and all of its arguments to `fn`.",
       "publicRequirements": [
         {
           "constraints": [
@@ -1464,14 +1464,14 @@
             "Return Function: A debounced version of the original function that delays execution until the delay period has elapsed."
           ],
           "id": "implementation-contract",
-          "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. Your solution must avoid synchronous execution, keep only the latest call in a burst, preserve `this` and arguments, and pass the starter tests. This page includes starter code, tests, timeline examples, edge cases, and follow-ups for cancel/flush and leading behavior.",
+          "prompt": "Implement `debounce(fn, delay)` by returning a trailing-edge wrapper that clears the previous timer and runs `fn` only after calls stop for `delay` ms. The wrapper must not call `fn` synchronously, must run only the latest call in a burst, and must pass that call's `this` and all of its arguments to `fn`.",
           "title": "Debounce Function"
         }
       ],
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-debounce",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-debounce.starterCode",
       "starterFiles": [
@@ -1654,7 +1654,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "323c8d42182631f984dde10faa9d1ce8086a2145b52cc5ec2ca23aa06bd83351",
+      "contentHash": "f6b60b1ad0b4af9ceddc5294a97543800bfc2ca9f822f4a416102345f8c1d2fb",
       "enabled": true,
       "id": "int-code-core-web-senior-concurrency-map-v1",
       "level": "senior",
@@ -1663,7 +1663,7 @@
         {
           "constraints": [
             "Input items (T[]): Inputs to process.",
-            "Input limit (number): Max number of concurrent worker calls. Must be ≥ 1.",
+            "Input limit (number): Max number of concurrent worker calls. Must be ≥ 1; a smaller limit is an error, thrown or as a rejected promise.",
             "Input worker ((item: T, index: number) => Promise<R>): Async mapper.",
             "Input strategy ('fail-fast' | 'all-settled'): Optional error handling strategy (default `'fail-fast'`). On error: either reject immediately (`'fail-fast'`) or collect all outcomes (`'all-settled'`).",
             "Return Promise<R[] | Array<{ status: 'fulfilled' | 'rejected'; value?: R; reason?: any }>>: If `'fail-fast'`, resolves to `R[]` or rejects on the first error. If `'all-settled'`, always resolves to settled outcomes in input order."
@@ -1676,7 +1676,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-31",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-concurrency-map-limit",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-concurrency-map-limit.starterCode",
       "starterFiles": [
@@ -1690,7 +1690,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "7d348ec8566efab4c387ec5cdc114af2da13488d2b00d8853ba47a07638b42bc",
+      "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
       "enabled": true,
       "id": "int-code-core-web-senior-deep-equal-v1",
       "level": "senior",
@@ -1710,7 +1710,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-deep-equal",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-deep-equal.starterCode",
       "starterFiles": [
@@ -1724,7 +1724,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "2a13a53222648c16758abd064e7a9bfc24a306a0a4d29a49ee091a070675e19c",
+      "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
       "enabled": true,
       "id": "int-code-core-web-senior-lru-cache-v1",
       "level": "senior",
@@ -1733,7 +1733,7 @@
         {
           "constraints": [
             "Input maxSize (number): Maximum number of entries to retain. Must be a positive integer.",
-            "Return { get, set, has, size, clear, keys }: An LRU cache API backed by Map insertion order."
+            "Return { get, set, has, size, clear, keys }: An object with `get(key)`, `set(key, value)`, `has(key)`, `size()`, `clear()` and `keys()`. `size()` is a method that returns the number of entries, and `keys()` returns an array of the keys from least to most recently used. `get` and `set` make a key the most recent; `has` does not."
           ],
           "id": "implementation-contract",
           "prompt": "Implement createLruCache(maxSize) to keep a bounded, eviction-based cache. This is a classic way to prevent \"memory leaks\" caused by unbounded Maps in long-lived SPAs (analytics, image metadata, computed results).",
@@ -1743,7 +1743,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-02-05",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "js-create-lru-cache",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-create-lru-cache.starterCode",
       "starterFiles": [
@@ -1791,7 +1791,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "56a8c441b543ba6cbaa94a5eccd6ec2883e6c84a290848b75f1a405e4fc4d8aa",
+      "contentHash": "44d718ffd28cad9f097c737d3be9abe07e5d0a957926af9b43fa53e373a532b5",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "level": "junior",
@@ -1857,7 +1857,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
+      "contentHash": "6acca21bc1fbe463685eb56a0a191a5df4dfcec3b0cc08463bc7eab82ce3a4cd",
       "enabled": true,
       "id": "int-code-react-junior-filterable-user-list-v1",
       "level": "junior",
@@ -1922,7 +1922,7 @@
       "track": "react"
     },
     {
-      "contentHash": "c31eb3ce2a84c639ebb430bc78e44b340047f8c73fd6ccd4de1c8cbbcb039d63",
+      "contentHash": "1547295f1cd60baa8e9242753aca443ca84b5fff19bc83594e1c80148c80b757",
       "enabled": true,
       "id": "int-code-react-junior-progress-thresholds-v1",
       "level": "junior",
@@ -1987,7 +1987,7 @@
       "track": "react"
     },
     {
-      "contentHash": "ca44eda57c9de30d494d3ce094167b85059dbb2cfc5b237e1948973d80986dd0",
+      "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
       "enabled": true,
       "id": "int-code-react-junior-tabs-switcher-v1",
       "level": "junior",
@@ -2052,11 +2052,11 @@
       "track": "react"
     },
     {
-      "contentHash": "a2a0dd6d5e1d57e19ab9bfe333123dd78cbeda836901caa45936bbead24fcc93",
+      "contentHash": "d6817bc43609365647e02312e4e58eda189a4373c92b8df28fcabd3e4c2de82b",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "level": "junior",
-      "prompt": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
+      "prompt": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly.",
       "publicRequirements": [
         {
           "constraints": [
@@ -2073,7 +2073,7 @@
           "constraints": [
             "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
             "Expose the selected filter with aria-pressed.",
-            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Announce the remaining active-task count with correct singular and plural copy: \"1 item left\", \"2 items left\".",
             "Clear completed tasks without removing active tasks."
           ],
           "id": "derived-filters",
@@ -2084,7 +2084,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "react-todo-list",
       "starterAsset": "assets/sb/react/question/react-todo-list.v1.json",
       "starterFiles": [
@@ -2101,7 +2101,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\nexport default function App() {\n  // Controlled input for the new task\n  const [newTask, setNewTask] = useState('');\n\n  // List of todo items\n  // NOTE: no generic type argument here to avoid TS error in this environment\n  const [todos, setTodos] = useState([]);\n\n  // Derived flag for showing list / empty state\n  const hasTodos = (todos as Todo[]).length > 0;\n\n  // TODO: Add a new todo using the current newTask value\n  // - Trim the text\n  // - Ignore empty strings\n  // - Append a new Todo object to the array\n  // - Clear the input afterwards\n  const addTask = () => {\n    // Implement in the solution\n  };\n\n  // TODO: Toggle the \"done\" flag for a given todo (by id)\n  const toggleTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove a single todo (by id)\n  const removeTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove all todos where done === true\n  const clearCompleted = () => {\n    // Implement in the solution\n  };\n\n  const typedTodos = todos as Todo[];\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Todo List</h1>\n\n        <div className=\"panel\">\n          <div className=\"input-row\">\n            <input\n              type=\"text\"\n              placeholder=\"Add a new task...\"\n              value={newTask}\n              onChange={(event) => setNewTask(event.target.value)}\n            />\n            <button type=\"button\" className=\"primary\" onClick={addTask}>\n              Add\n            </button>\n          </div>\n\n          {hasTodos ? (\n            <ul className=\"list\">\n              {typedTodos.map((todo) => (\n                <li key={todo.id} className=\"item\">\n                  <label className=\"item-main\">\n                    <input\n                      type=\"checkbox\"\n                      checked={todo.done}\n                      onChange={() => toggleTask(todo.id)}\n                    />\n                    <span className={todo.done ? 'done' : ''}>{todo.text}</span>\n                  </label>\n\n                  <button\n                    type=\"button\"\n                    className=\"ghost\"\n                    onClick={() => removeTask(todo.id)}\n                  >\n                    Remove\n                  </button>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">No tasks yet. Add your first one above.</p>\n          )}\n\n          {hasTodos && (\n            <div className=\"footer\">\n              <button\n                type=\"button\"\n                className=\"ghost small\"\n                onClick={clearCompleted}\n              >\n                Clear completed\n              </button>\n            </div>\n          )}\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Todo = {\n  id: number;\n  text: string;\n  done: boolean;\n};\n\nexport default function App() {\n  // Controlled input for the new task\n  const [newTask, setNewTask] = useState('');\n\n  // List of todo items\n  const [todos, setTodos] = useState<Todo[]>([]);\n\n  // Derived flag for showing list / empty state\n  const hasTodos = todos.length > 0;\n\n  // TODO: Add a new todo using the current newTask value\n  // - Trim the text\n  // - Ignore empty strings\n  // - Append a new Todo object to the array\n  // - Clear the input afterwards\n  const addTask = () => {\n    // Implement in the solution\n  };\n\n  // TODO: Toggle the \"done\" flag for a given todo (by id)\n  const toggleTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove a single todo (by id)\n  const removeTask = (_id: number) => {\n    // Implement in the solution\n  };\n\n  // TODO: Remove all todos where done === true\n  const clearCompleted = () => {\n    // Implement in the solution\n  };\n\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Todo List</h1>\n\n        <div className=\"panel\">\n          <div className=\"input-row\">\n            <input\n              type=\"text\"\n              placeholder=\"Add a new task...\"\n              value={newTask}\n              onChange={(event) => setNewTask(event.target.value)}\n            />\n            <button type=\"button\" className=\"primary\" onClick={addTask}>\n              Add\n            </button>\n          </div>\n\n          {hasTodos ? (\n            <ul className=\"list\">\n              {todos.map((todo) => (\n                <li key={todo.id} className=\"item\">\n                  <label className=\"item-main\">\n                    <input\n                      type=\"checkbox\"\n                      checked={todo.done}\n                      onChange={() => toggleTask(todo.id)}\n                    />\n                    <span className={todo.done ? 'done' : ''}>{todo.text}</span>\n                  </label>\n\n                  <button\n                    type=\"button\"\n                    className=\"ghost\"\n                    onClick={() => removeTask(todo.id)}\n                  >\n                    Remove\n                  </button>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">No tasks yet. Add your first one above.</p>\n          )}\n\n          {hasTodos && (\n            <div className=\"footer\">\n              <button\n                type=\"button\"\n                className=\"ghost small\"\n                onClick={clearCompleted}\n              >\n                Clear completed\n              </button>\n            </div>\n          )}\n        </div>\n      </section>\n    </main>\n  );\n}\n",
           "path": "src/App.tsx"
         },
         {
@@ -2118,7 +2118,7 @@
       "track": "react"
     },
     {
-      "contentHash": "34adde6b1f3d7a2953981a4c233306534b2db7461cf752e804cc3a70eab3616b",
+      "contentHash": "a9a0f1679b841f91ef793c0ba0d21215fed4c32580a062b6e3d69e56246aeefb",
       "enabled": true,
       "id": "int-code-react-mid-multi-step-form-v1",
       "level": "mid",
@@ -2194,7 +2194,7 @@
       "track": "react"
     },
     {
-      "contentHash": "fb5b766311f41d2fe44a96e38a4d0c03f2fffc6178366450704bb612d144be29",
+      "contentHash": "7ce775f9ab2ea9c33a5a47cd0ba8836b7a9185c67402ae5479416701f81db9cb",
       "enabled": true,
       "id": "int-code-react-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -2269,7 +2269,7 @@
       "track": "react"
     },
     {
-      "contentHash": "1a8eb5cb671366c35c672498a253ad80f210a8b75010a107c775faf6e38014e9",
+      "contentHash": "962910450ff9afbd747319232d5d07a1d07d5ba58006ea1ea72054385ee4115f",
       "enabled": true,
       "id": "int-code-react-mid-pagination-v1",
       "level": "mid",
@@ -2346,7 +2346,7 @@
       "track": "react"
     },
     {
-      "contentHash": "439ca7a01b517f613faf047c84ce8d9b841fbef793d0c219239105d9a7f9c09c",
+      "contentHash": "84e4d06e6f186516c5cee5cb87b88ba7b0040dff52db4adf6183ff54924f1b9c",
       "enabled": true,
       "id": "int-code-react-mid-shopping-cart-v1",
       "level": "mid",
@@ -2407,7 +2407,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & {\n  quantity: number;\n};\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\nexport default function App() {\n  // Static product list\n  const [products] = useState(PRODUCTS);\n\n  // TODO: Hold cart items (array of { id, name, price, quantity })\n  const [cartItems, setCartItems] = useState([]);\n\n  // TODO: Derive total quantity from cartItems\n  const totalQty = 0;\n\n  // TODO: Derive total price from cartItems\n  const totalPrice = 0;\n\n  // TODO: Add product to cart\n  // - If it does not exist, add with quantity 1\n  // - If it exists, increase quantity by 1\n  function addToCart(product: Product) {\n  }\n\n  // TODO: Increase quantity of a cart item\n  function increaseQty(item: CartItem) {\n  }\n\n  // TODO: Decrease quantity of a cart item\n  // - If quantity would go to 0, either remove item or clamp at 1\n  function decreaseQty(item: CartItem) {\n  }\n\n  // TODO: Remove item from the cart entirely\n  function removeItem(item: CartItem) {\n  }\n\n  return (\n    <main className=\"app\">\n      <section className=\"layout\">\n        {/* Products */}\n        <section className=\"column\">\n          <h1 className=\"title\">Products</h1>\n          <ul className=\"product-list\">\n            {products.map(p => (\n              <li className=\"product-card\" key={p.id}>\n                <div className=\"product-main\">\n                  <div className=\"product-name\">{p.name}</div>\n                  <div className=\"product-price\">${p.price.toFixed(2)}</div>\n                </div>\n                <button type=\"button\" onClick={() => addToCart(p)}>\n                  Add to cart\n                </button>\n              </li>\n            ))}\n          </ul>\n        </section>\n\n        {/* Cart */}\n        <section className=\"column\">\n          <header className=\"cart-header\">\n            <h1 className=\"title\">Cart</h1>\n            <p className=\"subtitle\">\n              Total items: <strong>{totalQty}</strong> · Total: <strong>${totalPrice.toFixed(2)}</strong>\n            </p>\n          </header>\n\n          {cartItems.length > 0 ? (\n            <ul className=\"cart-list\">\n              {cartItems.map(item => (\n                <li className=\"cart-row\" key={item.id}>\n                  <div className=\"cart-info\">\n                    <div className=\"cart-name\">{item.name}</div>\n                    <div className=\"cart-meta\">\n                      <span className=\"unit-price\">${item.price.toFixed(2)}</span>\n                      <span className=\"times\">x</span>\n                      <span className=\"qty\">{item.quantity}</span>\n                      <span className=\"equals\">=</span>\n                      <span className=\"line-total\">${(item.price * item.quantity).toFixed(2)}</span>\n                    </div>\n                  </div>\n\n                  <div className=\"cart-actions\">\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => decreaseQty(item)}\n                      aria-label=\"decrease quantity\"\n                    >\n                      −\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => increaseQty(item)}\n                      aria-label=\"increase quantity\"\n                    >\n                      +\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"danger\"\n                      onClick={() => removeItem(item)}\n                    >\n                      Remove\n                    </button>\n                  </div>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">Your cart is empty. Add something from above.</p>\n          )}\n        </section>\n      </section>\n    </main>\n  );\n}\n",
+          "content": "import React, { useState } from 'react';\nimport './App.css';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & {\n  quantity: number;\n};\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\nexport default function App() {\n  // Static product list\n  const [products] = useState(PRODUCTS);\n\n  // TODO: Hold cart items (array of { id, name, price, quantity })\n  const [cartItems, setCartItems] = useState([]);\n\n  // TODO: Derive total quantity from cartItems\n  const totalQty = 0;\n\n  // TODO: Derive total price from cartItems\n  const totalPrice = 0;\n\n  // TODO: Add product to cart\n  // - If it does not exist, add with quantity 1\n  // - If it exists, increase quantity by 1\n  function addToCart(product: Product) {\n  }\n\n  // TODO: Increase quantity of a cart item\n  function increaseQty(item: CartItem) {\n  }\n\n  // TODO: Decrease quantity of a cart item\n  // - If quantity would drop below 1, remove the item from the cart\n  function decreaseQty(item: CartItem) {\n  }\n\n  // TODO: Remove item from the cart entirely\n  function removeItem(item: CartItem) {\n  }\n\n  return (\n    <main className=\"app\">\n      <section className=\"layout\">\n        {/* Products */}\n        <section className=\"column\">\n          <h1 className=\"title\">Products</h1>\n          <ul className=\"product-list\">\n            {products.map(p => (\n              <li className=\"product-card\" key={p.id}>\n                <div className=\"product-main\">\n                  <div className=\"product-name\">{p.name}</div>\n                  <div className=\"product-price\">${p.price.toFixed(2)}</div>\n                </div>\n                <button type=\"button\" onClick={() => addToCart(p)}>\n                  Add to cart\n                </button>\n              </li>\n            ))}\n          </ul>\n        </section>\n\n        {/* Cart */}\n        <section className=\"column\">\n          <header className=\"cart-header\">\n            <h1 className=\"title\">Cart</h1>\n            <p className=\"subtitle\">\n              Total items: <strong>{totalQty}</strong> · Total: <strong>${totalPrice.toFixed(2)}</strong>\n            </p>\n          </header>\n\n          {cartItems.length > 0 ? (\n            <ul className=\"cart-list\">\n              {cartItems.map(item => (\n                <li className=\"cart-row\" key={item.id}>\n                  <div className=\"cart-info\">\n                    <div className=\"cart-name\">{item.name}</div>\n                    <div className=\"cart-meta\">\n                      <span className=\"unit-price\">${item.price.toFixed(2)}</span>\n                      <span className=\"times\">x</span>\n                      <span className=\"qty\">{item.quantity}</span>\n                      <span className=\"equals\">=</span>\n                      <span className=\"line-total\">${(item.price * item.quantity).toFixed(2)}</span>\n                    </div>\n                  </div>\n\n                  <div className=\"cart-actions\">\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => decreaseQty(item)}\n                      aria-label=\"decrease quantity\"\n                    >\n                      −\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"ghost\"\n                      onClick={() => increaseQty(item)}\n                      aria-label=\"increase quantity\"\n                    >\n                      +\n                    </button>\n                    <button\n                      type=\"button\"\n                      className=\"danger\"\n                      onClick={() => removeItem(item)}\n                    >\n                      Remove\n                    </button>\n                  </div>\n                </li>\n              ))}\n            </ul>\n          ) : (\n            <p className=\"empty\">Your cart is empty. Add something from above.</p>\n          )}\n        </section>\n      </section>\n    </main>\n  );\n}\n",
           "path": "src/App.tsx"
         },
         {
@@ -2424,7 +2424,7 @@
       "track": "react"
     },
     {
-      "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
+      "contentHash": "76e6c1a984ff3bbbfb33360b128d6c776dbf0564c6e3b0d89fe5f1570b341ff9",
       "enabled": true,
       "id": "int-code-react-mid-theme-toggle-v1",
       "level": "mid",
@@ -2504,7 +2504,7 @@
       "track": "react"
     },
     {
-      "contentHash": "3b6e0fce1141b6aca00a6ba1cf78e5dd4f16a22435eb608a58a7d36ced2436ad",
+      "contentHash": "4cc51a1e8c3b4aa74bb7fec592b4c468bc7a6273214a6dada542b499698779aa",
       "enabled": true,
       "id": "int-code-react-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -2592,7 +2592,7 @@
       "track": "react"
     },
     {
-      "contentHash": "f0d2276b4234fc725ad0a4c18567a6be090d60cfc3312a3699b857b4da4d62c5",
+      "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
       "enabled": true,
       "id": "int-code-react-senior-contact-form-v1",
       "level": "senior",
@@ -2680,7 +2680,7 @@
       "track": "react"
     },
     {
-      "contentHash": "a64b16a8d119050e0bef30688dba9f74e8c0a9dfc1dc8615d3db678fc33783de",
+      "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "level": "senior",
@@ -2769,7 +2769,7 @@
       "track": "react"
     },
     {
-      "contentHash": "4a0d154eb6e36fda74134e092b388f48ace439fb3819e9693ea19b91fd6ba0e1",
+      "contentHash": "700cec128d37c209fb46bcc12b04a7cede8d743bb57df270d51cd7fb5b75062d",
       "enabled": true,
       "id": "int-code-react-senior-nested-comments-v1",
       "level": "senior",
@@ -2824,7 +2824,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "react-nested-comments",
       "starterAsset": "assets/sb/react/question/react-nested-comments.v1.json",
       "starterFiles": [
@@ -2837,11 +2837,11 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.children {\n  display: grid;\n  gap: 8px;\n  margin-left: 16px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
           "path": "src/App.css"
         },
         {
-          "content": "import React, { useState, useRef } from 'react';\nimport './App.css';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\nexport default function App() {\n  // TODO: store a nested tree of comments\n  const [comments, setComments] = useState<CommentNode[]>([\n    { id: '1', text: 'First comment', children: [] }\n  ]);\n\n  // TODO: top-level draft\n  const [topDraft, setTopDraft] = useState('');\n\n  // TODO: reply UI state\n  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);\n  const [replyDraft, setReplyDraft] = useState('');\n\n  // Simple id generator\n  const nextIdRef = useRef(2);\n  const makeId = () => String(nextIdRef.current++);\n\n  // TODO: add a top-level comment\n  const addTop = () => {\n  };\n\n  // TODO: open reply input ONLY for the given comment\n  const openReply = (_id: string) => {\n  };\n\n  // TODO: cancel reply\n  const cancelReply = () => {\n  };\n\n  // TODO: submit reply under the correct parent\n  const submitReply = (_parentId: string) => {\n  };\n\n  // TODO: find node by id in a tree\n  const findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n    return null;\n  };\n\n  // A plain recursive call on purpose. A component created inside App would get a new\n  // identity on every render, and React would rebuild the inputs and lose their focus.\n  const renderTree = (nodes: CommentNode[], depth: number) =>\n    nodes.map((c) => (\n      <div key={c.id} className=\"node\" style={{ marginLeft: depth * 16 }}>\n        <div className=\"bubble\">\n          <div className=\"text\">{c.text}</div>\n          <div className=\"meta\">\n            <button className=\"ghost\" onClick={() => openReply(c.id)}>Reply</button>\n          </div>\n\n          {/* Reply box: should open ONLY for the active comment */}\n          {activeReplyId === c.id && (\n            <div className=\"reply\">\n              <input\n                value={replyDraft}\n                onChange={(e) => setReplyDraft(e.target.value)}\n                placeholder=\"Write a reply...\"\n              />\n              <div className=\"replyActions\">\n                <button onClick={() => submitReply(c.id)}>Post</button>\n                <button className=\"ghost\" onClick={cancelReply}>Cancel</button>\n              </div>\n            </div>\n          )}\n        </div>\n\n        {c.children.length > 0 && renderTree(c.children, depth + 1)}\n      </div>\n    ));\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Nested Comments</h1>\n        <p className=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n        <div className=\"composer\">\n          <textarea\n            rows={3}\n            value={topDraft}\n            onChange={(e) => setTopDraft(e.target.value)}\n            placeholder=\"Write a comment...\"\n          />\n          <button onClick={addTop}>Add Comment</button>\n        </div>\n\n        <div className=\"list\">\n          {renderTree(comments, 0)}\n        </div>\n\n        <div className=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n      </section>\n    </main>\n  );\n}\n",
+          "content": "import React, { useState, useRef } from 'react';\nimport './App.css';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\nexport default function App() {\n  // TODO: store a nested tree of comments\n  const [comments, setComments] = useState<CommentNode[]>([\n    { id: '1', text: 'First comment', children: [] }\n  ]);\n\n  // TODO: top-level draft\n  const [topDraft, setTopDraft] = useState('');\n\n  // TODO: reply UI state\n  const [activeReplyId, setActiveReplyId] = useState<string | null>(null);\n  const [replyDraft, setReplyDraft] = useState('');\n\n  // Simple id generator\n  const nextIdRef = useRef(2);\n  const makeId = () => String(nextIdRef.current++);\n\n  // TODO: add a top-level comment\n  const addTop = () => {\n  };\n\n  // TODO: open the reply input ONLY for the given comment, or close it when it is already open there\n  const toggleReply = (_id: string) => {\n  };\n\n  // TODO: cancel reply\n  const cancelReply = () => {\n  };\n\n  // TODO: submit reply under the correct parent\n  const submitReply = (_parentId: string) => {\n  };\n\n  // TODO: find node by id in a tree\n  const findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n    return null;\n  };\n\n  // A plain recursive call on purpose. A component created inside App would get a new\n  // identity on every render, and React would rebuild the inputs and lose their focus.\n  const renderTree = (nodes: CommentNode[]) =>\n    nodes.map((c) => (\n      <div key={c.id} className=\"node\">\n        <div className=\"bubble\">\n          <div className=\"text\">{c.text}</div>\n          <div className=\"meta\">\n            <button\n              className=\"ghost\"\n              onClick={() => toggleReply(c.id)}\n              aria-expanded={activeReplyId === c.id}\n            >\n              Reply\n            </button>\n          </div>\n\n          {/* Reply box: should open ONLY for the active comment */}\n          {activeReplyId === c.id && (\n            <div className=\"reply\">\n              <input\n                value={replyDraft}\n                onChange={(e) => setReplyDraft(e.target.value)}\n                placeholder=\"Write a reply...\"\n              />\n              <div className=\"replyActions\">\n                <button onClick={() => submitReply(c.id)}>Post</button>\n                <button className=\"ghost\" onClick={cancelReply}>Cancel</button>\n              </div>\n            </div>\n          )}\n        </div>\n\n        {/* Replies render inside their parent's node, so one fixed margin adds up to 16px per level. */}\n        {c.children.length > 0 && <div className=\"children\">{renderTree(c.children)}</div>}\n      </div>\n    ));\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Nested Comments</h1>\n        <p className=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n        <div className=\"composer\">\n          <textarea\n            rows={3}\n            value={topDraft}\n            onChange={(e) => setTopDraft(e.target.value)}\n            placeholder=\"Write a comment...\"\n          />\n          <button onClick={addTop}>Add Comment</button>\n        </div>\n\n        <div className=\"list\">\n          {renderTree(comments)}\n        </div>\n\n        <div className=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n      </section>\n    </main>\n  );\n}\n",
           "path": "src/App.tsx"
         },
         {
@@ -2858,7 +2858,7 @@
       "track": "react"
     },
     {
-      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
+      "contentHash": "2480dc3957dfc1c3630434681143df39008c3335a2836e38b8e18f779ef72694",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "level": "senior",
@@ -2946,7 +2946,7 @@
       "track": "react"
     },
     {
-      "contentHash": "1d74cb13400467d4e2f68246908edd48aa20da006a9be7e427a752528e51554f",
+      "contentHash": "19fd7d57c2c72938598988e7592e6cdac14c4a3a476f38fe21e1389af7adbeb7",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "level": "junior",
@@ -3012,7 +3012,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
+      "contentHash": "834c344ec474f4da7a39973d79a79af86b84ab527a4b57bf627f5a91be12eb09",
       "enabled": true,
       "id": "int-code-vue-junior-filterable-user-list-v1",
       "level": "junior",
@@ -3077,7 +3077,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "44cd2098db8de6d16f4541ecf2a2ae264f22886e75551d3395c6d0a57679a462",
+      "contentHash": "6dabb50817df425dc92a71b6b4224ad384ec1e4df078c5a1ea937bfbfe13cb56",
       "enabled": true,
       "id": "int-code-vue-junior-progress-thresholds-v1",
       "level": "junior",
@@ -3142,7 +3142,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "0ab86958f85e94753bca1502f5a6e6b419f80b6580b06dae6454a412333aaa5c",
+      "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
       "enabled": true,
       "id": "int-code-vue-junior-tabs-switcher-v1",
       "level": "junior",
@@ -3207,7 +3207,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "24028642630407880de1f004bb38dd82c96625850b87b6a369116ebc119346a8",
+      "contentHash": "f5d0bdb61d52999fd78daa01f2f21d56b76639ee440781f90f14a8381f4a037f",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "level": "junior",
@@ -3228,7 +3228,7 @@
           "constraints": [
             "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
             "Expose the selected filter with aria-pressed.",
-            "Announce the remaining active-task count with correct singular and plural copy.",
+            "Announce the remaining active-task count with correct singular and plural copy: \"1 item left\", \"2 items left\".",
             "Clear completed tasks without removing active tasks."
           ],
           "id": "derived-filters",
@@ -3239,7 +3239,7 @@
       "revision": 1,
       "roundLimit": 2,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-07-16",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-todo-list",
       "starterAsset": "assets/sb/vue/question/vue-todo-list.v2.json",
       "starterFiles": [
@@ -3273,7 +3273,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "c19e0b8c590a8c8341af87417f0a6475928457bf515ccbc2490fbc544c02d2de",
+      "contentHash": "2e53cfd96c5296ebae7b48fe8790a7184b7607b439ac31d47b2dc021fdcfd5c8",
       "enabled": true,
       "id": "int-code-vue-mid-multi-step-form-v1",
       "level": "mid",
@@ -3349,7 +3349,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "2a61348b980558c00ea034e0bfcc95f7585a7afc6ecc5dab1483e5abc5af917b",
+      "contentHash": "ce1501c079c2b7ff0990968b44af9f7ef25ee39b5334d439a7679164e7e7d497",
       "enabled": true,
       "id": "int-code-vue-mid-nested-checkboxes-v1",
       "level": "mid",
@@ -3390,7 +3390,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-nested-checkboxes",
       "starterAsset": "assets/sb/vue/question/vue-nested-checkboxes.v1.json",
       "starterFiles": [
@@ -3407,7 +3407,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            :checked=\"parentChecked\"\n            @change=\"onParentChange\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input\n              type=\"checkbox\"\n              :checked=\"child.checked\"\n              @change=\"() => onChildChange(child.id)\"\n            />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Parent checkbox state\n// In the solution, this will control all children when toggled.\nconst parentChecked = ref(false);\n\n// Children list (each child has its own checked flag)\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO (solution): when parent changes, update all children based on parentChecked.\nconst onParentChange = (_event: Event) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n\n// TODO (solution): when a child changes, toggle only that child.\n// Then update the parent: checked, unchecked or indeterminate.\nconst onChildChange = (_id: string) => {\n  // starter: no-op so UI renders; students will implement logic.\n};\n</script>\n",
+          "content": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Nested Checkboxes</h1>\n\n      <div class=\"panel\">\n        <label class=\"parent\">\n          <input\n            type=\"checkbox\"\n            v-model=\"allChecked\"\n            :indeterminate=\"someChecked\"\n          />\n          <span>Parent</span>\n        </label>\n\n        <div class=\"children\">\n          <label\n            v-for=\"child in children\"\n            :key=\"child.id\"\n            class=\"child\"\n          >\n            <input type=\"checkbox\" v-model=\"child.checked\" />\n            <span>{{ child.label }}</span>\n          </label>\n        </div>\n      </div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, ref } from 'vue';\n\ntype ChildNode = {\n  id: string;\n  label: string;\n  checked: boolean;\n};\n\n// Children list. Each child checkbox writes its own flag through v-model.\nconst children = ref<ChildNode[]>([\n  { id: 'c1', label: 'Child 1', checked: false },\n  { id: 'c2', label: 'Child 2', checked: false },\n  { id: 'c3', label: 'Child 3', checked: false }\n]);\n\n// TODO: the parent has no state of its own: it is checked, unchecked or indeterminate depending on the children.\n// Read it from them (checked when every child is checked); setting it (a click on the parent) checks or unchecks every child.\nconst allChecked = computed({\n  get: () => false,\n  set: (_checked: boolean) => {\n    // starter: no-op so the UI renders\n  }\n});\n\n// TODO: true when some children are checked but not all; the template binds it to the parent's indeterminate.\nconst someChecked = computed(() => false);\n</script>\n",
           "path": "src/App.vue"
         },
         {
@@ -3424,7 +3424,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
+      "contentHash": "360211fe773d5faf319fa5ddd3b040204445c108a3ce1d618e51f831492ad65a",
       "enabled": true,
       "id": "int-code-vue-mid-pagination-v1",
       "level": "mid",
@@ -3501,7 +3501,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "edf2d7389f53db3faea4cf5ce7801a39963f441d503b410ac25c1c64a2b87ec2",
+      "contentHash": "d64361bf34863ecb6981e4837bdb776080db76d4ad8deb2ae99a3356e02dfb16",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "level": "mid",
@@ -3545,7 +3545,7 @@
       "revision": 1,
       "roundLimit": 3,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-shopping-cart",
       "starterAsset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
       "starterFiles": [
@@ -3562,7 +3562,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"app\">\n    <section class=\"layout\">\n      <!-- Products -->\n      <section class=\"column\">\n        <h1 class=\"title\">Products</h1>\n        <ul class=\"product-list\">\n          <li\n            v-for=\"p in products\"\n            :key=\"p.id\"\n            class=\"product-card\"\n          >\n            <div class=\"product-main\">\n              <div class=\"product-name\">{{ p.name }}</div>\n              <div class=\"product-price\">{{ formatCurrency(p.price) }}</div>\n            </div>\n            <button type=\"button\" @click=\"addToCart(p)\">\n              Add to cart\n            </button>\n          </li>\n        </ul>\n      </section>\n\n      <!-- Cart -->\n      <section class=\"column\">\n        <header class=\"cart-header\">\n          <h1 class=\"title\">Cart</h1>\n          <p class=\"subtitle\">\n            Total items: <strong>{{ totalQty }}</strong>\n            ·\n            Total: <strong>{{ formatCurrency(totalPrice) }}</strong>\n          </p>\n        </header>\n\n        <template v-if=\"cartItems.length\">\n          <ul class=\"cart-list\">\n            <li\n              v-for=\"item in cartItems\"\n              :key=\"item.id\"\n              class=\"cart-row\"\n            >\n              <div class=\"cart-info\">\n                <div class=\"cart-name\">{{ item.name }}</div>\n                <div class=\"cart-meta\">\n                  <span class=\"unit-price\">{{ formatCurrency(item.price) }}</span>\n                  <span class=\"times\">x</span>\n                  <span class=\"qty\">{{ item.quantity }}</span>\n                  <span class=\"equals\">=</span>\n                  <span class=\"line-total\">\n                    {{ formatCurrency(item.price * item.quantity) }}\n                  </span>\n                </div>\n              </div>\n\n              <div class=\"cart-actions\">\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"decreaseQty(item)\"\n                  aria-label=\"decrease quantity\"\n                >\n                  −\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"increaseQty(item)\"\n                  aria-label=\"increase quantity\"\n                >\n                  +\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"danger\"\n                  @click=\"removeItem(item)\"\n                >\n                  Remove\n                </button>\n              </div>\n            </li>\n          </ul>\n        </template>\n        <p v-else class=\"empty\">Your cart is empty. Add something from the left.</p>\n      </section>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & { quantity: number };\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\n// Static product list\nconst products = PRODUCTS;\n\n// TODO: Hold cart items (array of { id, name, price, quantity })\nconst cartItems = ref<CartItem[]>([]);\n\n// TODO: Derive total quantity from cartItems\nconst totalQty = computed(() => 0);\n\n// TODO: Derive total price from cartItems\nconst totalPrice = computed(() => 0);\n\nfunction formatCurrency(value: number): string {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n    minimumFractionDigits: 2,\n    maximumFractionDigits: 2\n  }).format(value);\n}\n\n// TODO: Add product to cart\n// - If it does not exist, add with quantity 1\n// - If it exists, increase quantity by 1\nfunction addToCart(product: Product): void {\n}\n\n// TODO: Increase quantity of a cart item\nfunction increaseQty(item: CartItem): void {\n}\n\n// TODO: Decrease quantity of a cart item\n// - If quantity would go to 0, either remove item or clamp at 1\nfunction decreaseQty(item: CartItem): void {\n}\n\n// TODO: Remove item from the cart entirely\nfunction removeItem(item: CartItem): void {\n}\n</script>\n",
+          "content": "<template>\n  <main class=\"app\">\n    <section class=\"layout\">\n      <!-- Products -->\n      <section class=\"column\">\n        <h1 class=\"title\">Products</h1>\n        <ul class=\"product-list\">\n          <li\n            v-for=\"p in products\"\n            :key=\"p.id\"\n            class=\"product-card\"\n          >\n            <div class=\"product-main\">\n              <div class=\"product-name\">{{ p.name }}</div>\n              <div class=\"product-price\">{{ formatCurrency(p.price) }}</div>\n            </div>\n            <button type=\"button\" @click=\"addToCart(p)\">\n              Add to cart\n            </button>\n          </li>\n        </ul>\n      </section>\n\n      <!-- Cart -->\n      <section class=\"column\">\n        <header class=\"cart-header\">\n          <h1 class=\"title\">Cart</h1>\n          <p class=\"subtitle\">\n            Total items: <strong>{{ totalQty }}</strong>\n            ·\n            Total: <strong>{{ formatCurrency(totalPrice) }}</strong>\n          </p>\n        </header>\n\n        <template v-if=\"cartItems.length\">\n          <ul class=\"cart-list\">\n            <li\n              v-for=\"item in cartItems\"\n              :key=\"item.id\"\n              class=\"cart-row\"\n            >\n              <div class=\"cart-info\">\n                <div class=\"cart-name\">{{ item.name }}</div>\n                <div class=\"cart-meta\">\n                  <span class=\"unit-price\">{{ formatCurrency(item.price) }}</span>\n                  <span class=\"times\">x</span>\n                  <span class=\"qty\">{{ item.quantity }}</span>\n                  <span class=\"equals\">=</span>\n                  <span class=\"line-total\">\n                    {{ formatCurrency(item.price * item.quantity) }}\n                  </span>\n                </div>\n              </div>\n\n              <div class=\"cart-actions\">\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"decreaseQty(item)\"\n                  aria-label=\"decrease quantity\"\n                >\n                  −\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"ghost\"\n                  @click=\"increaseQty(item)\"\n                  aria-label=\"increase quantity\"\n                >\n                  +\n                </button>\n                <button\n                  type=\"button\"\n                  class=\"danger\"\n                  @click=\"removeItem(item)\"\n                >\n                  Remove\n                </button>\n              </div>\n            </li>\n          </ul>\n        </template>\n        <p v-else class=\"empty\">Your cart is empty. Add something from the left.</p>\n      </section>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\ntype Product = {\n  id: string;\n  name: string;\n  price: number;\n};\n\ntype CartItem = Product & { quantity: number };\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 },\n  { id: 'p4', name: 'USB-C Hub', price: 39.0 }\n];\n\n// Static product list\nconst products = PRODUCTS;\n\n// TODO: Hold cart items (array of { id, name, price, quantity })\nconst cartItems = ref<CartItem[]>([]);\n\n// TODO: Derive total quantity from cartItems\nconst totalQty = computed(() => 0);\n\n// TODO: Derive total price from cartItems\nconst totalPrice = computed(() => 0);\n\nfunction formatCurrency(value: number): string {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n    minimumFractionDigits: 2,\n    maximumFractionDigits: 2\n  }).format(value);\n}\n\n// TODO: Add product to cart\n// - If it does not exist, add with quantity 1\n// - If it exists, increase quantity by 1\nfunction addToCart(product: Product): void {\n}\n\n// TODO: Increase quantity of a cart item\nfunction increaseQty(item: CartItem): void {\n}\n\n// TODO: Decrease quantity of a cart item\n// - If quantity would drop below 1, remove the item from the cart\nfunction decreaseQty(item: CartItem): void {\n}\n\n// TODO: Remove item from the cart entirely\nfunction removeItem(item: CartItem): void {\n}\n</script>\n",
           "path": "src/App.vue"
         },
         {
@@ -3579,7 +3579,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
+      "contentHash": "522fbb03983e794fb59c1c3f0f74c85fc74447271e162343731692a7b602f877",
       "enabled": true,
       "id": "int-code-vue-mid-theme-toggle-v1",
       "level": "mid",
@@ -3655,7 +3655,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "3bc2bb4e551a0d0d99315af7026a2d93b7f34d830f3d8f37fc875ead4830e240",
+      "contentHash": "d1be6ae6691a1fff1ebd5ebfb6be71d05f886da12d1c973ad3a0164906352fe3",
       "enabled": true,
       "id": "int-code-vue-senior-chips-autocomplete-v1",
       "level": "senior",
@@ -3743,7 +3743,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "43e24e26a2ef6b112fcdb15e4a380e705f5b6b687ddb0a9bfe94803278519946",
+      "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
       "enabled": true,
       "id": "int-code-vue-senior-contact-form-v1",
       "level": "senior",
@@ -3831,7 +3831,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "5c12650312cca9f6fb8b26cd283c032d167a2b3e94a97858a99cfe9c10d7feff",
+      "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
       "enabled": true,
       "id": "int-code-vue-senior-debounced-search-v1",
       "level": "senior",
@@ -3886,7 +3886,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-12",
       "sourceQuestionId": "vue-debounced-search",
       "starterAsset": "assets/sb/vue/question/vue-debounced-search.v1.json",
       "starterFiles": [
@@ -3920,7 +3920,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "38506ea7971d3ca1a1eef5518551661b55ccecfb9f079d1321e3ed155e8df284",
+      "contentHash": "9472f612f4fc8f572ee5ad55abb577092c456411e77521f4eb81ab3e29244536",
       "enabled": true,
       "id": "int-code-vue-senior-nested-comments-v1",
       "level": "senior",
@@ -3975,7 +3975,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-11",
       "sourceQuestionId": "vue-nested-comments",
       "starterAsset": "assets/sb/vue/question/vue-nested-comments.v1.json",
       "starterFiles": [
@@ -3988,11 +3988,11 @@
           "path": "public/index.html"
         },
         {
-          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
+          "content": ":root {\n  color-scheme: dark;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n  background: #0a0a0a;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.page {\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  background: #0a0a0a;\n  padding: 24px;\n}\n\n.card {\n  width: 100%;\n  max-width: 720px;\n  background: #0b1020;\n  border: 1px solid #1f2937;\n  border-radius: 16px;\n  padding: 18px;\n  display: grid;\n  gap: 14px;\n  color: #e5e7eb;\n}\n\n.title {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 900;\n  color: #e5e7eb;\n}\n\n.subtitle {\n  margin: 0;\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n\n.composer {\n  display: grid;\n  gap: 10px;\n}\n\ntextarea {\n  width: 100%;\n  resize: vertical;\n  min-height: 70px;\n  background: #0a0f1e;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\ntextarea::placeholder {\n  color: #6b7280;\n}\n\n.list {\n  display: grid;\n  gap: 10px;\n}\n\n.node {\n  display: grid;\n  gap: 8px;\n}\n\n.children {\n  display: grid;\n  gap: 8px;\n  margin-left: 16px;\n}\n\n.bubble {\n  background: #0a0f1e;\n  border: 1px solid #1f2937;\n  border-radius: 14px;\n  padding: 12px;\n  display: grid;\n  gap: 10px;\n  color: #e5e7eb;\n}\n\n.text {\n  font-size: 14px;\n  line-height: 1.4;\n  color: #e5e7eb;\n}\n\n.meta {\n  display: flex;\n  gap: 8px;\n}\n\n.reply {\n  display: grid;\n  gap: 8px;\n  margin-top: 6px;\n}\n\n.reply input {\n  width: 100%;\n  background: #0b1020;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 12px;\n  padding: 10px;\n}\n\n.reply input::placeholder {\n  color: #6b7280;\n}\n\n.replyActions {\n  display: flex;\n  gap: 8px;\n  flex-wrap: wrap;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 12px;\n  padding: 10px 14px;\n  font-weight: 900;\n  cursor: pointer;\n}\n\nbutton.ghost {\n  background: transparent;\n  color: #e5e7eb;\n  border: 1px solid #374151;\n}\n\n.hint {\n  color: #9ca3af;\n  font-size: 12px;\n  line-height: 1.45;\n}\n",
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1 class=\"title\">Nested Comments</h1>\n      <p class=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n      <div class=\"composer\">\n        <textarea v-model=\"topDraft\" rows=\"3\" placeholder=\"Write a comment...\"></textarea>\n        <button @click=\"addTop\">Add Comment</button>\n      </div>\n\n      <div class=\"list\">\n        <Tree :nodes=\"comments\" :depth=\"0\" />\n      </div>\n\n      <div class=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { defineComponent, h, ref } from 'vue';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n// TODO: store a nested tree of comments\nconst comments = ref<CommentNode[]>([\n  { id: '1', text: 'First comment', children: [] }\n]);\n\n// TODO: top-level draft\nconst topDraft = ref('');\n\n// TODO: reply UI state\nconst activeReplyId = ref<string | null>(null);\nconst replyDraft = ref('');\n\n// Simple id generator\nconst nextId = ref(2);\nconst makeId = () => String(nextId.value++);\n\n// TODO: add a top-level comment\nconst addTop = () => {\n};\n\n// TODO: open reply input ONLY for the given comment\nconst openReply = (_id: string) => {\n};\n\n// TODO: cancel reply\nconst cancelReply = () => {\n};\n\n// TODO: submit reply under the correct parent\nconst submitReply = (_parentId: string) => {\n};\n\n// TODO: find node by id in a tree\nconst findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n  return null;\n};\n\nconst Tree = defineComponent({\n  name: 'Tree',\n  props: {\n    nodes: { type: Array as () => CommentNode[], required: true },\n    depth: { type: Number, required: true }\n  },\n  setup(props) {\n    return () =>\n      h(\n        'div',\n        {},\n        props.nodes.map((c) =>\n          h(\n            'div',\n            { class: 'node', style: { marginLeft: `${props.depth * 16}px` }, key: c.id },\n            [\n              h('div', { class: 'bubble' }, [\n                h('div', { class: 'text' }, c.text),\n                h('div', { class: 'meta' }, [\n                  h(\n                    'button',\n                    { class: 'ghost', onClick: () => openReply(c.id) },\n                    'Reply'\n                  )\n                ]),\n\n                activeReplyId.value === c.id\n                  ? h('div', { class: 'reply' }, [\n                      h('input', {\n                        value: replyDraft.value,\n                        onInput: (e: Event) => (replyDraft.value = (e.target as HTMLInputElement).value),\n                        placeholder: 'Write a reply...'\n                      }),\n                      h('div', { class: 'replyActions' }, [\n                        h('button', { onClick: () => submitReply(c.id) }, 'Post'),\n                        h('button', { class: 'ghost', onClick: cancelReply }, 'Cancel')\n                      ])\n                    ])\n                  : null\n              ]),\n\n              c.children.length\n                ? h(Tree, { nodes: c.children, depth: props.depth + 1 })\n                : null\n            ]\n          )\n        )\n      );\n  }\n});\n</script>\n",
+          "content": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1 class=\"title\">Nested Comments</h1>\n      <p class=\"subtitle\">Add top-level comments and reply infinitely. Only the clicked comment should open a reply input.</p>\n\n      <div class=\"composer\">\n        <textarea v-model=\"topDraft\" rows=\"3\" placeholder=\"Write a comment...\"></textarea>\n        <button @click=\"addTop\">Add Comment</button>\n      </div>\n\n      <div class=\"list\">\n        <Tree :nodes=\"comments\" />\n      </div>\n\n      <div class=\"hint\">Goal: replying should not open inputs on other comments. Replies must nest infinitely with indentation.</div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { defineComponent, h, ref } from 'vue';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n// TODO: store a nested tree of comments\nconst comments = ref<CommentNode[]>([\n  { id: '1', text: 'First comment', children: [] }\n]);\n\n// TODO: top-level draft\nconst topDraft = ref('');\n\n// TODO: reply UI state\nconst activeReplyId = ref<string | null>(null);\nconst replyDraft = ref('');\n\n// Simple id generator\nconst nextId = ref(2);\nconst makeId = () => String(nextId.value++);\n\n// TODO: add a top-level comment\nconst addTop = () => {\n};\n\n// TODO: open the reply input ONLY for the given comment, or close it when it is already open there\nconst toggleReply = (_id: string) => {\n};\n\n// TODO: cancel reply\nconst cancelReply = () => {\n};\n\n// TODO: submit reply under the correct parent\nconst submitReply = (_parentId: string) => {\n};\n\n// TODO: find node by id in a tree\nconst findById = (_nodes: CommentNode[], _id: string): CommentNode | null => {\n  return null;\n};\n\nconst Tree = defineComponent({\n  name: 'Tree',\n  props: {\n    nodes: { type: Array as () => CommentNode[], required: true }\n  },\n  setup(props) {\n    return () =>\n      h(\n        'div',\n        {},\n        props.nodes.map((c) =>\n          h(\n            'div',\n            { class: 'node', key: c.id },\n            [\n              h('div', { class: 'bubble' }, [\n                h('div', { class: 'text' }, c.text),\n                h('div', { class: 'meta' }, [\n                  h(\n                    'button',\n                    {\n                      class: 'ghost',\n                      onClick: () => toggleReply(c.id),\n                      'aria-expanded': activeReplyId.value === c.id\n                    },\n                    'Reply'\n                  )\n                ]),\n\n                activeReplyId.value === c.id\n                  ? h('div', { class: 'reply' }, [\n                      h('input', {\n                        value: replyDraft.value,\n                        onInput: (e: Event) => (replyDraft.value = (e.target as HTMLInputElement).value),\n                        placeholder: 'Write a reply...'\n                      }),\n                      h('div', { class: 'replyActions' }, [\n                        h('button', { onClick: () => submitReply(c.id) }, 'Post'),\n                        h('button', { class: 'ghost', onClick: cancelReply }, 'Cancel')\n                      ])\n                    ])\n                  : null\n              ]),\n\n              // Replies render inside their parent's node, so one fixed margin adds up to 16px per level.\n              c.children.length\n                ? h('div', { class: 'children' }, [h(Tree, { nodes: c.children })])\n                : null\n            ]\n          )\n        )\n      );\n  }\n});\n</script>\n",
           "path": "src/App.vue"
         },
         {
@@ -4009,7 +4009,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "de7ceb69e90c242884b78030808e288b37a235e3724d5cb417c3c1e6ad20add5",
+      "contentHash": "123fb469eb17483e52eda302bc3506f8d2f2069ea0032360debbf60bd7bdf8e4",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "level": "senior",
@@ -4063,7 +4063,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-12",
       "sourceQuestionId": "vue-transfer-list",
       "starterAsset": "assets/sb/vue/question/vue-transfer-list.v2.json",
       "starterFiles": [
@@ -4080,7 +4080,7 @@
           "path": "src/App.css"
         },
         {
-          "content": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1 class=\"title\">Transfer List</h1>\n      <p class=\"subtitle\">Select items and move them between lists.</p>\n\n      <div class=\"layout\">\n        <section class=\"listCard\">\n          <div class=\"listTitle\">Top</div>\n          <ul class=\"list\" role=\"list\">\n            <li v-for=\"item in topItems\" :key=\"item.id\" class=\"row\">\n              <label class=\"rowLabel\">\n                <input\n                  type=\"checkbox\"\n                  :checked=\"topSelected.has(item.id)\"\n                  @change=\"onTopChange(item.id, $event)\"\n                />\n                <span>{{ item.label }}</span>\n              </label>\n            </li>\n            <li v-if=\"topItems.length === 0\" class=\"empty\">Empty</li>\n          </ul>\n        </section>\n\n        <section class=\"controls\">\n          <button class=\"btn\" @click=\"moveDown\" :disabled=\"!canMoveDown\" aria-label=\"move down\">\n            ↓\n          </button>\n          <button class=\"btn\" @click=\"moveUp\" :disabled=\"!canMoveUp\" aria-label=\"move up\">\n            ↑\n          </button>\n        </section>\n\n        <section class=\"listCard\">\n          <div class=\"listTitle\">Bottom</div>\n          <ul class=\"list\" role=\"list\">\n            <li v-for=\"item in bottomItems\" :key=\"item.id\" class=\"row\">\n              <label class=\"rowLabel\">\n                <input\n                  type=\"checkbox\"\n                  :checked=\"bottomSelected.has(item.id)\"\n                  @change=\"onBottomChange(item.id, $event)\"\n                />\n                <span>{{ item.label }}</span>\n              </label>\n            </li>\n            <li v-if=\"bottomItems.length === 0\" class=\"empty\">Empty</li>\n          </ul>\n        </section>\n      </div>\n\n      <p class=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, ref } from 'vue';\n\ntype Item = { id: string; label: string };\n\nconst INITIAL_TOP: Item[] = [\n  { id: 'a', label: 'Alpha' },\n  { id: 'b', label: 'Beta' },\n  { id: 'c', label: 'Gamma' },\n  { id: 'd', label: 'Delta' },\n  { id: 'e', label: 'Epsilon' }\n];\n\nconst INITIAL_BOTTOM: Item[] = [\n  { id: 'x', label: 'Xenon' },\n  { id: 'y', label: 'Yttrium' },\n  { id: 'z', label: 'Zinc' }\n];\n\nconst topItems = ref<Item[]>(INITIAL_TOP);\nconst bottomItems = ref<Item[]>(INITIAL_BOTTOM);\n\n// Selected ids per list\nconst topSelected = ref<Set<string>>(new Set<string>());\nconst bottomSelected = ref<Set<string>>(new Set<string>());\n\n// TODO: compute button enablement\nconst canMoveDown = computed(() => false);\nconst canMoveUp = computed(() => false);\n\n// Helpers to read checkbox value without TS in template\nconst onTopChange = (id: string, e: Event) => {\n  const checked = (e.currentTarget as HTMLInputElement | null)?.checked ?? false;\n  toggleTop(id, checked);\n};\n\nconst onBottomChange = (id: string, e: Event) => {\n  const checked = (e.currentTarget as HTMLInputElement | null)?.checked ?? false;\n  toggleBottom(id, checked);\n};\n\n// TODO: toggle selection (must create a NEW Set)\nconst toggleTop = (id: string, checked: boolean) => {};\nconst toggleBottom = (id: string, checked: boolean) => {};\n\n// TODO: move selected Top -> Bottom (append), clear topSelected\nconst moveDown = () => {};\n\n// TODO: move selected Bottom -> Top (append), clear bottomSelected\nconst moveUp = () => {};\n</script>\n",
+          "content": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1 class=\"title\">Transfer List</h1>\n      <p class=\"subtitle\">Select items and move them between lists.</p>\n\n      <div class=\"layout\">\n        <section class=\"listCard\">\n          <div class=\"listTitle\">Top</div>\n          <ul class=\"list\" role=\"list\">\n            <li v-for=\"item in topItems\" :key=\"item.id\" class=\"row\">\n              <label class=\"rowLabel\">\n                <input\n                  type=\"checkbox\"\n                  :checked=\"topSelected.has(item.id)\"\n                  @change=\"onTopChange(item.id, $event)\"\n                />\n                <span>{{ item.label }}</span>\n              </label>\n            </li>\n            <li v-if=\"topItems.length === 0\" class=\"empty\">Empty</li>\n          </ul>\n        </section>\n\n        <section class=\"controls\">\n          <button class=\"btn\" @click=\"moveDown\" :disabled=\"!canMoveDown\" aria-label=\"move down\">\n            ↓\n          </button>\n          <button class=\"btn\" @click=\"moveUp\" :disabled=\"!canMoveUp\" aria-label=\"move up\">\n            ↑\n          </button>\n        </section>\n\n        <section class=\"listCard\">\n          <div class=\"listTitle\">Bottom</div>\n          <ul class=\"list\" role=\"list\">\n            <li v-for=\"item in bottomItems\" :key=\"item.id\" class=\"row\">\n              <label class=\"rowLabel\">\n                <input\n                  type=\"checkbox\"\n                  :checked=\"bottomSelected.has(item.id)\"\n                  @change=\"onBottomChange(item.id, $event)\"\n                />\n                <span>{{ item.label }}</span>\n              </label>\n            </li>\n            <li v-if=\"bottomItems.length === 0\" class=\"empty\">Empty</li>\n          </ul>\n        </section>\n      </div>\n\n      <p class=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { computed, ref } from 'vue';\n\ntype Item = { id: string; label: string };\n\nconst INITIAL_TOP: Item[] = [\n  { id: 'a', label: 'Alpha' },\n  { id: 'b', label: 'Beta' },\n  { id: 'c', label: 'Gamma' },\n  { id: 'd', label: 'Delta' },\n  { id: 'e', label: 'Epsilon' }\n];\n\nconst INITIAL_BOTTOM: Item[] = [\n  { id: 'x', label: 'Xenon' },\n  { id: 'y', label: 'Yttrium' },\n  { id: 'z', label: 'Zinc' }\n];\n\nconst topItems = ref<Item[]>(INITIAL_TOP);\nconst bottomItems = ref<Item[]>(INITIAL_BOTTOM);\n\n// Selected ids per list\nconst topSelected = ref<Set<string>>(new Set<string>());\nconst bottomSelected = ref<Set<string>>(new Set<string>());\n\n// TODO: compute button enablement\nconst canMoveDown = computed(() => false);\nconst canMoveUp = computed(() => false);\n\n// Helpers to read checkbox value without TS in template\nconst onTopChange = (id: string, e: Event) => {\n  const checked = (e.currentTarget as HTMLInputElement | null)?.checked ?? false;\n  toggleTop(id, checked);\n};\n\nconst onBottomChange = (id: string, e: Event) => {\n  const checked = (e.currentTarget as HTMLInputElement | null)?.checked ?? false;\n  toggleBottom(id, checked);\n};\n\n// TODO: toggle selection (add or delete the id on the reactive Set, or build a new Set)\nconst toggleTop = (id: string, checked: boolean) => {};\nconst toggleBottom = (id: string, checked: boolean) => {};\n\n// TODO: move selected Top -> Bottom (append), clear topSelected\nconst moveDown = () => {};\n\n// TODO: move selected Bottom -> Top (append), clear bottomSelected\nconst moveUp = () => {};\n</script>\n",
           "path": "src/App.vue"
         },
         {

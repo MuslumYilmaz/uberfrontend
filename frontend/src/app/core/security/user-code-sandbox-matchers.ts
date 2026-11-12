@@ -1,6 +1,54 @@
 export type SandboxExpect = ReturnType<typeof createSandboxExpect>;
 
+const MAX_SHOWN_ITEMS = 20;
+const MAX_SHOWN_DEPTH = 4;
+const MAX_SHOWN_CHARS = 2000;
+
+/**
+ * A value in a failed assertion, written as the test author would write it: strings in quotes, and `undefined`,
+ * array holes, `-0` and `NaN` as themselves. JSON printed the first three as `null` (or dropped the property), so
+ * "Expected [1,null,2]" hid an `undefined` or a hole. Maps, sets, dates, errors and class instances keep `fallback`.
+ */
+export function formatExpectValue(value: unknown, fallback: (value: unknown) => string): string {
+  const inProgress = new WeakSet<object>();
+  const format = (v: unknown, depth: number): string => {
+    if (v === undefined) return 'undefined';
+    if (v === null) return 'null';
+    if (typeof v === 'string') return JSON.stringify(v.length > MAX_SHOWN_CHARS ? `${v.slice(0, MAX_SHOWN_CHARS)}…` : v);
+    if (typeof v === 'number') return Object.is(v, -0) ? '-0' : String(v);
+    if (typeof v === 'bigint') return `${v}n`;
+    if (typeof v !== 'object') return fallback(v);
+    if (inProgress.has(v)) return '[Circular]';
+    if (Array.isArray(v)) {
+      if (depth >= MAX_SHOWN_DEPTH) return '[Array]';
+      inProgress.add(v);
+      const shown = Math.min(v.length, MAX_SHOWN_ITEMS);
+      const parts: string[] = [];
+      for (let i = 0; i < shown; i += 1) parts.push(i in v ? format(v[i], depth + 1) : '<empty>');
+      if (v.length > shown) parts.push(`… +${v.length - shown} more`);
+      inProgress.delete(v);
+      return `[${parts.join(',')}]`;
+    }
+    const proto = Object.getPrototypeOf(v);
+    if (proto !== Object.prototype && proto !== null) return fallback(v);
+    if (depth >= MAX_SHOWN_DEPTH) return '[Object]';
+    inProgress.add(v);
+    const keys = Object.keys(v);
+    const parts = keys.slice(0, MAX_SHOWN_ITEMS).map((key) => `${JSON.stringify(key)}:${format((v as any)[key], depth + 1)}`);
+    if (keys.length > MAX_SHOWN_ITEMS) parts.push('…');
+    inProgress.delete(v);
+    return `{${parts.join(',')}}`;
+  };
+  try {
+    return format(value, 0);
+  } catch {
+    return fallback(value);
+  }
+}
+
 export function createSandboxExpect(safeStringify: (value: unknown) => string) {
+  const show = (value: unknown) => formatExpectValue(value, safeStringify);
+
   function deepEqual(a: any, b: any): boolean {
     if (Object.is(a, b)) return true;
     if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
@@ -34,7 +82,7 @@ export function createSandboxExpect(safeStringify: (value: unknown) => string) {
     if (typeof expected === 'string') {
       if (!msg.includes(expected)) {
         throw new Error(
-          `Expected error message to include ${safeStringify(expected)}, received ${safeStringify(msg)}`,
+          `Expected error message to include ${show(expected)}, received ${show(msg)}`,
         );
       }
       return;
@@ -43,7 +91,7 @@ export function createSandboxExpect(safeStringify: (value: unknown) => string) {
     if (expected instanceof RegExp) {
       if (!expected.test(msg)) {
         throw new Error(
-          `Expected error message to match ${String(expected)}, received ${safeStringify(msg)}`,
+          `Expected error message to match ${String(expected)}, received ${show(msg)}`,
         );
       }
       return;
@@ -89,7 +137,7 @@ export function createSandboxExpect(safeStringify: (value: unknown) => string) {
         } catch (err: any) {
           if (err === resolvedMarker) {
             throw new Error(
-              `Expected promise to reject, resolved with ${safeStringify(resolvedMarker.value)}`,
+              `Expected promise to reject, resolved with ${show(resolvedMarker.value)}`,
             );
           }
           return err;
@@ -120,45 +168,45 @@ export function createSandboxExpect(safeStringify: (value: unknown) => string) {
     return {
       toBe(expected: any) {
         if (!Object.is(received, expected)) {
-          throw new Error(`Expected ${safeStringify(received)} to be ${safeStringify(expected)}`);
+          throw new Error(`Expected ${show(received)} to be ${show(expected)}`);
         }
       },
       toBeTruthy() {
-        if (!received) throw new Error(`Expected ${safeStringify(received)} to be truthy`);
+        if (!received) throw new Error(`Expected ${show(received)} to be truthy`);
       },
       toBeFalsy() {
-        if (received) throw new Error(`Expected ${safeStringify(received)} to be falsy`);
+        if (received) throw new Error(`Expected ${show(received)} to be falsy`);
       },
       toEqual(expected: any) {
         if (!deepEqual(received, expected)) {
           throw new Error(
-            `Expected ${safeStringify(received)} to deeply equal ${safeStringify(expected)}`,
+            `Expected ${show(received)} to deeply equal ${show(expected)}`,
           );
         }
       },
       toStrictEqual(expected: any) {
         if (!deepEqual(received, expected)) {
           throw new Error(
-            `Expected ${safeStringify(received)} to strictly equal ${safeStringify(expected)}`,
+            `Expected ${show(received)} to strictly equal ${show(expected)}`,
           );
         }
       },
       toMatchObject(expected: any) {
         if (!matchObject(received, expected)) {
           throw new Error(
-            `Expected ${safeStringify(received)} to match ${safeStringify(expected)}`,
+            `Expected ${show(received)} to match ${show(expected)}`,
           );
         }
       },
       toBeNaN() {
-        if (!Number.isNaN(received)) throw new Error(`Expected ${safeStringify(received)} to be NaN`);
+        if (!Number.isNaN(received)) throw new Error(`Expected ${show(received)} to be NaN`);
       },
       toBeCloseTo(expected: number, precision = 2) {
         const diff = Math.abs(Number(received) - Number(expected));
         const threshold = Math.pow(10, -precision) / 2;
         if (!(Number.isFinite(diff) && diff <= threshold)) {
           throw new Error(
-            `Expected ${safeStringify(received)} to be close to ${safeStringify(expected)} (+/-${threshold})`,
+            `Expected ${show(received)} to be close to ${show(expected)} (+/-${threshold})`,
           );
         }
       },

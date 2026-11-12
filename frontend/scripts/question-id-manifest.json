@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T05:12:37.649Z",
+  "generatedAt": "2026-11-11T12:57:07.049Z",
   "entries": [
     {
       "tech": "angular",
@@ -24,6 +24,12 @@
       "tech": "angular",
       "kind": "coding",
       "id": "angular-contact-form-starter",
+      "file": "angular/coding.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "coding",
+      "id": "angular-control-value-accessor-stepper",
       "file": "angular/coding.json"
     },
     {
@@ -168,6 +174,12 @@
       "tech": "angular",
       "kind": "debug",
       "id": "ng-debug-fleet-status-bug-reports",
+      "file": "angular/debug.json"
+    },
+    {
+      "tech": "angular",
+      "kind": "debug",
+      "id": "ng-debug-zoneless-shipment-board",
       "file": "angular/debug.json"
     },
     {

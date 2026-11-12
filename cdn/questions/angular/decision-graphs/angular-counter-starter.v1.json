@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-counter-starter",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly count = signal(0);\n  readonly isZero = computed(() => this.count() === 0);\n\n  inc(): void {\n    this.count.update((value) => value + 1);\n  }\n\n  dec(): void {\n    // The disabled button stops clicks at 0; the clamp keeps the rule true for any other caller.\n    this.count.update((value) => Math.max(0, value - 1));\n  }\n\n  reset(): void {\n    this.count.set(0);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-onpush-counter",
+          "title": "Run the counter with OnPush",
+          "anchor": {
+            "lineStart": 5,
+            "lineEnd": 5,
+            "snippet": "changeDetection: ChangeDetectionStrategy.OnPush,"
+          },
+          "why": "Everything the template shows comes from a signal, so Angular can skip this component until a signal it reads changes or one of its buttons fires.",
+          "alternative": "Keep the default strategy, which checks the component on every change detection pass anywhere in the app.",
+          "tradeoff": "OnPush is free here and keeps working if the count later changes from a timer or a service, but it hides plain fields changed outside the template."
+        },
+        {
+          "id": "d2-count-signal",
+          "title": "Keep the count in one signal",
+          "anchor": {
+            "lineStart": 10,
+            "lineEnd": 10,
+            "snippet": "readonly count = signal(0);"
+          },
+          "why": "The count is the only state; reading count() in the template ties the number and the minus button to it.",
+          "alternative": "A plain count = 0 field that the click handlers change.",
+          "tradeoff": "A plain field works while every change starts with a click in this template; the signal also covers timers, services or a parent under OnPush or zoneless change detection."
+        },
+        {
+          "id": "d3-derived-disabled",
+          "title": "Derive the disabled state",
+          "anchor": {
+            "lineStart": 11,
+            "lineEnd": 11,
+            "snippet": "readonly isZero = computed(() => this.count() === 0);"
+          },
+          "why": "The minus button binds its disabled state to isZero(), which recalculates only when count changes.",
+          "alternative": "Repeat count() === 0 in the template, or use a getter.",
+          "tradeoff": "An inline expression is shorter, but a named computed keeps the zero rule in one place for the template and anything else that needs it."
+        },
+        {
+          "id": "d4-clamp-decrement",
+          "title": "Clamp the decrement at zero",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "this.count.update((value) => Math.max(0, value - 1));"
+          },
+          "why": "The disabled button stops clicks at 0, and the clamp keeps the count from going negative for any other caller of dec().",
+          "alternative": "Rely on the disabled button alone, or return early when isZero() is true.",
+          "tradeoff": "The clamp is one expression that cannot go below zero; an early return reads closer to the rule but repeats the zero check."
+        },
+        {
+          "id": "d5-reset-with-set",
+          "title": "Reset with set",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "this.count.set(0);"
+          },
+          "why": "reset() replaces the value outright, so set says it directly; update derives the next value from the current one.",
+          "alternative": "count.update(() => 0).",
+          "tradeoff": "Both give the same value; set states the intent and skips reading the old count."
+        }
+      ]
+    }
+  }
+}

@@ -23,6 +23,288 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('@for');
   });
 
+  it('explains a template that prints a signal instead of calling it', () => {
+    const hint = buildFailureHint({
+      questionId: 'angular-counter-starter',
+      category: 'assertion-mismatch',
+      errorLine: '.value expected text "1" but found "[Signal: 1]"',
+      firstFailName: 'Counter flow',
+      passCount: 0,
+      totalCount: 1,
+      failCount: 1,
+      failedTests: [{ name: 'Counter flow', errorLine: '.value expected text "1" but found "[Signal: 1]"' }],
+    });
+
+    expect(hint.ruleId).toBe('angular-signal-read-in-template');
+    expect(hint.actions.join(' ')).toContain('count()');
+  });
+
+  it('explains a Vue nested checkbox parent that does not check its children', () => {
+    const errorLine = 'checkbox "Child 1" expected checked but was unchecked';
+    const hint = buildFailureHint({
+      questionId: 'vue-nested-checkboxes',
+      category: 'assertion-mismatch',
+      errorLine,
+      firstFailName: 'Checking the parent checks every child',
+      passCount: 3,
+      totalCount: 4,
+      failCount: 1,
+      failedTests: [{ name: 'Checking the parent checks every child', errorLine }],
+    });
+
+    expect(hint.ruleId).toBe('vue-nested-checkboxes-parent-setter');
+    expect(hint.actions.join(' ')).toContain('v-model="allChecked"');
+  });
+
+  it('explains a late answer to an older query in each Debounced Search task, the way its framework ignores it', () => {
+    const name = 'An older search that ends late does not replace the newer results';
+    const errorLine = 'text "Alice Johnson" expected 0 matches but found 1';
+    const cases: Array<[string, string]> = [
+      ['react-debounced-search', 'isCurrent'],
+      ['angular-debounced-search', 'switchMap'],
+      ['vue-debounced-search', 'stale = true'],
+    ];
+    for (const [questionId, action] of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 5,
+        totalCount: 6,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(questionId).toBe('debounced-search-late-answer');
+      expect(hint.actions.join(' ')).withContext(questionId).toContain(action);
+    }
+  });
+
+  it('explains the Angular pagination, star rating, chessboard and Reply toggle checks by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'angular-pagination-table',
+        name: 'Starts on Page 1 of 4 with the first 5 users and Previous disabled',
+        errorLine: 'text "Page 1 of 4" did not reach 1 match before timeout. Last count: 0',
+        ruleId: 'angular-pagination-page-label',
+        action: 'Page {{ currentPage() + 1 }} of {{ totalPages() }}',
+      },
+      {
+        questionId: 'angular-star-rating',
+        name: 'Arrow keys move the rating like a radio group',
+        errorLine: '.star expected tabindex="0" but found ""',
+        ruleId: 'angular-star-rating-radio-group',
+        action: 'aria-checked',
+      },
+      {
+        questionId: 'angular-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'angular-chessboard-size-on-change',
+        action: '(change)',
+      },
+      {
+        questionId: 'angular-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'angular-chessboard-single-selection',
+        action: 'cellKey(row, col)',
+      },
+      {
+        questionId: 'angular-nested-comments',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
+        ruleId: 'angular-nested-comments-reply-toggle',
+        action: 'toggleReply(id)',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 0,
+        totalCount: 2,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
+  it('explains the React and Vue star rating, Reply toggle and chessboard checks by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'react-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'react-chessboard-size-on-change',
+        action: 'setSizeText(String(clamped))',
+      },
+      {
+        questionId: 'react-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'react-chessboard-single-selection',
+        action: 'toKey(row, col)',
+      },
+      {
+        questionId: 'react-star-rating',
+        name: 'Arrow keys move the rating like a radio group',
+        errorLine: '.star expected tabindex="0" but found ""',
+        ruleId: 'react-star-rating-radio-group',
+        action: 'aria-checked={star === rating}',
+      },
+      {
+        questionId: 'vue-star-rating',
+        name: 'Clicking a star sets the rating',
+        errorLine: '.hint did not contain "Current rating: 4"',
+        ruleId: 'vue-star-rating-radio-group',
+        action: ':aria-checked="star === rating"',
+      },
+      {
+        questionId: 'react-nested-comments',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
+        ruleId: 'react-nested-comments-reply-toggle',
+        action: 'setActiveReplyId((active) => (active === id ? null : id))',
+      },
+      {
+        questionId: 'vue-nested-comments',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
+        ruleId: 'vue-nested-comments-reply-toggle',
+        action: 'toggleReply(id)',
+      },
+      {
+        questionId: 'vue-chessboard-click-highlight',
+        name: 'Board size applies on change and clamps to 2–20',
+        errorLine: '#board-size expected value "20" but found "30"',
+        ruleId: 'vue-chessboard-size-on-change',
+        action: '@change',
+      },
+      {
+        questionId: 'vue-chessboard-click-highlight',
+        name: 'Clicking a cell highlights only that cell',
+        errorLine: '.cell--active expected 1 matches but found 0',
+        ruleId: 'vue-chessboard-single-selection',
+        action: 'cellKey(row, col)',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 0,
+        totalCount: 2,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
+  it('explains the new checks of the JavaScript classics by their names', () => {
+    const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
+      {
+        questionId: 'js-deep-equal',
+        name: 'deepEqual › treats different types as unequal',
+        errorLine: 'Expected true to be false',
+        ruleId: 'js-deep-equal-kinds-and-keys',
+        action: 'Object.prototype.toString.call(a)',
+      },
+      {
+        questionId: 'js-throttle',
+        name: 'throttle › drops calls made during the interval instead of running them later',
+        errorLine: 'Expected ["first","dropped"] to deeply equal ["first"]',
+        ruleId: 'js-throttle-leading-only',
+        action: 'leading-only',
+      },
+      {
+        questionId: 'js-debounce',
+        name: 'debounce › uses the this value and all arguments of the last call',
+        errorLine: 'Expected [["last","b"]] to deeply equal [["last","b",2]]',
+        ruleId: 'js-debounce-args-this',
+        action: 'whole `args` array',
+      },
+      {
+        questionId: 'js-create-lru-cache',
+        name: 'createLruCache › updating a key at capacity evicts nothing',
+        errorLine: 'Expected ["b"] to deeply equal ["a","b"]',
+        ruleId: 'js-lru-update-recency',
+        action: 'map.size > maxSize',
+      },
+      {
+        questionId: 'js-concurrency-map-limit',
+        name: 'mapAsyncLimit › starts the next item as soon as a slot frees up',
+        errorLine: 'Expected [0,1] to deeply equal [0,1,2]',
+        ruleId: 'js-concurrency-pool-slots',
+        action: '`failed` flag',
+      },
+      {
+        questionId: 'js-implement-bind',
+        name: 'myBind › gives the bound function its own prototype object',
+        errorLine: 'Expected true to be false',
+        ruleId: 'js-bind-own-prototype',
+        action: 'Object.create(fn.prototype)',
+      },
+      {
+        questionId: 'js-once',
+        name: 'once › does not call again when the first call returned undefined',
+        errorLine: 'Expected 2 to be 1',
+        ruleId: 'js-once-called-flag',
+        action: '`called` boolean',
+      },
+      {
+        questionId: 'js-memoize-function',
+        name: 'memoize › caches falsy results such as 0 and undefined',
+        errorLine: 'Expected 4 to be 2',
+        ruleId: 'js-memoize-cache-key',
+        action: 'cache.has(key)',
+      },
+      {
+        questionId: 'js-three-sum',
+        name: 'threeSum › returns each triplet in non-decreasing order',
+        errorLine: 'Expected [2,-1,-1] to deeply equal [-1,-1,2]',
+        ruleId: 'js-three-sum-sorted-triplets',
+        action: 'Sort a copy of the input first',
+      },
+      {
+        questionId: 'js-merge-sorted-arrays',
+        name: 'mergeSortedArrays › merges without sorting the combined array',
+        errorLine: 'mergeSortedArrays must not call sort',
+        ruleId: 'js-merge-without-sort',
+        action: 'two front values',
+      },
+    ];
+
+    for (const { questionId, name, errorLine, ruleId, action } of cases) {
+      const hint = buildFailureHint({
+        questionId,
+        category: 'assertion-mismatch',
+        errorLine,
+        firstFailName: name,
+        passCount: 3,
+        totalCount: 4,
+        failCount: 1,
+        failedTests: [{ name, errorLine }],
+      });
+
+      expect(hint.ruleId).withContext(name).toBe(ruleId);
+      expect(hint.actions.join(' ')).withContext(name).toContain(action);
+    }
+  });
+
   it('explains a dropdown that reopens after a pick on the Angular and Vue autocomplete questions', () => {
     for (const questionId of ['angular-autocomplete-search-starter', 'vue-autocomplete-search']) {
       const hint = buildFailureHint({
@@ -878,8 +1160,11 @@ describe('listQuestionFailureHints', () => {
     expect(hints[0]).toEqual(runtime);
   });
 
-  it('shares one mapped rule per Angular template question and lists nothing for unknown ids', () => {
-    expect(listQuestionFailureHints('angular-tabs-switcher').map((hint) => hint.ruleId)).toEqual(['angular-modern-template-compile']);
+  it('lists the shared Angular template and signal-read rules for every Angular coding question and nothing for unknown ids', () => {
+    for (const questionId of ['angular-tabs-switcher', 'angular-counter-starter', 'angular-snake-game']) {
+      expect(listQuestionFailureHints(questionId).map((hint) => hint.ruleId))
+        .toEqual(['angular-modern-template-compile', 'angular-signal-read-in-template']);
+    }
     expect(listQuestionFailureHints('question-without-authored-hints')).toEqual([]);
     expect(listQuestionFailureHints('')).toEqual([]);
     expect(listQuestionFailureHints(undefined)).toEqual([]);
