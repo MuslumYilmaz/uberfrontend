@@ -1,4 +1,4 @@
-import type { FrameworkTest } from '../models/question.model';
+import type { FrameworkTest, FrameworkTestLocator } from '../models/question.model';
 
 /** At most this many checks cover a task's core flow only (a smoke check), not its list of requirements. */
 export const SMOKE_CHECK_MAX = 1;
@@ -21,16 +21,25 @@ export function frameworkCheckCoverage(question: CoverageSource): FrameworkCheck
 }
 
 /**
- * The CSS selectors a task's checks find elements by, in the order the checks first use them. The task page shows
- * them, so markup that works but names its elements differently is not failed for a contract no one stated.
+ * What a task's checks find elements by, CSS selectors and `by` locators alike, in the order the checks first use
+ * them. The task page shows them, so markup that works but names its elements differently is not failed for a
+ * contract no one stated.
  */
 export function checkSelectors(tests: readonly FrameworkTest[] | null | undefined): string[] {
   const seen = new Set<string>();
   for (const test of tests ?? []) {
     for (const step of test?.steps ?? []) {
-      const selector = String(step?.selector ?? '').trim();
-      if (selector) seen.add(selector);
+      const target = step?.by ? describeLocator(step.by) : String(step?.selector ?? '').trim();
+      if (target) seen.add(target);
     }
   }
   return [...seen];
+}
+
+/** A locator as the task page names it: `button "Add"`, `checkbox`, `textbox labelled "City"`, `text "No results"`. */
+export function describeLocator(by: FrameworkTestLocator): string {
+  if (by.text !== undefined) return `text "${by.text}"`;
+  if (by.label !== undefined) return `${by.role || 'control'} labelled "${by.label}"`;
+  if (!by.role) return by.name === undefined ? '' : `element "${by.name}"`;
+  return by.name === undefined ? by.role : `${by.role} "${by.name}"`;
 }

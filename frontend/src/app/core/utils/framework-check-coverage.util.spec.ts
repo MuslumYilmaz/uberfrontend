@@ -28,4 +28,29 @@ describe('checkSelectors', () => {
       .toEqual(['.input', '.primary', '.item']);
     expect(checkSelectors(undefined)).toEqual([]);
   });
+
+  it('names role, label and text locators as the task page shows them, once each, next to the selectors', () => {
+    const locators: FrameworkTest = {
+      id: 'locators',
+      name: 'locators',
+      steps: [
+        { type: 'setValue', by: { role: 'textbox' }, value: 'Milk' },
+        { type: 'click', by: { role: 'button', name: 'Add' } },
+        { type: 'expectText', selector: '.value', text: '1' },
+        { type: 'setValue', by: { role: 'combobox', label: 'City' }, value: 'san' },
+        { type: 'setValue', by: { label: 'Board size' }, value: '8' },
+        { type: 'expectExists', by: { text: 'No tasks yet.' } },
+        { type: 'click', by: { role: 'button', name: 'Add' }, index: 1 },
+      ],
+    };
+
+    expect(checkSelectors([locators])).toEqual([
+      'textbox',
+      'button "Add"',
+      '.value',
+      'combobox labelled "City"',
+      'control labelled "Board size"',
+      'text "No tasks yet."',
+    ]);
+  });
 });

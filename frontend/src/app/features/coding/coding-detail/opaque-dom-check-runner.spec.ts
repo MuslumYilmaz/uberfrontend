@@ -312,6 +312,141 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'HTTP lifecycle', passed: true }]);
   });
 
+  it('finds elements by role and name, by label and by their own text, the way a user would', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body><main>
+        <div class="actions">
+          <button aria-label="decrement" disabled>−</button>
+          <button aria-label="increment">+</button>
+          <button class="ghost">Reset</button>
+          <button hidden>Reset</button>
+        </div>
+        <div class="value">0</div>
+        <label for="size">Board size</label><input id="size" value="8">
+        <label class="item"><input type="checkbox"> <span>Buy milk</span></label>
+        <p class="empty">No tasks yet. Add your first one above.</p>
+        <p>Lon<mark>don</mark></p>
+        <div style="display: none"><button>Add</button></div>
+        <button>Add</button>
+        <script>
+          let count = 0;
+          const value = document.querySelector('.value');
+          const [dec, inc, reset] = document.querySelectorAll('.actions button');
+          const show = () => { value.textContent = String(count); dec.disabled = count === 0; };
+          inc.addEventListener('click', () => { count += 1; show(); });
+          dec.addEventListener('click', () => { count -= 1; show(); });
+          reset.addEventListener('click', () => { count = 0; show(); });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </main></body></html>`,
+      [{
+        id: 'locators',
+        name: 'Locators',
+        steps: [
+          // A hyphen finds the minus sign, and the visible "+" finds a button named "increment".
+          { type: 'expectDisabled', by: { role: 'button', name: '-' }, disabled: true },
+          { type: 'click', by: { role: 'button', name: '+' } },
+          { type: 'click', by: { role: 'button', name: 'increment' } },
+          { type: 'expectText', selector: '.value', text: '2' },
+          { type: 'expectDisabled', by: { role: 'button', name: '−' }, disabled: false },
+          { type: 'expectCount', by: { role: 'button', name: 'Reset' }, count: 1 },
+          { type: 'click', by: { role: 'button', name: 'Reset' } },
+          { type: 'expectText', selector: '.value', text: '0' },
+          { type: 'expectValue', by: { label: 'Board size' }, value: '8' },
+          { type: 'expectValue', by: { role: 'textbox', label: 'Board size' }, value: '8' },
+          { type: 'click', by: { role: 'checkbox', name: 'Buy milk' } },
+          { type: 'expectChecked', by: { role: 'checkbox' } },
+          { type: 'expectExists', by: { text: 'No tasks yet. Add your first one above.' } },
+          { type: 'expectText', by: { role: 'mark' }, text: 'don' },
+          { type: 'expectCount', by: { role: 'button', name: 'Add' }, count: 1 },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Locators', passed: true }]);
+  });
+
+  it('names the locator that found nothing, and counts what it finds', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <ul><li>Buy milk</li></ul>
+        <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script>
+      </body></html>`,
+      [
+        { id: 'missing', name: 'Missing button', steps: [{ type: 'click', by: { role: 'button', name: 'Save' } }] },
+        {
+          id: 'count',
+          name: 'Too few items',
+          steps: [{ type: 'waitForCount', by: { role: 'listitem' }, count: 2, timeoutMs: 100 }],
+        },
+        { id: 'second', name: 'Second item', steps: [{ type: 'expectText', by: { role: 'listitem' }, index: 1, text: 'x' }] },
+      ] as any,
+    );
+
+    expect(results).toEqual([
+      { name: 'Missing button', passed: false, error: 'button "Save" was not found', failureKind: 'assertion' },
+      {
+        name: 'Too few items',
+        passed: false,
+        error: 'listitem did not reach 2 matches before timeout. Last count: 1',
+        failureKind: 'assertion',
+      },
+      { name: 'Second item', passed: false, error: 'listitem #2 was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('reads a checkbox and text struck through by the element or an ancestor', async () => {
+    const page = (strike: boolean) => `<!doctype html><html><head><style>.done { text-decoration: line-through; }</style></head><body>
+      <ul><li><label><input type="checkbox"> <span>Buy milk</span></label> <button>Remove</button></li></ul>
+      <script>
+        const box = document.querySelector('input');
+        box.addEventListener('change', () => document.querySelector('li').classList.toggle('done', ${strike} && box.checked));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script>
+    </body></html>`;
+    const steps = [
+      { type: 'expectLineThrough', by: { role: 'listitem' }, expected: false },
+      { type: 'click', by: { role: 'checkbox' } },
+      { type: 'expectChecked', by: { role: 'checkbox' } },
+      { type: 'expectLineThrough', by: { role: 'listitem' } },
+      { type: 'click', by: { role: 'checkbox' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: false },
+      { type: 'expectLineThrough', by: { role: 'listitem' }, expected: false },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'strike', name: 'Strike', steps }] as any))
+      .toEqual([{ name: 'Strike', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'strike', name: 'Strike', steps }] as any))
+      .toEqual([{
+        name: 'Strike',
+        passed: false,
+        error: 'listitem expected its text to be struck through',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('fixes Math.random before the preview boots when a check asks for it, repeating the values in turn', async () => {
+    const page = `<!doctype html><html><head><script>
+        window.drawn = [Math.random(), Math.random(), Math.random()];
+      <\/script></head><body><p class="drawn"></p><script>
+        document.querySelector('.drawn').textContent = window.drawn.join(' ');
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'seeded',
+        name: 'Seeded',
+        steps: [
+          { type: 'mockRandom', values: [0.55, 0.1] },
+          { type: 'expectText', selector: '.drawn', text: '0.55 0.1 0.55' },
+        ],
+      },
+      { id: 'unseeded', name: 'Unseeded', steps: [{ type: 'expectNoText', selector: '.drawn', text: '0.55 0.1 0.55' }] },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Seeded', passed: true }, { name: 'Unseeded', passed: true }]);
+  });
+
   it('records mocked fetch requests and resolves their configured response', async () => {
     const results = await runner.runFramework(
       `<!doctype html><html><body>

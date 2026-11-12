@@ -9,7 +9,7 @@ import {
   PressureModeRound,
   PressureModeScenario,
 } from '../models/pressure-mode.model';
-import { FrameworkTest, FrameworkTestStep, FrameworkTestStepType } from '../models/question.model';
+import { FrameworkTest, FrameworkTestLocator, FrameworkTestStep, FrameworkTestStepType } from '../models/question.model';
 import { normalizeAssetPath } from '../utils/asset-url.util';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
@@ -38,6 +38,9 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'unmountPreview',
   'expectNoPreviewTimers',
   'expectNoPreviewLeaks',
+  'expectChecked',
+  'expectLineThrough',
+  'mockRandom',
 ]);
 
 @Injectable({ providedIn: 'root' })
@@ -177,6 +180,12 @@ export class PressureModeService {
         (step as Record<string, unknown>)[key] = source[key];
       }
     }
+    const by = this.normalizeLocator(source['by']);
+    if (by) step.by = by;
+    if (Array.isArray(source['values'])) {
+      const values = source['values'].filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+      if (values.length) step.values = values;
+    }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
     if (
       typeof source['expected'] === 'string'
@@ -186,6 +195,16 @@ export class PressureModeService {
       step.expected = source['expected'];
     }
     return step;
+  }
+
+  private normalizeLocator(value: unknown): FrameworkTestLocator | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const source = value as Record<string, unknown>;
+    const locator: FrameworkTestLocator = {};
+    for (const key of ['role', 'name', 'label', 'text'] as const) {
+      if (typeof source[key] === 'string') locator[key] = source[key];
+    }
+    return Object.keys(locator).length ? locator : null;
   }
 
   private normalizeDebrief(value: unknown): PressureModeDebrief | null {

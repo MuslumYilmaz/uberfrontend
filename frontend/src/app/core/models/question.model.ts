@@ -114,12 +114,27 @@ export type FrameworkTestStepType =
   | 'key'
   | 'unmountPreview'
   | 'expectNoPreviewTimers'
-  | 'expectNoPreviewLeaks';
+  | 'expectNoPreviewLeaks'
+  | 'expectChecked'
+  | 'expectLineThrough'
+  | 'mockRandom';
+
+/**
+ * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
+ * (the name also matches the visible text), by label, or by an element's own text. Hidden elements never match.
+ */
+export type FrameworkTestLocator = {
+  role?: string;
+  name?: string;
+  label?: string;
+  text?: string;
+};
 
 export type FrameworkTestStep = {
   type?: FrameworkTestStepType;
   action?: FrameworkTestStepType;
   selector?: string;
+  by?: FrameworkTestLocator;
   index?: number;
   text?: string;
   match?: 'equals' | 'contains';
@@ -137,6 +152,8 @@ export type FrameworkTestStep = {
   error?: string;
   bodyContains?: string;
   expected?: string | boolean | number;
+  /** mockRandom: Math.random returns these in turn, from before the preview boots. */
+  values?: number[];
 };
 
 export type FrameworkTest = {

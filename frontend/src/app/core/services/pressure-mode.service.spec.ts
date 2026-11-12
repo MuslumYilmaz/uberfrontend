@@ -34,6 +34,27 @@ describe('PressureModeService', () => {
     ).toBe(5);
   });
 
+  it('keeps role, label and text locators, the checked, line-through and mockRandom steps, and drops unknown fields', () => {
+    const payload = validScenario();
+    payload.rounds[0].frameworkTests[0].steps = [
+      { type: 'click', by: { role: 'button', name: 'Add', css: '.primary' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, index: 1, expected: false },
+      { type: 'expectLineThrough', by: { label: 'Milk' } },
+      { type: 'expectExists', by: { text: 'No tasks yet.' } },
+      { type: 'expectExists', by: 'button' },
+      { type: 'mockRandom', values: [0.55, 'x', 0.1] },
+    ];
+
+    expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
+      { type: 'click', by: { role: 'button', name: 'Add' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, index: 1, expected: false },
+      { type: 'expectLineThrough', by: { label: 'Milk' } },
+      { type: 'expectExists', by: { text: 'No tasks yet.' } },
+      { type: 'expectExists' },
+      { type: 'mockRandom', values: [0.55, 0.1] },
+    ]);
+  });
+
   it('rejects scenarios that exceed the six-check runner budget', () => {
     const payload = validScenario();
     payload.rounds[3].frameworkTests.push(
