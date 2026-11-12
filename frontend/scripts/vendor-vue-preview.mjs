@@ -25,7 +25,7 @@ const FILES = {
 
 function bannerVersion(file, name) {
   const head = fs.readFileSync(file, 'utf8').slice(0, 300);
-  return head.match(new RegExp(`${name.replace(/[/@]/g, '\\$&')} v(\\d+\\.\\d+\\.\\d+)`))?.[1] ?? null;
+  return head.match(new RegExp(`${name.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')} v(\\d+\\.\\d+\\.\\d+)`))?.[1] ?? null;
 }
 
 function check() {

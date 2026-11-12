@@ -70,13 +70,18 @@ const PREVIEW_CONSOLE_MAX = 200;
 /** A preview logging in a loop stops reporting after this many messages, with one line saying so. */
 const PREVIEW_CONSOLE_POST_LIMIT = 300;
 
+/** A string as a JSON literal for an inline script: no character in it can close the script tag or end the line. */
+function scriptStringLiteral(value: string): string {
+  return JSON.stringify(value).replace(/[<>\/\u2028\u2029]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
+}
+
 /**
  * Injected first into the preview document: console.log/info/warn/error/debug and uncaught errors are posted to this
  * panel with the preview's token, then go on to the browser console as before. Values are written as a console writes
  * them (strings bare, objects as JSON, %s and %c in a first string argument filled in), 2,000 characters at most.
  */
 export function previewConsoleBridge(token: string): string {
-  return `(function(){var token=${JSON.stringify(token)};var sent=0;var LIMIT=${PREVIEW_CONSOLE_POST_LIMIT};`
+  return `(function(){var token=${scriptStringLiteral(token)};var sent=0;var LIMIT=${PREVIEW_CONSOLE_POST_LIMIT};`
     + `function fmt(v){try{if(typeof v==='string')return v;if(v===undefined)return 'undefined';`
     + `if(typeof v==='function')return '[Function'+(v.name?' '+v.name:'')+']';if(typeof v==='bigint')return String(v)+'n';`
     + `if(typeof v==='symbol')return String(v);if(v instanceof Error)return (v.name||'Error')+': '+v.message;`
@@ -1280,7 +1285,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
     const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridge = `<script>${previewConsoleBridge(token)}(function(){var token=${JSON.stringify(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
+    const bridge = `<script>${previewConsoleBridge(token)}(function(){var token=${scriptStringLiteral(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
 
     if (/<head[^>]*>/i.test(html)) {
       return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };
