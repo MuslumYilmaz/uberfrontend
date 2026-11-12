@@ -3350,6 +3350,64 @@
         ]
       },
       {
+        "id": "cart-minus-removes",
+        "name": "− on a quantity of 1 takes the item out of the cart",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-row",
+            "text": "Wireless Headphones",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "Total items: 1",
+            "match": "contains"
+          }
+        ]
+      },
+      {
         "id": "cart-remove",
         "name": "Remove takes only its item out of the cart",
         "steps": [
@@ -5329,7 +5387,7 @@
         "implementationNotes": [
           "Use Vue 3 Composition API with `ref` for list state and selection state.",
           "Use `computed` properties for `canMoveDown` and `canMoveUp` (button enablement).",
-          "When toggling selection, create a new `Set` to ensure reactivity updates properly.",
+          "A selection `Set` held in a `ref` is reactive, so Vue tracks `add` and `delete` on it; building a new `Set` on each toggle, as the solution does, works as well.",
           "Keep everything in a single `<App.vue>` component for this exercise."
         ],
         "techFocus": [
@@ -5340,7 +5398,7 @@
         ]
       }
     },
-    "starterCodeHint": "Store items in `ref<Item[]>` and selections in `ref<Set<string>>`. Use computed values to enable/disable arrows. When toggling selection, always replace with a new Set.",
+    "starterCodeHint": "Store items in `ref<Item[]>` and selections in `ref<Set<string>>`. Use computed values to enable/disable arrows. Toggle a selection with `add` and `delete` on the Set, or replace it with a new Set; Vue tracks both.",
     "solutionBlock": {
       "overview": "Transfer lists are common in admin tools. The key is to move only the selected items, preserve ordering, and reset selection so the UI doesn’t show stale checked states. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
@@ -5370,7 +5428,7 @@
     "pressureModeAsset": "assets/questions/pressure-modes/transfer-list.v1.json",
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-11-11",
+    "updatedAt": "2026-11-12",
     "seo": {
       "title": "Build Transfer List in Vue with Multi-Select",
       "description": "Create dual lists where users select items and move them between panels while preserving order and clearing selection after each move."

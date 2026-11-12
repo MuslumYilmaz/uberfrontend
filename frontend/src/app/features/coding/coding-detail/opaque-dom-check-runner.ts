@@ -1128,6 +1128,38 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
       return Promise.resolve();
     }
+    if (type === 'expectName') {
+      // The accessible name a screen reader announces: present, or holding the given text.
+      const actual = accessibleName(element);
+      const expected = normalizeName(step.text);
+      if (!actual) throw new Error(`${target} has no accessible name`);
+      if (expected && !(step.match === 'equals' ? actual === expected : actual.includes(expected))) {
+        throw new Error(`${target} expected an accessible name ${step.match === 'equals' ? 'of' : 'with'} "${expected}" but it was "${actual}"`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectLiveRegion') {
+      // The live region the target sits in, itself included, announces the way the step says. role="status" is
+      // polite and atomic on its own, so it passes without aria-live or aria-atomic.
+      const roleDefaults = new Map<string, [string, boolean]>([
+        ['status', ['polite', true]], ['alert', ['assertive', true]], ['log', ['polite', false]],
+        ['marquee', ['off', false]], ['timer', ['off', false]],
+      ]);
+      let region: Element | null = element;
+      while (region && !region.hasAttribute('aria-live') && !roleDefaults.has(roleOf(region))) region = region.parentElement;
+      if (!region) throw new Error(`${target} is not inside a live region`);
+      const [rolePoliteness, roleAtomic] = roleDefaults.get(roleOf(region)) ?? ['off', false];
+      const politeness = region.getAttribute('aria-live')?.trim() || rolePoliteness;
+      const atomicAttribute = region.getAttribute('aria-atomic');
+      const atomic = atomicAttribute === null ? roleAtomic : atomicAttribute === 'true';
+      if (step.politeness && politeness !== step.politeness) {
+        throw new Error(`${target} sits in a live region that is ${politeness}, expected ${step.politeness}`);
+      }
+      if (step.atomic !== undefined && atomic !== step.atomic) {
+        throw new Error(`${target} sits in a live region that is ${atomic ? '' : 'not '}atomic, expected ${step.atomic ? '' : 'not '}atomic`);
+      }
+      return Promise.resolve();
+    }
     if (type === 'expectIndented') {
       // The target starts further right than another element, as a reply sits indented under its comment.
       const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;

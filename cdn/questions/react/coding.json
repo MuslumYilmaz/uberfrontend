@@ -3692,6 +3692,64 @@
         ]
       },
       {
+        "id": "cart-minus-removes",
+        "name": "− on a quantity of 1 takes the item out of the cart",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-row",
+            "text": "Wireless Headphones",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "Total items: 1",
+            "match": "contains"
+          }
+        ]
+      },
+      {
         "id": "cart-remove",
         "name": "Remove takes only its item out of the cart",
         "steps": [

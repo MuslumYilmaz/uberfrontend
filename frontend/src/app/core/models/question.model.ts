@@ -123,7 +123,9 @@ export type FrameworkTestStepType =
   | 'expectReferenced'
   | 'expectIndented'
   | 'mockStorage'
-  | 'expectStorage';
+  | 'expectStorage'
+  | 'expectName'
+  | 'expectLiveRegion';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -173,6 +175,10 @@ export type FrameworkTestStep = {
   than?: { selector?: string; by?: FrameworkTestLocator };
   /** mockStorage: the check's localStorage entries, set before the preview boots. */
   entries?: Record<string, string>;
+  /** expectLiveRegion: how the live region around the target announces, polite or assertive. */
+  politeness?: string;
+  /** expectLiveRegion: whether the live region announces itself whole. */
+  atomic?: boolean;
 };
 
 export type FrameworkTest = {

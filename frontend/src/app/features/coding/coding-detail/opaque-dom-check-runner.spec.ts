@@ -637,6 +637,38 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Closest', passed: true }]);
   });
 
+  it('reads accessible names, and the live region around an element however its markup declares it', async () => {
+    const page = `<!doctype html><html><body>
+      <ul><li><input type="checkbox" aria-label="Mark Milk complete"> <span>Milk</span> <button aria-label="Edit Milk">Edit</button>
+        <button>Remove</button></li></ul>
+      <p role="status" class="left">1 item left</p>
+      <div aria-live="polite" aria-atomic="true" class="undo"><span>Removed Eggs</span> <button>Undo</button></div>
+      <div aria-live="assertive"><button>Retry</button></div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'names',
+        name: 'Names',
+        steps: [
+          { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk' },
+          { type: 'expectName', by: { role: 'button', name: 'Edit' }, text: 'Edit Milk', match: 'equals' },
+          { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite', atomic: true },
+          { type: 'expectLiveRegion', by: { role: 'button', name: 'Undo' }, politeness: 'polite', atomic: true },
+        ],
+      },
+      { id: 'unnamed', name: 'Unnamed', steps: [{ type: 'expectName', by: { role: 'button', name: 'Remove' }, text: 'Milk' }] },
+      { id: 'loud', name: 'Loud', steps: [{ type: 'expectLiveRegion', by: { role: 'button', name: 'Retry' }, politeness: 'polite' }] },
+      { id: 'none', name: 'None', steps: [{ type: 'expectLiveRegion', by: { text: 'Milk' } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Names', passed: true },
+      { name: 'Unnamed', passed: false, error: 'button "Remove" expected an accessible name with "Milk" but it was "Remove"', failureKind: 'assertion' },
+      { name: 'Loud', passed: false, error: 'button "Retry" sits in a live region that is assertive, expected polite', failureKind: 'assertion' },
+      { name: 'None', passed: false, error: 'text "Milk" is not inside a live region', failureKind: 'assertion' },
+    ]);
+  });
+
   it('tells a reply indented under its comment from one left at the same level', async () => {
     const page = (indent: number) => `<!doctype html><html><body>
       <div class="node"><p>Root</p><div style="margin-left: ${indent}px"><p>Child</p></div></div>

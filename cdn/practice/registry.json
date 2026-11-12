@@ -9841,7 +9841,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-11-11",
+    "updatedAt": "2026-11-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/vue/coding.json#vue-transfer-list"
   },

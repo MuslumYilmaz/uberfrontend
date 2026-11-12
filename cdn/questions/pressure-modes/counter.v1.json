@@ -169,10 +169,8 @@
           "name": "Round 3 · Keyboard and ARIA",
           "steps": [
             {
-              "type": "expectAttribute",
-              "selector": "[tabindex=\"0\"]",
-              "attribute": "tabindex",
-              "expected": "0"
+              "type": "expectExists",
+              "selector": "[tabindex=\"0\"]"
             },
             {
               "type": "expectAttribute",
@@ -181,16 +179,9 @@
               "expected": true
             },
             {
-              "type": "expectAttribute",
+              "type": "expectLiveRegion",
               "selector": ".value",
-              "attribute": "role",
-              "expected": "status"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".value",
-              "attribute": "aria-live",
-              "expected": "polite"
+              "politeness": "polite"
             },
             {
               "type": "setValue",

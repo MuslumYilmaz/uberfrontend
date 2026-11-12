@@ -47,6 +47,8 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectIndented',
   'mockStorage',
   'expectStorage',
+  'expectName',
+  'expectLiveRegion',
 ]);
 
 const FRAMEWORK_STEP_HUES = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey', 'transparent']);
@@ -179,6 +181,7 @@ export class PressureModeService {
       'error',
       'bodyContains',
       'property',
+      'politeness',
     ] as const) {
       if (typeof source[key] === 'string') {
         (step as Record<string, unknown>)[key] = source[key];
@@ -205,6 +208,7 @@ export class PressureModeService {
       if (values.length) step.values = values;
     }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
+    if (typeof source['atomic'] === 'boolean') step.atomic = source['atomic'];
     if (typeof source['hue'] === 'string' && FRAMEWORK_STEP_HUES.has(source['hue'])) {
       step.hue = source['hue'] as FrameworkTestStep['hue'];
     }

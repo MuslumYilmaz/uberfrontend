@@ -2070,29 +2070,39 @@ function assertTodoListPressureMode() {
     'Core Todo List flow must clear the input after adding'
   );
 
+  // Since 2026-11-12 the rounds find what their text names: filters, Add, Edit, Remove and Undo by their labels, the
+  // count by its stated copy, and names, relationships and live regions by what they announce, not by id or class.
   const filterSteps = checksById['pressure-todo-filters'].steps;
   assert.deepEqual(
     filterSteps
-      .filter((step) => step.type === 'click' && step.selector.startsWith('.filter-'))
-      .map((step) => step.selector),
-    ['.filter-active', '.filter-completed', '.filter-all'],
+      .filter((step) => step.type === 'click' && ['All', 'Active', 'Completed'].includes(step.by?.name))
+      .map((step) => step.by.name),
+    ['Active', 'Completed', 'All'],
     'Todo filters must exercise Active, Completed, and All in order'
   );
   assert.ok(
     filterSteps.some(
       (step) =>
         step.type === 'expectAttribute' &&
-        step.selector === '.filter-active' &&
+        step.by?.name === 'Active' &&
         step.attribute === 'aria-pressed' &&
         step.expected === 'true'
     ),
     'Active Todo filter must expose its pressed state'
   );
   assert.ok(
-    filterSteps.some(
-      (step) => step.type === 'click' && step.selector === '.clear-completed'
-    ),
+    filterSteps.some((step) => step.type === 'click' && step.by?.name === 'Clear completed'),
     'Todo filter flow must clear completed tasks without removing active tasks'
+  );
+  for (const copy of ['2 items left', '1 item left']) {
+    assert.ok(
+      filterSteps.some((step) => step.type === 'waitForCount' && step.by?.text === copy),
+      `Todo filters must announce the count as the round states it: ${copy}`
+    );
+  }
+  assert.ok(
+    filterSteps.some((step) => step.type === 'expectLiveRegion' && step.politeness === 'polite'),
+    'Todo filters must announce the remaining count politely'
   );
 
   const editingSteps = checksById['pressure-todo-editing'].steps;
@@ -2103,15 +2113,25 @@ function assertTodoListPressureMode() {
   );
   assert.ok(
     editingSteps.some(
-      (step) => step.type === 'expectFocused' && step.selector === '.edit-input'
+      (step) => step.type === 'expectFocused' && step.by?.role === 'textbox' && step.index === 1
     ),
     'Todo editing must focus the edit input when editing starts'
   );
   assert.ok(
-    editingSteps.filter(
-      (step) => step.type === 'expectFocused' && step.selector === '.edit-task'
-    ).length >= 2,
+    editingSteps.filter((step) => step.type === 'expectFocused' && step.by?.name === 'Edit').length >= 2,
     'Todo editing must restore focus after both commit and cancel'
+  );
+  assert.deepEqual(
+    editingSteps
+      .filter((step) => step.type === 'expectName' && step.text === 'Draft title')
+      .map((step) => step.by?.name ?? step.by?.role),
+    ['checkbox', 'Edit', 'Remove'],
+    "Todo editing must check that each task control's name includes its task"
+  );
+  assert.deepEqual(
+    editingSteps.filter((step) => step.type === 'expectReferenced').map((step) => step.attribute),
+    ['aria-controls', 'aria-describedby'],
+    'Todo editing must check the input relationships without pinning ids'
   );
 
   const undoSteps = checksById['pressure-todo-undo'].steps;
@@ -2119,18 +2139,22 @@ function assertTodoListPressureMode() {
     undoSteps.some(
       (step) =>
         step.type === 'expectText' &&
-        step.selector === '.todo-text' &&
+        step.selector === '.item' &&
         step.index === 0 &&
         step.text === 'One'
     ),
     'Todo undo must restore the removed task at its original index'
   );
   assert.ok(
+    undoSteps.some((step) => step.type === 'expectCount' && step.by?.text === 'One' && step.count === 0),
+    'A newer removal must replace the prior undo opportunity'
+  );
+  assert.ok(
     undoSteps.some(
       (step) =>
-        step.type === 'expectNoText' && step.selector === '.card' && step.text === 'One'
+        step.type === 'expectLiveRegion' && step.by?.name === 'Undo' && step.politeness === 'polite' && step.atomic === true
     ),
-    'A newer removal must replace the prior undo opportunity'
+    'Todo undo must expose its updates as an atomic polite status'
   );
   assert.ok(
     undoSteps.some(
@@ -2166,32 +2190,18 @@ function assertTodoListPressureMode() {
     'Todo teardown must prove that the undo timer is cleared'
   );
 
+  // No round reaches for markup its text does not name.
   const serializedChecks = JSON.stringify(checks);
-  for (const requiredSignal of [
-    '#new-task',
-    '#todo-items',
-    '.todo-checkbox',
-    '.todo-text',
-    '.items-left',
-    '.filters',
-    '.filter-all',
-    '.filter-active',
-    '.filter-completed',
-    '.edit-task',
-    '.edit-input',
-    '.remove-task',
-    '.clear-completed',
-    '.undo-bar',
-    '.undo-button',
-    'aria-label',
-    'aria-controls',
-    'aria-describedby',
-    'aria-pressed',
-    'aria-live',
-    'aria-atomic',
-    'unmountPreview',
-    'expectNoPreviewTimers',
-  ]) {
+  for (const hiddenContract of ['#new-task', '#todo-items', '.todo-checkbox', '.todo-text', '.items-left', '.filters',
+    '.filter-', '.edit-task', '.edit-input', '.remove-task', '.clear-completed', '.undo-bar', '.undo-button', '.primary',
+    '.input', '.card', 'New todo', 'Filter tasks', 'Undo removal of']) {
+    assert.ok(
+      !serializedChecks.includes(hiddenContract),
+      `Todo List pressure checks must not depend on ${hiddenContract}`
+    );
+  }
+  for (const requiredSignal of ['aria-pressed', 'aria-controls', 'aria-describedby', 'expectName', 'expectLiveRegion',
+    'expectReferenced', 'unmountPreview', 'expectNoPreviewTimers']) {
     assert.ok(
       serializedChecks.includes(requiredSignal),
       `Todo List pressure checks are missing ${requiredSignal}`
@@ -6591,7 +6601,7 @@ const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
   'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
-  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage']);
+  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {
