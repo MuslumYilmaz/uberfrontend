@@ -33,36 +33,33 @@ test('pricing offer v2 preserves plan hierarchy and responsive reflow', async ({
   const quarterly = page.locator('.pr-card--quarterly');
   const annual = page.locator('.pr-card--annual');
   await expect(primaryCards).toHaveCount(3);
-  await expect(page.locator('.rec-badge')).toHaveCount(1);
+  // A situation label above every card and one highlighted plan, with no badge.
+  await expect(page.locator('.rec-badge')).toHaveCount(0);
+  await expect(page.locator('.pr-plan--rec .pr-card--quarterly')).toHaveCount(1);
+  await expect(page.getByTestId('pricing-plan-label-quarterly')).toHaveText('The sweet spot for a hiring round');
+  await expect(page.getByTestId('pricing-plan-label-monthly')).toHaveText('Interview in 1–2 weeks');
   await expect(page.getByTestId('pricing-lifetime-secondary')).toBeVisible();
-  await expect(page.getByTestId('pricing-trust-strip')).toContainText('Taxes included');
-  await expect(page.getByTestId('pricing-trust-strip')).toContainText('14-day refund on your first purchase');
-  await expect(page.getByTestId('pricing-trust-strip').getByRole('link', { name: /14-day refund/i })).toHaveAttribute('href', '/legal/refund');
+  await expect(page.getByTestId('pricing-lifetime-secondary')).toContainText('$199 once, never renews, future questions included.');
+  await expect(page.getByTestId('pricing-assurance')).toContainText('Taxes included');
+  await expect(page.getByTestId('pricing-assurance')).toContainText('First purchase: full refund within 14 days, no usage test.');
+  await expect(page.getByTestId('pricing-assurance')).toContainText('No sale prices, no countdowns.');
+  await expect(page.getByTestId('pricing-assurance').getByRole('link', { name: /full refund within 14 days/i })).toHaveAttribute('href', '/legal/refund');
   await expect(page.locator('input[name*="coupon"], input[name*="promo"]')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(/money-back guarantee|where available|expanding/i);
-  // Full-page presentation: monthly-equivalent headline, one filled CTA, a visible discounts block, no sidebar.
-  await expect(quarterly.locator('.price')).toContainText('$9.67');
-  await expect(quarterly.locator('.billing-note')).toContainText('$29 billed every 3 months');
+  // Full-page presentation: the charge with its monthly equivalent, one billing sentence, one filled CTA, no sidebar.
+  await expect(quarterly.locator('.price')).toContainText('$29');
+  await expect(quarterly.locator('.price')).toContainText('every 3 months, $9.67 a month');
+  await expect(quarterly.locator('.billing-note')).toHaveText(
+    'Billed as $29 today. Renews every 3 months. Cancel anytime. $29 instead of $36 month to month.',
+  );
   await expect(quarterly.locator('.btn')).not.toHaveClass(/btn--outline/);
   await expect(monthly.locator('.btn')).toHaveClass(/btn--outline/);
   await expect(page.getByTestId('pricing-discounts')).toContainText('40% off');
   await expect(page.getByTestId('pricing-student-action')).toHaveAttribute('href', '/auth/signup?src=pricing_student_discount');
   await expect(page.locator('app-sidebar')).toHaveCount(0);
-  const productProof = page.getByTestId('pricing-product-proof');
-  const productProofImage = productProof.getByRole('img', {
-    name: 'FrontendAtlas React Counter workspace with prompt, code editor, live preview, and run checks controls',
-  });
-  await expect(productProof).toBeVisible();
-  await expect(productProofImage).toHaveAttribute('src', 'assets/images/product-proof/react-counter-workspace.jpg');
-  await expect(productProofImage).toHaveAttribute('loading', 'lazy');
-  await expect(productProof.getByRole('link', { name: 'Open free React Counter challenge' })).toHaveAttribute(
-    'href',
-    '/react/coding/react-counter?src=pricing_product_proof',
-  );
-  await expect(productProof.getByRole('link', { name: 'Preview a guided solution' })).toHaveAttribute(
-    'href',
-    '/javascript/coding/js-throttle?src=pricing_product_proof',
-  );
+  // The product proof block is gone: its "Preview a guided solution" link opened a Premium-locked task.
+  await expect(page.getByTestId('pricing-product-proof')).toHaveCount(0);
+  await expect(page.locator('main a[href^="/javascript/coding/js-throttle"]')).toHaveCount(0);
 
   const desktopBoxes = await Promise.all([
     monthly.boundingBox(),
@@ -137,10 +134,15 @@ test('regional pricing shows the list price struck through next to the regional 
   expect(badgeBox!.y).toBeLessThan(headlineBox!.y);
   await expect(page.locator('.pr-card--quarterly .price-off')).toHaveText('50% off');
   await expect(page.locator('[data-testid="pricing-lifetime-secondary"] .price-off')).toHaveText('50% off');
-  await expect(page.locator('.pr-card--quarterly s[data-list-price]')).toHaveText('$9.67');
-  await expect(page.locator('.pr-card--quarterly .price')).toContainText('$4.83');
-  await expect(page.locator('.pr-card--quarterly .billing-note')).toContainText('$14.50 billed every 3 months');
+  // The struck figure is the list charge; the comparison uses the regional month.
+  await expect(page.locator('.pr-card--quarterly s[data-list-price]')).toHaveText('$29');
+  await expect(page.locator('.pr-card--quarterly .price')).toContainText('$14.50');
+  await expect(page.locator('.pr-card--quarterly .price')).toContainText('$4.83 a month');
+  await expect(page.locator('.pr-card--quarterly .billing-note')).toContainText('Billed as $14.50 today. Renews every 3 months.');
+  await expect(page.locator('.pr-card--quarterly .billing-note')).toContainText('$14.50 instead of $18 month to month.');
   await expect(page.locator('.pr-card--monthly s[data-list-price]')).toHaveText('$12');
+  await expect(page.getByTestId('pricing-assurance')).toContainText('The regional price is the same every day, with no countdowns.');
+  await expect(page.getByTestId('pricing-assurance')).not.toContainText('No sale prices');
   await expect(page.locator('[data-testid="pricing-lifetime-secondary"] s[data-list-price]')).toHaveText('$199');
   await expect(page.getByTestId('pricing-lifetime-secondary')).toContainText('$99.50');
   await expect(page.locator('body')).not.toContainText(/limited time|offer ending|was \$/i);

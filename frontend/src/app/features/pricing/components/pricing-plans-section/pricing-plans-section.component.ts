@@ -109,22 +109,25 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <i class="pi pi-globe" aria-hidden="true"></i>
           <span>Prices for {{ regional.countryName }}: {{ regionalPercentOff() }}% off the list price, applied automatically at checkout.</span>
         </p>
-        <ng-template #pricingKicker><p class="pr-kicker">Premium for interview sprints</p></ng-template>
-        <h1>Prepare faster with deeper frontend interview reps</h1>
-        <p class="pr-hero__lede" *ngIf="!isOfferV2(); else offerV2HeroCopy">
-          Every Premium coding question ships with a guided solution; JavaScript and debugging tasks run checks in the
-          browser, and most React, Angular and Vue tasks do too.
-        </p>
-        <ng-template #offerV2HeroCopy>
+        <ng-template #pricingKicker><p class="pr-kicker">{{ countedLayout() ? 'FrontendAtlas Premium' : 'Premium for interview sprints' }}</p></ng-template>
+        <!-- Sprint offers: what every plan opens, with the access period as the only choice. -->
+        <ng-container *ngIf="countedLayout(); else baselineHero">
+          <h1>One library. Choose how long.</h1>
           <p class="pr-hero__lede">
-            Every plan unlocks the same Premium library; only the access period changes. Every Premium coding question
-            ships with a guided solution; JavaScript and debugging tasks run checks in the browser, and most React,
-            Angular and Vue tasks do too.
+            Every plan opens the same Premium library: the locked coding tasks with guided solutions, the system design
+            walkthroughs and the company-round rehearsals. The only choice is the access period. Prices in US dollars.
           </p>
+        </ng-container>
+        <ng-template #baselineHero>
+          <h1>Prepare faster with deeper frontend interview reps</h1>
+          <p class="pr-hero__lede">
+            Every Premium coding question ships with a guided solution; JavaScript and debugging tasks run checks in the
+            browser, and most React, Angular and Vue tasks do too.
+          </p>
+          <div class="pr-proof-chips pr-hero__chips" aria-label="Premium highlights">
+            <span *ngFor="let chip of activeProofChips()">{{ chip }}</span>
+          </div>
         </ng-template>
-        <div class="pr-proof-chips pr-hero__chips" aria-label="Premium highlights">
-          <span *ngFor="let chip of activeProofChips()">{{ chip }}</span>
-        </div>
       </header>
 
       <div class="plan-unlock-strip" *ngIf="variant === 'compact'">
@@ -159,6 +162,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
 
       <div
         class="pr-grid"
+        *ngIf="!countedLayout()"
         [class.pr-grid--v2]="isOfferV2()"
         id="pricing-plans"
         #planCardsRef
@@ -210,13 +214,59 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
         </article>
       </div>
 
+      <!-- Counted layout: a situation label above each card, the charge as the headline, one sentence for billing,
+           renewal and the month-to-month comparison. The highlight follows recommendedPlan, so a company plan with an
+           interview this week moves it to the month. -->
+      <div
+        class="pr-grid pr-grid--v2 pr-grid--counted"
+        *ngIf="countedLayout()"
+        id="pricing-plans"
+        #planCardsRef
+        [attr.aria-busy]="ctaMode === 'checkout' && !paymentsConfigReady ? 'true' : null">
+        <div
+          class="pr-plan"
+          *ngFor="let plan of activePrimaryPlans(); trackBy: trackPlanById"
+          [class.pr-plan--rec]="plan.id === recommendedPlan">
+          <p class="pr-plan__label" [attr.data-testid]="'pricing-plan-label-' + plan.id">{{ situationLabel(plan.id) }}</p>
+          <article
+            class="pr-card"
+            [class.pr-card--monthly]="plan.id === 'monthly'"
+            [class.pr-card--quarterly]="plan.id === 'quarterly'"
+            [class.pr-card--annual]="plan.id === 'annual'">
+            <h3 class="title">{{ plan.title }}</h3>
+            <p class="price-list-row" *ngIf="listPriceHeadline(plan.id) as listPrice" data-testid="pricing-list-price-row">
+              <s class="price-list" data-list-price>{{ listPrice }}</s>
+              <span class="price-off" *ngIf="listPercentOff(plan.id) as off">{{ off }}% off</span>
+            </p>
+            <div class="price">{{ displayPrice(plan.id) }} <span>{{ periodLine(plan.id) }}</span></div>
+            <p class="billing-note" data-testid="pricing-billing-line">{{ billingSentence(plan.id) }}</p>
+            <p class="price-local" *ngIf="countedLocalEstimate(plan.id) as local" data-testid="pricing-local-estimate">{{ local }}</p>
+            <!-- A waiting company plan says what Premium adds to it once, on the card it recommends. -->
+            <ul class="features" *ngIf="plan.id === recommendedPlan && featureLead?.length" data-testid="pricing-plan-lead">
+              <li *ngFor="let line of featureLead">{{ line }}</li>
+            </ul>
+            <button
+              class="btn"
+              [class.btn--outline]="isOutlineCta(plan.id)"
+              type="button"
+              (click)="onCta(plan.id)"
+              [disabled]="isCheckoutDisabled(plan.id)"
+              [attr.aria-disabled]="isCheckoutDisabled(plan.id) ? 'true' : null"
+              [attr.title]="checkoutTooltip(plan.id)"
+              [attr.data-testid]="'pricing-cta-' + plan.id">
+              {{ ctaTextFor(plan) }}
+            </button>
+          </article>
+        </div>
+      </div>
+
       <!-- The estimate orients; the charge is the dollar amount above. The rate provider asks for a link. -->
       <p class="pr-local-note" *ngIf="regionalPricing?.local" data-testid="pricing-local-note">
         Charged in US dollars. Local amounts are estimates at the exchange rate of {{ localRateDate() }},
         <a href="https://www.exchangerate-api.com" rel="nofollow noopener" target="_blank">rates by Exchange Rate API</a>.
       </p>
 
-      <div class="pr-trust-strip" *ngIf="isOfferV2()" data-testid="pricing-trust-strip" aria-label="Checkout assurances">
+      <div class="pr-trust-strip" *ngIf="isOfferV2() && !countedLayout()" data-testid="pricing-trust-strip" aria-label="Checkout assurances">
         <span><i class="pi pi-check" aria-hidden="true"></i>{{ taxTrustCopy() }}</span>
         <span><i class="pi pi-refresh" aria-hidden="true"></i>Cancel anytime</span>
         <span><i class="pi pi-lock" aria-hidden="true"></i>Secure checkout by Lemon Squeezy</span>
@@ -225,6 +275,35 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
           <i class="pi pi-replay" aria-hidden="true"></i>
           <a [routerLink]="['/legal/refund']">14-day refund on your first purchase, see the Refund Policy</a>
         </span>
+      </div>
+
+      <!-- Counted layout: the refund and price terms once under the cards, and the one-payment option beside them. -->
+      <div class="pr-assurance" *ngIf="countedLayout()" data-testid="pricing-assurance">
+        <p class="pr-assurance__terms">
+          <a [routerLink]="['/legal/refund']">First purchase: full refund within 14 days</a>, no usage test.
+          {{ taxTrustCopy() }}. {{ priceStabilityLine() }}
+        </p>
+        <div class="pr-assurance__lifetime" data-testid="pricing-lifetime-secondary">
+          <p>
+            Prefer one payment?
+            <span class="price-list-row" *ngIf="listPriceHeadline('lifetime') as listPrice" data-testid="pricing-list-price-row">
+              <s class="price-list" data-list-price>{{ listPrice }}</s>
+              <span class="price-off" *ngIf="listPercentOff('lifetime') as off">{{ off }}% off</span>
+            </span>
+            <strong>{{ displayPrice('lifetime') }} once</strong>, never renews, future questions included.
+            <span class="price-local" *ngIf="countedLocalEstimate('lifetime') as local" data-testid="pricing-local-estimate">{{ local }}</span>
+          </p>
+          <button
+            class="btn btn--outline"
+            type="button"
+            (click)="onCta('lifetime')"
+            [disabled]="isCheckoutDisabled('lifetime')"
+            [attr.aria-disabled]="isCheckoutDisabled('lifetime') ? 'true' : null"
+            [attr.title]="checkoutTooltip('lifetime')"
+            data-testid="pricing-cta-lifetime">
+            {{ ctaTextFor(lifetimePlan()) }}
+          </button>
+        </div>
       </div>
 
       <section
@@ -275,7 +354,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
 
       <section
         class="lifetime-offer"
-        *ngIf="isOfferV2()"
+        *ngIf="isOfferV2() && !countedLayout()"
         data-testid="pricing-lifetime-secondary"
         aria-labelledby="lifetime-offer-title">
         <div class="lifetime-offer__copy">
@@ -343,49 +422,6 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
       <p class="tiny muted pr-footnote" *ngIf="ctaMode === 'checkout' && paymentsConfigReady && !paymentsEnabled && !isProUser()">
         Checkout is temporarily unavailable. Please try again shortly.
       </p>
-
-      <figure
-        class="product-proof"
-        *ngIf="variant === 'full' && isOfferV2()"
-        data-testid="pricing-product-proof"
-        aria-labelledby="pricing-product-proof-title">
-        <div class="product-proof__copy">
-          <p class="eyebrow">Real product, before you pay</p>
-          <h2 id="pricing-product-proof-title">See the practice workflow in action</h2>
-          <p>
-            Read the prompt, edit working code, inspect the live preview, and run behavioral checks
-            from one workspace. Open the free React Counter challenge to try it; no card is needed until you
-            choose a plan.
-          </p>
-          <div class="product-proof__actions" aria-label="Product preview links">
-            <a
-              class="link-btn link-btn--primary"
-              [routerLink]="['/react', 'coding', 'react-counter']"
-              [queryParams]="{ src: 'pricing_product_proof' }"
-              (click)="trackFreePathClick('product_proof_free_challenge', '/react/coding/react-counter')">
-              Open free React Counter challenge
-            </a>
-            <a
-              class="link-btn"
-              [routerLink]="['/javascript', 'coding', 'js-throttle']"
-              [queryParams]="{ src: 'pricing_product_proof' }"
-              (click)="trackFreePathClick('product_proof_solution_preview', '/javascript/coding/js-throttle')">
-              Preview a guided solution
-            </a>
-          </div>
-        </div>
-        <div class="product-proof__visual">
-          <img
-            src="assets/images/product-proof/react-counter-workspace.jpg"
-            alt="FrontendAtlas React Counter workspace with prompt, code editor, live preview, and run checks controls"
-            width="1512"
-            height="857"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>Actual FrontendAtlas workspace shown with the free React Counter challenge.</figcaption>
-        </div>
-      </figure>
 
       <section class="plan-compare" *ngIf="variant === 'full'">
         <h2 class="pr-section-title">Free vs Premium</h2>
@@ -531,7 +567,7 @@ export class PricingPlansSectionComponent implements OnInit, OnChanges, AfterVie
       premiumValue: 'On every Premium coding question',
     },
     {
-      // Free framework tasks run checks too (the product proof below sends visitors to the free React Counter for it).
+      // Free framework tasks run checks too, the free React Counter among them.
       label: 'Runnable checks',
       freeValue: 'JavaScript and debugging tasks, and most React, Angular and Vue tasks',
       premiumValue: 'The same, across the whole Premium library',
@@ -700,6 +736,84 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     return isSprintOfferVersion(this.normalizedOfferVersion());
   }
 
+  /** The full page on a sprint offer. The compact homepage section and the baseline offer keep their own layout. */
+  countedLayout(): boolean {
+    return this.variant === 'full' && this.isOfferV2();
+  }
+
+  /** The situation each plan fits, shown above its card instead of a badge. */
+  situationLabel(planId: PlanId): string {
+    const labels: Partial<Record<PlanId, string>> = {
+      monthly: 'Interview in 1–2 weeks',
+      quarterly: 'The sweet spot for a hiring round',
+      annual: 'Changing jobs this year',
+    };
+    return labels[planId] ?? '';
+  }
+
+  /** Beside the charge: "a month", "every 3 months, $16.33 a month", "a year, $8.25 a month", "once". */
+  periodLine(planId: PlanId): string {
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return '';
+    const months = this.billingMonths(detail);
+    if (detail.interval === 'one_time' || months === 1) return this.periodWords(detail);
+    const perMonth = this.formatMoney(detail.amountCents / months, detail.currency, false);
+    return `${this.periodWords(detail)}, ${perMonth} a month`;
+  }
+
+  /**
+   * What the card charges today, how it renews and, for a longer term, what the same months cost month to month.
+   * Every figure is the price shown on the page (the regional one where it applies), so the comparison stays exact.
+   */
+  billingSentence(planId: PlanId): string {
+    const detail = this.planDetailForDisplay(planId);
+    if (!detail) return 'Checkout unavailable';
+    const price = this.formatMoney(detail.amountCents, detail.currency, false);
+    if (detail.interval === 'one_time') return `One payment of ${price}. Never renews.`;
+    const sentences = [`Billed as ${price} today.`, `${this.renewalWords(detail)}.`, 'Cancel anytime.'];
+    const monthToMonth = this.monthToMonthTotal(planId, detail);
+    if (monthToMonth) sentences.push(`${price} instead of ${monthToMonth} month to month.`);
+    return sentences.join(' ');
+  }
+
+  /** The charge in the visitor's money, with the same period words as the card ("about ₹1,700 every 3 months"). */
+  countedLocalEstimate(planId: PlanId): string | null {
+    const local = this.regionalPricing?.local;
+    const detail = this.planDetailForDisplay(planId);
+    if (!local || !detail || this.regionalAmount(planId) === null) return null;
+    const amount = formatLocalMoney(roundAbout((detail.amountCents / 100) * local.rate), local.currency);
+    return amount ? `about ${amount} ${this.periodWords(detail)}` : null;
+  }
+
+  /** A regional price is struck against the list price, so "no sale prices" would read as a contradiction there. */
+  priceStabilityLine(): string {
+    return this.regionalPricing
+      ? 'The regional price is the same every day, with no countdowns.'
+      : 'No sale prices, no countdowns.';
+  }
+
+  private periodWords(detail: PricingPlanDetail): string {
+    if (detail.interval === 'one_time') return 'once';
+    if (detail.interval === 'year' && Number(detail.intervalCount || 1) === 1) return 'a year';
+    const months = this.billingMonths(detail);
+    return months === 1 ? 'a month' : `every ${months} months`;
+  }
+
+  private renewalWords(detail: PricingPlanDetail): string {
+    if (detail.interval === 'year' && Number(detail.intervalCount || 1) === 1) return 'Renews yearly';
+    const months = this.billingMonths(detail);
+    return months === 1 ? 'Renews monthly' : `Renews every ${months} months`;
+  }
+
+  private monthToMonthTotal(planId: PlanId, detail: PricingPlanDetail): string | null {
+    if (planId === 'monthly') return null;
+    const monthly = this.planDetailForDisplay('monthly');
+    if (!monthly || monthly.currency !== detail.currency || monthly.amountCents <= 0) return null;
+    const months = this.billingMonths(detail);
+    const total = monthly.amountCents * months;
+    return months > 1 && total > detail.amountCents ? this.formatMoney(total, detail.currency, false) : null;
+  }
+
   activeProofChips(): string[] {
     if (!this.isOfferV2()) return this.proofChips;
     return [
@@ -726,18 +840,16 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   badgeFor(plan: PricingPlan): string {
     if (!this.isOfferV2()) return plan.badge;
-    if (plan.id !== this.recommendedPlan) return '';
-    // The full page states the sprint length in the card summary, so its badge stays one word.
-    return this.variant === 'full' ? 'Recommended' : 'Recommended — 4–12 week interview sprint';
+    // The full page labels every card above it; the compact section keeps one badge on the recommended plan.
+    if (this.countedLayout() || plan.id !== this.recommendedPlan) return '';
+    return 'Recommended — 4–12 week interview sprint';
   }
 
   summaryFor(plan: PricingPlan): string {
     if (!this.isOfferV2()) return plan.summary;
     const summaries: Record<PlanId, string> = {
       monthly: 'A flexible month of focused practice',
-      quarterly: this.variant === 'full'
-        ? 'Built for a complete 4–12 week interview sprint'
-        : 'Built for a complete interview sprint',
+      quarterly: 'Built for a complete interview sprint',
       annual: 'Lowest monthly cost for ongoing practice',
       lifetime: 'Long-term access with one payment',
     };
@@ -779,11 +891,12 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
     return `${perMonth}/mo billed every ${months} months`;
   }
 
-  // Sprint offers lead with the monthly equivalent so the three cards compare
-  // in one unit, with the billed total on the next line. The homepage section
-  // uses the same framing as /pricing so a visitor never sees two price formats.
+  // The compact homepage section leads with the monthly equivalent so its three
+  // cards compare in one unit, with the billed total on the next line. The full
+  // page's counted layout leads with the charge and names the monthly
+  // equivalent beside it (periodLine), so both show the same two figures.
   usesPerMonthHeadline(planId: PlanId): boolean {
-    return this.isOfferV2() && (planId === 'quarterly' || planId === 'annual');
+    return this.isOfferV2() && !this.countedLayout() && (planId === 'quarterly' || planId === 'annual');
   }
 
   priceHeadline(planId: PlanId): string {
@@ -809,7 +922,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
 
   // Only the recommended card carries the filled button on the full page.
   isOutlineCta(planId: PlanId): boolean {
-    return this.variant === 'full' && this.isOfferV2() && planId !== this.recommendedPlan;
+    return this.countedLayout() && planId !== this.recommendedPlan;
   }
 
   // Regional pricing: the backend publishes the country's prices with the
@@ -1006,14 +1119,6 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
       src: this.normalizedSource(),
       location,
       page: 'pricing',
-    });
-  }
-
-  trackFreePathClick(cta: string, destination: string): void {
-    this.analytics.track('pricing_free_path_clicked', {
-      ...this.pricingAnalyticsBase(),
-      cta,
-      destination,
     });
   }
 

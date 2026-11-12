@@ -203,7 +203,7 @@ describe('PricingPlansSectionComponent', () => {
     expect(quarterlyCard.textContent || '').toContain('Best for 4-12 week interview prep');
   });
 
-  it('keeps offer v2 gated while rendering authoritative config prices and a secondary lifetime offer', () => {
+  it('renders the counted layout on the full sprint page: labels, the charge, renewal sentences and one assurance line', () => {
     component.offerVersion = PRICING_V2_OFFER_VERSION;
     component.planDetails = {
       monthly: { amountCents: 1500, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
@@ -215,43 +215,56 @@ describe('PricingPlansSectionComponent', () => {
     fixture.detectChanges();
 
     const page = fixture.nativeElement as HTMLElement;
-    const primaryCards = Array.from(page.querySelectorAll('.pr-grid .pr-card')) as HTMLElement[];
-    const primaryCtas = primaryCards.map((card) => card.querySelector('button')?.dataset['testid']);
-    const badges = Array.from(page.querySelectorAll('.rec-badge')) as HTMLElement[];
-    const lifetime = page.querySelector('[data-testid="pricing-lifetime-secondary"]') as HTMLElement;
-
-    expect(primaryCtas).toEqual([
+    const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
+    const cards = Array.from(page.querySelectorAll('.pr-grid--counted .pr-card')) as HTMLElement[];
+    expect(cards.map((card) => card.querySelector('button')?.dataset['testid'])).toEqual([
       'pricing-cta-monthly',
       'pricing-cta-quarterly',
       'pricing-cta-annual',
     ]);
-    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$15');
-    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$36');
-    expect(primaryCards.map((card) => card.textContent || '').join(' ')).toContain('$108');
-    expect(primaryCards[1].textContent || '').toContain('Save 20%');
-    expect(primaryCards[2].textContent || '').toContain('Save 40%');
-    expect(badges.length).toBe(1);
-    expect((badges[0].textContent || '').trim()).toBe('Recommended');
-    expect(primaryCards[1].textContent || '').toContain('Built for a complete 4–12 week interview sprint');
-    expect(lifetime.textContent || '').toContain('$250');
-    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('Taxes included');
-    expect(page.querySelector('[data-testid="pricing-trust-strip"]')?.textContent || '').toContain('14-day refund on your first purchase');
-    expect(page.querySelector('[data-testid="pricing-trust-strip"] a')?.getAttribute('href') || '').toContain('/legal/refund');
-    const productProof = page.querySelector('[data-testid="pricing-product-proof"]') as HTMLElement;
-    const productProofImage = productProof.querySelector('img') as HTMLImageElement;
-    const productProofLinks = Array.from(productProof.querySelectorAll('a')) as HTMLAnchorElement[];
-    expect(productProofImage.getAttribute('src')).toBe('assets/images/product-proof/react-counter-workspace.jpg');
-    expect(productProofImage.getAttribute('alt')).toBe('FrontendAtlas React Counter workspace with prompt, code editor, live preview, and run checks controls');
-    expect(productProofImage.getAttribute('loading')).toBe('lazy');
-    expect(productProofImage.getAttribute('decoding')).toBe('async');
-    expect(productProofImage.getAttribute('width')).toBe('1512');
-    expect(productProofImage.getAttribute('height')).toBe('857');
-    expect(productProofLinks.map((link) => link.getAttribute('href'))).toEqual([
-      '/react/coding/react-counter?src=pricing_product_proof',
-      '/javascript/coding/js-throttle?src=pricing_product_proof',
+    expect(['monthly', 'quarterly', 'annual'].map((plan) => text(`[data-testid="pricing-plan-label-${plan}"]`))).toEqual([
+      'Interview in 1–2 weeks',
+      'The sweet spot for a hiring round',
+      'Changing jobs this year',
     ]);
-    expect(page.textContent || '').toContain(`${SHOWCASE_STATS.totalQuestions} questions`);
-    expect(page.textContent || '').toContain(`${SHOWCASE_STATS.premiumPracticeCount} Premium practice prompts`);
+    // The charge leads with the monthly equivalent beside it; one sentence states the bill, the renewal and what the
+    // same months cost month to month, computed from the prices on the page.
+    expect(text('.pr-card--monthly .price')).toBe('$15 a month');
+    expect(text('.pr-card--monthly [data-testid="pricing-billing-line"]')).toBe('Billed as $15 today. Renews monthly. Cancel anytime.');
+    expect(text('.pr-card--quarterly .price')).toBe('$36 every 3 months, $12 a month');
+    expect(text('.pr-card--quarterly [data-testid="pricing-billing-line"]')).toBe(
+      'Billed as $36 today. Renews every 3 months. Cancel anytime. $36 instead of $45 month to month.',
+    );
+    expect(text('.pr-card--annual .price')).toBe('$108 a year, $9 a month');
+    expect(text('.pr-card--annual [data-testid="pricing-billing-line"]')).toBe(
+      'Billed as $108 today. Renews yearly. Cancel anytime. $108 instead of $180 month to month.',
+    );
+    // One highlighted plan, no badge and no percentage claim.
+    expect(page.querySelectorAll('.pr-plan--rec').length).toBe(1);
+    expect(page.querySelector('.pr-plan--rec .pr-card--quarterly')).toBeTruthy();
+    expect(page.querySelector('.rec-badge')).toBeNull();
+    expect(page.textContent || '').not.toMatch(/Save \d+%/);
+    expect((page.querySelector('[data-testid="pricing-cta-quarterly"]') as HTMLElement).classList.contains('btn--outline')).toBeFalse();
+    expect((page.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLElement).classList.contains('btn--outline')).toBeTrue();
+
+    expect(text('.pr-hero h1')).toBe('One library. Choose how long.');
+    expect(text('.pr-kicker')).toBe('FrontendAtlas Premium');
+    expect(text('.pr-hero__lede')).toContain('The only choice is the access period. Prices in US dollars.');
+    expect(page.querySelector('.pr-hero__chips')).toBeNull();
+
+    expect(text('[data-testid="pricing-assurance"] .pr-assurance__terms')).toBe(
+      'First purchase: full refund within 14 days, no usage test. Taxes included. No sale prices, no countdowns.',
+    );
+    expect(page.querySelector('[data-testid="pricing-assurance"] a')?.getAttribute('href')).toBe('/legal/refund');
+    expect(text('[data-testid="pricing-lifetime-secondary"]')).toContain(
+      'Prefer one payment? $250 once, never renews, future questions included.',
+    );
+    expect(page.querySelector('[data-testid="pricing-cta-lifetime"]')).toBeTruthy();
+    // The product proof (its "guided solution" link opened a locked task), the trust strip and the lifetime card are gone.
+    for (const removed of ['[data-testid="pricing-product-proof"]', '[data-testid="pricing-trust-strip"]', '.lifetime-offer', '.pr-grid:not(.pr-grid--counted)']) {
+      expect(page.querySelector(removed)).withContext(removed).toBeNull();
+    }
+
     const refundsFaq = component.faqGroups.flatMap((group) => group.items).find((item) => item.id === 'refunds');
     expect(refundsFaq?.a || '').toContain('ask within 14 days of the order and we refund it in full, with no usage test');
     expect(refundsFaq?.a || '').toContain('Renewal charges and unused subscription time are generally non-refundable');
@@ -259,23 +272,41 @@ describe('PricingPlansSectionComponent', () => {
     expect((page.textContent || '').toLowerCase()).not.toContain('money-back guarantee');
     expect((page.textContent || '').toLowerCase()).not.toContain('where available');
     expect((page.textContent || '').toLowerCase()).not.toContain('expanding');
-    expect(page.textContent || '').toContain('Every Premium coding question ships with a guided solution');
-    expect(page.textContent || '').toContain('Company practice pages');
     expect((page.textContent || '').toLowerCase()).not.toContain('large question library');
   });
 
-  it('renders the sprint layout for interview_sprint_v3 exactly as for v2', () => {
+  it('puts the lines of a waiting company plan on the card it recommends, and moves the highlight with it', () => {
+    component.offerVersion = PRICING_V2_OFFER_VERSION;
+    fixture.componentRef.setInput('featureLead', ['Your full ElevenLabs plan', '31 Premium React tasks with a live preview']);
+    fixture.componentRef.setInput('recommendedPlan', 'monthly');
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const leads = Array.from(page.querySelectorAll('[data-testid="pricing-plan-lead"]')) as HTMLElement[];
+    expect(leads.length).toBe(1);
+    expect(leads[0].closest('.pr-card')?.classList.contains('pr-card--monthly')).toBeTrue();
+    expect(Array.from(leads[0].querySelectorAll('li')).map((item) => item.textContent?.trim())).toEqual([
+      'Your full ElevenLabs plan',
+      '31 Premium React tasks with a live preview',
+    ]);
+    expect(page.querySelector('.pr-plan--rec .pr-card--monthly')).toBeTruthy();
+    expect((page.querySelector('[data-testid="pricing-cta-monthly"]') as HTMLElement).classList.contains('btn--outline')).toBeFalse();
+    expect((page.querySelector('[data-testid="pricing-cta-quarterly"]') as HTMLElement).classList.contains('btn--outline')).toBeTrue();
+  });
+
+  it('renders the counted layout for interview_sprint_v3 exactly as for v2', () => {
     component.offerVersion = 'interview_sprint_v3';
     fixture.detectChanges();
 
     const page = fixture.nativeElement as HTMLElement;
-    const primaryCtas = Array.from(page.querySelectorAll('.pr-grid .pr-card button'))
+    const primaryCtas = Array.from(page.querySelectorAll('.pr-grid--counted .pr-card button'))
       .map((button) => (button as HTMLElement).dataset['testid']);
     expect(component.isOfferV2()).toBeTrue();
+    expect(component.countedLayout()).toBeTrue();
     expect(primaryCtas).toEqual(['pricing-cta-monthly', 'pricing-cta-quarterly', 'pricing-cta-annual']);
     expect(page.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
-    expect(page.querySelector('[data-testid="pricing-product-proof"]')).toBeTruthy();
-    expect((page.querySelector('.rec-badge')?.textContent || '').trim()).toBe('Recommended');
+    expect(page.querySelector('[data-testid="pricing-assurance"]')).toBeTruthy();
+    expect(page.querySelector('.rec-badge')).toBeNull();
   });
 
   it('keeps one plan order in the DOM on a phone, so prerendered cards do not swap on hydration', async () => {
@@ -376,9 +407,9 @@ describe('PricingPlansSectionComponent', () => {
     const page: HTMLElement = fixture.nativeElement;
     const text = (selector: string) => (page.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
     expect(text('.pr-card--monthly [data-testid="pricing-local-estimate"]')).toBe('about ₹840 a month');
-    // One payment covers a quarter or a year, so those cards name the sum as well as the month.
-    expect(text('.pr-card--quarterly [data-testid="pricing-local-estimate"]')).toBe('about ₹570 a month, ₹1,700 every 3 months');
-    expect(text('.pr-card--annual [data-testid="pricing-local-estimate"]')).toBe('about ₹290 a month, ₹3,500 a year');
+    // The cards lead with the charge, so the estimate names the charge with the card's own period words.
+    expect(text('.pr-card--quarterly [data-testid="pricing-local-estimate"]')).toBe('about ₹1,700 every 3 months');
+    expect(text('.pr-card--annual [data-testid="pricing-local-estimate"]')).toBe('about ₹3,500 a year');
     expect(text('[data-testid="pricing-lifetime-secondary"] [data-testid="pricing-local-estimate"]')).toBe('about ₹6,300 once');
     expect(text('[data-testid="pricing-local-note"]')).toBe(
       'Charged in US dollars. Local amounts are estimates at the exchange rate of 5 Nov 2026, rates by Exchange Rate API.',
@@ -411,15 +442,22 @@ describe('PricingPlansSectionComponent', () => {
       'Prices for Türkiye: 50% off the list price, applied automatically at checkout.',
     );
     expect(text('.pr-card--monthly s[data-list-price]')).toBe('$12');
-    expect(text('.pr-card--monthly')).toContain('$6 / month');
-    expect(text('.pr-card--quarterly s[data-list-price]')).toBe('$9.67');
-    expect(text('.pr-card--quarterly')).toContain('$4.83 / month');
-    expect(text('.pr-card--quarterly')).toContain('$14.50 billed every 3 months');
-    expect(text('.pr-card--quarterly')).toContain('Save 19%');
-    expect(text('.pr-card--annual s[data-list-price]')).toBe('$6.58');
-    expect(text('.pr-card--annual')).toContain('$3.29 / month');
-    expect(text('.pr-card--annual')).toContain('$39.50 billed yearly');
-    expect(text('.pr-card--annual')).toContain('Save 45%');
+    expect(text('.pr-card--monthly')).toContain('$6 a month');
+    // The struck figure is the list charge the regional charge replaces, and the comparison uses the regional month.
+    expect(text('.pr-card--quarterly s[data-list-price]')).toBe('$29');
+    expect(text('.pr-card--quarterly')).toContain('$14.50 every 3 months, $4.83 a month');
+    expect(text('.pr-card--quarterly')).toContain(
+      'Billed as $14.50 today. Renews every 3 months. Cancel anytime. $14.50 instead of $18 month to month.',
+    );
+    expect(text('.pr-card--annual s[data-list-price]')).toBe('$79');
+    expect(text('.pr-card--annual')).toContain('$39.50 a year, $3.29 a month');
+    expect(text('.pr-card--annual')).toContain(
+      'Billed as $39.50 today. Renews yearly. Cancel anytime. $39.50 instead of $72 month to month.',
+    );
+    expect(page.textContent || '').not.toMatch(/Save \d+%/);
+    // A struck list price next to "no sale prices" would contradict itself, so the regional terms say what stays fixed.
+    expect(text('[data-testid="pricing-assurance"] .pr-assurance__terms')).toContain('The regional price is the same every day, with no countdowns.');
+    expect(text('[data-testid="pricing-assurance"]')).not.toContain('No sale prices');
     expect(text('[data-testid="pricing-lifetime-secondary"] s[data-list-price]')).toBe('$199');
     expect(text('[data-testid="pricing-lifetime-secondary"]')).toContain('$99.50');
     // Every card names its own discount next to the struck list price.
@@ -453,7 +491,8 @@ describe('PricingPlansSectionComponent', () => {
     fixture.detectChanges();
     expect(page.querySelector('[data-testid="pricing-regional-line"]')).toBeNull();
     expect(page.querySelector('s[data-list-price]')).toBeNull();
-    expect(text('.pr-card--quarterly')).toContain('$9.67 / month');
+    expect(text('.pr-card--quarterly')).toContain('$29 every 3 months, $9.67 a month');
+    expect(text('[data-testid="pricing-assurance"] .pr-assurance__terms')).toContain('No sale prices, no countdowns.');
   });
 
   it('shows the regional price on the compact homepage section too, so the card matches the checkout', () => {
@@ -502,7 +541,7 @@ describe('PricingPlansSectionComponent', () => {
     for (const card of ['.pr-card--monthly', '.pr-card--quarterly', '.pr-card--annual', '[data-testid="pricing-lifetime-secondary"]']) {
       expect(text(`${card} .price-off`)).withContext(card).toBe('35% off');
     }
-    expect(text('.pr-card--monthly')).toContain('$7.80 / month');
+    expect(text('.pr-card--monthly')).toContain('$7.80 a month');
     expect(component.listPercentOff('monthly')).toBe(35);
 
     // A card whose regional price is not below the list price shows no struck price and no discount.
@@ -517,19 +556,19 @@ describe('PricingPlansSectionComponent', () => {
     expect(page.querySelector('[data-testid="pricing-list-price-row"]')).toBeNull();
   });
 
-  it('leads with the monthly equivalent on the full sprint page and on the compact homepage section', () => {
+  it('leads with the charge on the full sprint page and with the monthly equivalent on the compact homepage section', () => {
     component.offerVersion = PRICING_V2_OFFER_VERSION;
     fixture.detectChanges();
 
     const page: HTMLElement = fixture.nativeElement;
     const cardText = (plan: string) => (page.querySelector(`.pr-card--${plan}`)?.textContent || '').replace(/\s+/g, ' ');
     const cta = (plan: string) => page.querySelector(`[data-testid="pricing-cta-${plan}"]`) as HTMLButtonElement;
-    expect(cardText('monthly')).toContain('$12 / month');
-    expect(cardText('monthly')).toContain('Billed monthly');
-    expect(cardText('quarterly')).toContain('$9.67 / month');
-    expect(cardText('quarterly')).toContain('$29 billed every 3 months');
-    expect(cardText('annual')).toContain('$6.58 / month');
-    expect(cardText('annual')).toContain('$79 billed yearly');
+    expect(cardText('monthly')).toContain('$12 a month');
+    expect(cardText('monthly')).toContain('Billed as $12 today. Renews monthly. Cancel anytime.');
+    expect(cardText('quarterly')).toContain('$29 every 3 months, $9.67 a month');
+    expect(cardText('quarterly')).toContain('Billed as $29 today.');
+    expect(cardText('annual')).toContain('$79 a year, $6.58 a month');
+    expect(cardText('annual')).toContain('Billed as $79 today.');
     expect(cta('quarterly').classList.contains('btn--outline')).toBeFalse();
     expect(cta('monthly').classList.contains('btn--outline')).toBeTrue();
     expect(cta('annual').classList.contains('btn--outline')).toBeTrue();
@@ -699,19 +738,6 @@ describe('PricingPlansSectionComponent', () => {
     }));
     expect(analytics.track).not.toHaveBeenCalledWith('pricing_unlock_preview_seen', jasmine.anything());
     expect(analytics.track).not.toHaveBeenCalledWith('pricing_value_anchor_seen', jasmine.anything());
-  });
-
-  it('tracks free path clicks with pricing context', () => {
-    const analytics = TestBed.inject(AnalyticsService) as jasmine.SpyObj<AnalyticsService>;
-
-    component.trackFreePathClick('free_challenge', '/react/coding/react-counter');
-
-    expect(analytics.track).toHaveBeenCalledWith('pricing_free_path_clicked', jasmine.objectContaining({
-      cta: 'free_challenge',
-      destination: '/react/coding/react-counter',
-      page_layout: 'interview_sprint_v1',
-      recommended_plan: 'quarterly',
-    }));
   });
 
   it('tracks premium unlock preview clicks with pricing context', () => {

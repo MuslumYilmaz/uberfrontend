@@ -116,7 +116,6 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
 const PRICING_PREVIEW_PATHS = [
   '/react/coding/react-contact-form-starter',
   '/system-design/multi-step-form-autosave',
-  '/javascript/coding/js-throttle',
 ] as const;
 
 const FREE_REACT_ROUTES = [
@@ -402,7 +401,7 @@ test.describe('production/SSR public remediation smoke', () => {
     expect(jsonLd || '').not.toMatch(/"companies?"\s*:/i);
   });
 
-  test('pricing preserves the three exact Premium evidence links', async ({ page }) => {
+  test('pricing keeps the exact Premium evidence links and offers no locked task as a free preview', async ({ page }) => {
     // The shared fixture answers the checkout config with the baseline offer, which has no
     // product-proof block; production answers the sprint offer. Pin the sprint layout here so
     // the hydrated page matches what production serves.
@@ -422,17 +421,17 @@ test.describe('production/SSR public remediation smoke', () => {
         }),
       });
     });
-    await openHydratedRoute(page, '/pricing', 'Prepare faster with deeper frontend interview reps');
+    await openHydratedRoute(page, '/pricing', 'One library. Choose how long.');
     const table = page.locator('.plan-compare');
     await expect(table).toContainText('Free vs Premium');
 
     const tableHrefs = await table.locator('a.plan-compare__preview').evaluateAll((links) =>
       links.map((link) => link.getAttribute('href')),
     );
-    expect(tableHrefs).toEqual([PRICING_PREVIEW_PATHS[0], PRICING_PREVIEW_PATHS[1]]);
-    await expect(
-      page.getByTestId('pricing-product-proof').locator(`a[href="${PRICING_PREVIEW_PATHS[2]}?src=pricing_product_proof"]`),
-    ).toHaveCount(1);
+    expect(tableHrefs).toEqual([...PRICING_PREVIEW_PATHS]);
+    // The old "Preview a guided solution" link opened a Premium-locked task as if it were a free preview.
+    await expect(page.getByTestId('pricing-product-proof')).toHaveCount(0);
+    await expect(page.locator('main a[href^="/javascript/coding/js-throttle"]')).toHaveCount(0);
     for (const path of PRICING_PREVIEW_PATHS) {
       await expect(page.locator(`main a[href^="${path}"]`)).toHaveCount(1);
     }

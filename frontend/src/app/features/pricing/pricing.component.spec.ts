@@ -172,7 +172,7 @@ describe('PricingComponent', () => {
     expect(component.checkoutSurface).toBe('overlay');
     expect(component.regionalPricing).toEqual(jasmine.objectContaining({ countryCode: 'TR', multiplier: 0.5 }));
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-regional-line"]')?.textContent || '').toContain('Prices for Türkiye');
-    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$9.67');
+    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$29');
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
@@ -184,7 +184,7 @@ describe('PricingComponent', () => {
 
   describe('with a company plan waiting', () => {
     const strip = () => fixture.nativeElement.querySelector('[data-testid="company-plan-pricing-strip"]') as HTMLElement | null;
-    const firstCardLines = () => Array.from(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card')[0].querySelectorAll('.features li'))
+    const planLeadLines = () => Array.from(fixture.nativeElement.querySelectorAll('[data-testid="pricing-plan-lead"] li'))
       .map((item) => (item as HTMLElement).textContent?.trim());
 
     async function render(url: string): Promise<void> {
@@ -207,31 +207,31 @@ describe('PricingComponent', () => {
 
       expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')?.textContent?.trim())
         .toBe('Your interview is this week, so a month of Premium is enough.');
-      const recommended = fixture.nativeElement.querySelector('.pr-rec') as HTMLElement;
+      const recommended = fixture.nativeElement.querySelector('.pr-plan--rec') as HTMLElement;
       expect(recommended.textContent).toContain('Monthly');
-      expect(recommended.textContent).toContain('Recommended');
-      expect(fixture.nativeElement.querySelectorAll('.pr-rec').length).toBe(1);
+      expect(recommended.textContent).toContain('Interview in 1–2 weeks');
+      expect(fixture.nativeElement.querySelectorAll('.pr-plan--rec').length).toBe(1);
     });
 
     it('keeps the quarter recommended, with no note, when the interview is further away', async () => {
       plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior' });
       await render('/?src=company_plan_elevenlabs');
       expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')).toBeNull();
-      expect((fixture.nativeElement.querySelector('.pr-rec') as HTMLElement).textContent).toContain('Quarterly');
+      expect((fixture.nativeElement.querySelector('.pr-plan--rec') as HTMLElement).textContent).toContain('Quarterly');
     });
 
-    it('shows the plan above the plans and opens every card with it', async () => {
+    it('shows the plan above the plans and its lines on the recommended card', async () => {
       await render('/?src=company_plan_elevenlabs');
 
       expect(strip()?.querySelector('h2')?.textContent?.trim()).toBe('Your ElevenLabs plan is waiting');
       expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\./);
       expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
-      expect(firstCardLines()).toEqual([
+      expect(planLeadLines()).toEqual([
         jasmine.stringMatching(/^The (locked task|\d locked tasks) in your ElevenLabs plan$/),
         `${PLAN_DATA.general.premiumCounts.react} Premium React tasks with a live preview`,
         `${PLAN_DATA.general.premiumCounts.systemDesign} Premium system design walkthroughs`,
-        'Cancel before the next renewal',
       ]);
+      expect(fixture.nativeElement.querySelector('[data-testid="pricing-plan-lead"]')?.closest('.pr-plan--rec')).toBeTruthy();
     });
 
     it('finds the plan again after the visitor signs in on the way', async () => {
@@ -250,7 +250,7 @@ describe('PricingComponent', () => {
     it('leaves the page as it was without a company plan source, for a general plan and for Premium members', async () => {
       await render('/');
       expect(strip()).toBeNull();
-      expect(firstCardLines()[0]).toBe('Full Premium content');
+      expect(planLeadLines()).toEqual([]);
       expect(plansStub.loadData).not.toHaveBeenCalled();
 
       await render('/?src=company_plan_general');
