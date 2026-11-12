@@ -67,6 +67,12 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['vue', 'vue-nested-comments', 'premium'],
   ['vue', 'vue-filterable-user-list', 'premium'],
   ['vue', 'vue-theme-toggle', 'premium'],
+  ['react', 'react-shopping-cart', 'premium'],
+  ['react', 'react-transfer-list', 'premium'],
+  ['angular', 'angular-shopping-cart-mini', 'premium'],
+  ['angular', 'angular-transfer-list', 'premium'],
+  ['vue', 'vue-shopping-cart', 'premium'],
+  ['vue', 'vue-transfer-list', 'premium'],
 ];
 const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-todo-list', fixture: 'react-todo-wrong.tsx', fails: ['todo-toggle', 'todo-remove', 'todo-clear-completed'] },

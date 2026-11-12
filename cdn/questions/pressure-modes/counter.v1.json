@@ -104,12 +104,16 @@
           "steps": [
             {
               "type": "expectValue",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "value": "1"
             },
             {
               "type": "setValue",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "value": "5"
             },
             {
@@ -124,7 +128,9 @@
             },
             {
               "type": "setValue",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "value": "10"
             },
             {
@@ -164,15 +170,15 @@
           "steps": [
             {
               "type": "expectAttribute",
-              "selector": ".counter-control",
+              "selector": "[tabindex=\"0\"]",
               "attribute": "tabindex",
               "expected": "0"
             },
             {
               "type": "expectAttribute",
-              "selector": ".counter-control",
+              "selector": "[tabindex=\"0\"]",
               "attribute": "aria-describedby",
-              "expected": "counter-shortcuts"
+              "expected": true
             },
             {
               "type": "expectAttribute",
@@ -188,12 +194,14 @@
             },
             {
               "type": "setValue",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "value": "5"
             },
             {
               "type": "key",
-              "selector": ".counter-control",
+              "selector": "[tabindex=\"0\"]",
               "key": "ArrowUp"
             },
             {
@@ -203,7 +211,7 @@
             },
             {
               "type": "key",
-              "selector": ".counter-control",
+              "selector": "[tabindex=\"0\"]",
               "key": "ArrowDown"
             },
             {
@@ -218,7 +226,7 @@
             },
             {
               "type": "key",
-              "selector": ".counter-control",
+              "selector": "[tabindex=\"0\"]",
               "key": "Home"
             },
             {
@@ -228,7 +236,9 @@
             },
             {
               "type": "key",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "key": "ArrowDown"
             },
             {
@@ -257,22 +267,24 @@
           "steps": [
             {
               "type": "expectAttribute",
-              "selector": ".auto-toggle",
+              "selector": "[aria-pressed]",
               "attribute": "aria-pressed",
               "expected": "false"
             },
             {
               "type": "setValue",
-              "selector": "#step-size",
+              "by": {
+                "role": "combobox"
+              },
               "value": "5"
             },
             {
               "type": "click",
-              "selector": ".auto-toggle"
+              "selector": "[aria-pressed]"
             },
             {
               "type": "expectAttribute",
-              "selector": ".auto-toggle",
+              "selector": "[aria-pressed]",
               "attribute": "aria-pressed",
               "expected": "true"
             },
@@ -292,11 +304,11 @@
             },
             {
               "type": "click",
-              "selector": ".auto-toggle"
+              "selector": "[aria-pressed]"
             },
             {
               "type": "expectAttribute",
-              "selector": ".auto-toggle",
+              "selector": "[aria-pressed]",
               "attribute": "aria-pressed",
               "expected": "false"
             },
@@ -327,7 +339,7 @@
           "steps": [
             {
               "type": "click",
-              "selector": ".auto-toggle"
+              "selector": "[aria-pressed]"
             },
             {
               "type": "waitForText",

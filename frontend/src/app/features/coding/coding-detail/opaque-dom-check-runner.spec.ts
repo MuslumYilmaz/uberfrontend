@@ -609,6 +609,34 @@ describe('OpaqueDomCheckRunner', () => {
     ]);
   });
 
+  it('picks, of several places a text shows, the one closest to a match', async () => {
+    const page = `<!doctype html><html><body>
+      <ul class="products">
+        <li><span>Keyboard</span> <button>Add to cart</button></li>
+        <li><span>Mouse</span> <button>Add to cart</button></li>
+      </ul>
+      <ul class="cart">
+        <li class="row"><span>Mouse</span> <button>Remove</button></li>
+        <li class="row"><span>Keyboard</span> <button>Remove</button></li>
+      </ul>
+      <script>
+        document.querySelectorAll('.cart button').forEach((button) => button.addEventListener('click', () => button.closest('li').remove()));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [{
+      id: 'closest',
+      name: 'Closest',
+      steps: [
+        { type: 'click', by: { role: 'button', name: 'Remove', near: { text: 'Keyboard' } } },
+        { type: 'expectCount', selector: '.cart .row', count: 1 },
+        { type: 'expectText', selector: '.cart .row', text: 'Mouse', match: 'contains' },
+        { type: 'expectCount', by: { role: 'button', name: 'Add to cart', near: { text: 'Mouse' } }, count: 1 },
+      ],
+    }] as any);
+
+    expect(results).toEqual([{ name: 'Closest', passed: true }]);
+  });
+
   it('tells a reply indented under its comment from one left at the same level', async () => {
     const page = (indent: number) => `<!doctype html><html><body>
       <div class="node"><p>Root</p><div style="margin-left: ${indent}px"><p>Child</p></div></div>

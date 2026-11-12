@@ -170,6 +170,27 @@ const FAMILIES = {
     angular: ['angular-theme-toggle', ['theme-toggles', 'theme-saved', 'theme-restored']],
     vue: ['vue-theme-toggle', ['theme-toggles', 'theme-saved', 'theme-restored']],
   },
+  shoppingCart: {
+    // The React and Vue texts remove an item whose quantity drops below 1, but all three starters allow clamping
+    // it at 1 instead, so no check decides that.
+    react: ['react-shopping-cart', ['cart-add', 'cart-plus-minus', 'cart-remove', 'cart-row-details', 'cart-totals']],
+    angular: ['angular-shopping-cart-mini', ['cart-add', 'cart-plus-minus', 'cart-remove', 'cart-row-details', 'cart-totals']],
+    vue: ['vue-shopping-cart', ['cart-add', 'cart-plus-minus', 'cart-remove', 'cart-row-details', 'cart-totals']],
+  },
+  transferList: {
+    react: ['react-transfer-list', [
+      'transfer-buttons-follow-selection', 'transfer-move-down', 'transfer-move-up', 'transfer-moved-unselected',
+      'transfer-selection-per-list',
+    ]],
+    angular: ['angular-transfer-list', [
+      'transfer-buttons-follow-selection', 'transfer-move-down', 'transfer-move-up', 'transfer-moved-unselected',
+      'transfer-selection-per-list',
+    ]],
+    vue: ['vue-transfer-list', [
+      'transfer-buttons-follow-selection', 'transfer-move-down', 'transfer-move-up', 'transfer-moved-unselected',
+      'transfer-selection-per-list',
+    ]],
+  },
 };
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');

@@ -1871,7 +1871,7 @@ function assertLikeButtonPressureMode() {
 }
 
 function assertTransferListPressureMode() {
-  const normalChecks = ['transfer-move-item'];
+  // The normal Transfer List checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'transfer-list',
     label: 'Transfer List',
@@ -1880,19 +1880,16 @@ function assertTransferListPressureMode() {
         id: 'react-transfer-list',
         starter: 'assets/sb/react/question/react-transfer-list.v2.json',
         solution: 'assets/sb/react/solution/react-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-transfer-list',
         starter: 'assets/sb/angular/question/angular-transfer-list.v2.json',
         solution: 'assets/sb/angular/solution/angular-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-transfer-list',
         starter: 'assets/sb/vue/question/vue-transfer-list.v2.json',
         solution: 'assets/sb/vue/solution/vue-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['move-between-lists', 'select-many', 'search-inside-a-list', 'undo-and-announce'],
@@ -2052,7 +2049,7 @@ function assertTodoListPressureMode() {
   assert.ok(
     coreSteps.some(
       (step) =>
-        step.type === 'key' && step.selector === '.input' && step.key === 'Enter'
+        step.type === 'key' && step.by?.role === 'textbox' && step.key === 'Enter'
     ),
     'Core Todo List flow must add through the form keyboard path'
   );
@@ -2060,7 +2057,7 @@ function assertTodoListPressureMode() {
     coreSteps.some(
       (step) =>
         step.type === 'expectDisabled' &&
-        step.selector === '.primary' &&
+        step.by?.name === 'Add' &&
         step.disabled === true
     ),
     'Core Todo List flow must keep Add disabled for invalid input'
@@ -2068,7 +2065,7 @@ function assertTodoListPressureMode() {
   assert.ok(
     coreSteps.some(
       (step) =>
-        step.type === 'expectValue' && step.selector === '.input' && step.value === ''
+        step.type === 'expectValue' && step.by?.role === 'textbox' && step.value === ''
     ),
     'Core Todo List flow must clear the input after adding'
   );
@@ -2332,11 +2329,7 @@ function assertShoppingCartPressureMode() {
       expected.solution,
       `${framework}: normal Shopping Cart solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['cart-adds-product'],
-      `${framework}: normal Shopping Cart checks must stay unchanged`
-    );
+    // The normal Shopping Cart checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/shopping-cart.v1.json',

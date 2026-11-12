@@ -1231,52 +1231,6 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
   });
 
-  test('a passed smoke check leads to the requirements and "Mark as solved", not to "Solved"', async ({ page, baseURL }) => {
-    // Every free React task and step 12's first batch check all of their requirements; this Premium task, in the
-    // last batch, still has one check. When that batch gives it full checks, this test needs a new one-check task.
-    if (!baseURL) throw new Error('Playwright baseURL is required for the Premium smoke test');
-    await seedPremiumSession(page, baseURL);
-    await page.goto('/react/coding/react-shopping-cart');
-    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
-    // The one check's selectors are named with the task, so markup that works can match them.
-    await expect(page.getByTestId('coding-check-selectors')).toContainText('.product-card button');
-    await waitForFrameworkPreview(page, '.product-card button');
-
-    // Adds a row and counts it, and nothing else: no prices, quantities or removing. The task's one check covers adding.
-    await loadCanonicalFile(page, 'src/App.tsx', [
-      "import React, { useState } from 'react';",
-      "import './App.css';",
-      '',
-      'export default function App() {',
-      '  const [cart, setCart] = useState<string[]>([]);',
-      '  return (',
-      '    <main>',
-      '      <ul>',
-      '        <li className="product-card">',
-      "          <span>Keyboard</span>",
-      "          <button onClick={() => setCart([...cart, 'Keyboard'])}>Add to cart</button>",
-      '        </li>',
-      '      </ul>',
-      '      <header className="cart-header"><p className="subtitle">Total items: {cart.length}</p></header>',
-      '      <ul>{cart.map((name, index) => <li key={index} className="cart-row">{name}</li>)}</ul>',
-      '    </main>',
-      '  );',
-      '}',
-      '',
-    ].join('\n'));
-    await rebuildPreview(page, '.product-card button');
-
-    const results = await runChecks(page, 1);
-    await expect(results.locator('.framework-check-results__summary')).toHaveText('1/1 passed');
-    const note = results.getByTestId('framework-smoke-note');
-    await expect(note).toContainText('core flow only');
-    await expect(note).toContainText('removing an item');
-    await expect(page.getByTestId('footer-submit')).toContainText('Mark as solved');
-    // The run itself marked nothing, so nothing asks to save a result.
-    await expect(page.getByTestId('login-required-dialog')).toBeHidden();
-    await expect(page.getByTestId('coding-post-pass')).toHaveCount(0);
-  });
-
   test('coding workspace stacks at 834px, keeps both framework panes usable, and preserves desktop columns', async ({ page }) => {
     await page.setViewportSize({ width: 834, height: 900 });
     await page.goto('/react/coding/react-counter');

@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "194fe1784c59bc9096d0166b4243dc96b7ca40d1e509481b1af3c4f90f0ebb63"
+      "sha256": "b8c19e382eef9ca21c02f74624d766597d6e545e5d608889386b6427c797f037"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "49cb819e60705550abcfa70d82078333eef5857c353c57d27998dd8ef5803b2e"
+      "sha256": "6f5e37abdb1dc90364bd536f9b283554cf09df23a1bd3cdb5ba4fa95930888e5"
     }
   },
-  "contentHash": "192f503aeed924deefad7aafedd521181e4a1215a4bfba5ece827444d305df2a",
-  "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
+  "contentHash": "bac4539abfa5ab02139fe756035e240f9c4cc02d706c904e4fcac8c340641140",
+  "definitionHash": "d5e0f0e3d11f01e71a03afaefae3b4a5e57fe0e0d2659ddebee7955a651b44f5",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -39,13 +39,14 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after nine pinned Premium questions gained full framework checks in the first batch of coding-trust step 12, approved by the project owner. Debounced search (React, Angular, Vue): a search only for the last query 500 ms after typing stops, the error query, clearing, an older search that ends late, and timer cleanup, plus the no-results message where the text asks. Tabs: the start state, one panel and one highlighted tab after every click, and for Angular aria-selected and labelled panels. Contact form: an invalid email, the message length where the text asks, field errors on an incomplete submit, and a cleared old result; Angular also refuses a second request while sending. The Vue debounced search solution and its Solution tab now ignore a late response for an older query, as its text promised; the question also gains a decision graph of that solution and its updatedAt moves to 2026-11-12, and the three debounced search tasks get a hint for the late-response check. Question hashes are re-pinned; starters and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the second batch of coding-trust step 12, approved by the project owner. Progress bar (React, Angular, Vue): steps of 10 from 0%, clamping at 0% and 100%, and the bar's red, orange and green at 20%, 50% and 80%, read from its rendered color. Chips input: suggestions by name or email, a click that adds a chip and empties the input, chosen users left out, ArrowDown, ArrowUp and Enter, aria-activedescendant, custom chips from Enter and comma, Backspace on an empty input, a remove button, and no duplicates. Nested checkboxes: the parent checks and clears every child, a mixed selection makes it indeterminate, and the children set it. Multi-step form: Next blocked on a step with a missing required field, the optional postal code, and a read-only summary with Submit; React and Angular also keep Next disabled, React checks Back and the step count, Angular the email format. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the third batch of coding-trust step 12, approved by the project owner. Pagination (React, Angular, Vue): Page 1 of 4 with the first five users and Previous disabled, Next moving five users at a time with the label following, a disabled Next on the last page and a disabled Previous on the first. Nested comments: top-level comments with their own Reply, one reply box at a time that a second click closes, replies nested and indented level by level; React and Vue also check Cancel and aria-expanded, which the Angular text does not ask for. Filterable user list: case-insensitive search by name only, the role dropdown, the active-only checkbox, all three together, and the empty state. Theme toggle: <html data-theme> and the label switch at once, the choice is saved under the starter's uf-theme key, and a stored dark theme applies on load. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the third batch of coding-trust step 12, approved by the project owner. Pagination (React, Angular, Vue): Page 1 of 4 with the first five users and Previous disabled, Next moving five users at a time with the label following, a disabled Next on the last page and a disabled Previous on the first. Nested comments: top-level comments with their own Reply, one reply box at a time that a second click closes, replies nested and indented level by level; React and Vue also check Cancel and aria-expanded, which the Angular text does not ask for. Filterable user list: case-insensitive search by name only, the role dropdown, the active-only checkbox, all three together, and the empty state. Theme toggle: <html data-theme> and the label switch at once, the choice is saved under the starter's uf-theme key, and a stored dark theme applies on load. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the fourth batch of coding-trust step 12, approved by the project owner. Six pinned Premium questions gained full framework checks: shopping cart (React, Angular, Vue) for Add to cart once and again, + and −, Remove, a row's name, unit price, quantity and line total, and the item count and total price; transfer list for buttons that follow their own list's selection, ↓ and ↑ appending in order, moved items arriving unselected, and per-list selection. Six pressure pins move with the counter and todo scenarios, whose rounds now find what their text names: counter rounds 2 to 4 find the step selector as a select box, the focusable container by tabindex, its keyboard instructions by any aria-describedby, and the Start/Pause button by aria-pressed; todo round 1 finds the Add button and the text box by role and reads task text from the starters' rows. The round texts, order, time limits and solutions are unchanged. Question hashes are re-pinned; starters are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "192f503aeed924deefad7aafedd521181e4a1215a4bfba5ece827444d305df2a",
+    "registryContentHash": "bac4539abfa5ab02139fe756035e240f9c4cc02d706c904e4fcac8c340641140",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "192f503aeed924deefad7aafedd521181e4a1215a4bfba5ece827444d305df2a",
+  "registryContentHash": "bac4539abfa5ab02139fe756035e240f9c4cc02d706c904e4fcac8c340641140",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -54,7 +55,7 @@
   "variantCount": 60,
   "variantRefs": [
     {
-      "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
+      "contentHash": "b0e8a88a3efd6f2d0d41a148b776cb4ae9677abc65bd7b568f114e1ba528a9d9",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "revision": 1
@@ -78,7 +79,7 @@
       "revision": 1
     },
     {
-      "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
+      "contentHash": "2a3783a6bef57ad25724fc333c944d677e21e597861648b0bc99405a261ebe6a",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "revision": 1
@@ -102,7 +103,7 @@
       "revision": 1
     },
     {
-      "contentHash": "9a28ed82f28e33d60c94fdc1f41aa2b6ed1f29bc197545a306ee3073577c81d0",
+      "contentHash": "f2f969e2602cc42682f67110350e06924e86b28f4c5e795b26c7e29b5225a667",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "revision": 1
@@ -138,7 +139,7 @@
       "revision": 1
     },
     {
-      "contentHash": "e5db84c26d980b9396ef0fe42b0c67127478df93c00e3e48a8e0fe3607e513ec",
+      "contentHash": "42ece01188f1debda2182c60e99242bfc9e1a40f62a0490561ecd95452412cf5",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "revision": 1
@@ -234,7 +235,7 @@
       "revision": 1
     },
     {
-      "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
+      "contentHash": "e775da056dbe0b6fec25b33b2fcab6f1a36c99c3e2fac975037ba0d9274dfe1a",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "revision": 1
@@ -258,7 +259,7 @@
       "revision": 1
     },
     {
-      "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
+      "contentHash": "f91934cfa2909a3e6c6a4e3aa5940025d0d762816abfd4a97cc1f9b8e9e517e9",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "revision": 1
@@ -282,7 +283,7 @@
       "revision": 1
     },
     {
-      "contentHash": "439ca7a01b517f613faf047c84ce8d9b841fbef793d0c219239105d9a7f9c09c",
+      "contentHash": "3a58a2a549ef109ba42eb620a2eb3ca6e932764fab7f2797b104a36d2fa7e73f",
       "enabled": true,
       "id": "int-code-react-mid-shopping-cart-v1",
       "revision": 1
@@ -318,13 +319,13 @@
       "revision": 1
     },
     {
-      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
+      "contentHash": "2480dc3957dfc1c3630434681143df39008c3335a2836e38b8e18f779ef72694",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "revision": 1
     },
     {
-      "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
+      "contentHash": "788167c1521d64a8ec6de806563c50ca3f9e8e019d39d257ee931d2b0532ead0",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "revision": 1
@@ -348,7 +349,7 @@
       "revision": 1
     },
     {
-      "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
+      "contentHash": "879e1aa7bd8b36ca30dfc07698ed324ae43073e788c85658747ebeacfe87a838",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "revision": 1
@@ -372,7 +373,7 @@
       "revision": 1
     },
     {
-      "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
+      "contentHash": "427ec148c3a47d9d19e9c2cd7159a040939b42fe1c2bda2ef456abc2a507934f",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "revision": 1
@@ -408,7 +409,7 @@
       "revision": 1
     },
     {
-      "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
+      "contentHash": "940fbf6221d3a5b4cad20e847c89e598f59314712dce0188f4922eb8a1ed6ecc",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "revision": 1

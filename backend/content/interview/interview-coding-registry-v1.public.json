@@ -5,7 +5,7 @@
   "status": "editorial-gold",
   "variants": [
     {
-      "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
+      "contentHash": "b0e8a88a3efd6f2d0d41a148b776cb4ae9677abc65bd7b568f114e1ba528a9d9",
       "enabled": true,
       "id": "int-code-angular-junior-counter-v1",
       "level": "junior",
@@ -298,7 +298,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
+      "contentHash": "2a3783a6bef57ad25724fc333c944d677e21e597861648b0bc99405a261ebe6a",
       "enabled": true,
       "id": "int-code-angular-junior-todo-v1",
       "level": "junior",
@@ -628,7 +628,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "9a28ed82f28e33d60c94fdc1f41aa2b6ed1f29bc197545a306ee3073577c81d0",
+      "contentHash": "f2f969e2602cc42682f67110350e06924e86b28f4c5e795b26c7e29b5225a667",
       "enabled": true,
       "id": "int-code-angular-mid-shopping-cart-v1",
       "level": "mid",
@@ -1188,7 +1188,7 @@
       "track": "angular"
     },
     {
-      "contentHash": "e5db84c26d980b9396ef0fe42b0c67127478df93c00e3e48a8e0fe3607e513ec",
+      "contentHash": "42ece01188f1debda2182c60e99242bfc9e1a40f62a0490561ecd95452412cf5",
       "enabled": true,
       "id": "int-code-angular-senior-transfer-list-v1",
       "level": "senior",
@@ -1791,7 +1791,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
+      "contentHash": "e775da056dbe0b6fec25b33b2fcab6f1a36c99c3e2fac975037ba0d9274dfe1a",
       "enabled": true,
       "id": "int-code-react-junior-counter-v1",
       "level": "junior",
@@ -2052,7 +2052,7 @@
       "track": "react"
     },
     {
-      "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
+      "contentHash": "f91934cfa2909a3e6c6a4e3aa5940025d0d762816abfd4a97cc1f9b8e9e517e9",
       "enabled": true,
       "id": "int-code-react-junior-todo-v1",
       "level": "junior",
@@ -2346,7 +2346,7 @@
       "track": "react"
     },
     {
-      "contentHash": "439ca7a01b517f613faf047c84ce8d9b841fbef793d0c219239105d9a7f9c09c",
+      "contentHash": "3a58a2a549ef109ba42eb620a2eb3ca6e932764fab7f2797b104a36d2fa7e73f",
       "enabled": true,
       "id": "int-code-react-mid-shopping-cart-v1",
       "level": "mid",
@@ -2858,7 +2858,7 @@
       "track": "react"
     },
     {
-      "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
+      "contentHash": "2480dc3957dfc1c3630434681143df39008c3335a2836e38b8e18f779ef72694",
       "enabled": true,
       "id": "int-code-react-senior-transfer-list-v1",
       "level": "senior",
@@ -2946,7 +2946,7 @@
       "track": "react"
     },
     {
-      "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
+      "contentHash": "788167c1521d64a8ec6de806563c50ca3f9e8e019d39d257ee931d2b0532ead0",
       "enabled": true,
       "id": "int-code-vue-junior-counter-v1",
       "level": "junior",
@@ -3207,7 +3207,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
+      "contentHash": "879e1aa7bd8b36ca30dfc07698ed324ae43073e788c85658747ebeacfe87a838",
       "enabled": true,
       "id": "int-code-vue-junior-todo-v1",
       "level": "junior",
@@ -3501,7 +3501,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
+      "contentHash": "427ec148c3a47d9d19e9c2cd7159a040939b42fe1c2bda2ef456abc2a507934f",
       "enabled": true,
       "id": "int-code-vue-mid-shopping-cart-v1",
       "level": "mid",
@@ -4009,7 +4009,7 @@
       "track": "vue"
     },
     {
-      "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
+      "contentHash": "940fbf6221d3a5b4cad20e847c89e598f59314712dce0188f4922eb8a1ed6ecc",
       "enabled": true,
       "id": "int-code-vue-senior-transfer-list-v1",
       "level": "senior",

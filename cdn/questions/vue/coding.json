@@ -3222,8 +3222,8 @@
     },
     "frameworkTests": [
       {
-        "id": "cart-adds-product",
-        "name": "Shopping cart adds product",
+        "id": "cart-add",
+        "name": "Add to cart puts a product in the cart once with quantity 1, and again raises its quantity",
         "steps": [
           {
             "type": "expectCount",
@@ -3232,7 +3232,161 @@
           },
           {
             "type": "click",
-            "selector": ".product-card button"
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "1",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-row",
+            "text": "Wireless Headphones",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "2",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "cart-plus-minus",
+        "name": "+ and − change a cart item's quantity by 1",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "2",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "+",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "3",
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "2",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "cart-remove",
+        "name": "Remove takes only its item out of the cart",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Mechanical Keyboard"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 2
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Remove",
+              "near": {
+                "text": "Mechanical Keyboard"
+              }
+            }
           },
           {
             "type": "waitForCount",
@@ -3241,14 +3395,165 @@
           },
           {
             "type": "expectText",
-            "selector": ".cart-header .subtitle",
-            "text": "Total items",
+            "selector": ".cart-row",
+            "text": "Wireless Headphones",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "cart-row-details",
+        "name": "A cart row shows the name, unit price, quantity and line total",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Mechanical Keyboard"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Mechanical Keyboard"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-row .qty",
+            "text": "2",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-row",
+            "text": "Mechanical Keyboard",
             "match": "contains"
           },
           {
             "type": "expectText",
+            "selector": ".cart-row",
+            "text": "89.5",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".cart-row",
+            "text": "179",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "cart-totals",
+        "name": "The item count and total price follow every change",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add to cart",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 2
+          },
+          {
+            "type": "waitForText",
             "selector": ".cart-header .subtitle",
-            "text": "1",
+            "text": "Total items: 3",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "309.97",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "-",
+              "near": {
+                "text": "Wireless Headphones"
+              }
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "Total items: 2",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "179.98",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Remove",
+              "near": {
+                "text": "Ergonomic Mouse"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".cart-row",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "Total items: 1",
+            "match": "contains"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".cart-header .subtitle",
+            "text": "129.99",
             "match": "contains"
           }
         ]
@@ -5072,27 +5377,401 @@
     },
     "frameworkTests": [
       {
-        "id": "transfer-move-item",
-        "name": "Transfer moves selected item",
+        "id": "transfer-buttons-follow-selection",
+        "name": "↓ and ↑ stay disabled until their own list has a selection",
         "steps": [
           {
-            "type": "expectCount",
-            "selector": ".layout .listCard:nth-child(1) .row",
-            "count": 5
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": true
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": true
           },
           {
             "type": "click",
-            "selector": ".layout .listCard:nth-child(1) .row input"
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            }
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": false
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": true
           },
           {
             "type": "click",
-            "selector": ".controls .btn",
-            "index": 0
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            }
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Xenon"
+            }
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": false
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "transfer-move-down",
+        "name": "↓ moves the selected Top items to the end of Bottom, in their order",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Beta"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Delta"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            }
           },
           {
             "type": "waitForCount",
-            "selector": ".layout .listCard:last-child .row",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "index": 0,
+            "text": "Alpha",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "index": 1,
+            "text": "Gamma",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "index": 2,
+            "text": "Epsilon",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "index": 2,
+            "text": "Zinc",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "index": 3,
+            "text": "Beta",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "index": 4,
+            "text": "Delta",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transfer-move-up",
+        "name": "↑ moves the selected Bottom items to the end of Top",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Yttrium"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "count": 6
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Top"
+              }
+            },
+            "index": 5,
+            "text": "Yttrium",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "index": 0,
+            "text": "Xenon",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
+            "index": 1,
+            "text": "Zinc",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "transfer-moved-unselected",
+        "name": "Moved items arrive unselected, and the buttons disable again",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            }
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "role": "listitem",
+              "near": {
+                "text": "Bottom"
+              }
+            },
             "count": 4
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": true
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "transfer-selection-per-list",
+        "name": "Selecting in one list leaves the other list as it was",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Xenon"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Yttrium"
+            },
+            "expected": false
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox",
+              "name": "Xenon"
+            }
+          },
+          {
+            "type": "expectChecked",
+            "by": {
+              "role": "checkbox",
+              "name": "Alpha"
+            }
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↓"
+            },
+            "disabled": false
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "↑"
+            },
+            "disabled": false
           }
         ]
       }

@@ -799,13 +799,22 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     });
     if (!by.near) return matches;
     // Near another element: the matches inside its closest ancestor that holds any, as a comment's own Reply button
-    // shares a wrapper with its text before the replies' buttons do.
-    const anchor = findAll({ by: by.near } as FrameworkTestStep)[0];
-    for (let scope = anchor?.parentElement ?? null; scope; scope = scope.parentElement) {
-      const inside = matches.filter((element) => scope!.contains(element));
-      if (inside.length) return inside;
+    // shares a wrapper with its text before the replies' buttons do. When the other element shows more than once
+    // (a product's name in its card and in the cart), the occurrence with the closest matches wins.
+    let nearest: Element[] = [];
+    let nearestDepth = Infinity;
+    for (const anchor of findAll({ by: by.near } as FrameworkTestStep)) {
+      let depth = 0;
+      for (let scope = anchor.parentElement; scope && depth < nearestDepth; scope = scope.parentElement, depth += 1) {
+        const inside = matches.filter((element) => scope!.contains(element));
+        if (inside.length) {
+          nearest = inside;
+          nearestDepth = depth;
+          break;
+        }
+      }
     }
-    return [];
+    return nearest;
   };
   const describeLocator = (by: FrameworkTestLocator): string => {
     const own = by.text !== undefined

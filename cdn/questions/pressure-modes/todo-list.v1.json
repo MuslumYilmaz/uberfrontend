@@ -33,17 +33,25 @@
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": true
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "   "
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": true
             },
             {
@@ -53,17 +61,24 @@
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "  Buy milk  "
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": false
             },
             {
               "type": "key",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "key": "Enter"
             },
             {
@@ -74,22 +89,30 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Buy milk"
+              "selector": ".item",
+              "text": "Buy milk",
+              "match": "contains"
             },
             {
               "type": "expectValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": ""
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Walk dog"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -99,15 +122,17 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
+              "selector": ".item",
               "index": 0,
-              "text": "Buy milk"
+              "text": "Buy milk",
+              "match": "contains"
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
+              "selector": ".item",
               "index": 1,
-              "text": "Walk dog"
+              "text": "Walk dog",
+              "match": "contains"
             }
           ]
         }
