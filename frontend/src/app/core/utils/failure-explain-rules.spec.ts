@@ -85,8 +85,8 @@ describe('failure-explain-rules', () => {
     const cases: Array<{ questionId: string; name: string; errorLine: string; ruleId: string; action: string }> = [
       {
         questionId: 'angular-pagination-table',
-        name: 'Pagination moves to next page',
-        errorLine: '.pagination span expected text "Page 1 of 4" but found "1 / 4"',
+        name: 'Starts on Page 1 of 4 with the first 5 users and Previous disabled',
+        errorLine: 'text "Page 1 of 4" did not reach 1 match before timeout. Last count: 0',
         ruleId: 'angular-pagination-page-label',
         action: 'Page {{ currentPage() + 1 }} of {{ totalPages() }}',
       },
@@ -113,8 +113,8 @@ describe('failure-explain-rules', () => {
       },
       {
         questionId: 'angular-nested-comments',
-        name: 'Reply opens one box and closes it on a second click',
-        errorLine: '.reply expected 0 matches but found 1',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
         ruleId: 'angular-nested-comments-reply-toggle',
         action: 'toggleReply(id)',
       },
@@ -169,15 +169,15 @@ describe('failure-explain-rules', () => {
       },
       {
         questionId: 'react-nested-comments',
-        name: 'Reply opens one box and closes it on a second click',
-        errorLine: '.reply expected 0 matches but found 1',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
         ruleId: 'react-nested-comments-reply-toggle',
         action: 'setActiveReplyId((active) => (active === id ? null : id))',
       },
       {
         questionId: 'vue-nested-comments',
-        name: 'Reply opens one box and closes it on a second click',
-        errorLine: '.reply expected 0 matches but found 1',
+        name: 'Reply opens one box, moves it to another comment, and a second click closes it',
+        errorLine: 'textbox expected 1 match but found 2',
         ruleId: 'vue-nested-comments-reply-toggle',
         action: 'toggleReply(id)',
       },

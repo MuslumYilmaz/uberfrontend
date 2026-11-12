@@ -29,7 +29,7 @@ export function checkSelectors(tests: readonly FrameworkTest[] | null | undefine
   const seen = new Set<string>();
   for (const test of tests ?? []) {
     for (const step of test?.steps ?? []) {
-      for (const part of [step, step?.among]) {
+      for (const part of [step, step?.among, step?.than]) {
         const target = part?.by ? describeLocator(part.by) : String(part?.selector ?? '').trim();
         if (target) seen.add(target);
       }
@@ -38,8 +38,16 @@ export function checkSelectors(tests: readonly FrameworkTest[] | null | undefine
   return [...seen];
 }
 
-/** A locator as the task page names it: `button "Add"`, `checkbox`, `textbox labelled "City"`, `text "No results"`. */
+/**
+ * A locator as the task page names it: `button "Add"`, `checkbox`, `textbox labelled "City"`, `text "No results"`,
+ * `button "Reply" near text "First comment"`.
+ */
 export function describeLocator(by: FrameworkTestLocator): string {
+  const own = ownLocator(by);
+  return own && by.near ? `${own} near ${describeLocator(by.near)}` : own;
+}
+
+function ownLocator(by: FrameworkTestLocator): string {
   if (by.text !== undefined) return `text "${by.text}"`;
   if (by.label !== undefined) return `${by.role || 'control'} labelled "${by.label}"`;
   if (!by.role) return by.name === undefined ? '' : `element "${by.name}"`;

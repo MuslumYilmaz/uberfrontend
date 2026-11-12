@@ -120,17 +120,22 @@ export type FrameworkTestStepType =
   | 'mockRandom'
   | 'expectStandsOut'
   | 'expectColor'
-  | 'expectReferenced';
+  | 'expectReferenced'
+  | 'expectIndented'
+  | 'mockStorage'
+  | 'expectStorage';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
  * (the name also matches the visible text), by label, or by an element's own text. Hidden elements never match.
+ * `near` keeps the matches that sit closest to another element, such as the Reply button of one comment.
  */
 export type FrameworkTestLocator = {
   role?: string;
   name?: string;
   label?: string;
   text?: string;
+  near?: FrameworkTestLocator;
 };
 
 export type FrameworkTestStep = {
@@ -164,6 +169,10 @@ export type FrameworkTestStep = {
   hue?: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'grey' | 'transparent';
   /** expectColor: the CSS color property read, background-color unless set. */
   property?: string;
+  /** expectIndented: the element the target must start further right than. */
+  than?: { selector?: string; by?: FrameworkTestLocator };
+  /** mockStorage: the check's localStorage entries, set before the preview boots. */
+  entries?: Record<string, string>;
 };
 
 export type FrameworkTest = {

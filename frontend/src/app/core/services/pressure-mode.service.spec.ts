@@ -48,6 +48,10 @@ describe('PressureModeService', () => {
       { type: 'expectColor', selector: '.bar', hue: 'teal' },
       { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
       { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
+      { type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' }, css: 'x' } },
+      { type: 'mockStorage', entries: { theme: 'dark', count: 3 } },
+      { type: 'expectStorage', key: 'theme', value: 'dark' },
+      { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root', css: 'x' } } },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -62,6 +66,10 @@ describe('PressureModeService', () => {
       { type: 'expectColor', selector: '.bar' },
       { type: 'expectReferenced', by: { role: 'option' }, attribute: 'aria-activedescendant', expected: false },
       { type: 'expectChecked', by: { role: 'checkbox' }, expected: 'mixed' },
+      { type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' } } },
+      { type: 'mockStorage', entries: { theme: 'dark' } },
+      { type: 'expectStorage', key: 'theme', value: 'dark' },
+      { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root' } } },
     ]);
   });
 

@@ -137,6 +137,39 @@ const FAMILIES = {
     ]],
     vue: ['vue-multi-step-form', ['multi-step-next-blocked', 'multi-step-summary']],
   },
+  pagination: {
+    react: ['react-pagination-table', ['pagination-first-page', 'pagination-next', 'pagination-last-page', 'pagination-previous']],
+    angular: ['angular-pagination-table', ['pagination-first-page', 'pagination-next', 'pagination-last-page', 'pagination-previous']],
+    vue: ['vue-pagination-table', ['pagination-first-page', 'pagination-next', 'pagination-last-page', 'pagination-previous']],
+  },
+  nestedComments: {
+    // Angular's text has no Cancel button and no aria-expanded.
+    react: ['react-nested-comments', [
+      'comments-add-top-level', 'comments-one-reply-box', 'comments-reply-aria-expanded', 'comments-replies-nest',
+      'comments-cancel-reply',
+    ]],
+    angular: ['angular-nested-comments', ['comments-add-top-level', 'comments-one-reply-box', 'comments-replies-nest']],
+    vue: ['vue-nested-comments', [
+      'comments-add-top-level', 'comments-one-reply-box', 'comments-reply-aria-expanded', 'comments-replies-nest',
+      'comments-cancel-reply',
+    ]],
+  },
+  userList: {
+    react: ['react-filterable-user-list', [
+      'user-list-search', 'user-list-role', 'user-list-only-active', 'user-list-filters-combine', 'user-list-empty-state',
+    ]],
+    angular: ['angular-filterable-user-list', [
+      'user-list-search', 'user-list-role', 'user-list-only-active', 'user-list-filters-combine', 'user-list-empty-state',
+    ]],
+    vue: ['vue-filterable-user-list', [
+      'user-list-search', 'user-list-role', 'user-list-only-active', 'user-list-filters-combine', 'user-list-empty-state',
+    ]],
+  },
+  themeToggle: {
+    react: ['react-theme-toggle', ['theme-toggles', 'theme-saved', 'theme-restored']],
+    angular: ['angular-theme-toggle', ['theme-toggles', 'theme-saved', 'theme-restored']],
+    vue: ['vue-theme-toggle', ['theme-toggles', 'theme-saved', 'theme-restored']],
+  },
 };
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');

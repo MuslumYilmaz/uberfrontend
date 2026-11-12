@@ -43,6 +43,8 @@ describe('checkSelectors', () => {
         { type: 'click', by: { role: 'button', name: 'Add' }, index: 1 },
         { type: 'expectStandsOut', selector: '.tabs button', index: 1, among: { selector: '.tabs button' } },
         { type: 'expectStandsOut', by: { role: 'tab', name: 'Details' }, among: { by: { role: 'tab' } } },
+        { type: 'expectIndented', by: { text: 'Child reply' }, than: { by: { text: 'Root comment' } } },
+        { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root comment' } } },
       ],
     };
 
@@ -56,6 +58,9 @@ describe('checkSelectors', () => {
       '.tabs button',
       'tab "Details"',
       'tab',
+      'text "Child reply"',
+      'text "Root comment"',
+      'button "Reply" near text "Root comment"',
     ]);
   });
 });

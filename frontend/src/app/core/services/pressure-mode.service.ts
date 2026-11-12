@@ -44,6 +44,9 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectStandsOut',
   'expectColor',
   'expectReferenced',
+  'expectIndented',
+  'mockStorage',
+  'expectStorage',
 ]);
 
 const FRAMEWORK_STEP_HUES = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey', 'transparent']);
@@ -188,14 +191,14 @@ export class PressureModeService {
     }
     const by = this.normalizeLocator(source['by']);
     if (by) step.by = by;
-    const among = source['among'];
-    if (among && typeof among === 'object' && !Array.isArray(among)) {
-      const group: NonNullable<FrameworkTestStep['among']> = {};
-      const selector = (among as Record<string, unknown>)['selector'];
-      if (typeof selector === 'string') group.selector = selector;
-      const groupBy = this.normalizeLocator((among as Record<string, unknown>)['by']);
-      if (groupBy) group.by = groupBy;
-      if (group.selector || group.by) step.among = group;
+    const among = this.normalizeTarget(source['among']);
+    if (among) step.among = among;
+    const than = this.normalizeTarget(source['than']);
+    if (than) step.than = than;
+    const entries = source['entries'];
+    if (entries && typeof entries === 'object' && !Array.isArray(entries)) {
+      const kept = Object.entries(entries).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
+      if (kept.length) step.entries = Object.fromEntries(kept);
     }
     if (Array.isArray(source['values'])) {
       const values = source['values'].filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
@@ -215,6 +218,17 @@ export class PressureModeService {
     return step;
   }
 
+  /** A second element a step compares its target with: expectStandsOut's group, expectIndented's reference. */
+  private normalizeTarget(value: unknown): { selector?: string; by?: FrameworkTestLocator } | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const source = value as Record<string, unknown>;
+    const target: { selector?: string; by?: FrameworkTestLocator } = {};
+    if (typeof source['selector'] === 'string') target.selector = source['selector'];
+    const by = this.normalizeLocator(source['by']);
+    if (by) target.by = by;
+    return target.selector || target.by ? target : null;
+  }
+
   private normalizeLocator(value: unknown): FrameworkTestLocator | null {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
     const source = value as Record<string, unknown>;
@@ -222,6 +236,8 @@ export class PressureModeService {
     for (const key of ['role', 'name', 'label', 'text'] as const) {
       if (typeof source[key] === 'string') locator[key] = source[key];
     }
+    const near = this.normalizeLocator(source['near']);
+    if (near && Object.keys(locator).length) locator.near = near;
     return Object.keys(locator).length ? locator : null;
   }
 

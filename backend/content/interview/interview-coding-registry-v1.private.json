@@ -1,5 +1,5 @@
 {
-  "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+  "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
@@ -26,9 +26,10 @@
       "2026-11-11 source-pin maintenance: registryContentHash refreshed after js-concurrency-map-limit gained a TypeScript starter, approved by the project owner (open items after coding-trust step 10). The task had none, so the TypeScript editor had no typed signature to start from. The JavaScript starter that the variant uses, the prompt, the tests, the rubric, time limits and revisions are unchanged. The question hash is re-pinned. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the six pinned Counter and Todo List questions gained full framework checks, approved by the project owner (coding-trust step 11). Counter: five checks (starts at 0, +1 per click, -1 above 0, never below 0, Reset from any count) replace the single flow check. Todo List: one check per requirement each text states (add and clear the input, ignore an empty input, ignore spaces where the text says so, strike through when checked, Remove its own task, Clear completed and the empty message where the text asks). The checks find elements by role, label and text. Only frameworkTests changed, so only the question hashes are re-pinned; interview rounds take their checks from the pinned pressure assets, which are unchanged, as are the summaries, which are the variant prompts, the starters, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after nine pinned Premium questions gained full framework checks in the first batch of coding-trust step 12, approved by the project owner. Debounced search (React, Angular, Vue): a search only for the last query 500 ms after typing stops, the error query, clearing, an older search that ends late, and timer cleanup, plus the no-results message where the text asks. Tabs: the start state, one panel and one highlighted tab after every click, and for Angular aria-selected and labelled panels. Contact form: an invalid email, the message length where the text asks, field errors on an incomplete submit, and a cleared old result; Angular also refuses a second request while sending. The Vue debounced search solution and its Solution tab now ignore a late response for an older query, as its text promised; the question also gains a decision graph of that solution and its updatedAt moves to 2026-11-12, and the three debounced search tasks get a hint for the late-response check. Question hashes are re-pinned; starters and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the second batch of coding-trust step 12, approved by the project owner. Progress bar (React, Angular, Vue): steps of 10 from 0%, clamping at 0% and 100%, and the bar's red, orange and green at 20%, 50% and 80%, read from its rendered color. Chips input: suggestions by name or email, a click that adds a chip and empties the input, chosen users left out, ArrowDown, ArrowUp and Enter, aria-activedescendant, custom chips from Enter and comma, Backspace on an empty input, a remove button, and no duplicates. Nested checkboxes: the parent checks and clears every child, a mixed selection makes it indeterminate, and the children set it. Multi-step form: Next blocked on a step with a missing required field, the optional postal code, and a read-only summary with Submit; React and Angular also keep Next disabled, React checks Back and the step count, Angular the email format. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the second batch of coding-trust step 12, approved by the project owner. Progress bar (React, Angular, Vue): steps of 10 from 0%, clamping at 0% and 100%, and the bar's red, orange and green at 20%, 50% and 80%, read from its rendered color. Chips input: suggestions by name or email, a click that adds a chip and empties the input, chosen users left out, ArrowDown, ArrowUp and Enter, aria-activedescendant, custom chips from Enter and comma, Backspace on an empty input, a remove button, and no duplicates. Nested checkboxes: the parent checks and clears every child, a mixed selection makes it indeterminate, and the children set it. Multi-step form: Next blocked on a step with a missing required field, the optional postal code, and a read-only summary with Submit; React and Angular also keep Next disabled, React checks Back and the step count, Angular the email format. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the third batch of coding-trust step 12, approved by the project owner. Pagination (React, Angular, Vue): Page 1 of 4 with the first five users and Previous disabled, Next moving five users at a time with the label following, a disabled Next on the last page and a disabled Previous on the first. Nested comments: top-level comments with their own Reply, one reply box at a time that a second click closes, replies nested and indented level by level; React and Vue also check Cancel and aria-expanded, which the Angular text does not ask for. Filterable user list: case-insensitive search by name only, the role dropdown, the active-only checkbox, all three together, and the empty state. Theme toggle: <html data-theme> and the label switch at once, the choice is saved under the starter's uf-theme key, and a stored dark theme applies on load. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release."
     ],
-    "registryContentHash": "a64ad45e799b1106f58e683250c54a608adba5e2f8f23737c633e081d9841624",
+    "registryContentHash": "192f503aeed924deefad7aafedd521181e4a1215a4bfba5ece827444d305df2a",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
@@ -49,7 +50,7 @@
       ],
       "review": {
         "contentHash": "b824940b9e6ef9e6210f998520311e4f28399a3f16e835645793666048a6cfae",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -97,7 +98,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -278,7 +280,7 @@
     },
     {
       "conceptId": "coding-ui-composed-user-filters",
-      "contentHash": "a0139f8b4942996690bcce79c3b32be078ac4d62d5d13398a6900ce044a743e7",
+      "contentHash": "09547d65125f7970f60947811f9cdc3ea1d406434d486d45c238dec7c82f91fa",
       "id": "int-code-angular-junior-filterable-user-list-v1",
       "remediationTopics": [
         "Derived Angular collections",
@@ -286,8 +288,8 @@
         "Accessible empty states"
       ],
       "review": {
-        "contentHash": "a0139f8b4942996690bcce79c3b32be078ac4d62d5d13398a6900ce044a743e7",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "09547d65125f7970f60947811f9cdc3ea1d406434d486d45c238dec7c82f91fa",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -335,7 +337,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -463,7 +466,7 @@
         "pressureAsset": "authoring://pressure-modes/filterable-user-list.candidate-v1.json",
         "pressureAssetHash": "5551c093f97962cd16aaf66606172c8ecbbc37b83475ec48bb6510bfab052e69",
         "selectedCheckContractHash": "8fd6288cfc65b0e73e84f2e260f03a82d07dfcad87dabbe17237a3b8bbcc4221",
-        "sourceQuestionHash": "05a96d67efde354725d9fcf13355d55b490cf8dd4dca963148a05364ddcaf435",
+        "sourceQuestionHash": "3c75e76d8f63580085a53fafaf40246464704bbe1fbc6471977a91f0d113abaa",
         "starterAsset": "assets/sb/angular/question/angular-filterable-user-list.v2.json",
         "starterAssetHash": "c9fdc47375c1a02dce03b4c70ec1b7521ca90f9b3aac192a33f0b4290effe339"
       }
@@ -479,7 +482,7 @@
       ],
       "review": {
         "contentHash": "ea778ac4634cba4f696a04b56b985cd60b30b9344a776167730b38bfb6eea3d6",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -527,7 +530,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -671,7 +675,7 @@
       ],
       "review": {
         "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -719,7 +723,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -875,7 +880,7 @@
       ],
       "review": {
         "contentHash": "5917349e4648ded1eac1f1c18620acc71551c90cf2148d8175772255c34c14c3",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -923,7 +928,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1213,7 +1219,7 @@
       ],
       "review": {
         "contentHash": "6b6ddfe1e55adfc9540056804b004ac71a0f0b3b247c99a5a5796fd2ccb4925b",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1261,7 +1267,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1475,7 +1482,7 @@
       ],
       "review": {
         "contentHash": "402d34231441ad60ce9498e0f98fa7640445816109941b1cc5dbab8766519f97",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1523,7 +1530,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1686,7 +1694,7 @@
     },
     {
       "conceptId": "coding-ui-pagination",
-      "contentHash": "1f82a23e5394ad38cea2ee28b76852815ddff7a3aa7a91b0db5b9cc2c7e916b5",
+      "contentHash": "190be8d191c9d32978f8460435efa740412b5e4a386e894c6a321a89aff8433c",
       "id": "int-code-angular-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -1694,8 +1702,8 @@
         "Stable numeric and text sorting"
       ],
       "review": {
-        "contentHash": "1f82a23e5394ad38cea2ee28b76852815ddff7a3aa7a91b0db5b9cc2c7e916b5",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "190be8d191c9d32978f8460435efa740412b5e4a386e894c6a321a89aff8433c",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1743,7 +1751,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2238,7 +2247,7 @@
         "pressureAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
         "pressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
-        "sourceQuestionHash": "fe28abee44313c949cdc836cb11b89bab542b41fb7dc54c3d12a9a8d14157a18",
+        "sourceQuestionHash": "04ed80f7dfdd4acb5262e9365c868995702f6b2aab7ec951498e6d56921972de",
         "starterAsset": "assets/sb/angular/question/angular-pagination-table.v2.json",
         "starterAssetHash": "d41dbbd2a28192c47dcf8fb0bdd147cc6af95f0b2e3ee55065f2e833f7cd8e4c"
       }
@@ -2254,7 +2263,7 @@
       ],
       "review": {
         "contentHash": "9a28ed82f28e33d60c94fdc1f41aa2b6ed1f29bc197545a306ee3073577c81d0",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2302,7 +2311,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2829,7 +2839,7 @@
     },
     {
       "conceptId": "coding-ui-persistent-theme",
-      "contentHash": "1302f0b48ae650473776434ea3aadb82c9054d47d04424025e9dd6dd797a4149",
+      "contentHash": "9afbcc1c69e0f8787c23301c0dd6dcc4f11aec0e4c94b14c58e1e9ad7efc2b84",
       "id": "int-code-angular-mid-theme-toggle-v1",
       "remediationTopics": [
         "SSR-safe Angular initialization",
@@ -2837,8 +2847,8 @@
         "Accessible toggle state"
       ],
       "review": {
-        "contentHash": "1302f0b48ae650473776434ea3aadb82c9054d47d04424025e9dd6dd797a4149",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "9afbcc1c69e0f8787c23301c0dd6dcc4f11aec0e4c94b14c58e1e9ad7efc2b84",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2886,7 +2896,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3063,7 +3074,7 @@
         "pressureAsset": "authoring://pressure-modes/theme-toggle.candidate-v1.json",
         "pressureAssetHash": "0169054a4656ccd3e2447ae0f4f660c592dc62ed1b3976391b359eb332dbca72",
         "selectedCheckContractHash": "ce8b6df739e9ca54fceebb0bad057ad8e797d03e19110bb4cff5980bdb6516ac",
-        "sourceQuestionHash": "29721d497d8b2fa8d7443d6d1947e49ad04dc1bb59edc1f6fc2f56c754ad24ee",
+        "sourceQuestionHash": "cdf3d8a1be882decf37854e19f9896d2a82994c22ca0e1a8ce625811da458c20",
         "starterAsset": "assets/sb/angular/question/angular-theme-toggle.v2.json",
         "starterAssetHash": "9d398d0dd20ae1f09fc78c7d7273635a6e12d52a783e4b50dd7c19d1ee40e26b"
       }
@@ -3079,7 +3090,7 @@
       ],
       "review": {
         "contentHash": "c5617bb01c6ef9ede077f55b7a26a279ab25a9232d917f1e764f287e18262aec",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3127,7 +3138,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3923,7 +3935,7 @@
       ],
       "review": {
         "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3971,7 +3983,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4272,7 +4285,7 @@
       ],
       "review": {
         "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4320,7 +4333,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4706,7 +4720,7 @@
     },
     {
       "conceptId": "coding-ui-recursive-comment-tree",
-      "contentHash": "813cae3c241da542c2755804a691e7c964155fcc2abc01daaf92bfacdbee7d4a",
+      "contentHash": "0d20ad1a0360ee919cf5a3e206ce891db57e077325ca321150dcb519cf622880",
       "id": "int-code-angular-senior-nested-comments-v1",
       "remediationTopics": [
         "Recursive Angular tree updates",
@@ -4714,8 +4728,8 @@
         "Accessible reply focus"
       ],
       "review": {
-        "contentHash": "813cae3c241da542c2755804a691e7c964155fcc2abc01daaf92bfacdbee7d4a",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "0d20ad1a0360ee919cf5a3e206ce891db57e077325ca321150dcb519cf622880",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4763,7 +4777,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5041,7 +5056,7 @@
         "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
         "pressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",
         "selectedCheckContractHash": "c551d0d30c371630dcd2d5502396e76466cf3add29f445a613abed84dbd2f312",
-        "sourceQuestionHash": "db1e98ab16269db211c6c5ef90d87d4fc4b42ddd3bea3bc8f6f4f6dea7d3c21c",
+        "sourceQuestionHash": "8dc2d262bb1048d5524d9facb0ed3cc03e756dcdf75693e5bcfe767e0b3bb502",
         "starterAsset": "assets/sb/angular/question/angular-nested-comments.v2.json",
         "starterAssetHash": "8ace180a45a40bcbe113e94a8d58972bd5cb321c667808b0cd57951805a4be7f"
       }
@@ -5057,7 +5072,7 @@
       ],
       "review": {
         "contentHash": "e5db84c26d980b9396ef0fe42b0c67127478df93c00e3e48a8e0fe3607e513ec",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5105,7 +5120,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5371,7 +5387,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5419,7 +5435,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5494,7 +5511,7 @@
       ],
       "review": {
         "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5542,7 +5559,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5612,7 +5630,7 @@
       ],
       "review": {
         "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5660,7 +5678,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5740,7 +5759,7 @@
       ],
       "review": {
         "contentHash": "db1aae580d6682ac9511fe1a29adb028c143764b6d42654e21d583820ab1954a",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5788,7 +5807,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5874,7 +5894,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5922,7 +5942,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6008,7 +6029,7 @@
       ],
       "review": {
         "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6056,7 +6077,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6136,7 +6158,7 @@
       ],
       "review": {
         "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6184,7 +6206,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6264,7 +6287,7 @@
       ],
       "review": {
         "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6312,7 +6335,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6409,7 +6433,7 @@
       ],
       "review": {
         "contentHash": "caf53fbd4e5424501c9302aefe7edb62e9b2ab7fa9005c5e1c7b89474736b615",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6457,7 +6481,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6537,7 +6562,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6585,7 +6610,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6682,7 +6708,7 @@
       ],
       "review": {
         "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6730,7 +6756,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6832,7 +6859,7 @@
       ],
       "review": {
         "contentHash": "f6b60b1ad0b4af9ceddc5294a97543800bfc2ca9f822f4a416102345f8c1d2fb",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6880,7 +6907,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6989,7 +7017,7 @@
       ],
       "review": {
         "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7037,7 +7065,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7138,7 +7167,7 @@
       ],
       "review": {
         "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7186,7 +7215,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7287,7 +7317,7 @@
       ],
       "review": {
         "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7335,7 +7365,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7416,7 +7447,7 @@
       ],
       "review": {
         "contentHash": "364ec2d2b2860c63f21903ab03352aff7d0446f428a28536435ee02538fbafe6",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7464,7 +7495,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7645,7 +7677,7 @@
     },
     {
       "conceptId": "coding-ui-composed-user-filters",
-      "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
+      "contentHash": "6acca21bc1fbe463685eb56a0a191a5df4dfcec3b0cc08463bc7eab82ce3a4cd",
       "id": "int-code-react-junior-filterable-user-list-v1",
       "remediationTopics": [
         "Derived React collections",
@@ -7653,8 +7685,8 @@
         "Accessible empty states"
       ],
       "review": {
-        "contentHash": "a7b270f4f5482d8228053db2cac8e99a3ebd38835c99381312104884fbaa433c",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "6acca21bc1fbe463685eb56a0a191a5df4dfcec3b0cc08463bc7eab82ce3a4cd",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7702,7 +7734,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7830,7 +7863,7 @@
         "pressureAsset": "authoring://pressure-modes/filterable-user-list.candidate-v1.json",
         "pressureAssetHash": "5551c093f97962cd16aaf66606172c8ecbbc37b83475ec48bb6510bfab052e69",
         "selectedCheckContractHash": "8fd6288cfc65b0e73e84f2e260f03a82d07dfcad87dabbe17237a3b8bbcc4221",
-        "sourceQuestionHash": "c33d3bc4c19ff2f12b50f604e3329e9ec8638dda5a198d3052c3f5b901df5a51",
+        "sourceQuestionHash": "8814643d42f073fb8d8228816e11db36c87a5805433e1cba9260c50abf2d9a3d",
         "starterAsset": "assets/sb/react/question/react-filterable-user-list.v1.json",
         "starterAssetHash": "510fbcf31baa6f148d7bac86cf950dcf8115b9854383d774a0aab667f79d25f2"
       }
@@ -7846,7 +7879,7 @@
       ],
       "review": {
         "contentHash": "1547295f1cd60baa8e9242753aca443ca84b5fff19bc83594e1c80148c80b757",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7894,7 +7927,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8038,7 +8072,7 @@
       ],
       "review": {
         "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8086,7 +8120,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8242,7 +8277,7 @@
       ],
       "review": {
         "contentHash": "83fe344fb0bf1b0b953a2559f8d43d2b21b9472e437f59e198916ce9a58bf82e",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8290,7 +8325,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8580,7 +8616,7 @@
       ],
       "review": {
         "contentHash": "a9a0f1679b841f91ef793c0ba0d21215fed4c32580a062b6e3d69e56246aeefb",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8628,7 +8664,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8842,7 +8879,7 @@
       ],
       "review": {
         "contentHash": "7ce775f9ab2ea9c33a5a47cd0ba8836b7a9185c67402ae5479416701f81db9cb",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8890,7 +8927,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9053,7 +9091,7 @@
     },
     {
       "conceptId": "coding-ui-pagination",
-      "contentHash": "1a8eb5cb671366c35c672498a253ad80f210a8b75010a107c775faf6e38014e9",
+      "contentHash": "962910450ff9afbd747319232d5d07a1d07d5ba58006ea1ea72054385ee4115f",
       "id": "int-code-react-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -9061,8 +9099,8 @@
         "Stable sorting"
       ],
       "review": {
-        "contentHash": "1a8eb5cb671366c35c672498a253ad80f210a8b75010a107c775faf6e38014e9",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "962910450ff9afbd747319232d5d07a1d07d5ba58006ea1ea72054385ee4115f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9110,7 +9148,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9605,7 +9644,7 @@
         "pressureAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
         "pressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
-        "sourceQuestionHash": "ffbad977d32ae74e21a8f22de54adfcc4d081163e5a2e3523d710b39986cdb6b",
+        "sourceQuestionHash": "794d3571fba0aebbccfb399600b86dcd3fa4f7e58b2137291ac3345fdab6afe3",
         "starterAsset": "assets/sb/react/question/react-pagination-table.v1.json",
         "starterAssetHash": "813db01a62ffea62ef453cb3e102ed858b2fd1afc418103cc24f12afe493e222"
       }
@@ -9621,7 +9660,7 @@
       ],
       "review": {
         "contentHash": "439ca7a01b517f613faf047c84ce8d9b841fbef793d0c219239105d9a7f9c09c",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9669,7 +9708,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10196,7 +10236,7 @@
     },
     {
       "conceptId": "coding-ui-persistent-theme",
-      "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
+      "contentHash": "76e6c1a984ff3bbbfb33360b128d6c776dbf0564c6e3b0d89fe5f1570b341ff9",
       "id": "int-code-react-mid-theme-toggle-v1",
       "remediationTopics": [
         "SSR-safe React initialization",
@@ -10204,8 +10244,8 @@
         "Accessible toggle state"
       ],
       "review": {
-        "contentHash": "73190fb1187c8f48227b44d340b58678e71cc8a9c05e944c8ddb1a983c053a9c",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "76e6c1a984ff3bbbfb33360b128d6c776dbf0564c6e3b0d89fe5f1570b341ff9",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10253,7 +10293,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10430,7 +10471,7 @@
         "pressureAsset": "authoring://pressure-modes/theme-toggle.candidate-v1.json",
         "pressureAssetHash": "0169054a4656ccd3e2447ae0f4f660c592dc62ed1b3976391b359eb332dbca72",
         "selectedCheckContractHash": "ce8b6df739e9ca54fceebb0bad057ad8e797d03e19110bb4cff5980bdb6516ac",
-        "sourceQuestionHash": "f1ba3dafdba62a1d79bca73171b1f475c8b6385278a0be921c848225316f4648",
+        "sourceQuestionHash": "187d7aaf42d64c12656e92bfd0c00a358cc5cd64f95c61d10683f50efb2c4153",
         "starterAsset": "assets/sb/react/question/react-theme-toggle.v1.json",
         "starterAssetHash": "7839994689f930a183c758a374316db7688248deef50877106856d2931aded9f"
       }
@@ -10446,7 +10487,7 @@
       ],
       "review": {
         "contentHash": "4cc51a1e8c3b4aa74bb7fec592b4c468bc7a6273214a6dada542b499698779aa",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10494,7 +10535,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11290,7 +11332,7 @@
       ],
       "review": {
         "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11338,7 +11380,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11639,7 +11682,7 @@
       ],
       "review": {
         "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11687,7 +11730,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12073,7 +12117,7 @@
     },
     {
       "conceptId": "coding-ui-recursive-comment-tree",
-      "contentHash": "896afc6e6ad0018b4f4040bb41506632c1a8fa7468b8704563374f2752b798cd",
+      "contentHash": "700cec128d37c209fb46bcc12b04a7cede8d743bb57df270d51cd7fb5b75062d",
       "id": "int-code-react-senior-nested-comments-v1",
       "remediationTopics": [
         "Recursive React tree updates",
@@ -12081,8 +12125,8 @@
         "Accessible reply focus"
       ],
       "review": {
-        "contentHash": "896afc6e6ad0018b4f4040bb41506632c1a8fa7468b8704563374f2752b798cd",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "700cec128d37c209fb46bcc12b04a7cede8d743bb57df270d51cd7fb5b75062d",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12130,7 +12174,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12408,7 +12453,7 @@
         "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
         "pressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",
         "selectedCheckContractHash": "c551d0d30c371630dcd2d5502396e76466cf3add29f445a613abed84dbd2f312",
-        "sourceQuestionHash": "caebbb3682ae2deef31f82441a600abdc571e153beeedd0b34c695209d64d4ba",
+        "sourceQuestionHash": "30f08b8b09d3f0eb9a480360edb7e176bd544fe54177efbd160b859a3680ab9b",
         "starterAsset": "assets/sb/react/question/react-nested-comments.v1.json",
         "starterAssetHash": "83c38d47a81c64228ac97d51d7b00dffb4ec8729470a3babd550deb90abfa3a2"
       }
@@ -12424,7 +12469,7 @@
       ],
       "review": {
         "contentHash": "565aa71d9a24ec3b3a1d90a27eee556f690f7fce8b390c3b9d9956cb4e0c149f",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12472,7 +12517,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12738,7 +12784,7 @@
       ],
       "review": {
         "contentHash": "5b38fc7cbd27065746dc7e607dad84978fcd3ad960e029d56b96b1bb2c63dbb0",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12786,7 +12832,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12967,7 +13014,7 @@
     },
     {
       "conceptId": "coding-ui-composed-user-filters",
-      "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
+      "contentHash": "834c344ec474f4da7a39973d79a79af86b84ab527a4b57bf627f5a91be12eb09",
       "id": "int-code-vue-junior-filterable-user-list-v1",
       "remediationTopics": [
         "Derived Vue collections",
@@ -12975,8 +13022,8 @@
         "Accessible empty states"
       ],
       "review": {
-        "contentHash": "9acef8519ed948ac203f3ced99ec0c58b38ca677fa90f9acfda9aaf414ae3467",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "834c344ec474f4da7a39973d79a79af86b84ab527a4b57bf627f5a91be12eb09",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13024,7 +13071,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13152,7 +13200,7 @@
         "pressureAsset": "authoring://pressure-modes/filterable-user-list.candidate-v1.json",
         "pressureAssetHash": "5551c093f97962cd16aaf66606172c8ecbbc37b83475ec48bb6510bfab052e69",
         "selectedCheckContractHash": "8fd6288cfc65b0e73e84f2e260f03a82d07dfcad87dabbe17237a3b8bbcc4221",
-        "sourceQuestionHash": "cd1b2d402487588ad6be9cc8c6c48d01b0f72786aaeb2229de04f8aa99b815ae",
+        "sourceQuestionHash": "b2e7da5e0cb98cbe8bef9ab37ac94c9315804b4078a850e00142df833593a51a",
         "starterAsset": "assets/sb/vue/question/vue-filterable-user-list.v1.json",
         "starterAssetHash": "7cd8222747bed3591830a761713641e57f7d99903629448a71bd98bc3ee0b055"
       }
@@ -13168,7 +13216,7 @@
       ],
       "review": {
         "contentHash": "6dabb50817df425dc92a71b6b4224ad384ec1e4df078c5a1ea937bfbfe13cb56",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13216,7 +13264,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13360,7 +13409,7 @@
       ],
       "review": {
         "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13408,7 +13457,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13564,7 +13614,7 @@
       ],
       "review": {
         "contentHash": "406d1355027f933545563dc3bb24e02cf29de7af9bf7f64a12e0f5d2ac346a54",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13612,7 +13662,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13902,7 +13953,7 @@
       ],
       "review": {
         "contentHash": "2e53cfd96c5296ebae7b48fe8790a7184b7607b439ac31d47b2dc021fdcfd5c8",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13950,7 +14001,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14164,7 +14216,7 @@
       ],
       "review": {
         "contentHash": "ce1501c079c2b7ff0990968b44af9f7ef25ee39b5334d439a7679164e7e7d497",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14212,7 +14264,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14375,7 +14428,7 @@
     },
     {
       "conceptId": "coding-ui-pagination",
-      "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
+      "contentHash": "360211fe773d5faf319fa5ddd3b040204445c108a3ce1d618e51f831492ad65a",
       "id": "int-code-vue-mid-pagination-v1",
       "remediationTopics": [
         "Derived pagination state",
@@ -14383,8 +14436,8 @@
         "Stable sorting"
       ],
       "review": {
-        "contentHash": "fc81a0a3893597fdc0019d6e48be4898266f97b96e4f63ad4880b74e1957278e",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "360211fe773d5faf319fa5ddd3b040204445c108a3ce1d618e51f831492ad65a",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14432,7 +14485,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14927,7 +14981,7 @@
         "pressureAsset": "assets/questions/pressure-modes/pagination-table.v1.json",
         "pressureAssetHash": "91d478feeb7ac3dbb2a656c76a61cd2847e69c2230137dbb275dbb7ba3ef76f1",
         "selectedCheckContractHash": "2aaff7dcaffed3f4e558393640f6f23219f68e032cd11ec5d24d527fb67acf9e",
-        "sourceQuestionHash": "05f489311ad50a7025c2fa3b6f23feb6f177975847e808c98024dc24e44a681c",
+        "sourceQuestionHash": "33976ecca3323e6a110f8f04dc5e0fe57dbdf092a72b728f0a557a395d24ecf3",
         "starterAsset": "assets/sb/vue/question/vue-pagination-table.v1.json",
         "starterAssetHash": "51c2b900701ad5443f0b60bd4f985929a402f9631b361d24e8d73c70fed4c67b"
       }
@@ -14943,7 +14997,7 @@
       ],
       "review": {
         "contentHash": "dc0ad4c722772023bf1955a9b88e1b6b16dae31d7b94f1854129ee23f75e9777",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14991,7 +15045,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15518,7 +15573,7 @@
     },
     {
       "conceptId": "coding-ui-persistent-theme",
-      "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
+      "contentHash": "522fbb03983e794fb59c1c3f0f74c85fc74447271e162343731692a7b602f877",
       "id": "int-code-vue-mid-theme-toggle-v1",
       "remediationTopics": [
         "SSR-safe Vue initialization",
@@ -15526,8 +15581,8 @@
         "Accessible toggle state"
       ],
       "review": {
-        "contentHash": "2a540d48d394f1db52e497d613824a27ce5fa3ab34758aae2d85f041bc3c8a37",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "522fbb03983e794fb59c1c3f0f74c85fc74447271e162343731692a7b602f877",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15575,7 +15630,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15752,7 +15808,7 @@
         "pressureAsset": "authoring://pressure-modes/theme-toggle.candidate-v1.json",
         "pressureAssetHash": "0169054a4656ccd3e2447ae0f4f660c592dc62ed1b3976391b359eb332dbca72",
         "selectedCheckContractHash": "ce8b6df739e9ca54fceebb0bad057ad8e797d03e19110bb4cff5980bdb6516ac",
-        "sourceQuestionHash": "e07a211c57d5183fe56ffff2dcdab6517d4159a809df973fbda7c36d820ed82d",
+        "sourceQuestionHash": "b124aaab84307abf4fbd24d9f8cc50afab9066c644139e1132fe5a10b75111b1",
         "starterAsset": "assets/sb/vue/question/vue-theme-toggle.v2.json",
         "starterAssetHash": "4d34b25e2d902232be8b1273ffd360bb10676f93293cfa45a0edadb7a0b6b805"
       }
@@ -15768,7 +15824,7 @@
       ],
       "review": {
         "contentHash": "d1be6ae6691a1fff1ebd5ebfb6be71d05f886da12d1c973ad3a0164906352fe3",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15816,7 +15872,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16612,7 +16669,7 @@
       ],
       "review": {
         "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16660,7 +16717,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16961,7 +17019,7 @@
       ],
       "review": {
         "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17009,7 +17067,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17395,7 +17454,7 @@
     },
     {
       "conceptId": "coding-ui-recursive-comment-tree",
-      "contentHash": "a8328459c3226153b777a698babe8486a6b3fe8c194129e835675565e7b28ee7",
+      "contentHash": "9472f612f4fc8f572ee5ad55abb577092c456411e77521f4eb81ab3e29244536",
       "id": "int-code-vue-senior-nested-comments-v1",
       "remediationTopics": [
         "Recursive Vue tree updates",
@@ -17403,8 +17462,8 @@
         "Accessible reply focus"
       ],
       "review": {
-        "contentHash": "a8328459c3226153b777a698babe8486a6b3fe8c194129e835675565e7b28ee7",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "contentHash": "9472f612f4fc8f572ee5ad55abb577092c456411e77521f4eb81ab3e29244536",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17452,7 +17511,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17730,7 +17790,7 @@
         "pressureAsset": "authoring://pressure-modes/nested-comments.candidate-v1.json",
         "pressureAssetHash": "b0ae17da60cfd3b7b3c5a9a46dc0089d65f826f8511eb732fedb83f2f6f08fd2",
         "selectedCheckContractHash": "c551d0d30c371630dcd2d5502396e76466cf3add29f445a613abed84dbd2f312",
-        "sourceQuestionHash": "0b4a1be07b9bc8dd8f3b66d17b18c3575454c8f602ad64827d8425e66d039cc4",
+        "sourceQuestionHash": "3af195e8c855c0fb92500ea18ed1f3931355bc60904e2b92450942b68ebe7612",
         "starterAsset": "assets/sb/vue/question/vue-nested-comments.v1.json",
         "starterAssetHash": "9bffa8c8732e3e87808e8bb9161652fef49b97466ebf44010acbf9ffd507d5eb"
       }
@@ -17746,7 +17806,7 @@
       ],
       "review": {
         "contentHash": "717bcb391c6201014b9c50fdb268ae42b4d44d3bbdf9fd06fbaabe4556cbb67f",
-        "definitionHash": "fee505f0f2914f5b7bb725f02888c9bfa9d48a56d3fe1b10935bcf36c44ed15f",
+        "definitionHash": "bbe1401a2ae89a66c85a04751539008fcc67ef265623be592535621fdb7f6c94",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17794,7 +17854,8 @@
             "2026-11-11 source-pin maintenance review: js-concurrency-map-limit gained starterCodeTs only; see the finalApproval note of the same date. The new starter type-checks against the TypeScript tests with the editor's settings and fails all seven tests, as the JavaScript starter does.",
             "2026-11-12 source-pin maintenance review: react-counter, angular-counter-starter, vue-counter, react-todo-list, angular-todo-list-starter and vue-todo-list changed only in frameworkTests; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them all but the Counter's starting-state check, and each mutant and each wrong solution from the 2026-11-10 persona round fails the check for its bug.",
             "2026-11-12 source-pin maintenance review: react/angular/vue debounced search, tabs switcher and contact form changed in frameworkTests, and vue-debounced-search also in its solution, Solution tab, decisionGraphAsset and updatedAt; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
-            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug."
+            "2026-11-12 source-pin maintenance review: react/angular/vue progress bar, chips input, nested checkboxes and multi-step form changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug.",
+            "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",

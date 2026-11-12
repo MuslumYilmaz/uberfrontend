@@ -55,6 +55,18 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['vue', 'vue-chips-input-autocomplete', 'premium'],
   ['vue', 'vue-nested-checkboxes', 'premium'],
   ['vue', 'vue-multi-step-form', 'premium'],
+  ['react', 'react-pagination-table', 'premium'],
+  ['react', 'react-nested-comments', 'premium'],
+  ['react', 'react-filterable-user-list', 'premium'],
+  ['react', 'react-theme-toggle', 'premium'],
+  ['angular', 'angular-pagination-table', 'premium'],
+  ['angular', 'angular-nested-comments', 'premium'],
+  ['angular', 'angular-filterable-user-list', 'premium'],
+  ['angular', 'angular-theme-toggle', 'premium'],
+  ['vue', 'vue-pagination-table', 'premium'],
+  ['vue', 'vue-nested-comments', 'premium'],
+  ['vue', 'vue-filterable-user-list', 'premium'],
+  ['vue', 'vue-theme-toggle', 'premium'],
 ];
 const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-todo-list', fixture: 'react-todo-wrong.tsx', fails: ['todo-toggle', 'todo-remove', 'todo-clear-completed'] },

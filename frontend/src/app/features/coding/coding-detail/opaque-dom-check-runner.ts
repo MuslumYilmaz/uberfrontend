@@ -1,4 +1,4 @@
-import type { FrameworkTest, FrameworkTestStep } from '../../../core/models/question.model';
+import type { FrameworkTest, FrameworkTestLocator, FrameworkTestStep } from '../../../core/models/question.model';
 import type { TestResult } from '../console-logger/console-logger.component';
 
 const OPAQUE_CHECK_CHANNEL = 'FA_OPAQUE_CHECK';
@@ -403,6 +403,24 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     let nextRandom = 0;
     Math.random = () => randomValues[nextRandom++ % randomValues.length];
   }
+  // The sandboxed frame has no storage of its own (localStorage throws), so each check gets fresh in-memory
+  // localStorage and sessionStorage, which a mockStorage step fills before the app's own scripts run.
+  const memoryStorage = (entries: Record<string, unknown>) => {
+    const items = new Map(Object.entries(entries).map(([key, value]) => [key, String(value)]));
+    return {
+      get length() { return items.size; },
+      key: (index: number) => Array.from(items.keys())[index] ?? null,
+      getItem: (key: string) => items.get(String(key)) ?? null,
+      setItem: (key: string, value: unknown) => { items.set(String(key), String(value)); },
+      removeItem: (key: string) => { items.delete(String(key)); },
+      clear: () => { items.clear(); },
+    } as Storage;
+  };
+  const storageStep = (config.check?.steps || []).find((step) => String(step?.type || step?.action || '') === 'mockStorage');
+  const pageStorage = memoryStorage(storageStep?.entries && typeof storageStep.entries === 'object' ? storageStep.entries : {});
+  for (const [name, storage] of [['localStorage', pageStorage], ['sessionStorage', memoryStorage({})]] as const) {
+    try { Object.defineProperty(window, name, { configurable: true, get: () => storage }); } catch { }
+  }
   const channel = 'FA_OPAQUE_CHECK';
   const version = 2;
   const maxErrorLength = 4000;
@@ -770,7 +788,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     const name = by.name === undefined ? undefined : normalizeName(by.name);
     const label = by.label === undefined ? undefined : normalizeName(by.label);
     const text = by.text === undefined ? undefined : normalizeName(by.text);
-    return Array.from(document.body.querySelectorAll('*')).filter((element) => {
+    const matches = Array.from(document.body.querySelectorAll('*')).filter((element) => {
       if (['SCRIPT', 'STYLE', 'TEMPLATE'].includes(element.tagName)) return false;
       if (role !== undefined && roleOf(element) !== role) return false;
       if (name !== undefined && accessibleName(element) !== name && normalizeName(visibleText(element)) !== name) return false;
@@ -779,15 +797,30 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       if (text !== undefined && ownText(element) !== text) return false;
       return !isHidden(element);
     });
+    if (!by.near) return matches;
+    // Near another element: the matches inside its closest ancestor that holds any, as a comment's own Reply button
+    // shares a wrapper with its text before the replies' buttons do.
+    const anchor = findAll({ by: by.near } as FrameworkTestStep)[0];
+    for (let scope = anchor?.parentElement ?? null; scope; scope = scope.parentElement) {
+      const inside = matches.filter((element) => scope!.contains(element));
+      if (inside.length) return inside;
+    }
+    return [];
+  };
+  const describeLocator = (by: FrameworkTestLocator): string => {
+    const own = by.text !== undefined
+      ? `text "${by.text}"`
+      : by.label !== undefined
+        ? `${by.role || 'control'} labelled "${by.label}"`
+        : `${by.role || 'element'}${by.name === undefined ? '' : ` "${by.name}"`}`;
+    return by.near ? `${own} near ${describeLocator(by.near)}` : own;
   };
   const describeTarget = (step: FrameworkTestStep) => {
     const by = step?.by;
     if (!by) return String(step?.selector || '').trim();
     const rawIndex = Number(step?.index);
     const nth = Number.isFinite(rawIndex) && rawIndex > 0 ? ` #${rawIndex + 1}` : '';
-    if (by.text !== undefined) return `text "${by.text}"${nth}`;
-    if (by.label !== undefined) return `${by.role || 'control'} labelled "${by.label}"${nth}`;
-    return `${by.role || 'element'}${by.name === undefined ? '' : ` "${by.name}"`}${nth}`;
+    return `${describeLocator(by)}${nth}`;
   };
   const queryElement = (step: FrameworkTestStep) => {
     const rawIndex = Number(step?.index);
@@ -926,7 +959,17 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return Promise.resolve();
     }
     if (type === 'wait') return delay(Math.max(0, Number(step.durationMs ?? step.timeoutMs ?? 0)));
-    if (type === 'mockRandom') return Promise.resolve();
+    if (type === 'mockRandom' || type === 'mockStorage') return Promise.resolve();
+    if (type === 'expectStorage') {
+      const key = String(step.key || '');
+      const expected = step.value === undefined ? null : String(step.value);
+      const actual = pageStorage.getItem(key);
+      if (actual !== expected) {
+        const show = (value: string | null) => (value === null ? 'nothing' : `"${value}"`);
+        throw new Error(`localStorage "${key}" expected ${show(expected)} but held ${show(actual)}`);
+      }
+      return Promise.resolve();
+    }
     if (type === 'unmountPreview') {
       const hook = (window as Window & { __FA_UNMOUNT_PREVIEW?: () => void }).__FA_UNMOUNT_PREVIEW;
       if (typeof hook !== 'function') throw new Error('Preview did not expose an unmount hook');
@@ -1074,6 +1117,15 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       finishAnimations([element]);
       const actual = colorName(getComputedStyle(element).getPropertyValue(property));
       if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectIndented') {
+      // The target starts further right than another element, as a reply sits indented under its comment.
+      const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
+      const other = queryElement(reference);
+      if (!other) throw new Error(`${describeTarget(reference)} was not found`);
+      const shift = Math.round(element.getBoundingClientRect().left - other.getBoundingClientRect().left);
+      if (shift < 8) throw new Error(`${target} starts ${shift}px right of ${describeTarget(reference)}; expected it indented further`);
       return Promise.resolve();
     }
     if (type === 'expectReferenced') {

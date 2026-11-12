@@ -1714,8 +1714,8 @@
     },
     "frameworkTests": [
       {
-        "id": "filter-search-users",
-        "name": "Filter searches users",
+        "id": "user-list-search",
+        "name": "Shows every user, and the search filters by name, ignoring case",
         "steps": [
           {
             "type": "expectCount",
@@ -1725,7 +1725,7 @@
           {
             "type": "setValue",
             "selector": "#search",
-            "value": "Alice"
+            "value": "ALI"
           },
           {
             "type": "waitForCount",
@@ -1733,10 +1733,222 @@
             "count": 1
           },
           {
-            "type": "expectText",
+            "type": "expectCount",
+            "by": {
+              "text": "Alice Johnson"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#search",
+            "value": "editor"
+          },
+          {
+            "type": "waitForCount",
             "selector": ".row",
-            "text": "Alice",
-            "match": "contains"
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": "#search",
+            "value": ""
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "id": "user-list-role",
+        "name": "The role dropdown shows only that role, and All shows everyone",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#role",
+            "value": "editor"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 2
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Bob Smith"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Dana Patel"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#role",
+            "value": "viewer"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 2
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Charlie Kim"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#role",
+            "value": "admin"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Alice Johnson"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#role",
+            "value": "all"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "id": "user-list-only-active",
+        "name": "The active-only checkbox hides inactive users until it is cleared",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Bob Smith"
+            },
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Elliot Brown"
+            },
+            "count": 0
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "id": "user-list-filters-combine",
+        "name": "Search, role and the active-only checkbox apply together",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#role",
+            "value": "editor"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "checkbox"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Dana Patel"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#search",
+            "value": "bob"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "user-list-empty-state",
+        "name": "With no match an empty-state message replaces the list",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "#search",
+            "value": "zzz"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".empty",
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": "#search",
+            "value": ""
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 5
+          },
+          {
+            "type": "expectCount",
+            "selector": ".empty",
+            "count": 0
           }
         ]
       }
@@ -2090,8 +2302,8 @@
     },
     "frameworkTests": [
       {
-        "id": "pagination-next-page",
-        "name": "Pagination moves to next page",
+        "id": "pagination-first-page",
+        "name": "Starts on Page 1 of 4 with the first 5 users and Previous disabled",
         "steps": [
           {
             "type": "expectCount",
@@ -2100,20 +2312,296 @@
           },
           {
             "type": "expectText",
-            "selector": ".pagination span",
-            "text": "Page 1 of 4",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Alice Johnson",
+            "match": "contains"
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 1 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": true
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            },
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "pagination-next",
+        "name": "Next shows the next 5 users and the page label follows",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 2 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "tbody tr",
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Frank Wu",
+            "match": "contains"
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": false
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 3 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Karen Diaz",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "pagination-last-page",
+        "name": "On the last page Next is disabled and does nothing",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 2 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 3 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 4 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "tbody tr",
+            "count": 5
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Paul Green",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 4,
+            "text": "Tina Fox",
+            "match": "contains"
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            },
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Page 4 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Paul Green",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "pagination-previous",
+        "name": "Previous moves back 5 users, and on Page 1 it is disabled and does nothing",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 2 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Next"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 3 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 2 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Frank Wu",
             "match": "contains"
           },
           {
             "type": "click",
-            "selector": ".pagination button",
-            "index": 1
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            }
           },
           {
-            "type": "waitForText",
-            "selector": ".pagination span",
-            "text": "Page 2 of 4",
+            "type": "waitForCount",
+            "by": {
+              "text": "Page 1 of 4"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": "tbody tr",
+            "index": 0,
+            "text": "Alice Johnson",
             "match": "contains"
+          },
+          {
+            "type": "expectDisabled",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            },
+            "disabled": true
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Previous"
+            }
+          },
+          {
+            "type": "wait",
+            "durationMs": 150
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Page 1 of 4"
+            },
+            "count": 1
           }
         ]
       }
@@ -2215,24 +2703,120 @@
     },
     "frameworkTests": [
       {
-        "id": "theme-toggle-updates-label",
-        "name": "Theme toggle updates label",
+        "id": "theme-toggles",
+        "name": "Starts light, and the toggle switches <html data-theme> and its label at once",
         "steps": [
           {
-            "type": "expectText",
+            "type": "expectCount",
+            "selector": "html[data-theme=\"dark\"]",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
             "selector": ".label",
             "text": "Light",
-            "match": "contains"
+            "match": "equals"
           },
           {
             "type": "click",
-            "selector": ".theme-toggle"
+            "by": {
+              "role": "button",
+              "name": "Toggle theme"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": "html[data-theme=\"dark\"]",
+            "count": 1
           },
           {
             "type": "waitForText",
             "selector": ".label",
             "text": "Dark",
-            "match": "contains"
+            "match": "equals"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Toggle theme"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": "html[data-theme=\"dark\"]",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Light",
+            "match": "equals"
+          }
+        ]
+      },
+      {
+        "id": "theme-saved",
+        "name": "The chosen theme is saved in localStorage",
+        "steps": [
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Toggle theme"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Dark",
+            "match": "equals"
+          },
+          {
+            "type": "expectStorage",
+            "key": "uf-theme",
+            "value": "dark"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Toggle theme"
+            }
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Light",
+            "match": "equals"
+          },
+          {
+            "type": "expectStorage",
+            "key": "uf-theme",
+            "value": "light"
+          }
+        ]
+      },
+      {
+        "id": "theme-restored",
+        "name": "A stored dark theme applies on load, before any click",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "uf-theme": "dark"
+            }
+          },
+          {
+            "type": "expectCount",
+            "selector": "html[data-theme=\"dark\"]",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".label",
+            "text": "Dark",
+            "match": "equals"
           }
         ]
       }
@@ -5294,64 +5878,328 @@
     },
     "frameworkTests": [
       {
-        "id": "comments-add-root-reply",
-        "name": "Nested comments add a root comment",
+        "id": "comments-add-top-level",
+        "name": "Add Comment adds the typed text as a comment with its own Reply button",
         "steps": [
           {
             "type": "setValue",
-            "selector": ".composer textarea",
-            "value": "This is a new comment"
+            "by": {
+              "role": "textbox",
+              "near": {
+                "role": "button",
+                "name": "Add Comment"
+              }
+            },
+            "value": "Comment from Ada"
           },
           {
             "type": "click",
-            "selector": ".composer button"
+            "by": {
+              "role": "button",
+              "name": "Add Comment"
+            }
           },
           {
-            "type": "waitForText",
-            "selector": ".list",
-            "text": "This is a new comment",
-            "match": "contains"
+            "type": "waitForCount",
+            "by": {
+              "text": "Comment from Ada"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox",
+              "near": {
+                "role": "button",
+                "name": "Add Comment"
+              }
+            },
+            "value": "Comment from Ben"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add Comment"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Comment from Ben"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "text": "Comment from Ada"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Comment from Ada"
+              }
+            },
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Comment from Ben"
+              }
+            },
+            "count": 1
           }
         ]
       },
       {
-        "id": "comments-reply-toggles",
-        "name": "Reply opens one box and closes it on a second click",
+        "id": "comments-one-reply-box",
+        "name": "Reply opens one box, moves it to another comment, and a second click closes it",
         "steps": [
           {
             "type": "setValue",
-            "selector": ".composer textarea",
-            "value": "Parent comment"
+            "by": {
+              "role": "textbox",
+              "near": {
+                "role": "button",
+                "name": "Add Comment"
+              }
+            },
+            "value": "Comment from Ada"
           },
           {
             "type": "click",
-            "selector": ".composer button"
+            "by": {
+              "role": "button",
+              "name": "Add Comment"
+            }
           },
           {
-            "type": "waitForText",
-            "selector": ".list",
-            "text": "Parent comment",
-            "match": "contains"
+            "type": "waitForCount",
+            "by": {
+              "text": "Comment from Ada"
+            },
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox",
+              "near": {
+                "role": "button",
+                "name": "Add Comment"
+              }
+            },
+            "value": "Comment from Ben"
           },
           {
             "type": "click",
-            "selector": ".node .meta button",
-            "index": 0
+            "by": {
+              "role": "button",
+              "name": "Add Comment"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Comment from Ben"
+            },
+            "count": 1
           },
           {
             "type": "expectCount",
-            "selector": ".reply",
+            "by": {
+              "role": "textbox"
+            },
             "count": 1
           },
           {
             "type": "click",
-            "selector": ".node .meta button",
-            "index": 0
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Comment from Ada"
+              }
+            }
           },
           {
             "type": "expectCount",
-            "selector": ".reply",
-            "count": 0
+            "by": {
+              "role": "textbox"
+            },
+            "count": 2
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Comment from Ben"
+              }
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "textbox"
+            },
+            "count": 2
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Comment from Ben"
+              }
+            }
+          },
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "textbox"
+            },
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "comments-replies-nest",
+        "name": "A reply sits under its comment and a reply to it one level deeper, each indented further",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox",
+              "near": {
+                "role": "button",
+                "name": "Add Comment"
+              }
+            },
+            "value": "Root comment"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Add Comment"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Root comment"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Root comment"
+              }
+            }
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox",
+              "near": {
+                "text": "Root comment"
+              }
+            },
+            "value": "Child reply"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Post",
+              "near": {
+                "text": "Root comment"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Child reply"
+            },
+            "count": 1
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Reply",
+              "near": {
+                "text": "Child reply"
+              }
+            }
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox",
+              "near": {
+                "text": "Child reply"
+              }
+            },
+            "value": "Grandchild reply"
+          },
+          {
+            "type": "click",
+            "by": {
+              "role": "button",
+              "name": "Post",
+              "near": {
+                "text": "Child reply"
+              }
+            }
+          },
+          {
+            "type": "waitForCount",
+            "by": {
+              "text": "Grandchild reply"
+            },
+            "count": 1
+          },
+          {
+            "type": "expectIndented",
+            "by": {
+              "text": "Child reply"
+            },
+            "than": {
+              "by": {
+                "text": "Root comment"
+              }
+            }
+          },
+          {
+            "type": "expectIndented",
+            "by": {
+              "text": "Grandchild reply"
+            },
+            "than": {
+              "by": {
+                "text": "Child reply"
+              }
+            }
           }
         ]
       }

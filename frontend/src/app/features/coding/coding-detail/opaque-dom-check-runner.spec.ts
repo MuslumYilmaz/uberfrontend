@@ -577,6 +577,95 @@ describe('OpaqueDomCheckRunner', () => {
     }
   });
 
+  it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
+    const page = `<!doctype html><html><body><div class="list">
+      <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>
+      <div class="node"><div class="bubble"><p>Root</p><button>Reply</button></div>
+        <div class="children"><div class="node"><div class="bubble"><p>Child</p><button>Reply</button></div></div></div>
+      </div></div>
+      <script>
+        document.querySelectorAll('button').forEach((button) => button.addEventListener('click', () => {
+          button.textContent = 'Replying';
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'near',
+        name: 'Near',
+        steps: [
+          { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root' } } },
+          { type: 'expectCount', by: { role: 'button', name: 'Replying', near: { text: 'Root' } }, count: 1 },
+          { type: 'expectCount', by: { role: 'button', name: 'Reply', near: { text: 'Child' } }, count: 1 },
+          { type: 'expectCount', by: { role: 'button', name: 'Reply', near: { text: 'Seed' } }, count: 1 },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Gone' } } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Near', passed: true },
+      { name: 'Missing', passed: false, error: 'button "Reply" near text "Gone" was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('tells a reply indented under its comment from one left at the same level', async () => {
+    const page = (indent: number) => `<!doctype html><html><body>
+      <div class="node"><p>Root</p><div style="margin-left: ${indent}px"><p>Child</p></div></div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const steps = [{ type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' } } }];
+
+    expect(await runner.runFramework(page(16), [{ id: 'indent', name: 'Indent', steps }] as any))
+      .toEqual([{ name: 'Indent', passed: true }]);
+    expect(await runner.runFramework(page(0), [{ id: 'indent', name: 'Indent', steps }] as any))
+      .toEqual([{
+        name: 'Indent',
+        passed: false,
+        error: 'text "Child" starts 0px right of text "Root"; expected it indented further',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('gives each check its own localStorage, filled by mockStorage before the preview boots', async () => {
+    const page = `<!doctype html><html><head><script>
+        window.startTheme = localStorage.getItem('theme') || 'light';
+      <\/script></head><body><button>Toggle</button><p class="theme"></p><script>
+        const show = () => { document.querySelector('.theme').textContent = window.startTheme; };
+        document.querySelector('button').addEventListener('click', () => {
+          window.startTheme = window.startTheme === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('theme', window.startTheme);
+          show();
+        });
+        show();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'saved',
+        name: 'Saved',
+        steps: [
+          { type: 'expectStorage', key: 'theme' },
+          { type: 'click', selector: 'button' },
+          { type: 'expectStorage', key: 'theme', value: 'dark' },
+        ],
+      },
+      {
+        id: 'restored',
+        name: 'Restored',
+        steps: [
+          { type: 'mockStorage', entries: { theme: 'dark' } },
+          { type: 'expectText', selector: '.theme', text: 'dark' },
+          { type: 'expectStorage', key: 'theme', value: 'light' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Saved', passed: true },
+      { name: 'Restored', passed: false, error: 'localStorage "theme" expected "light" but held "dark"', failureKind: 'assertion' },
+    ]);
+  });
+
   it('fixes Math.random before the preview boots when a check asks for it, repeating the values in turn', async () => {
     const page = `<!doctype html><html><head><script>
         window.drawn = [Math.random(), Math.random(), Math.random()];

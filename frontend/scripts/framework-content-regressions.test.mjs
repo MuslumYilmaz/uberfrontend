@@ -1059,28 +1059,22 @@ function assertBoardAndRatingRoles() {
 }
 
 function assertNestedCommentsPressureMode() {
-  const normalCheck = ['comments-add-root-reply'];
+  // The normal Nested Comments checks are pinned in framework-shared-checks.test.mjs.
   const expectedQuestions = {
     react: {
       id: 'react-nested-comments',
       starter: 'assets/sb/react/question/react-nested-comments.v1.json',
       solution: 'assets/sb/react/solution/react-nested-comments-solution.v1.json',
-      // Added on 2026-11-11 with the same Reply toggle fix as Angular.
-      checks: [...normalCheck, 'comments-reply-toggles'],
     },
     angular: {
       id: 'angular-nested-comments',
       starter: 'assets/sb/angular/question/angular-nested-comments.v2.json',
       solution: 'assets/sb/angular/solution/angular-nested-comments-solution.v2.json',
-      // Added on 2026-11-11 with the fix that makes Reply toggle its box, as the spec says.
-      checks: [...normalCheck, 'comments-reply-toggles'],
     },
     vue: {
       id: 'vue-nested-comments',
       starter: 'assets/sb/vue/question/vue-nested-comments.v1.json',
       solution: 'assets/sb/vue/solution/vue-nested-comments-solution.v1.json',
-      // Added on 2026-11-11 with the same Reply toggle fix as Angular.
-      checks: [...normalCheck, 'comments-reply-toggles'],
     },
   };
   const starterSources = assertSharedPressureEntries(
@@ -4688,36 +4682,6 @@ function assertPaginationTablePressureMode() {
       updatedAt: '2026-01-30',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'pagination-next-page',
-      name: 'Pagination moves to next page',
-      steps: [
-        {
-          type: 'expectCount',
-          selector: 'tbody tr',
-          count: 5,
-        },
-        {
-          type: 'expectText',
-          selector: '.page-info',
-          text: '1',
-          match: 'contains',
-        },
-        {
-          type: 'click',
-          selector: '.footer button',
-          index: 1,
-        },
-        {
-          type: 'waitForText',
-          selector: '.page-info',
-          text: '2',
-          match: 'contains',
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -4746,25 +4710,7 @@ function assertPaginationTablePressureMode() {
       expected.solution,
       `${framework}: normal Paginated Table solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      framework === 'angular'
-        ? expectedNormalChecks.map((check) => ({
-            ...check,
-            steps: check.steps.map((step) => ({
-              ...step,
-              selector: step.selector === '.page-info'
-                ? '.pagination span'
-                : step.selector === '.footer button'
-                  ? '.pagination button'
-                  : step.selector,
-              // Since 2026-11-11 the Angular label reads "Page X of Y", as the spec asks, and the check reads it whole.
-              ...(step.text ? { text: `Page ${step.text} of 4` } : {}),
-            })),
-          }))
-        : expectedNormalChecks,
-      `${framework}: normal Paginated Table check must stay unchanged`
-    );
+    // The normal Paginated Table checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/pagination-table.v1.json',
@@ -6652,7 +6598,7 @@ const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
   'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
-  'expectColor', 'expectReferenced']);
+  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

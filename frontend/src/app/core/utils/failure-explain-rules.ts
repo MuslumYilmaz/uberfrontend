@@ -334,13 +334,13 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'angular-pagination-page-label',
     questionId: 'angular-pagination-table',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['pagination moves to next page']),
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['starts on page 1 of 4', 'the page label follows']),
     buildHint: (snapshot) => ({
       ruleId: 'angular-pagination-page-label',
       title: 'Show five rows and a "Page X of Y" label',
       why: buildProgressAwareWhy(
         snapshot,
-        'The check counts five table rows, reads "Page 1 of 4" in the pagination label, clicks Next and then expects "Page 2 of 4".',
+        'The checks count five table rows, look for the label "Page 1 of 4", click Next and then look for "Page 2 of 4".',
       ),
       actions: [
         'Render the label as `Page {{ currentPage() + 1 }} of {{ totalPages() }}`; the page index itself stays 0-based.',
@@ -415,13 +415,13 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'angular-nested-comments-reply-toggle',
     questionId: 'angular-nested-comments',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
     buildHint: (snapshot) => ({
       ruleId: 'angular-nested-comments-reply-toggle',
       title: 'Let Reply close the box it opened',
       why: buildProgressAwareWhy(
         snapshot,
-        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
       ),
       actions: [
         'In `toggleReply(id)`, store `null` when `activeReplyId()` already equals `id`, and `id` otherwise: `activeReplyId.update((active) => (active === id ? null : id))`.',
@@ -497,13 +497,13 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'react-nested-comments-reply-toggle',
     questionId: 'react-nested-comments',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
     buildHint: (snapshot) => ({
       ruleId: 'react-nested-comments-reply-toggle',
       title: 'Let Reply close the box it opened',
       why: buildProgressAwareWhy(
         snapshot,
-        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
       ),
       actions: [
         'In `toggleReply(id)`, store `null` when the open id already equals `id`, and `id` otherwise: `setActiveReplyId((active) => (active === id ? null : id))`.',
@@ -517,13 +517,13 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'vue-nested-comments-reply-toggle',
     questionId: 'vue-nested-comments',
     priority: 110,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['closes it on a second click']),
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
     buildHint: (snapshot) => ({
       ruleId: 'vue-nested-comments-reply-toggle',
       title: 'Let Reply close the box it opened',
       why: buildProgressAwareWhy(
         snapshot,
-        'The check adds a comment, clicks its Reply button twice and expects the reply box to open and then close.',
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
       ),
       actions: [
         'In `toggleReply(id)`, set `activeReplyId.value` to `null` when it already equals `id`, and to `id` otherwise.',
