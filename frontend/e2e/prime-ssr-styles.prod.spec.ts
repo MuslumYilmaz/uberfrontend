@@ -12,7 +12,9 @@ test.beforeEach(({}, info) => {
   test.skip(info.config.metadata.primeSsrComparison !== true, 'Requires paired SSR build servers');
 });
 
-test.describe('PrimeNG prerender CSS before JavaScript', () => {
+// PrimeNG styles and large shared Angular component styles move from the prerendered page into hashed files. Without
+// JavaScript, every route must render exactly as the untouched inline build does.
+test.describe('PrimeNG and component prerender CSS before JavaScript', () => {
   test.use({ javaScriptEnabled: false, reducedMotion: 'reduce', colorScheme: 'light' });
   for (const width of widths) {
     for (const route of routes) {
@@ -25,10 +27,9 @@ test.describe('PrimeNG prerender CSS before JavaScript', () => {
         const candidateResponse = await page.goto(route);
         expect(referenceResponse?.status()).toBe(200);
         expect(candidateResponse?.status()).toBe(200);
-        const links = page.locator('link[data-fa-prime-ssr]');
-        if (await reference.locator('style[data-primeng-style-id]').count() === 0) {
-          // Native-control pages can prerender without PrimeNG styles. With
-          // nothing to extract, the complete document must remain untouched.
+        const links = page.locator('link[data-fa-prime-ssr], link[data-fa-ssr-styles]');
+        if (await reference.locator('style[data-primeng-style-id], style[ng-app-id]').count() === 0) {
+          // With nothing to extract, the complete document must remain untouched.
           await expect(links).toHaveCount(0);
           expect(await candidateResponse!.text()).toBe(await referenceResponse!.text());
         } else {
@@ -98,7 +99,7 @@ test('slow CSS remains render blocking under the deployment style CSP', async ({
   }
   await page.waitForLoadState('load');
   await expect.poll(() => page.evaluate(() => performance.getEntriesByName('first-contentful-paint').length)).toBe(1);
-  const loadStatus = await page.locator('link[data-fa-prime-ssr]').evaluateAll(links => links.every(link =>
+  const loadStatus = await page.locator('link[data-fa-prime-ssr], link[data-fa-ssr-styles]').evaluateAll(links => links.every(link =>
     (link as HTMLLinkElement).sheet?.cssRules.length));
   expect(loadStatus).toBe(true);
 });
