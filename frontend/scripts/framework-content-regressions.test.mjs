@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 253, cssSources: 319, changedAssets: 0, changedCssSources: 0 },
+    { assets: 257, cssSources: 329, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -435,11 +435,7 @@ function assertCounterPressureMode() {
     assert.ok(question, `${framework}: Counter question must exist`);
     assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal Counter starter changed`);
     assert.equal(question.solutionAsset, expected.solution, `${framework}: normal Counter solution changed`);
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['counter-basic-flow'],
-      `${framework}: normal Counter checks must stay unchanged`
-    );
+    // The normal Counter checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/counter.v1.json',
@@ -555,11 +551,7 @@ function assertDebouncedSearchPressureMode() {
       expected.solution,
       `${framework}: normal Debounced Search solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['debounced-search-results'],
-      `${framework}: normal Debounced Search checks must stay unchanged`
-    );
+    // The normal Debounced Search checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/debounced-search.v1.json',
@@ -798,22 +790,18 @@ function assertAutocompletePressureMode() {
     ).join('\n');
 
     if (framework !== 'react') {
-      assert.deepEqual(
-        question.frameworkTests.map((test) => test.id),
-        ['autocomplete-selects-option', 'autocomplete-outside-click-closes'],
-        `${framework}: normal Autocomplete checks must cover the pick and the outside click`
-      );
-      const pickSteps = question.frameworkTests.find(
-        (test) => test.id === 'autocomplete-selects-option'
-      )?.steps;
-      assert.deepEqual(
-        pickSteps?.slice(-2),
-        [
-          { type: 'wait', durationMs: 500 },
-          { type: 'expectCount', selector: '.list', count: 0 },
-        ],
-        `${framework}: the normal check must prove that a pick does not reopen the list`
-      );
+      // The full list of the normal checks lives in framework-shared-checks.test.mjs.
+      for (const id of ['autocomplete-selects-option', 'autocomplete-enter-selects']) {
+        const pickSteps = question.frameworkTests.find((test) => test.id === id)?.steps;
+        assert.deepEqual(
+          pickSteps?.slice(-2),
+          [
+            { type: 'wait', durationMs: 500 },
+            { type: 'expectCount', by: { role: 'listbox' }, count: 0 },
+          ],
+          `${framework}: ${id} must prove that a pick does not reopen the list`
+        );
+      }
     }
   }
 
@@ -926,6 +914,7 @@ function assertTeamListPressureMode() {
       'fetch-list-empty-state',
       'fetch-list-loading-state',
       'fetch-list-error-retry',
+      'fetch-list-ignores-stale-response',
     ],
     'Normal Team List checks must stay unchanged'
   );
@@ -1009,11 +998,14 @@ function assertSharedPressureEntries(expectedQuestions, assetPath, label) {
     assert.equal(question.access, 'premium', `${framework}: ${label} pressure entry must stay premium`);
     assert.equal(question.sdk?.asset, expected.starter, `${framework}: normal ${label} starter changed`);
     assert.equal(question.solutionAsset, expected.solution, `${framework}: normal ${label} solution changed`);
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      expected.checks,
-      `${framework}: normal ${label} checks must stay unchanged`
-    );
+    // A family whose normal checks framework-shared-checks.test.mjs pins passes no `checks` here.
+    if (expected.checks) {
+      assert.deepEqual(
+        (question.frameworkTests ?? []).map((test) => test.id),
+        expected.checks,
+        `${framework}: normal ${label} checks must stay unchanged`
+      );
+    }
     assert.equal(question.pressureModeAsset, assetPath, `${framework}: ${label} must reference the shared scenario`);
     starterSources[framework] = Object.values(
       normalizedAssetFiles(json(`cdn/${expected.starter.replace(/^assets\//, '')}`), `${framework}:${label}-starter`)
@@ -1042,26 +1034,47 @@ function assertPressureSolutions(scenario, solutionMarkers, slug, label) {
   }
 }
 
+// 2026-11-11: the chessboard is a labelled group of toggle buttons, because a grid needs rows, arrow keys and
+// aria-selected; the star ratings are WAI-ARIA radio groups, where aria-pressed would announce every filled star.
+function assertBoardAndRatingRoles() {
+  for (const framework of ['angular', 'react', 'vue']) {
+    const questions = json(`cdn/questions/${framework}/coding.json`);
+    const sources = (id) => {
+      const question = questions.find((entry) => entry.id === id);
+      assert.ok(question, `${id} must exist`);
+      return [question.sdk.asset, question.solutionAsset].map((reference) => [
+        reference,
+        Object.values(normalizedAssetFiles(json(`cdn/${reference.replace(/^assets\//, '')}`), reference)).join('\n'),
+      ]);
+    };
+    for (const [reference, source] of sources(`${framework}-chessboard-click-highlight`)) {
+      assert.doesNotMatch(source, /role="grid|gridcell/, `${reference}: the board has no rows or arrow keys, so it must not claim grid roles`);
+      assert.match(source, /aria-pressed/, `${reference}: the highlighted cell must be exposed with aria-pressed`);
+    }
+    for (const [reference, source] of sources(`${framework}-star-rating`)) {
+      assert.match(source, /role="radio"/, `${reference}: each star must be a radio`);
+      assert.doesNotMatch(source, /aria-pressed/, `${reference}: a star must not be a toggle button`);
+    }
+  }
+}
+
 function assertNestedCommentsPressureMode() {
-  const normalCheck = ['comments-add-root-reply'];
+  // The normal Nested Comments checks are pinned in framework-shared-checks.test.mjs.
   const expectedQuestions = {
     react: {
       id: 'react-nested-comments',
       starter: 'assets/sb/react/question/react-nested-comments.v1.json',
       solution: 'assets/sb/react/solution/react-nested-comments-solution.v1.json',
-      checks: normalCheck,
     },
     angular: {
       id: 'angular-nested-comments',
       starter: 'assets/sb/angular/question/angular-nested-comments.v2.json',
       solution: 'assets/sb/angular/solution/angular-nested-comments-solution.v2.json',
-      checks: normalCheck,
     },
     vue: {
       id: 'vue-nested-comments',
       starter: 'assets/sb/vue/question/vue-nested-comments.v1.json',
       solution: 'assets/sb/vue/solution/vue-nested-comments-solution.v1.json',
-      checks: normalCheck,
     },
   };
   const starterSources = assertSharedPressureEntries(
@@ -1136,25 +1149,22 @@ function assertNestedCommentsPressureMode() {
 }
 
 function assertContactFormPressureMode() {
-  const normalChecks = ['contact-form-validation', 'contact-form-submit-success', 'contact-form-submit-error'];
+  // The normal Contact Form checks are pinned in framework-shared-checks.test.mjs.
   const expectedQuestions = {
     react: {
       id: 'react-contact-form-starter',
       starter: 'assets/sb/react/question/react-contact-form.v1.json',
       solution: 'assets/sb/react/solution/react-contact-form-solution.v1.json',
-      checks: normalChecks,
     },
     angular: {
       id: 'angular-contact-form-starter',
       starter: 'assets/sb/angular/question/angular-contact-form.v2.json',
       solution: 'assets/sb/angular/solution/angular-contact-form-solution.v2.json',
-      checks: normalChecks,
     },
     vue: {
       id: 'vue-contact-form-starter',
       starter: 'assets/sb/vue/question/vue-contact-form.v1.json',
       solution: 'assets/sb/vue/solution/vue-contact-form-solution.v1.json',
-      checks: normalChecks,
     },
   };
   const starterSources = assertSharedPressureEntries(
@@ -1263,6 +1273,7 @@ function assertPremiumPressureScenario({ family, expectedQuestions, roundIds, ch
 }
 
 function assertChatStreamingPressureMode() {
+  // The normal Chat Streaming checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'chat-streaming-ui',
     label: 'Chat Streaming',
@@ -1271,7 +1282,6 @@ function assertChatStreamingPressureMode() {
         id: 'react-chat-streaming-ui',
         starter: 'assets/sb/react/question/react-chat-streaming-ui.v1.json',
         solution: 'assets/sb/react/solution/react-chat-streaming-ui-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['stream-the-answer', 'stop-keeps-the-text', 'failure-and-retry', 'announcements-and-cleanup'],
@@ -1378,6 +1388,7 @@ function assertUseEffectOncePressureMode() {
 }
 
 function assertDebugDoubleRenderPressureMode() {
+  // The normal Debug Double Render checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'debug-double-render',
     label: 'Debug Double Render',
@@ -1386,7 +1397,6 @@ function assertDebugDoubleRenderPressureMode() {
         id: 'react-debug-double-render',
         starter: 'assets/sb/react/question/react-debug-double-render.v1.json',
         solution: 'assets/sb/react/solution/react-debug-double-render-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['one-click-one-render', 'do-not-copy-props', 'typing-leaves-the-badge-alone', 'many-updates-one-render'],
@@ -1417,6 +1427,7 @@ function assertDebugDoubleRenderPressureMode() {
 }
 
 function assertTwoWayControlPressureMode() {
+  // The normal Two-way Control checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'input-output-two-way',
     label: 'Two-way Control',
@@ -1425,7 +1436,6 @@ function assertTwoWayControlPressureMode() {
         id: 'angular-input-output-two-way',
         starter: 'assets/sb/angular/question/angular-input-output-two-way.v2.json',
         solution: 'assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json',
-        checks: [],
       },
     },
     roundIds: ['parent-owns-the-value', 'changes-from-the-parent', 'work-inside-a-form', 'keyboard-and-names'],
@@ -1473,7 +1483,7 @@ function assertTwoWayControlPressureMode() {
 }
 
 function assertMultiStepFormPressureMode() {
-  const normalChecks = ['multi-step-form-advances'];
+  // The normal Multi-step Signup checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'multi-step-form',
     label: 'Multi-step Signup',
@@ -1482,19 +1492,16 @@ function assertMultiStepFormPressureMode() {
         id: 'react-multi-step-signup',
         starter: 'assets/sb/react/question/react-multi-step-form.v1.json',
         solution: 'assets/sb/react/solution/react-multi-step-form-solution.v1.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-multi-step-form-starter',
         starter: 'assets/sb/angular/question/angular-multi-step-form.v2.json',
         solution: 'assets/sb/angular/solution/angular-multi-step-form-solution.v2.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-multi-step-form',
         starter: 'assets/sb/vue/question/vue-multi-step-form.v1.json',
         solution: 'assets/sb/vue/solution/vue-multi-step-form-solution.v1.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['valid-navigation', 'edit-from-summary', 'company-step', 'finish-and-focus'],
@@ -1549,7 +1556,7 @@ function assertMultiStepFormPressureMode() {
 }
 
 function assertNestedCheckboxesPressureMode() {
-  const normalChecks = ['nested-checkbox-parent-sync'];
+  // The normal Checkbox Tree checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'nested-checkboxes',
     label: 'Checkbox Tree',
@@ -1558,19 +1565,16 @@ function assertNestedCheckboxesPressureMode() {
         id: 'react-nested-checkboxes',
         starter: 'assets/sb/react/question/react-nested-checkboxes.v1.json',
         solution: 'assets/sb/react/solution/react-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-nested-checkboxes',
         starter: 'assets/sb/angular/question/angular-nested-checkboxes.v1.json',
         solution: 'assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-nested-checkboxes',
         starter: 'assets/sb/vue/question/vue-nested-checkboxes.v1.json',
         solution: 'assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['parent-child-sync', 'deep-tree', 'locked-items', 'selection-summary'],
@@ -1631,6 +1635,7 @@ function assertNestedCheckboxesPressureMode() {
 }
 
 function assertImageSliderPressureMode() {
+  // The normal Image Slider checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'image-slider',
     label: 'Image Carousel',
@@ -1639,19 +1644,16 @@ function assertImageSliderPressureMode() {
         id: 'react-image-slider',
         starter: 'assets/sb/react/question/react-image-slider.v1.json',
         solution: 'assets/sb/react/solution/react-image-slider-solution.v1.json',
-        checks: [],
       },
       angular: {
         id: 'angular-image-slider-starter',
         starter: 'assets/sb/angular/question/angular-image-slider.v2.json',
         solution: 'assets/sb/angular/solution/angular-image-slider-solution.v2.json',
-        checks: [],
       },
       vue: {
         id: 'vue-image-slider',
         starter: 'assets/sb/vue/question/vue-image-slider.v1.json',
         solution: 'assets/sb/vue/solution/vue-image-slider-solution.v1.json',
-        checks: [],
       },
     },
     roundIds: ['one-current-slide', 'autoplay', 'keyboard-and-screen-readers', 'slides-can-disappear'],
@@ -1788,6 +1790,7 @@ function assertFileExplorerPressureMode() {
 }
 
 function assertLikeButtonPressureMode() {
+  // The normal Like Button checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'like-button',
     label: 'Like Button',
@@ -1796,19 +1799,16 @@ function assertLikeButtonPressureMode() {
         id: 'react-like-button',
         starter: 'assets/sb/react/question/react-like-button.v1.json',
         solution: 'assets/sb/react/solution/react-like-button-solution.v2.json',
-        checks: [],
       },
       angular: {
         id: 'angular-like-button',
         starter: 'assets/sb/angular/question/angular-like-button.v2.json',
         solution: 'assets/sb/angular/solution/angular-like-button-solution.v2.json',
-        checks: [],
       },
       vue: {
         id: 'vue-like-button',
         starter: 'assets/sb/vue/question/vue-like-button.v2.json',
         solution: 'assets/sb/vue/solution/vue-like-button-solution.v2.json',
-        checks: [],
       },
     },
     roundIds: ['update-first', 'server-says-no', 'fast-clicks', 'say-what-happened'],
@@ -1867,7 +1867,7 @@ function assertLikeButtonPressureMode() {
 }
 
 function assertTransferListPressureMode() {
-  const normalChecks = ['transfer-move-item'];
+  // The normal Transfer List checks are pinned in framework-shared-checks.test.mjs.
   const { scenario, checksById } = assertPremiumPressureScenario({
     family: 'transfer-list',
     label: 'Transfer List',
@@ -1876,19 +1876,16 @@ function assertTransferListPressureMode() {
         id: 'react-transfer-list',
         starter: 'assets/sb/react/question/react-transfer-list.v2.json',
         solution: 'assets/sb/react/solution/react-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
       angular: {
         id: 'angular-transfer-list',
         starter: 'assets/sb/angular/question/angular-transfer-list.v2.json',
         solution: 'assets/sb/angular/solution/angular-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
       vue: {
         id: 'vue-transfer-list',
         starter: 'assets/sb/vue/question/vue-transfer-list.v2.json',
         solution: 'assets/sb/vue/solution/vue-transfer-list-solution.v2.json',
-        checks: normalChecks,
       },
     },
     roundIds: ['move-between-lists', 'select-many', 'search-inside-a-list', 'undo-and-announce'],
@@ -1984,11 +1981,7 @@ function assertTodoListPressureMode() {
       expected.solution,
       `${framework}: normal Todo List solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['todo-add-item'],
-      `${framework}: normal Todo List checks must stay unchanged`
-    );
+    // The normal Todo List checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/todo-list.v1.json',
@@ -2052,7 +2045,7 @@ function assertTodoListPressureMode() {
   assert.ok(
     coreSteps.some(
       (step) =>
-        step.type === 'key' && step.selector === '.input' && step.key === 'Enter'
+        step.type === 'key' && step.by?.role === 'textbox' && step.key === 'Enter'
     ),
     'Core Todo List flow must add through the form keyboard path'
   );
@@ -2060,7 +2053,7 @@ function assertTodoListPressureMode() {
     coreSteps.some(
       (step) =>
         step.type === 'expectDisabled' &&
-        step.selector === '.primary' &&
+        step.by?.name === 'Add' &&
         step.disabled === true
     ),
     'Core Todo List flow must keep Add disabled for invalid input'
@@ -2068,34 +2061,44 @@ function assertTodoListPressureMode() {
   assert.ok(
     coreSteps.some(
       (step) =>
-        step.type === 'expectValue' && step.selector === '.input' && step.value === ''
+        step.type === 'expectValue' && step.by?.role === 'textbox' && step.value === ''
     ),
     'Core Todo List flow must clear the input after adding'
   );
 
+  // Since 2026-11-12 the rounds find what their text names: filters, Add, Edit, Remove and Undo by their labels, the
+  // count by its stated copy, and names, relationships and live regions by what they announce, not by id or class.
   const filterSteps = checksById['pressure-todo-filters'].steps;
   assert.deepEqual(
     filterSteps
-      .filter((step) => step.type === 'click' && step.selector.startsWith('.filter-'))
-      .map((step) => step.selector),
-    ['.filter-active', '.filter-completed', '.filter-all'],
+      .filter((step) => step.type === 'click' && ['All', 'Active', 'Completed'].includes(step.by?.name))
+      .map((step) => step.by.name),
+    ['Active', 'Completed', 'All'],
     'Todo filters must exercise Active, Completed, and All in order'
   );
   assert.ok(
     filterSteps.some(
       (step) =>
         step.type === 'expectAttribute' &&
-        step.selector === '.filter-active' &&
+        step.by?.name === 'Active' &&
         step.attribute === 'aria-pressed' &&
         step.expected === 'true'
     ),
     'Active Todo filter must expose its pressed state'
   );
   assert.ok(
-    filterSteps.some(
-      (step) => step.type === 'click' && step.selector === '.clear-completed'
-    ),
+    filterSteps.some((step) => step.type === 'click' && step.by?.name === 'Clear completed'),
     'Todo filter flow must clear completed tasks without removing active tasks'
+  );
+  for (const copy of ['2 items left', '1 item left']) {
+    assert.ok(
+      filterSteps.some((step) => step.type === 'waitForCount' && step.by?.text === copy),
+      `Todo filters must announce the count as the round states it: ${copy}`
+    );
+  }
+  assert.ok(
+    filterSteps.some((step) => step.type === 'expectLiveRegion' && step.politeness === 'polite'),
+    'Todo filters must announce the remaining count politely'
   );
 
   const editingSteps = checksById['pressure-todo-editing'].steps;
@@ -2106,15 +2109,25 @@ function assertTodoListPressureMode() {
   );
   assert.ok(
     editingSteps.some(
-      (step) => step.type === 'expectFocused' && step.selector === '.edit-input'
+      (step) => step.type === 'expectFocused' && step.by?.role === 'textbox' && step.index === 1
     ),
     'Todo editing must focus the edit input when editing starts'
   );
   assert.ok(
-    editingSteps.filter(
-      (step) => step.type === 'expectFocused' && step.selector === '.edit-task'
-    ).length >= 2,
+    editingSteps.filter((step) => step.type === 'expectFocused' && step.by?.name === 'Edit').length >= 2,
     'Todo editing must restore focus after both commit and cancel'
+  );
+  assert.deepEqual(
+    editingSteps
+      .filter((step) => step.type === 'expectName' && step.text === 'Draft title')
+      .map((step) => step.by?.name ?? step.by?.role),
+    ['checkbox', 'Edit', 'Remove'],
+    "Todo editing must check that each task control's name includes its task"
+  );
+  assert.deepEqual(
+    editingSteps.filter((step) => step.type === 'expectReferenced').map((step) => step.attribute),
+    ['aria-controls', 'aria-describedby'],
+    'Todo editing must check the input relationships without pinning ids'
   );
 
   const undoSteps = checksById['pressure-todo-undo'].steps;
@@ -2122,18 +2135,22 @@ function assertTodoListPressureMode() {
     undoSteps.some(
       (step) =>
         step.type === 'expectText' &&
-        step.selector === '.todo-text' &&
+        step.selector === '.item' &&
         step.index === 0 &&
         step.text === 'One'
     ),
     'Todo undo must restore the removed task at its original index'
   );
   assert.ok(
+    undoSteps.some((step) => step.type === 'expectCount' && step.by?.text === 'One' && step.count === 0),
+    'A newer removal must replace the prior undo opportunity'
+  );
+  assert.ok(
     undoSteps.some(
       (step) =>
-        step.type === 'expectNoText' && step.selector === '.card' && step.text === 'One'
+        step.type === 'expectLiveRegion' && step.by?.name === 'Undo' && step.politeness === 'polite' && step.atomic === true
     ),
-    'A newer removal must replace the prior undo opportunity'
+    'Todo undo must expose its updates as an atomic polite status'
   );
   assert.ok(
     undoSteps.some(
@@ -2169,32 +2186,18 @@ function assertTodoListPressureMode() {
     'Todo teardown must prove that the undo timer is cleared'
   );
 
+  // No round reaches for markup its text does not name.
   const serializedChecks = JSON.stringify(checks);
-  for (const requiredSignal of [
-    '#new-task',
-    '#todo-items',
-    '.todo-checkbox',
-    '.todo-text',
-    '.items-left',
-    '.filters',
-    '.filter-all',
-    '.filter-active',
-    '.filter-completed',
-    '.edit-task',
-    '.edit-input',
-    '.remove-task',
-    '.clear-completed',
-    '.undo-bar',
-    '.undo-button',
-    'aria-label',
-    'aria-controls',
-    'aria-describedby',
-    'aria-pressed',
-    'aria-live',
-    'aria-atomic',
-    'unmountPreview',
-    'expectNoPreviewTimers',
-  ]) {
+  for (const hiddenContract of ['#new-task', '#todo-items', '.todo-checkbox', '.todo-text', '.items-left', '.filters',
+    '.filter-', '.edit-task', '.edit-input', '.remove-task', '.clear-completed', '.undo-bar', '.undo-button', '.primary',
+    '.input', '.card', 'New todo', 'Filter tasks', 'Undo removal of']) {
+    assert.ok(
+      !serializedChecks.includes(hiddenContract),
+      `Todo List pressure checks must not depend on ${hiddenContract}`
+    );
+  }
+  for (const requiredSignal of ['aria-pressed', 'aria-controls', 'aria-describedby', 'expectName', 'expectLiveRegion',
+    'expectReferenced', 'unmountPreview', 'expectNoPreviewTimers']) {
     assert.ok(
       serializedChecks.includes(requiredSignal),
       `Todo List pressure checks are missing ${requiredSignal}`
@@ -2267,11 +2270,18 @@ function assertTodoListPressureMode() {
     }
   }
 
+  // Since 2026-11-11 the preview compiles real modules: every import from 'vue', in a .vue file or a .ts module, is
+  // linked to one module that re-exports each export of the Vue build, nextTick included. The Karma spec runs one.
   const vuePreviewBuilder = read('frontend/src/app/core/utils/vue-preview-builder.ts');
-  assert.equal(
-    (vuePreviewBuilder.match(/const \{[^}\n]*\bnextTick\b[^}\n]*\} = Vue;/g) ?? []).length,
-    2,
-    'Vue preview must expose nextTick for both script-setup and module-style imports'
+  assert.match(
+    vuePreviewBuilder,
+    /Object\.keys\(Vue\)/,
+    'Vue preview must re-export every export of the Vue build, nextTick included, to compiled modules'
+  );
+  assert.match(
+    vuePreviewBuilder,
+    /if \(spec === 'vue'\) return head \+ quote \+ vueModuleUrl\(\) \+ quote;/,
+    'Vue preview must link imports from vue to the module that re-exports the Vue build'
   );
 }
 
@@ -2287,13 +2297,14 @@ function assertShoppingCartPressureMode() {
       id: 'angular-shopping-cart-mini',
       starter: 'assets/sb/angular/question/angular-shopping-cart.v2.json',
       solution: 'assets/sb/angular/solution/angular-shopping-cart-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-shopping-cart',
       starter: 'assets/sb/vue/question/vue-shopping-cart.v1.json',
       solution: 'assets/sb/vue/solution/vue-shopping-cart-solution.v1.json',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: its guidance no longer calls in-place changes to the reactive cart a pitfall.
+      updatedAt: '2026-11-11',
     },
   };
   const pressureRefs = new Set();
@@ -2324,11 +2335,7 @@ function assertShoppingCartPressureMode() {
       expected.solution,
       `${framework}: normal Shopping Cart solution changed`
     );
-    assert.deepEqual(
-      (question.frameworkTests ?? []).map((test) => test.id),
-      ['cart-adds-product'],
-      `${framework}: normal Shopping Cart checks must stay unchanged`
-    );
+    // The normal Shopping Cart checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/shopping-cart.v1.json',
@@ -2542,7 +2549,7 @@ function assertChipsInputPressureMode() {
       id: 'angular-chips-input-autocomplete',
       starter: 'assets/sb/angular/question/angular-chips-input-autocomplete.v1.json',
       solution: 'assets/sb/angular/solution/angular-chips-input-autocomplete-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-chips-input-autocomplete',
@@ -2551,34 +2558,6 @@ function assertChipsInputPressureMode() {
       updatedAt: '2026-02-09',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'chips-add-suggestion',
-      name: 'Chips input adds suggestion',
-      steps: [
-        {
-          type: 'setValue',
-          selector: '.chip-input input',
-          value: 'Alice',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.suggestion',
-          count: 1,
-          timeoutMs: 800,
-        },
-        {
-          type: 'mouseDown',
-          selector: '.suggestion',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.chip',
-          count: 1,
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -2607,11 +2586,7 @@ function assertChipsInputPressureMode() {
       expected.solution,
       `${framework}: normal Invite Chips Input solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      expectedNormalChecks,
-      `${framework}: normal Invite Chips Input check must stay unchanged`
-    );
+    // The normal Invite Chips Input checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/chips-input-autocomplete.v1.json',
@@ -2864,37 +2839,16 @@ function assertAccordionFaqPressureMode() {
       id: 'angular-faq-accordion',
       starter: 'assets/sb/angular/question/angular-faq-accordion.v2.json',
       solution: 'assets/sb/angular/solution/angular-faq-accordion-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-accordion-faq',
       starter: 'assets/sb/vue/question/vue-accordion-faq.v1.json',
       solution: 'assets/sb/vue/solution/vue-accordion-faq-solution.v1.json',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: a pitfall that called in-place array changes hard to follow in Vue was removed.
+      updatedAt: '2026-11-11',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'accordion-toggle-answer',
-      name: 'Accordion toggles answer',
-      steps: [
-        {
-          type: 'expectCount',
-          selector: '.faq-body',
-          count: 0,
-        },
-        {
-          type: 'click',
-          selector: '.faq-header',
-        },
-        {
-          type: 'waitForCount',
-          selector: '.faq-body',
-          count: 1,
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -2923,11 +2877,7 @@ function assertAccordionFaqPressureMode() {
       expected.solution,
       `${framework}: normal Accordion FAQ solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      expectedNormalChecks,
-      `${framework}: normal Accordion FAQ check must stay unchanged`
-    );
+    // The normal Accordion FAQ checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/accordion-faq.v1.json',
@@ -3181,7 +3131,7 @@ function assertTicTacToePressureMode() {
       id: 'angular-tictactoe-starter',
       starter: 'assets/sb/angular/question/angular-tictactoe.v1.json',
       solution: 'assets/sb/angular/solution/angular-tictactoe-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-tictactoe',
@@ -3214,11 +3164,7 @@ function assertTicTacToePressureMode() {
       expected.solution,
       `${framework}: normal Tic-Tac-Toe solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce or rewrite normal Tic-Tac-Toe checks`
-    );
+    // The normal Tic-Tac-Toe checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/tic-tac-toe.v1.json',
@@ -3564,19 +3510,26 @@ function assertChessboardClickHighlightPressureMode() {
       id: 'react-chessboard-click-highlight',
       starter: 'assets/sb/react/question/react-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-02-09',
+      updatedAt: '2026-11-11',
+      // Added on 2026-11-11 with the fix that applies the size on the native change event: React's onChange runs on
+      // every keystroke.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
     angular: {
       id: 'angular-chessboard-click-highlight',
       starter: 'assets/sb/angular/question/angular-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
+      // Added on 2026-11-11 with the fix that applies the size on change instead of on every keystroke.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
     vue: {
       id: 'vue-chessboard-click-highlight',
       starter: 'assets/sb/vue/question/vue-chessboard-click-highlight.v1.json',
       solution: 'assets/sb/vue/solution/vue-chessboard-click-highlight-solution.v1.json',
-      updatedAt: '2026-02-09',
+      updatedAt: '2026-11-11',
+      // Added on 2026-11-11 with the fix that applies the size on change, as in Angular.
+      checks: ['chessboard-size-clamps', 'chessboard-single-highlight'],
     },
   };
   const pressureRefs = new Set();
@@ -3611,10 +3564,10 @@ function assertChessboardClickHighlightPressureMode() {
       expected.solution,
       `${framework}: normal Chessboard solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce normal Chessboard checks`
+    assert.deepEqual(
+      (question.frameworkTests ?? []).map((check) => check.id),
+      expected.checks,
+      `${framework}: normal Chessboard checks changed; pressure coverage must not add any`
     );
     assert.equal(
       question.pressureModeAsset,
@@ -3955,10 +3908,17 @@ function assertChessboardClickHighlightPressureMode() {
       attribute: 'aria-live',
       expected: 'polite',
     },
+    // 2026-11-11: rows of gridcells hold the cell buttons; aria-pressed stays on the buttons, which a gridcell would not support.
+    { type: 'expectCount', selector: '.board [role="row"]', count: 8 },
     {
       type: 'expectCount',
-      selector: 'button.cell[type="button"][role="gridcell"]',
+      selector: '.board [role="row"] [role="gridcell"] button.cell[type="button"]',
       count: 64,
+    },
+    {
+      type: 'expectCount',
+      selector: 'button.cell[role], button.cell[aria-rowindex], button.cell[aria-colindex]',
+      count: 0,
     },
     { type: 'expectCount', selector: 'button.cell:not([disabled])', count: 64 },
     {
@@ -3984,14 +3944,14 @@ function assertChessboardClickHighlightPressureMode() {
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="row"]',
       index: 0,
       attribute: 'aria-rowindex',
       expected: '1',
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="gridcell"]',
       index: 0,
       attribute: 'aria-colindex',
       expected: '1',
@@ -4033,14 +3993,14 @@ function assertChessboardClickHighlightPressureMode() {
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
-      index: 63,
+      selector: '.board [role="row"]',
+      index: 7,
       attribute: 'aria-rowindex',
       expected: '8',
     },
     {
       type: 'expectAttribute',
-      selector: '.cell',
+      selector: '.board [role="gridcell"]',
       index: 63,
       attribute: 'aria-colindex',
       expected: '8',
@@ -4188,7 +4148,7 @@ function assertDynamicCounterButtonsPressureMode() {
       solution: 'assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json',
       openFile: '/src/app/app.component.ts',
       storageKey: 'v2:ui:angular:angular-dynamic-counter-buttons',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-dynamic-counter-buttons',
@@ -4196,7 +4156,8 @@ function assertDynamicCounterButtonsPressureMode() {
       solution: 'assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json',
       openFile: '/src/App.vue',
       storageKey: 'v1:ui:vue:vue-dynamic-counter-buttons',
-      updatedAt: '2026-01-30',
+      // 2026-11-11: its prose now says the steps array is changed in place, as the code does.
+      updatedAt: '2026-11-11',
     },
   };
   const pressureRefs = new Set();
@@ -4241,11 +4202,7 @@ function assertDynamicCounterButtonsPressureMode() {
       expected.solution,
       `${framework}: normal Dynamic Counter solution changed`
     );
-    assert.equal(
-      Object.hasOwn(question, 'frameworkTests'),
-      false,
-      `${framework}: pressure coverage must not introduce normal Dynamic Counter checks`
-    );
+    // The normal Dynamic Counter checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/dynamic-counter-buttons.v1.json',
@@ -4707,7 +4664,7 @@ function assertPaginationTablePressureMode() {
       id: 'angular-pagination-table',
       starter: 'assets/sb/angular/question/angular-pagination-table.v2.json',
       solution: 'assets/sb/angular/solution/angular-pagination-table-solution.v2.json',
-      updatedAt: '2026-07-15',
+      updatedAt: '2026-11-11',
     },
     vue: {
       id: 'vue-pagination-table',
@@ -4716,36 +4673,6 @@ function assertPaginationTablePressureMode() {
       updatedAt: '2026-01-30',
     },
   };
-  const expectedNormalChecks = [
-    {
-      id: 'pagination-next-page',
-      name: 'Pagination moves to next page',
-      steps: [
-        {
-          type: 'expectCount',
-          selector: 'tbody tr',
-          count: 5,
-        },
-        {
-          type: 'expectText',
-          selector: '.page-info',
-          text: '1',
-          match: 'contains',
-        },
-        {
-          type: 'click',
-          selector: '.footer button',
-          index: 1,
-        },
-        {
-          type: 'waitForText',
-          selector: '.page-info',
-          text: '2',
-          match: 'contains',
-        },
-      ],
-    },
-  ];
   const pressureRefs = new Set();
 
   for (const [framework, expected] of Object.entries(expectedQuestions)) {
@@ -4774,23 +4701,7 @@ function assertPaginationTablePressureMode() {
       expected.solution,
       `${framework}: normal Paginated Table solution changed`
     );
-    assert.deepEqual(
-      question.frameworkTests,
-      framework === 'angular'
-        ? expectedNormalChecks.map((check) => ({
-            ...check,
-            steps: check.steps.map((step) => ({
-              ...step,
-              selector: step.selector === '.page-info'
-                ? '.pagination span'
-                : step.selector === '.footer button'
-                  ? '.pagination button'
-                  : step.selector,
-            })),
-          }))
-        : expectedNormalChecks,
-      `${framework}: normal Paginated Table check must stay unchanged`
-    );
+    // The normal Paginated Table checks are pinned in framework-shared-checks.test.mjs.
     assert.equal(
       question.pressureModeAsset,
       'assets/questions/pressure-modes/pagination-table.v1.json',
@@ -5368,9 +5279,9 @@ const engines = solutionAssets.map(({ name, relative, component, engine }) => {
   assert.doesNotMatch(componentCode, /pendingDirection/);
 
   if (name === 'Angular') {
-    assert.match(componentCode, /this\.bufferedDirection = null/);
-    assert.match(componentCode, /this\.isWon = false/);
-    assert.match(componentCode, /ngOnDestroy\(\): void \{[\s\S]*this\.clearTimer\(\)/);
+    assert.match(componentCode, /this\.bufferedDirection\.set\(null\)/);
+    assert.match(componentCode, /this\.isWon\.set\(false\)/);
+    assert.match(componentCode, /inject\(DestroyRef\)\.onDestroy\(\(\) => this\.clearTimer\(\)\)/);
     assert.match(componentCode, /outcome === 'won'[\s\S]*this\.pause\(\)/);
   } else if (name === 'React') {
     assert.match(componentCode, /bufferedDirection: null/);
@@ -5617,7 +5528,7 @@ for (const [technology, id] of [
 ]) {
   const question = json(`cdn/questions/${technology}/coding.json`).find((entry) => entry.id === id);
   assert.ok(question, `Missing ${id}`);
-  assert.equal(question.updatedAt, technology === 'angular' ? '2026-07-15' : '2026-07-14');
+  assert.equal(question.updatedAt, technology === 'angular' ? '2026-11-11' : '2026-07-14');
   const renderedContract = JSON.stringify(question);
   assert.match(renderedContract, /at most one valid perpendicular turn per tick/);
   assert.match(renderedContract, /full board|final free cell/);
@@ -5691,43 +5602,73 @@ function assertAngularCounterDebug() {
     (entry) => entry.id === 'ng-debug-counter-change-detection'
   );
   assert.ok(question, 'The published Angular counter debug question must remain available');
-  for (const [reference, expectedCounts] of [
-    [question.sdk.asset, [0, 0, 0]],
-    [question.solutionAsset, [0, 1, 2]],
+  // The bug is change detection, not arithmetic: both workspaces count every click and keep the display OnPush, and
+  // only the solution hands the display a new stats object. The browser check sees the starter's screen stuck at 0.
+  const OnPush = 0;
+  const angularCore = {
+    ChangeDetectionStrategy: { OnPush, Default: 1 },
+    Component: (config) => (component) => Object.assign(component, { config }),
+    input: { required: () => () => undefined },
+  };
+  for (const [reference, replacesStats] of [
+    [question.sdk.asset, false],
+    [question.solutionAsset, true],
   ]) {
     const relative = reference.replace(/^assets\//, '');
     assertMirror(relative);
     const asset = json(`cdn/${relative}`);
-    const source = fileCode(asset, 'src/app/app.component.ts');
-    parseAngularTemplate(fileCode(asset, 'src/app/app.component.html'), relative);
-    const transpiled = ts.transpileModule(source, {
-      compilerOptions: {
-        target: ts.ScriptTarget.ES2022,
-        module: ts.ModuleKind.CommonJS,
-        experimentalDecorators: true,
-      },
-      reportDiagnostics: true,
-    });
-    assert.deepEqual(
-      (transpiled.diagnostics ?? []).filter((entry) => entry.category === ts.DiagnosticCategory.Error),
-      [],
-      `${relative}: component must compile before its behavior can be checked`
+    const template = fileCode(asset, 'src/app/app.component.html');
+    parseAngularTemplate(template, relative);
+    assert.match(template, /<app-counter-display \[stats\]="stats" \/>/, `${relative}: the display must bind the stats object`);
+    const modules = {};
+    const load = (file) => {
+      const transpiled = ts.transpileModule(fileCode(asset, file), {
+        compilerOptions: {
+          target: ts.ScriptTarget.ES2022,
+          module: ts.ModuleKind.CommonJS,
+          experimentalDecorators: true,
+        },
+        reportDiagnostics: true,
+      });
+      assert.deepEqual(
+        (transpiled.diagnostics ?? []).filter((entry) => entry.category === ts.DiagnosticCategory.Error),
+        [],
+        `${relative}: ${file} must compile before its behavior can be checked`
+      );
+      const exports = {};
+      vm.runInNewContext(transpiled.outputText, {
+        exports,
+        require(specifier) {
+          if (specifier === './counter-display.component') return modules.display;
+          assert.equal(specifier, '@angular/core');
+          return angularCore;
+        },
+      }, { filename: `${relative}#${file}` });
+      return exports;
+    };
+    modules.display = load('src/app/counter-display.component.ts');
+    const display = modules.display.CounterDisplayComponent;
+    assert.equal(display.config.changeDetection, OnPush, `${relative}: the counter display must stay OnPush`);
+    assert.match(display.config.template, /\{\{ stats\(\)\.count \}\}/);
+    const { AppComponent } = load('src/app/app.component.ts');
+    // Spread into this realm: the array literal comes from the vm context.
+    assert.deepEqual([...AppComponent.config.imports], [display]);
+    const component = new AppComponent();
+    const references = [component.stats];
+    const counts = [component.stats.count];
+    for (let click = 0; click < 2; click += 1) {
+      component.inc();
+      references.push(component.stats);
+      counts.push(component.stats.count);
+    }
+    assert.deepEqual(counts, [0, 1, 2], `${relative}: inc() must count every click; the bug is in what the display sees`);
+    assert.equal(
+      new Set(references).size,
+      replacesStats ? 3 : 1,
+      replacesStats
+        ? `${relative}: the solution must give the OnPush display a new stats object on every click`
+        : `${relative}: the starter must change stats in place, so the OnPush display misses the update`
     );
-    const exports = {};
-    vm.runInNewContext(transpiled.outputText, {
-      exports,
-      require(specifier) {
-        assert.equal(specifier, '@angular/core');
-        return { Component: () => (component) => component };
-      },
-    }, { filename: relative });
-    const component = new exports.AppComponent();
-    const counts = [component.count];
-    component.inc();
-    counts.push(component.count);
-    component.inc();
-    counts.push(component.count);
-    assert.deepEqual(counts, expectedCounts, `${relative}: starter must reproduce the bug and solution must repair it`);
   }
 }
 
@@ -5748,6 +5689,7 @@ assertPaginationTablePressureMode();
 assertAutocompletePressureMode();
 assertTeamListPressureMode();
 assertNestedCommentsPressureMode();
+assertBoardAndRatingRoles();
 assertContactFormPressureMode();
 assertChatStreamingPressureMode();
 assertUseEffectOncePressureMode();
@@ -5799,7 +5741,8 @@ const modernizedAngularIds = [
 for (const id of modernizedAngularIds) {
   const question = angularCodingQuestions.find((entry) => entry.id === id);
   assert.ok(question, `Missing modernized Angular question ${id}`);
-  assert.equal(question.updatedAt, '2026-07-15', `${id}: stale Angular update date`);
+  // 2026-11-11: the official solutions were rewritten with signals.
+  assert.equal(question.updatedAt, '2026-11-11', `${id}: stale Angular update date`);
 }
 for (const id of [
   'angular-image-slider-starter',
@@ -5822,15 +5765,16 @@ for (const id of [
   );
 }
 
-for (const relative of [
-  'sb/angular/question/angular-todo-list.v2.json',
-  'sb/angular/solution/angular-todo-list-solution.v2.json'
+// The starter keeps plain fields; the solution reads the same state from signals.
+for (const [relative, read] of [
+  ['sb/angular/question/angular-todo-list.v2.json', ''],
+  ['sb/angular/solution/angular-todo-list-solution.v2.json', '\\(\\)']
 ]) {
   const asset = json(`cdn/${relative}`);
   const template = fileCode(asset, '/src/app/app.component.html');
   const component = fileCode(asset, '/src/app/app.component.ts');
-  assert.match(template, /@for \(todo of todos; track todo\.id\)/);
-  assert.match(template, /@if \(hasTodos\)/);
+  assert.match(template, new RegExp(`@for \\(todo of todos${read}; track todo\\.id\\)`));
+  assert.match(template, new RegExp(`@if \\(hasTodos${read}\\)`));
   assert.doesNotMatch(template, deprecatedAngularControlFlow);
   assert.doesNotMatch(component, /CommonModule|trackById/);
 }
@@ -5842,9 +5786,9 @@ assert.ok(todoQuestion);
 assert.equal(todoQuestion.access, 'free');
 assert.equal(todoQuestion.sdk.asset, 'assets/sb/angular/question/angular-todo-list.v2.json');
 assert.equal(todoQuestion.solutionAsset, 'assets/sb/angular/solution/angular-todo-list-solution.v2.json');
-assert.equal(todoQuestion.updatedAt, '2026-07-15');
+assert.equal(todoQuestion.updatedAt, '2026-11-11');
 const todoContract = JSON.stringify(todoQuestion);
-assert.match(todoContract, /@for \(todo of todos; track todo\.id\)/);
+assert.match(todoContract, /@for \(todo of todos\(\); track todo\.id\)/);
 assert.doesNotMatch(todoContract, deprecatedAngularControlFlow);
 const foundationsTrackPreview = read(
   'frontend/src/app/features/tracks/track-preview/track-preview.component.ts'
@@ -5867,10 +5811,10 @@ assert.deepEqual(tabsQuestion.premiumPreview, {
   ],
   unlockDescription: 'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.'
 });
-const tabsPanelCounts = tabsQuestion.frameworkTests[0].steps.filter(
+const tabsPanelCounts = tabsQuestion.frameworkTests.flatMap((test) => test.steps).filter(
   (step) => step.type === 'expectCount' && step.selector === '.panel' && step.count === 1
 );
-assert.equal(tabsPanelCounts.length, 3, 'Tabs must assert exactly one panel initially and after both tab changes');
+assert.ok(tabsPanelCounts.length >= 3, 'Tabs must assert exactly one panel initially and after the tab changes');
 for (const relative of [
   'sb/angular/question/angular-tabs.v2.json',
   'sb/angular/solution/angular-tabs-solution.v2.json'
@@ -5983,8 +5927,30 @@ assert.ok(
   'Pending ArrowDown/Enter must not select an option from the previous query'
 );
 
+// The task states the fake latency, so a stale-response check means the same thing for every candidate: san takes
+// 900 ms and anything else 50 ms in the text, the starter's TODO, the solution and the checks' timing.
+assert.ok(
+  autocompleteQuestion.description.specs.requirements.includes(
+    'Simulate latency in searchCities: 900 ms for the query san and 50 ms for every other query.'
+  )
+);
+assert.match(autocompleteStarterCode, /simulate abortable latency \(900 ms for "san", 50 ms for any other query\)/);
+assert.match(autocompleteSolutionCode, /const delay = query === 'san' \? 900 : 50;/);
+const debounceAutocompleteTest = autocompleteTests.get('autocomplete-debounce-final-query');
+const slowSanWait = debounceAutocompleteTest.steps.findIndex((step) => step.type === 'wait' && step.durationMs === 600);
+assert.deepEqual(
+  debounceAutocompleteTest.steps.slice(slowSanWait, slowSanWait + 2),
+  [{ type: 'wait', durationMs: 600 }, { type: 'expectCount', selector: '.option', count: 0 }],
+  'The debounce check must also prove that san answers only after its 900 ms'
+);
+
 const staleAutocompleteTest = autocompleteTests.get('autocomplete-stale-response-ignored');
 assert.ok(staleAutocompleteTest);
+assert.deepEqual(
+  staleAutocompleteTest.steps.filter((step) => step.type === 'wait').map((step) => step.durationMs),
+  [340, 600],
+  'The stale-response check must type se while san runs and wait past the late san response'
+);
 assert.ok(
   staleAutocompleteTest.steps
     .filter((step) => step.text === 'Seattle')
@@ -6106,7 +6072,7 @@ try {
 
   // Do not flush the query render yet. The old request cannot be cancelled and its
   // effect cleanup has not run, so requestSeqRef is the only active stale-result guard.
-  await clock.advanceBy(450);
+  await clock.advanceBy(900);
   assert.equal(harness.state(5), 'loading');
   assert.deepEqual(
     Array.from(harness.state(8)),
@@ -6116,7 +6082,7 @@ try {
 
   harness.flush();
   await clock.advanceBy(300);
-  await clock.advanceBy(80);
+  await clock.advanceBy(50);
   harness.flush();
   assert.equal(harness.state(5), 'success');
   assert.deepEqual(Array.from(harness.state(8)), ['Brussels', 'San Jose', 'Seattle', 'Seoul']);
@@ -6144,6 +6110,24 @@ for (const node of autocompleteGraphVariant.nodes) {
     autocompleteGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet),
     `${node.id}: autocomplete anchor range must contain its snippet`
   );
+}
+
+// The Vue Debounced Search graph explains the solution's script line by line, the stale flag included.
+const vueDebounceQuestion = json('cdn/questions/vue/coding.json').find((entry) => entry.id === 'vue-debounced-search');
+assert.equal(vueDebounceQuestion.decisionGraphAsset, 'assets/questions/vue/decision-graphs/vue-debounced-search.v1.json');
+const vueDebounceGraph = json('cdn/questions/vue/decision-graphs/vue-debounced-search.v1.json').variants.approach1;
+const vueDebounceSolution = fileCode(json('cdn/sb/vue/solution/vue-debounced-search-solution.v1.json'), 'src/App.vue');
+assert.equal(
+  vueDebounceGraph.code,
+  vueDebounceSolution.match(/<script setup lang="ts">\n([\s\S]*?)<\/script>/)[1],
+  'the Vue Debounced Search graph shows the solution script'
+);
+assert.match(vueDebounceGraph.code, /onInvalidate\(\(\) => \{\n\s+stale = true;/);
+const vueDebounceGraphLines = vueDebounceGraph.code.split('\n');
+for (const node of vueDebounceGraph.nodes) {
+  const { lineStart, lineEnd, snippet } = node.anchor;
+  assert.ok(lineStart >= 1 && lineEnd >= lineStart && lineEnd <= vueDebounceGraphLines.length, `${node.id}: invalid anchor range`);
+  assert.ok(vueDebounceGraphLines.slice(lineStart - 1, lineEnd).join('\n').includes(snippet), `${node.id}: anchor range must contain its snippet`);
 }
 
 const apiMisuseQuestion = json('cdn/questions/react/coding.json').find((entry) => entry.id === 'react-debug-api-misuse');
@@ -6604,7 +6588,8 @@ for (const node of vanillaPortVariant.nodes) {
 const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
-  'expectNoPreviewTimers', 'expectNoPreviewLeaks']);
+  'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
+  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

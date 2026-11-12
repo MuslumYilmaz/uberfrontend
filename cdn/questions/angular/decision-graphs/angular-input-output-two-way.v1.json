@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-input-output-two-way",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "// src/app/child.component.ts\nimport { ChangeDetectionStrategy, Component, model } from '@angular/core';\n\n@Component({\n  selector: 'app-child',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './child.component.html',\n  styleUrls: ['./child.component.css']\n})\nexport class ChildComponent {\n  // A model is an input plus a matching output (valueChange, likedChange): the pair [(value)] and [(liked)] bind to.\n  readonly value = model(0);\n  readonly liked = model(false);\n\n  inc(): void {\n    this.value.update((value) => value + 1);\n  }\n\n  dec(): void {\n    this.value.update((value) => Math.max(0, value - 1));\n  }\n\n  toggleLike(): void {\n    this.liked.update((liked) => !liked);\n  }\n}\n\n// src/app/app.component.ts\nimport { ChangeDetectionStrategy, Component, signal } from '@angular/core';\nimport { ChildComponent } from './child.component';\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [ChildComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly value = signal(0);\n  readonly liked = signal(false);\n}\n",
+      "nodes": [
+        {
+          "id": "d1-value-model",
+          "title": "Declare value as a model",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "readonly value = model(0);"
+          },
+          "why": "model(0) registers a value input and a valueChange output in one field, the exact pair [(value)] binds to, and inside the child it reads and writes like a signal.",
+          "alternative": "Pair @Input() value with @Output() valueChange = new EventEmitter<number>(), or input() with output(), and emit the next value by hand.",
+          "tradeoff": "One field replaces two declarations, but the child now holds a copy of the value; the stateless input() plus output() pair never shows a number the parent has not accepted."
+        },
+        {
+          "id": "d2-write-the-model",
+          "title": "Write the model instead of emitting",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "this.value.update((value) => value + 1);"
+          },
+          "why": "update changes the child's value and emits valueChange with the result in one call, so the plus button needs no EventEmitter and the parent's [(value)] receives the new number.",
+          "alternative": "Emit this.value + 1 from an output and show the new number only after the parent sends it back through [value].",
+          "tradeoff": "The child shows the new number at once; a parent that bound only [value] and ignored valueChange would see the child drift away from its own value."
+        },
+        {
+          "id": "d3-floor-at-zero",
+          "title": "Keep the value at zero or above",
+          "anchor": {
+            "lineStart": 20,
+            "lineEnd": 20,
+            "snippet": "Math.max(0, value - 1)"
+          },
+          "why": "The minus button is disabled at 0, and Math.max holds the floor if dec() runs at 0 some other way; a model set to its current value emits nothing, so no extra valueChange goes out.",
+          "alternative": "Rely on [disabled]=\"value() === 0\" alone, or let the value go negative and reject it in the parent.",
+          "tradeoff": "The clamp repeats a rule the disabled button already enforces, but it keeps dec() correct for a keyboard shortcut or a test that calls it directly."
+        },
+        {
+          "id": "d4-flip-liked",
+          "title": "Flip the like flag through its model",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 24,
+            "snippet": "this.liked.update((liked) => !liked);"
+          },
+          "why": "update stores the negation of the current liked value and the model emits likedChange, so the parent's liked signal and its true or false stat follow the click.",
+          "alternative": "Keep liked as plain child state that the parent never hears about, or emit !this.liked from an output for the parent to assign.",
+          "tradeoff": "The flag now lives in two places, the child's model and the parent's signal, kept equal by [(liked)]; a child-only flag is simpler but invisible to the stats row."
+        },
+        {
+          "id": "d5-parent-signals",
+          "title": "Keep the source of truth in parent signals",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "readonly value = signal(0);"
+          },
+          "why": "The parent's value and liked signals are what [(value)]=\"value\" and [(liked)]=\"liked\" read and write: Angular calls set on them when the child emits, and the stats row reads value() and liked().",
+          "alternative": "Plain value and liked fields, which [(value)] also accepts but which an OnPush parent would not re-render if they changed outside its template.",
+          "tradeoff": "The binding passes the signal without parentheses while the interpolation calls it, a split that is easy to get wrong; in return every change is tracked."
+        }
+      ]
+    }
+  }
+}

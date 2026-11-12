@@ -1,0 +1,62 @@
+:host{
+  display: block;
+  /* A flex item under the framework checks: it keeps its height while the preview shrinks. */
+  flex: 0 0 auto;
+}
+
+.post-pass{
+  position: relative;
+  display: grid;
+  gap: var(--uf-space-2);
+  margin: var(--uf-space-2) 0;
+  padding: var(--uf-space-3) calc(var(--uf-space-5) + var(--uf-space-3)) var(--uf-space-3) var(--uf-space-3);
+  border: 1px solid color-mix(in srgb, var(--uf-badge-green-b) 45%, var(--uf-border-subtle));
+  border-radius: var(--uf-card-radius);
+  background: color-mix(in srgb, var(--uf-badge-green-b) 10%, var(--uf-surface));
+  color: var(--uf-text-primary);
+}
+.post-pass--framework{
+  margin: 0;
+  border-width: 1px 0 0;
+  border-radius: 0;
+}
+.post-pass__status{
+  display: flex;
+  align-items: flex-start;
+  gap: var(--uf-space-2);
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.post-pass__icon{
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--uf-badge-green-a);
+}
+.post-pass__actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uf-space-2);
+}
+.post-pass__actions [data-testid="coding-post-pass-next"]{
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+.post-pass__close{
+  position: absolute;
+  top: var(--uf-space-2);
+  right: var(--uf-space-2);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--uf-text-secondary);
+  cursor: pointer;
+}
+.post-pass__close:hover{ color: var(--uf-text-primary); background: var(--uf-surface-muted); }
+.post-pass__close:focus-visible{ outline: 2px solid var(--uf-accent); outline-offset: 2px; }

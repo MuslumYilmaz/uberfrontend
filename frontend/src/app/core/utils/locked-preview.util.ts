@@ -1,6 +1,7 @@
 import { PremiumPreviewContent, Question, QuestionPreviewSample } from '../models/question.model';
 import type { IncidentListItem } from '../models/incident.model';
 import type { TradeoffBattleListItem } from '../models/tradeoff-battle.model';
+import type { FrameworkCheckCoverage } from './framework-check-coverage.util';
 
 export type LockedPreviewType = 'coding' | 'trivia' | 'system-design';
 
@@ -67,6 +68,8 @@ export type CodingLockedPreviewQuestion = Pick<
   'id' | 'title' | 'description' | 'tags' | 'difficulty' | 'premiumPreview' | 'starterCode' | 'code'
 > & {
   starterCodeTs?: string;
+  /** Worked out by the page from the task's checks; the preview never reads the checks themselves. */
+  checkCoverage?: FrameworkCheckCoverage;
 } & Partial<Pick<Question, 'type' | 'technology' | 'access' | 'importance' | 'pressureModeAsset' | 'reviewModeAsset' | 'previewSample'>>;
 
 type TriviaContext = BuildContext & {
@@ -81,6 +84,24 @@ const DEFAULT_TECH = 'frontend';
 
 export const CODING_PREMIUM_UNLOCK_DESCRIPTION =
   'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion.';
+
+/** A framework task whose one check covers the core flow only (framework-check-coverage.util). */
+export const CODING_SMOKE_CHECK_UNLOCK_DESCRIPTION =
+  "Premium unlocks the runnable workspace, a check of the core flow with the task's requirement list, implementation walkthrough, and edge-case discussion.";
+
+/** A framework task with a live preview and no checks: it is marked complete by hand. */
+export const CODING_PREVIEW_ONLY_UNLOCK_DESCRIPTION =
+  'Premium unlocks the runnable workspace with a live preview, implementation walkthrough, and edge-case discussion.';
+
+const FRAMEWORK_TECHS = new Set(['react', 'angular', 'vue']);
+
+/** The unlock line promises only the checks the task has; without a stated coverage it keeps the usual line. */
+function codingUnlockDescription(q: CodingLockedPreviewQuestion, technology: string | undefined): string {
+  if (!FRAMEWORK_TECHS.has(String(technology || q.technology || ''))) return CODING_PREMIUM_UNLOCK_DESCRIPTION;
+  if (q.checkCoverage === 'smoke') return CODING_SMOKE_CHECK_UNLOCK_DESCRIPTION;
+  if (q.checkCoverage === 'none') return CODING_PREVIEW_ONLY_UNLOCK_DESCRIPTION;
+  return CODING_PREMIUM_UNLOCK_DESCRIPTION;
+}
 
 /** Added to a coding task's unlock line when the task has an Interview Pressure Mode, as its plan row's chip says. */
 export const CODING_PRESSURE_MODE_UNLOCK =
@@ -653,7 +674,11 @@ export const buildLockedPreviewForCoding = (
   const learningGoals = buildLearningGoals(ctx, publicOutcomeCandidates);
   if (!what || repeatsTitlePrefix(q.title, what) || learningGoals.length < 3) return null;
 
-  const unlock = preview?.unlockDescription || CODING_PREMIUM_UNLOCK_DESCRIPTION;
+  // Authored previews repeat the generic line; it counts as the default, so it too promises only the task's checks.
+  const authoredUnlock = preview?.unlockDescription;
+  const unlock = authoredUnlock && authoredUnlock !== CODING_PREMIUM_UNLOCK_DESCRIPTION
+    ? authoredUnlock
+    : codingUnlockDescription(q, ctx.technology);
   const sample = previewSampleOf(q.previewSample);
   return {
     what,

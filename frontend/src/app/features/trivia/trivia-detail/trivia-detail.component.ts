@@ -24,10 +24,11 @@ import {
   isContentAccessibleForFree,
   robotsForContentAccess,
 } from '../../../core/utils/content-access-policy.util';
-import { CompanyPlanReturnLink, companyPlanReturnLink } from '../../../core/utils/company-plan-return.util';
+import { CompanyPlanReturnLink, planReturnLink } from '../../../core/utils/company-plan-return.util';
 import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { isTriviaReferenceOnlyBlock } from '../../../core/utils/trivia-search-intent.util';
 import { publicQuestionHref } from '../../../core/utils/public-question-link.util';
+import { practiceProgressText } from '../../../core/utils/practice-session.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SiteFooterComponent } from '../../../shared/components/footer/site-footer.component';
 import { GithubStarCtaComponent } from '../../../shared/components/github-star-cta/github-star-cta.component';
@@ -96,7 +97,7 @@ type AnswerBlock = BlockText | BlockCode | BlockImage | BlockList;
 type RichAnswer = { blocks: AnswerBlock[] } | null | undefined;
 
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
-type PracticeSession = { items: PracticeItem[]; index: number } | null;
+type PracticeSession = { items: PracticeItem[]; index: number; label?: string | null } | null;
 type QuestionListEntry = QuestionListItem;
 type SimilarItem = { question: QuestionListEntry; difficulty: string };
 type TagMatcher = { tag: string; re: RegExp };
@@ -764,7 +765,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // footer helpers
   progressText(): string {
-    return this.practice ? `${this.practice.index + 1} / ${this.practice.items.length}` : '—';
+    return this.practice ? practiceProgressText(this.practice) : '—';
   }
   hasPrev() { return !!this.practice && this.practice.index > 0; }
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
@@ -1198,7 +1199,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     this.returnTo = s?.returnTo ?? null;
     this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
     this.returnLabel.set(s?.returnLabel ?? null);
-    this.planReturn.set(companyPlanReturnLink(this.router, this.returnToUrl, this.returnLabel()));
+    this.planReturn.set(planReturnLink(this.router, this.returnToUrl, this.returnLabel()));
     this.refreshSidebarQuestions();
   }
 
@@ -1238,7 +1239,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!it) return;
     this.router.navigate(['/', it.tech, it.kind, it.id], {
       state: {
-        session: { items: this.practice.items, index: newIndex },
+        session: { ...this.practice, index: newIndex },
         sessionSource: this.sessionSource ?? undefined,
         returnTo: this.returnTo ?? undefined,
         returnToUrl: this.returnToUrl ?? undefined,
@@ -2332,7 +2333,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const index = session
       ? Math.max(0, session.items.findIndex((item) => item.id === targetId))
       : 0;
-    const normalizedSession = session ? { items: session.items, index } : undefined;
+    const normalizedSession = session ? { ...session, index } : undefined;
 
     return {
       session: normalizedSession,

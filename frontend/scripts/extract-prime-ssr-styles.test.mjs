@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { planPrimeStyles, extractPrimeStyles } from './extract-prime-ssr-styles.mjs';
+import { planPrimeStyles, extractPrimeStyles, planComponentStyles, isScopedComponentCss } from './extract-prime-ssr-styles.mjs';
 
 const css = `@layer primeng{:root{${Array.from({ length: 60 }, (_, i) => `--p-test-${i}:${i}px;`).join('')}}}`;
 const style = (value = css, extra = '') => `<style type="text/css" data-primeng-style-id="test"${extra}>${value}</style>`;
@@ -72,3 +72,57 @@ test('rejects unsupported bases and missing assets before changing any HTML', as
   await assert.rejects(extractPrimeStyles(directory), /ENOENT/);
   assert.equal(await fs.readFile(path.join(directory, 'a.html'), 'utf8'), page());
 });
+
+// Angular component styles: scoped by emulated encapsulation, repeated in every page that renders the component.
+const scoped = `[_nghost-ng-c1]{display:block}${Array.from({ length: 80 }, (_, i) => `.row-${i}[_ngcontent-ng-c1]{margin:${i}px}`).join('')}@media (max-width:600px){.row-0[_ngcontent-ng-c1]{margin:0}}@keyframes _ngcontent-ng-c1_fade{from{opacity:0}to{opacity:1}}`;
+const ngStyle = (value = scoped, extra = '') => `<style ng-app-id="ng"${extra}>${value}</style>`;
+
+test('moves a large scoped component style into a hashed file, linked where the style was', () => {
+  const input = page(`<link rel="stylesheet" href="styles.css">${ngStyle()}<style ng-app-id="ng">.tiny[_ngcontent-ng-c2]{color:red}</style>`);
+  const output = planComponentStyles(input, new Set([scoped]));
+  assert.equal(output.assets.size, 1);
+  const [[asset, content]] = output.assets;
+  assert.match(asset, /^assets\/ssr-styles\/[a-f0-9]{64}\.css$/);
+  assert.equal(content, scoped);
+  // Everything else is byte for byte the same: the link takes the style's place in the cascade.
+  assert.equal(output.html.replace(`<link rel="stylesheet" href="/${asset}" data-fa-ssr-styles>`, ngStyle()), input);
+  assert.equal(planComponentStyles(output.html, new Set([scoped])).html, output.html);
+});
+
+test('keeps small, unshared, unscoped, URL-dependent and attributed component styles inline', () => {
+  assert.equal(isScopedComponentCss(scoped), true);
+  for (const css of [
+    '.global{color:red}' + scoped,
+    scoped + '.child[_nghost-ng-c1] .leak{color:red}.leak{color:blue}',
+    scoped.replace('display:block', 'background:url(/a.svg)'),
+  ]) assert.equal(isScopedComponentCss(css), false, css.slice(0, 40));
+  for (const unchanged of [
+    ngStyle('.small[_ngcontent-ng-c1]{color:red}'),
+    ngStyle('.global{color:red}' + scoped),
+    ngStyle(scoped, ' media="print"'),
+  ]) assert.equal(planComponentStyles(page(unchanged), new Set([scoped, '.global{color:red}' + scoped])).html, page(unchanged));
+  // A style no other page carries saves nothing to cache, so it stays in its page.
+  assert.equal(planComponentStyles(page(ngStyle()), new Set()).html, page(ngStyle()));
+  const inBody = page('').replace('</body>', `${ngStyle()}</body>`);
+  assert.equal(planComponentStyles(inBody, new Set([scoped])).html, inBody);
+});
+
+test('shares a component style across the routes that carry it and keeps one-off styles in their page', async (t) => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'ssr-styles-test-'));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await fs.mkdir(path.join(directory, 'nested'));
+  const unique = scoped.replaceAll('ng-c1', 'ng-c9');
+  await fs.writeFile(path.join(directory, 'index.html'), page(ngStyle()));
+  await fs.writeFile(path.join(directory, 'nested/index.html'), page(ngStyle() + ngStyle(unique)));
+  const result = await extractPrimeStyles(directory);
+  assert.equal(result.pages, 2);
+  assert.equal(result.assets, 1);
+  const nested = await fs.readFile(path.join(directory, 'nested/index.html'), 'utf8');
+  assert.match(nested, /data-fa-ssr-styles/);
+  assert.ok(nested.includes(ngStyle(unique)), 'the one-off style stays inline');
+  assert.equal((await extractPrimeStyles(directory)).pages, 0);
+  const [asset] = planComponentStyles(page(ngStyle()), new Set([scoped])).assets.keys();
+  await fs.writeFile(path.join(directory, asset), 'corrupt');
+  await assert.rejects(extractPrimeStyles(directory), /Corrupt Angular SSR asset/);
+});
+

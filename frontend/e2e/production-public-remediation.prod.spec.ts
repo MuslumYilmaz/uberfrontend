@@ -107,6 +107,7 @@ const PREMIUM_PREVIEWS: readonly PremiumPreviewCase[] = [
   {
     path: '/angular/coding/angular-tabs-switcher',
     h1: 'Angular Tabs / Multi-View Switcher',
+    // A framework task's lock page promises behavioral checks only when they cover its requirements, as these do.
     unlock: CODING_UNLOCK,
     requiredPracticeCopy: ['typed active-state', 'Angular @if control flow', 'one content panel', 'accessible tab controls'],
   },
@@ -191,8 +192,8 @@ function extractCanonical(html: string): string {
 function rawBodyMarkup(html: string): string {
   const body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html;
   return body
-    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ');
+    .replace(/<script\b[\s\S]*?<\/script\b[^>]*>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style\b[^>]*>/gi, ' ');
 }
 
 function componentMarkup(html: string, selector: string): string {

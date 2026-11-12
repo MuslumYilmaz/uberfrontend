@@ -49,6 +49,17 @@ const noWrite = process.argv.includes('--no-write');
 // 112,000,000 for the planned content pages of steps 11 and 12, at roughly
 // 110 to 215 KB each. Splitting the trivia detail CSS would save more than this.
 //
+// 2026-11-11, shared component styles: 49 MB of the 111 MB prerender total were
+// Angular component styles repeated in every page that renders the component
+// (99 distinct blocks; the trivia detail's 56.6 KB on 242 pages, the coding
+// detail's 35.2 KB on 219, shell styles on all 642). The SSR style step now moves
+// each scoped block of 2 KB or more that two or more pages share into a hashed
+// file under /assets/ssr-styles, as it does for PrimeNG. The total fell to about
+// 68.5 MB, so its threshold moves from 112,000,000 down to 75,000,000 and keeps
+// catching growth. The home page now links six of those files (71 KB) where its
+// HTML carried them inline (the page shrank by 88 KB); stylesheets count toward
+// initialBytes, which moves from 1,400,000 to 1,475,000 for that reason alone.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -56,10 +67,10 @@ const noWrite = process.argv.includes('--no-write');
 // the eager graph is unchanged (2026-10-10: identical 51-file graph, hinted
 // bytes moved from 37,580 to 74,155).
 const THRESHOLDS = {
-  initialBytes: 1_400_000,
+  initialBytes: 1_475_000,
   eagerJsBytes: 1_260_000,
   codingHtmlBytes: 660_000,
-  totalHtmlBytes: 112_000_000,
+  totalHtmlBytes: 75_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
 };

@@ -15,7 +15,7 @@
             "lineEnd": 5,
             "snippet": "if (now - lastTime >= interval) {"
           },
-          "why": "This is the core throttle rule: only run when enough time has passed since the previous execution.",
+          "why": "This is the core throttle rule: only run when enough time has passed since the previous execution. A call inside the window is dropped, not queued: nothing runs when the window ends, which is what makes this throttle leading-only.",
           "alternative": "Use a timer-based cooldown flag instead of comparing timestamps.",
           "tradeoff": "Timestamp logic stays lightweight, but behavior depends on clock reads and exact timing boundaries."
         },
@@ -57,7 +57,7 @@
             "lineEnd": 4,
             "snippet": "if (!waiting) {"
           },
-          "why": "When `waiting` is true, we skip extra calls. That guarantees at most one execution per interval window.",
+          "why": "When `waiting` is true, we skip extra calls. That guarantees at most one execution per interval window. A call during the cooldown is dropped, not saved for later, so the timer only reopens the gate and never runs a trailing call.",
           "alternative": "Use `Date.now()` and compare against a stored last-run timestamp.",
           "tradeoff": "Flag-based logic feels intuitive with timers, but timestamp logic can be easier to test deterministically."
         },

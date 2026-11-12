@@ -9,7 +9,7 @@ import {
   PressureModeRound,
   PressureModeScenario,
 } from '../models/pressure-mode.model';
-import { FrameworkTest, FrameworkTestStep, FrameworkTestStepType } from '../models/question.model';
+import { FrameworkTest, FrameworkTestLocator, FrameworkTestStep, FrameworkTestStepType } from '../models/question.model';
 import { normalizeAssetPath } from '../utils/asset-url.util';
 import { PracticeAssetResolverService } from './practice-asset-resolver.service';
 
@@ -38,7 +38,20 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'unmountPreview',
   'expectNoPreviewTimers',
   'expectNoPreviewLeaks',
+  'expectChecked',
+  'expectLineThrough',
+  'mockRandom',
+  'expectStandsOut',
+  'expectColor',
+  'expectReferenced',
+  'expectIndented',
+  'mockStorage',
+  'expectStorage',
+  'expectName',
+  'expectLiveRegion',
 ]);
+
+const FRAMEWORK_STEP_HUES = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey', 'transparent']);
 
 @Injectable({ providedIn: 'root' })
 export class PressureModeService {
@@ -167,6 +180,8 @@ export class PressureModeService {
       'method',
       'error',
       'bodyContains',
+      'property',
+      'politeness',
     ] as const) {
       if (typeof source[key] === 'string') {
         (step as Record<string, unknown>)[key] = source[key];
@@ -177,7 +192,26 @@ export class PressureModeService {
         (step as Record<string, unknown>)[key] = source[key];
       }
     }
+    const by = this.normalizeLocator(source['by']);
+    if (by) step.by = by;
+    const among = this.normalizeTarget(source['among']);
+    if (among) step.among = among;
+    const than = this.normalizeTarget(source['than']);
+    if (than) step.than = than;
+    const entries = source['entries'];
+    if (entries && typeof entries === 'object' && !Array.isArray(entries)) {
+      const kept = Object.entries(entries).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
+      if (kept.length) step.entries = Object.fromEntries(kept);
+    }
+    if (Array.isArray(source['values'])) {
+      const values = source['values'].filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+      if (values.length) step.values = values;
+    }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
+    if (typeof source['atomic'] === 'boolean') step.atomic = source['atomic'];
+    if (typeof source['hue'] === 'string' && FRAMEWORK_STEP_HUES.has(source['hue'])) {
+      step.hue = source['hue'] as FrameworkTestStep['hue'];
+    }
     if (
       typeof source['expected'] === 'string'
       || typeof source['expected'] === 'number'
@@ -186,6 +220,29 @@ export class PressureModeService {
       step.expected = source['expected'];
     }
     return step;
+  }
+
+  /** A second element a step compares its target with: expectStandsOut's group, expectIndented's reference. */
+  private normalizeTarget(value: unknown): { selector?: string; by?: FrameworkTestLocator } | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const source = value as Record<string, unknown>;
+    const target: { selector?: string; by?: FrameworkTestLocator } = {};
+    if (typeof source['selector'] === 'string') target.selector = source['selector'];
+    const by = this.normalizeLocator(source['by']);
+    if (by) target.by = by;
+    return target.selector || target.by ? target : null;
+  }
+
+  private normalizeLocator(value: unknown): FrameworkTestLocator | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const source = value as Record<string, unknown>;
+    const locator: FrameworkTestLocator = {};
+    for (const key of ['role', 'name', 'label', 'text'] as const) {
+      if (typeof source[key] === 'string') locator[key] = source[key];
+    }
+    const near = this.normalizeLocator(source['near']);
+    if (near && Object.keys(locator).length) locator.near = near;
+    return Object.keys(locator).length ? locator : null;
   }
 
   private normalizeDebrief(value: unknown): PressureModeDebrief | null {

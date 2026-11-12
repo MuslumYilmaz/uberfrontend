@@ -149,20 +149,35 @@ function buildProgressAwareWhy(snapshot: FailureSnapshot, base: string): string 
   return base;
 }
 
+// Every Angular coding question: all of them use built-in control flow and signal-based solutions.
 const ANGULAR_MODERN_TEMPLATE_QUESTION_IDS = [
   'angular-autocomplete-search-starter',
+  'angular-chessboard-click-highlight',
+  'angular-chips-input-autocomplete',
   'angular-contact-form-starter',
+  'angular-control-value-accessor-stepper',
+  'angular-counter-starter',
+  'angular-debounced-search',
+  'angular-dynamic-counter-buttons',
   'angular-dynamic-table-starter',
   'angular-faq-accordion',
   'angular-filterable-user-list',
   'angular-image-slider-starter',
+  'angular-input-output-two-way',
+  'angular-like-button',
   'angular-multi-step-form-starter',
   'angular-nested-checkboxes',
+  'angular-nested-comments',
   'angular-pagination-table',
+  'angular-progress-bar-thresholds',
+  'angular-shopping-cart-mini',
+  'angular-snake-game',
   'angular-star-rating',
   'angular-tabs-switcher',
+  'angular-theme-toggle',
   'angular-tictactoe-starter',
   'angular-todo-list-starter',
+  'angular-transfer-list',
 ] as const;
 
 const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 'vue-autocomplete-search'].map(
@@ -184,6 +199,45 @@ const AUTOCOMPLETE_CLOSING_HINT_RULES = ['angular-autocomplete-search-starter', 
         'Listen for mousedown on the document and close only when the target is outside the component.',
       ],
       confidence: 0.82,
+    }),
+  }),
+);
+
+// The React, Angular and Vue Debounced Search tasks share the late-answer check; each framework ignores that answer its
+// own way.
+const DEBOUNCED_SEARCH_LATE_ANSWER_ACTIONS: ReadonlyArray<readonly [string, string[]]> = [
+  ['react-debounced-search', [
+    'Give each effect run its own `let isCurrent = true`, and set it to `false` in the cleanup the effect returns.',
+    'Return early from the `then` and `catch` of `fakeApiSearch` while `isCurrent` is `false`, before any state is set.',
+    'Clear the timeout in the same cleanup, so a search that has not started yet never starts.',
+  ]],
+  ['angular-debounced-search', [
+    'Map each debounced term to its request with `switchMap`: a newer term unsubscribes from the request still running for the older one.',
+    '`mergeMap` and `concatMap` keep every request alive, so the older answer still arrives and shows results for a query that was replaced.',
+    'Without a pipeline, unsubscribe from the previous request before starting the next one.',
+  ]],
+  ['vue-debounced-search', [
+    'Declare `let stale = false` inside the watcher callback, so each run has a flag of its own.',
+    'Set `stale = true` in the cleanup the watcher callback receives as its third argument (`onInvalidate` in the starter, `onCleanup` in the Vue docs), next to `clearTimeout`.',
+    'Return early from the `then` and `catch` of `fakeApiSearch` while `stale` is `true`.',
+  ]],
+];
+
+const DEBOUNCED_SEARCH_LATE_ANSWER_HINT_RULES = DEBOUNCED_SEARCH_LATE_ANSWER_ACTIONS.map(
+  ([questionId, actions]): QuestionHintRule => ({
+    ruleId: 'debounced-search-late-answer',
+    questionId,
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['older search that ends late']),
+    buildHint: (snapshot) => ({
+      ruleId: 'debounced-search-late-answer',
+      title: 'Ignore the answer to a query that was already replaced',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check types bob while the search for alice is still running. The alice answer arrives first, and it must not show, because only the bob search is current.',
+      ),
+      actions: [...actions],
+      confidence: 0.85,
     }),
   }),
 );
@@ -225,9 +279,342 @@ const ANGULAR_MODERN_TEMPLATE_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.
   }),
 );
 
+// In dev mode an uncalled signal renders as "[Signal: 0]" (or [Computed: …], [Input Signal: …], [Model Signal: …]),
+// so a text check that finds that label points at a template that reads a signal without calling it.
+const ANGULAR_SIGNAL_READ_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'angular-signal-read-in-template',
+    questionId,
+    priority: 120,
+    matches: (snapshot) =>
+      anyFailingErrorIncludes(snapshot, ['[signal', '[computed', '[input signal', '[model signal', '[linkedsignal']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-signal-read-in-template',
+      title: 'Call a signal where the template reads it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The page shows a "[Signal: …]" label, which Angular prints when a template reads a signal without calling it.',
+      ),
+      actions: [
+        'Write `count()` rather than `count` in interpolations: a signal is a function, and the template needs its value.',
+        'Check property bindings as well: `[disabled]="isEmpty"` binds the function, which is always truthy, while `[disabled]="isEmpty()"` binds the boolean.',
+        'Inputs, models and computed values read the same way, for example `rating()`, `value()` or `filteredUsers()` inside `@for`.',
+      ],
+      confidence: 0.9,
+    }),
+  }),
+);
+
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
+  ...ANGULAR_SIGNAL_READ_HINT_RULES,
+  {
+    ruleId: 'angular-cva-writes-reach-view',
+    questionId: 'angular-control-value-accessor-stepper',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['starts with', 'reset writes', 'disabling the form control']) ||
+      anyFailingErrorIncludes(snapshot, ['ng01203', 'no value accessor']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-cva-writes-reach-view',
+      title: "Let the form's writes reach the OnPush stepper",
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The form calls writeValue and setDisabledState from outside the stepper's template, so an OnPush view only shows them when they land in signals.",
+      ),
+      actions: [
+        'In `writeValue`, set the `value` signal, falling back to `min()` for `null`; in `setDisabledState`, set the `disabled` signal.',
+        'Keep the `NG_VALUE_ACCESSOR` provider with `useExisting: forwardRef(() => QuantityStepperComponent)` and `multi: true`; without it `formControlName` throws NG01203.',
+        'Store the callbacks from `registerOnChange` and `registerOnTouched`, and call the change callback from `step()` after clamping.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-pagination-page-label',
+    questionId: 'angular-pagination-table',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['starts on page 1 of 4', 'the page label follows']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-pagination-page-label',
+      title: 'Show five rows and a "Page X of Y" label',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks count five table rows, look for the label "Page 1 of 4", click Next and then look for "Page 2 of 4".',
+      ),
+      actions: [
+        'Render the label as `Page {{ currentPage() + 1 }} of {{ totalPages() }}`; the page index itself stays 0-based.',
+        'Fill the table from a slice of `pageSize` users that starts at `currentPage() * pageSize`.',
+        'Compute `totalPages` with `Math.ceil(users.length / pageSize)`, so the 20 users give 4 pages.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-star-rating-radio-group',
+    questionId: 'angular-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Set the rating in `onRate`; with `rating = model(0)`, `rating.set(value)` also emits `ratingChange` for `[(rating)]`.',
+        'Bind `role="radio"` and `[attr.aria-checked]="star === rating()"` on each star, so exactly one is checked; `aria-pressed` on every filled star does not pass.',
+        'Give the checked star `tabindex="0"` (the first star while the rating is 0) and the rest `-1`.',
+        'In the keydown handler, map Right and Down to +1 and Left and Up to -1, wrap past either end, set the rating and call `focus()` on the star you checked.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-chessboard-size-on-change',
+    questionId: 'angular-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-chessboard-size-on-change',
+      title: 'Apply the size on change and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Bind `(change)` on the size field rather than `(input)`, so a two-digit size is applied once it is complete.',
+        'Clamp with `Math.max(minSize, Math.min(maxSize, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Write the clamped number back into the field: `[value]` only updates it when the size changes, so 30 on a 20 by 20 board would stay on screen.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'angular-chessboard-single-selection',
+    questionId: 'angular-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onCellClick(row, col)`, store `cellKey(row, col)` in `selectedKey`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Set `selectedKey` back to `null` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'angular-nested-comments-reply-toggle',
+    questionId: 'angular-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
+    buildHint: (snapshot) => ({
+      ruleId: 'angular-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, store `null` when `activeReplyId()` already equals `id`, and `id` otherwise: `activeReplyId.update((active) => (active === id ? null : id))`.',
+        'Render the box with `@if (activeReplyId() === comment.id)`, so one stored id means at most one open box.',
+        'Bind `[attr.aria-expanded]` on the Reply button to the same comparison.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-nested-checkboxes-parent-setter',
+    questionId: 'vue-nested-checkboxes',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['checking the parent checks every child']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-nested-checkboxes-parent-setter',
+      title: "Let a click on the parent check every child",
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks the parent checkbox and expects it and all three children to be checked.',
+      ),
+      actions: [
+        'Make `allChecked` a writable `computed`: `get` compares the checked count with the number of children, and `set(checked)` assigns `child.checked = checked` to every child.',
+        'Bind the parent with `v-model="allChecked"`, so a click calls the setter; Vue tracks the flags changed in place.',
+        'Bind `:indeterminate` to a computed that is true when some but not all children are checked.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-star-rating-radio-group',
+    questionId: 'react-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Call `onChange(value)` in `handleRate`, so the parent state and the hint update.',
+        'Render `role="radio"` and `aria-checked={star === rating}` on each star, so exactly one is checked; `aria-pressed` on every filled star does not pass.',
+        'Give the checked star `tabIndex={0}` (the first star while the rating is 0) and the rest `-1`.',
+        'In `handleKeyDown`, map Right and Down to +1 and Left and Up to -1, wrap past either end, call `onChange` and focus the new star through a `useRef` array that ref callbacks fill.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-star-rating-radio-group',
+    questionId: 'vue-star-rating',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['clicking a star', 'arrow keys move the rating']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-star-rating-radio-group',
+      title: 'Make the stars one radio group that the keyboard can move',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "The checks read each star's aria-checked and tabindex and press the arrow keys on a focused star, so the rating, the checked star and focus have to move together.",
+      ),
+      actions: [
+        'Set `rating.value` in `handleRate` when the value is between 1 and `max`.',
+        'Bind `role="radio"` and `:aria-checked="star === rating"` on each star, so exactly one is checked.',
+        'Bind `:tabindex="star === tabStop ? 0 : -1"`, so only the checked star (the first one while the rating is 0) is in the Tab order.',
+        'In `handleKeydown`, map Right and Down to +1 and Left and Up to -1, wrap past either end, set the rating and focus the new star through a function ref that stores each button at its index.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-nested-comments-reply-toggle',
+    questionId: 'react-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, store `null` when the open id already equals `id`, and `id` otherwise: `setActiveReplyId((active) => (active === id ? null : id))`.',
+        'Render the box only when `activeReplyId === c.id`, so one stored id means at most one open box.',
+        'Bind `aria-expanded` on the Reply button to the same comparison.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-nested-comments-reply-toggle',
+    questionId: 'vue-nested-comments',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['a second click closes it']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-nested-comments-reply-toggle',
+      title: 'Let Reply close the box it opened',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds two comments, opens Reply on one and then the other, expects one box at a time, and then clicks the open Reply again to close it.',
+      ),
+      actions: [
+        'In `toggleReply(id)`, set `activeReplyId.value` to `null` when it already equals `id`, and to `id` otherwise.',
+        'Render the box only when `activeReplyId.value === c.id`, so one stored id means at most one open box.',
+        "Pass `'aria-expanded': activeReplyId.value === c.id` to the Reply button.",
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'vue-chessboard-size-on-change',
+    questionId: 'vue-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-chessboard-size-on-change',
+      title: 'Apply the size on change and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Bind `@change` on the size field rather than `@input`, so a two-digit size is applied once it is complete.',
+        'Clamp with `Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Write the clamped number back into the field: `:value` is written again only when the board re-renders, so 30 on a 20 by 20 board would stay on screen.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-chessboard-size-on-change',
+    questionId: 'react-chessboard-click-highlight',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['board size applies on change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-chessboard-size-on-change',
+      title: 'Apply the size on the native change event and show the clamped number',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check commits whole sizes such as 12, 25, 30 and 1 and expects the board and the field to settle on the clamped size.',
+      ),
+      actions: [
+        'Do the work in `applySize`: React\'s `onChange` runs on every keystroke, so the starter already calls `applySize` from the native `change` event (Enter, blur or the arrows).',
+        'Clamp with `Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.trunc(value)))`, and keep the current size for an empty or non-numeric field.',
+        'Call `setSizeText(String(clamped))` every time, so 30 on a 20 by 20 board is rewritten to 20 even though the size does not change.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-chessboard-single-selection',
+    questionId: 'react-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onSelectCell(row, col)`, call `setSelectedKey(toKey(row, col))`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Call `setSelectedKey(null)` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'vue-chessboard-single-selection',
+    questionId: 'vue-chessboard-click-highlight',
+    priority: 100,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['highlights only that cell']),
+    buildHint: (snapshot) => ({
+      ruleId: 'vue-chessboard-single-selection',
+      title: 'Keep one selected key and clear it on resize',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check clicks two cells, expects one `cell--active` each time and the matching status line, then resizes and expects no selection.',
+      ),
+      actions: [
+        'In `onCellClick(row, col)`, store `cellKey(row, col)` in `selectedKey.value`; the previous cell loses its class because its key no longer matches.',
+        "Count rows and columns from 1 in the status: 'Selected: row 2, column 2' for the cell at index 9 of an 8 by 8 board.",
+        'Set `selectedKey.value` back to `null` whenever the size changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
   ...AUTOCOMPLETE_CLOSING_HINT_RULES,
+  ...DEBOUNCED_SEARCH_LATE_ANSWER_HINT_RULES,
   {
     ruleId: 'react-fetch-list-states-request-union',
     questionId: 'react-fetch-list-states',
@@ -1182,6 +1569,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'preserves this context and arguments',
         'passes arguments',
         'preserves this',
+        'all arguments of the last call',
       ]),
     buildHint: (snapshot) => ({
       ruleId: 'js-debounce-args-this',
@@ -1190,7 +1578,194 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Return a regular function wrapper (not arrow) if `this` must be preserved.',
         'Inside timeout use `fn.apply(this, args)`.',
+        'Keep the `this` and the whole `args` array of every call, so the call that fires is the last one, with all of its arguments.',
         'Confirm context-based examples like `search-box:react` still pass after the delay.',
+      ],
+      confidence: 0.9,
+    }),
+  },
+  {
+    ruleId: 'js-deep-equal-kinds-and-keys',
+    questionId: 'js-deep-equal',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'treats different types as unequal',
+        'requires the same set of keys',
+        'compares nan, -0 and regexp details',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-deep-equal-kinds-and-keys',
+      title: 'Compare the kind of each value and its full set of keys',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks compare a Date with `{}`, an array with an object, objects with missing or extra keys, `NaN` inside arrays, and RegExps with different patterns or flags.',
+      ),
+      actions: [
+        'Return `false` when `Object.prototype.toString.call(a)` and `Object.prototype.toString.call(b)` differ, so a Date never equals a plain object.',
+        'Compare `Object.keys` lengths before recursing: an extra key, or a key that holds `undefined`, makes two objects different.',
+        'Treat `NaN` as equal only to `NaN`, keep `0` and `-0` equal as `===` does, and compare RegExp `source` and `flags`. `JSON.stringify` gets all three wrong.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-throttle-leading-only',
+    questionId: 'js-throttle',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['calls fn with the this value', 'drops calls made during the interval']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-throttle-leading-only',
+      title: 'Run the first call at once and drop the rest of the window',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks call the throttled function as a method and expect `this` to be that object, and they expect a call made during the interval never to run, not even when the interval ends.',
+      ),
+      actions: [
+        'Return a regular `function` and call `fn.apply(this, args)`; an arrow wrapper loses the caller\'s `this`.',
+        'Ignore calls while the window is open instead of saving one for later: this throttle is leading-only.',
+        'Measure the window with `Date.now()` or with a cooldown timer; the checks move time with fake timers, so either works.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-lru-update-recency',
+    questionId: 'js-create-lru-cache',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['updating a key makes it the most recent', 'updating a key at capacity']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-lru-update-recency',
+      title: 'Treat an update as a use, and evict only when the size grows',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks update a key and then add another one, expecting the updated key to stay, and update a key at capacity, expecting nothing to be evicted.',
+      ),
+      actions: [
+        'In `set`, delete the key before setting it again, so the `Map` moves it to the most recent end.',
+        'Evict after the write, and only while `map.size > maxSize`; updating a stored key does not grow the size.',
+        '`keys()` lists keys from least to most recently used, and `size()` is a method.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-concurrency-pool-slots',
+    questionId: 'js-concurrency-map-limit',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, [
+        'starts the next item as soon as a slot frees up',
+        'fail-fast starts no new items',
+        'rejects a limit below 1',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-concurrency-pool-slots',
+      title: 'Refill each slot at once, and stop after a fail-fast error',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks move fake time and look at which items have started: a finished item frees its slot for the next one right away, and after a fail-fast error no new item starts.',
+      ),
+      actions: [
+        'Run `limit` runners that each take the next index as soon as their item settles; waiting for a whole batch leaves slots empty.',
+        'Set a `failed` flag on the first fail-fast error and check it before taking the next index.',
+        'An invalid `limit` may throw or reject, so an `async` function that throws for it passes.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'js-bind-own-prototype',
+    questionId: 'js-implement-bind',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['its own prototype object']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-bind-own-prototype',
+      title: 'Give the bound function a prototype of its own',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check adds a method to the bound prototype and expects the original prototype to stay untouched, while instances still pass `instanceof`.',
+      ),
+      actions: [
+        'Set `boundFn.prototype = Object.create(fn.prototype)` instead of `boundFn.prototype = fn.prototype`.',
+        'Point the new prototype\'s `constructor` at `boundFn`, so it describes the bound function.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-once-called-flag',
+    questionId: 'js-once',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['first call returned undefined']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-once-called-flag',
+      title: 'Record the first call with a flag, not with the result',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check wraps a function that returns `undefined` and calls the wrapper twice; the function must still run only once.',
+      ),
+      actions: [
+        'Keep a separate `called` boolean and set it the first time.',
+        'Return the cached result on every later call, even when it is `undefined`.',
+      ],
+      confidence: 0.9,
+    }),
+  },
+  {
+    ruleId: 'js-memoize-cache-key',
+    questionId: 'js-memoize-function',
+    priority: 110,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['uses every argument in the cache key', 'caches falsy results']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-memoize-cache-key',
+      title: 'Key the cache by every argument, and trust has()',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The checks call with arguments that share a first value, and cache functions that return `0` and `undefined`.',
+      ),
+      actions: [
+        'Build the key from all arguments, for example `JSON.stringify(args)`.',
+        'Check `cache.has(key)` before computing; `cache.get(key) || ...` computes falsy results again on every call.',
+        'If you nest one `Map` per argument instead, store the result under a `Symbol` key: a string key such as `\'result\'` can also be an argument.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-three-sum-sorted-triplets',
+    questionId: 'js-three-sum',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['triplet in non-decreasing order']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-three-sum-sorted-triplets',
+      title: 'Build each triplet in sorted order',
+      why: buildProgressAwareWhy(snapshot, 'The check expects every returned triplet to be in non-decreasing order, as the task asks.'),
+      actions: [
+        'Sort a copy of the input first: the two-pointer scan then builds each triplet as `[arr[i], arr[l], arr[r]]`, already in order.',
+        'If you collect triplets another way, sort each one before returning it.',
+      ],
+      confidence: 0.88,
+    }),
+  },
+  {
+    ruleId: 'js-merge-without-sort',
+    questionId: 'js-merge-sorted-arrays',
+    priority: 110,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['without sorting the combined array']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-merge-without-sort',
+      title: 'Merge with two pointers instead of sorting',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The check replaces `Array.prototype.sort` with a function that throws, so any call to `sort` fails it.',
+      ),
+      actions: [
+        'Walk both arrays with an index each and push the smaller of the two front values.',
+        'When one array runs out, append what is left of the other.',
       ],
       confidence: 0.9,
     }),

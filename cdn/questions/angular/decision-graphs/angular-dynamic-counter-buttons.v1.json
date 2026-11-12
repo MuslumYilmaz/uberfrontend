@@ -1,0 +1,73 @@
+{
+  "questionId": "angular-dynamic-counter-buttons",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ChangeDetectionStrategy, Component, signal } from '@angular/core';\n\ninterface CounterButton {\n  id: number;\n  count: number;\n}\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly buttons = signal<CounterButton[]>([{ id: 1, count: 0 }]);\n  private nextId = 2;\n\n  onClick(id: number): void {\n    this.buttons.update((buttons) => [\n      ...buttons.map((button) =>\n        button.id === id ? { ...button, count: button.count + 1 } : button\n      ),\n      { id: this.nextId++, count: 0 }\n    ]);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "d1-id-and-own-count",
+          "title": "Give every button an id and its own count",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "interface CounterButton {"
+          },
+          "why": "Each button carries a stable id for tracking and for its click handler, plus a count that belongs to it alone, so clicking one button never touches another's number.",
+          "alternative": "Keep a plain number[] of counts and identify buttons by their position in the array.",
+          "tradeoff": "Objects need an id generator, while positions would point at the wrong button if the list were ever reordered or trimmed."
+        },
+        {
+          "id": "d2-list-in-one-signal",
+          "title": "Hold the whole list in one signal",
+          "anchor": {
+            "lineStart": 15,
+            "lineEnd": 15,
+            "snippet": "readonly buttons = signal<CounterButton[]>"
+          },
+          "why": "The @for reads buttons(), and every click hands the signal a new array, so OnPush rendering and anything computed from the list follow each change.",
+          "alternative": "A plain buttons array reassigned in the click handler, which renders here because the click marks the view for checking.",
+          "tradeoff": "The signal makes every change visible to computed values such as a total; a plain field works only while the click handler is the one thing that changes the list."
+        },
+        {
+          "id": "d3-plain-id-counter",
+          "title": "Keep the id counter out of the template",
+          "anchor": {
+            "lineStart": 16,
+            "lineEnd": 16,
+            "snippet": "private nextId = 2;"
+          },
+          "why": "nextId only hands out ids and is never displayed, so a private plain field is enough; it starts at 2 because the first button already uses id 1.",
+          "alternative": "Make nextId a signal, or derive the next id from the largest id in the list.",
+          "tradeoff": "A plain field is the least code; deriving from the list needs no extra state but scans the array on every click and could reuse an id once the last button is removed."
+        },
+        {
+          "id": "d4-copy-clicked-button",
+          "title": "Copy only the clicked button",
+          "anchor": {
+            "lineStart": 21,
+            "lineEnd": 21,
+            "snippet": "button.id === id ? { ...button, count: button.count + 1 } : button"
+          },
+          "why": "map returns a new object for the clicked id and the same objects for the rest, so the signal gets a new array while untouched buttons keep their identity.",
+          "alternative": "Increment button.count on the existing object and push onto the existing array, which leaves the signal holding the same reference.",
+          "tradeoff": "One new array and one new object per click cost nothing at this size; in-place edits would still render after a click but leave a computed total at its old value."
+        },
+        {
+          "id": "d5-append-fresh-button",
+          "title": "Append a fresh button with the next id",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "{ id: this.nextId++, count: 0 }"
+          },
+          "why": "The new button goes on the end of the same new array, so one update both counts the click and grows the list, and @for track button.id gives the new row its own element.",
+          "alternative": "Call update twice, once to increment and once to append, or push the new button in a second step.",
+          "tradeoff": "One replacement per click keeps the user action in a single write; two writes end in the same list but allocate two arrays and split one click across two steps."
+        }
+      ]
+    }
+  }
+}

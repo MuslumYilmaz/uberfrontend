@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { companyPlanReturnLink, companyReturnLink } from './company-plan-return.util';
+import { companyReturnLink, planReturnLink } from './company-plan-return.util';
 
-describe('companyPlanReturnLink', () => {
+describe('planReturnLink', () => {
   let router: Router;
 
   beforeEach(() => {
@@ -11,24 +11,33 @@ describe('companyPlanReturnLink', () => {
   });
 
   it('keeps the answers in the address, so the way back opens the same plan', () => {
-    expect(companyPlanReturnLink(router, '/companies/preview?companies=agoda,meta&lists=agoda:gurgaon&when=tomorrow', 'Back to plan')).toEqual({
+    expect(planReturnLink(router, '/companies/preview?companies=agoda,meta&lists=agoda:gurgaon&when=tomorrow', 'Back to plan')).toEqual({
       label: 'Back to plan',
       route: ['/companies/preview'],
       queryParams: { companies: 'agoda,meta', lists: 'agoda:gurgaon', when: 'tomorrow' },
     });
-    expect(companyPlanReturnLink(router, '/companies/plan', 'Back to plan')).toEqual({
+    expect(planReturnLink(router, '/companies/plan', 'Back to plan')).toEqual({
       label: 'Back to plan',
       route: ['/companies/plan'],
       queryParams: {},
     });
   });
 
+  it('leads a task opened from a track, or its public preview, back to that plan', () => {
+    expect(planReturnLink(router, '/tracks/foundations-30d/preview', 'Back to plan')).toEqual({
+      label: 'Back to plan',
+      route: ['/tracks/foundations-30d/preview'],
+      queryParams: {},
+    });
+    expect(planReturnLink(router, '/tracks/crash-7d', 'Crash track')?.route).toEqual(['/tracks/crash-7d']);
+  });
+
   it('leaves every other list on the usual footer link', () => {
-    for (const url of ['/coding?tech=javascript', '/companies/google/all', '/companies/preview-old', '/companies', '/guides/framework-prep']) {
-      expect(companyPlanReturnLink(router, url, 'Back')).withContext(url).toBeNull();
+    for (const url of ['/coding?tech=javascript', '/companies/google/all', '/companies/preview-old', '/companies', '/guides/framework-prep', '/tracks', '/tracks/crash-7d/mastery']) {
+      expect(planReturnLink(router, url, 'Back')).withContext(url).toBeNull();
     }
-    expect(companyPlanReturnLink(router, null, 'Back to plan')).toBeNull();
-    expect(companyPlanReturnLink(router, '/companies/plan', null)).toBeNull();
+    expect(planReturnLink(router, null, 'Back to plan')).toBeNull();
+    expect(planReturnLink(router, '/companies/plan', null)).toBeNull();
   });
 });
 

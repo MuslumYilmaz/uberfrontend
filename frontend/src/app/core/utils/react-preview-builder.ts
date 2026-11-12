@@ -15,16 +15,20 @@ const REACT_PREVIEW_PARAMETERS = new Set([
   'useCallback',
 ]);
 
-/** An import from react becomes a read from the UMD global, so every export keeps working. */
-function reactImportBindings(clause: string, moduleName: string): string {
+/**
+ * An import from react becomes a read from the UMD global, so every export keeps working. Files of one workspace share
+ * a script, so a name another file already read is not declared again.
+ */
+function reactImportBindings(clause: string, moduleName: string, bound: Set<string>): string {
   if (/^type\s/.test(clause)) return '';
   const source = moduleName === 'react' ? 'React' : 'ReactDOM';
   const statements: string[] = [];
+  const isNew = (name: string) => !REACT_PREVIEW_PARAMETERS.has(name) && !bound.has(name) && !!bound.add(name);
 
   const namespaceName = clause.match(/\*\s+as\s+([\w$]+)/)?.[1];
   const defaultName = clause.match(/^([\w$]+)\s*(?:,|$)/)?.[1];
   for (const name of [namespaceName, defaultName]) {
-    if (name && !REACT_PREVIEW_PARAMETERS.has(name)) statements.push(`const ${name} = ${source};`);
+    if (name && isNew(name)) statements.push(`const ${name} = ${source};`);
   }
 
   const named = (clause.match(/\{([\s\S]*)\}/)?.[1] ?? '')
@@ -32,38 +36,48 @@ function reactImportBindings(clause: string, moduleName: string): string {
     .map((part) => part.trim())
     .filter((part) => part && !/^type\s/.test(part))
     .map((part) => part.split(/\s+as\s+/))
-    .filter(([imported, local]) => !REACT_PREVIEW_PARAMETERS.has(local ?? imported))
+    .filter(([imported, local]) => isNew(local ?? imported))
     .map(([imported, local]) => (local ? `${imported}: ${local}` : imported));
   if (named.length) statements.push(`const { ${named.join(', ')} } = ${source};`);
 
   return statements.join('\n');
 }
 
-function rewriteReactModuleToUMD(src: string): string {
+/**
+ * What replaces an import keeps the line breaks the import took (the patterns below also swallow blank lines around
+ * it), so a compile error's line number still points at the line in the editor.
+ */
+function keepLineBreaks(match: string, replacement = ''): string {
+  return replacement.replace(/\n/g, ' ') + '\n'.repeat(match.split('\n').length - 1);
+}
+
+/** Exported for its spec. */
+export function rewriteReactModuleToUMD(src: string): string {
   let s = src;
+  const bound = new Set<string>();
 
   // 1) React / ReactDOM importlarını UMD global'lerinden okuyan satırlara çevir
   s = s.replace(
     /^\s*import\s+([\w$*\s,{}]+?)\s+from\s+['"](react(?:-dom(?:\/client)?)?)['"];?[ \t]*$/mg,
-    (_match, clause: string, moduleName: string) => reactImportBindings(clause.trim(), moduleName)
+    (match, clause: string, moduleName: string) => keepLineBreaks(match, reactImportBindings(clause.trim(), moduleName, bound))
   );
 
   // Kalanları (örneğin içinde yorum olan importları) sil
   s = s.replace(
     /^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 2) CSS importlarını sil
   s = s.replace(
     /^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 3) Relatif importları (./theme, ../foo vs) sil
   s = s.replace(
     /^\s*import\s+[^;]*from\s+['"]\.{1,2}\/[^'"]+['"];?\s*$/mg,
-    ''
+    (match) => keepLineBreaks(match)
   );
 
   // 4) TS tip exportlarını normal deklarasyona çevir
@@ -71,7 +85,7 @@ function rewriteReactModuleToUMD(src: string): string {
   //    export interface Foo {...} -> interface Foo {...}
   //    export enum Bar {...}      -> enum Bar {...}
   s = s.replace(
-    /^\s*export\s+(type|interface|enum)\s+/mg,
+    /^[ \t]*export[ \t]+(type|interface|enum)[ \t]+/mg,
     '$1 '
   );
 
@@ -93,13 +107,119 @@ function rewriteReactModuleToUMD(src: string): string {
   // 6) Kalan named export keyword'lerini kaldır
   //    export const x = ...  -> const x = ...
   s = s.replace(
-    /^\s*export\s+(?=(const|let|var|function|class)\b)/mg,
+    /^[ \t]*export[ \t]+(?=(const|let|var|function|class)\b)/mg,
     ''
   );
 
-  return s.trim();
+  // Only the end: trimming the start would move every line up.
+  return s.replace(/\s+$/, '');
 }
 
+
+const REACT_APP_FILES = ['src/App.tsx', 'src/App.jsx', 'src/App.ts', 'src/App.js'];
+const REACT_MODULE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js'];
+
+function resolveRelativeModule(files: Record<string, string>, fromPath: string, spec: string): string | null {
+  const parts = fromPath.split('/').slice(0, -1);
+  for (const part of spec.split('/')) {
+    if (part === '..') parts.pop();
+    else if (part && part !== '.') parts.push(part);
+  }
+  const base = parts.join('/');
+  const candidates = [
+    base,
+    ...REACT_MODULE_EXTENSIONS.map((extension) => base + extension),
+    ...REACT_MODULE_EXTENSIONS.map((extension) => `${base}/index${extension}`),
+  ];
+  return candidates.find((path) => /\.[jt]sx?$/.test(path) && files[path] != null) ?? null;
+}
+
+/**
+ * Exported for its spec. The files the entry imports by relative path, directly or not, each before the files that
+ * import it, the order in which ES modules run; the entry comes last.
+ */
+export function relativeModuleOrder(files: Record<string, string>, entry: string): string[] {
+  const order: string[] = [];
+  const visit = (path: string, chain: Set<string>) => {
+    if (order.includes(path) || chain.has(path)) return;
+    chain.add(path);
+    for (const [, spec] of (files[path] ?? '').matchAll(/(?:\bfrom|\bimport)\s*['"](\.{1,2}\/[^'"]+)['"]/g)) {
+      const target = resolveRelativeModule(files, path, spec);
+      if (target) visit(target, chain);
+    }
+    chain.delete(path);
+    order.push(path);
+  };
+  visit(entry, new Set());
+  return order;
+}
+
+const NAMED_DEFAULT_DECLARATION = /\bexport\s+default\s+((?:async\s+)?(?:function\*?|class)\s+([\w$]+))/;
+const DEFAULT_IDENTIFIER = /^[ \t]*export\s+default\s+([\w$]+)[ \t]*;?[ \t]*$/m;
+
+/**
+ * The name a file's default export has in the shared script: the declared function or class, or the variable that
+ * `export default name;` names, since declaring it again under the same name would be an error.
+ */
+function defaultExportName(source: string, index: number): string {
+  return source.match(NAMED_DEFAULT_DECLARATION)?.[2] ?? source.match(DEFAULT_IDENTIFIER)?.[1] ?? `__faModuleDefault${index}`;
+}
+
+/** The values a file exports, as `exported: local` pairs for a namespace import. */
+function exportedBindings(source: string, index: number): string[] {
+  const pairs = new Map<string, string>();
+  for (const [, name] of source.matchAll(/\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var|enum)\s+([\w$]+)/g)) {
+    pairs.set(name, name);
+  }
+  for (const [, list] of source.matchAll(/\bexport\s*\{([^}]*)\}(?!\s*from)/g)) {
+    for (const part of list.split(',')) {
+      const [local, exported] = part.trim().split(/\s+as\s+/);
+      if (local && !/^type\s/.test(local)) pairs.set(exported ?? local, local);
+    }
+  }
+  if (/\bexport\s+default\b/.test(source)) pairs.set('default', defaultExportName(source, index));
+  return [...pairs].map(([exported, local]) => (exported === local ? local : `${exported}: ${local}`));
+}
+
+/**
+ * The workspace's files share one script, so a relative import has nothing to load: the file it names runs earlier.
+ * Its default, renamed and namespace bindings become declarations, and the line breaks stay, so errors keep their
+ * lines. A file other than the entry loses its export keywords, and its default export gets a name of its own.
+ */
+function shareModuleScope(files: Record<string, string>, path: string, order: string[]): string {
+  let source = (files[path] ?? '').replace(
+    /^[ \t]*import\s+([^;'"]*?)\s+from\s+['"](\.{1,2}\/[^'"]+)['"];?[ \t]*$/mg,
+    (match, rawClause: string, spec: string) => {
+      const clause = rawClause.trim();
+      const target = resolveRelativeModule(files, path, spec);
+      const index = target ? order.indexOf(target) : -1;
+      if (!target || index < 0 || /^type\s/.test(clause)) return keepLineBreaks(match);
+      const targetSource = files[target] ?? '';
+      const statements: string[] = [];
+      const defaultLocal = clause.match(/^([\w$]+)\s*(?:,|$)/)?.[1];
+      const defaultName = defaultExportName(targetSource, index);
+      if (defaultLocal && defaultLocal !== defaultName) statements.push(`var ${defaultLocal} = ${defaultName};`);
+      const namespace = clause.match(/\*\s+as\s+([\w$]+)/)?.[1];
+      if (namespace) statements.push(`var ${namespace} = { ${exportedBindings(targetSource, index).join(', ')} };`);
+      for (const part of (clause.match(/\{([\s\S]*)\}/)?.[1] ?? '').split(',')) {
+        const [imported, local] = part.trim().split(/\s+as\s+/);
+        if (imported && local && imported !== local && !/^type\s/.test(part.trim())) {
+          statements.push(`var ${local} = ${imported};`);
+        }
+      }
+      return keepLineBreaks(match, statements.join(' '));
+    },
+  );
+  if (path === order[order.length - 1]) return source;
+
+  const index = order.indexOf(path);
+  source = source
+    .replace(/^[ \t]*export\s+(?:\*|\{[^}]*\})\s+from\s+['"][^'"]+['"];?[ \t]*$/mg, (match) => keepLineBreaks(match))
+    .replace(/^[ \t]*export\s*\{[^}]*\};?[ \t]*$/mg, (match) => keepLineBreaks(match));
+  if (NAMED_DEFAULT_DECLARATION.test(source)) return source.replace(NAMED_DEFAULT_DECLARATION, '$1');
+  if (DEFAULT_IDENTIFIER.test(source)) return source.replace(DEFAULT_IDENTIFIER, (match) => keepLineBreaks(match));
+  return source.replace(/\bexport\s+default\s+/, `const __faModuleDefault${index} = `);
+}
 
 export function makeReactPreviewHtml(files: Record<string, string>, assetBase?: string): string {
   const base =
@@ -110,30 +230,21 @@ export function makeReactPreviewHtml(files: Record<string, string>, assetBase?: 
   const assetUrl = (path: string) =>
     base ? new URL(path, base).toString() : path;
 
-  const appSrc =
-    files['src/App.tsx'] ??
-    files['src/App.jsx'] ??
-    files['src/App.ts'] ??
-    files['src/App.js'] ??
-    `export default function App(){ return <div>Hello React</div> }`;
+  // App and every file it imports run in one script, the imported files first. Only App's default export is the
+  // component to render.
+  const appPath = REACT_APP_FILES.find((path) => files[path] != null);
+  const order = appPath ? relativeModuleOrder(files, appPath) : [];
+  const segments = appPath
+    ? order.map((path) => ({ file: path.replace(/^src\//, ''), source: shareModuleScope(files, path, order) }))
+    : [{ file: 'App.tsx', source: `export default function App(){ return <div>Hello React</div> }` }];
+  let nextLine = 1;
+  const ranges = segments.map(({ file, source }) => {
+    const range = { file, start: nextLine };
+    nextLine += source.split('\n').length;
+    return range;
+  });
 
-  // Yeni: theme dosyasını da oku (varsa)
-  const themeSrc =
-    files['src/theme.tsx'] ??
-    files['src/theme.ts'] ??
-    files['src/theme.jsx'] ??
-    files['src/theme.js'] ??
-    '';
-
-  // Only App's default export is the component to render.
-  const themeModuleSrc = themeSrc
-    .replace(/\bexport\s+default\s+(function|class)\b/, '$1')
-    .replace(/\bexport\s+default\s+/, 'const __faThemeDefaultExport = ');
-
-  // theme'i App'in önüne ekle ki önce o tanımlansın
-  const combinedSrc = themeModuleSrc ? `${themeModuleSrc}\n\n${appSrc}` : appSrc;
-
-  const appModuleSrc = rewriteReactModuleToUMD(combinedSrc);
+  const appModuleSrc = rewriteReactModuleToUMD(segments.map(({ source }) => source).join('\n'));
 
   const css =
     files['src/App.css'] ??
@@ -392,20 +503,37 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         render(){ return this.props.children; }
       }
 
-      function formatBabelError(err){
+      // The workspace's files share the script, each starting on its own line; an error names the file it is in.
+      const FA_SEGMENTS = ${JSON.stringify(ranges).replace(/</g, '\\u003c')};
+      function locate(line){
+        let segment = FA_SEGMENTS[0] || { file: 'App.tsx', start: 1 };
+        for (const candidate of FA_SEGMENTS) if (candidate.start <= line) segment = candidate;
+        return { file: segment.file, start: segment.start, line: line - segment.start + 1 };
+      }
+
+      function formatBabelError(err, src){
         try{
-          // Babel compile errors often have loc + codeFrame
-          const loc = err && err.loc ? ('App.tsx:' + err.loc.line + ':' + err.loc.column) : '';
-          let msg = (err && (err.message || String(err))) || 'Compile error';
-          if (err && err.codeFrame) msg += '\\n\\n' + err.codeFrame;
-          return { msg, meta: loc };
+          const message = (err && (err.message || String(err))) || 'Compile error';
+          if (!err || !err.loc) return { msg: message, meta: '' };
+          // Babel numbers the lines of the whole script; the frame shows the lines of the file the error is in.
+          const where = locate(err.loc.line);
+          const lines = src.split('\\n');
+          const frame = [];
+          for (let n = Math.max(where.start, err.loc.line - 2); n <= Math.min(lines.length, err.loc.line + 2); n += 1) {
+            if (locate(n).file !== where.file) continue;
+            frame.push((n === err.loc.line ? '> ' : '  ') + String(n - where.start + 1).padStart(4) + ' | ' + lines[n - 1]);
+            if (n === err.loc.line) frame.push('       | ' + ' '.repeat(Math.max(0, err.loc.column)) + '^');
+          }
+          const reason = message.split('\\n')[0].replace(/^App\\.tsx:\\s*/, '').replace(/\\s*\\(\\d+:\\d+\\)\\s*$/, '');
+          return { msg: reason + '\\n\\n' + frame.join('\\n'), meta: where.file + ':' + where.line + ':' + err.loc.column };
         }catch{
           return { msg: String(err || 'Compile error'), meta: '' };
         }
       }
 
       function compileAndRun(){
-        const src = document.getElementById('_fa_user_src').textContent || '';
+        // The text starts with the line break after the script tag, which would push every line number down by one.
+        const src = (document.getElementById('_fa_user_src').textContent || '').replace(/^\\r?\\n/, '');
         let compiled;
 
         // 1) Compile TS/TSX -> JS with inline sourcemap + stable filename
@@ -428,7 +556,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           });
           compiled = (res && res.code) ? (res.code + '\\n//# sourceURL=App.tsx') : '';
         }catch(e){
-          const { msg, meta } = formatBabelError(e);
+          const { msg, meta } = formatBabelError(e, src);
           showOverlay(msg, meta, 'compile-error');
           return;
         }

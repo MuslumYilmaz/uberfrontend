@@ -1,0 +1,73 @@
+{
+  "questionId": "vue-debounced-search",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import { ref, watch } from 'vue';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term: string): Promise<Result[]> {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const mail = item.email.toLowerCase();\n        return name.includes(trimmed) || mail.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref<Result[]>([]);\nconst isLoading = ref(false);\nconst error = ref<string | null>(null);\n\nlet timeoutId: number | undefined;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId !== undefined) {\n      window.clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    // A response that arrives after the query changed again is ignored.\n    let stale = false;\n    timeoutId = window.setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          if (stale) return;\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          if (stale) return;\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      stale = true;\n      if (timeoutId !== undefined) {\n        window.clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event: Event) => {\n  const target = event.target as HTMLInputElement;\n  query.value = target.value;\n};\n",
+      "nodes": [
+        {
+          "id": "d1-watch-the-query",
+          "title": "Start every search from a watcher on query",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "watch("
+          },
+          "why": "The input handler only writes query. The watcher sees every change, so the timer, the loading flag and the request all start in one place.",
+          "alternative": "Start the timer in the input handler and keep its id next to it.",
+          "tradeoff": "Doing it in the handler drops the watcher, but then only typing starts a search; the watcher also covers a query set from code."
+        },
+        {
+          "id": "d2-empty-query",
+          "title": "Clear everything for an empty query",
+          "anchor": {
+            "lineStart": 62,
+            "lineEnd": 62,
+            "snippet": "if (!trimmed) {"
+          },
+          "why": "A blank or whitespace-only query empties the results, stops loading and drops an old error, then returns before a timer starts, so fakeApiSearch never gets an empty term.",
+          "alternative": "Pass the empty string to fakeApiSearch and let it answer with an empty list.",
+          "tradeoff": "The early return is one more branch, but clearing the box empties the list at once instead of 1.1 seconds later, after the debounce and the fake API's delay."
+        },
+        {
+          "id": "d3-ignore-late-answers",
+          "title": "Ignore the answer to an older query",
+          "anchor": {
+            "lineStart": 73,
+            "lineEnd": 73,
+            "snippet": "let stale = false;"
+          },
+          "why": "Each run of the watcher has its own stale flag. When the query changes while a search is running, the cleanup sets the flag, and the then and catch of that search return without touching the results, the loading flag or the error of the newer search.",
+          "alternative": "Rely on clearing the timer alone.",
+          "tradeoff": "Clearing the timer stops a search that has not started, but one already running still answers: its results show for a query that is gone, and with real network delays they can even arrive after the newer ones and replace them. The flag ignores that answer; the request itself still runs to the end, because the fake API cannot be cancelled."
+        },
+        {
+          "id": "d4-wait-for-a-pause",
+          "title": "Wait for a 500 ms pause in typing",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 74,
+            "snippet": "timeoutId = window.setTimeout(() => {"
+          },
+          "why": "Each change clears the timer of the change before it, so a burst of keystrokes reaches fakeApiSearch once, 500 ms after the last one.",
+          "alternative": "Search on every input event, or throttle so the first keystroke of each window searches at once.",
+          "tradeoff": "Results show up at least 500 ms after the last keystroke, which is the price for not searching each partial word typed on the way."
+        },
+        {
+          "id": "d5-cleanup",
+          "title": "Clear the timer when the query changes or the component unmounts",
+          "anchor": {
+            "lineStart": 89,
+            "lineEnd": 89,
+            "snippet": "onInvalidate(() => {"
+          },
+          "why": "Vue calls this cleanup, which its docs name onCleanup, before the watcher runs again and when the component unmounts. A pending timer never fires for a query that is gone, and the stale flag is set in the same place.",
+          "alternative": "Clear the timer at the top of the watcher, and in an onUnmounted hook for the last one.",
+          "tradeoff": "The clear at the top of the watcher is redundant next to the cleanup but harmless; the cleanup alone covers the next run and the unmount."
+        }
+      ]
+    }
+  }
+}

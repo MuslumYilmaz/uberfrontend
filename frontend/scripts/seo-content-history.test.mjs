@@ -9,6 +9,13 @@ import test from 'node:test';
 import { createBaseline, createGitReader, createIndexReader, resolveContentDates, validateStagedContent } from './seo-content-history.mjs';
 import { ensureSeoHistory } from './ensure-seo-history.mjs';
 
+// Git gives a hook run from a linked worktree an absolute GIT_DIR, and `git -C <fixture>` then acts on the real
+// repository: the pre-push hook once committed fixtures to its branches and set core.bare. Clear the repository
+// variables so every git call in this file, the scripts' own included, stays in its temporary fixture.
+for (const name of execFileSync('git', ['rev-parse', '--local-env-vars'], { encoding: 'utf8' }).split('\n')) {
+  if (name) delete process.env[name];
+}
+
 function git(root, args, env = {}) {
   return execFileSync('git', ['-C', root, ...args], {
     encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],

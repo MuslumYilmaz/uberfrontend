@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Injector,
+  Input,
+  Output,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   RehearsalDefinition,
@@ -104,6 +115,31 @@ export class RehearsalPanelComponent {
   @Output() readonly nextQuestion = new EventEmitter<void>();
   @Output() readonly skipToProblems = new EventEmitter<void>();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  /** Ending early cannot be undone, so the button asks once before the clock stops. */
+  readonly confirmingEnd = signal(false);
+
+  askToEnd(): void {
+    this.confirmingEnd.set(true);
+    this.focusAfterRender('rehearsal-end-no');
+  }
+
+  keepGoing(): void {
+    this.confirmingEnd.set(false);
+    this.focusAfterRender('rehearsal-end');
+  }
+
+  confirmEnd(): void {
+    this.confirmingEnd.set(false);
+    this.endRehearsal.emit();
+  }
+
+  /** The button that was pressed is gone; focus moves to the one that took its place. */
+  private focusAfterRender(testId: string): void {
+    afterNextRender(() => this.host.nativeElement.querySelector<HTMLElement>(`[data-testid="${testId}"]`)?.focus(), {
+      injector: this.injector,
+    });
+  }
 
   clock(): string {
     return formatRehearsalClock(this.remainingMs);

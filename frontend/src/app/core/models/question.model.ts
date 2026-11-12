@@ -114,12 +114,37 @@ export type FrameworkTestStepType =
   | 'key'
   | 'unmountPreview'
   | 'expectNoPreviewTimers'
-  | 'expectNoPreviewLeaks';
+  | 'expectNoPreviewLeaks'
+  | 'expectChecked'
+  | 'expectLineThrough'
+  | 'mockRandom'
+  | 'expectStandsOut'
+  | 'expectColor'
+  | 'expectReferenced'
+  | 'expectIndented'
+  | 'mockStorage'
+  | 'expectStorage'
+  | 'expectName'
+  | 'expectLiveRegion';
+
+/**
+ * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
+ * (the name also matches the visible text), by label, or by an element's own text. Hidden elements never match.
+ * `near` keeps the matches that sit closest to another element, such as the Reply button of one comment.
+ */
+export type FrameworkTestLocator = {
+  role?: string;
+  name?: string;
+  label?: string;
+  text?: string;
+  near?: FrameworkTestLocator;
+};
 
 export type FrameworkTestStep = {
   type?: FrameworkTestStepType;
   action?: FrameworkTestStepType;
   selector?: string;
+  by?: FrameworkTestLocator;
   index?: number;
   text?: string;
   match?: 'equals' | 'contains';
@@ -136,7 +161,24 @@ export type FrameworkTestStep = {
   status?: number;
   error?: string;
   bodyContains?: string;
+  /** expectChecked takes true, false or 'mixed' (an indeterminate checkbox). */
   expected?: string | boolean | number;
+  /** mockRandom: Math.random returns these in turn, from before the preview boots. */
+  values?: number[];
+  /** expectStandsOut: the group the target must look different from. */
+  among?: { selector?: string; by?: FrameworkTestLocator };
+  /** expectColor: the color family the target shows, named as a person would. */
+  hue?: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'grey' | 'transparent';
+  /** expectColor: the CSS color property read, background-color unless set. */
+  property?: string;
+  /** expectIndented: the element the target must start further right than. */
+  than?: { selector?: string; by?: FrameworkTestLocator };
+  /** mockStorage: the check's localStorage entries, set before the preview boots. */
+  entries?: Record<string, string>;
+  /** expectLiveRegion: how the live region around the target announces, polite or assertive. */
+  politeness?: string;
+  /** expectLiveRegion: whether the live region announces itself whole. */
+  atomic?: boolean;
 };
 
 export type FrameworkTest = {
@@ -199,7 +241,11 @@ export interface Question {
   code?: string;
   starterCode?: string;
   tests?: string;
+  /** How long each JavaScript test may run before it fails as timed out; the runner's default is 1000 ms. */
+  testTimeoutMs?: number;
   frameworkTests?: FrameworkTest[];
+  /** Overrides the default reading of `frameworkTests` (one check or fewer is 'smoke'): framework-check-coverage.util. */
+  checkCoverage?: 'smoke' | 'full';
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
   sources?: QuestionSource[];

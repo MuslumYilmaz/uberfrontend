@@ -33,17 +33,25 @@
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": true
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "   "
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": true
             },
             {
@@ -53,17 +61,24 @@
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "  Buy milk  "
             },
             {
               "type": "expectDisabled",
-              "selector": ".primary",
+              "by": {
+                "role": "button",
+                "name": "Add"
+              },
               "disabled": false
             },
             {
               "type": "key",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "key": "Enter"
             },
             {
@@ -74,22 +89,30 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Buy milk"
+              "selector": ".item",
+              "text": "Buy milk",
+              "match": "contains"
             },
             {
               "type": "expectValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": ""
             },
             {
               "type": "setValue",
-              "selector": ".input",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Walk dog"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -99,15 +122,17 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
+              "selector": ".item",
               "index": 0,
-              "text": "Buy milk"
+              "text": "Buy milk",
+              "match": "contains"
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
+              "selector": ".item",
               "index": 1,
-              "text": "Walk dog"
+              "text": "Walk dog",
+              "match": "contains"
             }
           ]
         }
@@ -120,7 +145,7 @@
       "constraints": [
         "Provide All, Active, and Completed filters that derive the visible rows from the source list.",
         "Expose the selected filter with aria-pressed.",
-        "Announce the remaining active-task count with correct singular and plural copy.",
+        "Announce the remaining active-task count with correct singular and plural copy: \"1 item left\", \"2 items left\".",
         "Clear completed tasks without removing active tasks."
       ],
       "frameworkTests": [
@@ -130,21 +155,31 @@
           "steps": [
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Alpha"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Beta"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -153,28 +188,53 @@
               "timeoutMs": 700
             },
             {
+              "type": "waitForCount",
+              "by": {
+                "text": "2 items left"
+              },
+              "count": 1
+            },
+            {
+              "type": "expectLiveRegion",
+              "by": {
+                "text": "2 items left"
+              },
+              "politeness": "polite"
+            },
+            {
               "type": "click",
-              "selector": ".todo-checkbox",
+              "by": {
+                "role": "checkbox"
+              },
               "index": 0
             },
             {
-              "type": "expectClass",
-              "selector": ".todo-text",
-              "index": 0,
-              "className": "done"
+              "type": "expectChecked",
+              "by": {
+                "role": "checkbox"
+              },
+              "index": 0
             },
             {
-              "type": "expectText",
-              "selector": ".items-left",
-              "text": "1 item left"
+              "type": "waitForCount",
+              "by": {
+                "text": "1 item left"
+              },
+              "count": 1
             },
             {
               "type": "click",
-              "selector": ".filter-active"
+              "by": {
+                "role": "button",
+                "name": "Active"
+              }
             },
             {
               "type": "expectAttribute",
-              "selector": ".filter-active",
+              "by": {
+                "role": "button",
+                "name": "Active"
+              },
               "attribute": "aria-pressed",
               "expected": "true"
             },
@@ -185,16 +245,23 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Beta"
+              "selector": ".item",
+              "text": "Beta",
+              "match": "contains"
             },
             {
               "type": "click",
-              "selector": ".filter-completed"
+              "by": {
+                "role": "button",
+                "name": "Completed"
+              }
             },
             {
               "type": "expectAttribute",
-              "selector": ".filter-completed",
+              "by": {
+                "role": "button",
+                "name": "Completed"
+              },
               "attribute": "aria-pressed",
               "expected": "true"
             },
@@ -205,16 +272,23 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Alpha"
+              "selector": ".item",
+              "text": "Alpha",
+              "match": "contains"
             },
             {
               "type": "click",
-              "selector": ".filter-all"
+              "by": {
+                "role": "button",
+                "name": "All"
+              }
             },
             {
               "type": "expectAttribute",
-              "selector": ".filter-all",
+              "by": {
+                "role": "button",
+                "name": "All"
+              },
               "attribute": "aria-pressed",
               "expected": "true"
             },
@@ -225,7 +299,10 @@
             },
             {
               "type": "click",
-              "selector": ".clear-completed"
+              "by": {
+                "role": "button",
+                "name": "Clear completed"
+              }
             },
             {
               "type": "expectCount",
@@ -234,14 +311,16 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Beta"
+              "selector": ".item",
+              "text": "Beta",
+              "match": "contains"
             },
             {
-              "type": "expectNoText",
-              "selector": ".card",
-              "text": "Alpha",
-              "match": "contains"
+              "type": "expectCount",
+              "by": {
+                "text": "Alpha"
+              },
+              "count": 0
             }
           ]
         }
@@ -255,7 +334,7 @@
         "Focus the edit input when editing starts.",
         "Commit trimmed text with Enter and cancel changes with Escape.",
         "Return focus to the same task's Edit button after commit or cancel.",
-        "Give the input, task controls, filter group, and status regions stable accessible names and relationships."
+        "Give the input, task controls, filter group, and status regions stable accessible names and relationships; each task control's name includes its task's text."
       ],
       "frameworkTests": [
         {
@@ -264,12 +343,17 @@
           "steps": [
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Draft title"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -278,122 +362,154 @@
               "timeoutMs": 700
             },
             {
-              "type": "expectAttribute",
-              "selector": "#new-task",
-              "attribute": "aria-label",
-              "expected": "New todo"
+              "type": "expectName",
+              "by": {
+                "role": "textbox"
+              }
             },
             {
-              "type": "expectAttribute",
-              "selector": "#new-task",
-              "attribute": "aria-controls",
-              "expected": "todo-items"
+              "type": "expectReferenced",
+              "by": {
+                "role": "list"
+              },
+              "attribute": "aria-controls"
             },
             {
-              "type": "expectExists",
-              "selector": "#todo-items"
+              "type": "expectReferenced",
+              "by": {
+                "text": "1 item left"
+              },
+              "attribute": "aria-describedby"
             },
             {
-              "type": "expectAttribute",
-              "selector": "#new-task",
-              "attribute": "aria-describedby",
-              "expected": "todo-instructions items-left"
+              "type": "expectName",
+              "by": {
+                "role": "group"
+              }
             },
             {
-              "type": "expectAttribute",
-              "selector": ".filters",
-              "attribute": "role",
-              "expected": "group"
+              "type": "expectName",
+              "by": {
+                "role": "checkbox"
+              },
+              "text": "Draft title"
             },
             {
-              "type": "expectAttribute",
-              "selector": ".filters",
-              "attribute": "aria-label",
-              "expected": "Filter tasks"
+              "type": "expectName",
+              "by": {
+                "role": "button",
+                "name": "Edit"
+              },
+              "text": "Draft title"
             },
             {
-              "type": "expectAttribute",
-              "selector": ".todo-checkbox",
-              "attribute": "aria-label",
-              "expected": "Mark Draft title complete"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".edit-task",
-              "attribute": "aria-label",
-              "expected": "Edit Draft title"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".remove-task",
-              "attribute": "aria-label",
-              "expected": "Remove Draft title"
+              "type": "expectName",
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              },
+              "text": "Draft title"
             },
             {
               "type": "click",
-              "selector": ".edit-task"
+              "by": {
+                "role": "button",
+                "name": "Edit"
+              }
             },
             {
               "type": "expectCount",
-              "selector": ".edit-input",
-              "count": 1
+              "by": {
+                "role": "textbox"
+              },
+              "count": 2
             },
             {
               "type": "expectFocused",
-              "selector": ".edit-input"
+              "by": {
+                "role": "textbox"
+              },
+              "index": 1
             },
             {
               "type": "setValue",
-              "selector": ".edit-input",
+              "by": {
+                "role": "textbox"
+              },
+              "index": 1,
               "value": "  Updated title  "
             },
             {
               "type": "key",
-              "selector": ".edit-input",
+              "by": {
+                "role": "textbox"
+              },
+              "index": 1,
               "key": "Enter"
             },
             {
               "type": "waitForText",
-              "selector": ".todo-text",
+              "selector": ".item",
               "text": "Updated title",
+              "match": "contains",
               "timeoutMs": 700
             },
             {
               "type": "expectCount",
-              "selector": ".edit-input",
-              "count": 0
+              "by": {
+                "role": "textbox"
+              },
+              "count": 1
             },
             {
               "type": "expectFocused",
-              "selector": ".edit-task"
+              "by": {
+                "role": "button",
+                "name": "Edit"
+              }
             },
             {
               "type": "click",
-              "selector": ".edit-task"
+              "by": {
+                "role": "button",
+                "name": "Edit"
+              }
             },
             {
               "type": "setValue",
-              "selector": ".edit-input",
+              "by": {
+                "role": "textbox"
+              },
+              "index": 1,
               "value": "Discard me"
             },
             {
               "type": "key",
-              "selector": ".edit-input",
+              "by": {
+                "role": "textbox"
+              },
+              "index": 1,
               "key": "Escape"
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Updated title"
+              "selector": ".item",
+              "text": "Updated title",
+              "match": "contains"
             },
             {
               "type": "expectCount",
-              "selector": ".edit-input",
-              "count": 0
+              "by": {
+                "role": "textbox"
+              },
+              "count": 1
             },
             {
               "type": "expectFocused",
-              "selector": ".edit-task"
+              "by": {
+                "role": "button",
+                "name": "Edit"
+              }
             }
           ]
         }
@@ -417,21 +533,31 @@
           "steps": [
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "One"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Two"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -440,26 +566,11 @@
               "timeoutMs": 700
             },
             {
-              "type": "expectAttribute",
-              "selector": ".items-left",
-              "attribute": "role",
-              "expected": "status"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".items-left",
-              "attribute": "aria-live",
-              "expected": "polite"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".items-left",
-              "attribute": "aria-atomic",
-              "expected": "true"
-            },
-            {
               "type": "click",
-              "selector": ".remove-task",
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              },
               "index": 0
             },
             {
@@ -468,38 +579,20 @@
               "count": 1
             },
             {
-              "type": "expectAttribute",
-              "selector": ".undo-bar",
-              "attribute": "role",
-              "expected": "status"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".undo-bar",
-              "attribute": "aria-live",
-              "expected": "polite"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".undo-bar",
-              "attribute": "aria-atomic",
-              "expected": "true"
-            },
-            {
-              "type": "expectText",
-              "selector": ".undo-bar",
-              "text": "One",
-              "match": "contains"
-            },
-            {
-              "type": "expectAttribute",
-              "selector": ".undo-button",
-              "attribute": "aria-label",
-              "expected": "Undo removal of One"
+              "type": "expectLiveRegion",
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              },
+              "politeness": "polite",
+              "atomic": true
             },
             {
               "type": "click",
-              "selector": ".undo-button"
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              }
             },
             {
               "type": "waitForCount",
@@ -509,46 +602,55 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "index": 0,
-              "text": "One"
+              "selector": ".item",
+              "text": "One",
+              "match": "contains",
+              "index": 0
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "index": 1,
-              "text": "Two"
+              "selector": ".item",
+              "text": "Two",
+              "match": "contains",
+              "index": 1
             },
             {
               "type": "expectCount",
-              "selector": ".undo-bar",
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              },
               "count": 0
             },
             {
               "type": "click",
-              "selector": ".remove-task",
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              },
               "index": 0
             },
             {
               "type": "click",
-              "selector": ".remove-task",
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              },
               "index": 0
             },
             {
-              "type": "expectText",
-              "selector": ".undo-bar",
-              "text": "Two",
-              "match": "contains"
-            },
-            {
-              "type": "expectNoText",
-              "selector": ".card",
-              "text": "One",
-              "match": "contains"
+              "type": "expectCount",
+              "by": {
+                "text": "One"
+              },
+              "count": 0
             },
             {
               "type": "click",
-              "selector": ".undo-button"
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              }
             },
             {
               "type": "waitForCount",
@@ -558,25 +660,33 @@
             },
             {
               "type": "expectText",
-              "selector": ".todo-text",
-              "text": "Two"
+              "selector": ".item",
+              "text": "Two",
+              "match": "contains"
             },
             {
-              "type": "expectNoText",
-              "selector": ".card",
-              "text": "One",
-              "match": "contains"
+              "type": "expectCount",
+              "by": {
+                "text": "One"
+              },
+              "count": 0
             },
             {
               "type": "expectNoPreviewTimers"
             },
             {
               "type": "click",
-              "selector": ".remove-task"
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              }
             },
             {
               "type": "expectCount",
-              "selector": ".undo-bar",
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              },
               "count": 1
             },
             {
@@ -585,7 +695,10 @@
             },
             {
               "type": "expectCount",
-              "selector": ".undo-bar",
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              },
               "count": 0
             },
             {
@@ -599,12 +712,17 @@
           "steps": [
             {
               "type": "setValue",
-              "selector": "#new-task",
+              "by": {
+                "role": "textbox"
+              },
               "value": "Timer"
             },
             {
               "type": "click",
-              "selector": ".primary"
+              "by": {
+                "role": "button",
+                "name": "Add"
+              }
             },
             {
               "type": "waitForCount",
@@ -614,11 +732,17 @@
             },
             {
               "type": "click",
-              "selector": ".remove-task"
+              "by": {
+                "role": "button",
+                "name": "Remove"
+              }
             },
             {
               "type": "expectCount",
-              "selector": ".undo-bar",
+              "by": {
+                "role": "button",
+                "name": "Undo"
+              },
               "count": 1
             },
             {

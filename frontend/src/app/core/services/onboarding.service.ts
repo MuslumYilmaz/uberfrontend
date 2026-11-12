@@ -3,7 +3,20 @@ import { Injectable } from '@angular/core';
 export type OnboardingTrigger = 'first_pass' | 'save_prompt';
 export type OnboardingTimeline = '1_week' | '2_4_weeks' | '1_3_months' | 'ongoing';
 export type OnboardingFramework = 'react' | 'angular' | 'vue' | 'javascript';
-export type OnboardingTargetRole = 'senior_frontend' | 'staff_frontend' | 'fullstack_frontend';
+export type OnboardingTargetRole =
+  | 'junior_frontend'
+  | 'mid_frontend'
+  | 'senior_frontend'
+  | 'staff_frontend'
+  | 'fullstack_frontend';
+
+const TARGET_ROLES: readonly OnboardingTargetRole[] = [
+  'junior_frontend',
+  'mid_frontend',
+  'senior_frontend',
+  'staff_frontend',
+  'fullstack_frontend',
+];
 
 export type OnboardingProfile = {
   timeline: OnboardingTimeline;
@@ -103,8 +116,7 @@ export class OnboardingService {
       timeline === '1_week' || timeline === '2_4_weeks' || timeline === '1_3_months' || timeline === 'ongoing';
     const validFramework =
       framework === 'react' || framework === 'angular' || framework === 'vue' || framework === 'javascript';
-    const validRole =
-      targetRole === 'senior_frontend' || targetRole === 'staff_frontend' || targetRole === 'fullstack_frontend';
+    const validRole = !!targetRole && TARGET_ROLES.includes(targetRole);
 
     if (!validTimeline || !validFramework || !validRole) return null;
 

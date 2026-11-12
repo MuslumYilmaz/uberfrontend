@@ -2,9 +2,12 @@
 
 import { normalizeError } from '../utils/console-normalize';
 import type { BundleFile } from '../utils/file-bundle.util';
+import { createSandboxFakeTimers } from './user-code-sandbox-fake-timers';
 import { freezeHardenedPrototypes } from './user-code-sandbox-hardening';
 import { createSandboxExpect } from './user-code-sandbox-matchers';
 import { linkModules } from './user-code-sandbox-modules';
+import { runQueue, timedOutMessage, type QueuedResult, type QueuedTest } from './user-code-sandbox-runner';
+import { createTestSuite } from './user-code-sandbox-suite';
 
 // ---------- message contracts ----------
 type RunMsg = {
@@ -13,7 +16,18 @@ type RunMsg = {
     userCode: string;    // transformed to set globalThis[globalName]
     testCode: string;    // transformed to reference that global; with files, imports them as they are
     files?: BundleFile[]; // a multi-file task: each file runs as its own module and userCode is unused
-    timeoutMs?: number;  // default 1500
+    timeoutMs?: number;  // loading the code and the tests; default 1500
+    testTimeoutMs?: number; // each test; default 1000
+    budgetMs?: number;   // all the tests together; default 4000
+};
+/** Sent while tests run, so the page can keep what finished if a later test blocks the worker. */
+type ProgressMsg = {
+    type: 'progress';
+    nonce: string;
+    phase: 'registered' | 'start' | 'result';
+    tests?: Array<{ idx: number; name: string }>;
+    test?: { idx: number; name: string };
+    result?: QueuedResult;
 };
 
 type LogLevel = 'log' | 'warn' | 'error' | 'info';
@@ -44,7 +58,14 @@ const asyncErrors: SandboxAsyncError[] = [];
 let logLimitHit = false;
 let activeTestIdx: number | null = null;
 let activeTestName: string | null = null;
-const now = () => Date.now();
+// The runner's own clock and timers, taken before any user code runs: a task or its tests may replace them.
+const now = Date.now.bind(Date);
+const realSetTimeout = self.setTimeout.bind(self);
+const realClearTimeout = self.clearTimeout.bind(self);
+const realNow = performance.now.bind(performance);
+const fakeTimers = createSandboxFakeTimers(self);
+const DEFAULT_TEST_TIMEOUT_MS = 1000;
+const DEFAULT_RUN_BUDGET_MS = 4000;
 
 // ---------- limits ----------
 const MAX_CODE_BYTES = 200 * 1024;     // 200 KB per payload
@@ -269,47 +290,60 @@ self.addEventListener('unhandledrejection', (e: any) => {
 });
 
 // ---------- tiny test DSL (ORDERED execution) ----------
-type TestCase = { idx: number; name: string; fn: () => any };
-const suiteStack: string[] = [];
-const queue: TestCase[] = [];
+// Each run gets a fresh suite; once the tests have loaded, `queue` holds them in order, wrapped with their hooks.
+let suite = createTestSuite(' › ');
+let queue: QueuedTest[] = [];
 let nextIdx = 0;
 
 const expect = createSandboxExpect(safeStringify);
-function fullName(name: string) { return [...suiteStack, name].join(' › '); }
-function describe(name: string, fn: () => any) { suiteStack.push(name); try { fn(); } finally { suiteStack.pop(); } }
-function test(name: string, fn: () => any) { queue.push({ idx: nextIdx++, name: fullName(name), fn }); }
-function it(name: string, fn: () => any) { test(name, fn); }
 
-// Run queued tests sequentially; return ordered results with clean errors
-async function runQueued(): Promise<TestResult[]> {
-    const results: TestResult[] = [];
-    for (const t of queue) {
-        const asyncStart = asyncErrors.length;
-        const currentAsyncError = () => asyncErrors
-            .slice(asyncStart)
-            .find((err) => err.testIdx === t.idx && !err.reported);
-        activeTestIdx = t.idx;
-        activeTestName = t.name;
-        try {
-            const maybe = t.fn();
-            if (maybe && typeof (maybe as any).then === 'function') await (maybe as any);
-            const asyncError = currentAsyncError();
-            if (asyncError) {
-                asyncError.reported = true;
-                results.push({ name: t.name, passed: false, error: asyncError.message, order: t.idx });
-                continue;
-            }
-            results.push({ name: t.name, passed: true, order: t.idx });
-        } catch (e: any) {
-            const asyncError = currentAsyncError();
-            const msg = asyncError ? asyncError.message : pushError(e);
-            if (asyncError) asyncError.reported = true;
-            results.push({ name: t.name, passed: false, error: msg, order: t.idx });
-        } finally {
+const postProgress = (payload: Omit<ProgressMsg, 'type' | 'nonce'>) => {
+    if (doneSent) return;
+    (self as any).postMessage({ type: 'progress', nonce: ACTIVE_NONCE, ...payload } as ProgressMsg);
+};
+
+// Run queued tests sequentially; return ordered results with clean errors. A test that never settles fails on its
+// own after `perTestMs`, and the next one starts: one hang no longer costs the results of the whole file.
+async function runQueued(perTestMs: number, budgetMs: number): Promise<TestResult[]> {
+    const asyncStartByTest = new Map<number, number>();
+    const currentAsyncError = (t: QueuedTest) => asyncErrors
+        .slice(asyncStartByTest.get(t.idx) ?? 0)
+        .find((err) => err.testIdx === t.idx && !err.reported);
+    const results: TestResult[] = await runQueue(queue, {
+        perTestMs,
+        budgetMs,
+        now: realNow,
+        setTimer: (callback, ms) => realSetTimeout(callback, ms),
+        clearTimer: (handle) => realClearTimeout(handle as number),
+        onStart: (t) => {
+            asyncStartByTest.set(t.idx, asyncErrors.length);
+            activeTestIdx = t.idx;
+            activeTestName = t.name;
+            postProgress({ phase: 'start', test: { idx: t.idx, name: t.name } });
+        },
+        finish: (t, outcome) => {
+            // A test that left fake timers on must not hand them to the next one.
+            fakeTimers.useRealTimers();
             activeTestIdx = null;
             activeTestName = null;
-        }
-    }
+            // An error thrown from a callback names the bug better than the timeout or rejection it led to.
+            const asyncError = currentAsyncError(t);
+            if (asyncError) {
+                asyncError.reported = true;
+                return { name: t.name, passed: false, error: asyncError.message, order: t.idx };
+            }
+            if (outcome.timedOut) {
+                const message = timedOutMessage(perTestMs);
+                push('error', `${t.name}: ${message}`);
+                return { name: t.name, passed: false, error: message, order: t.idx };
+            }
+            if (outcome.error !== undefined) {
+                return { name: t.name, passed: false, error: pushError(outcome.error), order: t.idx };
+            }
+            return { name: t.name, passed: true, order: t.idx };
+        },
+        onResult: (result) => postProgress({ phase: 'result', result }),
+    });
     for (const err of asyncErrors) {
         if (err.reported || err.testIdx !== null) continue;
         err.reported = true;
@@ -368,7 +402,10 @@ const stripFrameworkImports = (code: string) =>
     code.replace(/^\s*import\s+[^;]+from\s+['"](?:jest|vitest|@jest\/globals)['"];?\s*$/gm, '');
 
 self.onmessage = async (e: MessageEvent<RunMsg>) => {
-    const { type, nonce, userCode, testCode, files, timeoutMs = 1500 } = e.data || ({} as any);
+    const {
+        type, nonce, userCode, testCode, files, timeoutMs = 1500,
+        testTimeoutMs = DEFAULT_TEST_TIMEOUT_MS, budgetMs = DEFAULT_RUN_BUDGET_MS,
+    } = e.data || ({} as any);
     if (type !== 'run' || !nonce || typeof userCode !== 'string' || typeof testCode !== 'string') return;
 
     // Reset per run
@@ -376,17 +413,25 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     doneSent = false;
     logs.length = 0;
     asyncErrors.length = 0;
-    queue.length = 0;
-    suiteStack.length = 0;
+    suite = createTestSuite(' › ');
+    queue = [];
     nextIdx = 0;
     activeTestIdx = null;
     activeTestName = null;
 
     // expose DSL to tests
-    (self as any).describe = describe;
-    (self as any).test = test;
+    (self as any).describe = suite.describe;
+    (self as any).test = suite.test;
     (self as any).expect = expect;
-    (self as any).it = it;
+    (self as any).it = suite.it;
+    (self as any).beforeAll = suite.beforeAll;
+    (self as any).afterAll = suite.afterAll;
+    (self as any).beforeEach = suite.beforeEach;
+    (self as any).afterEach = suite.afterEach;
+    (self as any).useFakeTimers = fakeTimers.useFakeTimers;
+    (self as any).useRealTimers = fakeTimers.useRealTimers;
+    (self as any).advanceTimersByTime = fakeTimers.advanceTimersByTime;
+    (self as any).advanceTimersByTimeAsync = fakeTimers.advanceTimersByTimeAsync;
 
     // hard reset per-run log cap
     logLimitHit = false;
@@ -399,8 +444,9 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
         return;
     }
 
+    // This limit covers loading the code and the tests; each test then has its own (runQueued).
     let timedOut = false;
-    const killer = setTimeout(() => {
+    const killer = realSetTimeout(() => {
         timedOut = true;
         push('error', `Execution timed out after ${timeoutMs}ms`);
         sendDone({ entries: logs, results: [], timedOut: true });
@@ -421,7 +467,11 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
             if (!timedOut) await runAsModule(testCode); // test file (queues tests)
         }
         if (!timedOut) {
-            const ordered = await runQueued();        // run in definition order
+            realClearTimeout(killer);
+            queue = suite.tests().map(({ idx, fullName, fn }) => ({ idx, name: fullName, fn }));
+            nextIdx = queue.length;
+            postProgress({ phase: 'registered', tests: queue.map(({ idx, name }) => ({ idx, name })) });
+            const ordered = await runQueued(testTimeoutMs, budgetMs); // run in definition order
             sendDone({ entries: logs, results: ordered });
         }
     } catch (err: any) {
@@ -430,7 +480,7 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
             sendDone({ entries: logs, results: [], error: msg });
         }
     } finally {
-        clearTimeout(killer);
+        realClearTimeout(killer);
         for (const url of moduleUrls) URL.revokeObjectURL(url);
     }
 };

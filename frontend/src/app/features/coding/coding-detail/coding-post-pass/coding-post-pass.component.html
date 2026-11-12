@@ -1,0 +1,23 @@
+<section class="post-pass" [class.post-pass--framework]="place === 'framework'" data-testid="coding-post-pass"
+  [attr.data-card]="card">
+  <p class="post-pass__status" role="status">
+    <app-fa-glyph class="post-pass__icon" icon="pi pi-check-circle"></app-fa-glyph>
+    <span>{{ card === 'guest' ? 'Passed. Create a free account to save it as solved.' : 'Saved as solved.' }}</span>
+  </p>
+  <div class="post-pass__actions">
+    <ng-container *ngIf="card === 'guest'">
+      <button faButton variant="primary" size="sm" type="button" data-testid="coding-post-pass-signup"
+        (click)="signUp.emit()">Create free account</button>
+      <button faButton variant="ghost" size="sm" type="button" data-testid="coding-post-pass-login"
+        (click)="signIn.emit()">Sign in</button>
+    </ng-container>
+    <button *ngIf="nextLabel" faButton size="sm" type="button" [variant]="card === 'guest' ? 'ghost' : 'primary'"
+      icon="pi pi-arrow-right" iconPosition="end" data-testid="coding-post-pass-next" (click)="next.emit()">{{ nextLabel }}</button>
+    <button *ngIf="card === 'personalize'" faButton variant="ghost" size="sm" type="button"
+      data-testid="coding-post-pass-personalize" (click)="personalize.emit()">Personalize what comes next</button>
+  </div>
+  <button type="button" class="post-pass__close" aria-label="Close" data-testid="coding-post-pass-close"
+    (click)="dismiss.emit()">
+    <app-fa-glyph icon="pi pi-times"></app-fa-glyph>
+  </button>
+</section>

@@ -56,7 +56,8 @@ type Row = Question & {
   __debug?: boolean;
 };
 
-type PracticeItem = { tech: Tech; kind: QuestionKind | 'debug'; id: string };
+/** `access` lets the task page's Next step over Premium tasks for a visitor who cannot open them. */
+type PracticeItem = { tech: Tech; kind: QuestionKind | 'debug'; id: string; access?: Row['access'] };
 type PracticeSession = { items: PracticeItem[]; index: number };
 // ---------- Formats categories ----------
 type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
@@ -72,6 +73,12 @@ type SortKey =
   | 'created-desc' | 'created-asc'
   // for compatibility with shared filter panel in other contexts
   | 'diff-asc' | 'diff-desc';
+
+/** `.fa-sort__menu` min-width and the page gutter it must keep (coding-list.component.scss). */
+const SORT_MENU_MIN_WIDTH_PX = 260;
+const SORT_MENU_EDGE_PX = 16;
+/** The visitor's "Free only" choice, kept in this browser; it is not a filter in the address. */
+const FREE_ONLY_STORAGE_KEY = 'fa:coding-list:free-only';
 
 type SupportedPrepTech = Extract<Tech, 'javascript' | 'react' | 'angular' | 'vue'>;
 
@@ -317,10 +324,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   sort$ = new BehaviorSubject<SortKey>('default');
   sortOpen = false;
+  /** The menu opens toward the free side of the trigger: a phone wraps the sort to the row's start. */
+  sortMenuAlignStart = false;
   sortOptions: Array<{ key: SortKey; label: string; hint?: string }> = [
     {
       key: 'default',
-      label: 'Difficulty: Easy to Hard',
+      label: 'Recommended order',
       hint: 'Easy → Hard, then practice priority High → Low'
     },
     { key: 'title-asc', label: 'Title: A to Z' },
@@ -695,7 +704,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   );
 
   // Merge filter chain
-  filtered$ = combineLatest([
+  private readonly baseFiltered$ = combineLatest([
     this.rawQuestions$,
     this.search$,
     this.diffs$,
@@ -816,6 +825,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
       return deduped.slice().sort(warmupFirst);
     })
+  );
+
+  /** "Free only": a guest or a free account can hide the tasks they would meet a lock on (kept per browser). */
+  readonly freeOnly$ = new BehaviorSubject<boolean>(this.readFreeOnlyPreference());
+
+  // Filtered again when the account arrives: a member who once chose "Free only" has no locks, so nothing is hidden.
+  filtered$ = combineLatest([this.baseFiltered$, this.freeOnly$, toObservable(this.auth.user)]).pipe(
+    map(([list, freeOnly, user]) => (list && freeOnly ? list.filter((q) => !isQuestionLockedForTier(q, user)) : list)),
   );
 
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
@@ -1041,9 +1058,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // --- UI handlers for sorting ---
   currentSortLabel(k: SortKey | null | undefined): string {
     const opt = this.sortOptions.find(o => o.key === k);
-    return opt?.label || 'Difficulty: Easy to Hard';
+    return opt?.label || 'Recommended order';
   }
-  toggleSort() { this.sortOpen = !this.sortOpen; }
+  toggleSort(event?: Event) {
+    this.sortOpen = !this.sortOpen;
+    // A right-aligned menu needs its full width to the trigger's left; without it, it opens to the right instead.
+    const trigger = event?.currentTarget;
+    if (this.sortOpen && trigger instanceof HTMLElement) {
+      this.sortMenuAlignStart = trigger.getBoundingClientRect().right < SORT_MENU_MIN_WIDTH_PX + SORT_MENU_EDGE_PX;
+    }
+  }
   closeSort() { this.sortOpen = false; }
   setSort(k: SortKey) {
     this.sort$.next(k);
@@ -1069,6 +1093,41 @@ export class CodingListComponent implements OnInit, OnDestroy {
   isLocked(q: Row): boolean {
     const user = this.auth.user();
     return isQuestionLockedForTier(q, user);
+  }
+
+  /** Only a visitor who would meet locks has a use for "Free only"; a member sees every task open. */
+  freeOnlyAvailable(): boolean {
+    return isQuestionLockedForTier({ access: 'premium' }, this.auth.user());
+  }
+
+  /** The global list already sorts Premium tasks after free ones (baseFiltered$); other lists keep their order. */
+  freeOnlyTitle(): string {
+    return this.source === 'global-coding'
+      ? 'Premium tasks are listed after the free ones; this hides them.'
+      : 'Hides the Premium tasks.';
+  }
+
+  toggleFreeOnly(): void {
+    this.setFreeOnly(!this.freeOnly$.value);
+  }
+
+  private setFreeOnly(on: boolean): void {
+    this.freeOnly$.next(on);
+    if (!this.isBrowser) return;
+    try {
+      localStorage.setItem(FREE_ONLY_STORAGE_KEY, on ? '1' : '0');
+    } catch {
+      // Storage can be off (private mode); the toggle still works for this visit.
+    }
+  }
+
+  private readFreeOnlyPreference(): boolean {
+    if (!this.isBrowser) return false;
+    try {
+      return localStorage.getItem(FREE_ONLY_STORAGE_KEY) === '1';
+    } catch {
+      return false;
+    }
   }
 
   trackByQuestionId = (_: number, q: Row): string => q.id;
@@ -1728,6 +1787,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       tech: (r.tech ?? this.tech ?? 'javascript') as Tech,
       kind: r.__debug ? 'debug' : r.__kind,
       id: r.id,
+      access: r.access,
     }));
     const index = Math.max(0, list.findIndex((r) => r.id === current.id));
     const session: PracticeSession = { items, index };
@@ -2064,6 +2124,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedTech$.next(null);
     this.selectedKind$.next('coding');
     this.selectedCategory$.next(null);
+    this.setFreeOnly(false);
     this.closeSort();
 
     // URL state

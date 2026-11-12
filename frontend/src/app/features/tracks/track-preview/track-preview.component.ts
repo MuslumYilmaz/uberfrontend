@@ -974,6 +974,24 @@ export class TrackPreviewComponent implements OnInit {
     return ['/', tech, item.kind === 'trivia' ? 'trivia' : 'coding', item.id];
   }
 
+  /**
+   * Opens a task inside its part of the plan, as the full track does: the task footer counts through that day (or the
+   * samples) and leads back to this page instead of the whole catalog.
+   */
+  navState(items: PreviewQuestion[], current: PreviewQuestion, label: string | null = null) {
+    if (!this.track || current.kind === 'system-design') return undefined;
+    const practice = items
+      .filter((item) => item.kind !== 'system-design')
+      .map((item) => ({ tech: item.tech || 'javascript', kind: item.kind, id: item.id, access: item.access }));
+    const index = practice.findIndex((item) => item.id === current.id && item.kind === current.kind);
+    if (index < 0) return undefined;
+    return {
+      session: { items: practice, index, label },
+      returnToUrl: `/tracks/${this.track.slug}/preview`,
+      returnLabel: 'Back to plan',
+    };
+  }
+
   linkQueryParams(link: PreviewLink | null | undefined, trackSlug: string): Record<string, string | number | boolean> | null {
     if (!link?.queryParams) return null;
     return {

@@ -312,6 +312,442 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'HTTP lifecycle', passed: true }]);
   });
 
+  it('finds elements by role and name, by label and by their own text, the way a user would', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body><main>
+        <div class="actions">
+          <button aria-label="decrement" disabled>−</button>
+          <button aria-label="increment">+</button>
+          <button class="ghost">Reset</button>
+          <button hidden>Reset</button>
+        </div>
+        <div class="value">0</div>
+        <label for="size">Board size</label><input id="size" value="8">
+        <label class="item"><input type="checkbox"> <span>Buy milk</span></label>
+        <p class="empty">No tasks yet. Add your first one above.</p>
+        <p>Lon<mark>don</mark></p>
+        <div style="display: none"><button>Add</button></div>
+        <button>Add</button>
+        <script>
+          let count = 0;
+          const value = document.querySelector('.value');
+          const [dec, inc, reset] = document.querySelectorAll('.actions button');
+          const show = () => { value.textContent = String(count); dec.disabled = count === 0; };
+          inc.addEventListener('click', () => { count += 1; show(); });
+          dec.addEventListener('click', () => { count -= 1; show(); });
+          reset.addEventListener('click', () => { count = 0; show(); });
+          setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        <\/script>
+      </main></body></html>`,
+      [{
+        id: 'locators',
+        name: 'Locators',
+        steps: [
+          // A hyphen finds the minus sign, and the visible "+" finds a button named "increment".
+          { type: 'expectDisabled', by: { role: 'button', name: '-' }, disabled: true },
+          { type: 'click', by: { role: 'button', name: '+' } },
+          { type: 'click', by: { role: 'button', name: 'increment' } },
+          { type: 'expectText', selector: '.value', text: '2' },
+          { type: 'expectDisabled', by: { role: 'button', name: '−' }, disabled: false },
+          { type: 'expectCount', by: { role: 'button', name: 'Reset' }, count: 1 },
+          { type: 'click', by: { role: 'button', name: 'Reset' } },
+          { type: 'expectText', selector: '.value', text: '0' },
+          { type: 'expectValue', by: { label: 'Board size' }, value: '8' },
+          { type: 'expectValue', by: { role: 'textbox', label: 'Board size' }, value: '8' },
+          { type: 'click', by: { role: 'checkbox', name: 'Buy milk' } },
+          { type: 'expectChecked', by: { role: 'checkbox' } },
+          { type: 'expectExists', by: { text: 'No tasks yet. Add your first one above.' } },
+          { type: 'expectText', by: { role: 'mark' }, text: 'don' },
+          { type: 'expectCount', by: { role: 'button', name: 'Add' }, count: 1 },
+        ],
+      }] as any,
+    );
+
+    expect(results).toEqual([{ name: 'Locators', passed: true }]);
+  });
+
+  it('names the locator that found nothing, and counts what it finds', async () => {
+    const results = await runner.runFramework(
+      `<!doctype html><html><body>
+        <ul><li>Buy milk</li></ul>
+        <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script>
+      </body></html>`,
+      [
+        { id: 'missing', name: 'Missing button', steps: [{ type: 'click', by: { role: 'button', name: 'Save' } }] },
+        {
+          id: 'count',
+          name: 'Too few items',
+          steps: [{ type: 'waitForCount', by: { role: 'listitem' }, count: 2, timeoutMs: 100 }],
+        },
+        { id: 'second', name: 'Second item', steps: [{ type: 'expectText', by: { role: 'listitem' }, index: 1, text: 'x' }] },
+      ] as any,
+    );
+
+    expect(results).toEqual([
+      { name: 'Missing button', passed: false, error: 'button "Save" was not found', failureKind: 'assertion' },
+      {
+        name: 'Too few items',
+        passed: false,
+        error: 'listitem did not reach 2 matches before timeout. Last count: 1',
+        failureKind: 'assertion',
+      },
+      { name: 'Second item', passed: false, error: 'listitem #2 was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('reads a checkbox and text struck through by the element or an ancestor', async () => {
+    const page = (strike: boolean) => `<!doctype html><html><head><style>.done { text-decoration: line-through; }</style></head><body>
+      <ul><li><label><input type="checkbox"> <span>Buy milk</span></label> <button>Remove</button></li></ul>
+      <script>
+        const box = document.querySelector('input');
+        box.addEventListener('change', () => document.querySelector('li').classList.toggle('done', ${strike} && box.checked));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script>
+    </body></html>`;
+    const steps = [
+      { type: 'expectLineThrough', by: { role: 'listitem' }, expected: false },
+      { type: 'click', by: { role: 'checkbox' } },
+      { type: 'expectChecked', by: { role: 'checkbox' } },
+      { type: 'expectLineThrough', by: { role: 'listitem' } },
+      { type: 'click', by: { role: 'checkbox' } },
+      { type: 'expectChecked', by: { role: 'checkbox' }, expected: false },
+      { type: 'expectLineThrough', by: { role: 'listitem' }, expected: false },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'strike', name: 'Strike', steps }] as any))
+      .toEqual([{ name: 'Strike', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'strike', name: 'Strike', steps }] as any))
+      .toEqual([{
+        name: 'Strike',
+        passed: false,
+        error: 'listitem expected its text to be struck through',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('tells a highlighted element from its group once transitions end, and a stuck highlight from a real one', async () => {
+    const page = (stuck: boolean) => `<!doctype html><html><head><style>
+        .tab { background: transparent; color: #999; transition: background-color 150ms, color 150ms; }
+        .tab.active { background: #eee; color: #000; }
+      </style></head><body>
+      <nav><button class="tab active">One</button><button class="tab">Two</button><button class="tab">Three</button></nav>
+      <script>
+        const tabs = Array.from(document.querySelectorAll('.tab'));
+        tabs.forEach((tab) => tab.addEventListener('click', () => {
+          tabs.forEach((other) => { if (!${stuck} || other === tab) other.classList.toggle('active', other === tab); });
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'expectStandsOut', selector: '.tab', index: 0, among: { selector: '.tab' } },
+      { type: 'click', by: { role: 'button', name: 'Two' } },
+      { type: 'expectStandsOut', by: { role: 'button', name: 'Two' }, among: { by: { role: 'button' } } },
+    ];
+
+    expect(await runner.runFramework(page(false), [{ id: 'highlight', name: 'Highlight', steps }] as any))
+      .toEqual([{ name: 'Highlight', passed: true }]);
+    expect(await runner.runFramework(page(true), [{ id: 'highlight', name: 'Highlight', steps }] as any))
+      .toEqual([{
+        name: 'Highlight',
+        passed: false,
+        error: 'button "Two" looks the same as 1 other element of its group',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('reads a checkbox as mixed while it is indeterminate, and as checked only once it is not', async () => {
+    const page = (clearsMixed: boolean) => `<!doctype html><html><body>
+      <label><input type="checkbox" class="parent"> Parent</label>
+      <label><input type="checkbox" class="child"> Child</label>
+      <label><input type="checkbox" class="child"> Child two</label>
+      <script>
+        const parent = document.querySelector('.parent');
+        const children = Array.from(document.querySelectorAll('.child'));
+        children.forEach((child) => child.addEventListener('change', () => {
+          const count = children.filter((box) => box.checked).length;
+          parent.checked = count === children.length;
+          if (${clearsMixed} || count < children.length) parent.indeterminate = count > 0 && count < children.length;
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'click', by: { role: 'checkbox', name: 'Child' } },
+      { type: 'expectChecked', by: { role: 'checkbox', name: 'Parent' }, expected: 'mixed' },
+      { type: 'click', by: { role: 'checkbox', name: 'Child two' } },
+      { type: 'expectChecked', by: { role: 'checkbox', name: 'Parent' } },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'mixed', name: 'Mixed', steps }] as any))
+      .toEqual([{ name: 'Mixed', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'mixed', name: 'Mixed', steps }] as any))
+      .toEqual([{
+        name: 'Mixed',
+        passed: false,
+        error: 'checkbox "Parent" expected checked but was mixed',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('names an element\'s color by its family, whatever CSS syntax set it', async () => {
+    const page = `<!doctype html><html><head><style>
+        .a { background: #ef4444; } .b { background: oklch(0.77 0.17 65); } .c { background-color: rgb(34 197 94 / 0.8); }
+        .d { color: hsl(220 90% 55%); } .e { background: #888; }
+      </style></head><body>
+      <div class="a">a</div><div class="b">b</div><div class="c">c</div><div class="d">d</div><div class="e">e</div><div class="f">f</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'colors',
+        name: 'Colors',
+        steps: [
+          { type: 'expectColor', selector: '.a', hue: 'red' },
+          { type: 'expectColor', selector: '.b', hue: 'orange' },
+          { type: 'expectColor', selector: '.c', hue: 'green' },
+          { type: 'expectColor', selector: '.d', property: 'color', hue: 'blue' },
+          { type: 'expectColor', selector: '.e', hue: 'grey' },
+          { type: 'expectColor', selector: '.f', hue: 'transparent' },
+        ],
+      },
+      { id: 'wrong', name: 'Wrong', steps: [{ type: 'expectColor', selector: '.b', hue: 'green' }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Colors', passed: true },
+      { name: 'Wrong', passed: false, error: '.b expected background-color to be green but it was orange', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('finds the element that names a target in an id-reference attribute, whatever its id', async () => {
+    const page = (wired: boolean) => `<!doctype html><html><body>
+      <div role="combobox"><input type="text"></div>
+      <ul role="listbox"><li role="option" id="opt-a">Ada</li><li role="option" id="opt-b">Bea</li></ul>
+      <script>
+        const input = document.querySelector('input');
+        let active = -1;
+        input.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowDown') return;
+          active = (active + 1) % 2;
+          if (${wired}) document.querySelector('[role=combobox]').setAttribute('aria-activedescendant', ['opt-a', 'opt-b'][active]);
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'key', selector: 'input', key: 'ArrowDown' },
+      { type: 'key', selector: 'input', key: 'ArrowDown' },
+      { type: 'expectReferenced', by: { role: 'option' }, index: 1, attribute: 'aria-activedescendant' },
+      { type: 'expectReferenced', by: { role: 'option' }, index: 0, attribute: 'aria-activedescendant', expected: false },
+    ];
+
+    expect(await runner.runFramework(page(true), [{ id: 'ref', name: 'Ref', steps }] as any))
+      .toEqual([{ name: 'Ref', passed: true }]);
+    expect(await runner.runFramework(page(false), [{ id: 'ref', name: 'Ref', steps }] as any))
+      .toEqual([{
+        name: 'Ref',
+        passed: false,
+        error: 'option #2 expected an element\'s aria-activedescendant to name it',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('types a printable key into a text field unless the page cancels it, after the page handled the keydown', async () => {
+    const page = (cancels: boolean) => `<!doctype html><html><body>
+      <input type="text"><ul class="chips"></ul>
+      <script>
+        const input = document.querySelector('input');
+        const add = (label) => { if (label.trim()) document.querySelector('.chips').insertAdjacentHTML('beforeend', '<li>' + label.trim() + '</li>'); };
+        input.addEventListener('keydown', (event) => {
+          if (${cancels} && event.key === ',') { event.preventDefault(); add(input.value); input.value = ''; }
+        });
+        input.addEventListener('input', () => {
+          if (!${cancels} && input.value.endsWith(',')) { add(input.value.slice(0, -1)); input.value = ''; }
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const steps = [
+      { type: 'setValue', selector: 'input', value: 'Design team' },
+      { type: 'key', selector: 'input', key: ',' },
+      { type: 'expectCount', by: { text: 'Design team' }, count: 1 },
+      { type: 'expectValue', selector: 'input', value: '' },
+    ];
+
+    for (const cancels of [true, false]) {
+      expect(await runner.runFramework(page(cancels), [{ id: 'comma', name: 'Comma', steps }] as any))
+        .withContext(cancels ? 'keydown handler' : 'input handler')
+        .toEqual([{ name: 'Comma', passed: true }]);
+    }
+  });
+
+  it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
+    const page = `<!doctype html><html><body><div class="list">
+      <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>
+      <div class="node"><div class="bubble"><p>Root</p><button>Reply</button></div>
+        <div class="children"><div class="node"><div class="bubble"><p>Child</p><button>Reply</button></div></div></div>
+      </div></div>
+      <script>
+        document.querySelectorAll('button').forEach((button) => button.addEventListener('click', () => {
+          button.textContent = 'Replying';
+        }));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'near',
+        name: 'Near',
+        steps: [
+          { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root' } } },
+          { type: 'expectCount', by: { role: 'button', name: 'Replying', near: { text: 'Root' } }, count: 1 },
+          { type: 'expectCount', by: { role: 'button', name: 'Reply', near: { text: 'Child' } }, count: 1 },
+          { type: 'expectCount', by: { role: 'button', name: 'Reply', near: { text: 'Seed' } }, count: 1 },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Gone' } } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Near', passed: true },
+      { name: 'Missing', passed: false, error: 'button "Reply" near text "Gone" was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('picks, of several places a text shows, the one closest to a match', async () => {
+    const page = `<!doctype html><html><body>
+      <ul class="products">
+        <li><span>Keyboard</span> <button>Add to cart</button></li>
+        <li><span>Mouse</span> <button>Add to cart</button></li>
+      </ul>
+      <ul class="cart">
+        <li class="row"><span>Mouse</span> <button>Remove</button></li>
+        <li class="row"><span>Keyboard</span> <button>Remove</button></li>
+      </ul>
+      <script>
+        document.querySelectorAll('.cart button').forEach((button) => button.addEventListener('click', () => button.closest('li').remove()));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [{
+      id: 'closest',
+      name: 'Closest',
+      steps: [
+        { type: 'click', by: { role: 'button', name: 'Remove', near: { text: 'Keyboard' } } },
+        { type: 'expectCount', selector: '.cart .row', count: 1 },
+        { type: 'expectText', selector: '.cart .row', text: 'Mouse', match: 'contains' },
+        { type: 'expectCount', by: { role: 'button', name: 'Add to cart', near: { text: 'Mouse' } }, count: 1 },
+      ],
+    }] as any);
+
+    expect(results).toEqual([{ name: 'Closest', passed: true }]);
+  });
+
+  it('reads accessible names, and the live region around an element however its markup declares it', async () => {
+    const page = `<!doctype html><html><body>
+      <ul><li><input type="checkbox" aria-label="Mark Milk complete"> <span>Milk</span> <button aria-label="Edit Milk">Edit</button>
+        <button>Remove</button></li></ul>
+      <p role="status" class="left">1 item left</p>
+      <div aria-live="polite" aria-atomic="true" class="undo"><span>Removed Eggs</span> <button>Undo</button></div>
+      <div aria-live="assertive"><button>Retry</button></div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'names',
+        name: 'Names',
+        steps: [
+          { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk' },
+          { type: 'expectName', by: { role: 'button', name: 'Edit' }, text: 'Edit Milk', match: 'equals' },
+          { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite', atomic: true },
+          { type: 'expectLiveRegion', by: { role: 'button', name: 'Undo' }, politeness: 'polite', atomic: true },
+        ],
+      },
+      { id: 'unnamed', name: 'Unnamed', steps: [{ type: 'expectName', by: { role: 'button', name: 'Remove' }, text: 'Milk' }] },
+      { id: 'loud', name: 'Loud', steps: [{ type: 'expectLiveRegion', by: { role: 'button', name: 'Retry' }, politeness: 'polite' }] },
+      { id: 'none', name: 'None', steps: [{ type: 'expectLiveRegion', by: { text: 'Milk' } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Names', passed: true },
+      { name: 'Unnamed', passed: false, error: 'button "Remove" expected an accessible name with "Milk" but it was "Remove"', failureKind: 'assertion' },
+      { name: 'Loud', passed: false, error: 'button "Retry" sits in a live region that is assertive, expected polite', failureKind: 'assertion' },
+      { name: 'None', passed: false, error: 'text "Milk" is not inside a live region', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('tells a reply indented under its comment from one left at the same level', async () => {
+    const page = (indent: number) => `<!doctype html><html><body>
+      <div class="node"><p>Root</p><div style="margin-left: ${indent}px"><p>Child</p></div></div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const steps = [{ type: 'expectIndented', by: { text: 'Child' }, than: { by: { text: 'Root' } } }];
+
+    expect(await runner.runFramework(page(16), [{ id: 'indent', name: 'Indent', steps }] as any))
+      .toEqual([{ name: 'Indent', passed: true }]);
+    expect(await runner.runFramework(page(0), [{ id: 'indent', name: 'Indent', steps }] as any))
+      .toEqual([{
+        name: 'Indent',
+        passed: false,
+        error: 'text "Child" starts 0px right of text "Root"; expected it indented further',
+        failureKind: 'assertion',
+      }]);
+  });
+
+  it('gives each check its own localStorage, filled by mockStorage before the preview boots', async () => {
+    const page = `<!doctype html><html><head><script>
+        window.startTheme = localStorage.getItem('theme') || 'light';
+      <\/script></head><body><button>Toggle</button><p class="theme"></p><script>
+        const show = () => { document.querySelector('.theme').textContent = window.startTheme; };
+        document.querySelector('button').addEventListener('click', () => {
+          window.startTheme = window.startTheme === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('theme', window.startTheme);
+          show();
+        });
+        show();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'saved',
+        name: 'Saved',
+        steps: [
+          { type: 'expectStorage', key: 'theme' },
+          { type: 'click', selector: 'button' },
+          { type: 'expectStorage', key: 'theme', value: 'dark' },
+        ],
+      },
+      {
+        id: 'restored',
+        name: 'Restored',
+        steps: [
+          { type: 'mockStorage', entries: { theme: 'dark' } },
+          { type: 'expectText', selector: '.theme', text: 'dark' },
+          { type: 'expectStorage', key: 'theme', value: 'light' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Saved', passed: true },
+      { name: 'Restored', passed: false, error: 'localStorage "theme" expected "light" but held "dark"', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('fixes Math.random before the preview boots when a check asks for it, repeating the values in turn', async () => {
+    const page = `<!doctype html><html><head><script>
+        window.drawn = [Math.random(), Math.random(), Math.random()];
+      <\/script></head><body><p class="drawn"></p><script>
+        document.querySelector('.drawn').textContent = window.drawn.join(' ');
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'seeded',
+        name: 'Seeded',
+        steps: [
+          { type: 'mockRandom', values: [0.55, 0.1] },
+          { type: 'expectText', selector: '.drawn', text: '0.55 0.1 0.55' },
+        ],
+      },
+      { id: 'unseeded', name: 'Unseeded', steps: [{ type: 'expectNoText', selector: '.drawn', text: '0.55 0.1 0.55' }] },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Seeded', passed: true }, { name: 'Unseeded', passed: true }]);
+  });
+
   it('records mocked fetch requests and resolves their configured response', async () => {
     const results = await runner.runFramework(
       `<!doctype html><html><body>
@@ -551,6 +987,54 @@ describe('OpaqueDomCheckRunner', () => {
     });
   }
 
+  // Workspaces where App imports other files, as the snake game imports its engine.
+  const reactWorkspaces: Record<string, Record<string, string>> = {
+    'a helper module and types imported over several lines': {
+      'src/App.tsx': `
+        import React, { useState } from 'react';
+        import './App.css';
+        import {
+          next,
+          type Count,
+        } from './counter';
+        export default function App() {
+          const [n, setN] = useState<Count>(0);
+          return <main><button className="go" onClick={() => setN(next)}>Go</button><p className="out">{n}</p></main>;
+        }`,
+      'src/App.css': '.out { color: inherit; }',
+      'src/counter.ts': `
+        export type Count = number;
+        const STEP = 1;
+        export function next(value: Count): Count { return value + STEP; }`,
+    },
+    'default, renamed and namespace imports from nested files sharing a React import': {
+      'src/App.tsx': `
+        import { memo, useState } from 'react';
+        import Out from './components/Out';
+        import Display from './components/Out';
+        import { step as advance } from './lib/math';
+        import * as labels from './lib/labels';
+        const Shell = memo(({ children }: { children: any }) => <main>{children}</main>);
+        export default function App() {
+          const [n, setN] = useState(0);
+          return <Shell><button className="go" onClick={() => setN((v) => advance(v))}>{labels.GO}</button><Out n={n} />{Display === Out ? null : 'mismatch'}</Shell>;
+        }`,
+      'src/components/Out.tsx': `
+        import { memo } from 'react';
+        const Out = memo(({ n }: { n: number }) => <p className="out">{n}</p>);
+        export default Out;`,
+      'src/lib/math.ts': `export function step(value: number) { return value + 1; }`,
+      'src/lib/labels.ts': `export const GO = 'Go';`,
+    },
+  };
+
+  for (const [label, files] of Object.entries(reactWorkspaces)) {
+    it(`runs a React preview with ${label}`, async () => {
+      const html = makeReactPreviewHtml(files, window.location.origin);
+      expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+    });
+  }
+
   const vueTemplate = `<main><button class="go" @click="inc">Go</button><p class="out">{{ n }}</p></main>`;
   const vueShapes: Record<string, string> = {
     'the Options API': `
@@ -615,6 +1099,29 @@ describe('OpaqueDomCheckRunner', () => {
       expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
     });
   }
+
+  it('runs a Vue workspace of several files in the sandboxed frame', async () => {
+    const html = makeVuePreviewHtml({
+      'src/main.ts': "import { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\ncreateApp(App).mount('#app');",
+      'src/App.css': '.out { font-weight: 600; }',
+      'src/App.vue': `
+        <template><main><Counter v-model="n" /><p class="out">{{ show(n) }}</p></main></template>
+        <script setup lang="ts">
+        import { ref } from 'vue';
+        import Counter from './components/Counter.vue';
+        import { show } from './show';
+        const n = ref(0);
+        </script>`,
+      'src/components/Counter.vue': `
+        <template><button class="go" @click="model += 1">Go</button></template>
+        <script setup lang="ts">
+        const model = defineModel<number>({ required: true });
+        </script>
+        <style scoped>.go { cursor: pointer; }</style>`,
+      'src/show.ts': 'export const show = (value: number): string => String(value);',
+    }, window.location.origin);
+    expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+  });
 
   it('removes the frame and rejects promptly when a run is cancelled', async () => {
     const run = runner.runFramework(

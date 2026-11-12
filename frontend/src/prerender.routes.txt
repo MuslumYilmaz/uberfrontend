@@ -5,6 +5,7 @@
 /angular/coding/angular-chessboard-click-highlight
 /angular/coding/angular-chips-input-autocomplete
 /angular/coding/angular-contact-form-starter
+/angular/coding/angular-control-value-accessor-stepper
 /angular/coding/angular-counter-starter
 /angular/coding/angular-debounced-search
 /angular/coding/angular-dynamic-counter-buttons
@@ -29,6 +30,7 @@
 /angular/coding/angular-transfer-list
 /angular/debug/ng-debug-counter-change-detection
 /angular/debug/ng-debug-fleet-status-bug-reports
+/angular/debug/ng-debug-zoneless-shipment-board
 /angular/interview-questions
 /angular/trivia/angular-appmodule-standalone-changes
 /angular/trivia/angular-change-detection-strategies

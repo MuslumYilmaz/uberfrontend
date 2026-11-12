@@ -53,7 +53,8 @@ A push to `dev` runs no workflow; `dev` is first tested in CI by the open dev→
 |---|---|---|
 | Frontend Unit Verify | PR, main | `verify:unit-and-content`: the pre-push set with `lint:questions:check`, which also runs `gen-data-version.mjs --check` |
 | Backend Verify | PR, main | `verify:ci`: ESLint, `generate:interview-content:check`, `validate:interview-content`, the full Jest suite |
-| Playwright Critical | PR, main | `lint:questions`, `lint:design-system:strict`, build, `perf:contract:strict`, critical e2e, then `test:e2e:react:prod`, `test:e2e:framework-catalog:prod`, `test:e2e:public:prod`, `test:e2e:incidents:prod` |
+| Playwright Critical | PR, main | `lint:questions`, `lint:design-system:strict`, build, `perf:contract:strict`, critical e2e, then `test:e2e:react:prod`, `test:e2e:public:prod`, `test:e2e:incidents:prod` |
+| Playwright Framework Catalog | PR, main | its own build, then `test:e2e:framework-catalog:prod`: every framework task's official solution and known wrong solutions against its checks (about 180 cases, 25 minutes, so it runs beside Critical) |
 | Playwright Extended | PR, main | `test:e2e:extended:prod` (SEO SSR, editorial copy, labs, premium exposure) and `test:e2e:extended` (mobile layout, accessibility, offline replay) |
 | UI Regression | PR only | Linux screenshots (`ui-visual.spec.ts`, 138 images) and three-browser SSR style/keyboard checks |
 | Interview mocked / production full-stack, Cross-browser Gate | PR, main, when backend or shared paths change | `interview-mode.spec.ts` and the production-config lifecycle in Chromium, Firefox and WebKit |
@@ -71,7 +72,7 @@ UI Regression and the Interview matrices use `scripts/ci-change-scope.mjs`: any 
 ## Gaps: passes locally, fails in CI
 1. **Data version.** `lint:questions:hook` is `lint:questions:check` without `gen-data-version.mjs --check`, and the pre-push SEO guard runs `gen:data`, which rewrites `cdn/data-version.json` in the working tree after the commits exist. The push succeeds and Frontend Unit Verify fails with `[gen-data] ERROR: data version is stale.`, hiding any Karma or content failure behind it.
 2. **Perf contract.** Pre-push runs `perf:contract -- --no-write`, where overruns are warnings; Playwright Critical runs `--strict`, where any warning fails.
-3. **Suites no hook runs.** Both Extended suites, the four production e2e steps of Playwright Critical, UI Regression, the Interview cross-browser matrices and Full-stack Smoke.
+3. **Suites no hook runs.** Both Extended suites, the three production e2e steps of Playwright Critical, Playwright Framework Catalog, UI Regression, the Interview cross-browser matrices and Full-stack Smoke.
 4. **Backend tests.** Hooks run related tests only; CI runs the full suite and ESLint.
 5. **Unrelated failures.** New security advisories or an expired allowlist entry fail any pull request; WebKit problems surface up to a week late through the Monday schedule.
 

@@ -1,5 +1,8 @@
 import {
   buildLockedPreviewForCoding,
+  CODING_PREMIUM_UNLOCK_DESCRIPTION,
+  CODING_PREVIEW_ONLY_UNLOCK_DESCRIPTION,
+  CODING_SMOKE_CHECK_UNLOCK_DESCRIPTION,
   CodingLockedPreviewQuestion,
   buildLockedPreviewForIncident,
   buildLockedPreviewForTradeoff,
@@ -96,6 +99,16 @@ describe('locked preview builder', () => {
     expect(withCase?.unlockDescription).toBe(
       'Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion. It opens as a case: work an example by hand, mark the lines that are wrong and say why without running the code, then compare with a sample answer and fix it.',
     );
+
+    // A framework task promises only the checks it has, even where an authored preview repeats the generic line.
+    const framework = { ...q, technology: undefined };
+    const unlockFor = (checkCoverage: 'none' | 'smoke' | 'full', tech: string) =>
+      buildLockedPreviewForCoding({ ...framework, checkCoverage }, { candidates, tech, kind: 'coding' })?.unlockDescription;
+    expect(unlockFor('smoke', 'react')).toBe(CODING_SMOKE_CHECK_UNLOCK_DESCRIPTION);
+    expect(unlockFor('none', 'angular')).toBe(CODING_PREVIEW_ONLY_UNLOCK_DESCRIPTION);
+    expect(unlockFor('full', 'vue')).toBe(CODING_PREMIUM_UNLOCK_DESCRIPTION);
+    // A JavaScript task's tests always run, whatever a caller passes.
+    expect(unlockFor('none', 'javascript')).toBe(CODING_PREMIUM_UNLOCK_DESCRIPTION);
   });
 
   it('builds a trivia preview without relying on answers', () => {

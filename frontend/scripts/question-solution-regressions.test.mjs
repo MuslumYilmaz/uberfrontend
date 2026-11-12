@@ -496,6 +496,27 @@ async function testDebounceExample() {
   }
 }
 
+// Approach 2 keys a nested Map by each argument; its result key used to be the string 'result', so memoized('result')
+// after memoized() read the cached value as if it were the next map.
+async function testMemoizeNestedMapKey() {
+  const approach = getQuestion('js-memoize-function').solutionBlock.approaches.find((entry) => entry.decisionGraphKey === 'approach2');
+  for (const language of ['js', 'ts']) {
+    const source = language === 'ts'
+      ? ts.transpileModule(approach.codeTs, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText
+      : approach.codeJs;
+    const memoize = (await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}#memoize-a2-${language}`)).default;
+    let calls = 0;
+    const count = memoize((...args) => {
+      calls += 1;
+      return args.length;
+    });
+    assert.equal(count(), 0);
+    assert.equal(count('result'), 1, `${language}: an argument named 'result' must not reach the cached result`);
+    assert.equal(count('result'), 1);
+    assert.equal(calls, 2);
+  }
+}
+
 async function testTakeLatestCleanup() {
   for (const language of ['js', 'ts']) {
     const takeLatest = await importSolution('js-take-latest', language);
@@ -700,6 +721,7 @@ await testMyBind();
 await testMyInstanceOf();
 await testDeferredExamples();
 await testDebounceExample();
+await testMemoizeNestedMapKey();
 await testTakeLatestCleanup();
 await testStreamToTextCleanup();
 await testFetchJsonMock();

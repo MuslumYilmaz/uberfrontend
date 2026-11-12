@@ -141,6 +141,7 @@ app-coding-tech-kind-tabs {
 .fa-context-link:focus-visible,
 .fa-discovery-section__links a:focus-visible,
 .fa-mobile-filter-trigger:focus-visible,
+.fa-free-only:focus-visible,
 .fa-sort__trigger:focus-visible,
 .fa-filter-panel__close:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--fa-accent) 72%, var(--ink));
@@ -553,7 +554,12 @@ app-coding-tech-kind-tabs {
   white-space: nowrap;
 }
 
-.fa-mobile-filter-trigger.is-active {
+.fa-free-only {
+  white-space: nowrap;
+}
+
+.fa-mobile-filter-trigger.is-active,
+.fa-free-only.is-active {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--fa-accent) 68%, var(--border));
   background: color-mix(in srgb, var(--surface-2) 84%, rgba(var(--fa-accent-rgb), 0.18));
@@ -602,6 +608,13 @@ app-coding-tech-kind-tabs {
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.5);
   padding: 8px;
   z-index: 10;
+  max-width: calc(100vw - 32px);
+}
+
+// Opened toward the right when the trigger sits near the start of the row (phones wrap it there).
+.fa-sort__menu--start {
+  left: 0;
+  right: auto;
 }
 
 .fa-sort__item {

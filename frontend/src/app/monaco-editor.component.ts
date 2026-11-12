@@ -1,10 +1,12 @@
 // src/app/monaco-editor.component.ts
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
-  AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges,
+  AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges,
   OnDestroy, Output, PLATFORM_ID, SimpleChanges, ViewChild, inject
 } from '@angular/core';
+import { EDITOR_RXJS_TYPINGS } from './generated/editor-rxjs-typings';
 import { createTrackedMonacoWorker } from './core/utils/monaco-worker-tracker';
+import { STYLESHEET_LOADER } from './core/utils/stylesheet-loader';
 import { userVisibleFailures } from './core/utils/user-visible-failure-reporter';
 
 const DEFAULT_EDITOR_THEME = 'fa-dark';
@@ -78,11 +80,19 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Output() ready = new EventEmitter<void>();
   @Output() lineClick = new EventEmitter<MonacoLineClickEvent>();
   @Output() loadFailed = new EventEmitter<MonacoLoadError>();
+  /** Ctrl+Enter (Cmd+Enter on a Mac) inside this editor; the workspace runs its tests or checks. */
+  @Output() runShortcut = new EventEmitter<void>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
+  /**
+   * The workspace's other files by path. TypeScript gets the .ts and .tsx ones, so a type that the open file imports
+   * from a sibling resolves instead of falling to the `declare module "*"` stub (TS2709).
+   */
+  @Input() siblingFiles: Readonly<Record<string, string>> | null = null;
 
   // ADD
   private editor!: any;
   private model?: any;                  // NEW: keep a handle to the model
+  private readonly siblingLibs = new Map<string, { content: string; lib?: { dispose(): void } }>();
   private decorationIds: string[] = [];
   private suppressNextModelUpdate = false;
   private disposed = false;
@@ -94,6 +104,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private static monacoReady = false;
   private static requestedLanguageModules = new Set<string>();
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly zone = inject(NgZone);
+  private readonly loadStylesheet = inject(STYLESHEET_LOADER);
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
     const baseExt =
@@ -161,7 +173,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         (this.container.nativeElement.parentElement as HTMLElement)?.classList.add('fixed-height');
       }
 
-      // Create the model first with a deterministic URI/extension.
+      // Create the model first with a deterministic URI/extension, after the files it may import from.
+      this.syncSiblingLibs();
       this.createOrSwapModel(langNorm, this.code ?? '');
 
       // Then create the editor bound to that model.
@@ -184,6 +197,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           }, whenSuggest);
         }
       } catch { }
+
+      // Ctrl/Cmd+Enter runs the workspace. An action, unlike addCommand, is bound to this editor only: a page with a
+      // code and a tests editor keeps each shortcut on the editor that has the focus.
+      if (this.runShortcut.observed) {
+        const monaco = (window as any).monaco;
+        this.editor.addAction?.({
+          id: 'fa.runWorkspace',
+          label: 'Run tests or checks',
+          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter],
+          run: () => this.zone.run(() => this.runShortcut.emit()),
+        });
+      }
 
       // Mirror -> @Output
       this.editor.onDidChangeModelContent?.(() => {
@@ -246,6 +271,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.editor && !this.model) return;
+
+    // Before a model swap, so the file that opens leaves the siblings and the file that closes joins them.
+    if (changes['siblingFiles'] || changes['modelKey']) this.syncSiblingLibs();
 
     if (changes['modelKey'] && !changes['modelKey'].isFirstChange()) {
       const langNorm = this.normalizeLanguage(this.language);
@@ -316,6 +344,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     try { this.resizeObs?.disconnect(); } catch { }
     try { this.editor?.dispose?.(); } catch { }
     try { this.model?.dispose?.(); } catch { }  // keep this
+    for (const { lib } of this.siblingLibs.values()) {
+      try { lib?.dispose(); } catch { }
+    }
+    this.siblingLibs.clear();
   }
 
   getValue(): string {
@@ -529,6 +561,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   private extractLoadUrl(error: any, moduleId?: string): string | undefined {
+    if (typeof error?.url === 'string' && error.url) return error.url;
     const target = error?.target || error?.currentTarget || error?.srcElement;
     const targetSrc = typeof target?.src === 'string' ? target.src : '';
     if (targetSrc) return targetSrc;
@@ -624,6 +657,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               // base twice downloads a module a second time when the first
               // attempt fails, including the ones Monaco loads later.
               paths: { vs: [this.vsBasePath, this.vsBasePath] },
+              // ensureMonaco loads editor.main.css itself (see below).
+              'vs/css': { disabled: true },
               onError: (error: unknown) => fail(error),
             });
             req.configuredForVs = true;
@@ -701,6 +736,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export function ContentChild(token: any, opts?: any): any;",
               "  export function ContentChildren(token: any, opts?: any): any;",
               "  export class ElementRef<T = any> { constructor(nativeElement: T); nativeElement: T; }",
+              "  export class QueryList<T = any> implements Iterable<T> { readonly length: number; readonly first: T; readonly last: T; readonly changes: any; toArray(): T[]; get(index: number): T | undefined; map<U>(fn: (item: T, index: number) => U): U[]; forEach(fn: (item: T, index: number) => void): void; find(fn: (item: T) => boolean): T | undefined; [Symbol.iterator](): Iterator<T>; }",
+              "  export abstract class Renderer2 { createElement(name: string, namespace?: string | null): any; appendChild(parent: any, child: any): void; removeChild(parent: any, oldChild: any): void; setAttribute(el: any, name: string, value: string): void; removeAttribute(el: any, name: string): void; addClass(el: any, name: string): void; removeClass(el: any, name: string): void; setStyle(el: any, style: string, value: any): void; removeStyle(el: any, style: string): void; setProperty(el: any, name: string, value: any): void; listen(target: any, eventName: string, callback: (event: any) => boolean | void): () => void; }",
               "  export interface SimpleChange { previousValue: any; currentValue: any; firstChange: boolean; isFirstChange(): boolean; }",
               "  export type SimpleChanges = { [propName: string]: SimpleChange };",
               "  export interface PipeTransform { transform(value: any, ...args: any[]): any; }",
@@ -724,8 +761,34 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export function Self(): any;",
               "  export function Host(): any;",
               "  export function forwardRef(fn: () => any): any;",
+              // Signals and the signal-based component API, which current Angular code uses throughout.
+              "  export interface Signal<T> { (): T; }",
+              "  export interface WritableSignal<T> extends Signal<T> { set(value: T): void; update(fn: (value: T) => T): void; asReadonly(): Signal<T>; }",
+              "  export function signal<T>(initialValue: T, options?: any): WritableSignal<T>;",
+              "  export function computed<T>(computation: () => T, options?: any): Signal<T>;",
+              "  export function effect(fn: (onCleanup: (cleanup: () => void) => void) => void, options?: any): { destroy(): void };",
+              "  export function untracked<T>(fn: () => T): T;",
+              "  export interface InputSignal<T> extends Signal<T> {}",
+              "  export interface ModelSignal<T> extends WritableSignal<T> {}",
+              "  export interface OutputEmitterRef<T> { emit(value: T): void; subscribe(fn: (value: T) => void): { unsubscribe(): void }; }",
+              "  export const input: { <T>(initialValue?: T, opts?: any): InputSignal<T>; required<T>(opts?: any): InputSignal<T> };",
+              "  export const model: { <T>(initialValue?: T, opts?: any): ModelSignal<T>; required<T>(opts?: any): ModelSignal<T> };",
+              "  export function output<T = void>(opts?: any): OutputEmitterRef<T>;",
+              "  export const viewChild: { <T = any>(locator: any, opts?: any): Signal<T | undefined>; required<T = any>(locator: any, opts?: any): Signal<T> };",
+              "  export function viewChildren<T = any>(locator: any, opts?: any): Signal<ReadonlyArray<T>>;",
+              "  export const contentChild: { <T = any>(locator: any, opts?: any): Signal<T | undefined>; required<T = any>(locator: any, opts?: any): Signal<T> };",
+              "  export function contentChildren<T = any>(locator: any, opts?: any): Signal<ReadonlyArray<T>>;",
+              "  export class DestroyRef { onDestroy(callback: () => void): () => void; }",
+              "  export enum ChangeDetectionStrategy { OnPush = 0, Default = 1 }",
+              "  export class ChangeDetectorRef { markForCheck(): void; detectChanges(): void; detach(): void; reattach(): void; }",
+              "  export class NgZone { run<T>(fn: () => T): T; runOutsideAngular<T>(fn: () => T): T; }",
+              "  export function afterNextRender(fn: () => void, options?: any): { destroy(): void };",
+              "  export function provideZoneChangeDetection(options?: any): any;",
+              "  export function provideZonelessChangeDetection(): any;",
+              "  export function provideExperimentalZonelessChangeDetection(): any;",
+              "  export const VERSION: { full: string; major: string; minor: string; patch: string };",
               "}",
-            ].join('\\n');
+            ].join('\n');
 
             ts.typescriptDefaults.addExtraLib(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
@@ -793,39 +856,89 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare module '@angular/forms' {",
               "  export type ValidationErrors = Record<string, any> | null;",
               "  export type ValidatorFn = (control: AbstractControl<any>) => ValidationErrors;",
+              "  export type FormControlStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';",
+              "  export interface FormControlOptions { nonNullable?: boolean; validators?: ValidatorFn | ValidatorFn[] | null; asyncValidators?: any; updateOn?: 'change' | 'blur' | 'submit'; }",
               "  export abstract class AbstractControl<T = any> {",
               "    readonly value: T;",
+              "    readonly status: FormControlStatus;",
               "    readonly valid: boolean;",
               "    readonly invalid: boolean;",
+              "    readonly pending: boolean;",
+              "    readonly disabled: boolean;",
+              "    readonly enabled: boolean;",
               "    readonly touched: boolean;",
+              "    readonly untouched: boolean;",
+              "    readonly dirty: boolean;",
+              "    readonly pristine: boolean;",
               "    readonly errors: ValidationErrors;",
+              "    readonly valueChanges: any;",
+              "    readonly statusChanges: any;",
+              "    readonly events: any;",
+              "    setValue(value: T, options?: any): void;",
+              "    patchValue(value: any, options?: any): void;",
+              "    reset(value?: any, options?: any): void;",
+              "    getRawValue(): any;",
+              "    get(path: string | Array<string | number>): AbstractControl<any> | null;",
+              "    hasError(errorCode: string, path?: string | Array<string | number>): boolean;",
+              "    getError(errorCode: string, path?: string | Array<string | number>): any;",
+              "    disable(options?: any): void;",
+              "    enable(options?: any): void;",
+              "    markAsTouched(options?: any): void;",
+              "    markAsUntouched(options?: any): void;",
+              "    markAsDirty(options?: any): void;",
+              "    markAsPristine(options?: any): void;",
               "    markAllAsTouched(): void;",
+              "    updateValueAndValidity(options?: any): void;",
+              "    setErrors(errors: ValidationErrors, options?: any): void;",
               "  }",
               "  export class FormControl<T = any> extends AbstractControl<T> {",
-              "    constructor(value: T, validators?: ValidatorFn | ValidatorFn[]);",
-              "    setValue(value: T): void;",
-              "    reset(value?: T): void;",
+              "    constructor(value: T, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null, asyncValidator?: any);",
               "  }",
               "  export class FormGroup<T extends Record<string, any> = any> extends AbstractControl<T> {",
               "    controls: { [K in keyof T]: AbstractControl<T[K]> };",
-              "    constructor(controls: { [key: string]: AbstractControl<any> | any[] });",
-              "    get(path: string): AbstractControl<any> | null;",
-              "    reset(value?: Partial<T>): void;",
+              "    constructor(controls: { [key: string]: AbstractControl<any> | any[] }, validatorOrOpts?: any);",
+              "  }",
+              "  export class FormArray<T = any> extends AbstractControl<T[]> {",
+              "    controls: AbstractControl<T>[];",
+              "    readonly length: number;",
+              "    constructor(controls: AbstractControl<T>[], validatorOrOpts?: any);",
+              "    at(index: number): AbstractControl<T>;",
+              "    push(control: AbstractControl<T>): void;",
+              "    insert(index: number, control: AbstractControl<T>): void;",
+              "    removeAt(index: number): void;",
+              "    clear(): void;",
               "  }",
               "  export class FormBuilder {",
-              "    group(controls: { [key: string]: any[] | AbstractControl<any> }): FormGroup<any>;",
-              "    control<T>(value: T, validators?: ValidatorFn | ValidatorFn[]): FormControl<T>;",
+              "    readonly nonNullable: FormBuilder;",
+              "    group(controls: { [key: string]: any }, options?: any): FormGroup<any>;",
+              "    control<T>(value: T, validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null): FormControl<T>;",
+              "    array(controls: any[], validatorOrOpts?: any): FormArray<any>;",
               "  }",
+              "  export class NonNullableFormBuilder extends FormBuilder {}",
               "  export class Validators {",
               "    static required: ValidatorFn;",
+              "    static requiredTrue: ValidatorFn;",
               "    static email: ValidatorFn;",
+              "    static nullValidator: ValidatorFn;",
               "    static minLength(min: number): ValidatorFn;",
               "    static maxLength(max: number): ValidatorFn;",
+              "    static min(min: number): ValidatorFn;",
+              "    static max(max: number): ValidatorFn;",
+              "    static pattern(pattern: string | RegExp): ValidatorFn;",
+              "    static compose(validators: Array<ValidatorFn | null>): ValidatorFn | null;",
               "  }",
+              "  export interface ControlValueAccessor {",
+              "    writeValue(value: any): void;",
+              "    registerOnChange(fn: any): void;",
+              "    registerOnTouched(fn: any): void;",
+              "    setDisabledState?(isDisabled: boolean): void;",
+              "  }",
+              "  export const NG_VALUE_ACCESSOR: any;",
+              "  export const NG_VALIDATORS: any;",
               "  export class ReactiveFormsModule {}",
               "  export class FormsModule {}",
               "}",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             mAny.__faAngularFormsLib = true;
@@ -836,18 +949,34 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare module '@angular/common/http' {",
               "  export class HttpClient {",
               "    constructor(handler: any);",
-              "    post<T = any>(url: string, body: any): any;",
+              "    get<T = any>(url: string, options?: any): any;",
+              "    post<T = any>(url: string, body: any, options?: any): any;",
+              "    put<T = any>(url: string, body: any, options?: any): any;",
+              "    patch<T = any>(url: string, body: any, options?: any): any;",
+              "    delete<T = any>(url: string, options?: any): any;",
               "  }",
+              "  export function provideHttpClient(...features: any[]): any;",
+              "  export function withFetch(): any;",
+              "  export function withInterceptors(interceptors: any[]): any;",
+              "  export class HttpErrorResponse { readonly status: number; readonly statusText: string; readonly message: string; readonly error: any; readonly url: string | null; }",
               "  export class HttpClientModule {}",
               "  export class HttpResponse<T = any> { constructor(init: { status?: number; body?: T }); status: number; body: T; }",
               "  export class HttpRequest<T = any> { constructor(method: string, url: string, body?: T); }",
               "  export type HttpEvent<T = any> = HttpResponse<T>;",
               "  export abstract class HttpBackend { handle(req: HttpRequest<any>): any; }",
               "}",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             mAny.__faAngularHttpLib = true;
+          }
+
+          if (!mAny.__faRxjsLib) {
+            // Generated from the installed typings: without it every rxjs import is `any`, so generic calls such as
+            // `new Subject<string>()` and types such as `Observable<User[]>` show as errors in correct code.
+            ts.typescriptDefaults.addExtraLib(EDITOR_RXJS_TYPINGS, 'file:///node_modules/rxjs/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(EDITOR_RXJS_TYPINGS, 'file:///node_modules/rxjs/index.d.ts');
+            mAny.__faRxjsLib = true;
           }
 
           if (!mAny.__faTestLib) {
@@ -860,7 +989,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare const afterEach: (fn: () => void) => void;",
               "declare const beforeAll: (fn: () => void) => void;",
               "declare const afterAll: (fn: () => void) => void;",
-            ].join('\\n');
+              "declare function useFakeTimers(): void;",
+              "declare function useRealTimers(): void;",
+              "declare function advanceTimersByTime(ms: number): void;",
+              "declare function advanceTimersByTimeAsync(ms: number): Promise<void>;",
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
             mAny.__faTestLib = true;
@@ -874,13 +1007,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare var process: { env: Record<string, string | undefined> };",
               "declare var __dirname: string;",
               "declare var __filename: string;",
-            ].join('\\n');
+            ].join('\n');
             ts.typescriptDefaults.addExtraLib(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
             mAny.__faNodeShimLib = true;
           }
 
-              succeed();
+              // If the stylesheet failed, the load has already failed and succeed() does nothing.
+              void stylesheetLoaded.then(succeed);
             } catch (error) {
               fail(error, 'Monaco editor setup failed.');
             }
@@ -889,6 +1023,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           fail(error, 'Monaco editor bootstrap failed.');
         }
       };
+
+      // Monaco's own CSS plugin requests editor.main.css only once, so one
+      // dropped request left the visitor with the plain text area. The
+      // stylesheet is loaded here instead, alongside the scripts, with one
+      // retry; the editor is created only once it has loaded.
+      const stylesheetUrl = new URL(`${this.vsBasePath}/editor/editor.main.css`, document.baseURI).toString();
+      const stylesheetLoaded = this.loadStylesheet(stylesheetUrl, 'vs/editor/editor.main').catch(() => fail({
+        message: 'Monaco editor stylesheet failed to load.',
+        phase: 'loading',
+        moduleId: 'vs/css!vs/editor/editor.main',
+        url: stylesheetUrl,
+      }));
 
       // If AMD loader already present, start immediately; otherwise load it
       if ((window as any).require && typeof (window as any).require === 'function') {
@@ -1209,13 +1355,39 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     });
   }
 
+  private static fileUri(path: string): string {
+    return `file:///${path.replace(/^file:\/\//, '').replace(/^\/+/, '')}`;
+  }
+
+  // Each sibling .ts or .tsx file is an extra lib at its own path, where relative imports find it. The open file never
+  // is one: it is the model, and a lib at the same path would declare its contents a second time.
+  private syncSiblingLibs(): void {
+    const defaults = (window as any).monaco?.languages?.typescript?.typescriptDefaults;
+    if (!defaults?.addExtraLib) return;
+    const open = this.modelKey ? MonacoEditorComponent.fileUri(this._modelId) : '';
+    const next = new Map<string, string>();
+    for (const [path, content] of Object.entries(this.siblingFiles ?? {})) {
+      const uri = MonacoEditorComponent.fileUri(path);
+      if (uri !== open && /\.tsx?$/i.test(uri)) next.set(uri, content ?? '');
+    }
+    for (const [uri, { lib }] of this.siblingLibs) {
+      if (next.has(uri)) continue;
+      try { lib?.dispose(); } catch { }
+      this.siblingLibs.delete(uri);
+    }
+    for (const [uri, content] of next) {
+      if (this.siblingLibs.get(uri)?.content === content) continue;
+      // Adding a path again replaces its content, and the older disposable no longer removes it.
+      this.siblingLibs.set(uri, { content, lib: defaults.addExtraLib(content, uri) });
+    }
+  }
+
   private createOrSwapModel(langNorm: string, code: string) {
     const rawId = this._modelId; // src/App.tsx, fa-1.ts, vs.
     const previousModel = this.model;
 
     // Dosya path’ini düzgün bir file:// URI’sine çevir
-    const normalizedPath = rawId.replace(/^file:\/\//, '').replace(/^\/+/, '');
-    const uri = window.monaco.Uri.parse(`file:///${normalizedPath}`);
+    const uri = window.monaco.Uri.parse(MonacoEditorComponent.fileUri(rawId));
 
     let existing = window.monaco.editor.getModel(uri);
     if (existing) {

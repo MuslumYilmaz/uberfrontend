@@ -1,17 +1,18 @@
 [
     {
         "id": "ng-debug-counter-change-detection",
-        "title": "Counter not updating",
+        "title": "Counter stuck at 0 after an OnPush refactor",
         "difficulty": "intermediate",
         "importance": 3,
-        "updatedAt": "2026-10-02",
+        "updatedAt": "2026-11-11",
         "tags": [
+            "change-detection",
+            "onpush",
             "components",
-            "event-binding",
             "state"
         ],
         "description": {
-            "text": "The counter starts at 0, but clicking Increment leaves the displayed value unchanged. Fix the increment logic so every click increases the count by exactly 1. Keep the existing component state and template bindings."
+            "text": "The counter display moved into its own OnPush component to save change detection work. Since then, clicking Increment leaves the number on screen at 0, although the click handler runs on every click. Find why Angular skips the display and fix it so every click shows the new count. Keep CounterDisplayComponent on ChangeDetectionStrategy.OnPush."
         },
         "sdk": {
             "asset": "assets/sb/angular/debug/counter-fix.json",
@@ -19,7 +20,7 @@
         },
         "solutionAsset": "assets/sb/angular/solution/ng-debug-counter-change-detection.solution.json",
         "solutionBlock": {
-            "overview": "The postfix increment expression returns the previous count. Assigning that result back to count overwrites the increment, so the value stays unchanged. Increment the property without assigning the old value back; the existing Angular click binding will update the view."
+            "overview": "`inc()` adds 1 to `stats.count` in place, so the object bound to `[stats]` is the same reference after every click. Angular checks an `OnPush` component only when an input receives a new value (compared by reference), when an event fires in its own template, or when a signal its template reads changes. The mutation meets none of these: the `stats` input signal keeps the same object, so Angular skips `CounterDisplayComponent` and the paragraph keeps its first render while the real count grows.\n\nReplace the object instead of changing it: `this.stats = { ...this.stats, count: this.stats.count + 1 }` gives the binding a new reference, the input updates and the display renders the new count. Passing the number itself (`[count]=\"stats.count\"`) or keeping the count in a signal works too. Turning OnPush off would hide the bug and bring back the work the refactor removed."
         },
         "frameworkTests": [
             {
@@ -205,5 +206,106 @@
                 "note": "One self-reported senior loop. It establishes that an onsite round handed the candidate an Angular app plus user bug reports to fix; the three bugs here are practice versions, not the reported ones."
             }
         ]
+    },
+    {
+        "id": "ng-debug-zoneless-shipment-board",
+        "title": "Fix a shipment board that stopped updating after going zoneless",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "updatedAt": "2026-11-11",
+        "tags": [
+            "change-detection",
+            "signals",
+            "onpush",
+            "debugging"
+        ],
+        "description": {
+            "text": "The shipment board moved to zoneless change detection, and its list to OnPush, in the last release. Three reports came in since. Report 1: \"After I click Refresh, the status says Syncing… forever, although the sync finishes in a moment.\" Report 2: \"Add shipment does nothing: the list keeps three rows and the header still says 3 shipments.\" Report 3: \"Next moves the selection, the line above the list says Selected: S-102, but the highlighted row stays on S-101.\" Find the root cause of each report and fix all three. Keep the app zoneless, keep ShipmentListComponent on OnPush, and keep the test ids and button labels."
+        },
+        "sdk": {
+            "asset": "assets/sb/angular/debug/zoneless-shipment-board.json",
+            "openFile": "src/app/app.component.ts"
+        },
+        "solutionAsset": "assets/sb/angular/solution/ng-debug-zoneless-shipment-board.solution.json",
+        "solutionBlock": {
+            "overview": "Report 1 comes from the zoneless switch itself. `refresh()` writes `syncStatus` after an `await`; zone.js used to run change detection when the timer fired, but without it nothing tells Angular that a plain field changed, so the view keeps Syncing…. Keeping `syncStatus` in a signal fixes it: `set()` schedules the refresh.\n\nReport 2 is an in-place change. `addShipment()` pushes into the array the signal already holds and returns that same array, so the signal sees no new value: `count` does not recompute and the OnPush list receives the same input. Return a new array, `[...list, shipment]`.\n\nReport 3 is OnPush reading state nobody tells it about. The list compares `selection.selectedId` in its template, a plain field on a shared service, and Next is clicked outside the list, so nothing marks the list for check while the parent, which runs default change detection, shows the new id. Make the selection a signal in `SelectionService`, expose it read-only, and read `selectedId()` in both templates. Turning OnPush off or putting zone.js back would hide reports 1 and 3 without fixing the reads."
+        },
+        "frameworkTests": [
+            {
+                "id": "sync-status-settles",
+                "name": "Refresh ends with the time of the sync",
+                "steps": [
+                    {
+                        "type": "expectText",
+                        "selector": "[data-testid=\"sync-status\"]",
+                        "text": "Not synced yet"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"refresh\"]"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"sync-status\"]",
+                        "text": "Synced at",
+                        "match": "contains",
+                        "timeoutMs": 2000
+                    }
+                ]
+            },
+            {
+                "id": "add-shipment-renders",
+                "name": "Add shipment adds a row and updates the count",
+                "steps": [
+                    {
+                        "type": "expectCount",
+                        "selector": "[data-testid=\"shipment-row\"]",
+                        "count": 3
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"add-shipment\"]"
+                    },
+                    {
+                        "type": "waitForCount",
+                        "selector": "[data-testid=\"shipment-row\"]",
+                        "count": 4
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"shipment-count\"]",
+                        "text": "4 shipments"
+                    }
+                ]
+            },
+            {
+                "id": "next-moves-highlight",
+                "name": "Next moves the highlighted row",
+                "steps": [
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"shipment-row\"].is-selected",
+                        "text": "S-101",
+                        "match": "contains"
+                    },
+                    {
+                        "type": "click",
+                        "selector": "[data-testid=\"select-next\"]"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"selected-shipment\"]",
+                        "text": "Selected: S-102"
+                    },
+                    {
+                        "type": "waitForText",
+                        "selector": "[data-testid=\"shipment-row\"].is-selected",
+                        "text": "S-102",
+                        "match": "contains"
+                    }
+                ]
+            }
+        ],
+        "access": "free"
     }
 ]

@@ -5,19 +5,31 @@
   "variants": {
     "approach1": {
       "language": "typescript",
-      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface User {\n  id: number;\n  name: string;\n  role: Role;\n  active: boolean;\n}\n\ntype Role = 'admin' | 'editor' | 'viewer';\n\ntype RoleFilter = 'all' | Role;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  searchTerm = '';\n  selectedRole: RoleFilter = 'all';\n  showOnlyActive = false;\n\n  readonly users: User[] = [\n    { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n    { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n    { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n    { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n    { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n  ];\n\n  get filteredUsers(): User[] {\n    const term = this.searchTerm.trim().toLowerCase();\n\n    return this.users.filter(user => {\n      if (term && !user.name.toLowerCase().includes(term)) {\n        return false;\n      }\n\n      if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {\n        return false;\n      }\n\n      if (this.showOnlyActive && !user.active) {\n        return false;\n      }\n\n      return true;\n    });\n  }\n\n}\n",
+      "code": "import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';\nimport { TitleCasePipe } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface User {\n  id: number;\n  name: string;\n  role: Role;\n  active: boolean;\n}\n\ntype Role = 'admin' | 'editor' | 'viewer';\n\ntype RoleFilter = 'all' | Role;\n\n@Component({\n  selector: 'app-root',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  imports: [FormsModule, TitleCasePipe],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly searchTerm = signal('');\n  readonly selectedRole = signal<RoleFilter>('all');\n  readonly showOnlyActive = signal(false);\n\n  readonly users: User[] = [\n    { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n    { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n    { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n    { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n    { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n  ];\n\n  readonly filteredUsers = computed(() => {\n    const term = this.searchTerm().trim().toLowerCase();\n    const role = this.selectedRole();\n    const onlyActive = this.showOnlyActive();\n\n    return this.users.filter((user) => {\n      if (term && !user.name.toLowerCase().includes(term)) {\n        return false;\n      }\n\n      if (role !== 'all' && user.role !== role) {\n        return false;\n      }\n\n      if (onlyActive && !user.active) {\n        return false;\n      }\n\n      return true;\n    });\n  });\n}\n",
       "nodes": [
         {
           "id": "d1-import-template-features",
-          "title": "Import forms and the pipe dependency",
+          "title": "Import forms and the one pipe the template uses",
           "anchor": {
             "lineStart": 19,
             "lineEnd": 19,
-            "snippet": "imports: [CommonModule, FormsModule],"
+            "snippet": "imports: [FormsModule, TitleCasePipe],"
           },
-          "why": "FormsModule supports ngModel and CommonModule remains necessary for the TitleCasePipe used by the external template.",
-          "alternative": "Remove CommonModule because modern @for no longer needs it, without checking remaining pipe usage.",
-          "tradeoff": "Keeping only verified imports avoids dead dependencies while preserving template compilation."
+          "why": "FormsModule supplies ngModel for the three controls, and the only other template dependency is the pipe that capitalizes the role pill, so TitleCasePipe is imported on its own.",
+          "alternative": "Import CommonModule for a single pipe, or drop it without checking which pipes the external template still uses.",
+          "tradeoff": "The import list names exactly what the template needs; another pipe added later needs its own import."
+        },
+        {
+          "id": "d5-filter-signals",
+          "title": "Hold each filter in a signal",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 24,
+            "snippet": "readonly searchTerm = signal('');"
+          },
+          "why": "[(ngModel)] writes the search text, the role and the toggle straight into writable signals, and the computed list depends on exactly those three values.",
+          "alternative": "Plain fields read by a getter, which works while every change comes from a control in this template.",
+          "tradeoff": "Signals add call syntax in TypeScript, but OnPush and the computed list also see changes made outside this template, such as filters restored from the URL."
         },
         {
           "id": "d2-normalize-search-once",
@@ -25,19 +37,19 @@
           "anchor": {
             "lineStart": 37,
             "lineEnd": 37,
-            "snippet": "const term = this.searchTerm.trim().toLowerCase();"
+            "snippet": "const term = this.searchTerm().trim().toLowerCase();"
           },
-          "why": "One normalized value makes name matching case-insensitive and avoids repeated cleanup inside the filter.",
+          "why": "One normalized value makes name matching case-insensitive and avoids repeated cleanup inside the filter callback.",
           "alternative": "Compare raw input separately for every user row.",
-          "tradeoff": "Normalization allocates a small string per getter run, but the filtering rules stay readable."
+          "tradeoff": "Normalization allocates a small string per recomputation, but the filtering rules stay readable."
         },
         {
           "id": "d3-apply-role-filter-explicitly",
           "title": "Treat all as the role wildcard",
           "anchor": {
-            "lineStart": 44,
-            "lineEnd": 44,
-            "snippet": "if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {"
+            "lineStart": 46,
+            "lineEnd": 46,
+            "snippet": "if (role !== 'all' && user.role !== role) {"
           },
           "why": "The wildcard must bypass role rejection while concrete roles match exactly.",
           "alternative": "Compare every user role directly to the selected value, including all.",
@@ -47,13 +59,13 @@
           "id": "d4-compose-active-filter",
           "title": "Compose the active-only constraint",
           "anchor": {
-            "lineStart": 48,
-            "lineEnd": 48,
-            "snippet": "if (this.showOnlyActive && !user.active) {"
+            "lineStart": 50,
+            "lineEnd": 50,
+            "snippet": "if (onlyActive && !user.active) {"
           },
-          "why": "Inactive users are rejected only when the toggle is enabled, preserving the original collection.",
+          "why": "Inactive users are rejected only while the toggle is on, and the source array stays intact.",
           "alternative": "Mutate the source users array whenever the toggle changes.",
-          "tradeoff": "Derived filtering reruns with state changes, but the canonical data remains intact."
+          "tradeoff": "The computed reruns the whole filter when any of the three signals changes, which is cheap for five users and keeps the canonical data intact."
         }
       ]
     }

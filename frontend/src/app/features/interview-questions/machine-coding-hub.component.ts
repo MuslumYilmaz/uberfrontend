@@ -187,8 +187,9 @@ export class MachineCodingHubComponent implements OnInit {
       tier: 'High leverage',
       difficulty: 'Easy',
       tags: ['lists', 'local state', 'CRUD'],
-      signal: 'Basic local state, list updates, filtering, editing, and simple edge cases.',
-      requirement: 'Add, edit, complete, filter, and delete todos without mutating list state.',
+      // The task's own requirements (react/coding.json): no editing or filtering, so the card promises neither.
+      signal: 'Basic local state, controlled input, list updates, and simple edge cases.',
+      requirement: 'Add, complete, remove, and clear completed todos without mutating list state.',
     },
     {
       rank: 11,

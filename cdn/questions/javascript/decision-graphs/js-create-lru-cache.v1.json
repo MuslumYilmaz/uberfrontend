@@ -39,7 +39,7 @@
             "lineEnd": 11,
             "snippet": "const touch = (key, value) =>"
           },
-          "why": "Reinserting the key moves it to the most-recent end.",
+          "why": "Reinserting the key moves it to the most-recent end. set goes through the same helper, so updating a key moves it to the most recent end as well.",
           "alternative": "Track recency in a custom linked list.",
           "tradeoff": "Very compact approach, but tightly coupled to Map order semantics."
         },
@@ -75,7 +75,7 @@
             "lineEnd": 30,
             "snippet": "evictIfNeeded()"
           },
-          "why": "This keeps set() logic simple and guarantees capacity is respected.",
+          "why": "This keeps set() logic simple and guarantees capacity is respected. Because eviction only runs after the write, updating a key that is already stored never pushes the size past maxSize, so nothing else is evicted.",
           "alternative": "Check fullness before set and branch for update/new key.",
           "tradeoff": "Cleaner control flow, but still performs eviction checks per set."
         }

@@ -15,7 +15,7 @@
             "lineEnd": 2,
             "snippet": "let called = false;"
           },
-          "why": "This flag is the gate that makes the wrapper run the original function only once.",
+          "why": "This flag is the gate that makes the wrapper run the original function only once. The flag, not the cached result, records the call: a function that returns undefined would otherwise run again on every call.",
           "alternative": "Delete or replace the inner function after the first call.",
           "tradeoff": "Very easy to follow, with one small piece of closure state."
         },
