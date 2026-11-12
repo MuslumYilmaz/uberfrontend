@@ -404,6 +404,13 @@ test.describe('production/SSR public remediation smoke', () => {
     const raw = await (await page.request.get('/pricing')).text();
     expect(raw).toContain('What you get, counted');
     expect(raw).toContain(`${PRICING_COUNTS.areas.react.premium} tasks`);
+    // The help line and the FAQ it links to are prerendered too. The link stays on /pricing (a bare #fragment would
+    // resolve against <base href="/"> before hydration), and a guest's student answer leads to sign-up.
+    expect(raw).toContain('Pre-sales question?');
+    expect(raw).toContain('href="/pricing#pricing-faq"');
+    expect(raw).toMatch(/<section[^>]*id="pricing-faq"/);
+    expect(raw).toContain('Is there a student discount?');
+    expect(raw).toContain('href="/auth/signup?src=pricing_student_discount"');
     // The shared fixture answers the checkout config with the baseline offer; production answers the
     // sprint offer. Pin the sprint layout here so the hydrated page matches what production serves.
     await page.route(/\/api\/billing\/checkout\/config(?:\?.*)?$/, async (route) => {

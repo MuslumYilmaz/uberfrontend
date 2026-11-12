@@ -73,13 +73,14 @@ The application sends every `page_view` itself: the tag loads with
 FrontendAtlas > Enhanced measurement > Page views > Show advanced settings**,
 **Page changes based on browser history events** must be off.
 
-On 2026-11-12 it was on. Every in-app navigation therefore produced a second,
-automatic `page_view` a few seconds after the application's own one, without
-the application's parameters, so `traffic_type` tagging did not reach it;
-direct landings were not affected. Until it is switched off, read route visits
-from the application's own route events (for `/pricing`, `pricing_page_viewed`)
-rather than from views, and do not compare views across the day it is switched
-off.
+Until 2026-11-12 it was on. Every in-app navigation therefore produced a
+second, automatic `page_view` a few seconds after the application's own one,
+without the application's parameters, so `traffic_type` tagging did not reach
+it; direct landings were not affected. It was switched off on 2026-11-12 at
+about 19:35 UTC (22:35 Europe/Istanbul). Views before that time count most
+in-app visits twice: read route visits from that period from the application's
+own route events (for `/pricing`, `pricing_page_viewed`), and do not compare
+views across the switch.
 
 Before the release that moves the application's `page_view` after the router's
 title update, an in-app navigation reported the previous page's title in
@@ -459,8 +460,8 @@ first readout restart at its production deployment.
 - `auth_prompt` and `auth_prompt_action` with `prompt_context=pricing_checkout`
   keep their names and parameters; the prompt now shows the plan and the price
   before sign-in.
-- Create the `preview_type` custom dimension before the deployment; custom
-  dimensions are not retroactive.
+- The `preview_type` custom dimension was created on 2026-11-12, before the
+  deployment; custom dimensions are not retroactive.
 - Production deployment: pending. Record its timestamp and Europe/Istanbul
   date here; the 28 baseline days start the next full day.
 
