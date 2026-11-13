@@ -1,5 +1,5 @@
 {
-  "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+  "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
@@ -30,9 +30,10 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after twelve pinned Premium questions gained full framework checks in the third batch of coding-trust step 12, approved by the project owner. Pagination (React, Angular, Vue): Page 1 of 4 with the first five users and Previous disabled, Next moving five users at a time with the label following, a disabled Next on the last page and a disabled Previous on the first. Nested comments: top-level comments with their own Reply, one reply box at a time that a second click closes, replies nested and indented level by level; React and Vue also check Cancel and aria-expanded, which the Angular text does not ask for. Filterable user list: case-insensitive search by name only, the role dropdown, the active-only checkbox, all three together, and the empty state. Theme toggle: <html data-theme> and the label switch at once, the choice is saved under the starter's uf-theme key, and a stored dark theme applies on load. Question hashes are re-pinned; starters, solutions and pressure assets are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the fourth batch of coding-trust step 12, approved by the project owner. Six pinned Premium questions gained full framework checks: shopping cart (React, Angular, Vue) for Add to cart once and again, + and −, Remove, a row's name, unit price, quantity and line total, and the item count and total price; transfer list for buttons that follow their own list's selection, ↓ and ↑ appending in order, moved items arriving unselected, and per-list selection. Six pressure pins move with the counter and todo scenarios, whose rounds now find what their text names: counter rounds 2 to 4 find the step selector as a select box, the focusable container by tabindex, its keyboard instructions by any aria-describedby, and the Start/Pause button by aria-pressed; todo round 1 finds the Add button and the text box by role and reads task text from the starters' rows. The round texts, order, time limits and solutions are unchanged. Question hashes are re-pinned; starters are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release."
+      "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
+      "2026-11-14 source-pin maintenance: registryContentHash refreshed after react-debounced-search lost its Spotify company tag and its Spotify source in the company guide fixes of 2026-11-13 (step 9 of the redesign the project owner approved): that source says the Spotify round was framework-free, so the React task no longer counts as Spotify practice. Its requirements, expected behavior, starter, checks and solution are unchanged; this is not a new approval of the task."
     ],
-    "registryContentHash": "586f25626b87cb54d479d596989e49baf6901107983a04671ad0613e0308c6cf",
+    "registryContentHash": "f2d22c500b986b0e46bb11ea9ed5249c2057abc086a6e7b306555aa997ac54bf",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
@@ -53,7 +54,7 @@
       ],
       "review": {
         "contentHash": "5e27716aedeb7133cc473e7bd896ddddeebf3f6f55523eba9d9f0e09d5891174",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -105,7 +106,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -301,7 +303,7 @@
       ],
       "review": {
         "contentHash": "09547d65125f7970f60947811f9cdc3ea1d406434d486d45c238dec7c82f91fa",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -353,7 +355,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -497,7 +500,7 @@
       ],
       "review": {
         "contentHash": "ea778ac4634cba4f696a04b56b985cd60b30b9344a776167730b38bfb6eea3d6",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -549,7 +552,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -693,7 +697,7 @@
       ],
       "review": {
         "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -745,7 +749,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -901,7 +906,7 @@
       ],
       "review": {
         "contentHash": "711e65df4010e82e469b94453046e3d31c6ce091253128603a8004a40c3022fb",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -953,7 +958,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1322,7 +1328,7 @@
       ],
       "review": {
         "contentHash": "6b6ddfe1e55adfc9540056804b004ac71a0f0b3b247c99a5a5796fd2ccb4925b",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1374,7 +1380,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1588,7 +1595,7 @@
       ],
       "review": {
         "contentHash": "402d34231441ad60ce9498e0f98fa7640445816109941b1cc5dbab8766519f97",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1640,7 +1647,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1812,7 +1820,7 @@
       ],
       "review": {
         "contentHash": "190be8d191c9d32978f8460435efa740412b5e4a386e894c6a321a89aff8433c",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1864,7 +1872,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2375,7 +2384,7 @@
       ],
       "review": {
         "contentHash": "f2f969e2602cc42682f67110350e06924e86b28f4c5e795b26c7e29b5225a667",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2427,7 +2436,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2963,7 +2973,7 @@
       ],
       "review": {
         "contentHash": "9afbcc1c69e0f8787c23301c0dd6dcc4f11aec0e4c94b14c58e1e9ad7efc2b84",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3015,7 +3025,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3208,7 +3219,7 @@
       ],
       "review": {
         "contentHash": "c5617bb01c6ef9ede077f55b7a26a279ab25a9232d917f1e764f287e18262aec",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3260,7 +3271,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4056,7 +4068,7 @@
       ],
       "review": {
         "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4108,7 +4120,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4409,7 +4422,7 @@
       ],
       "review": {
         "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4461,7 +4474,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4856,7 +4870,7 @@
       ],
       "review": {
         "contentHash": "0d20ad1a0360ee919cf5a3e206ce891db57e077325ca321150dcb519cf622880",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4908,7 +4922,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5202,7 +5217,7 @@
       ],
       "review": {
         "contentHash": "42ece01188f1debda2182c60e99242bfc9e1a40f62a0490561ecd95452412cf5",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5254,7 +5269,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5520,7 +5536,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5572,7 +5588,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5647,7 +5664,7 @@
       ],
       "review": {
         "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5699,7 +5716,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5769,7 +5787,7 @@
       ],
       "review": {
         "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5821,7 +5839,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5901,7 +5920,7 @@
       ],
       "review": {
         "contentHash": "db1aae580d6682ac9511fe1a29adb028c143764b6d42654e21d583820ab1954a",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5953,7 +5972,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6039,7 +6059,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6091,7 +6111,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6177,7 +6198,7 @@
       ],
       "review": {
         "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6229,7 +6250,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6309,7 +6331,7 @@
       ],
       "review": {
         "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6361,7 +6383,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6441,7 +6464,7 @@
       ],
       "review": {
         "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6493,7 +6516,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6590,7 +6614,7 @@
       ],
       "review": {
         "contentHash": "caf53fbd4e5424501c9302aefe7edb62e9b2ab7fa9005c5e1c7b89474736b615",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6642,7 +6666,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6722,7 +6747,7 @@
       ],
       "review": {
         "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6774,7 +6799,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6871,7 +6897,7 @@
       ],
       "review": {
         "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6923,7 +6949,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7025,7 +7052,7 @@
       ],
       "review": {
         "contentHash": "f6b60b1ad0b4af9ceddc5294a97543800bfc2ca9f822f4a416102345f8c1d2fb",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7077,7 +7104,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7186,7 +7214,7 @@
       ],
       "review": {
         "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7238,7 +7266,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7339,7 +7368,7 @@
       ],
       "review": {
         "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7391,7 +7420,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7492,7 +7522,7 @@
       ],
       "review": {
         "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7544,7 +7574,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7625,7 +7656,7 @@
       ],
       "review": {
         "contentHash": "44d718ffd28cad9f097c737d3be9abe07e5d0a957926af9b43fa53e373a532b5",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7677,7 +7708,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7873,7 +7905,7 @@
       ],
       "review": {
         "contentHash": "6acca21bc1fbe463685eb56a0a191a5df4dfcec3b0cc08463bc7eab82ce3a4cd",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7925,7 +7957,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8069,7 +8102,7 @@
       ],
       "review": {
         "contentHash": "1547295f1cd60baa8e9242753aca443ca84b5fff19bc83594e1c80148c80b757",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8121,7 +8154,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8265,7 +8299,7 @@
       ],
       "review": {
         "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8317,7 +8351,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8473,7 +8508,7 @@
       ],
       "review": {
         "contentHash": "d6817bc43609365647e02312e4e58eda189a4373c92b8df28fcabd3e4c2de82b",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8525,7 +8560,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8894,7 +8930,7 @@
       ],
       "review": {
         "contentHash": "a9a0f1679b841f91ef793c0ba0d21215fed4c32580a062b6e3d69e56246aeefb",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8946,7 +8982,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9160,7 +9197,7 @@
       ],
       "review": {
         "contentHash": "7ce775f9ab2ea9c33a5a47cd0ba8836b7a9185c67402ae5479416701f81db9cb",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9212,7 +9249,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9384,7 +9422,7 @@
       ],
       "review": {
         "contentHash": "962910450ff9afbd747319232d5d07a1d07d5ba58006ea1ea72054385ee4115f",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9436,7 +9474,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9947,7 +9986,7 @@
       ],
       "review": {
         "contentHash": "84e4d06e6f186516c5cee5cb87b88ba7b0040dff52db4adf6183ff54924f1b9c",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9999,7 +10038,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10535,7 +10575,7 @@
       ],
       "review": {
         "contentHash": "76e6c1a984ff3bbbfb33360b128d6c776dbf0564c6e3b0d89fe5f1570b341ff9",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10587,7 +10627,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10780,7 +10821,7 @@
       ],
       "review": {
         "contentHash": "4cc51a1e8c3b4aa74bb7fec592b4c468bc7a6273214a6dada542b499698779aa",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10832,7 +10873,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11628,7 +11670,7 @@
       ],
       "review": {
         "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11680,7 +11722,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11972,7 +12015,7 @@
     },
     {
       "conceptId": "coding-ui-debounced-search",
-      "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
+      "contentHash": "ccb4f94398a0d99e62ea6906bf52f650dd065daf32721e5c11243328795ac39a",
       "id": "int-code-react-senior-debounced-search-v1",
       "remediationTopics": [
         "Effect and timer ownership",
@@ -11980,8 +12023,8 @@
         "Accessible async states"
       ],
       "review": {
-        "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "contentHash": "ccb4f94398a0d99e62ea6906bf52f650dd065daf32721e5c11243328795ac39a",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12033,7 +12076,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12412,7 +12456,7 @@
         "pressureAsset": "assets/questions/pressure-modes/debounced-search.v1.json",
         "pressureAssetHash": "059c690882468d40432598a815947da6eba101de556a4925f7b4148d204971e2",
         "selectedCheckContractHash": "a5add5b9521c81ea1648c09ad851d3694de71da9bb881e6d1c56f58f3910a31c",
-        "sourceQuestionHash": "027fa38e3293952af755c1c88ad6d4946b38ecd6958f9a6a333c38aa225bc00e",
+        "sourceQuestionHash": "aba664197a567204f8f23688e9a080c8cdc93453910d8dc558812c5818b6da9b",
         "starterAsset": "assets/sb/react/question/react-debounced-search.v1.json",
         "starterAssetHash": "9cc55b69ec9e100916051df2661a7c8b5786e8a12cf88ff0b1e9dc405af97bff"
       }
@@ -12428,7 +12472,7 @@
       ],
       "review": {
         "contentHash": "700cec128d37c209fb46bcc12b04a7cede8d743bb57df270d51cd7fb5b75062d",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12480,7 +12524,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12774,7 +12819,7 @@
       ],
       "review": {
         "contentHash": "2480dc3957dfc1c3630434681143df39008c3335a2836e38b8e18f779ef72694",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12826,7 +12871,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13092,7 +13138,7 @@
       ],
       "review": {
         "contentHash": "19fd7d57c2c72938598988e7592e6cdac14c4a3a476f38fe21e1389af7adbeb7",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13144,7 +13190,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13340,7 +13387,7 @@
       ],
       "review": {
         "contentHash": "834c344ec474f4da7a39973d79a79af86b84ab527a4b57bf627f5a91be12eb09",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13392,7 +13439,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13536,7 +13584,7 @@
       ],
       "review": {
         "contentHash": "6dabb50817df425dc92a71b6b4224ad384ec1e4df078c5a1ea937bfbfe13cb56",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13588,7 +13636,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13732,7 +13781,7 @@
       ],
       "review": {
         "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13784,7 +13833,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13940,7 +13990,7 @@
       ],
       "review": {
         "contentHash": "f5d0bdb61d52999fd78daa01f2f21d56b76639ee440781f90f14a8381f4a037f",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13992,7 +14042,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14361,7 +14412,7 @@
       ],
       "review": {
         "contentHash": "2e53cfd96c5296ebae7b48fe8790a7184b7607b439ac31d47b2dc021fdcfd5c8",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14413,7 +14464,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14627,7 +14679,7 @@
       ],
       "review": {
         "contentHash": "ce1501c079c2b7ff0990968b44af9f7ef25ee39b5334d439a7679164e7e7d497",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14679,7 +14731,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14851,7 +14904,7 @@
       ],
       "review": {
         "contentHash": "360211fe773d5faf319fa5ddd3b040204445c108a3ce1d618e51f831492ad65a",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14903,7 +14956,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15414,7 +15468,7 @@
       ],
       "review": {
         "contentHash": "d64361bf34863ecb6981e4837bdb776080db76d4ad8deb2ae99a3356e02dfb16",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15466,7 +15520,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16002,7 +16057,7 @@
       ],
       "review": {
         "contentHash": "522fbb03983e794fb59c1c3f0f74c85fc74447271e162343731692a7b602f877",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16054,7 +16109,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16247,7 +16303,7 @@
       ],
       "review": {
         "contentHash": "d1be6ae6691a1fff1ebd5ebfb6be71d05f886da12d1c973ad3a0164906352fe3",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16299,7 +16355,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17095,7 +17152,7 @@
       ],
       "review": {
         "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17147,7 +17204,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17448,7 +17506,7 @@
       ],
       "review": {
         "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17500,7 +17558,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17895,7 +17954,7 @@
       ],
       "review": {
         "contentHash": "9472f612f4fc8f572ee5ad55abb577092c456411e77521f4eb81ab3e29244536",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17947,7 +18006,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -18241,7 +18301,7 @@
       ],
       "review": {
         "contentHash": "123fb469eb17483e52eda302bc3506f8d2f2069ea0032360debbf60bd7bdf8e4",
-        "definitionHash": "62793dd185afc71bf67ce61766906c3cfec08655a6e764fdbf4040373b544371",
+        "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -18293,7 +18353,8 @@
             "2026-11-12 source-pin maintenance review: react/angular/vue pagination table, nested comments, filterable user list and theme toggle changed in frameworkTests only; see the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, each mutant fails the check for its bug, and two right nested comments variants (a kept seed comment, newest last) pass.",
             "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
-            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical."
+            "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
+            "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
