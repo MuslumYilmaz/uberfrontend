@@ -65,6 +65,28 @@ Use this event only as an analysis inclusion signal. It does not suppress,
 rewrite, rate-limit, or block raw analytics events or HTTP traffic. Do not use
 it as a WAF, crawler, robots, or sitemap rule.
 
+## Page Views
+
+The application sends every `page_view` itself: the tag loads with
+`send_page_view: false`, and each route sends one `page_view` with
+`page_path`, `page_location` and `page_title`. In **Admin > Data streams >
+FrontendAtlas > Enhanced measurement > Page views > Show advanced settings**,
+**Page changes based on browser history events** must be off.
+
+Until 2026-11-12 it was on. Every in-app navigation therefore produced a
+second, automatic `page_view` a few seconds after the application's own one,
+without the application's parameters, so `traffic_type` tagging did not reach
+it; direct landings were not affected. It was switched off on 2026-11-12 at
+about 19:35 UTC (22:35 Europe/Istanbul). Views before that time count most
+in-app visits twice: read route visits from that period from the application's
+own route events (for `/pricing`, `pricing_page_viewed`), and do not compare
+views across the switch.
+
+Before the release that moves the application's `page_view` after the router's
+title update, an in-app navigation reported the previous page's title in
+`page_title`. Page title reports from earlier periods file those views under
+the wrong page; `page_path` was always right.
+
 ## Custom Dimensions
 
 In **Admin > Custom definitions > Custom dimensions**, read the existing
@@ -110,9 +132,14 @@ dimension whose dimension name and event parameter are exactly the same.
 | `framework` | Event | `framework` |
 | `viewer` | Event | `viewer` |
 | `company_query` | Event | `company_query` |
+| `preview_type` | Event | `preview_type` |
 
 Do not register `question_id` or `task` as a custom dimension. They are
 intentionally kept out because of their high cardinality.
+
+`preview_type` names the pricing link a visitor opened from
+`pricing_unlock_preview_clicked`; on the counted pricing page it is
+`counted_<row>` (see **Pricing counted layout exception** below).
 
 `target_path` is the destination of a followed link: the path of an internal
 page, or the origin of another site. `company_guide_link_clicked` sends it
@@ -334,6 +361,8 @@ the baseline:
 12. Early queued events and page views retain their original event/page order.
     `page_path` and `page_location` use the canonical pathname only, so query
     strings and hashes do not split a route into separate report rows.
+13. One in-app navigation, for example from the homepage to `/pricing`, sends
+    exactly one `page_view`, with the new page's title (see **Page Views**).
 
 ## First Readout
 
@@ -399,6 +428,42 @@ so it can behave like an upper bound. Call the latter **decision-qualified**,
 never “bot-free” or “clean human.” Exact bot subtraction is not available from
 GA4 alone because Vercel ASN/JA4 request signals are not joined to a GA session
 identifier.
+
+### Pricing counted layout exception
+
+The counted pricing page replaces the full `/pricing` page on sprint offers
+before the pricing checks above could be read: a situation label and a renewal
+sentence on each plan, a table of free and Premium counts per area with linked
+locked examples, a help line and an FAQ that now hold the student and employer
+terms, and an account step that names the plan and the price before sign-in.
+The rule above is suspended for this release too, and the pricing rows of the
+first readout restart at its production deployment.
+
+- `pricing_page_viewed` and every pricing-section event on this page carry
+  `page_layout=counted_v1`; `offer_version` still names the offer. Read
+  `counted_v1` only against itself. The homepage section keeps
+  `page_layout=interview_sprint_v2` with `variant=compact`, and the baseline
+  offer keeps `interview_sprint_v1`. Before this release, `pricing_page_viewed`
+  sent the offer version as its layout and the section events sent
+  `interview_sprint_v2`.
+- Retired with this layout: `pricing_free_path_clicked`, sent by the product
+  proof block that is gone. Stop reading it from the deployment timestamp.
+- Existing events with new sources: `pricing_unlock_preview_clicked` from the
+  table's locked examples, with `preview_type=counted_<row>` for the rows
+  `react`, `angular`, `vue`, `javascript`, `debug`, `systemDesign`,
+  `tradeoffsIncidents`, `companyGuides` and `formats`;
+  `pricing_student_discount_clicked` from the student answer in the FAQ and
+  from the student status line, with `destination` `/auth/signup` or
+  `/profile`; `changelog_link_clicked` from the help line, with
+  `location=pricing_changelog_link` as before.
+- The pre-sales email and the billing FAQ links send no event.
+- `auth_prompt` and `auth_prompt_action` with `prompt_context=pricing_checkout`
+  keep their names and parameters; the prompt now shows the plan and the price
+  before sign-in.
+- The `preview_type` custom dimension was created on 2026-11-12, before the
+  deployment; custom dimensions are not retroactive.
+- Production deployment: pending. Record its timestamp and Europe/Istanbul
+  date here; the 28 baseline days start the next full day.
 
 ## Promotion Experiment Gate
 

@@ -13,6 +13,7 @@ const CONTENT_PIPELINE_SCRIPTS = new Set([
   'frontend/scripts/content-paths.mjs',
   'frontend/scripts/gen-content-metadata.mjs',
   'frontend/scripts/gen-data-version.mjs',
+  'frontend/scripts/gen-pricing-counts.mjs',
   'frontend/scripts/gen-showcase-stats.mjs',
   'frontend/scripts/generate-angular-decision-graphs.mjs',
   'frontend/scripts/generate-practice-registry.mjs',
@@ -20,6 +21,7 @@ const CONTENT_PIPELINE_SCRIPTS = new Set([
   'frontend/scripts/lint-questions.mjs',
   'frontend/scripts/lint-incidents.mjs',
   'frontend/scripts/lint-tradeoff-battles.mjs',
+  'frontend/scripts/pricing-counted-examples.json',
   'frontend/scripts/question-identity-lib.mjs',
   'frontend/scripts/sync-tradeoff-battle-access.mjs',
   'frontend/scripts/tradeoff-battle-access-policy.mjs',
@@ -140,6 +142,7 @@ function main() {
       || file === 'frontend/package.json'
       || file === 'frontend/angular.json'
       || file === 'frontend/src/app/generated/content-metadata.ts'
+      || file === 'frontend/src/app/generated/pricing-counts.ts'
       || CONTENT_PIPELINE_SCRIPTS.has(file)
       || COMPANY_PLAN_SOURCES.has(file);
   });
