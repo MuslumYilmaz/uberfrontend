@@ -10,6 +10,7 @@ import { COMPANY_PRACTICE_DISCLAIMER } from '../../../core/content/public-editor
 import { Tech } from '../../../core/models/user.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { isPremiumRoute } from '../../../core/utils/premium-route.util';
 import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
@@ -271,6 +272,7 @@ export class CompanyPreviewComponent implements OnInit {
   private readonly authoredPreviews = inject(AUTHORED_COMPANY_PREVIEWS_TOKEN);
   private readonly analytics = inject(AnalyticsService);
   private readonly auth = inject(AuthService);
+  private readonly progress = inject(UserProgressService);
   private readonly injector = inject(Injector);
   /** The company on screen, as a signal, so the plan card follows a move to another guide. */
   private readonly guide = signal({ slug: '', label: '' });
@@ -278,6 +280,15 @@ export class CompanyPreviewComponent implements OnInit {
   private readonly rendered = signal(false);
   private readonly planProgress = signal<{ plans: CompanyPlanService; data: CompanyPlanData } | null>(null);
   private planProgressRequested = false;
+
+  /**
+   * The practice tasks a reader with an account has solved, with those marked done in a saved plan. The plan counts
+   * the same list, so a task done there shows as solved here. A visitor and the prerendered page have none.
+   */
+  readonly practised = computed<ReadonlySet<string> | null>(() => {
+    if (this.tier() === 'guest') return null;
+    return new Set([...this.progress.solvedIds(), ...(this.auth.user()?.companyPlan?.markedDone ?? [])]);
+  });
 
   /** A Premium member already has the full set, so the guide drops its lock chips and its unlock and pricing calls. */
   readonly member = computed(() => this.rendered() && hasPremium(this.auth.user()));

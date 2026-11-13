@@ -41,7 +41,8 @@
 }
 
 .cq__fresh,
-.cq__allowance {
+.cq__allowance,
+.cq__progress {
   max-width: 72ch;
   font-size: 14px;
   line-height: 1.5;
@@ -121,7 +122,8 @@
 }
 
 .cq-row__open-tag,
-.cq-row__premium-tag {
+.cq-row__premium-tag,
+.cq-row__solved-tag {
   display: inline-block;
   margin-left: auto;
   padding: 0 8px;
@@ -135,6 +137,12 @@
 
 .cq-row__practice .cq-row__premium-tag {
   margin-left: 8px;
+}
+
+/* The Solved tag sits next to an Open or Premium tag; on a member's rows it is the only tag, pushed right. */
+.cq-row__open-tag + .cq-row__solved-tag,
+.cq-row__premium-tag + .cq-row__solved-tag {
+  margin-left: 6px;
 }
 
 .cq-row__title {

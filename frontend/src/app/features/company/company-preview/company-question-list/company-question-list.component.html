@@ -14,6 +14,11 @@
     @if (allowance(); as line) {
       <p class="cq__allowance" data-testid="company-question-allowance">{{ line }}</p>
     }
+    @if (progress(); as count) {
+      <p class="cq__progress" data-testid="company-question-progress">
+        Your {{ companyLabel() }} prep: {{ count.solved }} of {{ count.total }} practice {{ count.total === 1 ? 'task' : 'tasks' }} solved
+      </p>
+    }
   </div>
 
   <ol class="cq__rows">
@@ -34,6 +39,9 @@
             <span class="cq-row__open-tag" data-testid="company-question-unlocked">Opened with your free unlock</span>
           } @else if (rowLocked(row)) {
             <span class="cq-row__premium-tag">Premium</span>
+          }
+          @if (rowSolved(row)) {
+            <span class="cq-row__solved-tag" data-testid="company-question-solved" aria-label="Practice task solved">✓ Solved</span>
           }
         </div>
 

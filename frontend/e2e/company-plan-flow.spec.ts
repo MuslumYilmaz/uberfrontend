@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import type { Page } from '@playwright/test';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { expect, test } from './fixtures';
+import { COMPANY_INTERVIEW_PROCESSES } from '../src/app/shared/company-previews/company-interview-processes';
 
 // Five people through the company plan flow: form, preview, pricing, payment and the way back. The account, its plan
 // and the checkout attempt are answered from memory, so nothing reaches a backend and no checkout ever opens.
@@ -417,6 +418,20 @@ test.describe('company plan from a company guide', () => {
     await expect(sources.locator('a[href^="http"]').first()).toBeAttached();
     // The other questions stay locked for a free account.
     await expect(list.locator('.cq-row__question.premium-locked').first()).toBeAttached();
+    expect(await overflow(page)).toBe(0);
+  });
+
+  test('Selin, with a free account and one task solved, sees on the ElevenLabs guide how many of its practice tasks are solved', async ({ page }) => {
+    // The plan's task ids: a question by its id, a guide by its route.
+    const taskId = (path: string) => (path.startsWith('/guides/') ? path : path.slice(path.lastIndexOf('/') + 1));
+    const questions = COMPANY_INTERVIEW_PROCESSES['elevenlabs'].questions ?? [];
+    const tasks = [...new Set(questions.flatMap((question) => (question.practice ? [taskId(question.practice.path)] : [])))];
+    const rowsWithTask = questions.filter((question) => question.practice && taskId(question.practice.path) === tasks[0]).length;
+    await signIn(page, newAccount({ solved: [tasks[0]] }));
+    await page.goto('/companies/elevenlabs/preview');
+    const list = page.getByTestId('company-question-list');
+    await expect(list.getByTestId('company-question-progress')).toHaveText(`Your ElevenLabs prep: 1 of ${tasks.length} practice tasks solved`);
+    await expect(list.getByTestId('company-question-solved')).toHaveCount(rowsWithTask);
     expect(await overflow(page)).toBe(0);
   });
 

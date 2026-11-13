@@ -60,6 +60,11 @@ function frequencyLine(row: Pick<QuestionListRow, 'accounts' | 'banks' | 'latest
   return `Reported in ${accounts}${bank} · ${month(row.latest)}`;
 }
 
+/** The id the plan and the solved list use for a practice task: a question's id, or a guide's route. */
+export function practiceTaskId(path: string): string {
+  return path.startsWith('/guides/') ? path : path.slice(path.lastIndexOf('/') + 1);
+}
+
 /** Who stands behind a question: its newest account, or the bank when no account names it. */
 function whoLine(sources: readonly InterviewProcessSource[]): string {
   const accounts = sources.filter((source) => source.kind === 'report' && !source.reportForm);
@@ -94,6 +99,8 @@ export class CompanyQuestionListComponent {
   readonly returnState = input<{ [key: string]: unknown } | undefined>(undefined);
   /** The account's free unlock, wherever it was spent; null for a visitor or an account that has not used it. */
   readonly freeUnlock = input<FreeUnlock | null>(null);
+  /** The practice tasks a reader with an account has solved or marked done in a plan; null for a visitor. */
+  readonly practised = input<ReadonlySet<string> | null>(null);
   readonly unlockState = input<FreeUnlockState | null>(null);
   /**
    * The reader chose the free unlock for a question, by id: an account spends it, a visitor's choice is kept until
@@ -190,11 +197,26 @@ export class CompanyQuestionListComponent {
     return 'You have one free unlock. Click a locked question to use it there; it counts across all company guides.';
   });
 
+  /** A reader with an account sees how many of the list's practice tasks they have solved, as their plan counts them. */
+  readonly progress = computed(() => {
+    const practised = this.practised();
+    if (!practised || this.viewer() === 'guest') return null;
+    const tasks = new Set(this.rows().flatMap((row) => (row.question.practice ? [practiceTaskId(row.question.practice.path)] : [])));
+    if (!tasks.size) return null;
+    const solved = [...tasks].filter((task) => practised.has(task)).length;
+    return { solved, total: tasks.size };
+  });
+
   readonly showOffer = computed(() => this.features().premiumPull && this.locking() && this.offer() !== null);
 
   readonly signupParams = computed(() => ({ redirectTo: `/companies/${this.slug()}/preview` }));
 
   readonly pricingParams = computed(() => ({ src: this.pricingSource() }));
+
+  rowSolved(row: Row): boolean {
+    const practised = this.practised();
+    return !!practised && this.viewer() !== 'guest' && !!row.question.practice && practised.has(practiceTaskId(row.question.practice.path));
+  }
 
   rowId(row: Row): string {
     return `${this.slug()}-question-${row.question.id}`;

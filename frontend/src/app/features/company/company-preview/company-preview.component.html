@@ -48,7 +48,7 @@
     <app-company-question-list *ngIf="questionSummary() as list"
       [slug]="slug" [companyLabel]="label" [process]="interviewProcess!" [summary]="list" [guides]="answerGuides"
       [viewer]="tier()" [features]="features" [offer]="offer()" [pricingSource]="previewSource + '_list'"
-      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()"
+      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()" [practised]="practised()"
       (unlock)="onFreeUnlock($event)"></app-company-question-list>
     <section *ngIf="!questionSummary()" class="openai-section" aria-labelledby="openai-prompts">
       <div class="openai-section__head">
@@ -185,7 +185,7 @@
     <app-company-question-list *ngIf="questionSummary() as list"
       [slug]="slug" [companyLabel]="label" [process]="interviewProcess!" [summary]="list" [guides]="answerGuides"
       [viewer]="tier()" [features]="features" [offer]="offer()" [pricingSource]="previewSource + '_list'"
-      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()"
+      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()" [practised]="practised()"
       (unlock)="onFreeUnlock($event)"></app-company-question-list>
     <section *ngIf="!questionSummary()" class="company-guide-section" aria-labelledby="google-practice-prompts">
       <div class="company-guide-section__head">
@@ -413,7 +413,7 @@
     <app-company-question-list *ngIf="questionSummary() as list"
       [slug]="slug" [companyLabel]="label" [process]="interviewProcess!" [summary]="list" [guides]="answerGuides"
       [viewer]="tier()" [features]="features" [offer]="offer()" [pricingSource]="previewSource + '_list'"
-      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()"
+      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()" [practised]="practised()"
       (unlock)="onFreeUnlock($event)"></app-company-question-list>
     <section *ngIf="!questionSummary()" class="company-guide-section" aria-labelledby="netflix-practice-prompts">
       <div class="company-guide-section__head">
@@ -681,7 +681,7 @@
     <app-company-question-list *ngIf="questionSummary() as list; else authoredPrompts"
       [slug]="slug" [companyLabel]="label" [process]="interviewProcess!" [summary]="list" [guides]="answerGuides"
       [viewer]="tier()" [features]="features" [offer]="offer()" [pricingSource]="preview.cta.src + '_list'"
-      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()"
+      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()" [practised]="practised()"
       (unlock)="onFreeUnlock($event)"></app-company-question-list>
 
     <ng-template #authoredPrompts>
@@ -1003,7 +1003,7 @@
     <app-company-question-list *ngIf="questionSummary() as list"
       [slug]="slug" [companyLabel]="label" [process]="interviewProcess!" [summary]="list"
       [viewer]="tier()" [features]="features" [offer]="offer()" [pricingSource]="previewSource + '_list'"
-      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()"
+      [returnState]="returnState" [freeUnlock]="freeUnlock()" [unlockState]="unlockState()" [practised]="practised()"
       (unlock)="onFreeUnlock($event)"></app-company-question-list>
 
     <section

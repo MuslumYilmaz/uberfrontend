@@ -6,7 +6,7 @@ import type { CompanyInterviewProcess, InterviewProcessSource } from '../../../.
 import { summariseQuestionList } from '../../../../shared/company-previews/company-question-list';
 import { COMPANY_GUIDE_FEATURES, type CompanyGuideFeatures } from '../company-guide-features';
 import type { FreeUnlock } from '../../../../core/models/free-unlock.model';
-import { CompanyQuestionListComponent, type CompanyGuideViewer, type FreeUnlockState } from './company-question-list.component';
+import { CompanyQuestionListComponent, practiceTaskId, type CompanyGuideViewer, type FreeUnlockState } from './company-question-list.component';
 
 const account = (id: string, date: string): InterviewProcessSource => ({
   label: 'Taro',
@@ -37,7 +37,7 @@ describe('CompanyQuestionListComponent', () => {
 
   function create(
     viewer: CompanyGuideViewer,
-    options: { features?: Partial<CompanyGuideFeatures>; rows?: number; today?: string; freeUnlock?: FreeUnlock; unlockState?: FreeUnlockState } = {},
+    options: { features?: Partial<CompanyGuideFeatures>; rows?: number; today?: string; freeUnlock?: FreeUnlock; unlockState?: FreeUnlockState; practised?: ReadonlySet<string> } = {},
   ) {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     TestBed.configureTestingModule({
@@ -58,6 +58,7 @@ describe('CompanyQuestionListComponent', () => {
     fixture.componentRef.setInput('pricingSource', 'company_preview_acme_list');
     if (options.freeUnlock) fixture.componentRef.setInput('freeUnlock', options.freeUnlock);
     if (options.unlockState) fixture.componentRef.setInput('unlockState', options.unlockState);
+    if (options.practised) fixture.componentRef.setInput('practised', options.practised);
     fixture.detectChanges();
     return fixture.nativeElement as HTMLElement;
   }
@@ -145,6 +146,41 @@ describe('CompanyQuestionListComponent', () => {
     expect(group.textContent).toContain('Reported in 1 account · Jun 2025');
     // One account behind the group reads as one source, not as "the same reports".
     expect(group.querySelector('.cq-behavioural__intro')?.textContent?.trim()).toBe('Open to everyone: 1 question from one public source.');
+  });
+
+  describe('progress for a reader with an account', () => {
+    const progress = (host: HTMLElement) => host.querySelector('[data-testid="company-question-progress"]')?.textContent?.trim() ?? null;
+    const solvedRows = (host: HTMLElement) => rows(host).map((row) => !!row.querySelector('[data-testid="company-question-solved"]'));
+
+    it('counts the practice tasks the account has solved, as the plan does, and tags each solved row', () => {
+      const host = create('account', { practised: new Set(['react-x', 'not-on-this-list']) });
+      expect(progress(host)).toBe('Your Acme prep: 1 of 1 practice task solved');
+      expect(solvedRows(host)).toEqual([false, true, false, false]);
+    });
+
+    it('counts none for an account that has not practised yet', () => {
+      const host = create('account', { practised: new Set() });
+      expect(progress(host)).toBe('Your Acme prep: 0 of 1 practice task solved');
+      expect(solvedRows(host)).toEqual([false, false, false, false]);
+    });
+
+    it('shows a member the same count, beside the open rows', () => {
+      const host = create('member', { practised: new Set(['react-x']) });
+      expect(progress(host)).toBe('Your Acme prep: 1 of 1 practice task solved');
+      expect(solvedRows(host)).toEqual([false, true, false, false]);
+    });
+
+    it('shows a visitor no progress, so the prerendered page carries none', () => {
+      const host = create('guest', { practised: new Set(['react-x']) });
+      expect(progress(host)).toBeNull();
+      expect(solvedRows(host)).toEqual([false, false, false, false]);
+    });
+
+    it('reads a task id the way the plan writes it: a question by its id, a guide by its route', () => {
+      expect(practiceTaskId('/javascript/coding/js-debounce')).toBe('js-debounce');
+      expect(practiceTaskId('/system-design/infinite-scroll-list')).toBe('infinite-scroll-list');
+      expect(practiceTaskId('/guides/behavioral/stories')).toBe('/guides/behavioral/stories');
+    });
   });
 
   describe('the free unlock', () => {

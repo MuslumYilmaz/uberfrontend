@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../core/services/billing-checkout.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import type { CompanyPreviewQuestion } from '../../../core/models/company-public.model';
 import { countWord } from './company-evidence';
 import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from '../company-plan/company-plan-sets';
@@ -19,6 +20,7 @@ import { companySetLine } from '../company-plan/company-plan.format';
 import { CompanyPlanService } from '../company-plan/company-plan.service';
 import { CompanyPreviewComponent } from './company-preview.component';
 import { FreeUnlockService } from './free-unlock.service';
+import { practiceTaskId } from './company-question-list/company-question-list.component';
 import { OPENAI_COPY, OPENAI_PRACTICE_PROMPTS, OPENAI_PREVIEW_DESCRIPTION, OPENAI_PREVIEW_TITLE, OPENAI_RESOURCE_LINKS } from './openai-preview-content';
 import { GOOGLE_COPY, GOOGLE_PREVIEW_DESCRIPTION, GOOGLE_PREVIEW_TITLE, GOOGLE_RESOURCE_LINKS } from './google-preview-content';
 import { NETFLIX_COPY, NETFLIX_PREVIEW_DESCRIPTION, NETFLIX_PREVIEW_TITLE, NETFLIX_RESOURCE_LINKS, NETFLIX_SOURCES, NETFLIX_SOURCE_BOUNDARY } from './netflix-preview-content';
@@ -38,6 +40,7 @@ describe('CompanyPreviewComponent', () => {
   let routeData: BehaviorSubject<Data>;
   const MEMBER = { _id: 'member', role: 'user', accessTier: 'premium' };
   const user = signal<unknown>(null);
+  const solvedIds = signal<string[]>([]);
   const memberWithPlan = (companyPlan: CompanyPlanAnswers) => ({ ...MEMBER, companyPlan: { ...companyPlan, passedRounds: [], markedDone: [] } });
   const planData = { schemaVersion: 1 } as unknown as CompanyPlanData;
   let plans: { loadData: jasmine.Spy; buildPlan: jasmine.Spy };
@@ -70,6 +73,7 @@ describe('CompanyPreviewComponent', () => {
 
   beforeEach(() => {
     user.set(null);
+    solvedIds.set([]);
     freeUnlocks = jasmine.createSpyObj<FreeUnlockService>('FreeUnlockService', ['claim', 'rememberIntent', 'takeIntent']);
     freeUnlocks.takeIntent.and.returnValue(null);
     plans = {
@@ -134,6 +138,7 @@ describe('CompanyPreviewComponent', () => {
         { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: authored },
         { provide: BillingCheckoutService, useValue: { getCheckoutConfig: () => Promise.resolve(null) } },
         { provide: FreeUnlockService, useValue: freeUnlocks },
+        { provide: UserProgressService, useValue: { solvedIds } },
       ],
     }).compileComponents();
 
@@ -1320,6 +1325,21 @@ describe('CompanyPreviewComponent', () => {
       const chips = Array.from(host().querySelectorAll('.preview-chip')).map((chip) => chip.textContent?.trim());
       expect(chips).toContain(`${COMPANY_INTERVIEW_PROCESSES['walmart'].questions!.length} reported questions`);
       expect(host().querySelector('[data-testid="company-preview-counts"]')?.textContent?.trim()).toBe('FrontendAtlas practice set: Concepts 2');
+    });
+
+    it('tells a reader with an account how many of the list\'s practice tasks they solved, with the plan\'s done marks', async () => {
+      const tasks = [...new Set(COMPANY_INTERVIEW_PROCESSES['elevenlabs'].questions!.flatMap((q) => (q.practice ? [practiceTaskId(q.practice.path)] : [])))];
+      solvedIds.set([tasks[0]]);
+      // A task marked done in the plan counts as solved there, so it counts here too.
+      user.set({ ...FREE, companyPlan: { companies: [{ slug: 'elevenlabs' }], when: 'week', level: 'mid', passedRounds: [], markedDone: [tasks[1]] } });
+      await createComponent('elevenlabs');
+      expect(host().querySelector('[data-testid="company-question-progress"]')?.textContent?.trim())
+        .toBe(`Your ElevenLabs prep: 2 of ${tasks.length} practice tasks solved`);
+      expect(host().querySelectorAll('[data-testid="company-question-solved"]').length).toBeGreaterThanOrEqual(2);
+
+      user.set(null);
+      await createComponent('elevenlabs');
+      expect(host().querySelector('[data-testid="company-question-progress"]')).toBeNull();
     });
 
     it('replaces the prompt cards with the list, keeps the first question open and locks the rest in the page', async () => {
