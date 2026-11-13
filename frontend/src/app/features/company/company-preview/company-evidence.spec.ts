@@ -22,7 +22,7 @@ describe('companyEvidence', () => {
 
   it('counts the guide sources and the table sources once by URL, and lists the table-only ones after the guide ones', () => {
     const { counts, sources } = companyEvidence(acme, TABLE);
-    expect(counts).toEqual({ reports: 2, official: 2, sources: 4, prompts: 2 });
+    expect(counts).toEqual({ reports: 2, official: 2, sources: 4, prompts: 2, questions: 0 });
     expect(sources.slice(0, 2)).toEqual(acme.sources.items);
     expect(sources[2]).toEqual({
       label: 'LeetCode account, March 2025',
@@ -35,12 +35,12 @@ describe('companyEvidence', () => {
   });
 
   it('counts only the guide sources when there is no table', () => {
-    expect(companyEvidence(acme, null).counts).toEqual({ reports: 1, official: 1, sources: 2, prompts: 2 });
+    expect(companyEvidence(acme, null).counts).toEqual({ reports: 1, official: 1, sources: 2, prompts: 2, questions: 0 });
   });
 });
 
 describe('fillCompanyCounts', () => {
-  const counts = { reports: 7, official: 2, sources: 9, prompts: 5 };
+  const counts = { reports: 7, official: 2, sources: 9, prompts: 5, questions: 0 };
 
   it('writes words, capitalised at a sentence start, and digits on request', () => {
     expect(fillCompanyCounts('{reports} public accounts inform this guide. It cites {official} official pages and {sources} sources in all: {#prompts} prompts.', counts))

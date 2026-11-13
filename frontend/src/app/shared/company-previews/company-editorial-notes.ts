@@ -19,10 +19,10 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     hero: {
       kicker: 'Public preview and process notes',
       subtitle:
-        'Walmart Global Tech loops reported from India and the US, from the 2024 multiple-choice assessment to the 2026 HackerRank Frontend Engineering Assessment, with free and premium practice items for each round.',
+        'Walmart Global Tech loops reported from India and the US, from the 2024 multiple-choice assessment to the 2026 HackerRank Frontend Engineering Assessment. The page sets out the three loop shapes round by round, then what candidates were asked, with the first question open to every reader.',
     },
     intro: [
-      'Walmart publishes no frontend interview guide, so this page rests on public interview reports: process accounts from 2022 to 2026 and question sources from 2020. Most of the detail comes from Walmart Global Tech India; US accounts mostly describe the shape of the loop rather than its questions.',
+      'Walmart has no public interview guide for frontend roles, so everything here comes from candidates: loop accounts from 2021 to 2026 and questions going back to 2018. Most of the question detail comes from Walmart Global Tech India; the US accounts mostly describe the shape of the loop. Some question accounts come from full-stack and React Native loops, and from those only the frontend and algorithm questions are kept.',
     ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
@@ -44,7 +44,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           link: { label: 'See the senior stages', fragment: 'walmart-interview-process-3' },
         },
         {
-          text: 'Senior onsites mix coding rounds, one or two design rounds and a behavioural or hiring manager round. A staff candidate for an advertising team was sent a backend-only guide, so the team sets the format.',
+          text: 'Senior onsites mix coding rounds, one or two design rounds and a behavioural or hiring manager round. In a 2025 Software Engineer III loop the hiring manager ran the design round, starting from the resume.',
         },
       ],
     },
@@ -52,76 +52,52 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       {
         id: 'frontend-engineering-assessment',
         kicker: 'Round decoder',
-        title: 'Walmart Frontend Engineering Assessment and Karat interview: what each one asks',
+        title: 'Walmart Frontend Engineering Assessment and Karat interview: how each one runs',
         lede: [
-          'A May 2026 invitation email described a HackerRank Frontend Engineering Assessment with two parts: a language-agnostic coding problem and a React or Angular debugging task, with AI assistance for UI navigation, syntax and clarification. The recruiter had first mentioned DSA and low-level design. A September 2026 full-stack invite adds a back-end section, and a commenter who took that test reports 140 minutes, a medium DSA question and an Angular task that adds a feature to an existing project until the test cases pass.',
-          'Software Engineer III and senior loops report a coding screen instead: a Karat interview with about ten minutes of short answers and then coding, a one-hour HackerRank interview, two React code challenges on HackerRank, or a 45-minute JavaScript coding round. The team sets the format, so your invitation names the platform that applies to your loop.',
+          'A May 2026 invitation email described a HackerRank Frontend Engineering Assessment with two parts: a language-agnostic coding problem and a React or Angular debugging task, with AI assistance for UI navigation, syntax and clarification. The recruiter had first mentioned DSA and low-level design. A September 2026 full-stack invite adds a back-end section, and a commenter who took that test reports 140 minutes split between a medium DSA question, an Angular section and a simpler Java task.',
+          'Software Engineer III and senior loops report a coding screen instead: a Karat interview with about ten minutes of short answers and then coding, a one-hour HackerRank interview, two React tasks on HackerRank, or a 45-minute JavaScript coding round. Your invitation names the platform that applies to your loop.',
         ],
         facts: [
           { label: '2026 frontend assessment', value: 'Two sections on HackerRank: a language-agnostic coding problem, and debugging a React or Angular app with AI assistance for UI navigation, syntax and clarification. It comes from one pre-interview post quoting the invitation email (May 2026), which gives no length.' },
-          { label: '2026 full-stack assessment', value: 'Three sections: one language-agnostic coding question, front-end bug fixing or features in React or Angular with AI assist, and a back-end task in Node, Spring or Django with AI assist. One commenter who took it reports 140 minutes, a medium DSA question, an Angular feature added to an existing project until the test cases pass, and a simpler Java task (September 2026).' },
+          { label: '2026 full-stack assessment', value: 'Three sections: one language-agnostic coding question, front-end bug fixing or features in React or Angular with AI assist, and a back-end task in Node, Spring or Django with AI assist. One commenter who took it reports 140 minutes, a medium DSA question, an Angular section and a simpler Java task (September 2026).' },
           { label: '2024 assessment (India)', value: 'An older shape in one account: 20 multiple-choice questions on HTML, CSS and JavaScript, two easy coding questions in JavaScript only, and 10 multiple-choice questions on React or Angular.' },
           { label: 'Karat interview', value: 'About ten minutes of short answers, then coding; reported for software engineer to senior roles.' },
-          { label: 'Other screens', value: 'A one-hour HackerRank interview, two React code challenges on HackerRank, or a 45-minute JavaScript coding round.' },
+          { label: 'Other screens', value: 'A one-hour HackerRank interview (on CodePair for one React Native team), two React tasks on HackerRank, or a 45-minute JavaScript coding round.' },
           { label: 'After the screen', value: 'One or two coding rounds (React coding, a debugging session, two medium DSA problems, a UI and JavaScript round), one or two design rounds, and a behavioural or hiring-manager round.' },
-          { label: 'Sources', value: 'LeetCode, May and September 2026 and October 2024; Taro and Blind accounts from 2022 to 2025. All are linked in the reported process below.' },
+          { label: 'Sources', value: 'LeetCode, May and September 2026 and October 2024; Taro and Blind accounts from 2022 to 2025, all in the sources list that closes the page.' },
         ],
-        practiceLink: { label: 'Rehearse the React debugging task (Premium)', path: '/react/coding/react-debug-api-misuse' },
+        practiceLink: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
         processLink: { label: 'See the 2026 assessment row in the reported process', fragment: 'walmart-interview-process-3-stage-online-assessment-2026-accounts' },
       },
     ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the reported rounds in order',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      intro: 'The open bracket problem first, then one item for each kind of round: the JavaScript and React fundamentals, the 2026 debugging section and the design rounds.',
       steps: [
         {
           label: 'Valid Parentheses',
           path: '/javascript/coding/js-valid-parentheses',
           access: 'free',
-          why: 'A warm-up in the shape of the DSA round that opens the SDE 3 (UI) loop.',
+          why: 'The open question, from the DSA round of two of the three SDE 3 (UI) accounts and from a 2020 front-end developer account.',
         },
         {
-          label: 'How SSR and hydration work in React',
-          path: '/react/trivia/react-ssr-hydration',
+          label: 'Frontend fundamentals quiz',
+          path: '/guides/interview-blueprint/quiz',
           access: 'free',
-          why: 'The fundamentals round asks how React renders and how the web works.',
-        },
-        {
-          label: 'When a React app needs Redux',
-          path: '/react/trivia/react-state-management-redux',
-          access: 'free',
-          why: 'State management questions recur in the React rounds.',
-        },
-        {
-          label: 'Code splitting and module federation',
-          path: '/react/trivia/react-code-splitting-module-federation',
-          access: 'free',
-          why: 'One SDE 3 (UI) account was asked about module federation.',
+          why: 'Short JavaScript, React, CSS and browser answers, for the fundamentals round and the short-answer screens.',
         },
         {
           label: 'Debug a product search that misuses its API',
           path: '/react/coding/react-debug-api-misuse',
           access: 'premium',
-          why: 'The 2026 assessment describes debugging a React or Angular app, and a Walmart-badged commenter on a Software Engineer III thread listed a React coding round and a debug session.',
-        },
-        {
-          label: 'Select with compound components',
-          path: '/react/coding/react-select-compound-api',
-          access: 'premium',
-          why: 'A component API design task reported in an SDE 3 (UI) round.',
-        },
-        {
-          label: 'Implement useMemo and a Context data provider',
-          path: '/react/coding/react-implement-usememo-context',
-          access: 'premium',
-          why: 'Reported as a from-scratch hooks task that then extends to API results.',
+          why: 'The 2026 Frontend Engineering Assessment has a React or Angular debugging section; this one is in React.',
         },
         {
           label: 'Design a real-time messaging inbox',
           path: '/system-design/messaging-inbox-frontend',
           access: 'premium',
-          why: 'A practice version for the design rounds. The chat prompt comes from published advice, not from a reported round.',
+          why: 'For the design rounds of Software Engineer III and senior loops. A Walmart-badged user on Blind gave a chat app as an example of the frontend design asked; this is a practice version of it.',
         },
       ],
     },
@@ -132,7 +108,7 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
         {
           question: 'Is there a system design round?',
           answer:
-            'Senior and Software Engineer III accounts, mostly from the US, report one or two design rounds. The SDE 3 (UI) accounts from India report none, and none of them mentions an online assessment either.',
+            'Senior and Software Engineer III accounts, mostly from the US, report one or two design rounds. The three SDE 3 (UI) accounts report none, and none of them mentions an online assessment either.',
         },
         {
           question: 'What is the Walmart Frontend Engineering Assessment, and which platform runs the screen?',
@@ -140,9 +116,9 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
             'A May 2026 invite describes a HackerRank Frontend Engineering Assessment with two parts: a language-agnostic coding problem and a React or Angular debugging task, with AI assistance allowed for UI navigation, syntax and clarification. A September 2026 full-stack invite adds a back-end section, and a commenter who took it reports 140 minutes. Other reports name HackerRank, including CodePair, and Karat. Your invitation names the platform that applies to your loop.',
         },
         {
-          question: 'Are these the real Walmart questions?',
+          question: 'Where do the reported questions come from?',
           answer:
-            'No. They are practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Walmart questions. Treat recruiter material as the source of truth.',
+            'From posts by candidates on LeetCode, Taro, Blind, Medium, Hashnode, dev.to, Code360, GeeksforGeeks and frontendgeek, between 2018 and 2026, written here in our words. They are not leaked or confirmed Walmart questions; most come from Walmart Global Tech India, and several from full-stack loops.',
         },
       ],
     },
@@ -517,16 +493,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports from 2021 to 2023 describe Booking.com frontend interviews: a HackerRank test, coding rounds with two engineers and the fit interview.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Booking.com publishes a four-step journey; public frontend reports from 2021 to 2023 add the detail: a 90 to 100 minute HackerRank test, one or two 60 minute coding rounds in vanilla JavaScript or React, and a fit interview. One 2025 software engineer account adds a take-home.',
+      subtitle: 'Booking.com publishes a four-step hiring journey. Frontend accounts from 2021 to 2023 fill in the rounds: a HackerRank test of 90 to 100 minutes, one or two live coding rounds of about an hour with two engineers, in plain JavaScript or React, and a fit interview, with engineering managers in one account. Each round follows in turn, then the questions candidates reported, with the first one open.',
     },
-    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for technical roles. The frontend detail comes from public accounts from 2021 to mid-2023, most of them for Amsterdam roles; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers.'],
+    intro: ['The official page, linked below, describes Application, Interview, Business and Feedback steps over three to six weeks, with technical tests and coding interviews for some technical roles. The frontend detail comes from candidate accounts from 2021 to mid-2023, most of them for Amsterdam roles. Three 2025 accounts say less: a frontend developer describes a recruiter call and a live-coding round with two engineers, and two software engineer loops add a take-home, an easy React exercise and system design.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'HackerRank test, recruiter call, coding rounds, fit interview',
-      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and one React component. A short recruiter call follows, 15 minutes in one full-stack account, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview with engineering managers, 60 minutes in that same full-stack account.'],
+      paragraphs: ['The HackerRank test runs 90 to 100 minutes with about five items: two algorithm problems, mostly easy (one account had a medium), two HTML and CSS multiple-choice questions and one React component. A short recruiter call follows, 15 minutes in one full-stack account, sometimes with a few technical questions, then one or two coding rounds of about 60 minutes with two engineers, and a fit interview, with engineering managers in one account and 60 minutes in that same full-stack account.'],
       bullets: [
         {
-          text: 'The coding rounds build a component in plain JavaScript or React. An autocomplete or typeahead recurs; other accounts mention a tooltip, a component fed by API data to a design spec and a new feature added to a prepared app.',
+          text: 'In the coding rounds the candidate builds a UI component live with two engineers, in plain JavaScript, HTML and CSS or in React. An autocomplete search box recurs from 2021 to 2023 and opens the question list below; the other tasks candidates reported are in the same list.',
           link: {
             label: 'See the coding stage',
             fragment: 'booking-com-interview-process-1',
@@ -536,10 +512,10 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
           text: 'Backend coding and system design appear only in full-stack and senior accounts; no frontend-titled account describes a system design round.',
         },
         {
-          text: 'One account describes a monitored 40-minute HackerRank session with three engineers, a live round rather than the take-home test.',
+          text: 'One 2023 account describes a monitored 40-minute HackerRank session with three engineers, a live round rather than the timed test.',
         },
         {
-          text: 'One August 2025 software engineer account describes a take-home followed by a technical session, then system design and an engineering manager round; a May 2025 senior full-stack loop had an easy React exercise and system design.',
+          text: 'An August 2025 software engineer account describes a take-home followed by a technical session, then system design and an engineering manager round; a May 2025 senior software engineer loop had an easy React exercise and system design.',
         },
       ],
     },
@@ -547,18 +523,18 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       {
         id: 'fit-interview',
         kicker: 'Round decoder',
-        title: 'Booking.com fit interview for frontend engineers: what it is and how to prepare',
+        title: 'The Booking.com fit interview: who runs it and where it falls',
         lede: [
           'The fit interview is the final round in the public frontend accounts from 2021 to 2023, after the HackerRank test, the recruiter call and one or two coding rounds. One account calls it a team fit with the engineering managers, another a behavioral interview, and two others a culture fit interview; one full-stack account gives it 60 minutes. Booking.com’s own journey page describes Application, Interview, Business and Feedback steps over three to six weeks.',
-          'These accounts name the round but list no questions, so treat it as a behavioural conversation: prepare stories with a decision, a trade-off and a measured result, and ask the recruiter who runs it and how long it takes.',
+          'None of these accounts lists a question from this round, so what it asks is not on record. They agree on its place at the end of the loop; one 2022 account names the engineering managers as the interviewers, and a 2025 software engineer loop also closed with an engineering manager round. The recruiter can tell you who joins and how long it lasts.',
         ],
         facts: [
           { label: 'Position in the loop', value: 'The final round, after the HackerRank test, the recruiter call and one or two coding rounds.' },
           { label: 'What accounts call it', value: 'A team fit with the engineering managers (2022), a behavioral interview (2023), a culture fit interview (2021 and 2022).' },
           { label: 'Length', value: '60 minutes in one full-stack account; the frontend accounts give no duration.' },
-          { label: 'Questions', value: 'The frontend accounts name the round but list no questions; the questions they report belong to the coding rounds.' },
-          { label: 'Recent loops', value: 'An August 2025 software engineer account describes a take-home, a technical session, system design and an engineering manager round; a thin September 2025 frontend account describes a recruiter call and a live-coding round.' },
-          { label: 'Sources', value: 'Taro frontend accounts from 2021 to 2023, linked in the reported process below, and the Booking.com careers journey page.' },
+          { label: 'Questions', value: 'None of the accounts lists a fit-interview question; the questions they report come from the coding rounds and the HackerRank test.' },
+          { label: 'Recent loops', value: 'An August 2025 software engineer loop closed with an engineering manager round after a take-home, a technical session and system design; a September 2025 frontend account describes a recruiter call and a live-coding round.' },
+          { label: 'Sources', value: 'Taro frontend accounts from 2021 to 2023 and the Booking.com careers journey page, listed with the other sources at the end of this page.' },
         ],
         practiceLink: { label: 'Prepare with the behavioural interview guide', path: '/guides/behavioral' },
         processLink: { label: 'See the fit interview row in the reported process', fragment: 'booking-com-interview-process-1-stage-fit-interview' },
@@ -567,61 +543,61 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the autocomplete round first',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      intro: 'The autocomplete leads because it is the task these accounts repeat; warm-ups for the HackerRank test and the premium search items follow.',
       steps: [
         {
           label: 'React autocomplete search',
           path: '/react/coding/react-autocomplete-search-starter',
           access: 'free',
-          why: 'The autocomplete that recurs across the coding rounds.',
+          why: 'The open question, a search box with suggestions, here in React; one 2023 account asked for plain JavaScript.',
         },
         {
           label: 'Debounce',
           path: '/javascript/coding/js-debounce',
           access: 'free',
-          why: 'The debounce discussed inside the autocomplete rounds.',
+          why: 'One autocomplete account lists debounce or throttle among the features to weigh.',
         },
         {
           label: 'Flatten one level',
           path: '/javascript/coding/js-flatten-once',
           access: 'free',
-          why: 'An editorial grouping for the easy algorithm items of the HackerRank test.',
+          why: 'A warm-up for the easy algorithm problems of the HackerRank test; flattening is our pick, not a reported problem.',
         },
         {
           label: 'The CSS box model',
           path: '/css/trivia/css-box-model',
           access: 'free',
-          why: 'An editorial grouping for the HTML and CSS multiple-choice questions of the HackerRank test.',
+          why: 'For the HTML and CSS multiple-choice questions of the HackerRank test, whose topics the accounts do not give.',
         },
         {
           label: 'Vue autocomplete search',
           path: '/vue/coding/vue-autocomplete-search',
           access: 'free',
-          why: 'The same autocomplete in Vue, one of the frameworks candidates could choose.',
+          why: 'The same search box in Vue, for a round that lets you pick the framework.',
         },
         {
           label: 'Autocomplete engine in plain JavaScript',
           path: '/javascript/coding/js-autocomplete-engine',
           access: 'premium',
-          why: 'The typeahead logic the coding rounds discuss: debounce, a stale-response guard and a cache, tested without a page.',
+          why: 'The typeahead logic without a page: debounce, a guard against stale responses and a cache.',
         },
         {
           label: 'Throttle',
           path: '/javascript/coding/js-throttle',
           access: 'premium',
-          why: 'The throttle variant discussed in a 2023 machine coding round.',
+          why: 'The other half of the debounce or throttle choice in that autocomplete account.',
         },
         {
           label: 'React debounced search',
           path: '/react/coding/react-debounced-search',
           access: 'premium',
-          why: 'A practice version of the component fed by API data to a design spec.',
+          why: 'Suggestions fetched from an API as the user types, with stale results dropped.',
         },
         {
           label: 'Real-time search with debounce and cache',
           path: '/system-design/realtime-search-debounce-cache',
           access: 'premium',
-          why: 'A design-level practice version for the autocomplete with caching and keyboard navigation.',
+          why: 'The autocomplete as a design discussion: caching, keyboard navigation and error states.',
         },
       ],
     },
@@ -631,15 +607,15 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Is there a system design round for frontend roles?',
-          answer: 'Not in the frontend-titled accounts. Backend coding and system design appear in full-stack and senior accounts only.',
+          answer: 'Not in the frontend-titled accounts. Backend coding and system design appear in full-stack and senior accounts, and system design in both 2025 software engineer loops.',
         },
         {
           question: 'Is the HackerRank test monitored?',
-          answer: 'One account describes a monitored 40-minute session with three engineers, which was a live round. The take-home test in the other accounts ran 90 to 100 minutes on its own.',
+          answer: 'One 2023 account describes a monitored 40-minute session with three engineers, which was a live round. The timed test in the other accounts ran 90 to 100 minutes on its own.',
         },
         {
           question: 'How recent are these reports?',
-          answer: 'Detailed frontend accounts run from 2021 to mid-2023; a thin September 2025 frontend developer account describes a recruiter call and a live-coding round with two engineers. The 2025 software engineer accounts describe a take-home followed by a technical session in one case and an easy React exercise plus system design in another.',
+          answer: 'The detailed frontend accounts run from 2021 to mid-2023. The three 2025 accounts are short: a frontend developer describes a recruiter call and one live-coding round with two engineers, a software engineer a take-home, a technical session, system design and an engineering manager round, and a senior software engineer an easy React exercise and system design.',
         },
       ],
     },

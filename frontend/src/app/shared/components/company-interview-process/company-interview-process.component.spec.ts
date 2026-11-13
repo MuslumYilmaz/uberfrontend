@@ -303,4 +303,59 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(host.querySelector('.interview-process__tag')).toBeNull();
     expect(host.querySelectorAll('.interview-process__sources a').length).toBe(4);
   });
+
+  describe('with the sources at the end of the guide', () => {
+    async function renderReportedBy() {
+      await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+      const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+      fixture.componentRef.setInput('slug', 'acme');
+      fixture.componentRef.setInput('companyLabel', 'Acme');
+      fixture.componentRef.setInput('process', {
+        ...FIXTURE,
+        variants: [{
+          ...FIXTURE.variants[0],
+          stages: [FIXTURE.variants[0].stages[0], {
+            ...FIXTURE.variants[0].stages[1],
+            sources: [
+              ...FIXTURE.variants[0].stages[1].sources,
+              { label: 'Aced', url: 'https://reports.example/four', kind: 'report', date: '2025-09', role: 'Senior frontend engineer', location: 'Canada' },
+            ],
+          }],
+        }],
+      });
+      fixture.componentRef.setInput('reportedBy', true);
+      fixture.componentRef.setInput('questionCounts', { 'System design': 2 });
+      fixture.componentRef.setInput('roundNotStated', 1);
+      fixture.componentRef.setInput('questionsAnchor', 'acme-questions');
+      fixture.componentRef.setInput('tryNow', { stage: 'Online assessment', label: 'Debounce', path: '/javascript/coding/js-debounce' });
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    }
+
+    it('says who reported each round and when, with no link to the report', async () => {
+      const host = await renderReportedBy();
+      expect(host.querySelectorAll('a[href^="http"]').length).toBe(0);
+      expect(host.querySelector('thead')?.textContent).toContain('Reported by');
+      const reporters = Array.from(host.querySelectorAll('[data-testid="company-interview-process-reporter"]')).map((el) => el.textContent?.trim());
+      // An official page names itself; a round with accounts names its newest one.
+      expect(reporters).toEqual(['Acme hiring guide', 'Newest: Senior frontend engineer, Canada · Sep 2025']);
+    });
+
+    it('counts the reported questions of a round and those of no round, each linking to the list', async () => {
+      const host = await renderReportedBy();
+      const count = host.querySelector('[data-testid="company-interview-process-question-count"]') as HTMLAnchorElement;
+      expect(count.textContent?.replace(/\s+/g, ' ').trim()).toBe('2 reported questions');
+      expect(count.getAttribute('href')).toBe('#acme-questions');
+      expect(count.closest('tr')?.querySelector('th')?.textContent).toContain('System design');
+      expect(host.querySelector('[data-testid="company-interview-process-unplaced"]')?.textContent?.replace(/\s+/g, ' ').trim())
+        .toBe('1 more reported question comes from sources that do not name the round.');
+    });
+
+    it('offers the first technical round\'s free task to try at once', async () => {
+      const host = await renderReportedBy();
+      const box = host.querySelector('[data-testid="company-interview-process-try"]') as HTMLElement;
+      expect(box.textContent?.replace(/\s+/g, ' ')).toContain('Online assessment: try Debounce now, a free task we picked for this round.');
+      expect(box.querySelector('a')?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
+    });
+  });
 });

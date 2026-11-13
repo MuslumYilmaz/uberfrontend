@@ -1,6 +1,6 @@
 import { seoContentDateModified } from '../../../core/utils/seo-content-date.util';
-import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Injector, OnInit, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ApplicationRef, Component, DestroyRef, Injector, OnInit, PLATFORM_ID, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { from, map, switchMap } from 'rxjs';
@@ -12,6 +12,9 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { isPremiumRoute } from '../../../core/utils/premium-route.util';
+import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
+import { formatPlanDollars, premiumPlanPrices } from '../../../core/utils/plan-price.util';
+import { PRERENDER_PLAN_DETAILS } from '../../../generated/pricing-defaults';
 import { hasPremium } from '../company-plan/company-plan-access';
 import { cleanCompanyPlanAnswers } from '../company-plan/company-plan-draft';
 import { COMPANY_SET_COUNTS, PREMIUM_QUESTION_COUNT } from '../company-plan/company-plan-sets';
@@ -20,7 +23,7 @@ import { LEVEL_LABELS, WHEN_LABELS, companySetLine, joinNames } from '../company
 import type { CompanyPlanService } from '../company-plan/company-plan.service';
 import { companyBrandFor } from '../../../shared/company-branding';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
-import type { AuthoredCompanyPreview, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
+import type { AuthoredCompanyPreview, AuthoredPracticePrompt, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
@@ -32,7 +35,16 @@ import { isCompanyGuideGated } from './company-guide-gate';
 import {
   COMPANY_INTERVIEW_PROCESSES,
   type CompanyInterviewProcess,
+  type InterviewProcessSource,
 } from '../../../shared/company-previews/company-interview-processes';
+// The redesign's counting and reporter helpers sit beside the process data; every guide changes with them in one release.
+import { summariseQuestionList } from '../../../shared/company-previews/company-question-list';
+import { describeReporter } from '../../../shared/company-previews/company-source-reporter';
+import { COMPANY_GUIDE_FEATURES } from './company-guide-features';
+import { CompanyQuestionListComponent, type CompanyQuestionOffer, type FreeUnlockState } from './company-question-list/company-question-list.component';
+import { FreeUnlockService } from './free-unlock.service';
+import { CompanyGuideSourcesComponent, type GuideSourceRow } from './company-guide-sources/company-guide-sources.component';
+import type { InterviewProcessTryNow } from '../../../shared/components/company-interview-process/company-interview-process.component';
 import type { CompanyReportedItem } from '../../../core/models/company-public.model';
 import { CompanyOfficialGuidesComponent } from '../../../shared/components/company-official-guides/company-official-guides.component';
 import { CompanyInterviewProcessComponent } from '../../../shared/components/company-interview-process/company-interview-process.component';
@@ -125,6 +137,8 @@ const GUIDE_LINK_ZONES: readonly (readonly [selector: string, surface: string])[
   ['app-company-official-guides', 'official_guides'],
   ['.company-round-spotlight', 'round_spotlight'],
   ['.company-prompt, .openai-prompt', 'prompts'],
+  ['app-company-question-list', 'question_list'],
+  ['app-company-guide-sources', 'sources'],
   ['.company-guide-links, .openai-links', 'free_practice'],
   ['.company-sample-gate', 'sample_gate'],
   ['.company-account-gate', 'account_gate'],
@@ -301,6 +315,8 @@ const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
       StripInlineMarkupPipe,
       InlineCodeComponent,
       BehavioralDrillComponent,
+      CompanyQuestionListComponent,
+      CompanyGuideSourcesComponent,
     ],
     templateUrl: './company-preview.component.html',
     styleUrls: ['./company-preview.component.css']
@@ -411,8 +427,71 @@ export class CompanyPreviewComponent implements OnInit {
     return hasPremium(user) ? 'member' : 'account';
   });
 
-  /** The account gate is on for this guide (see GATED_COMPANY_GUIDES). */
-  readonly gated = computed(() => isCompanyGuideGated(this.guide().slug));
+  readonly features = COMPANY_GUIDE_FEATURES;
+
+  /**
+   * The guide's reported-question list, when its process has one. The redesigned layout follows from it: the list in
+   * place of the prompt cards, locked prep sections and the sources at the end. The authored branch shows it today.
+   */
+  readonly questionSummary = computed(() => {
+    const process = COMPANY_INTERVIEW_PROCESSES[this.guide().slug];
+    return process ? summariseQuestionList(process) : null;
+  });
+
+  /** The account gate is on for this guide (see GATED_COMPANY_GUIDES); the question list replaces it. */
+  readonly gated = computed(() => isCompanyGuideGated(this.guide().slug) && !this.questionSummary());
+
+  /** Study priorities, role lenses and the walkthrough are Premium once the list locks. */
+  readonly prepLocked = computed(() => this.features.lockedQuestions && !!this.questionSummary() && this.tier() !== 'member');
+
+  /** The 7-day plan shows its day titles to everyone; what each day holds opens with a free account. */
+  readonly planLocked = computed(() => this.features.lockedQuestions && !!this.questionSummary() && this.tier() === 'guest');
+
+  /** Reported questions per round, for the stage table. */
+  readonly questionCounts = computed(() => {
+    const summary = this.questionSummary();
+    if (!summary || !this.features.premiumPull) return null;
+    return Object.fromEntries(summary.rounds.map((round) => [round.stage, round.count]));
+  });
+
+  /** The first technical round's first free task, to try the round's shape at once; none when no round has one. */
+  readonly tryNow = computed<InterviewProcessTryNow | null>(() => {
+    const process = COMPANY_INTERVIEW_PROCESSES[this.guide().slug];
+    if (!process || !this.questionSummary()) return null;
+    for (const stage of process.variants[0]?.stages ?? []) {
+      const practice = stage.practice;
+      if (practice && !practice.fragment && !isPremiumRoute(practice.path)) return { stage: stage.stage, label: practice.label, path: practice.path };
+    }
+    return null;
+  });
+
+  /** The guide's practice prompts by id: a question's answer guide is one of them. */
+  answerGuides: Readonly<Record<string, AuthoredPracticePrompt>> = {};
+  /** Every source once, with who reported it and when, for the list at the end of the page. */
+  guideSourceRows: readonly GuideSourceRow[] = [];
+
+  /** Premium's monthly price in the list's offer: the prerendered list price, then the visitor's regional one. */
+  private readonly offerPlanDetails = signal<Partial<Record<'monthly' | 'annual', { amountCents?: number }>>>(PRERENDER_PLAN_DETAILS);
+  private readonly offerRegional = signal<RegionalPricing | null>(null);
+  private offerPricingRequested = false;
+  private readonly billingCheckout = inject(BillingCheckoutService);
+  private readonly appRef = inject(ApplicationRef);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  private readonly freeUnlocks = inject(FreeUnlockService);
+  /** The account's free unlock, wherever it was spent. A visitor and a member have none to show. */
+  readonly freeUnlock = computed(() => (this.tier() === 'account' ? this.auth.user()?.freeUnlock ?? null : null));
+  readonly unlockState = signal<FreeUnlockState | null>(null);
+  /** The guide whose remembered choice was looked at, so a visitor's choice is spent once, on arrival with an account. */
+  private intentCheckedFor: string | null = null;
+
+  readonly offer = computed<CompanyQuestionOffer | null>(() => {
+    const monthly = premiumPlanPrices(this.offerPlanDetails(), this.offerRegional())?.monthly
+      ?? this.offerPlanDetails().monthly?.amountCents;
+    if (!monthly) return null;
+    const regional = this.offerRegional();
+    return { price: formatPlanDollars(monthly), priceNote: regional ? `prices for ${regional.countryName}` : 'lower prices in many countries' };
+  });
 
   /** What each round asks, the sources and the prompts past the first wait for a free account. */
   readonly detailLocked = computed(() => this.gated() && this.tier() === 'guest');
@@ -572,6 +651,10 @@ export class CompanyPreviewComponent implements OnInit {
 
   /** The closing call of an authored guide, which names no Premium task. */
   ctaCopy(total: number): string {
+    const summary = this.questionSummary();
+    if (summary && this.features.lockedQuestions) {
+      return `Premium opens the other ${summary.total - 1} reported ${this.label} questions, every question in the ${this.label} set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`;
+    }
     const locked = total - this.openPrompts();
     const prompts = locked > 0 ? `${this.lockedRange(total)} with ${locked === 1 ? 'its answer guide' : 'their answer guides'}, ` : '';
     return `Premium opens ${prompts}every question in the ${this.label} set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`;
@@ -592,6 +675,7 @@ export class CompanyPreviewComponent implements OnInit {
     const notes = this.editorialNotes;
     const stages = (this.interviewProcess?.variants ?? []).flatMap((variant) => variant.stages);
     return this.gated()
+      || (!!this.questionSummary() && this.features.lockedQuestions)
       || this.data.samples.some(premiumAccess)
       || (this.data.reports ?? []).some(premiumAccess)
       || (notes?.prepSteps?.steps ?? []).some(premiumAccess)
@@ -616,6 +700,33 @@ export class CompanyPreviewComponent implements OnInit {
     afterNextRender(() => this.rendered.set(true));
     effect(() => {
       if (this.planHere()) untracked(() => this.loadPlanProgress());
+    });
+    // A visitor who chose the free unlock before signing up comes back with an account: the question opens on arrival.
+    // A member's remembered choice is dropped: Premium already opens the question.
+    effect(() => {
+      const slug = this.guide().slug;
+      const tier = this.tier();
+      if (tier === 'guest' || !this.questionSummary() || this.intentCheckedFor === slug) return;
+      this.intentCheckedFor = slug;
+      untracked(() => {
+        const questionId = this.freeUnlocks.takeIntent(slug);
+        if (tier === 'account' && questionId && !this.freeUnlock()) this.spendFreeUnlock(questionId, 'after_signup');
+      });
+    });
+    // The offer names Premium's price; the checkout config then brings the visitor's regional one. The request waits
+    // for the app to settle: an HTTP request counts as pending work, the router skips its scroll reset while hydration
+    // is unfinished, and a click on the guide's lower links would then open the next page scrolled down.
+    effect(() => {
+      if (!this.isBrowser || !this.rendered() || this.offerPricingRequested) return;
+      if (!this.questionSummary() || !this.features.premiumPull || this.tier() === 'member') return;
+      this.offerPricingRequested = true;
+      void this.appRef.whenStable()
+        .then(() => this.billingCheckout.getCheckoutConfig())
+        .then((config) => {
+          if (config?.planDetails) this.offerPlanDetails.set(config.planDetails);
+          this.offerRegional.set(config?.pricing?.regional ?? null);
+        })
+        .catch(() => undefined);
     });
   }
 
@@ -667,6 +778,11 @@ export class CompanyPreviewComponent implements OnInit {
       ? companyEvidence(authored, this.interviewProcess)
       : this.isNetflixPreview ? evidenceFrom(NETFLIX_SOURCES, NETFLIX_PRACTICE_PROMPTS.length, this.interviewProcess) : null;
     this.authoredPreview = authored && this.evidence ? fillAuthoredPreview(authored, this.evidence.counts) : null;
+    this.answerGuides = Object.fromEntries((this.authoredPreview?.prompts.items ?? []).map((prompt) => [prompt.id, prompt]));
+    // A catalog guide has no sources list of its own: the reported items' accounts and the table's make it up.
+    this.guideSourceRows = this.sourceRows(
+      this.evidence?.sources ?? evidenceFrom(this.reportedItemSources(resolved?.reports ?? []), 0, this.interviewProcess).sources,
+    );
     this.editorialNotes = this.authoredPreview || this.isOpenAiPreview || this.isGooglePreview || this.isNetflixPreview
       ? null
       : this.editorialNotesRegistry[this.slug] ?? null;
@@ -676,6 +792,11 @@ export class CompanyPreviewComponent implements OnInit {
       counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 },
       samples: [],
     };
+    // Beside a question list, a sample that is a locked question's practice task would name what the lock holds back;
+    // the list carries that task, so the sample is left out.
+    const held = new Set((this.features.lockedQuestions ? (this.interviewProcess?.questions ?? []).slice(1) : [])
+      .flatMap((question) => (question.practice ? [question.practice.path.split('/').pop()] : [])));
+    if (held.size) this.data = { ...this.data, samples: this.data.samples.filter((item) => !held.has(item.id)) };
     this.reportedSampleKeys = new Set((this.data.reports ?? []).map((item) => `${item.kind}:${item.id}`));
 
     if (this.isOpenAiPreview) {
@@ -1102,6 +1223,80 @@ export class CompanyPreviewComponent implements OnInit {
     });
   }
 
+  /** The reader chose the free unlock for a question: an account spends it, a visitor's choice waits for an account. */
+  onFreeUnlock(questionId: string): void {
+    if (this.tier() === 'guest') this.freeUnlocks.rememberIntent(this.slug, questionId);
+    else if (this.tier() === 'account') this.spendFreeUnlock(questionId, 'direct');
+  }
+
+  private spendFreeUnlock(questionId: string, via: 'direct' | 'after_signup'): void {
+    const company = this.slug;
+    this.unlockState.set({ questionId, status: 'pending' });
+    this.freeUnlocks.claim(company, questionId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((result) => {
+      if (result.status === 'error') {
+        this.unlockState.set({ questionId, status: 'error' });
+        this.analytics.track('company_question_unlock_failed', { company, question_id: questionId, via });
+        return;
+      }
+      this.unlockState.set(result.status === 'used' ? { questionId, status: 'used' } : null);
+      if (result.status === 'opened') {
+        this.analytics.track('company_question_unlocked', { company, question_id: questionId, via });
+        // The reader lands on the question they opened, wherever the page was.
+        if (this.isBrowser) setTimeout(() => document.getElementById(`${company}-question-${questionId}`)?.scrollIntoView({ block: 'start' }));
+      }
+    });
+  }
+
+  /** A plan day's title: its focus up to the first colon, "Media timing" from "Media timing: requestAnimationFrame loops…". */
+  dayTitle(focus: string): string {
+    const colon = focus.indexOf(':');
+    return colon > 0 ? focus.slice(0, colon) : focus;
+  }
+
+  /** What a plan day holds after its title; empty when the focus has no colon. */
+  dayDetail(focus: string): string {
+    const colon = focus.indexOf(':');
+    if (colon <= 0) return '';
+    const detail = focus.slice(colon + 1).trim();
+    return detail.charAt(0).toUpperCase() + detail.slice(1);
+  }
+
+  /** The accounts behind a catalog guide's reported practice items, once each, as sources rows. */
+  private reportedItemSources(reports: readonly CompanyReportedItem[]): AuthoredSource[] {
+    const byUrl = new Map<string, AuthoredSource>();
+    for (const item of reports) {
+      for (const source of item.sources ?? []) {
+        if (!byUrl.has(source.url)) {
+          byUrl.set(source.url, { label: source.label, url: source.url, kind: 'report', note: 'A public account behind one of the practice tasks tagged for this company.' });
+        }
+      }
+    }
+    return [...byUrl.values()];
+  }
+
+  /** The guide's sources with who reported each one and when, read from the process data that cites them. */
+  private sourceRows(sources: readonly AuthoredSource[]): GuideSourceRow[] {
+    const process = this.interviewProcess;
+    const byUrl = new Map<string, InterviewProcessSource>();
+    // The first citation wins: a thread a stage cites for its poster's loop keeps that date when a question cites a
+    // later comment in the same thread.
+    const cite = (source: InterviewProcessSource) => byUrl.has(source.url) || byUrl.set(source.url, source);
+    for (const variant of process?.variants ?? []) for (const stage of variant.stages) stage.sources.forEach(cite);
+    for (const question of [...(process?.questions ?? []), ...(process?.behaviouralQuestions ?? [])]) question.sources.forEach(cite);
+    return sources.map((source) => {
+      const cited = byUrl.get(source.url);
+      const account = cited?.kind === 'report' && cited.reportForm !== 'question-bank';
+      return {
+        label: source.label,
+        url: source.url,
+        kind: source.kind,
+        note: source.note,
+        who: cited ? describeReporter(cited) : null,
+        date: account ? cited.date : null,
+      };
+    });
+  }
+
   sourceRel(source: AuthoredSource): string {
     return source.kind === 'report' ? 'noopener noreferrer nofollow' : 'noopener noreferrer';
   }
@@ -1124,6 +1319,10 @@ export class CompanyPreviewComponent implements OnInit {
       })),
     };
 
+    // With the question list the locked rows are the Premium part. Their questions are not listed as an ItemList:
+    // structured data would name what a visitor cannot read.
+    const questionList = this.questionSummary();
+    const locked = questionList ? this.features.lockedQuestions : this.gated() || preview.prompts.items.length > OPEN_PROMPTS;
     const collectionPage = {
       '@type': 'CollectionPage',
       '@id': `${canonicalUrl}#collection`,
@@ -1134,14 +1333,14 @@ export class CompanyPreviewComponent implements OnInit {
       disambiguatingDescription: preview.trustNote,
       inLanguage: 'en',
       ...(dateModified ? { dateModified } : {}),
-      ...lockedAccess(this.gated() || preview.prompts.items.length > OPEN_PROMPTS),
+      ...lockedAccess(locked),
       about: preview.about.map((name) => ({ '@type': 'Thing', name })),
       mentions: preview.resourceLinks.items.map((link) => ({
         '@type': 'WebPage',
         name: link.label,
         url: this.seo.buildCanonicalUrl(link.path),
       })),
-      mainEntity: { '@id': itemListId },
+      ...(questionList ? {} : { mainEntity: { '@id': itemListId } }),
     };
 
     const breadcrumb = {
@@ -1174,7 +1373,7 @@ export class CompanyPreviewComponent implements OnInit {
       description: preview.description,
       robots: 'index,follow',
       canonical: preview.canonicalPath,
-      jsonLd: [collectionPage, itemList, breadcrumb],
+      jsonLd: questionList ? [collectionPage, breadcrumb] : [collectionPage, itemList, breadcrumb],
     });
   }
 

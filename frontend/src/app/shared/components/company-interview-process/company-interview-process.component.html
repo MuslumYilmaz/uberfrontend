@@ -19,13 +19,21 @@
               <th scope="col">Stage</th>
               <th scope="col">What happens</th>
               <th scope="col">Who</th>
-              <th scope="col">Evidence</th>
+              <th scope="col">{{ reportedBy ? 'Reported by' : 'Evidence' }}</th>
             </tr>
           </thead>
           <tbody>
             @for (stage of variant.stages; track $index) {
               <tr [attr.id]="stageId(i, stage)">
-                <th scope="row" data-label="Stage">{{ stage.stage }}</th>
+                <th scope="row" data-label="Stage">
+                  {{ stage.stage }}
+                  @if (questionCount(stage); as count) {
+                    <a class="interview-process__qcount" [attr.href]="'#' + questionsAnchor" data-testid="company-interview-process-question-count">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                      {{ count }} reported {{ count === 1 ? 'question' : 'questions' }}
+                    </a>
+                  }
+                </th>
                 <td data-label="What happens">
                   {{ stage.format }}
                   @if (stage.practice; as practice) {
@@ -55,12 +63,14 @@
                   }
                 </td>
                 <td data-label="Who">{{ stage.appliesTo }}</td>
-                <td data-label="Evidence">
+                <td [attr.data-label]="reportedBy ? 'Reported by' : 'Evidence'">
                   <span class="interview-process__strength">{{ evidenceLabel(stage) }}</span>
-                  @if (!showSourceLinks) {
+                  @if (reportedBy) {
+                    <span class="interview-process__reporter" data-testid="company-interview-process-reporter">{{ newestReporter(stage) }}</span>
+                  } @else if (!showSourceLinks) {
                     <span class="interview-process__tag">Free account</span>
                   }
-                  @if (showSourceLinks) {
+                  @if (showSourceLinks && !reportedBy) {
                     <!-- On a phone the list waits behind its count; wider screens show it in full. -->
                     <button type="button" class="interview-process__toggle" [attr.aria-expanded]="expanded(i, stage)" (click)="toggleSources(i, stage)">{{ expanded(i, stage) ? 'Hide the sources' : 'Show the sources' }}</button>
                     <ul class="interview-process__sources" [class.interview-process__sources--collapsed]="!expanded(i, stage)">
@@ -76,6 +86,21 @@
             }
           </tbody>
         </table>
+      </div>
+    }
+
+    @if (roundNotStated) {
+      <p class="interview-process__unplaced" data-testid="company-interview-process-unplaced">
+        <a [attr.href]="'#' + questionsAnchor">{{ roundNotStated }} more reported {{ roundNotStated === 1 ? 'question comes' : 'questions come' }}</a>
+        from sources that do not name the round.
+      </p>
+    }
+
+    @if (tryNow; as task) {
+      <div class="interview-process__try" data-testid="company-interview-process-try">
+        <!-- The stage leads, so its own capitals stay (HackerRank, Power Day); the task is our pick, not a reported question. -->
+        <p><strong>{{ task.stage }}:</strong> try {{ task.label }} now, a free task we picked for this round.</p>
+        <a class="interview-process__try-link" [routerLink]="task.path" [state]="returnState">Start the free task <span aria-hidden="true">→</span></a>
       </div>
     }
   </section>

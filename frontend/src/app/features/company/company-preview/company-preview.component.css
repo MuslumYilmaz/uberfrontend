@@ -681,6 +681,41 @@
   color: var(--uf-text-primary);
 }
 
+.company-prep-sequence__title {
+  font-weight: 600;
+  color: var(--uf-text-primary);
+}
+
+.company-prep-sequence__body {
+  display: grid;
+  gap: 5px;
+}
+
+.company-prep-gate {
+  max-width: 72ch;
+  font-size: 14px;
+  color: var(--uf-text-primary);
+}
+
+/* A Premium prep section shows a few blurred lines that fade out; its text stays in the page for search. */
+.company-prep-body {
+  display: grid;
+  gap: 10px;
+}
+
+.company-prep-body--locked {
+  max-height: 7.5rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, currentColor 45%, transparent);
+  mask-image: linear-gradient(to bottom, currentColor 45%, transparent);
+  pointer-events: none;
+}
+
+.company-prep-body--locked > * {
+  filter: blur(5px);
+  user-select: none;
+}
+
 .company-faq-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

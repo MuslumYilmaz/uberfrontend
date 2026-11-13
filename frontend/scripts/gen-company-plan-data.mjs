@@ -451,8 +451,15 @@ function buildCompany(slug, context) {
   });
 
   // The company's whole evidence, counted the way the guide page counts it: every table citation and the guide's
-  // own sources list, once by URL. The plan's "from N public sources" then matches the guide's numbers.
-  const evidence = new Set([...allCited, ...(context.sources?.[slug] ?? [])]);
+  // own sources list, once by URL. The plan's "from N public sources" then matches the guide's numbers. A guide with
+  // a question list also counts what its questions cite, and a catalog guide then lists every reported item's sources.
+  const listed = [...(table.questions ?? []), ...(table.behaviouralQuestions ?? [])];
+  const evidence = new Set([
+    ...allCited,
+    ...(context.sources?.[slug] ?? []),
+    ...listed.flatMap((question) => question.sources.map((source) => source.url)),
+    ...(listed.length && showsEveryReport ? (context.reports[slug] ?? []).flatMap((row) => row.sources.map((source) => source.url)) : []),
+  ]);
   return {
     name: brands[slug].label,
     signature: signatures[slug],
@@ -463,6 +470,8 @@ function buildCompany(slug, context) {
     sourceCount: evidence.size,
     // The guide's practice prompts; the plan tells a phone reader which answer guides Premium opens there.
     promptCount: (context.prompts?.[slug] ?? []).length,
+    // A guide with a question list shows its reported questions instead, the first one open.
+    ...(table.questions?.length ? { questionCount: table.questions.length } : {}),
     variants,
   };
 }

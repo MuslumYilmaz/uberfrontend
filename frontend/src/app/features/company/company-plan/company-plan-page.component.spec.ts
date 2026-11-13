@@ -101,9 +101,11 @@ describe('CompanyPlanPageComponent', () => {
   }
 
   it('builds the plan in the framework the account chose and says so in the chips', () => {
-    setup({ ...ELEVENLABS, framework: 'angular' });
-    expect(Array.from(host.querySelectorAll('.plan-hero__chip')).map((chip) => chip.textContent)).toEqual(['Week of Nov 9', 'Senior', 'Angular, your choice']);
-    const plan = plans.buildPlan(DATA, { ...ELEVENLABS, framework: 'angular' });
+    // This week's ElevenLabs plan holds a task with an Angular version.
+    const chosen: SavedCompanyPlan = { ...ELEVENLABS, when: 'this-week', framework: 'angular' };
+    setup(chosen);
+    expect(Array.from(host.querySelectorAll('.plan-hero__chip')).map((chip) => chip.textContent)).toEqual(['Week of Nov 2', 'Senior', 'Angular, your choice']);
+    const plan = plans.buildPlan(DATA, chosen);
     expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
     expect(plan.tasks.some((task) => task.tech === 'angular')).toBeTrue();
     expect(all('company-plan-map-block').length).toBe(plan.tasks.length);

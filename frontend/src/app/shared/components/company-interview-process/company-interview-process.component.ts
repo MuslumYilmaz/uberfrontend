@@ -8,6 +8,14 @@ import type {
   InterviewProcessSource,
   InterviewProcessStage,
 } from '../../company-previews/company-interview-processes';
+import { describeReporter } from '../../company-previews/company-source-reporter';
+
+/** The free task under the table that lets a reader try the first technical round's shape at once. */
+export type InterviewProcessTryNow = {
+  readonly stage: string;
+  readonly label: string;
+  readonly path: string;
+};
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -33,6 +41,18 @@ export class CompanyInterviewProcessComponent {
   @Input() showSourceLinks = true;
   /** Navigation state for the practice links: a locked task page shows the way back to the guide. */
   @Input() returnState: { [key: string]: any } | undefined;
+  /**
+   * Rows say who reported a round and when, with no links: the guide lists its sources once, at the end. Takes
+   * precedence over `showSourceLinks`.
+   */
+  @Input() reportedBy = false;
+  /** Reported questions per stage name, shown under each stage with a link to the question list. */
+  @Input() questionCounts: Readonly<Record<string, number>> | null = null;
+  /** Reported questions no source places in a round. */
+  @Input() roundNotStated = 0;
+  /** The id of the question list the counts link to. */
+  @Input() questionsAnchor = '';
+  @Input() tryNow: InterviewProcessTryNow | null = null;
 
   /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
   private readonly opened = signal<ReadonlySet<string>>(new Set());
@@ -109,6 +129,18 @@ export class CompanyInterviewProcessComponent {
       return `Official page and ${reports.length === 1 ? 'one report' : `${reports.length} reports`}`;
     }
     return reports.length === 1 ? `One public report, ${span}` : `${reports.length} public reports, ${span}`;
+  }
+
+  /** "Newest: Senior software engineer, United States · Jan 2026", or the official pages when no account backs the round. */
+  newestReporter(stage: InterviewProcessStage): string {
+    const reports = stage.sources.filter((source) => source.kind === 'report' && source.reportForm !== 'question-bank');
+    const newest = [...reports].sort((a, b) => b.date.localeCompare(a.date))[0];
+    if (newest) return `Newest: ${describeReporter(newest)} · ${this.formatMonth(newest.date)}`;
+    return stage.sources.filter((source) => source.kind === 'official').map((source) => source.label).join(' · ');
+  }
+
+  questionCount(stage: InterviewProcessStage): number {
+    return this.questionCounts?.[stage.stage] ?? 0;
   }
 
   /** Reports carry their month in the link text so several links from one site stay distinguishable. */

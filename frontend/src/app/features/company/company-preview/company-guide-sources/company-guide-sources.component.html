@@ -1,0 +1,38 @@
+<section class="guide-sources company-source-list" [attr.aria-labelledby]="headingId()" data-testid="company-guide-sources">
+  <details class="guide-sources__details">
+    <summary class="guide-sources__summary"><h2 [attr.id]="headingId()">Sources ({{ sources().length }})</h2></summary>
+    @if (boundary(); as copy) {
+      <div class="guide-sources__boundary">
+        <p class="guide-sources__boundary-title">{{ copy.title }}</p>
+        @for (paragraph of copy.paragraphs; track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+    }
+    @if (viewer() === 'guest') {
+      <p class="guide-sources__gate" data-testid="company-guide-sources-gate">
+        The links open with a free account.
+        <a routerLink="/auth/signup" [queryParams]="signupParams()">Create a free account</a>
+        <span aria-hidden="true"> · </span>
+        <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
+      </p>
+    }
+    <ul class="guide-sources__list">
+      @for (row of sources(); track row.url) {
+        <li>
+          <p class="guide-sources__label">
+            @if (viewer() === 'guest') {
+              {{ row.label }}
+            } @else {
+              <a [href]="row.url" target="_blank" [attr.rel]="rel(row)">{{ row.label }}</a>
+            }
+          </p>
+          @if (row.who || row.date) {
+            <p class="guide-sources__who">{{ row.who }}@if (row.who && row.date) { · }{{ when(row) }}</p>
+          }
+          <p class="guide-sources__note">{{ row.note }}</p>
+        </li>
+      }
+    </ul>
+  </details>
+</section>

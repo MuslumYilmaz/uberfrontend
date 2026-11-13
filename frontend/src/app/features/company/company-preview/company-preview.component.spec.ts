@@ -8,6 +8,7 @@ import type { CompanyPlanAnswers } from '../../../core/models/company-plan.model
 import { CompanyPreviewResolved } from '../../../core/models/company-public.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BillingCheckoutService } from '../../../core/services/billing-checkout.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import type { CompanyPreviewQuestion } from '../../../core/models/company-public.model';
@@ -17,11 +18,14 @@ import type { CompanyPlanData } from '../company-plan/company-plan.engine';
 import { companySetLine } from '../company-plan/company-plan.format';
 import { CompanyPlanService } from '../company-plan/company-plan.service';
 import { CompanyPreviewComponent } from './company-preview.component';
+import { FreeUnlockService } from './free-unlock.service';
 import type { AuthoredCompanyPreview } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { buildCompanyEditorialNotesFixture } from '../../../shared/company-previews/company-editorial-notes.spec-fixture';
+import { COMPANY_INTERVIEW_PROCESSES } from '../../../shared/company-previews/company-interview-processes';
+import { summariseQuestionList } from '../../../shared/company-previews/company-question-list';
 
 describe('CompanyPreviewComponent', () => {
   let fixture: ComponentFixture<CompanyPreviewComponent>;
@@ -34,6 +38,7 @@ describe('CompanyPreviewComponent', () => {
   const memberWithPlan = (companyPlan: CompanyPlanAnswers) => ({ ...MEMBER, companyPlan: { ...companyPlan, passedRounds: [], markedDone: [] } });
   const planData = { schemaVersion: 1 } as unknown as CompanyPlanData;
   let plans: { loadData: jasmine.Spy; buildPlan: jasmine.Spy };
+  let freeUnlocks: jasmine.SpyObj<FreeUnlockService>;
 
   /** The plan code arrives through a dynamic import, after the render that asked for it. */
   async function settle(): Promise<void> {
@@ -43,6 +48,8 @@ describe('CompanyPreviewComponent', () => {
 
   beforeEach(() => {
     user.set(null);
+    freeUnlocks = jasmine.createSpyObj<FreeUnlockService>('FreeUnlockService', ['claim', 'rememberIntent', 'takeIntent']);
+    freeUnlocks.takeIntent.and.returnValue(null);
     plans = {
       loadData: jasmine.createSpy('loadData').and.returnValue(of(planData)),
       buildPlan: jasmine.createSpy('buildPlan').and.returnValue({ tasks: [{ solved: true }, { solved: false }, { solved: false }, { solved: false }] }),
@@ -103,6 +110,8 @@ describe('CompanyPreviewComponent', () => {
         { provide: AuthService, useValue: { user } },
         { provide: CompanyPlanService, useValue: plans },
         { provide: AUTHORED_COMPANY_PREVIEWS_TOKEN, useValue: authored },
+        { provide: BillingCheckoutService, useValue: { getCheckoutConfig: () => Promise.resolve(null) } },
+        { provide: FreeUnlockService, useValue: freeUnlocks },
       ],
     }).compileComponents();
 
@@ -830,10 +839,10 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('lists the sources the process table cites after the guide sources, and counts them all in the gates', async () => {
-      await createComponent('agoda');
+      await createComponent('revolut');
       const host: HTMLElement = fixture.nativeElement;
       const rows = Array.from(host.querySelectorAll('.company-source-list article'));
-      const guideRows = AUTHORED_COMPANY_PREVIEWS['agoda'].sources.items.length;
+      const guideRows = AUTHORED_COMPANY_PREVIEWS['revolut'].sources.items.length;
       expect(rows.length).toBeGreaterThan(guideRows);
       expect(rows[guideRows].querySelector('p')?.textContent).toMatch(/read for the process table, where it describes the /);
       // The cited-only sources wait behind one closed line with their count; the guide's own notes stay open.
@@ -847,7 +856,7 @@ describe('CompanyPreviewComponent', () => {
       expect(host.querySelector('.preview-subtitle')?.textContent).not.toContain('{');
       const reports = rows.filter((row) => row.querySelector('a')?.getAttribute('rel')?.includes('nofollow')).length;
       const word = countWord(reports);
-      expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public accounts inform this guide`);
+      expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public frontend accounts inform this guide`);
     });
 
     it('states the prompt count of an inline guide from the prompts it renders', async () => {
@@ -955,7 +964,8 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a followed link by where it sits and where it goes, but not a jump within the page', async () => {
-      await createComponent('elevenlabs');
+      // Revolut keeps the layout without a question list: its sources sit in their own section.
+      await createComponent('revolut');
       const host: HTMLElement = fixture.nativeElement;
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const follow = (selector: string): HTMLAnchorElement => {
@@ -1069,7 +1079,7 @@ describe('CompanyPreviewComponent', () => {
     };
 
     it('opens the first three prompts and keeps the details of the rest under a blur, with their title and opening still readable', async () => {
-      await createComponent('elevenlabs');
+      await createComponent('datadog');
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
       expect(cards.length).toBeGreaterThan(3);
@@ -1088,14 +1098,14 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('keeps a free practice link readable under a locked prompt, and blurs only the name of a Premium one', async () => {
-      await createComponent('anduril');
+      await createComponent('gitlab');
       const cards = prompts(fixture.nativeElement);
       const link = (index: number) => cards[index].querySelector('.company-resource-link--inline') as HTMLElement;
       // Prompts 4 and 5 lead to free pages, prompt 1 to a Premium page.
       expect(link(3).classList).not.toContain('company-link--locked');
       expect(link(3).hasAttribute('inert')).toBeFalse();
       expect(link(3).closest('.company-prompt__details')).toBeNull();
-      expect(link(3).textContent?.trim()).toBe('Practise flattening one level (free)');
+      expect(link(3).textContent?.trim()).toBe('Build a spy function like Jest mocks (free)');
       expect(link(0).classList).toContain('company-link--premium');
       expect(link(0).hasAttribute('inert')).toBeFalse();
       expect(link(0).querySelector('.company-link__label')?.textContent).toBe('Premium task for this prompt');
@@ -1105,7 +1115,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('names the locked prompts in a card right after the third one, leading into the plan', async () => {
-      await createComponent('elevenlabs');
+      await createComponent('datadog');
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
       const card = host.querySelector('[data-testid="company-prompt-gate"]') as HTMLElement;
@@ -1113,9 +1123,9 @@ describe('CompanyPreviewComponent', () => {
       expect(cards[2].nextElementSibling).toBe(card);
       expect(gate()).toEqual({
         title: 'The answer guides for prompts 4 and 5 are in Premium',
-        line: 'Premium opens their answer guides and the full ElevenLabs practice set. Your plan shows what opens for your date, and the price.',
-        button: 'Build my ElevenLabs plan →',
-        href: '/companies?company=elevenlabs',
+        line: 'Premium opens their answer guides and the full Datadog practice set. Your plan shows what opens for your date, and the price.',
+        button: 'Build my Datadog plan →',
+        href: '/companies?company=datadog',
       });
     });
 
@@ -1123,7 +1133,12 @@ describe('CompanyPreviewComponent', () => {
       // Amazon, not Google: Google sits behind the account gate, which words its card differently.
       await createComponent('amazon');
       expect(gate()?.title).toBe('The answer guides for prompts 4 to 7 are in Premium');
-      await createComponent('xai');
+      // No guide without a question list has four prompts today, so Datadog's first four stand in.
+      const datadog = AUTHORED_COMPANY_PREVIEWS['datadog'];
+      await createComponent('datadog', undefined, {
+        ...AUTHORED_COMPANY_PREVIEWS,
+        datadog: { ...datadog, prompts: { ...datadog.prompts, items: datadog.prompts.items.slice(0, 4) } },
+      });
       expect(prompts(fixture.nativeElement).length).toBe(4);
       expect(gate()?.title).toBe('The answer guide for prompt 4 is in Premium');
       await createComponent('openai');
@@ -1145,7 +1160,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a click on the card as its own surface', async () => {
-      await createComponent('elevenlabs');
+      await createComponent('datadog');
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const link = fixture.nativeElement.querySelector('[data-testid="company-prompt-gate"] a') as HTMLAnchorElement;
       link.addEventListener('click', (event) => event.preventDefault());
@@ -1216,8 +1231,24 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('renders catalog notes whose bullets carry no link, and labels only the blurred links as Premium tasks', async () => {
-      // Walmart's notes end with a bullet that has no link at all; the page must not break on it.
-      await createComponent('walmart', { ...AIRBNB, slug: 'walmart' }, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
+      // Notes may end with a bullet that has no link at all, as Walmart's did before its question list; the page must
+      // not break on it.
+      const notes: CompanyEditorialNotesRegistry = {
+        ...COMPANY_EDITORIAL_NOTES,
+        airbnb: {
+          ...COMPANY_EDITORIAL_NOTES['airbnb'],
+          reportsDescribe: {
+            kicker: 'What public interview reports describe',
+            title: 'Two loop shapes',
+            paragraphs: ['The loop depends on the team.'],
+            bullets: [
+              { text: 'Mid-level loops open with a technical screen.', link: { label: 'See the stages', fragment: 'airbnb-interview-process-1' } },
+              { text: 'Senior onsites mix coding rounds and a design round.' },
+            ],
+          },
+        },
+      };
+      await createComponent('airbnb', AIRBNB, AUTHORED_COMPANY_PREVIEWS, notes);
       const describe = host().querySelector('[data-testid="company-reports-describe"]') as HTMLElement;
       expect(describe.textContent).toContain('Senior onsites mix coding rounds');
       const locked = Array.from(host().querySelectorAll('.company-link--locked'));
@@ -1513,12 +1544,144 @@ describe('CompanyPreviewComponent', () => {
       expect(gateCard('company-prompt-gate')).toBeNull();
 
       user.set(null);
-      await createComponent('elevenlabs');
+      await createComponent('datadog');
       expect(fixture.componentInstance.gated()).toBeFalse();
       expect(fixture.componentInstance.openPrompts()).toBe(3);
       expect(gateCard('company-process-gate')).toBeNull();
       expect(host().querySelectorAll('.interview-process__sources a').length).toBeGreaterThan(0);
       expect(prompts()[1].querySelector('.company-prompt__statement .premium-locked')).toBeNull();
+    });
+  });
+
+  describe('a guide with a reported-question list', () => {
+    const FREE = { _id: 'free-user', role: 'user', accessTier: 'free' };
+    const host = (): HTMLElement => fixture.nativeElement;
+    const summary = summariseQuestionList(COMPANY_INTERVIEW_PROCESSES['elevenlabs'])!;
+    const graph = () => (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd as any[];
+    const readable = (el: Element | null) => Boolean(el) && !el!.closest('.premium-locked');
+
+    it('leaves out a catalog sample that is a locked question\'s practice task', async () => {
+      const process = COMPANY_INTERVIEW_PROCESSES['walmart'];
+      const held = process.questions!.slice(1).find((question) => question.practice)!;
+      const heldId = held.practice!.path.split('/').pop()!;
+      const sample = (id: string, title: string) => ({ id, title, kind: 'trivia' as const, tech: 'javascript' as const, difficulty: 'intermediate' as const, access: 'free' as const });
+      await createComponent('walmart', {
+        slug: 'walmart', mode: 'catalog', counts: { all: 2, coding: 0, trivia: 2, system: 0, debug: 0 },
+        samples: [sample(heldId, 'The locked question\'s practice'), sample('js-unrelated-sample', 'An unrelated sample')],
+      }, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
+      expect(host().querySelector(`[data-testid="company-preview-question-${heldId}"]`)).toBeNull();
+      expect(host().querySelector('[data-testid="company-preview-question-js-unrelated-sample"]')).not.toBeNull();
+    });
+
+    it('replaces the prompt cards with the list, keeps the first question open and locks the rest in the page', async () => {
+      await createComponent('elevenlabs');
+      expect(host().querySelectorAll('.company-prompt').length).toBe(0);
+      const rows = Array.from(host().querySelectorAll<HTMLElement>('[data-testid="company-question-row"]'));
+      expect(rows.length).toBe(summary.total);
+      expect(rows[0].querySelector('.premium-locked.cq-row__question')).toBeNull();
+      expect(readable(rows[0].querySelector('.cq-row__title'))).toBeTrue();
+      // Every other question stays in the HTML for search, under the lock and out of snippets.
+      const locked = rows.slice(1).map((row) => row.querySelector('.cq-row__question'));
+      expect(locked.every((el) => el?.classList.contains('premium-locked') && el.hasAttribute('data-nosnippet') && (el.textContent ?? '').trim().length > 0)).toBeTrue();
+    });
+
+    it('tells search engines the locked rows are Premium and lists no question it hides', async () => {
+      await createComponent('elevenlabs');
+      const collection = graph().find((node) => node?.['@type'] === 'CollectionPage');
+      expect(collection.isAccessibleForFree).toBeFalse();
+      expect(collection.hasPart).toEqual([{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }]);
+      expect(collection.mainEntity).toBeUndefined();
+      expect(graph().some((node) => node?.['@type'] === 'ItemList')).toBeFalse();
+    });
+
+    it('says who reported each round instead of linking, counts its questions and moves every source link to the end, behind an account', async () => {
+      await createComponent('elevenlabs');
+      const table = host().querySelector('[data-testid="company-interview-process"]') as HTMLElement;
+      expect(table.querySelectorAll('a[href^="http"]').length).toBe(0);
+      expect(table.querySelectorAll('[data-testid="company-interview-process-reporter"]').length).toBeGreaterThan(0);
+      const counts = Array.from(table.querySelectorAll('[data-testid="company-interview-process-question-count"]')).map((el) => el.textContent?.replace(/\s+/g, ' ').trim());
+      expect(counts).toEqual(summary.rounds.map((round) => `${round.count} reported ${round.count === 1 ? 'question' : 'questions'}`));
+      expect(host().querySelector('[aria-labelledby="elevenlabs-source-notes"]')).toBeNull();
+      const sources = host().querySelector('[data-testid="company-guide-sources"]') as HTMLElement;
+      // The list is the last thing on the page, after the other guides.
+      expect(host().querySelector('[data-testid="company-related-guides"]')!.compareDocumentPosition(sources) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(sources.querySelector('details')?.hasAttribute('open')).toBeFalse();
+      expect(sources.querySelectorAll('a[href^="http"]').length).toBe(0);
+      expect(sources.querySelector('[data-testid="company-guide-sources-gate"]')).not.toBeNull();
+    });
+
+    it('locks the prep sections but not the trust note, and shows each plan day by title only', async () => {
+      await createComponent('elevenlabs');
+      const study = host().querySelector('#elevenlabs-study-first')!.closest('section') as HTMLElement;
+      expect(study.querySelector('.company-prep-body.premium-locked[data-nosnippet]')).not.toBeNull();
+      expect(readable(study.querySelector('.company-guide-note--trust'))).toBeTrue();
+      const days = Array.from(host().querySelectorAll('[data-testid="company-prep-plan-days"] li'));
+      expect(days.length).toBe(7);
+      expect(days.every((day) => readable(day.querySelector('.company-prep-sequence__title')))).toBeTrue();
+      expect(days.every((day) => day.querySelector('.company-prep-sequence__body')?.classList.contains('premium-locked'))).toBeTrue();
+    });
+
+    it('renders the visitor view on the first render, as hydration finds it', async () => {
+      user.set(MEMBER);
+      await createComponent('elevenlabs', undefined, AUTHORED_COMPANY_PREVIEWS, {}, { firstRenderOnly: true });
+      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.total - 1);
+      expect(host().querySelectorAll('[data-testid="company-guide-sources"] a[href^="http"]').length).toBe(0);
+    });
+
+    it('opens the answer outline, the plan and the source links for a free account, but not the locked questions', async () => {
+      user.set(FREE);
+      await createComponent('elevenlabs');
+      expect(host().querySelector('[data-testid="company-question-outline-gate"]')).toBeNull();
+      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.total - 1);
+      expect(host().querySelector('.company-prep-sequence__body.premium-locked')).toBeNull();
+      expect(host().querySelector('.company-prep-body.premium-locked')).not.toBeNull();
+      const links = host().querySelectorAll('[data-testid="company-guide-sources"] a[href^="http"]');
+      expect(links.length).toBe(fixture.componentInstance.guideSourceRows.length);
+    });
+
+    it('keeps a visitor\'s choice of free unlock for after they sign up', async () => {
+      await createComponent('elevenlabs');
+      const row = summary.rows.find((entry) => entry.unlockable)!;
+      const element = host().querySelector(`#elevenlabs-question-${row.id}`) as HTMLElement;
+      (element.querySelector('.cq-row__locked') as HTMLButtonElement).click();
+      fixture.detectChanges();
+      const link = element.querySelector('[data-testid="company-question-choice"] a') as HTMLAnchorElement;
+      link.addEventListener('click', (event) => event.preventDefault());
+      link.click();
+      expect(freeUnlocks.rememberIntent).toHaveBeenCalledOnceWith('elevenlabs', row.id);
+      expect(freeUnlocks.claim).not.toHaveBeenCalled();
+    });
+
+    it('opens the question a visitor chose once they are back with an account, and lands on it', async () => {
+      const row = summary.rows.find((entry) => entry.unlockable)!;
+      const unlock = { company: 'elevenlabs', questionId: row.id, practiceId: null, unlockedAt: '2026-11-13T10:00:00.000Z' };
+      freeUnlocks.takeIntent.and.returnValue(row.id);
+      freeUnlocks.claim.and.callFake(() => {
+        user.update((current: any) => ({ ...current, freeUnlock: unlock }));
+        return of({ status: 'opened' as const, unlock });
+      });
+      user.set(FREE);
+      await createComponent('elevenlabs');
+      await settle();
+      expect(freeUnlocks.claim).toHaveBeenCalledOnceWith('elevenlabs', row.id);
+      expect(host().querySelector(`#elevenlabs-question-${row.id}`)?.classList).not.toContain('cq-row--locked');
+      expect(analytics.track).toHaveBeenCalledWith('company_question_unlocked', { company: 'elevenlabs', question_id: row.id, via: 'after_signup' });
+    });
+
+    it('drops a remembered choice for a member, who has every question already', async () => {
+      freeUnlocks.takeIntent.and.returnValue('any-question');
+      user.set(MEMBER);
+      await createComponent('elevenlabs');
+      expect(freeUnlocks.takeIntent).toHaveBeenCalledWith('elevenlabs');
+      expect(freeUnlocks.claim).not.toHaveBeenCalled();
+    });
+
+    it('opens every question and drops the offer for a member', async () => {
+      user.set(MEMBER);
+      await createComponent('elevenlabs');
+      expect(host().querySelectorAll('.premium-locked').length).toBe(0);
+      expect(host().querySelector('[data-testid="company-question-offer"]')).toBeNull();
+      expect(host().querySelector('[data-testid="company-question-allowance"]')).toBeNull();
     });
   });
 });

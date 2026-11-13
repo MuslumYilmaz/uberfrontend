@@ -233,7 +233,7 @@ export class EssentialQuestionsComponent implements OnInit {
   }
 
   isLocked(item: EssentialResolvedItem): boolean {
-    return isQuestionLockedForTier({ access: item.access }, this.auth.user());
+    return isQuestionLockedForTier({ access: item.access, id: item.primary.id }, this.auth.user());
   }
 
   tierLabel(item: EssentialResolvedItem): string {

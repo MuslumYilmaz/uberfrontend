@@ -41,23 +41,24 @@ test('finds evidence claims and skips years, names and sub-counts without a noun
 test('a guide whose totals are tokens and whose sub-counts fit passes, with the table sources counted', () => {
   assert.deepEqual(checkGuide(guide(), table, evidence), []);
   const { counts, sources } = evidence.companyEvidence(guide(), table);
-  assert.deepEqual(counts, { reports: 3, official: 1, sources: 4, prompts: 2 });
+  assert.deepEqual(counts, { reports: 3, official: 1, sources: 4, prompts: 2, questions: 0 });
   assert.equal(sources[3].label, 'LeetCode account, March 2025');
   assert.match(sources[3].note, /Phone screen and Onsite/);
 });
 
 test('flags hand-written totals, wrong prompt counts, impossible sub-counts, unknown tokens and unlisted reports', () => {
   const errors = checkGuide(guide({
-    description: 'Prepare with 5 practice prompts.',
+    description: 'Prepare with 5 practice prompts and 19 reported questions.',
     hero: { kicker: 'Guide', subtitle: 'Shaped by nine public accounts and two official pages.', caveat: 'Thin.', chips: ['{#prompt}'] },
     sourceBoundary: { kicker: 'k', title: 't', paragraphs: ['Six self-reported loops inform this guide; twelve accounts are on Taro.'] },
     prompts: { kicker: 'k', title: 't', intro: 'Intro.', itemListName: 'n', items: [{ id: 'a', reportedRound: { label: 'r', url: 'https://r.example/9' } }, { id: 'b' }] },
   }), table, evidence);
   assert.deepEqual(errors, [
     '[description] says "5 practice prompts" but the page has 2 prompts',
+    '[description] write {questions} instead of "19 reported questions": the list has 0',
     '[hero.subtitle] write {reports} instead of "nine public accounts": the page counts 3',
     '[hero.subtitle] write {official} instead of "two official pages": the page counts 1',
-    '[hero.chips[0]] unknown count token {#prompt}; use {reports}, {official}, {sources} or {prompts}, with # for digits',
+    '[hero.chips[0]] unknown count token {#prompt}; use {reports}, {official}, {sources}, {prompts} or {questions}, with # for digits',
     '[sourceBoundary.paragraphs[0]] write {reports} instead of "Six self-reported loops": the page counts 3',
     '[sourceBoundary.paragraphs[0]] "twelve accounts" counts more than the page has (3)',
     '[prompts.items.a] modelled on https://r.example/9, which the sources do not list',

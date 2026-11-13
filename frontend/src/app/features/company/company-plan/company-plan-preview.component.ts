@@ -247,6 +247,16 @@ export class CompanyPlanPreviewComponent {
   readonly phoneNote = computed<{ text: string; guide: { name: string; path: string } | null }>(() => {
     const plan = this.plan();
     const company = plan && !plan.general && plan.companies.length === 1 ? plan.companies[0] : null;
+    if (company && this.request()?.answers.when === 'tomorrow' && company.questionCount) {
+      // A guide with a question list keeps its first reported question open; Premium opens the others, which read on
+      // a phone.
+      const locked = company.questionCount - 1;
+      const more = locked ? ` Premium also opens its other ${locked === 1 ? 'reported question' : `${locked} reported questions`} there, readable on this phone tonight.` : '';
+      return {
+        text: `Tonight on a phone, read the ${company.name} guide: its rounds and its open reported question. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.${more}`,
+        guide: { name: company.name, path: `/companies/${company.slug}/preview` },
+      };
+    }
     if (company && this.request()?.answers.when === 'tomorrow') {
       // The guide's answer guides past the open prompts are Premium and read on a phone: the one thing a
       // purchase opens tonight. A gated guide keeps only its first prompt open before the account step.

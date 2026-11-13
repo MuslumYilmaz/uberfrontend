@@ -80,6 +80,18 @@ const CompanyPlanSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// The one reported question a free account opened on a company guide, for good: its row and the Premium practice task
+// behind it (practiceId) read as open. One per account across all guides; it is never moved.
+const FreeUnlockSchema = new mongoose.Schema(
+  {
+    company: String,
+    questionId: String,
+    practiceId: { type: String, default: null },
+    unlockedAt: Date,
+  },
+  { _id: false }
+);
+
 const UserSchema =new mongoose.Schema(
   {
     // identity
@@ -196,6 +208,7 @@ const UserSchema =new mongoose.Schema(
     // progress
     solvedQuestionIds: { type: [String], default: [] },
     companyPlan: { type: CompanyPlanSchema, default: null },
+    freeUnlock: { type: FreeUnlockSchema, default: null },
 
     // security / housekeeping
     passwordUpdatedAt: Date,

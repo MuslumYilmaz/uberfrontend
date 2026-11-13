@@ -258,14 +258,15 @@ test.describe('company plan from a company guide', () => {
     await expect(card).toContainText('Interviewing at ElevenLabs?');
     expect(await overflow(page)).toBe(0);
 
-    // The first three prompts are open; the fourth keeps its title and opening, and its details sit under a blur.
-    const gate = page.getByTestId('company-prompt-gate');
-    await expect(gate).toContainText('The answer guides for prompts 4 and 5 are in Premium');
-    await expect(gate.getByRole('link', { name: 'Build my ElevenLabs plan' })).toHaveAttribute('href', '/companies?company=elevenlabs');
-    const prompts = page.locator('.company-prompt');
-    await expect(prompts.nth(2).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
-    await expect(prompts.nth(3).locator('h3')).toBeVisible();
-    await expect(prompts.nth(3).locator('.company-prompt__details')).toHaveAttribute('inert', '');
+    // The reported questions replace the prompts: the first is open, the others show their round under a lock, and
+    // the offer in the list leads into the same plan.
+    const rows = page.getByTestId('company-question-row');
+    await expect(rows.first().locator('h3')).toBeVisible();
+    await expect(rows.first()).not.toHaveClass(/cq-row--locked/);
+    await expect(rows.nth(1)).toHaveClass(/cq-row--locked/);
+    await expect(rows.nth(1).locator('.cq-row__round')).toBeVisible();
+    await expect(page.getByTestId('company-question-offer').getByRole('link', { name: 'Build my ElevenLabs plan first' }))
+      .toHaveAttribute('href', '/companies?company=elevenlabs');
 
     await card.getByRole('link', { name: 'Build my ElevenLabs plan' }).click();
     await expect(page).toHaveURL('/companies?company=elevenlabs');

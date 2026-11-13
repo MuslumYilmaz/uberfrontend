@@ -19,6 +19,8 @@ export type CompanyEvidenceCounts = {
   readonly sources: number;
   /** Practice prompts on the page. */
   readonly prompts: number;
+  /** Reported questions in the guide's question list; the behavioural group is not counted. */
+  readonly questions: number;
 };
 
 export type CompanyEvidence = {
@@ -27,12 +29,12 @@ export type CompanyEvidence = {
   readonly sources: readonly AuthoredSource[];
 };
 
-export const COUNT_KEYS = ['reports', 'official', 'sources', 'prompts'] as const;
+export const COUNT_KEYS = ['reports', 'official', 'sources', 'prompts', 'questions'] as const;
 export type CountKey = (typeof COUNT_KEYS)[number];
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const TOKEN = /\{(#?)(reports|official|sources|prompts)\}/g;
+const TOKEN = /\{(#?)(reports|official|sources|prompts|questions)\}/g;
 
 /** "seven", "twenty-three", "thirty"; digits past thirty or below zero. */
 export function countWord(count: number): string {
@@ -51,22 +53,38 @@ function joinWords(words: readonly string[]): string {
   return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
 }
 
-/** A process table source the guide's list lacks, as a sources row that says where the table uses it. */
-function citedSource(source: InterviewProcessSource, stages: readonly string[]): AuthoredSource {
-  const rounds = joinWords(stages);
-  return source.kind === 'report'
-    ? {
-        label: `${source.label} account, ${monthWords(source.date)}`,
-        url: source.url,
-        kind: 'report',
-        note: `A public account read for the process table, where it describes the ${rounds}. One candidate's loop, not a fixed format.`,
-      }
-    : {
-        label: source.label,
-        url: source.url,
-        kind: 'official',
-        note: `An official page read for the process table, where it describes the ${rounds}. Process context, not interview content.`,
-      };
+/** Where the page uses a source: the process table rounds it describes, or the reported questions it backs. */
+type Citation = { stages: string[]; questionRounds: string[]; questions: number; behavioural: number };
+
+function citedWhere({ stages, questionRounds, questions, behavioural }: Citation): string {
+  if (stages.length) return `the process table, where it describes the ${joinWords(stages)}`;
+  const asked = [
+    questions ? `${questions === 1 ? 'one reported question' : `${countWord(questions)} reported questions`}${questionRounds.length ? ` from the ${joinWords(questionRounds.map((round) => round.toLowerCase()))}` : ''}` : '',
+    behavioural ? `${behavioural === 1 ? 'a behavioural question' : `${countWord(behavioural)} behavioural questions`}` : '',
+  ].filter(Boolean);
+  return joinWords(asked);
+}
+
+/** A source the guide's list lacks, as a sources row that says where the page uses it. */
+function citedSource(source: InterviewProcessSource, citation: Citation): AuthoredSource {
+  const where = citedWhere(citation);
+  if (source.kind === 'official') {
+    return { label: source.label, url: source.url, kind: 'official', note: `An official page read for ${where}. Process context, not interview content.` };
+  }
+  if (source.reportForm === 'question-bank') {
+    return {
+      label: source.label,
+      url: source.url,
+      kind: 'report',
+      note: `A question bank candidates add to, read for ${where}. It lists questions without the loop around them.`,
+    };
+  }
+  return {
+    label: `${source.label} account, ${monthWords(source.date)}`,
+    url: source.url,
+    kind: 'report',
+    note: `A public account read for ${where}. One candidate's loop, not a fixed format.`,
+  };
 }
 
 export function companyEvidence(preview: AuthoredCompanyPreview, process: CompanyInterviewProcess | null): CompanyEvidence {
@@ -75,30 +93,45 @@ export function companyEvidence(preview: AuthoredCompanyPreview, process: Compan
 
 /**
  * The same count for a guide whose sources list lives outside the authored model (Netflix): its own list first,
- * then the sources only the process table cites.
+ * then the sources only the process table or the question lists cite.
  */
 export function evidenceFrom(curated: readonly AuthoredSource[], prompts: number, process: CompanyInterviewProcess | null): CompanyEvidence {
   const seen = new Set(curated.map((source) => source.url));
-  const cited = new Map<string, { source: InterviewProcessSource; stages: string[] }>();
+  const cited = new Map<string, { source: InterviewProcessSource } & Citation>();
+  const citation = (source: InterviewProcessSource) => {
+    const entry = cited.get(source.url) ?? { source, stages: [], questionRounds: [], questions: 0, behavioural: 0 };
+    cited.set(source.url, entry);
+    return entry;
+  };
   for (const variant of process?.variants ?? []) {
     for (const stage of variant.stages) {
       for (const source of stage.sources) {
-        const entry = cited.get(source.url) ?? { source, stages: [] };
+        const entry = citation(source);
         if (!entry.stages.includes(stage.stage)) entry.stages.push(stage.stage);
-        cited.set(source.url, entry);
       }
     }
   }
+  // Sources the question lists cite and no round does come after the table's, counted by the questions they back.
+  for (const question of process?.questions ?? []) {
+    for (const source of question.sources) {
+      const entry = citation(source);
+      entry.questions += 1;
+      if (question.round && !entry.questionRounds.includes(question.round)) entry.questionRounds.push(question.round);
+    }
+  }
+  for (const question of process?.behaviouralQuestions ?? []) {
+    for (const source of question.sources) citation(source).behavioural += 1;
+  }
   const extra: AuthoredSource[] = [];
-  for (const { source, stages } of cited.values()) {
+  for (const { source, ...where } of cited.values()) {
     if (seen.has(source.url)) continue;
     seen.add(source.url);
-    extra.push(citedSource(source, stages));
+    extra.push(citedSource(source, where));
   }
   const sources = [...curated, ...extra];
   const reports = sources.filter((source) => source.kind === 'report').length;
   return {
-    counts: { reports, official: sources.length - reports, sources: sources.length, prompts },
+    counts: { reports, official: sources.length - reports, sources: sources.length, prompts, questions: process?.questions?.length ?? 0 },
     sources,
   };
 }

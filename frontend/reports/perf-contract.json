@@ -1,26 +1,28 @@
 {
-  "generatedAt": "2026-05-08T16:48:17.487Z",
-  "strictMode": false,
+  "generatedAt": "2026-11-13T10:00:02.937Z",
+  "strictMode": true,
   "buildDir": "dist/frontendatlas/browser",
   "thresholds": {
-    "initialBytes": 1150000,
-    "modulePreloadBytes": 600000,
-    "codingHtmlBytes": 450000,
-    "totalHtmlBytes": 70000000,
+    "initialBytes": 1475000,
+    "eagerJsBytes": 1260000,
+    "codingHtmlBytes": 660000,
+    "totalHtmlBytes": 75000000,
     "sentryLazyChunkBytes": 260000,
     "showcaseLazyHeavyBytes": 620000
   },
   "metrics": {
-    "initialBytes": 887810,
-    "modulePreloadBytes": 539968,
-    "modulePreloadCount": 27,
-    "entryScriptBytes": 248450,
+    "initialBytes": 1458259,
+    "eagerJsBytes": 1246547,
+    "eagerJsFileCount": 55,
+    "modulePreloadBytes": 74860,
+    "modulePreloadCount": 10,
+    "entryScriptBytes": 283065,
     "entryScriptCount": 2,
-    "stylesheetBytes": 99392,
-    "stylesheetCount": 2,
-    "totalHtmlBytes": 78870953,
-    "htmlFileCount": 605,
-    "codingHtmlBytes": 577744,
+    "stylesheetBytes": 211712,
+    "stylesheetCount": 14,
+    "totalHtmlBytes": 68638018,
+    "htmlFileCount": 645,
+    "codingHtmlBytes": 597759,
     "sentryLazyChunkBytes": 0,
     "sentryLazyChunkFile": null,
     "showcaseLazyHeavyBytes": 0,
@@ -30,108 +32,105 @@
     {
       "route": "/coding",
       "file": "dist/frontendatlas/browser/coding/index.html",
-      "bytes": 577744
+      "bytes": 597759
+    },
+    {
+      "route": "/companies/walmart/preview",
+      "file": "dist/frontendatlas/browser/companies/walmart/preview/index.html",
+      "bytes": 309226
     },
     {
       "route": "/interview-questions/essential",
       "file": "dist/frontendatlas/browser/interview-questions/essential/index.html",
-      "bytes": 320523
+      "bytes": 296677
+    },
+    {
+      "route": "/companies/agoda/preview",
+      "file": "dist/frontendatlas/browser/companies/agoda/preview/index.html",
+      "bytes": 258329
+    },
+    {
+      "route": "/guides/framework-prep/angular-prep-path",
+      "file": "dist/frontendatlas/browser/guides/framework-prep/angular-prep-path/index.html",
+      "bytes": 256247
+    },
+    {
+      "route": "/guides/framework-prep/vue-prep-path",
+      "file": "dist/frontendatlas/browser/guides/framework-prep/vue-prep-path/index.html",
+      "bytes": 241687
+    },
+    {
+      "route": "/guides/framework-prep/react-prep-path",
+      "file": "dist/frontendatlas/browser/guides/framework-prep/react-prep-path/index.html",
+      "bytes": 232484
+    },
+    {
+      "route": "/",
+      "file": "dist/frontendatlas/browser/index.html",
+      "bytes": 230739
+    },
+    {
+      "route": "/react/trivia/react-stale-state-closures",
+      "file": "dist/frontendatlas/browser/react/trivia/react-stale-state-closures/index.html",
+      "bytes": 224871
+    },
+    {
+      "route": "/companies/booking-com/preview",
+      "file": "dist/frontendatlas/browser/companies/booking-com/preview/index.html",
+      "bytes": 222459
+    },
+    {
+      "route": "/companies/bytedance/preview",
+      "file": "dist/frontendatlas/browser/companies/bytedance/preview/index.html",
+      "bytes": 211416
+    },
+    {
+      "route": "/javascript/trivia/js-promises-async-await",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-promises-async-await/index.html",
+      "bytes": 210037
+    },
+    {
+      "route": "/companies/tesla/preview",
+      "file": "dist/frontendatlas/browser/companies/tesla/preview/index.html",
+      "bytes": 207910
+    },
+    {
+      "route": "/companies/apple/preview",
+      "file": "dist/frontendatlas/browser/companies/apple/preview/index.html",
+      "bytes": 207587
+    },
+    {
+      "route": "/system-design/ai-agent-run-inspector",
+      "file": "dist/frontendatlas/browser/system-design/ai-agent-run-inspector/index.html",
+      "bytes": 204405
+    },
+    {
+      "route": "/javascript/trivia/js-equality-vs-strict-equality",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-equality-vs-strict-equality/index.html",
+      "bytes": 203945
+    },
+    {
+      "route": "/javascript/trivia/js-escape-vs-sanitize",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-escape-vs-sanitize/index.html",
+      "bytes": 200421
     },
     {
       "route": "/javascript/trivia/js-cookie-options",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-cookie-options/index.html",
-      "bytes": 252301
-    },
-    {
-      "route": "/javascript/trivia/js-object-creation-methods",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-object-creation-methods/index.html",
-      "bytes": 242310
-    },
-    {
-      "route": "/javascript/trivia/js-type-coercion",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-type-coercion/index.html",
-      "bytes": 239279
-    },
-    {
-      "route": "/javascript/trivia/js-arrow-vs-regular-functions",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-arrow-vs-regular-functions/index.html",
-      "bytes": 239048
-    },
-    {
-      "route": "/javascript/trivia/js-calback-hell-resolved-with-promise",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-calback-hell-resolved-with-promise/index.html",
-      "bytes": 238867
-    },
-    {
-      "route": "/javascript/trivia/js-bigint-data-type",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-bigint-data-type/index.html",
-      "bytes": 238525
-    },
-    {
-      "route": "/javascript/trivia/web-performance-optimize-load-time",
-      "file": "dist/frontendatlas/browser/javascript/trivia/web-performance-optimize-load-time/index.html",
-      "bytes": 238406
-    },
-    {
-      "route": "/javascript/trivia/js-compare-two-objects",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-compare-two-objects/index.html",
-      "bytes": 237682
-    },
-    {
-      "route": "/javascript/trivia/js-event-loop",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-event-loop/index.html",
-      "bytes": 237338
-    },
-    {
-      "route": "/javascript/trivia/js-why-eval-function-considered-dangerous",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-why-eval-function-considered-dangerous/index.html",
-      "bytes": 236826
-    },
-    {
-      "route": "/javascript/trivia/js-xss-dom-sinks",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-xss-dom-sinks/index.html",
-      "bytes": 236572
-    },
-    {
-      "route": "/javascript/trivia/js-null-coalescing-operator",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-null-coalescing-operator/index.html",
-      "bytes": 236422
-    },
-    {
-      "route": "/javascript/trivia/js-passing-by-value-and-by-reference",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-passing-by-value-and-by-reference/index.html",
-      "bytes": 235987
-    },
-    {
-      "route": "/javascript/trivia/js-use-strict-describe",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-use-strict-describe/index.html",
-      "bytes": 235715
+      "bytes": 199842
     },
     {
       "route": "/javascript/trivia/js-check-data-type-with-typeof",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-check-data-type-with-typeof/index.html",
-      "bytes": 235609
+      "bytes": 199581
     },
     {
-      "route": "/javascript/trivia/js-repaint-reflow",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-repaint-reflow/index.html",
-      "bytes": 235461
-    },
-    {
-      "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-promise-combinators-all-allsettled-race-any/index.html",
-      "bytes": 235249
-    },
-    {
-      "route": "/javascript/trivia/js-this-keyword",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-this-keyword/index.html",
-      "bytes": 235026
+      "route": "/companies/jpmorgan/preview",
+      "file": "dist/frontendatlas/browser/companies/jpmorgan/preview/index.html",
+      "bytes": 197196
     }
   ],
   "bundleStatsSource": null,
   "showcaseLazyChunks": [],
-  "warnings": [
-    "/coding HTML bytes 577744 exceed 450000",
-    "Total prerender HTML bytes 78870953 exceed 70000000"
-  ]
+  "warnings": []
 }
