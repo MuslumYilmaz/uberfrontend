@@ -262,14 +262,6 @@
       "access": "free",
       "minutes": 15
     },
-    "/guides/interview-blueprint/react-prep-path": {
-      "id": "/guides/interview-blueprint/react-prep-path",
-      "title": "React interview preparation path",
-      "route": "/guides/interview-blueprint/react-prep-path",
-      "kind": "guide",
-      "access": "free",
-      "minutes": 9
-    },
     "/guides/system-design-blueprint": {
       "id": "/guides/system-design-blueprint",
       "title": "Frontend system design blueprint",
@@ -12652,7 +12644,7 @@
               ]
             },
             {
-              "id": "/guides/interview-blueprint/react-prep-path",
+              "id": "/guides/framework-prep/react-prep-path",
               "lead": true,
               "rounds": [
                 "technical-rounds"

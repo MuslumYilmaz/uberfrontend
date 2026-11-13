@@ -2955,7 +2955,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               'Two technical rounds of about an hour: data structures or a medium LeetCode problem in any language, then a round of React questions, with CSS and HTML theory in a 2021 account.',
             appliesTo: 'SDE-2',
             sources: [WALMART_W33_SDE2, WALMART_W2_SDE2_BENGALURU, WALMART_W15_SDE2],
-            practice: { label: 'React interview preparation path', path: '/guides/interview-blueprint/react-prep-path' },
+            practice: { label: 'React interview preparation path', path: '/guides/framework-prep/react-prep-path' },
           },
           {
             stage: 'Final round',

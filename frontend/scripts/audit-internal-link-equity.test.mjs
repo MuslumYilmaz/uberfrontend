@@ -180,6 +180,25 @@ test('generic company sample/count hydration shells fail and authored previews p
   assert.match(failures(audit()), /Company directory missing initial-HTML link/);
 });
 
+test('a catalog guide with a reported-question list shows the list instead of samples and its practice set by kind', (t) => {
+  const route = '/companies/microsoft/preview';
+  const f = fixture(t, ['/', '/companies', route]);
+  const audit = () => f.audit({
+    companySamples: new Map([['microsoft', { count: 2, requiredIds: new Set(['one', 'two']) }]]),
+    companyCounts: { microsoft: { all: 3, coding: 2, trivia: 1, system: 0 } },
+    listedCompanies: new Set(['microsoft']),
+  });
+  f.page('/', link('/companies'));
+  f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 3)}</section>`);
+  const preview = '<span class="preview-chip">5 reported questions</span><span data-testid="company-preview-counts">Practice set: Coding 2 · Concepts 1</span>';
+  f.page(route, `${preview}<section data-testid="company-question-list"></section>`);
+  assert.deepEqual(audit().failures, []);
+  f.page(route, preview);
+  assert.match(failures(audit()), /Company preview missing its reported-question list/);
+  f.page(route, `${preview.replace('Concepts 1', 'Concepts 4')}<section data-testid="company-question-list"></section>`);
+  assert.match(failures(audit()), /Company preview count mismatch/);
+});
+
 test('company counts and preview samples both show one card per framework family', (t) => {
   const route = '/companies/microsoft/preview';
   const f = fixture(t, ['/', '/companies', route]);
