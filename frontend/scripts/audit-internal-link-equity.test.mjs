@@ -13,7 +13,7 @@ import { buildFrameworkFamilyByIdMap } from './gen-showcase-stats.mjs';
 
 const BASE = 'https://frontendatlas.com';
 const link = (route, attrs = '') => `<a href="${route}" ${attrs}>Question</a>`;
-const companyLink = (route, count) => `<a href="${route}">${count} editorial practice prompts</a>`;
+const companyLink = (route, count) => `<a href="${route}">${count} FrontendAtlas practice questions</a>`;
 function fixture(t, routes = ['/', '/article']) {
   const buildDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fa-link-equity-'));
   t.after(() => fs.rmSync(buildDir, { recursive: true, force: true }));
@@ -168,7 +168,7 @@ test('generic company sample/count hydration shells fail and authored previews p
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 2)}${companyLink(authored, 1)}</section>`);
   assert.match(failures(audit()), /Company preview missing or unexpected initial-HTML samples/);
-  const preview = '<span class="preview-chip">2 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 2</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
+  const preview = '<span class="preview-chip">2 FrontendAtlas practice questions</span><span data-testid="company-preview-counts">Coding 2</span><div data-testid="company-preview-question-one"></div><div data-testid="company-preview-question-two"></div>';
   f.page(route, preview);
   assert.deepEqual(audit().failures, []);
   f.page(route, preview.replace('Coding 2', 'Coding 999'));
@@ -212,7 +212,7 @@ test('company counts and preview samples both show one card per framework family
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 1)}</section>`);
   // Angular comes before React in the page's catalog order, so its member stands for the family.
   const card = (id) => `<div data-testid="company-preview-question-${id}"></div>`;
-  const preview = '<span class="preview-chip">1 editorial practice prompt</span><span data-testid="company-preview-counts">Coding 1 · Concepts 0 · System 0</span>';
+  const preview = '<span class="preview-chip">1 FrontendAtlas practice question</span><span data-testid="company-preview-counts">Coding 1 · Concepts 0 · System 0</span>';
   f.page(route, preview + card('angular-counter-starter'));
   assert.deepEqual(f.audit({ questionsDir }).failures, []);
   f.page(route, preview + card('angular-counter-starter') + card('react-counter'));
@@ -311,7 +311,7 @@ test('a company preview counts its debugging tasks on the chip and in the total,
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 3)}</section>`);
   const card = '<div data-testid="company-preview-question-js-coding"></div>';
-  const preview = '<span class="preview-chip">3 editorial practice prompts</span><span data-testid="company-preview-counts">Coding 1 · Debugging 2</span>';
+  const preview = '<span class="preview-chip">3 FrontendAtlas practice questions</span><span data-testid="company-preview-counts">Coding 1 · Debugging 2</span>';
   f.page(route, preview + card);
   assert.deepEqual(f.audit({ questionsDir }).failures, []);
   // A chip that leaves the debugging tasks out no longer matches the set.

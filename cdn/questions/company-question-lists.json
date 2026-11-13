@@ -4988,7 +4988,7 @@
           "open": false,
           "unlockable": true,
           "practice": null,
-          "answerGuide": "fix-a-practical-react-problem"
+          "answerGuide": "timed-assessment-react-and-algorithms"
         },
         {
           "id": "coderpad-finish-react-component",
@@ -5303,7 +5303,7 @@
         {
           "id": "flux-and-vuex",
           "round": "Written assessment",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2018-06",
@@ -5508,7 +5508,7 @@
         {
           "id": "vue-reactivity",
           "round": null,
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2019-03",
@@ -9815,7 +9815,7 @@
         {
           "id": "vue-two-way-binding",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 2,
           "banks": 0,
           "latest": "2020-03",
@@ -9831,7 +9831,7 @@
         {
           "id": "vue-computed-and-watch",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9847,7 +9847,7 @@
         {
           "id": "vue-lifecycle-dom",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9863,7 +9863,7 @@
         {
           "id": "vue-mixin-merge",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9879,7 +9879,7 @@
         {
           "id": "vue-attrs-and-props",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9892,7 +9892,7 @@
         {
           "id": "vue-list-keys",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9908,7 +9908,7 @@
         {
           "id": "vue-array-methods",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9921,7 +9921,7 @@
         {
           "id": "vue-component-communication",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9937,7 +9937,7 @@
         {
           "id": "v-if-and-v-show",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",
@@ -9953,7 +9953,7 @@
         {
           "id": "vuex-internals",
           "round": "First technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2022-04",
@@ -10526,7 +10526,7 @@
         {
           "id": "vue-router-internals",
           "round": "Second technical interview",
-          "kind": "Web fundamentals",
+          "kind": "Vue concepts",
           "accounts": 1,
           "banks": 0,
           "latest": "2020-03",

@@ -240,8 +240,8 @@ describe('CompanyPlanPageComponent', () => {
     setup({ ...ELEVENLABS, companies: [{ slug: 'elevenlabs' }, { slug: 'amazon' }] });
     const links = Array.from(all('company-plan-beyond')[0].querySelectorAll<HTMLAnchorElement>('a'));
     expect(links.map((link) => [link.textContent?.trim(), link.getAttribute('href')])).toEqual([
-      [`The full ElevenLabs set: ${COMPANY_SET_COUNTS['elevenlabs']!.all} questions`, '/companies/elevenlabs/all'],
-      [`The full Amazon set: ${COMPANY_SET_COUNTS['amazon']!.all} questions`, '/companies/amazon/all'],
+      [`The FrontendAtlas ElevenLabs practice set: ${COMPANY_SET_COUNTS['elevenlabs']!.all} questions`, '/companies/elevenlabs/all'],
+      [`The FrontendAtlas Amazon practice set: ${COMPANY_SET_COUNTS['amazon']!.all} questions`, '/companies/amazon/all'],
       [`All ${PREMIUM_QUESTION_COUNT} Premium questions`, '/coding'],
     ]);
   });

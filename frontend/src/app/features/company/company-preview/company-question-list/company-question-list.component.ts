@@ -1,6 +1,23 @@
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, TransferState, computed, inject, input, makeStateKey, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  PLATFORM_ID,
+  TransferState,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  makeStateKey,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 import { isPlatformServer } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { of } from 'rxjs';
 import type { FreeUnlock } from '../../../../core/models/free-unlock.model';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { isPremiumRoute } from '../../../../core/utils/premium-route.util';
@@ -65,6 +82,11 @@ export function practiceTaskId(path: string): string {
   return path.startsWith('/guides/') ? path : path.slice(path.lastIndexOf('/') + 1);
 }
 
+/** "a", "a and b", "a, b and c". */
+function listOf(parts: readonly string[]): string {
+  return parts.length < 2 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+}
+
 /** Who stands behind a question: its newest account, or the bank when no account names it. */
 function whoLine(sources: readonly InterviewProcessSource[]): string {
   const accounts = sources.filter((source) => source.kind === 'report' && !source.reportForm);
@@ -122,6 +144,19 @@ export class CompanyQuestionListComponent {
   readonly expanded = signal(false);
   /** The locked row whose choice is open. */
   readonly choosing = signal<string | null>(null);
+  private readonly injector = inject(Injector);
+  private readonly fragment = toSignal(inject(ActivatedRoute, { optional: true })?.fragment ?? of(null), { initialValue: null });
+
+  constructor() {
+    // A link to a row behind "Show all" (a round's count in the process table, a shared address) opens the list there.
+    effect(() => {
+      const fragment = this.fragment();
+      const row = fragment ? this.rows().find((candidate) => this.rowId(candidate) === fragment) : undefined;
+      if (!row || !this.extra(row) || untracked(this.expanded)) return;
+      this.expanded.set(true);
+      afterNextRender(() => document.getElementById(fragment!)?.scrollIntoView({ block: 'start' }), { injector: this.injector });
+    });
+  }
 
   readonly headingId = computed(() => `${this.slug()}-questions`);
   /** The list locks for anyone without Premium while the switch is on. */
@@ -175,7 +210,10 @@ export class CompanyQuestionListComponent {
     const total = this.summary().total;
     if (!this.features().lockedQuestions) return `All ${total} are open to read, with their practice tasks and answer guides where they have one.`;
     if (this.viewer() === 'member') return `Premium opens all ${total}, with their practice tasks and answer guides where they have one.`;
-    return `The first is open to everyone. The others show their topic; Premium opens the other ${total - 1}: the question, its practice task and its answer guide where it has one.`;
+    const first = this.viewer() === 'guest' ? 'The first question is open to read; its answer outline opens with a free account.' : 'The first question is open.';
+    const locked = this.lockedCount();
+    if (!locked) return first;
+    return `${first} The others show their topic and what is behind the lock; Premium opens ${locked === 1 ? 'the one still locked' : `all ${locked} still locked`}.`;
   });
 
   readonly freshness = computed(() => {
@@ -205,6 +243,14 @@ export class CompanyQuestionListComponent {
     if (!tasks.size) return null;
     const solved = [...tasks].filter((task) => practised.has(task)).length;
     return { solved, total: tasks.size };
+  });
+
+  /** Said of this list's tasks, so it does not read as another count of the company's set or of a plan. */
+  readonly progressLine = computed(() => {
+    const count = this.progress();
+    if (!count) return null;
+    const tasks = count.total === 1 ? 'the one practice task in this list' : `the ${count.total} practice tasks in this list`;
+    return `Your ${this.companyLabel()} prep: ${count.solved} of ${tasks} solved`;
   });
 
   readonly showOffer = computed(() => this.features().premiumPull && this.locking() && this.offer() !== null);
@@ -237,6 +283,21 @@ export class CompanyQuestionListComponent {
   /** Opened with the reader's free unlock. */
   rowUnlocked(row: Row): boolean {
     return this.locking() && row.question.id === this.unlockedId();
+  }
+
+  /**
+   * What a locked row holds, so a reader can choose before spending the free unlock or paying: the question (or only
+   * the accounts' description when they keep the prompt), its answer guide and a Premium practice task. A practice task
+   * that is free for everyone is said to be free and never named, since its title would give the question away.
+   */
+  lockedContents(row: Row): string {
+    const parts = [row.question.promptNotShared ? 'the accounts\' description (they do not share the prompt)' : 'the question'];
+    if (row.guide) parts.push('an answer guide');
+    const practice = row.question.practice;
+    if (practice && isPremiumRoute(practice.path)) parts.push('a Premium practice task');
+    const only = parts.length === 1 ? ' only' : '';
+    const free = practice && !isPremiumRoute(practice.path) ? ' Its practice task is free for everyone.' : '';
+    return `Behind the lock: ${listOf(parts)}${only}.${free}`;
   }
 
   /** The chooser offers the free unlock on this row: it may be opened and the reader has not spent theirs. */

@@ -325,8 +325,6 @@ export const GOOGLE_COPY = {
   caveat:
     'How many rounds are frontend varies: one in most accounts, three of the four onsite rounds in a 2023 loop that ended in an offer, none in a 2026 account. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 press report describes a pilot for some US teams.',
   chips: ['{#questions} reported questions', '{#reports} public reports, 2019–2026'],
-  promptsTitle: 'Google answer guides',
-  promptsIntro: 'The practice versions behind the reported Google questions, written by FrontendAtlas.',
   studyParagraphs: [
     'Google\'s front end loops are mostly algorithm coding with one JavaScript round, so the JavaScript round is where frontend preparation pays off. The accounts show what it asks: in 2019, combining the results of callback functions into one array, a delayed-run API and a sequential queue; in 2021, a retry function followed by then, catch and finally, a task-sequencing problem finished with promises, and string manipulation that led to an autocomplete; in a 2020 phone screen, a throttle. In the 2021 loop every question started small and grew once the first version worked.',
     'The algorithm rounds fill the rest of the loop: minimum window substring, a hash map and set problem, paths in a 2D array, a graph problem and one the interviewer expected to be solved with a quad tree. Write them in a plain document without running the code, as the screens are run, and state the complexity before you start. From L5 there is a design round, frontend and API in most accounts; the 2019 onsite asked for an app in which drones shop for you.',

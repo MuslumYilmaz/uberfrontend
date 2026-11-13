@@ -78,6 +78,13 @@ export function companyPlanRoundNote(round: CompanyPlanRound, format: string): s
   return round.note ?? format.match(/^.+?[.!?]["”]?(?=\s+[A-Z"“]|$)/)?.[0] ?? format;
 }
 
+/** Capital One's CodeSignal test is the same in both of its lists, and so is the practice the plan picks for it. */
+const CAPITAL_ONE_ASSESSMENT_PICKS: readonly string[] = [
+  '/javascript/coding/js-valid-parentheses',
+  '/javascript/coding/js-maze-path',
+  '/javascript/coding/js-longest-substring-without-repeating',
+];
+
 export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> = {
   agoda: {
     variants: [
@@ -423,6 +430,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Online assessment',
             kinds: ['coding'],
             note: 'CodeSignal, about 70 minutes, four LeetCode-style questions in most accounts and three in one.',
+            // Problems for the CodeSignal test, which no reported task practises: a stack, a grid walk and a hash-map
+            // window, the skills the reported matrix, array navigation and pair-counting problems call for.
+            picks: CAPITAL_ONE_ASSESSMENT_PICKS,
           },
           {
             id: 'power-day-frontend-design',
@@ -457,7 +467,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing as a lead engineer?',
         reported: { levels: ['staff'], who: 'lead candidates' },
         rounds: [
-          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
+          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'], picks: CAPITAL_ONE_ASSESSMENT_PICKS },
           {
             id: 'power-day',
             stage: 'Power Day',
@@ -580,6 +590,11 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   elevenlabs: {
+    // The 2026 Aced account behind the async-race task is cited on the assessment too, but the task practises its live
+    // round, where the candidate fixed a practical problem with the interviewer; the guide links it there as well.
+    reportRounds: {
+      'js-debug-async-race': ['live-technical-round'],
+    },
     variants: [
       {
         id: 'main',
@@ -1006,11 +1021,18 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'ho-chi-minh',
         title: 'Front-end engineers, Ho Chi Minh City, 2025',
-        from: 'candidates in Ho Chi Minh City',
+        // The table rests on one account, so the plan says so beside the company's whole source count.
+        from: 'one account of a Ho Chi Minh City loop',
         ask: 'Interviewing in Ho Chi Minh City?',
         default: true,
         rounds: [
-          { id: 'hr-call', stage: 'HR call', kinds: ['recruiter'] },
+          {
+            id: 'hr-call',
+            stage: 'HR call',
+            kinds: ['recruiter'],
+            // The first round the form offers names the loop, since the form shows no list title.
+            note: 'Ho Chi Minh City loop, from one account: personal details, expected salary and whether you would move to Saigon.',
+          },
           {
             id: 'frontend-technical-round',
             stage: 'Frontend technical round',
@@ -1118,7 +1140,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['coding'],
             note: '60 to 90 minutes with one or two engineers: JavaScript and CSS questions and a coding task.',
           },
-          { id: 'final-web-practical', stage: 'Final: web practical', kinds: ['coding'] },
+          {
+            id: 'final-web-practical',
+            stage: 'Final: web practical',
+            kinds: ['coding'],
+            // The accounts' web hour has no framework, so the extra build renders into the DOM by hand.
+            picks: ['/javascript/coding/js-dom-renderer'],
+          },
           { id: 'final-algorithms', stage: 'Final: algorithms', kinds: ['coding'] },
           { id: 'final-system-design', stage: 'Final: system design', kinds: ['design'] },
           { id: 'final-values', stage: 'Final: values', kinds: ['people'] },

@@ -182,21 +182,21 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         id: 'carousel-with-state-follow-ups',
         title: 'Implement a carousel component, then defend its state management',
         statement:
-          'Build a carousel that shows one slide at a time with previous and next controls and wraps at the ends, then explain where the current index lives and how else it could be handled.',
+          'Build a carousel that shows one slide at a time with previous and next controls, then explain where the current index lives and how else it could be handled. Settle what happens at the last slide before coding: the carousel either wraps round to the first slide or stops there with next disabled, as the practice task does.',
         whatThisMeasures:
-          'Component state design, index arithmetic with wrap-around, controlled versus uncontrolled components, and the ability to discuss alternatives after the code works.',
+          'Component state design, index arithmetic at both ends of the list, controlled versus uncontrolled components, and the ability to discuss alternatives after the code works.',
         clarifyFirst: [
-          'Confirm wrap-around, autoplay and whether the parent needs to control or observe the active slide.',
+          'Confirm what the ends do, wrap round to the other end or stop with the control disabled, then ask about autoplay and whether the parent needs to control or observe the active slide.',
           'Confirm the slide content: images with alternative text, arbitrary children, or a fixed list.',
         ],
         strongAnswer: [
-          'Hold one active index and derive the visible slide, the disabled states and the indicator dots from it.',
-          'Compute the next index with modular arithmetic so wrap-around has no special cases.',
+          'Hold one active index and derive the visible slide, the indicator dots and any disabled control from it.',
+          'For a carousel that wraps, compute the next index with modular arithmetic so the ends need no special case; for one that stops, clamp the index and disable previous on the first slide and next on the last.',
           'Offer a controlled mode through an optional prop and a change callback, and say when a reducer or a store would replace local state.',
           'Make the controls real buttons with labels and keep the slide list reachable by keyboard.',
         ],
         commonMiss:
-          'Storing the current slide in several places, so the dots, the buttons and the slide disagree after a wrap-around.',
+          'Storing the current slide in several places, so the dots, the buttons and the slide disagree at the first or last slide.',
         resourceLabel: 'Practice the image slider (Premium)',
         resourcePath: '/react/coding/react-image-slider',
         reportedRound: { label: AMAZON_LOOP_2020_LABEL, url: AMAZON_LOOP_2020_URL },

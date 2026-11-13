@@ -442,8 +442,6 @@ export const NETFLIX_COPY = {
   caveat:
     'Netflix publishes its process only for new graduates and interns, and Netflix-tagged commenters say each team runs its own loop. The newest account is a 2025 screen in Poland; a 2024 Warsaw account counts eight stages without naming them.',
   chip: 'Public accounts, 2020–2025',
-  promptsTitle: 'Netflix answer guides',
-  promptsIntro: 'The practice versions behind the reported Netflix questions, written by FrontendAtlas.',
   studyTitle: 'What Netflix\'s rounds reward: plain JavaScript, code a reviewer can follow, and the culture memo',
   studyParagraphs: [
     'The technical rounds in these accounts are practical rather than LeetCode: three small JavaScript tasks in an hour in the 2025 Poland screen (flattening a nested object, expect and toBe matchers, two async calls where one may fail), a React table of collapsible event log configurations in a 2024 CoderPad screen, a collapsible list whose data a filter changes in a 2024 onsite, and frontend system designs of the Netflix app and of an internal tool from its screenshot. The open question, filtering API results as the user types, turned on how much delay a debounce adds.',

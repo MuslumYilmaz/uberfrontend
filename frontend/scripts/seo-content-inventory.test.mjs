@@ -461,8 +461,8 @@ test('company previews are dated by their own content: shared template and compo
   const html = read.read(template);
   const ts = read.read(component);
   const edits = [
-    // Shared catalog copy and the shared component class render every company.
-    [template, html.replace('<h2>Sample FrontendAtlas practice prompts</h2>', '<h2>Sample FrontendAtlas practice questions</h2>'), []],
+    // Shared copy and the shared component class render every company.
+    [template, html.replace('<h2 id="company-related-guides-title">Other company frontend interview guides</h2>', '<h2 id="company-related-guides-title">More company frontend interview guides</h2>'), []],
     [component, ts.replace('title: `${this.label} Frontend Interview Questions Preview`,', 'title: `${this.label} Frontend Interview Questions: Preview`,'), []],
     // Inline branches and prefixed constants belong to one company.
     [template, html.replace('<p class="preview-kicker">Time-sensitive context</p>', '<p class="preview-kicker">Time-sensitive note</p>'), ['/companies/google/preview']],

@@ -3,7 +3,6 @@ import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sit
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
 import { PREP_MENU_ROUTES } from './prep-menu';
-import { GATED_COMPANY_GUIDES } from '../src/app/features/company/company-preview/company-guide-gate';
 import { readFileSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 
@@ -648,7 +647,7 @@ const NETFLIX_PREVIEW_INBOUND_PAGES = [
 ] as const;
 
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES): the notes
-// wrap the unchanged counts, samples, process table, reports and official pages.
+// wrap the unchanged counts, process table, question list and official pages.
 const EDITORIAL_NOTE_CASES = [
   {
     label: 'Walmart',
@@ -667,7 +666,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -688,7 +686,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -709,7 +706,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -730,7 +726,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -752,7 +747,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -773,7 +767,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -794,7 +787,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -815,7 +807,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -836,7 +827,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -856,7 +846,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-editorial-intro"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -884,9 +873,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Waymo questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
       '/javascript/coding/js-take-latest',
@@ -916,8 +902,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official ElevenLabs questions',
-    // The reported-question list replaces the prompts (QUESTION_LIST_GUIDES).
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-stream-to-text',
       '/javascript/coding/js-poll-until',
@@ -948,9 +932,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'most from senior frontend loops in France, Spain and Portugal',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/react/trivia/react-keys-in-lists',
@@ -982,9 +963,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'None is an official or leaked Intuit question',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/guides/interview-blueprint/dsa-for-fe',
@@ -1012,12 +990,10 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'Candidates posted these accounts on LeetCode Discuss',
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-array-foreach',
       '/javascript/trivia/js-this-keyword',
     ],
-    questionList: true,
     reportUrl:
       'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
   },
@@ -1041,9 +1017,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'own posts on LeetCode Discuss, Blind and Medium between 2019 and 2025',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/react/coding/react-autocomplete-search-starter',
       '/system-design/infinite-scroll-list',
@@ -1071,12 +1044,10 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'posted by a Meta front end candidate',
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-array-foreach',
       '/javascript/coding/js-debounce',
     ],
-    questionList: true,
     reportUrl:
       'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
   },
@@ -1100,9 +1071,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'anonymous interview review re-posted on Taro',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/javascript/coding/js-valid-parentheses',
@@ -1131,12 +1099,10 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'something a Spotify candidate wrote about their own loop',
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-take-latest',
       '/javascript/coding/js-fetch-json-timeout',
     ],
-    questionList: true,
     reportUrl:
       'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
   },
@@ -1159,9 +1125,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official xAI questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/css/coding/css-grid-card-gallery',
@@ -1194,9 +1157,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'none is a leaked, confirmed or official JPMorgan Chase',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/trivia/js-memoization',
       '/react/trivia/react-keys-in-lists',
@@ -1227,9 +1187,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'Agoda has confirmed none of them, nothing is leaked',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/guides/interview-blueprint/dsa-for-fe',
       '/guides/system-design-blueprint',
@@ -1257,12 +1214,10 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'a Viblo interview in which a preparation course quotes a hire',
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-create-deferred-promise',
       '/guides/interview-blueprint/javascript-interviews',
     ],
-    questionList: true,
     reportUrl:
       'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
   },
@@ -1285,9 +1240,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'read the list as what came up',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
       '/javascript/trivia/js-classes',
@@ -1319,9 +1271,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'Taro re-posts with rewritten text and placeholder dates',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/debug/js-debug-mutating-input',
       '/javascript/debug/js-debug-off-by-one',
@@ -1352,9 +1301,6 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Capital One questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/javascript/debug/js-debug-nullish-defaults',
       '/react/trivia/react-state-management-redux',
@@ -1384,12 +1330,10 @@ const AUTHORED_GUIDE_CASES = [
       'Sources (',
     ],
     trustFragment: 'These questions come from CrowdStrike candidates',
-    prompts: [] as { id: string; title: string }[],
     resources: [
       '/html/coding/html-tables-accessibility',
       '/react/coding/react-fetch-list-states',
     ],
-    questionList: true,
     reportUrl:
       'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
   },
@@ -3789,32 +3733,23 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
-  test('raw company guides carry the plan card above the H1, the same link under a week plan and on the locked prompts and samples cards', async ({ request }) => {
+  test('raw company guides carry the plan card above the H1, the same link under a week plan and in the question list offer', async ({ request }) => {
     test.setTimeout(120_000);
-    // Guides with prompts past the open ones name them in a card, and catalog guides with Premium samples close the
-    // sample list with a card; both lead into the plan. Behind the account gate the prompts card leads to a free
-    // account instead, so it adds no plan link.
-    // A guide with a question list leads into the plan from its offer card instead of a prompts card.
-    for (const [slug, weekPlan, lockedPrompts, lockedSamples] of [
-      ['elevenlabs', true, false, false],
-      ['netflix', true, false, false],
-      ['servicenow', true, false, false],
-      ['apple', false, false, false],
+    // A guide with a question list leads into the plan from its offer card as well.
+    for (const [slug, weekPlan] of [
+      ['elevenlabs', true],
+      ['netflix', true],
+      ['servicenow', true],
+      ['apple', false],
     ] as const) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
-      const gated = GATED_COMPANY_GUIDES.has(slug);
       const cardAt = html.indexOf('data-testid="company-plan-entry"');
       expect(cardAt, `${slug} plan card`).toBeGreaterThan(-1);
       expect(cardAt, `${slug} plan card before the H1`).toBeLessThan(html.indexOf('<h1'));
-      expect(html.includes('data-testid="company-prompt-gate"'), `${slug} locked prompts card`).toBe(lockedPrompts);
-      expect(html.includes('data-testid="company-sample-gate"'), `${slug} locked samples card`).toBe(lockedSamples);
-      if (gated) {
-        expect(html, `${slug} account gate`).toContain(`href="/auth/signup?redirectTo=%2Fcompanies%2F${slug}%2Fpreview"`);
-      }
       const listOffer = QUESTION_LIST_GUIDES.has(slug);
       expect(html.includes('data-testid="company-question-offer"'), `${slug} question list offer`).toBe(listOffer);
       expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`)
-        .toBe(1 + Number(weekPlan) + Number(lockedPrompts && !gated) + Number(lockedSamples) + Number(listOffer));
+        .toBe(1 + Number(weekPlan) + Number(listOffer));
     }
   });
 
@@ -3918,7 +3853,6 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/tesla/preview',
-      gated: true,
       heading: 'Tesla frontend interview process',
       tables: 2,
       after: '<h1',
@@ -3929,7 +3863,6 @@ test.describe('seo-ssr', () => {
     {
       // Google keeps its own template branch; its table also opens the page, before the reported questions.
       path: '/companies/google/preview',
-      gated: true,
       heading: 'Google frontend interview process',
       tables: 1,
       after: '<h1',
@@ -3940,7 +3873,6 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/meta/preview',
-      gated: true,
       heading: 'Meta Front End Engineer interview process',
       tables: 2,
       after: '<h1',
@@ -3951,7 +3883,6 @@ test.describe('seo-ssr', () => {
     },
     {
       path: '/companies/microsoft/preview',
-      gated: true,
       heading: 'Microsoft frontend interview process',
       tables: 2,
       after: '<h1',
@@ -3974,7 +3905,6 @@ test.describe('seo-ssr', () => {
     {
       // Netflix keeps its own template branch; its table opens the page, and the role lenses come later.
       path: '/companies/netflix/preview',
-      gated: true,
       heading: 'Netflix frontend interview process',
       tables: 2,
       after: '<h1',
@@ -4045,12 +3975,6 @@ test.describe('seo-ssr', () => {
         // With the question list the table says who reported each round, and the links wait at the end of the page.
         expect(reportAnchors.length, `${slug} report links in the table`).toBe(0);
         expect(section, `${slug} reporters`).toContain('interview-process__reporter');
-      } else if (GATED_COMPANY_GUIDES.has(slug)) {
-        // Behind the account gate the raw table reads in full and carries the evidence counts with a tag, not the links.
-        expect(reportAnchors.length, `${slug} report links behind the gate`).toBe(0);
-        expect(section, `${slug} evidence counts`).toContain('interview-process__strength');
-        expect(section, `${slug} free-account tag`).toContain('>Free account<');
-        expect(section, `${slug} blurred rounds`).not.toContain('interview-process__detail');
       } else {
         expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
       }
@@ -4076,11 +4000,6 @@ test.describe('seo-ssr', () => {
       if (QUESTION_LIST_GUIDES.has(item.path.split('/')[2])) {
         expect(section, `${item.path} report link in the table`).not.toContain(`href="${item.reportUrl}"`);
         expect(section).toContain('interview-process__reporter');
-      } else if ('gated' in item && item.gated) {
-        // Behind the account gate the raw table keeps its text, counts and practice links and carries no evidence links.
-        expect(section, `${item.path} gated evidence`).not.toContain(`href="${item.reportUrl}"`);
-        expect(section).toContain('>Free account<');
-        expect(section).not.toContain('interview-process__detail');
       } else {
         const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
         expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
@@ -4137,14 +4056,13 @@ test.describe('seo-ssr', () => {
   });
 
   for (const guide of AUTHORED_GUIDE_CASES) {
-    test(`raw ${guide.label} company preview exposes the authored guide, sourced prompts, schema and crawlable links`, async ({ request }) => {
+    test(`raw ${guide.label} company preview exposes the authored guide, its question list, schema and crawlable links`, async ({ request }) => {
       test.setTimeout(120_000);
 
       const html = await readRawHtml(request, guide.path);
       const text = rawVisibleText(html);
       const caseText = rawVisibleTextPreserveCase(html);
       const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
-      const schemaNodes = extractRawJsonLdNodes(html);
       const schemaTypes = extractRawJsonLdTypes(html);
 
       expect(extractRawTitle(html)).toBe(guide.title);
@@ -4159,39 +4077,19 @@ test.describe('seo-ssr', () => {
       });
 
       expect(caseText).toContain(guide.trustFragment);
-      const questionList = QUESTION_LIST_GUIDES.has(guide.path.split('/')[2]);
-      if (!questionList) expect(caseText).toContain('Practice version modelled on a reported round');
       expect(caseText).not.toContain('known questions');
-      expect(caseText).not.toContain('Sample FrontendAtlas practice prompts');
       expect(caseText).not.toContain('Try free challenge');
 
-      for (const prompt of guide.prompts) {
-        expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
-        expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
-          new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
-        );
-      }
       for (const resource of guide.resources) {
         expect(html, `crawlable resource link ${resource}`).toContain(`href="${resource}"`);
       }
       for (const sibling of ['/companies/stripe/preview', '/companies/walmart/preview']) {
         expect(html, `crawlable sibling company guide link ${sibling}`).toContain(`href="${sibling}"`);
       }
-      if (questionList) {
-        // A visitor reads who reported each source, with no link, and the locked questions stay in the page.
-        expect(html).not.toContain(`href="${guide.reportUrl}"`);
-        expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
-        expect(schemaTypes).not.toContain('ItemList');
-        return;
-      }
-      expect(html).toMatch(new RegExp(`href="${escapeRegExp(guide.reportUrl)}"[^>]*rel="noopener noreferrer nofollow"`));
-
-      for (const schemaType of ['BreadcrumbList', 'CollectionPage', 'ItemList']) {
-        expect(schemaTypes, `schema type ${schemaType}`).toContain(schemaType);
-      }
-      const itemList = schemaNodes.find((node: any) => node?.['@type'] === 'ItemList') as any;
-      expect(itemList?.numberOfItems).toBe(guide.prompts.length);
-      expect(itemList?.itemListElement?.[0]?.url).toBe(`${expectedCanonical(guide.path)}#${guide.prompts[0].id}`);
+      // A visitor reads who reported each source, with no link, and the locked questions stay in the page.
+      expect(html).not.toContain(`href="${guide.reportUrl}"`);
+      expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
+      expect(schemaTypes).not.toContain('ItemList');
     });
 
     test(`${guide.label} company preview reflows without horizontal overflow at target widths`, async ({ page }) => {
@@ -4400,10 +4298,7 @@ test.describe('seo-ssr', () => {
         expect(text, `${note.label} preview includes ${heading}`).toContain(normalizeText(heading));
       }
 
-      // A guide with a reported-question list shows the list in place of the editorial sample.
-      const listed = QUESTION_LIST_GUIDES.has(note.path.split('/')[2]);
-      const markers = listed ? note.markers.filter((marker) => !marker.includes('Sample FrontendAtlas practice prompts')) : note.markers;
-      if (listed) expect(html).not.toContain('>Sample FrontendAtlas practice prompts</h2>');
+      const { markers } = note;
       const positions = markers.map((marker) => html.indexOf(marker));
       for (let index = 0; index < positions.length; index += 1) {
         expect(positions[index], `${markers[index]} present`).toBeGreaterThan(-1);

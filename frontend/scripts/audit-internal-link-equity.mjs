@@ -49,7 +49,7 @@ export function parsePage(html, route, canonicalBase) {
     if (attrs['data-testid']) testIds.add(attrs['data-testid']);
     if (attrs['data-testid'] === 'company-preview-counts') companyCounts = textContent(node).replace(/\s+/g, ' ').trim();
     if (tokens(attrs.class).includes('preview-chip')) {
-      const total = textContent(node).match(/^(\d+) editorial practice prompts?$/);
+      const total = textContent(node).match(/^(\d+) FrontendAtlas practice questions?$/);
       if (total) companyTotal = Number(total[1]);
     }
     if (node.tagName === 'base' && attrs.href && !hasBase) {
@@ -71,7 +71,7 @@ export function parsePage(html, route, canonicalBase) {
         pathWithQuery: `${url.pathname}${url.search}`, query: url.search, fragment: url.hash,
         follow: !tokens(attrs.rel).some((rel) => ['nofollow', 'sponsored', 'ugc'].includes(rel)),
         zone: navigation ? 'navigation' : 'content', directory: Boolean(directory), companyIndex: Boolean(companyIndex),
-        companyCount: companyIndex ? Number(textContent(node).match(/(\d+)\s+editorial practice prompts?/)?.[1] ?? NaN) : null });
+        companyCount: companyIndex ? Number(textContent(node).match(/(\d+)\s+FrontendAtlas practice questions?/)?.[1] ?? NaN) : null });
     }
     for (const child of node.childNodes || []) visit(child, { navigation, directory, companyIndex });
   };

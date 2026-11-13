@@ -698,8 +698,10 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   const warnings: string[] = [];
   for (const { company, list, switched } of chosen) {
+    // Said of the rounds this plan follows: another list of the same company may come from this level.
     if (!switched && list.reported && !list.reported.levels.includes(input.level)) {
-      warnings.push(`No report from a ${LEVEL_WORDS[input.level]} candidate at ${company.name}. These accounts come from ${list.reported.who}. Confirm the loop with your recruiter.`);
+      const rounds = chosen.length > 1 ? `the ${company.name} rounds` : 'these rounds';
+      warnings.push(`None of the accounts behind ${rounds} comes from a ${LEVEL_WORDS[input.level]} candidate: they come from ${list.reported.who}. Confirm the loop with your recruiter.`);
     }
     if (list.newestReport && olderThanCutoff(list.newestReport, input.today)) {
       const subject = chosen.length > 1 ? `the ${company.name} rounds` : 'these rounds';

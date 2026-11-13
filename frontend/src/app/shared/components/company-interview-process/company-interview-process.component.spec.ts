@@ -275,35 +275,6 @@ describe('CompanyInterviewProcessComponent', () => {
     expect(host.querySelectorAll('.interview-process__tag').length).toBe(0);
   });
 
-  it('behind the gate, keeps what every round asks open and replaces the evidence links with their counts and a tag', async () => {
-    await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
-    const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
-    fixture.componentRef.setInput('slug', 'acme');
-    fixture.componentRef.setInput('process', FIXTURE);
-    fixture.componentRef.setInput('showSourceLinks', false);
-    fixture.detectChanges();
-    const host = fixture.nativeElement as HTMLElement;
-
-    // Every "What happens" cell reads in full; nothing in the table sits under a blur.
-    expect(host.textContent).toContain('Coding in a browser IDE.');
-    expect(host.textContent).toContain('React fundamentals.');
-    expect(host.textContent).toContain('A frontend design round.');
-    expect(host.querySelector('.premium-locked')).toBeNull();
-    // The counts stay with a "Free account" tag, the links go, the practice link stays.
-    const strengths = Array.from(host.querySelectorAll('.interview-process__strength'));
-    expect(strengths.length).toBe(3);
-    expect(strengths.every((cell) => cell.nextElementSibling?.classList.contains('interview-process__tag'))).toBeTrue();
-    expect(host.querySelector('.interview-process__tag')?.textContent).toBe('Free account');
-    expect(host.querySelector('.interview-process__sources')).toBeNull();
-    expect(host.querySelector('a[href="https://reports.example/one"]')).toBeNull();
-    expect(host.querySelector('.interview-process__practice a')?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
-
-    fixture.componentRef.setInput('showSourceLinks', true);
-    fixture.detectChanges();
-    expect(host.querySelector('.interview-process__tag')).toBeNull();
-    expect(host.querySelectorAll('.interview-process__sources a').length).toBe(4);
-  });
-
   describe('with the sources at the end of the guide', () => {
     async function renderReportedBy() {
       await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
@@ -351,11 +322,52 @@ describe('CompanyInterviewProcessComponent', () => {
         .toBe('1 more reported question comes from sources that do not name the round.');
     });
 
+    it('leads each round\'s count to its first question, and locks only a count with a locked question', async () => {
+      await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+      const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+      const report = { label: 'Taro', url: 'https://reports.example/one', kind: 'report' as const, date: '2026-01' };
+      fixture.componentRef.setInput('slug', 'acme');
+      fixture.componentRef.setInput('companyLabel', 'Acme');
+      fixture.componentRef.setInput('process', {
+        ...FIXTURE,
+        // The list's first question is open; the online assessment holds only that one.
+        questions: [
+          { id: 'first', round: 'Online assessment', kind: 'Algorithm', topic: 'First', question: 'First?', sources: [report] },
+          { id: 'second', round: 'System design', kind: 'Frontend system design', topic: 'Second', question: 'Second?', sources: [report] },
+          { id: 'third', round: 'System design', kind: 'Frontend system design', topic: 'Third', question: 'Third?', sources: [report] },
+          { id: 'unplaced', kind: 'Algorithm', topic: 'Unplaced', question: 'Where?', sources: [report] },
+        ],
+      });
+      fixture.componentRef.setInput('reportedBy', true);
+      fixture.componentRef.setInput('questionCounts', { 'Online assessment': 1, 'System design': 2 });
+      fixture.componentRef.setInput('roundNotStated', 1);
+      fixture.componentRef.setInput('questionsAnchor', 'acme-questions');
+      fixture.componentRef.setInput('questionsLocked', true);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      const counts = () => Array.from(host.querySelectorAll<HTMLAnchorElement>('[data-testid="company-interview-process-question-count"]'))
+        .map((link) => [link.getAttribute('href'), Boolean(link.querySelector('svg'))]);
+      expect(counts()).toEqual([['#acme-question-first', false], ['#acme-question-second', true]]);
+      expect(host.querySelector('[data-testid="company-interview-process-unplaced"] a')?.getAttribute('href')).toBe('#acme-question-unplaced');
+      // A member reads every question: no count shows a lock.
+      fixture.componentRef.setInput('questionsLocked', false);
+      fixture.detectChanges();
+      expect(counts()).toEqual([['#acme-question-first', false], ['#acme-question-second', false]]);
+    });
+
     it('offers the first technical round\'s free task to try at once', async () => {
       const host = await renderReportedBy();
       const box = host.querySelector('[data-testid="company-interview-process-try"]') as HTMLElement;
       expect(box.textContent?.replace(/\s+/g, ' ')).toContain('Online assessment: try Debounce now, a free task we picked for this round.');
       expect(box.querySelector('a')?.getAttribute('href')).toBe('/javascript/coding/js-debounce');
+    });
+
+    it('names a pick that is not a task for what it is', async () => {
+      await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+      const component = TestBed.createComponent(CompanyInterviewProcessComponent).componentInstance;
+      expect(['/guides/interview-blueprint/quiz', '/guides/framework-prep/react-prep-path', '/javascript/trivia/js-event-loop',
+        '/system-design/ai-chat-textarea-design', '/javascript/coding/js-debounce'].map((path) => component.tryNowKind(path)))
+        .toEqual(['a free quiz', 'a free guide to read', 'a free concept question', 'a free system design walkthrough', 'a free task']);
     });
   });
 });

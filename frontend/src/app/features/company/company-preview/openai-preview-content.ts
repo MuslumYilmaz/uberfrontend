@@ -23,6 +23,11 @@ export type OpenAiResourceLink = {
   readonly path: string;
 };
 
+export type OpenAiPreviewFaq = {
+  readonly question: string;
+  readonly answer: string;
+};
+
 export const OPENAI_PREVIEW_TITLE = 'OpenAI Frontend Interview: {#questions} Reported Questions + Prep Guide';
 export const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
 export const OPENAI_PREVIEW_DESCRIPTION =
@@ -36,8 +41,6 @@ export const OPENAI_COPY = {
   subtitle:
     'Frontend and full-stack accounts from 2023 to 2026 describe a recruiter call, then a technical screen in two parts, coding and system design; in October 2026 one candidate could swap the coding hour for an agentic one in a Python codebase. Below the table are the questions candidates reported; the first is open to everyone.',
   chip: 'Public accounts, 2023–2026',
-  promptsTitle: 'OpenAI answer guides',
-  promptsIntro: 'The practice versions behind the reported OpenAI questions, written by FrontendAtlas.',
   studyKicker: 'What to study first',
   studyTitle: 'What OpenAI\'s screens test: a chat product to design, and an hour of general coding',
   studyParagraphs: [
@@ -65,6 +68,18 @@ export const OPENAI_SOURCE_BOUNDARY: AuthoredSectionCopy = {
     'OpenAI\'s interview guide says formats vary by team and may include pair coding, take-home projects or technical tests, that some formats allow AI tools while others do not, and that final interviews run 4 to 6 hours with 4 to 6 people over 1 to 2 days. No frontend-titled account read for this page reaches that final loop; the onsite accounts are software engineer and full-stack loops from 2023, 2025 and 2026. Ask your recruiter which coding format, tools and language your screen uses.',
   ],
 };
+
+/**
+ * Questions the page answers from its sources. "openai online assessment" reaches the guide from search; no account
+ * read for it mentions a test before or instead of the live screen.
+ */
+export const OPENAI_PREVIEW_FAQS: readonly OpenAiPreviewFaq[] = [
+  {
+    question: 'Does OpenAI send an online assessment before the screen?',
+    answer:
+      'None of the accounts behind this page mentions one. Those that describe the start of the process, from 2024 to 2026, go from a call with a recruiter or hiring manager to a live technical screen: coding and system design back to back in 2024 and 2025, and for one senior candidate in October 2026 a choice between a 60-minute JavaScript interview and an agentic one. OpenAI\'s interview guide says formats vary by team and may include pair coding, take-home projects or technical tests, so ask your recruiter which your team uses.',
+  },
+];
 
 export const OPENAI_RESOURCE_LINKS: readonly OpenAiResourceLink[] = [
   {

@@ -1,7 +1,7 @@
 /**
  * The company guide redesign ships behind three switches, one per change, so each can be turned off on its own: the
- * SEO rollback rule turns off `lockedQuestions` alone if the most clicked guides lose impressions or position. A guide
- * takes the new layout only once its process lists reported questions; until then it renders as before.
+ * SEO rollback rule turns off `lockedQuestions` alone if the most clicked guides lose impressions or position. Every
+ * guide's process lists reported questions, which the layout needs; a spec fails for a guide without them.
  */
 export type CompanyGuideFeatures = {
   /** No source links in the upper page: rows say who reported a round and when, and one collapsed list ends the page. */

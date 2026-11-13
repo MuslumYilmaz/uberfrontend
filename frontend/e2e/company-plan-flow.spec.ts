@@ -217,7 +217,7 @@ test.describe('company plan, five people', () => {
 
   test('Zeynep, mid-level, Agoda in Gurgaon: switches the list, signs up, pays and finds the plan the next day', async ({ page }) => {
     await answerForm(page, ['agoda'], 'next-week', 'mid');
-    await expect(page.getByTestId('company-plan-warning').first()).toContainText('No report from a mid-level candidate at Agoda');
+    await expect(page.getByTestId('company-plan-warning').first()).toContainText('None of the accounts behind these rounds comes from a mid-level candidate');
     await page.getByTestId('company-plan-switch-line').getByRole('button').click();
     await expect(page).toHaveURL(/lists=agoda(:|%3A)gurgaon/);
     await page.getByTestId('company-plan-build').click();
@@ -384,10 +384,11 @@ test.describe('company plan from a company guide', () => {
     await expect(page.locator('.preview-chip', { hasText: 'Full practice set requires Premium' })).toBeHidden();
     await expect(page.getByRole('link', { name: 'Unlock the full Agoda practice set' })).toBeHidden();
     const set = page.getByTestId('company-set-entry');
-    await expect(set).toContainText(/The full Agoda set: \d+ questions/);
+    await expect(set).toContainText(/The FrontendAtlas Agoda practice set: \d+ questions/);
     await expect(set.getByRole('link', { name: 'Open the Agoda set' })).toHaveAttribute('href', '/companies/agoda/all');
-    await expect(page.getByTestId('company-prompt-gate')).toHaveCount(0);
-    await expect(page.locator('.company-prompt--locked')).toHaveCount(0);
+    // The question list opens every question to a member and makes no offer.
+    await expect(page.getByTestId('company-question-offer')).toHaveCount(0);
+    await expect(page.locator('.cq-row--locked')).toHaveCount(0);
 
     const sidebarPlan = page.getByTestId('sidebar-company-plan');
     await expect(sidebarPlan).toContainText('Your Agoda plan');
@@ -399,8 +400,8 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your Agoda plan is ready' })).toBeVisible();
   });
 
-  // Every guide now shows the reported-question list, which replaced the account gate: the rounds, the first question and
-  // the source names are open, the source links open with a free account and the other questions with Premium.
+  // Every guide shows the reported-question list: the rounds, the first question and the source names are open, the
+  // source links open with a free account and the other questions with Premium.
   test('Ferhat reads the Meta guide: a visitor gets the rounds, the first question and the source names, a free account the source links', async ({ page }) => {
     await page.goto('/companies/meta/preview');
     const process = page.getByTestId('company-interview-process');
@@ -430,7 +431,7 @@ test.describe('company plan from a company guide', () => {
     await signIn(page, newAccount({ solved: [tasks[0]] }));
     await page.goto('/companies/elevenlabs/preview');
     const list = page.getByTestId('company-question-list');
-    await expect(list.getByTestId('company-question-progress')).toHaveText(`Your ElevenLabs prep: 1 of ${tasks.length} practice tasks solved`);
+    await expect(list.getByTestId('company-question-progress')).toHaveText(`Your ElevenLabs prep: 1 of the ${tasks.length} practice tasks in this list solved`);
     await expect(list.getByTestId('company-question-solved')).toHaveCount(rowsWithTask);
     expect(await overflow(page)).toBe(0);
   });
@@ -440,10 +441,9 @@ test.describe('company plan from a company guide', () => {
     await page.goto('/companies/meta/preview');
     const drill = page.getByTestId('behavioral-drill');
     await drill.scrollIntoViewIfNeeded();
-    // The behavioural questions are open on a guide with the reported-question list, so a visitor picks any of them.
+    // The behavioural questions are open, so a visitor picks any of them.
     await expect(drill.getByTestId('behavioral-drill-question-disagreement')).toBeChecked();
     await expect(drill.getByTestId('behavioral-drill-question-criticism')).toBeEnabled();
-    await expect(drill.getByTestId('company-drill-gate')).toHaveCount(0);
 
     await drill.getByTestId('behavioral-drill-situation').fill('Design and I disagreed on the checkout error states a week before launch.');
     await drill.getByTestId('behavioral-drill-action').fill('We met, we listed the cases and our designer drew them.');

@@ -70,7 +70,7 @@ export class CompanyIndexComponent implements OnInit {
   ];
 
   promptCountLabel(count: number): string {
-    return `${count} editorial practice ${count === 1 ? 'prompt' : 'prompts'}`;
+    return `${count} FrontendAtlas practice ${count === 1 ? 'question' : 'questions'}`;
   }
 
   ngOnInit() {

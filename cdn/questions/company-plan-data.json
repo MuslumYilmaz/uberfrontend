@@ -3325,7 +3325,7 @@
       "signature": "Frontend Platform interview",
       "framework": "react",
       "checkedAt": "2026-11-13",
-      "sourceCount": 25,
+      "sourceCount": 26,
       "promptCount": 5,
       "questionCount": 38,
       "variants": [
@@ -3537,7 +3537,7 @@
           ],
           "tasks": [
             {
-              "id": "/guides/interview-blueprint/dsa-for-fe",
+              "id": "js-build-tree-from-flat-list",
               "lead": true,
               "rounds": [
                 "coding-interview"
@@ -6248,6 +6248,24 @@
               "prompt": true
             },
             {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-maze-path",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
               "id": "react-state-management-redux"
             }
           ]
@@ -6332,6 +6350,24 @@
               "lead": true,
               "rounds": [
                 "power-day"
+              ]
+            },
+            {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-maze-path",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "rounds": [
+                "online-assessment"
               ]
             },
             {
@@ -7441,7 +7477,6 @@
                 "date": "2026-07"
               },
               "rounds": [
-                "coding-assessment",
                 "live-technical-round"
               ],
               "lead": true
@@ -10715,7 +10750,7 @@
         {
           "id": "ho-chi-minh",
           "title": "Front-end engineers, Ho Chi Minh City, 2025",
-          "from": "candidates in Ho Chi Minh City",
+          "from": "one account of a Ho Chi Minh City loop",
           "ask": "Interviewing in Ho Chi Minh City?",
           "default": true,
           "sourceCount": 1,
@@ -10727,7 +10762,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Personal details, expected salary, why the candidate applied and whether they would move to Saigon.",
+              "note": "Ho Chi Minh City loop, from one account: personal details, expected salary and whether you would move to Saigon.",
               "sources": [
                 {
                   "label": "Viblo",
@@ -11352,7 +11387,7 @@
         {
           "id": "main",
           "title": "Web and full-stack engineers",
-          "sourceCount": 29,
+          "sourceCount": 31,
           "newestReport": "2026-03",
           "rounds": [
             {
@@ -11368,15 +11403,15 @@
                   "date": "2026-11"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-02"
+                  "label": "Taro",
+                  "date": "2025-06"
                 },
                 {
-                  "label": "Taro",
-                  "date": "2022-08"
+                  "label": "Taro (approx.)",
+                  "date": "2025-02"
                 }
               ],
-              "moreSources": 6
+              "moreSources": 7
             },
             {
               "id": "technical-screen",
@@ -11398,15 +11433,15 @@
                   "date": "2026-11"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-02"
+                  "label": "Taro",
+                  "date": "2025-06"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2023-04"
+                  "date": "2025-06"
                 }
               ],
-              "moreSources": 14
+              "moreSources": 16
             },
             {
               "id": "final-web-practical",
@@ -11450,18 +11485,18 @@
               "sources": [
                 {
                   "label": "Taro (approx.)",
+                  "date": "2025-06"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2025-02"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-04"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 7
+              "moreSources": 8
             },
             {
               "id": "final-system-design",
@@ -11473,18 +11508,18 @@
               "sources": [
                 {
                   "label": "Taro (approx.)",
+                  "date": "2025-06"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2025-02"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-04"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 7
+              "moreSources": 8
             },
             {
               "id": "final-values",
@@ -11503,14 +11538,14 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2025-02"
+                  "date": "2025-06"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2023-04"
+                  "date": "2025-02"
                 }
               ],
-              "moreSources": 7
+              "moreSources": 8
             }
           ],
           "tasks": [
@@ -11550,14 +11585,9 @@
               ]
             },
             {
-              "id": "react-debounced-search",
-              "report": {
-                "publisher": "Blind",
-                "date": "2022-04"
-              },
+              "id": "js-dom-renderer",
               "rounds": [
-                "final-web-practical",
-                "final-algorithms"
+                "final-web-practical"
               ]
             },
             {

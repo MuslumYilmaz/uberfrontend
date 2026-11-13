@@ -35,6 +35,7 @@ export type ReportedQuestionKind =
   | 'React debugging'
   | 'React concepts'
   | 'Angular concepts'
+  | 'Vue concepts'
   | 'UI debugging'
   | 'React and algorithms'
   | 'UI build'
@@ -9040,6 +9041,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               SPOTIFY_STOCKHOLM_FS_2018,
               SPOTIFY_NY_2018,
               SPOTIFY_LONDON_FS_JUN_2022,
+              SPOTIFY_US_SWE_2025,
             ],
           },
           {
@@ -9065,6 +9067,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               SPOTIFY_NIGERIA_FS_2021,
               SPOTIFY_AMSTERDAM_FS_2022,
               SPOTIFY_NY_FS_2022,
+              SPOTIFY_US_SWE_2025,
+              SPOTIFY_LONDON_SWE_2025,
             ],
             // The event-loop tasks practise locked rows of this round, so the open link is the broad fundamentals quiz.
             practice: { label: 'Frontend fundamentals quiz', path: '/guides/interview-blueprint/quiz' },
@@ -9104,6 +9108,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               SPOTIFY_STOCKHOLM_FS_2018,
               SPOTIFY_GERMANY_FS_2022,
               SPOTIFY_BERLIN_FS_2022,
+              SPOTIFY_LONDON_SWE_2025,
             ],
             practice: { label: 'Data structures and algorithms for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
           },
@@ -9123,6 +9128,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               SPOTIFY_GERMANY_FS_2022,
               SPOTIFY_BERLIN_FS_2022,
               SPOTIFY_ITALY_FS_2022,
+              SPOTIFY_LONDON_SWE_2025,
             ],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
@@ -9142,6 +9148,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               SPOTIFY_STOCKHOLM_FE_2021,
               SPOTIFY_GERMANY_FS_2022,
               SPOTIFY_BERLIN_FS_2022,
+              SPOTIFY_LONDON_SWE_2025,
             ],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
@@ -10351,7 +10358,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               '60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, with the complexity stated for each, then a few spoken follow-up questions.',
             appliesTo: AGODA_ROLE,
             sources: [AGODA_A1_BANGKOK_2026, AGODA_A4_STAFF_2025, AGODA_A5_FULL_STACK_2025, AGODA_A12_BANGALORE_2025, AGODA_INTERVIEWER_GUIDE],
-            practice: { label: 'DSA for frontend loops', path: '/guides/interview-blueprint/dsa-for-fe' },
+            // A free problem rather than the DSA guide, so "Start the free task" opens a task. Not Valid Parentheses: it
+            // is the practice of a locked row in this round.
+            practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
             rehearsal: { label: 'Agoda coding interview, 2 problems in 45 minutes', path: '/javascript/coding/js-add-strings' },
           },
           {
@@ -10956,7 +10965,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         title: 'Campus and social hires, mainland China, in Chinese, 2019 to 2022',
         note:
-          'The official line comes from a reprinted 2027 campus posting for Beijing, Shanghai and Shenzhen. The accounts, written in Chinese on Juejin and Nowcoder, are campus loops from 2019 to 2021 and social-hire loops from 2020 and 2022, and none names its city; both social hires were re-interviewed by a second department.',
+          'The official line comes from a campus posting for students graduating in 2027, in Beijing, Shanghai and Shenzhen, reprinted on a campus jobs site in April 2026. The accounts, written in Chinese on Juejin and Nowcoder, are campus loops from 2019 to 2021 and social-hire loops from 2020 and 2022, and none names its city; both social hires were re-interviewed by a second department.',
         stages: [
           {
             stage: 'Application or referral, then a written test',
@@ -11467,7 +11476,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-two-way-binding',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'How Vue two-way binding works',
         question: 'How is Vue\'s two-way data binding implemented?',
         sources: [SHOPEE_S3_JUEJIN_2020, SHOPEE_S8_CAMPUS_2020],
@@ -11476,7 +11485,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-computed-and-watch',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue computed and watch',
         question: 'How do computed properties and watchers differ in Vue?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11485,7 +11494,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-lifecycle-dom',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue lifecycle and DOM access',
         question: 'Walk through Vue\'s lifecycle hooks. From which one can you reach the DOM?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11494,7 +11503,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-mixin-merge',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue mixin merge strategy',
         question: 'When a mixin and a component both define created and data, how does Vue merge them?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11503,7 +11512,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-attrs-and-props',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue $attrs and $props',
         question: 'What is the difference between $attrs and $props in Vue?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11511,7 +11520,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-list-keys',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Keys in Vue lists',
         question: 'What is the key attribute for in Vue?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11520,7 +11529,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-array-methods',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'How Vue implements array methods',
         question: 'Do you know how Vue implements its array methods?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11528,7 +11537,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-component-communication',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue component communication',
         question: 'What are the ways Vue components communicate?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -11537,7 +11546,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'v-if-and-v-show',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue v-if and v-show',
         question: 'What are v-if and v-show, and how do they differ?',
         sources: [SHOPEE_S8_CAMPUS_2020],
@@ -11546,7 +11555,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vuex-internals',
         round: 'First technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'How Vuex works',
         question: 'How does Vuex work, and is a Vuex getter any different from a plain function?',
         sources: [SHOPEE_S4_NOWCODER_2022],
@@ -11890,7 +11899,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'vue-router-internals',
         round: 'Second technical interview',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'How Vue Router works',
         question: 'How does Vue Router work under the hood?',
         sources: [SHOPEE_S3_JUEJIN_2020],
@@ -12372,7 +12381,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           'Refactor existing code, in a language the interviewer asked you to pick, and cover its edge cases. A 2024 frontend candidate remembers it as a piece of JavaScript that needed fixing.',
         promptNotShared: true,
         sources: [OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024],
-        practice: { label: 'Stop a helper mutating its input', path: '/javascript/debug/js-debug-mutating-input' },
+        practice: { label: 'Stop mutating caller data in unique', path: '/javascript/debug/js-debug-mutating-input' },
       },
       {
         id: 'openai-playground-design',
@@ -12837,7 +12846,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Fix a bug in a React component, in a CoderPad round that also held LeetCode problems.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
-        answerGuide: 'fix-a-practical-react-problem',
+        // The asynchronous CoderPad round, so the assessment's guide; the live-fix guide is question 7's.
+        answerGuide: 'timed-assessment-react-and-algorithms',
       },
       {
         id: 'coderpad-finish-react-component',
@@ -13531,7 +13541,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'flux-and-vuex',
         round: 'Written assessment',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'The Flux pattern and Vuex',
         question: 'GitLab\'s frontend is mostly Vue.js with Vuex: describe in writing what the Flux model is and what the pattern gains you.',
         sources: [GITLAB_GL35_FE_2018],
@@ -13638,7 +13648,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       },
       {
         id: 'vue-reactivity',
-        kind: 'Web fundamentals',
+        kind: 'Vue concepts',
         topic: 'Vue reactivity',
         question: 'Explain how Vue\'s reactivity works.',
         sources: [GITLAB_GL34_FE_2019],
@@ -14022,7 +14032,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           'Read badly written code, say what it does, then refactor or improve it, weighing the designs and trade-offs you propose.',
         promptNotShared: true,
         sources: [CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO7_LEAD_2022, CAPITALONE_CO30_LEAD_2023],
-        practice: { label: 'Stop a helper mutating its input', path: '/javascript/debug/js-debug-mutating-input' },
+        practice: { label: 'Stop mutating caller data in unique', path: '/javascript/debug/js-debug-mutating-input' },
         answerGuide: 'read-explain-refactor-code',
       },
       {

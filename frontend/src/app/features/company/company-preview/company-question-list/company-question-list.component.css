@@ -197,10 +197,15 @@
   user-select: none;
 }
 
-.cq-row__who {
+.cq-row__who,
+.cq-row__contents {
   font-size: 13px;
   line-height: 1.5;
   color: var(--uf-text-secondary);
+}
+
+.cq-row__contents {
+  max-width: 72ch;
 }
 
 .cq-row__practice {
@@ -208,7 +213,8 @@
   color: var(--uf-text-secondary);
 }
 
-.cq a {
+/* Buttons keep their own colours: a primary button's dark text on the accent would otherwise turn light. */
+.cq a:not([faButton]) {
   color: var(--uf-text-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -236,11 +242,6 @@
   gap: 8px;
 }
 
-.cq .cq-choice__actions a,
-.cq .cq-offer__actions a[faButton] {
-  text-decoration: none;
-}
-
 .cq-choice__note {
   font-size: 13px;
   color: var(--uf-text-secondary);
@@ -254,6 +255,12 @@
 .cq-guide__part {
   display: grid;
   gap: 6px;
+}
+
+/* An answer guide reads as prose: its lines stop at a readable length on a wide screen. */
+.cq-guide p,
+.cq-guide li {
+  max-width: 72ch;
 }
 
 .cq-guide h4 {

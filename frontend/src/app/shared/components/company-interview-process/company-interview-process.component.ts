@@ -34,16 +34,11 @@ export class CompanyInterviewProcessComponent {
   @Input() process: CompanyInterviewProcess | null = null;
   /** The viewer has no Premium, so a practice link to a Premium page keeps its name under a blur. */
   @Input() lockPremium = false;
-  /**
-   * Whether the evidence links are rendered. A gated guide shows a viewer without an account the counts and a
-   * "Free account" tag in their place; what each round asks stays open for everyone.
-   */
-  @Input() showSourceLinks = true;
   /** Navigation state for the practice links: a locked task page shows the way back to the guide. */
   @Input() returnState: { [key: string]: any } | undefined;
   /**
-   * Rows say who reported a round and when, with no links: the guide lists its sources once, at the end. Takes
-   * precedence over `showSourceLinks`.
+   * Rows say who reported a round and when, with no links: the guide lists its sources once, at the end. Without it,
+   * each row links its sources.
    */
   @Input() reportedBy = false;
   /** Reported questions per stage name, shown under each stage with a link to the question list. */
@@ -52,6 +47,8 @@ export class CompanyInterviewProcessComponent {
   @Input() roundNotStated = 0;
   /** The id of the question list the counts link to. */
   @Input() questionsAnchor = '';
+  /** The list locks its questions for this reader, so a count with a locked question shows a lock. */
+  @Input() questionsLocked = false;
   @Input() tryNow: InterviewProcessTryNow | null = null;
 
   /** The rows whose source list a phone reader opened; wider screens show every list regardless. */
@@ -141,6 +138,33 @@ export class CompanyInterviewProcessComponent {
 
   questionCount(stage: InterviewProcessStage): number {
     return this.questionCounts?.[stage.stage] ?? 0;
+  }
+
+  /** A stage's count leads to its first question in the list (the list opens there if the row is past "Show all"). */
+  questionHref(stage: InterviewProcessStage): string {
+    const first = this.process?.questions?.find((question) => question.round === stage.stage);
+    return `#${first && this.slug ? `${this.slug}-question-${first.id}` : this.questionsAnchor}`;
+  }
+
+  /** What the try-now pick is, so the line does not call a guide, a quiz or a walkthrough a task. */
+  tryNowKind(path: string): string {
+    if (path.endsWith('/quiz')) return 'a free quiz';
+    if (path.startsWith('/guides/')) return 'a free guide to read';
+    if (path.includes('/trivia/')) return 'a free concept question';
+    if (path.startsWith('/system-design/')) return 'a free system design walkthrough';
+    return 'a free task';
+  }
+
+  /** The questions no source places in a round lead to the first of them. */
+  notStatedHref(): string {
+    const first = this.process?.questions?.find((question) => !question.round);
+    return `#${first && this.slug ? `${this.slug}-question-${first.id}` : this.questionsAnchor}`;
+  }
+
+  /** A stage holds a locked question: any of its questions but the list's first, which is open to everyone. */
+  questionsLockedIn(stage: InterviewProcessStage): boolean {
+    const questions = this.process?.questions ?? [];
+    return this.questionsLocked && questions.some((question, index) => index > 0 && question.round === stage.stage);
   }
 
   /** Reports carry their month in the link text so several links from one site stay distinguishable. */

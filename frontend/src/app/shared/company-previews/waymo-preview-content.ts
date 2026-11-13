@@ -18,7 +18,7 @@ export const WAYMO_PREVIEW_DESCRIPTION =
   'Prepare for a Waymo frontend interview with {#questions} reported questions from 2026 reports: the tree filter screen, Angular debugging and a four-round onsite.';
 export const WAYMO_PREVIEW_CANONICAL_PATH = '/companies/waymo/preview';
 export const WAYMO_PREVIEW_TRUST_NOTE =
-  'The questions below are our wording of what candidates posted publicly, not leaked, confirmed or official Waymo questions, and the answer guides are FrontendAtlas\'s own. {reports} public accounts from 2022 to 2026 show what some loops asked; the instructions Waymo sends you come first.';
+  'The reported questions on this page are our wording of what candidates posted publicly, not leaked, confirmed or official Waymo questions, and the answer guides are FrontendAtlas\'s own. {reports} public accounts from 2022 to 2026 show what some loops asked; the instructions Waymo sends you come first.';
 
 export const WAYMO_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'waymo',

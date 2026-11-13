@@ -10,11 +10,6 @@ import { startSeoStaticServer } from './seo-static-server.mjs';
 import { marksPremiumParts, premiumLockViolations } from './seo-premium-lock-contract.mjs';
 import { loadSitemapDateMap, schemaDateMatchesSitemap } from './seo-sitemap-date-contract.mjs';
 
-/** Companies whose guide lists reported questions, from the generated list file. */
-const QUESTION_LIST_COMPANIES = new Set(
-  Object.keys(JSON.parse(fs.readFileSync(path.join(cdnQuestionsDir, 'company-question-lists.json'), 'utf8')).companies),
-);
-
 const BUILD_DIR = path.resolve(process.env.SEO_BUILD_DIR || 'dist/frontendatlas/browser');
 const HOST = process.env.SEO_SERVER_HOST || '127.0.0.1';
 const PORT = Number(process.env.SEO_SERVER_PORT || 4173);
@@ -92,9 +87,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Waymo questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
       '/javascript/coding/js-take-latest',
@@ -126,8 +118,6 @@ const AUTHORED_GUIDE_SMOKE = [
     trustFragment: 'not leaked, confirmed or official ElevenLabs questions',
     // The reported-question list replaces the prompt cards: its locked rows are the Premium part, and no ItemList
     // names them. The sources sit closed at the end, linked only for an account.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/coding/js-stream-to-text',
       '/javascript/coding/js-poll-until',
@@ -158,9 +148,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'most from senior frontend loops in France, Spain and Portugal',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/react/trivia/react-keys-in-lists',
@@ -192,9 +179,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'None is an official or leaked Intuit question',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/guides/interview-blueprint/dsa-for-fe',
@@ -222,12 +206,10 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'Candidates posted these accounts on LeetCode Discuss',
-    prompts: [],
     resources: [
       '/javascript/coding/js-array-foreach',
       '/javascript/trivia/js-this-keyword',
     ],
-    questionList: true,
     reportUrl:
       'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
   },
@@ -251,9 +233,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'own posts on LeetCode Discuss, Blind and Medium between 2019 and 2025',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/react/coding/react-autocomplete-search-starter',
       '/system-design/infinite-scroll-list',
@@ -281,12 +260,10 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'posted by a Meta front end candidate',
-    prompts: [],
     resources: [
       '/javascript/coding/js-array-foreach',
       '/javascript/coding/js-debounce',
     ],
-    questionList: true,
     reportUrl:
       'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
   },
@@ -310,9 +287,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'anonymous interview review re-posted on Taro',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/javascript/coding/js-valid-parentheses',
@@ -341,12 +315,10 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'something a Spotify candidate wrote about their own loop',
-    prompts: [],
     resources: [
       '/javascript/coding/js-take-latest',
       '/javascript/coding/js-fetch-json-timeout',
     ],
-    questionList: true,
     reportUrl:
       'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
   },
@@ -369,9 +341,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official xAI questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/css/coding/css-grid-card-gallery',
@@ -404,9 +373,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'none is a leaked, confirmed or official JPMorgan Chase',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/trivia/js-memoization',
       '/react/trivia/react-keys-in-lists',
@@ -437,9 +403,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'Agoda has confirmed none of them, nothing is leaked',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/guides/interview-blueprint/dsa-for-fe',
       '/guides/system-design-blueprint',
@@ -467,12 +430,10 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'a Viblo interview in which a preparation course quotes a hire',
-    prompts: [],
     resources: [
       '/javascript/coding/js-create-deferred-promise',
       '/guides/interview-blueprint/javascript-interviews',
     ],
-    questionList: true,
     reportUrl:
       'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
   },
@@ -495,9 +456,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'read the list as what came up',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
       '/javascript/trivia/js-classes',
@@ -529,9 +487,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'Taro re-posts with rewritten text and placeholder dates',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/debug/js-debug-mutating-input',
       '/javascript/debug/js-debug-off-by-one',
@@ -562,9 +517,6 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Capital One questions',
-    // The reported-question list replaces the prompt cards.
-    questionList: true,
-    prompts: [],
     resources: [
       '/javascript/debug/js-debug-nullish-defaults',
       '/react/trivia/react-state-management-redux',
@@ -594,12 +546,10 @@ const AUTHORED_GUIDE_SMOKE = [
       'Sources (',
     ],
     trustFragment: 'These questions come from CrowdStrike candidates',
-    prompts: [],
     resources: [
       '/html/coding/html-tables-accessibility',
       '/react/coding/react-fetch-list-states',
     ],
-    questionList: true,
     reportUrl:
       'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
   },
@@ -1920,7 +1870,6 @@ try {
     const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
     const itemList = jsonLd.graph.find((node) => hasSchemaType(node, 'ItemList'));
     const breadcrumbs = jsonLd.graph.find((node) => hasSchemaType(node, 'BreadcrumbList'));
-    const listItems = Array.isArray(itemList?.itemListElement) ? itemList.itemListElement : [];
     const breadcrumbItems = Array.isArray(breadcrumbs?.itemListElement) ? breadcrumbs.itemListElement : [];
     const missingHeadings = guide.headings.filter((heading) => !visibleText.includes(heading));
     checks.push({
@@ -1943,40 +1892,18 @@ try {
       ok: missingHeadings.length === 0 && visibleText.includes(guide.trustFragment),
       detail: missingHeadings.length ? `missing=${missingHeadings.join(' | ')}` : 'all headings present',
     });
-    if (guide.questionList) {
-      const lockedRows = (body.match(/class="[^"]*cq-row__question[^"]*premium-locked[^"]*"/g) || []).length;
-      checks.push({
-        name: `${guide.label} company preview locks its reported questions in the page, marks them Premium and links no source for a visitor`,
-        ok:
-          lockedRows > 0 &&
-          !itemList &&
-          !collectionPage?.mainEntity &&
-          marksPremiumParts(collectionPage) &&
-          schemaDateMatchesSitemap(collectionPage, guide.route, sitemapDates) &&
-          !body.includes(`href="${guide.reportUrl}"`),
-        detail: `locked_rows=${lockedRows} itemList=${Boolean(itemList)} dateModified=${collectionPage?.dateModified || '(missing)'}`,
-      });
-    } else {
-      checks.push({
-        name: `${guide.label} company preview ItemList matches all ${guide.prompts.length} visible prompts`,
-        ok:
-          listItems.length === guide.prompts.length &&
-          guide.prompts.every((prompt, index) =>
-            listItems[index]?.position === index + 1 &&
-            listItems[index]?.name === prompt.title &&
-            listItems[index]?.url === `${guideCanonical}#${prompt.id}`),
-        detail: `item_count=${listItems.length}`,
-      });
-      checks.push({
-        name: `${guide.label} company preview CollectionPage references the ItemList, marks its locked prompts as Premium and matches the sitemap date`,
-        ok:
-          Boolean(collectionPage?.mainEntity?.['@id']) &&
-          collectionPage?.mainEntity?.['@id'] === itemList?.['@id'] &&
-          (guide.prompts.length > 3 ? marksPremiumParts(collectionPage) : collectionPage?.isAccessibleForFree === true) &&
-          schemaDateMatchesSitemap(collectionPage, guide.route, sitemapDates),
-        detail: `mainEntity=${collectionPage?.mainEntity?.['@id'] || '(missing)'} dateModified=${collectionPage?.dateModified || '(missing)'}`,
-      });
-    }
+    const lockedRows = (body.match(/class="[^"]*cq-row__question[^"]*premium-locked[^"]*"/g) || []).length;
+    checks.push({
+      name: `${guide.label} company preview locks its reported questions in the page, marks them Premium and links no source for a visitor`,
+      ok:
+        lockedRows > 0 &&
+        !itemList &&
+        !collectionPage?.mainEntity &&
+        marksPremiumParts(collectionPage) &&
+        schemaDateMatchesSitemap(collectionPage, guide.route, sitemapDates) &&
+        !body.includes(`href="${guide.reportUrl}"`),
+      detail: `locked_rows=${lockedRows} itemList=${Boolean(itemList)} dateModified=${collectionPage?.dateModified || '(missing)'}`,
+    });
     checks.push({
       name: `${guide.label} company preview BreadcrumbList ends at the canonical page`,
       ok:
@@ -1989,7 +1916,6 @@ try {
       name: `${guide.label} company preview links its practice pages without catalog leakage`,
       ok:
         guide.resources.slice(0, 2).every((link) => body.includes(`href="${link}"`)) &&
-        !visibleText.includes('Sample FrontendAtlas practice prompts') &&
         !visibleText.includes('Try free challenge'),
       detail: 'practice links present, catalog markup absent',
     });
@@ -2002,10 +1928,9 @@ try {
     const collectionPage = jsonLd.graph.find((node) => hasSchemaType(node, 'CollectionPage'));
     const titleOk = extractTitle(body) === note.title;
     const headingsOk = [note.h1, ...note.headings].every((heading) => visibleText.includes(normalizeText(heading)));
-    // A guide with a reported-question list shows the list in place of the editorial sample.
-    const sample = visibleText.includes(normalizeText('Sample FrontendAtlas practice prompts'));
-    const listed = QUESTION_LIST_COMPANIES.has(note.route.split('/')[2]);
-    const catalogOk = (listed ? !sample : sample) && body.includes(`href="${note.practicePath}"`);
+    // The guide shows its reported-question list, and the practice link of its notes.
+    const listed = body.includes('data-testid="company-question-list"');
+    const catalogOk = listed && body.includes(`href="${note.practicePath}"`);
     const schemaOk = Boolean(collectionPage?.dateModified) && !jsonLd.graph.some((node) => hasSchemaType(node, 'FAQPage'));
     checks.push({
       name: `${note.label} company preview renders its editorial notes around the catalog blocks with a dated CollectionPage`,

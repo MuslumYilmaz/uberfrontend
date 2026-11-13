@@ -1691,8 +1691,8 @@ export const SHOWCASE_STATS = {
       "debug": 0
     },
     "spotify": {
-      "all": 13,
-      "coding": 4,
+      "all": 12,
+      "coding": 3,
       "trivia": 9,
       "system": 0,
       "debug": 0

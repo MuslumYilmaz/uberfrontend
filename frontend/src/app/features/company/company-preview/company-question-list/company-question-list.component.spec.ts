@@ -1,11 +1,12 @@
 import { TransferState, makeStateKey } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import type { CompanyInterviewProcess, InterviewProcessSource } from '../../../../shared/company-previews/company-interview-processes';
 import { summariseQuestionList } from '../../../../shared/company-previews/company-question-list';
 import { COMPANY_GUIDE_FEATURES, type CompanyGuideFeatures } from '../company-guide-features';
 import type { FreeUnlock } from '../../../../core/models/free-unlock.model';
+import type { AuthoredPracticePrompt } from '../../../../shared/company-previews/authored-company-preview.model';
 import { CompanyQuestionListComponent, practiceTaskId, type CompanyGuideViewer, type FreeUnlockState } from './company-question-list.component';
 
 const account = (id: string, date: string): InterviewProcessSource => ({
@@ -37,7 +38,11 @@ describe('CompanyQuestionListComponent', () => {
 
   function create(
     viewer: CompanyGuideViewer,
-    options: { features?: Partial<CompanyGuideFeatures>; rows?: number; today?: string; freeUnlock?: FreeUnlock; unlockState?: FreeUnlockState; practised?: ReadonlySet<string> } = {},
+    options: {
+      features?: Partial<CompanyGuideFeatures>; rows?: number; today?: string; freeUnlock?: FreeUnlock; unlockState?: FreeUnlockState;
+      practised?: ReadonlySet<string>; edit?: (process: CompanyInterviewProcess) => CompanyInterviewProcess;
+      guides?: Record<string, AuthoredPracticePrompt>;
+    } = {},
   ) {
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', ['track']);
     TestBed.configureTestingModule({
@@ -46,12 +51,13 @@ describe('CompanyQuestionListComponent', () => {
     });
     // The prerender's day travels with the page; the list reads it instead of the reader's clock.
     if (options.today) TestBed.inject(TransferState).set(makeStateKey<string>('company-guide-today'), options.today);
-    const process = acme(options.rows ?? 4);
+    const process = (options.edit ?? ((same) => same))(acme(options.rows ?? 4));
     fixture = TestBed.createComponent(CompanyQuestionListComponent);
     fixture.componentRef.setInput('slug', 'acme');
     fixture.componentRef.setInput('companyLabel', 'Acme');
     fixture.componentRef.setInput('process', process);
     fixture.componentRef.setInput('summary', summariseQuestionList(process));
+    if (options.guides) fixture.componentRef.setInput('guides', options.guides);
     fixture.componentRef.setInput('viewer', viewer);
     fixture.componentRef.setInput('features', { ...COMPANY_GUIDE_FEATURES, ...options.features });
     fixture.componentRef.setInput('offer', { price: '$24', priceNote: 'lower prices in many countries' });
@@ -148,25 +154,94 @@ describe('CompanyQuestionListComponent', () => {
     expect(group.querySelector('.cq-behavioural__intro')?.textContent?.trim()).toBe('Open to everyone: 1 question from one public source.');
   });
 
+  describe('what a locked row holds', () => {
+    const guide: AuthoredPracticePrompt = {
+      id: 'g-bare', title: 'Solve the bare puzzle', statement: 'Solve it.', whatThisMeasures: 'Care.', clarifyFirst: [],
+      strongAnswer: ['Name the edge cases.'], commonMiss: '', resourceLabel: 'Bare', resourcePath: '/react/coding/react-x',
+    };
+    // Row 3 gets an answer guide and a Premium task, and keeps its prompt to the accounts.
+    const withGuide = (process: CompanyInterviewProcess): CompanyInterviewProcess => ({
+      ...process,
+      questions: process.questions!.map((question) => (question.id === 'bare'
+        ? { ...question, answerGuide: 'g-bare', promptNotShared: true, practice: { label: 'Debug it', path: '/react/coding/react-debug-transcript-sync' } }
+        : question)),
+    });
+    const contents = (host: HTMLElement) => rows(host).map((row) => row.querySelector('[data-testid="company-question-contents"]')?.textContent?.trim() ?? null);
+
+    it('says on every locked row, before any choice, what the free unlock or Premium would open', () => {
+      const host = create('guest', { edit: withGuide, guides: { 'g-bare': guide } });
+      expect(contents(host)).toEqual([
+        null,
+        // A free task is said to be free and not named: its title would give the locked question away.
+        'Behind the lock: the question only. Its practice task is free for everyone.',
+        "Behind the lock: the accounts' description (they do not share the prompt), an answer guide and a Premium practice task.",
+        'Behind the lock: the question only.',
+      ]);
+      expect(host.textContent).not.toContain('Fix it');
+      // The choice no longer repeats a promise the row does not keep.
+      expect(choose(host, 1).textContent).not.toContain('its answer guide where it has one');
+    });
+
+    it('drops the line from a row the reader opened, and from every row for a member', () => {
+      let host = create('account', { freeUnlock: { company: 'acme', questionId: 'with-task', practiceId: 'react-x', unlockedAt: '2026-11-13T00:00:00.000Z' } });
+      expect(contents(host)).toEqual([null, null, 'Behind the lock: the question only.', 'Behind the lock: the question only.']);
+      TestBed.resetTestingModule();
+      host = create('member');
+      expect(contents(host).every((line) => line === null)).toBeTrue();
+    });
+  });
+
+  describe('counts and rows past "Show all"', () => {
+    it('counts the questions still locked once the free unlock opened one here', () => {
+      const host = create('account', { rows: 10, freeUnlock: { company: 'acme', questionId: 'with-task', practiceId: 'react-x', unlockedAt: '2026-11-13T00:00:00.000Z' } });
+      expect(host.querySelector('.cq__intro')?.textContent?.trim())
+        .toBe('The first question is open. The others show their topic and what is behind the lock; Premium opens all 8 still locked.');
+      expect(host.querySelector('.cq-offer__title')?.textContent?.trim()).toBe('Unlock all 8 Acme questions');
+    });
+
+    it('tells a visitor that the open question\'s outline waits for a free account', () => {
+      const host = create('guest');
+      expect(host.querySelector('.cq__intro')?.textContent?.trim()).toBe(
+        'The first question is open to read; its answer outline opens with a free account. The others show their topic and what is behind the lock; Premium opens all 3 still locked.',
+      );
+    });
+
+    it('keeps the question opened with the free unlock in view when it sits past "Show all"', () => {
+      const host = create('account', { rows: 12, freeUnlock: { company: 'acme', questionId: 'extra-8', practiceId: null, unlockedAt: '2026-11-13T00:00:00.000Z' } });
+      const hidden = (id: string) => host.querySelector(`#acme-question-${id}`)!.classList.contains('cq-row--hidden');
+      expect(hidden('extra-8')).toBeFalse();
+      expect(hidden('extra-7')).toBeTrue();
+    });
+
+    it('opens the list at a row past "Show all" when a link points at it, as a round\'s count in the process table does', async () => {
+      const host = create('guest', { rows: 12 });
+      expect(host.querySelector('#acme-question-extra-8')!.classList.contains('cq-row--hidden')).toBeTrue();
+      await TestBed.inject(Router).navigateByUrl('/#acme-question-extra-8');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.expanded()).toBeTrue();
+      expect(host.querySelector('#acme-question-extra-8')!.classList.contains('cq-row--hidden')).toBeFalse();
+    });
+  });
+
   describe('progress for a reader with an account', () => {
     const progress = (host: HTMLElement) => host.querySelector('[data-testid="company-question-progress"]')?.textContent?.trim() ?? null;
     const solvedRows = (host: HTMLElement) => rows(host).map((row) => !!row.querySelector('[data-testid="company-question-solved"]'));
 
     it('counts the practice tasks the account has solved, as the plan does, and tags each solved row', () => {
       const host = create('account', { practised: new Set(['react-x', 'not-on-this-list']) });
-      expect(progress(host)).toBe('Your Acme prep: 1 of 1 practice task solved');
+      expect(progress(host)).toBe('Your Acme prep: 1 of the one practice task in this list solved');
       expect(solvedRows(host)).toEqual([false, true, false, false]);
     });
 
     it('counts none for an account that has not practised yet', () => {
       const host = create('account', { practised: new Set() });
-      expect(progress(host)).toBe('Your Acme prep: 0 of 1 practice task solved');
+      expect(progress(host)).toBe('Your Acme prep: 0 of the one practice task in this list solved');
       expect(solvedRows(host)).toEqual([false, false, false, false]);
     });
 
     it('shows a member the same count, beside the open rows', () => {
       const host = create('member', { practised: new Set(['react-x']) });
-      expect(progress(host)).toBe('Your Acme prep: 1 of 1 practice task solved');
+      expect(progress(host)).toBe('Your Acme prep: 1 of the one practice task in this list solved');
       expect(solvedRows(host)).toEqual([false, true, false, false]);
     });
 

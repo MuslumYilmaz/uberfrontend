@@ -2157,24 +2157,6 @@
         ]
       }
     ],
-    "spotify": [
-      {
-        "id": "react-debounced-search",
-        "kind": "coding",
-        "tech": "react",
-        "title": "React Debounced Search with Fake API",
-        "access": "premium",
-        "route": "/react/coding/react-debounced-search",
-        "sources": [
-          {
-            "label": "Blind: Spotify web engineer final round, April 2022",
-            "url": "https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg",
-            "publisher": "Blind",
-            "date": "2022-04"
-          }
-        ]
-      }
-    ],
     "stripe": [
       {
         "id": "js-group-by",

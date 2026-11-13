@@ -14,17 +14,15 @@
     @if (allowance(); as line) {
       <p class="cq__allowance" data-testid="company-question-allowance">{{ line }}</p>
     }
-    @if (progress(); as count) {
-      <p class="cq__progress" data-testid="company-question-progress">
-        Your {{ companyLabel() }} prep: {{ count.solved }} of {{ count.total }} practice {{ count.total === 1 ? 'task' : 'tasks' }} solved
-      </p>
+    @if (progressLine(); as line) {
+      <p class="cq__progress" data-testid="company-question-progress">{{ line }}</p>
     }
   </div>
 
   <ol class="cq__rows">
     @for (row of rows(); track row.question.id) {
       <li class="cq-row" [attr.id]="rowId(row)" [class.cq-row--open]="row.summary.open" [class.cq-row--locked]="rowLocked(row)"
-          [class.cq-row--extra]="extra(row)" [class.cq-row--hidden]="extra(row) && !expanded()" data-testid="company-question-row">
+          [class.cq-row--extra]="extra(row)" [class.cq-row--hidden]="extra(row) && !expanded() && !rowUnlocked(row)" data-testid="company-question-row">
         <div class="cq-row__meta">
           <span class="cq-row__number">{{ row.number }}</span>
           <span class="cq-row__round">{{ roundLabel(row) }}</span>
@@ -63,6 +61,9 @@
         }
 
         <p class="cq-row__who">{{ row.who }} · {{ row.frequency }}</p>
+        @if (rowLocked(row)) {
+          <p class="cq-row__contents" data-testid="company-question-contents">{{ lockedContents(row) }}</p>
+        }
 
         @if (rowLocked(row) && choosing() === row.question.id) {
           <div class="cq-choice" data-testid="company-question-choice">
@@ -70,8 +71,8 @@
               <p class="cq-choice__line">
                 This question is Premium.
                 @if (offersFreeUnlock(row)) {
-                  You can still open this one free with an account: one per account, across all company guides. It opens
-                  the question, its practice task and its answer guide where it has one, and cannot be moved later.
+                  You can still open this one free with an account: one per account, across all company guides, and it
+                  cannot be moved later.
                 }
               </p>
               <span class="cq-choice__actions">
@@ -84,7 +85,7 @@
               <p class="cq-choice__line">
                 This question is Premium.
                 @if (offersFreeUnlock(row)) {
-                  Use your one free unlock here? It opens the question, its practice task and its answer guide where it has one, and cannot be moved later.
+                  Use your one free unlock here? It cannot be moved later.
                 } @else if (freeUnlock()) {
                   Your free unlock is already used{{ usedElsewhere() ? ' in the ' + usedElsewhere() + ' guide' : ' on this guide' }}.
                 }

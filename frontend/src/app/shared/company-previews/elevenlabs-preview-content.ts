@@ -174,7 +174,7 @@ export const ELEVENLABS_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       },
       {
         id: 'timed-assessment-react-and-algorithms',
-        title: 'Clear a 90-minute technical assessment before the first call',
+        title: 'Clear a 90-minute technical assessment, often set before the first call',
         statement:
           'One account describes a 90-minute technical assessment that arrives before the recruiter screen, without listing its questions. Practise a timed mix of frontend tasks and medium algorithm problems: allocate time, ship working code and move on.',
         whatThisMeasures:

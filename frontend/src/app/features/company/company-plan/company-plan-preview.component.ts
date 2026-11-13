@@ -30,10 +30,6 @@ import {
   whyLineFor,
 } from './company-plan.format';
 import { CompanyPlanService } from './company-plan.service';
-import { isCompanyGuideGated } from '../company-preview/company-guide-gate';
-
-/** The practice prompts a guide keeps open without an account or Premium; the answer guides after them are Premium. */
-const OPEN_GUIDE_PROMPTS = 3;
 
 const WHENS: readonly CompanyPlanWhen[] = ['tomorrow', 'this-week', 'next-week', 'few-weeks', 'later'];
 const LEVELS: readonly CompanyPlanAnswerLevel[] = ['junior', 'mid', 'senior', 'staff'];
@@ -124,6 +120,9 @@ export class CompanyPlanPreviewComponent {
     return isProActive(user) ? 'premium' : 'free';
   });
 
+  /** The Premium task a free account opened with its free unlock: it opens here as it does on the guide. */
+  private readonly unlockedTaskId = computed(() => (this.viewer() === 'free' ? this.auth.user()?.freeUnlock?.practiceId ?? null : null));
+
   private readonly names = computed(() => {
     const data = this.data();
     const request = this.request();
@@ -209,7 +208,7 @@ export class CompanyPlanPreviewComponent {
     const group = this.groups().get(task.id) ?? 'Plan';
     const time = clockText(task.minutes);
     const title = stripInlineMarkup(task.title);
-    const locked = this.viewer() !== 'premium' && task.access === 'premium';
+    const locked = this.viewer() !== 'premium' && task.access === 'premium' && task.id !== this.unlockedTaskId();
     const why = whyLine(task.why);
     return {
       task,
@@ -242,31 +241,18 @@ export class CompanyPlanPreviewComponent {
 
   /**
    * Shown on a phone only. The tasks open there as questions with their solutions, while the code runs on a larger
-   * screen; the night before an interview, the guide's rounds and open prompts are the reading a phone is good for.
+   * screen; the night before an interview, the guide's rounds and its open reported question are the reading a phone
+   * is good for.
    */
   readonly phoneNote = computed<{ text: string; guide: { name: string; path: string } | null }>(() => {
     const plan = this.plan();
     const company = plan && !plan.general && plan.companies.length === 1 ? plan.companies[0] : null;
     if (company && this.request()?.answers.when === 'tomorrow' && company.questionCount) {
-      // A guide with a question list keeps its first reported question open; Premium opens the others, which read on
-      // a phone.
+      // A guide keeps its first reported question open; Premium opens the others, which read on a phone.
       const locked = company.questionCount - 1;
       const more = locked ? ` Premium also opens its other ${locked === 1 ? 'reported question' : `${locked} reported questions`} there, readable on this phone tonight.` : '';
       return {
         text: `Tonight on a phone, read the ${company.name} guide: its rounds and its open reported question. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.${more}`,
-        guide: { name: company.name, path: `/companies/${company.slug}/preview` },
-      };
-    }
-    if (company && this.request()?.answers.when === 'tomorrow') {
-      // The guide's answer guides past the open prompts are Premium and read on a phone: the one thing a
-      // purchase opens tonight. A gated guide keeps only its first prompt open before the account step.
-      const first = isCompanyGuideGated(company.slug) ? 2 : OPEN_GUIDE_PROMPTS + 1;
-      const last = company.promptCount;
-      const guides = last >= first
-        ? ` Premium also opens the answer guides for ${last === first ? `prompt ${first}` : last === first + 1 ? `prompts ${first} and ${last}` : `prompts ${first} to ${last}`} there, readable on this phone tonight.`
-        : '';
-      return {
-        text: `Tonight on a phone, read the ${company.name} guide: its rounds and open prompts. The tasks here open as questions with their solutions; the code runs on a desktop or tablet.${guides}`,
         guide: { name: company.name, path: `/companies/${company.slug}/preview` },
       };
     }
@@ -306,7 +292,7 @@ export class CompanyPlanPreviewComponent {
       ? 'Progress saved as you go'
       : counts && `Premium opens all ${PREMIUM_QUESTION_COUNT} Premium questions, including ${counts[framework]} ${frameworkLabel(framework)} tasks and ${counts.systemDesign} system design walkthroughs`;
     const warmups = this.warmups();
-    const open = openTaskCount(plan);
+    const open = openTaskCount(plan, this.unlockedTaskId());
     const locked = plan.tasks.length - open;
     // A fact about the plan counts the plan's tasks; a free warm-up outside it keeps its badge but is not counted.
     const pressure = plan.tasks.filter((task) => task.pressure).length;
@@ -326,7 +312,7 @@ export class CompanyPlanPreviewComponent {
     if (!plan || plan.general) return '';
     if (this.replacing()) return `This replaces your ${this.replacing()} plan. Your solved tasks stay.`;
     if (this.viewer() === 'premium') return 'You have Premium, so your plan opens right away.';
-    const note = planUnlockNote(openTaskCount(plan), plan.tasks.length);
+    const note = planUnlockNote(openTaskCount(plan, this.unlockedTaskId()), plan.tasks.length);
     return this.viewer() === 'free' && this.plans.saved() ? `Saved to your account. ${note}` : note;
   });
 

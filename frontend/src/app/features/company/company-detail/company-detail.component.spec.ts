@@ -59,7 +59,7 @@ describe('CompanyDetailComponent', () => {
     expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
     );
-    expect(text).toContain('1 editorial practice prompt');
+    expect(text).toContain('1 FrontendAtlas practice question');
     expect(text).toContain('The grouping is editorial organization');
     expect(text).not.toContain('known questions');
     expect(text).not.toContain('candidate reports');
