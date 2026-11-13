@@ -17,6 +17,9 @@
         <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
       </p>
     }
+    @if (hasAccounts()) {
+      <p class="guide-sources__scope">Each candidate's account describes one loop, not a fixed format.</p>
+    }
     <ul class="guide-sources__list">
       @for (row of sources(); track row.url) {
         <li>

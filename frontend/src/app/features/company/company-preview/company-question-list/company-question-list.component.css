@@ -143,12 +143,6 @@
   color: var(--uf-text-primary);
 }
 
-.cq-row__title--question {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
 .cq-row__statement,
 .cq-row__note {
   max-width: 72ch;

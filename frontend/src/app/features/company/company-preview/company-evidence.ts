@@ -29,6 +29,9 @@ export type CompanyEvidence = {
   readonly sources: readonly AuthoredSource[];
 };
 
+/** Hosts a guide never cites (see company-interview-processes.ts): a catalog task tagged from one of them adds no source. */
+export const UNCITED_SOURCE = /github\.com|glassdoor|1point3acres|prepfully|dataford/i;
+
 export const COUNT_KEYS = ['reports', 'official', 'sources', 'prompts', 'questions'] as const;
 export type CountKey = (typeof COUNT_KEYS)[number];
 
@@ -65,11 +68,22 @@ function citedWhere({ stages, questionRounds, questions, behavioural }: Citation
   return joinWords(asked);
 }
 
+const APPROX = /\s*\(approx\.\)/;
+
 /** A source the guide's list lacks, as a sources row that says where the page uses it. */
 function citedSource(source: InterviewProcessSource, citation: Citation): AuthoredSource {
-  const where = citedWhere(citation);
+  // A question bank lists questions without the loop around them, so its note names no round.
+  const where = citedWhere(source.reportForm === 'question-bank' ? { ...citation, questionRounds: [] } : citation);
   if (source.kind === 'official') {
     return { label: source.label, url: source.url, kind: 'official', note: `An official page read for ${where}. Process context, not interview content.` };
+  }
+  if (source.reportForm === 'press') {
+    return {
+      label: `${source.label} report, ${monthWords(source.date)}`,
+      url: source.url,
+      kind: 'report',
+      note: `A press report read for ${where}, not a candidate's account.`,
+    };
   }
   if (source.reportForm === 'question-bank') {
     return {
@@ -80,10 +94,14 @@ function citedSource(source: InterviewProcessSource, citation: Citation): Author
     };
   }
   return {
-    label: `${source.label} account, ${monthWords(source.date)}`,
+    // "Taro (approx.)" marks a month the page gives only roughly; the reader sees that in words.
+    label: APPROX.test(source.label)
+      ? `${source.label.replace(APPROX, '')} account, around ${monthWords(source.date)}`
+      : `${source.label} account, ${monthWords(source.date)}`,
     url: source.url,
     kind: 'report',
-    note: `A public account read for ${where}. One candidate's loop, not a fixed format.`,
+    // The sources list says once that each account is one loop; repeated on every row it read as a template.
+    note: `A public account read for ${where}.`,
   };
 }
 

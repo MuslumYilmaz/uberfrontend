@@ -51,7 +51,7 @@ const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 const QUESTION_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function isAccount(source: InterviewProcessSource): boolean {
-  return source.kind === 'report' && source.reportForm !== 'question-bank';
+  return source.kind === 'report' && !source.reportForm;
 }
 
 /** The last day a question whose newest account is from `month` (YYYY-MM) shows as new. */
@@ -108,6 +108,10 @@ export function summariseQuestionList(process: CompanyInterviewProcess): Questio
 }
 
 /** What is wrong with a process's question lists on their own terms; catalog and answer-guide links are checked by the generator. */
+const TOPIC_MAX = 48;
+/** One to six words up to the length limit, not ending in a full stop; one word is allowed for a concept ("Closures"). */
+const TOPIC = new RegExp(`^(?=.{1,${TOPIC_MAX}}$)\\S+(?: \\S+){0,5}(?<!\\.)$`);
+
 export function questionListProblems(process: CompanyInterviewProcess): string[] {
   const problems: string[] = [];
   const questions = process.questions ?? [];
@@ -127,9 +131,14 @@ export function questionListProblems(process: CompanyInterviewProcess): string[]
       if (!MONTH.test(source.date)) problems.push(`${at}: ${source.url} has the date "${source.date}", not YYYY-MM`);
     }
   };
+  const topics = new Set<string>();
   questions.forEach((question, index) => {
     const at = `question ${question.id || index}`;
     check(at, question.id, question.question, question.sources);
+    const topic = question.topic ?? '';
+    if (!TOPIC.test(topic)) problems.push(`${at}: the topic "${topic}" must be 1 to 6 words, at most ${TOPIC_MAX} characters, with no full stop`);
+    if (topics.has(topic.toLowerCase())) problems.push(`${at}: the topic "${topic}" is used twice`);
+    topics.add(topic.toLowerCase());
     if (question.round !== undefined && !stages.has(question.round)) problems.push(`${at}: no stage is named "${question.round}"`);
     if (index === 0 && question.promptNotShared) problems.push(`${at}: the open row must show a question, not a format`);
   });

@@ -338,42 +338,39 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'tesla',
     title: 'Tesla Frontend Interview Process and Practice Questions',
     h1: 'Tesla Frontend Interview Questions and Process',
-    description: 'How public reports describe Tesla frontend interviews: a Codility assessment, a one-hour technical screen, 3 or 4 onsite rounds and team-specific take-homes.',
+    description: 'How candidates from 2020 to 2026 describe Tesla frontend interviews: a Codility assessment, a one-hour screen, a three or four round onsite and intern rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Recruiter call, Codility assessment, technical screen and a three or four round onsite, as described in public interview reports from 2020 to 2026, with the free and premium items that rehearse each stage.',
+      subtitle: 'A recruiter call, an online assessment that is often on Codility, a one-hour screen, then a virtual onsite of three or four rounds, as frontend candidates described them between 2020 and 2026. Intern loops, which one intern called very team dependent, have a table of their own, and the search bar from a 2025 screen opens the reported questions.',
     },
-    intro: ['Tesla publishes no frontend interview guide, so this page rests on public interview reports from 2020 to 2026. Several accounts say the format depends on the team, and a few describe what a recruiter planned rather than a finished loop.'],
+    intro: ['Tesla has no public interview page for frontend roles, so this page rests on candidates’ posts on Taro, Blind, LeetCode and Code360. Most frontend accounts are from the US and one 2025 account is from Amsterdam; several Blind posts record what a recruiter planned before the interview rather than how it went. The question list also draws on intern loops, a 2022 full-stack new-grad loop on Autopilot and a 2020 general SDE-1 loop, from which only frontend, web and algorithm questions are kept.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'Assessment, screen, then a three or four round onsite',
-      paragraphs: ['Two accounts open with a recruiter or HR call; most start with an online assessment, often on Codility, then a one-hour technical screen. The onsite runs three or four rounds of about 45 minutes and mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation.'],
+      paragraphs: ['Two accounts open with a recruiter or HR call; most start with an online assessment, often on Codility, then a one-hour technical screen. The onsite mixes frontend coding, an algorithm round, frontend system design and a behavioural or hiring manager conversation. A 2020 recruiter planned a 60-minute hiring manager interview, a 30-minute product manager interview and two 45-minute engineer rounds, and said two of three coding rounds would be frontend-focused and the third on algorithms; which interview holds the third is not stated. A 2022 account gives its virtual onsite three and a half hours.'],
       bullets: [
         {
-          text: 'Assessments vary: two hours for five questions on Codility in one account, a three-hour assessment with HTML, CSS, a like button and a string puzzle in another.',
+          text: 'Assessments vary: two hours for five questions on Codility in a 2022 account; three hours in a 2021 one, with an HTML and CSS question, a React question and a string problem; basic front-end framework tasks in a 2020 one.',
           link: {
             label: 'See the assessment stage',
             fragment: 'tesla-interview-process-1',
           },
         },
         {
-          text: 'The one-hour screen took different shapes: basic JavaScript questions and a search bar in a live React session in a 2025 account, React questions about a take-home and a LeetCode easy in a 2022 one.',
+          text: 'The one-hour screen took different shapes. In 2025 it was live React coding with basic JavaScript questions and a search bar, the question that opens the list below; in 2022 a senior developer on the team asked React questions about the candidate’s take-home and an easy LeetCode problem.',
           link: {
             label: 'See the technical screen',
             fragment: 'tesla-interview-process-1-stage-technical-screen',
           },
         },
         {
-          text: 'Frontend coding is mostly React; one 2024 loop ran an Angular round followed by a TypeScript and JavaScript round.',
-        },
-        {
-          text: 'Take-homes are team-specific. Candidates have published two briefs, an energy site layout and a creative technology control; this page describes their shape and does not reproduce them.',
+          text: 'Frontend coding is mostly React; a 2024 Fremont loop ran an Angular round with a coding test, then a TypeScript and JavaScript round.',
         },
         {
           text: 'Team match matters: a 2026 account passed four technical rounds and got no offer because the team wanted a full-stack engineer.',
         },
         {
-          text: 'Interns get one or two rounds, sometimes with a system design final.',
+          text: 'Interns describe one or two rounds that vary by team, and one intern loop ended with a system design final.',
           link: {
             label: 'See the internship stages',
             fragment: 'tesla-interview-process-2',
@@ -383,86 +380,44 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'Rehearse the reported stages in order',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      title: 'Start with the search bar, then the onsite rounds',
+      intro: 'The open search bar question leads, with a warm-up for the easy problem a 2022 screen added. The React path and the design and behavioural guides follow the order of the loop, and the Premium rehearsal of the one-hour screen comes last.',
       steps: [
-        {
-          label: 'Color contrast ratio',
-          path: '/javascript/coding/js-color-contrast-ratio',
-          access: 'free',
-          why: 'A JavaScript task listed in a 2022 account that also had a Codility assessment.',
-        },
-        {
-          label: 'Forms: validation and required fields',
-          path: '/html/coding/html-forms-validation-required',
-          access: 'free',
-          why: 'The same account lists a login form among its tasks.',
-        },
-        {
-          label: 'Semantic HTML layout',
-          path: '/html/coding/html-semantic-layout',
-          access: 'free',
-          why: 'Reported as replacing divs with semantic HTML5 elements.',
-        },
-        {
-          label: 'CSS positioning badge',
-          path: '/css/coding/css-positioning-badge',
-          access: 'free',
-          why: 'Reported as positioning boxes with CSS.',
-        },
-        {
-          label: 'React fetch and render a list',
-          path: '/react/coding/react-fetch-list-states',
-          access: 'free',
-          why: 'Reported as fetching photos and rendering them with a theme context.',
-        },
         {
           label: 'React autocomplete search',
           path: '/react/coding/react-autocomplete-search-starter',
           access: 'free',
-          why: 'A search bar build for the live React session in a 2025 screen.',
+          why: 'The open question: a search bar built in live React coding during a 2025 screen. This version adds the suggestion list.',
         },
         {
           label: 'Valid parentheses',
           path: '/javascript/coding/js-valid-parentheses',
           access: 'free',
-          why: 'A LeetCode easy of the kind a 2022 screen paired with React questions.',
+          why: 'A warm-up for the easy LeetCode problem in a 2022 screen; which problem it was is not stated.',
         },
         {
-          label: 'Shallow clone',
-          path: '/javascript/coding/js-shallow-clone',
+          label: 'React interview preparation path',
+          path: '/guides/framework-prep/react-prep-path',
           access: 'free',
-          why: 'Copy semantics came up in a published round-one file.',
+          why: 'Most onsite coding rounds in these accounts were in React; the 2024 Fremont loop used Angular and TypeScript instead.',
+        },
+        {
+          label: 'Frontend system design blueprint',
+          path: '/guides/system-design-blueprint',
+          access: 'free',
+          why: 'The 2020 and 2024 onsites each had one frontend system design round, and one intern loop ended with one.',
+        },
+        {
+          label: 'Behavioral interview guide',
+          path: '/guides/behavioral',
+          access: 'free',
+          why: 'A 2020 recruiter planned a 60-minute hiring manager interview and a 30-minute product manager interview; the behavioural questions candidates reported are open beside the list.',
         },
         {
           label: 'The one-hour screen, rehearsed',
           path: '/react/trivia/react-phone-screen-search-bar-rehearsal',
           access: 'premium',
-          why: 'The screen in its parts: two-sentence JavaScript answers, the search bar with stale responses, and an easy problem narrated.',
-        },
-        {
-          label: 'Deep clone',
-          path: '/javascript/coding/js-deep-clone',
-          access: 'premium',
-          why: 'The deep copy half of the same reported task.',
-        },
-        {
-          label: 'React like button',
-          path: '/react/coding/react-like-button',
-          access: 'premium',
-          why: 'Reported in a three-hour assessment.',
-        },
-        {
-          label: 'Battery site layout',
-          path: '/react/coding/react-battery-site-layout',
-          access: 'premium',
-          why: 'A practice version of a published take-home, built on our own catalog and wording.',
-        },
-        {
-          label: 'Car rental booking frontend design',
-          path: '/system-design/car-rental-booking-frontend',
-          access: 'premium',
-          why: 'A practice version for the system design round that discussed a car rental company.',
+          why: 'The one-hour screen in three parts: short JavaScript answers and a search bar, as in the 2025 screen, and an easy problem talked through, as in the 2022 one.',
         },
       ],
     },
@@ -472,15 +427,15 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Does Tesla use a take-home?',
-          answer: 'Some teams do. Candidates have published two briefs, one of them marked confidential, so this page describes their shape only and the battery item uses our own catalog and wording.',
-        },
-        {
-          question: 'Which framework should I expect?',
-          answer: 'React in most accounts. One 2024 loop ran an Angular round and a TypeScript and JavaScript round, so ask the recruiter which stack the team uses.',
+          answer: 'One account mentions one: in 2022 a senior developer on the team asked React questions about a take-home assessment the candidate had submitted; most other accounts describe a timed online assessment, often on Codility. One intern called the format very team dependent, so ask the recruiter what your team sets.',
         },
         {
           question: 'Is there a system design round?',
-          answer: 'Several onsite accounts include one, on a shared component and its API in one case and a car rental company in another. One intern loop ended with a system design final.',
+          answer: 'The 2020 and 2024 onsite accounts each had one frontend system design round, and one intern loop ended with a system design final. A 2025 intern account lists system design for UI components among its technical questions.',
+        },
+        {
+          question: 'Where do the reported questions come from?',
+          answer: 'From candidates’ posts on Taro, LeetCode and Code360 dated 2020 to 2025, written here in our words; one behavioural question comes from a Blind commenter. Some come from intern, full-stack and general software engineer loops. None is confirmed by Tesla.',
         },
       ],
     },
@@ -628,23 +583,23 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'What Zalando publishes about its hiring loop and what public reports add for frontend roles: a Codility take-home, JS fundamentals and system design rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Zalando publishes two process pages; public interview reports from 2019 to 2024 add the Berlin frontend loop: a two to three hour Codility take-home, a hiring manager call, then a final day that reviews the take-home and covers JavaScript fundamentals, system design and a manager conversation.',
+      subtitle: 'Zalando publishes two process pages; frontend accounts posted from 2020 to 2024, two of them from Berlin, add the loop they went through: a Codility take-home of two to three hours, a hiring manager call, then a final day that reviews the take-home and covers JavaScript fundamentals, system design and a manager conversation. The 2024 take-home, a search box with suggestions, heads the reported questions and is open to all.',
     },
-    intro: ['The two official pages, linked below, describe a 30-minute talent acquisition call, a case study or coding exercise, a hiring manager interview and three to five final interviews of 45 to 60 minutes. Only three complete frontend loops are public, two of them from Berlin, and only one is from after 2022.'],
+    intro: ['The two official pages, linked below, describe a 30-minute talent acquisition call, a case study or coding exercise, a hiring manager interview and three to five final interviews of 45 to 60 minutes; the 2023 blog post adds that the coding, system design and general tech interviews last an hour each. Three public accounts describe a whole frontend loop: a 2019 interview posted in 2021, and 2020 and 2024 loops in Berlin; a 2022 Blind post adds the Codility test. Only the 2024 account, a senior frontend engineer’s, is from after 2022, and it supplies nearly every reported question on this page.'],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A take-home, a hiring manager call and a final day',
-      paragraphs: ['The take-home is a Codility challenge of two to three hours in 2022 and 2024, a React and Node app or easy algorithm problems; the 2020 assessment named no platform and gave three working days for a React question plus an API design question. The hiring manager interview is sometimes non-technical. The final day of the 2024 account had a 45-minute take-home review, an hour of JavaScript fundamentals with two senior frontend engineers, an hour of system design and 45 minutes with the engineering manager.'],
+      paragraphs: ['The take-home is a Codility challenge of two to three hours in 2022 and 2024, a React and Node app or easy algorithm problems; the 2020 assessment named no platform and gave three working days for a React question plus an API design question. The hiring manager interview is sometimes non-technical. The final day of the 2024 account had a 45-minute take-home review, an hour of JavaScript fundamentals with two senior frontend engineers, an hour of system design and 45 minutes with the engineering manager, and the candidate then waited about two weeks for the offer.'],
       bullets: [
         {
-          text: 'The 2024 take-home was a search box with suggestions on every keystroke, with a hand-written debounce and a discussion of further optimisation.',
+          text: 'The 2024 take-home, a React and Node search box with suggestions, opens the question list below; on the final day a senior software engineer spent 45 minutes going back over the submitted code.',
           link: {
             label: 'See the challenge stage',
             fragment: 'zalando-interview-process-1',
           },
         },
         {
-          text: 'The system design round leaned backend in 2024, a load balancer for HTTP requests; a 2019 account expected something related to e-commerce.',
+          text: 'System design leaned backend in 2024: a senior principal engineer set a design with a load balancer for HTTP requests and optimised database reads and writes. An account posted in 2021 about a 2019 interview advises expecting something related to e-commerce.',
         },
         {
           text: 'The official pages differ: the Tech tab puts the case study before the hiring manager, and the 2023 blog lists the hiring manager before a live coding interview and treats a take-home as an optional extra. The blog gives two to three weeks for the loop.',
@@ -654,55 +609,25 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the take-home, then the fundamentals hour',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      intro: 'The search box comes first: it is the open question and the code the 2024 review went back over. The fundamentals hour and the manager round follow.',
       steps: [
         {
           label: 'React autocomplete search',
           path: '/react/coding/react-autocomplete-search-starter',
           access: 'free',
-          why: 'The search box with suggestions from the 2024 take-home.',
+          why: 'The open question, the search box with suggestions from the 2024 Codility take-home, as a React exercise without the Node part.',
         },
         {
-          label: 'Debounce',
-          path: '/javascript/coding/js-debounce',
+          label: 'Frontend fundamentals quiz',
+          path: '/guides/interview-blueprint/quiz',
           access: 'free',
-          why: 'The debounce the same account wrote by hand.',
+          why: 'Short spoken answers on JavaScript, CSS, HTML and the browser, for the hour of questions with two senior frontend engineers.',
         },
         {
-          label: 'Deferred and async scripts',
-          path: '/javascript/trivia/js-deferred-scripts',
+          label: 'Common behavioral questions',
+          path: '/guides/behavioral/common-questions',
           access: 'free',
-          why: 'async versus defer, asked in the JavaScript fundamentals hour.',
-        },
-        {
-          label: 'HTML parsing and rendering',
-          path: '/html/trivia/html-parsing-rendering',
-          access: 'free',
-          why: 'The CSSOM and rendering questions from the same hour.',
-        },
-        {
-          label: 'Web performance: optimise load time',
-          path: '/javascript/trivia/web-performance-optimize-load-time',
-          access: 'free',
-          why: 'Metrics such as FCP and TTI came up in the fundamentals hour.',
-        },
-        {
-          label: 'XSS and DOM sinks',
-          path: '/javascript/trivia/js-xss-dom-sinks',
-          access: 'free',
-          why: 'Security questions, including XSS, from the fundamentals hour.',
-        },
-        {
-          label: 'Real-time search with debounce and cache',
-          path: '/system-design/realtime-search-debounce-cache',
-          access: 'premium',
-          why: 'A practice version of the optimisation discussion that followed the take-home.',
-        },
-        {
-          label: 'Memoize a function',
-          path: '/javascript/coding/js-memoize-function',
-          access: 'premium',
-          why: 'An editorial grouping for the JavaScript fundamentals hour.',
+          why: 'For the 45-minute engineering manager round, whose 2024 questions on teamwork and leading a team are open beside the list.',
         },
       ],
     },
@@ -711,16 +636,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       title: 'Common questions about Zalando frontend interviews',
       items: [
         {
-          question: 'Is the take-home a React app?',
-          answer: 'The 2024 account built a React and Node search box. Earlier accounts had easy algorithm tasks in 2022 and a React plus API design question in 2020, so the challenge changes.',
-        },
-        {
           question: 'Does the hiring manager come before or after the challenge?',
           answer: 'The two official pages disagree, and in the 2024 account the engineering manager came on the final day. Ask your talent acquisition partner for the order of your loop.',
         },
         {
           question: 'How long does the loop take?',
-          answer: 'The 2023 blog gives two to three weeks. The 2020 account had three working days for the take-home alone.',
+          answer: 'The 2023 blog gives two to three weeks. The 2020 account had three working days for the take-home alone, and the 2024 candidate waited about two weeks for the offer.',
+        },
+        {
+          question: 'Where do the reported questions come from?',
+          answer: 'All but one come from a senior frontend engineer’s 2024 Berlin account on LeetCode: the take-home, the review that followed it and the fundamentals hour. The other, from a 2022 Blind post, comes from the Codility test. They are in our words and are not confirmed by Zalando.',
         },
       ],
     },
@@ -730,72 +655,86 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'stripe',
     title: 'Stripe Frontend Interview Process and Practice Questions',
     h1: 'Stripe Frontend Interview Questions and Process',
-    description: 'How public reports describe Stripe frontend interviews: a 60 minute multi-part CoderPad screen, then an onsite with bug squash, integration and frontend design.',
+    description: 'How public reports describe Stripe frontend interviews: a 60-minute coding screen, then an onsite with a bug squash, integration and frontend design.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Stripe describes its process only in general terms; public interview reports from 2022 to 2025 fill in the frontend loop: a multi-part CoderPad screen and an onsite built around a bug squash, an integration exercise and frontend design.',
+      subtitle:
+        'Stripe describes its process only in general terms, so the frontend loop here comes from people who went through it between 2022 and 2026: a recruiter call, an hour of live coding with an engineer, then four or five onsite interviews built around a bug squash, an integration exercise, a programming exercise, frontend design and a talk with the hiring manager. After the rounds come the questions they reported; the bug squash is open to every reader.',
     },
-    intro: ['The careers FAQ, linked below, describes a recruiter screen, a technical or skills-based assessment and interviews with the team, and says timelines vary by role, level and location. Candidates mention a preparation document that recruiters share; the detail here comes from public accounts.'],
+    intro: [
+      'Stripe’s careers FAQ, linked below, says most processes include a recruiter screen, a technical or skills-based assessment and a series of interviews with the team you would join, and that timelines vary by role, level and location. The rest comes from candidates: frontend accounts on Taro from 2022 to 2026 written from Canada, the United States, Spain, India, Sweden and Ireland, two Blind threads, a LeetCode post on a 2024 software engineer screen, a 2025 intern account on Medium, and web developer accounts from 2017 and 2018 that add behavioural questions.',
+    ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'A multi-part screen, then an onsite of four or five rounds',
-      paragraphs: ['Accounts describe a 30-minute recruiter call and a 60-minute CoderPad screen with two to four exercises; one screen was a three-part exercise, another a four-digit code entry form. The onsite rows rest on fewer accounts: a programming exercise, a bug squash in an unfamiliar project, an integration of two provided tools, frontend design and a conversation about experience and goals.'],
+      paragraphs: [
+        'The recruiter call runs about 30 minutes. The screen is about an hour with an engineer, in CoderPad or in your own editor, on one exercise in parts or two to four short ones, and several accounts let the candidate pick the language. The onsite, virtual in the 2022 and 2024 accounts, held four or five interviews: a bug squash, an integration exercise, one or more programming exercises, a frontend design discussion and a conversation with the hiring manager.',
+      ],
       bullets: [
         {
-          text: 'The bug squash and integration rounds were the hardest in a 2022 account, and one candidate got a hiring manager interview instead of the bug squash.',
+          text: 'A 2022 account from India found the bug squash and the integration round the hardest, and a commenter on a 2024 Blind thread had a hiring manager interview in place of the bug squash.',
           link: {
             label: 'See the onsite stages',
             fragment: 'stripe-interview-process-1',
           },
         },
         {
-          text: 'One account describes about three weeks for the loop plus two more for an answer.',
+          text: 'Timing varies: three weeks of interviews and two more for an answer in a 2023 account, four weeks from screen to offer in 2022, two weeks for a 2025 senior loop.',
         },
         {
-          text: 'A 2024 account of a JSON traversal and manipulation screen says the exercise suits JavaScript candidates; it does not share the exact questions.',
+          text: 'Accounts from 2022 to 2025 say the tasks are set in realistic work scenarios rather than puzzle-style problems. In 2022 a recruiter told a senior candidate to expect a small, self-contained JavaScript component of the kind a component library holds.',
         },
       ],
     },
+    roundSpotlights: [
+      {
+        id: 'bug-squash',
+        kicker: 'Round decoder',
+        title: 'The Stripe bug squash: what the round asks and how it runs',
+        lede: [
+          'The bug squash is an onsite round in which you fix a bug in a codebase you have not seen. In a 2022 loop that ended in an offer, the code was a fork of a real open-source project with an issue describing the problem and failing test cases: the candidate reproduced the failure, walked the code to the root cause, explained the fix, implemented it and ran the whole test suite.',
+          'A 2022 Seattle account describes the same kind of task in a forked open-source repository, and a 2024 Canada account a failing unit test in an existing codebase. A 2022 account from India called this round and the integration round the hardest of the loop.',
+        ],
+        facts: [
+          { label: 'Position in the loop', value: 'One of four or five onsite interviews after the screen; a recruiter’s 2024 plan, posted on Blind, put it second, after the programming exercise.' },
+          { label: 'What you get', value: 'An existing repository with a reported bug and failing tests; in two 2022 accounts, a fork of an open-source project.' },
+          { label: 'What you do', value: 'Reproduce the failing test, find the root cause, explain the cleanest fix, implement it, then run the full suite, in the order the 2022 candidate with an offer gives.' },
+          { label: 'Environment', value: 'In the 2024 account most onsite tasks were cloned from GitHub and worked on in the candidate’s own setup.' },
+          { label: 'Swaps', value: 'A commenter on the 2024 Blind thread had a hiring manager interview instead, and a 2025 Barcelona account lists bug fixing among four onsite rounds next to deployment, testing and CI/CD.' },
+          { label: 'Sources', value: 'Taro accounts from 2022 (two from the United States, one from India), 2023 (Spain), 2024 (Canada) and 2025 (Spain), and the 2024 Blind thread with the recruiter’s plan, listed at the end of the page.' },
+        ],
+        practiceLink: { label: 'Rehearse it on an unfamiliar invoicing repository (Premium)', path: '/javascript/debug/js-debug-bug-squash-invoices' },
+        processLink: { label: 'See the bug squash row in the reported process', fragment: 'stripe-interview-process-1-stage-onsite-bug-squash' },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'Rehearse the bug squash and the JSON screen',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      title: 'Start with the bug squash',
+      intro: 'The bug squash leads because its question is the one open to every reader, and a 2022 account gives the round’s steps in order. The free tasks train the habit of reading code you did not write; the Premium repository is the full rehearsal.',
       steps: [
         {
-          label: 'Debug an async race',
-          path: '/javascript/debug/js-debug-async-race',
+          label: 'Fix an off-by-one in a chunk helper',
+          path: '/javascript/debug/js-debug-off-by-one',
           access: 'free',
-          why: 'A debugging exercise in the shape of the bug squash round.',
+          why: 'A teammate’s helper with a boundary bug: write the failing case before you touch the code, as the 2022 candidate did with the issue’s test.',
         },
         {
-          label: 'Debug a stale closure in autosave',
-          path: '/javascript/debug/js-debug-stale-closure-autosave',
+          label: 'Stop a helper mutating its input',
+          path: '/javascript/debug/js-debug-mutating-input',
           access: 'free',
-          why: 'A second bug squash rehearsal, on a stale closure.',
+          why: 'A second fix in code you did not write, where the existing behaviour has to survive the change.',
         },
         {
-          label: 'BigInt in JavaScript',
-          path: '/javascript/trivia/js-bigint-data-type',
+          label: 'Fetch and render a list with loading, error and empty states',
+          path: '/react/coding/react-fetch-list-states',
           access: 'free',
-          why: 'An editorial grouping for the JavaScript fundamentals a screen can touch.',
+          why: 'For the hour-long screen: a small component with honest request states, built while you explain it.',
         },
         {
           label: 'Bug squash an unfamiliar invoicing repo',
           path: '/javascript/debug/js-debug-bug-squash-invoices',
           access: 'premium',
           why: 'Five files you have not seen and four bug reports, the shape of the bug squash round.',
-        },
-        {
-          label: 'Group by',
-          path: '/javascript/coding/js-group-by',
-          access: 'premium',
-          why: 'Practice for the JSON traversal and manipulation screen.',
-        },
-        {
-          label: 'Implement lodash get',
-          path: '/javascript/coding/js-lodash-get',
-          access: 'premium',
-          why: 'A second drill for the same screen: safe nested access.',
         },
       ],
     },
@@ -805,19 +744,19 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'What is the bug squash round?',
-          answer: 'Finding and fixing bugs in a project you have not seen before. One account called it and the integration round the hardest parts of the loop.',
+          answer: 'An onsite round in which you fix a bug in a codebase you have not seen; in two 2022 accounts it was a fork of a real open-source project with an issue and failing tests. A 2022 account from India called it and the integration round the hardest parts of the loop.',
         },
         {
-          question: 'Is the screen in JavaScript?',
-          answer: 'The screen runs in CoderPad, and the account of the JSON manipulation exercise says it suits JavaScript candidates. Confirm the language with your recruiter.',
+          question: 'Which language does the screen use?',
+          answer: 'Your choice in several accounts: the 2025 screens in Barcelona and San Francisco and a 2024 Toronto screen. A 2025 Canada account calls its screen a JavaScript and React interview. Confirm the language with your recruiter.',
         },
         {
           question: 'Does Stripe publish preparation material?',
-          answer: 'The careers FAQ describes the process in general terms only. Candidates mention a document that recruiters share, which is the source of truth for your loop.',
+          answer: 'The careers FAQ describes the process in general terms only. In 2022 and 2024 accounts the recruiter explained each interview in advance, and one told a senior candidate what kind of component the screen would ask for.',
         },
       ],
     },
-    about: ['Stripe frontend interview preparation'],
+    about: ['Stripe frontend interview preparation', 'Stripe bug squash interview round'],
   },
   uber: {
     slug: 'uber',

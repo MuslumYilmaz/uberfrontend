@@ -313,7 +313,7 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
     '[Netflix frontend interview questions](https://frontendatlas.com/companies/netflix/preview)',
   );
   expect(text).toContain(
-    'Public Netflix prep guide with six representative prompts and a broad frontend preparation plan.',
+    'Public Netflix prep guide: recruiter and manager calls, a live screen or a take-home, the onsite, and 13 questions candidates reported from 2020 to 2025.',
   );
   expect(text).toContain(
     '[Waymo frontend interview questions](https://frontendatlas.com/companies/waymo/preview)',

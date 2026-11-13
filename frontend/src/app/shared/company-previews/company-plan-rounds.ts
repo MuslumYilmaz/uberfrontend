@@ -584,6 +584,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           { id: 'recruiter-screen', stage: 'Recruiter screen', kinds: ['recruiter'] },
           { id: 'technical-screen', stage: 'Technical screen', kinds: ['coding'] },
           { id: 'react-live-coding', stage: 'React live coding', kinds: ['coding'] },
+          {
+            id: 'take-home-project',
+            stage: 'Take-home project',
+            kinds: ['coding'],
+            note: 'A small frontend app built at home, with 4–6 suggested hours; one 2024 candidate chose it over React live coding.',
+          },
           { id: 'second-coding-round', stage: 'Second coding round', kinds: ['coding'] },
           { id: 'frontend-system-design', stage: 'Frontend system design', kinds: ['design'] },
           { id: 'experience-and-values', stage: 'Experience and values', kinds: ['people'] },
@@ -898,7 +904,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'take-home',
             stage: 'Take-home',
             kinds: ['coding'],
-            note: 'A build exercise reviewed later in the loop, in the 2020 account and in a loop from before 2022.',
           },
           {
             id: 'onsite',
@@ -943,7 +948,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding', 'design'],
-            note: 'Refactoring then systems design in one 2024 account; a JavaScript fix or a React exercise in others.',
           },
           {
             id: 'agentic-coding-option',
@@ -974,7 +978,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'live-coding',
             stage: 'Live coding',
             kinds: ['coding'],
-            note: 'About an hour of React and TypeScript: render API data with loading and error states, or extend a small app.',
           },
           { id: 'system-design', stage: 'System design', kinds: ['design'] },
           { id: 'team-fit', stage: 'Team fit', kinds: ['people'] },
@@ -1205,7 +1208,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'final-loop-frontend-system-design',
             stage: 'Final loop: frontend system design',
             kinds: ['design'],
-            note: 'A design round on a shared component and its API in one account, on a car rental company in another.',
           },
           {
             id: 'final-loop-hiring-manager-and-behavioural',
@@ -1228,7 +1230,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-rounds',
             stage: 'Technical rounds',
             kinds: ['coding'],
-            note: 'One or two rounds, such as a React autocomplete backed by an API, then a medium binary search problem.',
           },
           { id: 'system-design-final', stage: 'System design final', kinds: ['design'] },
         ],
@@ -1475,7 +1476,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'hiring-manager',
             stage: 'Hiring manager',
             kinds: ['people'],
-            note: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical.',
+            note: '45 to 60 minutes on the official pages; a Blind commenter describes it as non-technical.',
           },
           // The review discusses the take-home's design and further optimisation, so a design case modelled on it fits here.
           { id: 'final-take-home-review', stage: 'Final: take-home review', kinds: ['coding', 'design'] },

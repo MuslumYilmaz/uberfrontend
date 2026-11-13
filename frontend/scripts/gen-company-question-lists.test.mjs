@@ -33,10 +33,10 @@ function acme(questions, behaviouralQuestions) {
 test('counts questions per stage in stage order, rounds not stated apart, and accounts apart from banks', () => {
   const summary = questionList.summariseQuestionList(
     acme([
-      { id: 'open-one', round: 'Design round', kind: 'Product design', question: 'Q', sources: [account('a', '2025-03'), BANK], answerGuide: 'p1' },
-      { id: 'same-task', round: 'Coding round', kind: 'React build', question: 'Q', sources: [account('a', '2025-03'), account('b', '2026-02'), account('b', '2026-02', { label: 'Blind comment' })] },
-      { id: 'bank-only', kind: 'Algorithm', question: 'Q', sources: [BANK], practice: { label: 'X', path: '/javascript/coding/js-x' } },
-      { id: 'with-guide', round: 'Coding round', kind: 'React debugging', question: 'Q', sources: [account('c', '2024-11')], answerGuide: 'p2' },
+      { id: 'open-one', round: 'Design round', kind: 'Product design', topic: 'Topic 1', question: 'Q', sources: [account('a', '2025-03'), BANK], answerGuide: 'p1' },
+      { id: 'same-task', round: 'Coding round', kind: 'React build', topic: 'Topic 2', question: 'Q', sources: [account('a', '2025-03'), account('b', '2026-02'), account('b', '2026-02', { label: 'Blind comment' })] },
+      { id: 'bank-only', kind: 'Algorithm', topic: 'Topic 3', question: 'Q', sources: [BANK], practice: { label: 'X', path: '/javascript/coding/js-x' } },
+      { id: 'with-guide', round: 'Coding round', kind: 'React debugging', topic: 'Topic 4', question: 'Q', sources: [account('c', '2024-11')], answerGuide: 'p2' },
     ], [{ id: 'why-acme', question: 'Why Acme?', sources: [account('a', '2025-03'), account('b', '2026-02'), BANK] }]),
   );
   assert.equal(summary.total, 4);
@@ -68,9 +68,9 @@ test('a question stays new for 60 days after its newest account month ends', () 
 test('flags list problems: unknown stages, reused ids, official-only rows, bad dates and a format-only open row', () => {
   const problems = questionList.questionListProblems(
     acme([
-      { id: 'first', round: 'Coding round', kind: 'Algorithm', question: 'Q', promptNotShared: true, sources: [account('a', '2025-3')] },
-      { id: 'first', round: 'Onsite', kind: 'Algorithm', question: 'Q', sources: [OFFICIAL] },
-      { id: 'Bad_Id', kind: 'Algorithm', question: ' ', sources: [account('a', '2025-03'), account('a', '2025-03')] },
+      { id: 'first', round: 'Coding round', kind: 'Algorithm', topic: 'Same topic', question: 'Q', promptNotShared: true, sources: [account('a', '2025-3')] },
+      { id: 'first', round: 'Onsite', kind: 'Algorithm', topic: 'Same topic', question: 'Q', sources: [OFFICIAL] },
+      { id: 'Bad_Id', kind: 'Algorithm', topic: 'Ends with a stop.', question: ' ', sources: [account('a', '2025-03'), account('a', '2025-03')] },
     ]),
   );
   assert.deepEqual(problems, [
@@ -78,14 +78,16 @@ test('flags list problems: unknown stages, reused ids, official-only rows, bad d
     'question first: the open row must show a question, not a format',
     'question first: the id is used twice',
     'question first: only official pages back it',
+    'question first: the topic "Same topic" is used twice',
     'question first: no stage is named "Onsite"',
     'question Bad_Id: the id must be kebab-case',
     'question Bad_Id: the question is empty',
     'question Bad_Id: a source is listed twice',
+    'question Bad_Id: the topic "Ends with a stop." must be 1 to 6 words, at most 48 characters, with no full stop',
   ]);
   // The behavioural group shares the id space, since an id names a question wherever it is shown.
   const behavioural = questionList.questionListProblems({
-    ...acme([{ id: 'why-acme', kind: 'Algorithm', question: 'Q', sources: [account('a', '2025-03')] }]),
+    ...acme([{ id: 'why-acme', kind: 'Algorithm', topic: 'Topic 5', question: 'Q', sources: [account('a', '2025-03')] }]),
     behaviouralQuestions: [{ id: 'why-acme', question: 'Why Acme?', sources: [OFFICIAL] }],
   });
   assert.deepEqual(behavioural, ['behavioural question why-acme: the id is used twice', 'behavioural question why-acme: only official pages back it']);
@@ -94,8 +96,8 @@ test('flags list problems: unknown stages, reused ids, official-only rows, bad d
 test('the generated file carries practice access and rejects links to missing tasks or prompts', () => {
   const processes = {
     acme: acme([
-      { id: 'one', round: 'Coding round', kind: 'React build', question: 'Q', sources: [account('a', '2026-01')], practice: { label: 'X', path: '/react/coding/react-x' }, answerGuide: 'p1' },
-      { id: 'two', kind: 'Algorithm', question: 'Q', sources: [account('b', '2025-01')], practice: { label: 'Y', path: '/javascript/coding/js-y' } },
+      { id: 'one', round: 'Coding round', kind: 'React build', topic: 'Topic 6', question: 'Q', sources: [account('a', '2026-01')], practice: { label: 'X', path: '/react/coding/react-x' }, answerGuide: 'p1' },
+      { id: 'two', kind: 'Algorithm', topic: 'Topic 7', question: 'Q', sources: [account('b', '2025-01')], practice: { label: 'Y', path: '/javascript/coding/js-y' } },
     ]),
     beta: { ...acme([]), questions: undefined },
   };
@@ -148,7 +150,7 @@ test('every Taro source in the process data parses to a job title, and every pla
   }
   const taro = [...sources.values()].filter((source) => source.url.includes('jointaro.com'));
   assert.ok(taro.length > 150);
-  const countries = new Set(['United States', 'United Kingdom', 'India', 'Poland', 'Spain', 'Germany', 'France', 'Canada', 'Australia', 'Singapore', 'Netherlands', 'Portugal', 'Brazil', 'Israel', 'Serbia', 'Mexico', 'Denmark', 'Romania', 'Turkey', 'Bangladesh', 'Georgia', 'Finland']);
+  const countries = new Set(['United States', 'United Kingdom', 'India', 'Poland', 'Spain', 'Germany', 'France', 'Canada', 'Australia', 'Singapore', 'Netherlands', 'Portugal', 'Brazil', 'Israel', 'Serbia', 'Mexico', 'Denmark', 'Romania', 'Turkey', 'Bangladesh', 'Georgia', 'Finland', 'Sweden', 'Ireland', 'Cyprus', 'Paraguay']);
   for (const source of taro) {
     const { role, location, outcome } = reporter.sourceReporter(source);
     // A place missing from the dictionary would stay in the role, which then ends in a city instead of a job word. An

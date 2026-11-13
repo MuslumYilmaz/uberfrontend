@@ -27,6 +27,8 @@ describe('CompanyGuideSourcesComponent', () => {
     expect(host.querySelector('h2')?.textContent?.trim()).toBe('Sources (2)');
     expect(host.querySelectorAll('a[href^="http"]').length).toBe(0);
     expect(host.textContent).toContain('Frontend engineer, United States · Mar 2026');
+    // Said once above the list, not on every account.
+    expect(host.querySelectorAll('.guide-sources__scope').length).toBe(1);
     expect(host.querySelector('[data-testid="company-guide-sources-gate"] a')?.getAttribute('href')).toBe('/auth/signup?redirectTo=%2Fcompanies%2Facme%2Fpreview');
   });
 

@@ -14,6 +14,9 @@ import { loadTsModule } from './load-ts-module.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
 const previewsRoot = path.resolve(here, '..', 'src', 'app', 'shared', 'company-previews');
+const inlineRoot = path.resolve(here, '..', 'src', 'app', 'features', 'company', 'company-preview');
+/** The guides the preview renders from its own branch, with the export that holds their prompts. */
+const INLINE_PROMPTS = { google: 'GOOGLE_PRACTICE_PROMPTS', netflix: 'NETFLIX_PRACTICE_PROMPTS', openai: 'OPENAI_PRACTICE_PROMPTS' };
 export const COMPANY_QUESTION_LISTS_RELATIVE_PATH = path.join('questions', 'company-question-lists.json');
 const TECHS = ['javascript', 'react', 'angular', 'vue', 'css', 'html'];
 
@@ -42,14 +45,19 @@ export function readCatalogAccess(cdnRoot) {
   return access;
 }
 
-/** The practice prompt ids of each authored guide, from its content module. */
-export function readAnswerGuides(slugs = REGISTRY_AUTHORED_COMPANIES) {
+/** The practice prompt ids of each authored guide, from its content module, and of the inline guides from theirs. */
+export function readAnswerGuides(slugs = REGISTRY_AUTHORED_COMPANIES, inline = INLINE_PROMPTS) {
   const guides = new Map();
   for (const slug of slugs) {
     const content = loadTsModule(path.join(previewsRoot, `${slug}-preview-content.ts`));
     const preview = Object.values(content).find((value) => value && typeof value === 'object' && value.slug === slug && value.prompts);
     if (!preview) throw new Error(`[gen-company-question-lists] ${slug}-preview-content.ts exports no preview for ${slug}.`);
     guides.set(slug, new Set(preview.prompts.items.map((prompt) => prompt.id)));
+  }
+  for (const [slug, name] of Object.entries(inline)) {
+    const prompts = loadTsModule(path.join(inlineRoot, `${slug}-preview-content.ts`))[name];
+    if (!Array.isArray(prompts)) throw new Error(`[gen-company-question-lists] ${slug}-preview-content.ts exports no ${name}.`);
+    guides.set(slug, new Set(prompts.map((prompt) => prompt.id)));
   }
   return guides;
 }

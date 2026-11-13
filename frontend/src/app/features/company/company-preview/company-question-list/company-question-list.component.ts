@@ -62,7 +62,7 @@ function frequencyLine(row: Pick<QuestionListRow, 'accounts' | 'banks' | 'latest
 
 /** Who stands behind a question: its newest account, or the bank when no account names it. */
 function whoLine(sources: readonly InterviewProcessSource[]): string {
-  const accounts = sources.filter((source) => source.kind === 'report' && source.reportForm !== 'question-bank');
+  const accounts = sources.filter((source) => source.kind === 'report' && !source.reportForm);
   const newest = [...accounts].sort((a, b) => b.date.localeCompare(a.date))[0];
   return newest ? describeReporter(newest) ?? '' : 'Candidate question bank';
 }
@@ -168,7 +168,7 @@ export class CompanyQuestionListComponent {
     const total = this.summary().total;
     if (!this.features().lockedQuestions) return `All ${total} are open to read, with their practice tasks and answer guides where they have one.`;
     if (this.viewer() === 'member') return `Premium opens all ${total}, with their practice tasks and answer guides where they have one.`;
-    return `The first is open to everyone. The other ${total - 1} open with Premium: the question, its practice task and its answer guide where it has one.`;
+    return `The first is open to everyone. The others show their topic; Premium opens the other ${total - 1}: the question, its practice task and its answer guide where it has one.`;
   });
 
   readonly freshness = computed(() => {

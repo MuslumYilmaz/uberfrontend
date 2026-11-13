@@ -38,17 +38,17 @@
         </div>
 
         @if (rowLocked(row)) {
-          <!-- The question stays in the page for search under the lock; the button names the row for a screen reader. -->
+          <!-- The topic is open; the question stays in the page for search under the lock, and the button names the row. -->
+          <h3 class="cq-row__title cq-row__topic" data-testid="company-question-topic">{{ row.question.topic }}</h3>
           <button type="button" class="cq-row__locked" [attr.aria-expanded]="choosing() === row.question.id"
-                  [attr.aria-label]="'Question ' + row.number + ', ' + roundLabel(row) + ', ' + row.question.kind + ': Premium. Show how to open it.'"
+                  [attr.aria-label]="'Question ' + row.number + ', ' + row.question.topic + ', ' + roundLabel(row) + ': Premium. Show how to open it.'"
                   (click)="toggleChoice(row)">
             <span class="cq-row__question company-locked premium-locked" data-nosnippet aria-hidden="true">{{ row.question.question }}</span>
           </button>
-        } @else if (row.summary.open && row.guide) {
-          <h3 class="cq-row__title">{{ row.guide.title }}</h3>
-          <p class="cq-row__statement"><fa-inline-code [text]="row.guide.statement"></fa-inline-code></p>
         } @else {
-          <h3 class="cq-row__title cq-row__title--question">{{ row.question.question }}</h3>
+          <!-- An open row reads as what the candidates reported; a practice version follows it as its answer guide. -->
+          <h3 class="cq-row__title">{{ row.question.topic }}</h3>
+          <p class="cq-row__statement" data-testid="company-question-reported">{{ row.question.question }}</p>
           @if (row.question.promptNotShared) {
             <p class="cq-row__note">The accounts describe the task but do not share its prompt.</p>
           }
@@ -103,17 +103,26 @@
           @if (row.summary.open) {
             <div class="cq-guide">
               <div class="cq-guide__part">
-                <h4>What this measures</h4>
-                <p><fa-inline-code [text]="guide.whatThisMeasures"></fa-inline-code></p>
+                <h4 data-testid="company-question-guide-title">Answer guide: {{ guide.title }}</h4>
+                <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
               </div>
-              <div class="cq-guide__part">
-                <h4>Clarify first</h4>
-                <ul>
-                  @for (item of guide.clarifyFirst; track $index) {
-                    <li><fa-inline-code [text]="item"></fa-inline-code></li>
-                  }
-                </ul>
-              </div>
+              <!-- A guide may give only a statement and a rubric (OpenAI's); the parts it lacks are left out. -->
+              @if (guide.whatThisMeasures) {
+                <div class="cq-guide__part">
+                  <h4>What this measures</h4>
+                  <p><fa-inline-code [text]="guide.whatThisMeasures"></fa-inline-code></p>
+                </div>
+              }
+              @if (guide.clarifyFirst.length) {
+                <div class="cq-guide__part">
+                  <h4>Clarify first</h4>
+                  <ul>
+                    @for (item of guide.clarifyFirst; track $index) {
+                      <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                    }
+                  </ul>
+                </div>
+              }
               <div class="cq-guide__part cq-guide__outline" [class.cq-guide__outline--locked]="outlineLocked()">
                 <h4>Strong answer should cover</h4>
                 <div [class.company-locked]="outlineLocked()" [class.premium-locked]="outlineLocked()" [attr.data-nosnippet]="outlineLocked() ? '' : null"
@@ -123,7 +132,9 @@
                       <li><fa-inline-code [text]="item"></fa-inline-code></li>
                     }
                   </ul>
-                  <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
+                  @if (guide.commonMiss) {
+                    <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
+                  }
                 </div>
                 @if (outlineLocked()) {
                   <p class="cq-guide__gate" data-testid="company-question-outline-gate">
@@ -149,19 +160,23 @@
             <details class="cq-guide cq-guide--details">
               <summary>Answer guide: {{ guide.title }}</summary>
               <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
-              <h4>Clarify first</h4>
-              <ul>
-                @for (item of guide.clarifyFirst; track $index) {
-                  <li><fa-inline-code [text]="item"></fa-inline-code></li>
-                }
-              </ul>
+              @if (guide.clarifyFirst.length) {
+                <h4>Clarify first</h4>
+                <ul>
+                  @for (item of guide.clarifyFirst; track $index) {
+                    <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                  }
+                </ul>
+              }
               <h4>Strong answer should cover</h4>
               <ul>
                 @for (item of guide.strongAnswer; track $index) {
                   <li><fa-inline-code [text]="item"></fa-inline-code></li>
                 }
               </ul>
-              <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
+              @if (guide.commonMiss) {
+                <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
+              }
             </details>
           }
         }

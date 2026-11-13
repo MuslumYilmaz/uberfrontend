@@ -23,9 +23,10 @@ export type InterviewProcessSource = {
   readonly outcome?: InterviewOutcome;
   /**
    * A question bank many candidates add to, rather than one candidate's account of a loop. Its date is the month it
-   * was read, so it adds nothing to a question's freshness.
+   * was read, so it adds nothing to a question's freshness. A press report ('press') is not an account either: it names
+   * no reporter and never stands as a round's newest account.
    */
-  readonly reportForm?: 'question-bank';
+  readonly reportForm?: 'question-bank' | 'press';
 };
 
 /** The kind of a reported question. A locked row shows it beside the round, so it never names the task itself. */
@@ -54,6 +55,11 @@ export type ReportedQuestion = {
    */
   readonly round?: string;
   readonly kind: ReportedQuestionKind;
+  /**
+   * What the question is about, in one to six words ("Debounced autocomplete search", "Closures"). A locked row shows it:
+   * a reader sees what the lock holds, while the wording, constraints, follow-ups and answer guide stay Premium.
+   */
+  readonly topic: string;
   /** The question in our words, from what its sources describe. A locked row hides it. */
   readonly question: string;
   /** The sources name the task's subject but not its prompt, and the row says so. */
@@ -141,27 +147,91 @@ const AMAZON_STUDENT_PREP: InterviewProcessSource = {
 };
 const report = (label: string, url: string, date: string): InterviewProcessSource => ({ label, url, kind: 'report', date });
 const amazonReport = (id: number, date: string) => report('LeetCode', `https://leetcode.com/discuss/post/${id}/`, date);
-const AMAZON_PHONE_2020 = amazonReport(546992, '2020-03');
-const AMAZON_SEATTLE_2020 = amazonReport(591141, '2020-04');
-const AMAZON_OFFER_2020 = amazonReport(694045, '2020-06');
-const AMAZON_PHONE_NO_LP_2020 = amazonReport(678045, '2020-06');
-const AMAZON_ONSITE_2021 = amazonReport(1503301, '2021-10');
-const AMAZON_VANCOUVER_2022 = amazonReport(1984996, '2022-04');
-const AMAZON_SEATTLE_2024 = amazonReport(5934170, '2024-10');
+// Amazon accounts with who and when, 2026-11-13. LeetCode bodies were saved in the research sessions of 2026-10-15
+// and 2026-11-06 (LeetCode is not re-readable now); the Blind FEE I post was re-read on 2026-11-13. Roles, places and
+// outcomes are what each post gives. Three posts report an offer or a selection without saying it was accepted, so they
+// carry no outcome.
+const AMAZON_PHONE_2020: InterviewProcessSource = { ...amazonReport(546992, '2020-03'), role: 'Front End Engineer II' };
+const AMAZON_SEATTLE_2020: InterviewProcessSource = {
+  ...amazonReport(591141, '2020-04'),
+  role: 'Front End Engineer II',
+  location: 'United States',
+};
+const AMAZON_OFFER_2020: InterviewProcessSource = { ...amazonReport(694045, '2020-06'), role: 'Front End Engineer II' };
+const AMAZON_PHONE_NO_LP_2020: InterviewProcessSource = {
+  ...amazonReport(678045, '2020-06'),
+  role: 'Front End Engineer I or II',
+  outcome: 'no offer',
+};
+const AMAZON_ONSITE_2021: InterviewProcessSource = { ...amazonReport(1503301, '2021-10'), role: 'Front end engineer', outcome: 'no offer' };
+const AMAZON_VANCOUVER_2022: InterviewProcessSource = {
+  ...amazonReport(1984996, '2022-04'),
+  role: 'Front End Engineer II (L5)',
+  location: 'Canada',
+};
+const AMAZON_SEATTLE_2024: InterviewProcessSource = {
+  ...amazonReport(5934170, '2024-10'),
+  role: 'Front End Engineer II (L5)',
+  location: 'United States',
+  outcome: 'no offer',
+};
 const AMAZON_INTERVIEW_LOOP: InterviewProcessSource = {
   label: 'Amazon interview loop page',
   url: 'https://www.amazon.jobs/content/en/how-we-hire/interview-loop',
   kind: 'official',
   date: '2026-11',
 };
-const AMAZON_HM_2019 = amazonReport(336727, '2019-07');
-const AMAZON_FEE_I_2025 = amazonReport(6968134, '2025-07');
-const AMAZON_BLIND_2022 = report(
-  'Blind',
-  'https://www.teamblind.com/post/amazon-frontend-fee-i-oa-phone-screen-loop-interview-2022-qqdjoknw',
-  '2023-01',
-);
+const AMAZON_HM_2019: InterviewProcessSource = {
+  ...amazonReport(336727, '2019-07'),
+  role: 'Front end engineer',
+  location: 'United States',
+  outcome: 'no offer',
+};
+const AMAZON_FEE_I_2025: InterviewProcessSource = { ...amazonReport(6968134, '2025-07'), role: 'Front End Engineer I', location: 'India' };
+const AMAZON_BLIND_2022: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/amazon-frontend-fee-i-oa-phone-screen-loop-interview-2022-qqdjoknw', '2023-01'),
+  role: 'Front End Engineer I',
+};
 const AMAZON_ROLE = 'All FEE candidates';
+// Added 2026-11-13 for the question list and the behavioural questions. The URLs match amazon-preview-content.ts, so
+// the sources list shows each account once.
+const AMAZON_INDIA_2025: InterviewProcessSource = {
+  ...amazonReport(6329840, '2025-01'),
+  role: 'Front End Engineer I',
+  location: 'India',
+  outcome: 'no offer',
+};
+const AMAZON_NYC_2019: InterviewProcessSource = { ...amazonReport(320613, '2019-06'), role: 'Front end engineer', location: 'United States' };
+const AMAZON_L5_NYC_2020: InterviewProcessSource = {
+  ...amazonReport(618601, '2020-05'),
+  role: 'Front End Engineer (L5)',
+  location: 'United States',
+};
+const AMAZON_CUSTOMER_2021: InterviewProcessSource = { ...amazonReport(1639880, '2021-12'), role: 'Front end engineer', location: 'Canada' };
+const AMAZON_GRAD_SCREEN_2025: InterviewProcessSource = {
+  ...amazonReport(7075953, '2025-08'),
+  role: 'Front End Engineer, new graduate',
+  location: 'Ireland',
+};
+const AMAZON_MEDIUM_2021: InterviewProcessSource = {
+  ...report('Medium', 'https://medium.com/javarevisited/how-was-my-frontend-engineer-interview-experience-amazon-d10055fbdd89', '2021-07'),
+  role: 'Frontend engineer',
+};
+// The interview is dated May 28 with no year, so the date is the post's month.
+const AMAZON_MEDIUM_2025: InterviewProcessSource = {
+  ...report(
+    'Medium',
+    'https://javascript.plainenglish.io/my-interview-experience-amazon-for-frontend-developer-and-lessons-learned-a4c23221b9c6',
+    '2025-08',
+  ),
+  role: 'Frontend developer',
+  outcome: 'no offer',
+};
+// A list one candidate started in July 2020 for others to add to; its date is the month it was read.
+const AMAZON_LIST_2020: InterviewProcessSource = {
+  ...report('LeetCode community list', 'https://leetcode.com/discuss/post/742791/', '2026-10'),
+  reportForm: 'question-bank',
+};
 
 // No official Walmart page is cited, so every Walmart stage comes from public accounts. Blind "comment"
 // sources are answers from Walmart-badged commenters, not the poster's own loop.
@@ -300,8 +370,15 @@ const WALMART_W55_FE: InterviewProcessSource = {
 
 // Taro shows its own dates (often the 1st of a month) and its locations are not reliable, so Tesla labels
 // carry no city. Blind posts written before an interview are cited only for what the recruiter said.
+// Re-read 2026-11-13: the Taro pages (T1 to T9; Taro answered 404 to some requests and loaded on retry) and the Blind
+// posts. LeetCode L1 and Code360 C1 come from docs/references/walmart-nvidia-tesla-questions-2026-10.md, read in full
+// on 2026-10-19: LeetCode is not re-read, and Code360 answered 403 on 2026-11-13. Roles and outcomes are what each
+// account gives; T1's page names Amsterdam.
 const TESLA_TARO = 'https://www.jointaro.com/interviews/companies/tesla/experiences';
-const TESLA_T1_FE_2025 = report('Taro', `${TESLA_TARO}/frontend-developer-october-15-2025-no-offer-positive-3c909dee/`, '2025-10');
+const TESLA_T1_FE_2025: InterviewProcessSource = {
+  ...report('Taro', `${TESLA_TARO}/frontend-developer-october-15-2025-no-offer-positive-3c909dee/`, '2025-10'),
+  location: 'Netherlands',
+};
 const TESLA_T2_FE_2021 = report('Taro (approx.)', `${TESLA_TARO}/frontend-developer-san-francisco-ca-january-1-2021-no-offer-positive-8db5ee50/`, '2021-01');
 const TESLA_T3_FE_2025 = report('Taro', `${TESLA_TARO}/front-end-developer-united-states-november-17-2025-no-offer-positive-868af7da/`, '2025-11');
 const TESLA_T4_FE_2024 = report('Taro (approx.)', `${TESLA_TARO}/front-end-developer-fremont-ca-january-1-2024-no-offer-neutral-9e5d4e3f/`, '2024-01');
@@ -322,20 +399,67 @@ const TESLA_T9_INTERN_2024 = report(
   `${TESLA_TARO}/software-engineerinternship-palo-alto-ca-november-30-2024-accepted-offer-positive-5f2e19b5/`,
   '2024-11',
 );
-const TESLA_B1_ONSITE_PLAN = report('Blind', 'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-06');
-const TESLA_B2_TAKE_HOME = report('Blind', 'https://www.teamblind.com/post/Tesla-Frontend-Interview-SbEAx1rM', '2022-04');
-const TESLA_B3_CODILITY = report('Blind', 'https://www.teamblind.com/post/Tesla-front-end-software-engineer-interview-PfuGrTKB', '2023-02');
-const TESLA_B4_CODILITY = report('Blind', 'https://www.teamblind.com/post/tesla-codility-assessment-for-frontend-software-engineer-pvjhqzke', '2023-01');
-const TESLA_B7_INTERN = report('Blind', 'https://www.teamblind.com/post/tesla-frontendmobile-swe-intern-interview-tips-pz6gagjy', '2025-02');
-const TESLA_B8_TEAM_MATCH = report('Blind', 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x', '2026-05');
+const TESLA_B1_ONSITE_PLAN: InterviewProcessSource = {
+  ...report('Blind (recruiter plan)', 'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-06'),
+  role: 'Frontend engineer',
+  location: 'United States',
+  outcome: 'in progress',
+};
+const TESLA_B2_TAKE_HOME: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/Tesla-Frontend-Interview-SbEAx1rM', '2022-04'),
+  role: 'Frontend engineer',
+  outcome: 'in progress',
+};
+const TESLA_B3_CODILITY: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/Tesla-front-end-software-engineer-interview-PfuGrTKB', '2023-02'),
+  role: 'Front-end software engineer (Digital Experience)',
+  outcome: 'in progress',
+};
+// The poster's own loop; the written question after the full loop comes from a commenter whose role is not stated.
+const TESLA_B4_CODILITY: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/tesla-codility-assessment-for-frontend-software-engineer-pvjhqzke', '2023-01'),
+  role: 'Frontend software engineer',
+  outcome: 'in progress',
+};
+const TESLA_B7_INTERN: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/tesla-frontendmobile-swe-intern-interview-tips-pz6gagjy', '2025-02'),
+  role: 'Frontend and mobile software engineer intern',
+  outcome: 'in progress',
+};
+const TESLA_B8_TEAM_MATCH: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x', '2026-05'),
+  role: 'Frontend engineer',
+  outcome: 'no offer',
+};
 const TESLA_ROLE = 'Frontend roles';
+const TESLA_L1_FULLSTACK_2022: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/interview-experience/2715209/', '2022-10'),
+  role: 'Full-stack software engineer, new grad (Autopilot)',
+  location: 'United States',
+  outcome: 'no offer',
+};
+const TESLA_C1_SDE1_2020: InterviewProcessSource = {
+  ...report('Code360', 'https://www.naukri.com/code360/interview-experiences/tesla/interview-experience-nov-2020-exp-0-2-years-2-4465', '2020-11'),
+  role: 'Software development engineer 1',
+  location: 'United States',
+};
 
 // Google, Meta, Microsoft and Apple: research and sources in docs/references/company-interview-processes-2026-10.md.
 const official = (label: string, url: string): InterviewProcessSource => ({ label, url, kind: 'official', date: '2026-10' });
 const GOOGLE_HOW_WE_HIRE = official('Google: How we hire', 'https://www.google.com/about/careers/applications/how-we-hire/');
-const GOOGLE_GO1 = report('Blind', 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt', '2022-06');
+// Google accounts with who and when, 2026-11-13. Blind posts and the stylus07 Medium feed were re-read on 2026-11-13;
+// LeetCode bodies come from the research sessions of 2026-10-15 and 2026-11-06 (LeetCode is not re-readable now).
+// Roles and places are what each post gives; "80LPA" in the April 2026 Medium title is not a stated country.
+const GOOGLE_GO1: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt', '2022-06'),
+  role: 'L5 candidate, frontend domain',
+};
 const GOOGLE_GO2 = report('Blind comment', 'https://www.teamblind.com/post/is-there-a-separate-frontend-interview-process-at-google-e6sbbcao', '2022-07');
-const GOOGLE_GO3 = report('Medium', 'https://medium.com/@stylus07/google-software-engineer-interview-experience-d31c16c1e309', '2022-07');
+const GOOGLE_GO3: InterviewProcessSource = {
+  ...report('Medium', 'https://medium.com/@stylus07/google-software-engineer-interview-experience-d31c16c1e309', '2022-07'),
+  role: 'Software engineer applicant (also applied as UX Engineer)',
+  outcome: 'no offer',
+};
 const GOOGLE_GO4 = report(
   'Taro',
   'https://www.jointaro.com/interviews/companies/google/experiences/frontend-engineer-mountain-view-ca-july-1-2023-accepted-offer-positive-e47fc62d/',
@@ -346,14 +470,34 @@ const GOOGLE_GO5 = report(
   'https://www.jointaro.com/interviews/companies/google/experiences/front-end-developer-germany-june-23-2024-no-offer-positive-f76226db/',
   '2024-06',
 );
-const GOOGLE_GO6 = report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04');
+const GOOGLE_GO6: InterviewProcessSource = {
+  ...report('Medium', 'https://shubhamjangle.medium.com/google-swe-iii-interview-the-round-by-round-breakdown-nobody-wrote-fd2c10fe52ff', '2026-04'),
+  role: 'SWE III (L4), frontend or software engineer track',
+};
 // The question bank cites this post at its current address; one spelling keeps the task on the rounds that cite it.
-const GOOGLE_GO7 = report('LeetCode', 'https://leetcode.com/discuss/post/1274542/', '2021-06');
-const GOOGLE_GO8 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06');
-const GOOGLE_PHONE_2020 = report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04');
+const GOOGLE_GO7: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/1274542/', '2021-06'),
+  role: 'L3/L4 frontend engineer',
+  location: 'India',
+  outcome: 'in progress',
+};
+const GOOGLE_GO8: InterviewProcessSource = {
+  ...report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-06'),
+  role: 'L5 candidate, frontend loop',
+};
+const GOOGLE_PHONE_2020: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/592667/', '2020-04'),
+  role: 'Software engineer, front end',
+  location: 'United States',
+};
 // Read in the browser on 2026-11-06: a Sunnyvale front end onsite of five rounds, three of them JavaScript (combining
 // callback results, a delayed-run API, a sequential queue), one app design and one algorithm; no phone screen.
-const GOOGLE_ONSITE_2019 = report('LeetCode', 'https://leetcode.com/discuss/post/342364/', '2019-07');
+const GOOGLE_ONSITE_2019: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/342364/', '2019-07'),
+  role: 'Front end engineer',
+  location: 'United States',
+  outcome: 'no offer',
+};
 // The Googleyness interview. Google's current pages no longer use the word; its interview tips describe the same
 // behavioural and hypothetical questions, and the archived 2020 interview page names it as one of four areas.
 // LeetCode posts were read through the GraphQL endpoint (post bodies, not comments).
@@ -375,12 +519,56 @@ const GOOGLE_INTERVIEW_2020: InterviewProcessSource = {
   kind: 'official',
   date: '2020-05',
 };
-const GOOGLE_GL_NEW_GRAD_2024 = report('LeetCode', 'https://leetcode.com/discuss/post/6022505/', '2024-10');
-const GOOGLE_GL_ML_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7093123/google-gl-googleyness-round-swe-iii-ml-b-0fe9/', '2025-08');
-const GOOGLE_GL_L4_US_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/7571793/', '2026-02');
-const GOOGLE_GL_L3_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8543506/', '2026-09');
-const GOOGLE_GL_L4_2024 = report('LeetCode', 'https://leetcode.com/discuss/interview-question/5584385/', '2024-08');
-const GOOGLE_GL_L4_BLR_2026 = report('LeetCode', 'https://leetcode.com/discuss/post/8319665/', '2026-06');
+const GOOGLE_GL_NEW_GRAD_2024: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/6022505/', '2024-10'),
+  role: 'New graduate software engineer',
+  location: 'India',
+};
+const GOOGLE_GL_ML_2025: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/7093123/google-gl-googleyness-round-swe-iii-ml-b-0fe9/', '2025-08'),
+  role: 'SWE III (machine learning)',
+  location: 'India',
+};
+const GOOGLE_GL_L4_US_2026: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/7571793/', '2026-02'),
+  role: 'L4 software engineer',
+  location: 'United States',
+};
+const GOOGLE_GL_L3_2026: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/8543506/', '2026-09'),
+  role: 'L3 software engineer',
+  location: 'India',
+};
+const GOOGLE_GL_L4_2024: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/interview-question/5584385/', '2024-08'),
+  role: 'L4 software engineer',
+};
+const GOOGLE_GL_L4_BLR_2026: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/8319665/', '2026-06'),
+  role: 'L4 software engineer',
+  location: 'India',
+};
+// The press report behind the 2026 pilot. The guide's time-sensitive note linked it until the sources moved to the end
+// of the page; citing it here keeps the link in that list.
+const GOOGLE_PILOT_PRESS_2026: InterviewProcessSource = {
+  ...report('Business Insider', 'https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5', '2026-05'),
+  reportForm: 'press',
+};
+// Added 2026-11-13 for the question list.
+// A September 2021 reply in the GO8 thread: a technical call that asked "a DOM manipulation related question".
+const GOOGLE_GO8_DOM_2021 = report('Blind comment', 'https://www.teamblind.com/post/Google-Frontend-interview-78mvqUW2', '2021-09');
+// Known from the research record only (docs/references/company-interview-processes-2026-10.md): three algorithm
+// rounds, an async and closure front-end round and a behavioural round.
+const GOOGLE_L3L4_2019: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/421954/', '2019-11'),
+  role: 'L3/L4 candidate',
+};
+// An Amazon-badged poster's list of Google frontend questions, "a few questions from my experience and few that I could
+// find across the internet", without saying which is which; its date is the month it was read.
+const GOOGLE_FE_THREAD: InterviewProcessSource = {
+  ...report('Blind question thread', 'https://www.teamblind.com/post/google-frontend-interview-questions-thread-yqyqmvon', '2026-11'),
+  reportForm: 'question-bank',
+};
 
 const META_HIRING = official('Meta: Hiring process', 'https://www.metacareers.com/hiring-process/');
 const META_FEE_INITIAL = official('Meta: FEE initial interview prep', 'https://www.metacareers.com/FEE-prep-initial/');
@@ -463,11 +651,65 @@ const STRIPE_ST1 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-engineer-ba
 const STRIPE_ST3 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-engineer-san-francisco-ca-august-1-2025-no-offer-neutral-8ad7d78f/`, '2025-08');
 const STRIPE_ST4 = report('Taro', `${STRIPE_TARO}/front-end-developer-india-november-15-2022-no-offer-positive-f4ea85cd/`, '2022-11');
 const STRIPE_ST5 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-developer-barcelona-march-1-2025-no-offer-positive-c1c921ed/`, '2025-03');
-const STRIPE_ST6_PLAN = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11');
-const STRIPE_ST7 = report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07');
+// Stripe accounts re-read 2026-11-13: the Taro pages, both Blind threads (through a reader, since Blind refuses plain
+// requests) and the intern's post through its Medium RSS feed. The LeetCode post is not re-read (LeetCode is blocked);
+// its row rests on docs/references/company-interview-processes-2026-10.md and company-sources-review-2026-10.md.
+// Taro places the reporter does not map (Sweden, Vancouver, Dublin) carry an authored role and country.
+// Replaces STRIPE_ST6_PLAN, STRIPE_ST7 and STRIPE_ST9 (same URLs and dates, with the role each account gives).
+const STRIPE_ST6_PLAN: InterviewProcessSource = {
+  ...report('Blind (recruiter plan)', 'https://www.teamblind.com/post/Stripe-frontend-onsite-SfaGgc1a', '2024-11'),
+  role: 'Frontend engineer (L3)',
+};
+const STRIPE_ST7: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/stripe-frontend-interview-be7f1ymm', '2024-07'),
+  role: 'Senior developer',
+};
 const STRIPE_ST8 = report('Taro', `${STRIPE_TARO}/frontend-developer-canada-september-19-2025-no-offer-positive-caea53c0/`, '2025-09');
-const STRIPE_ST9 = report('LeetCode Discuss', 'https://leetcode.com/discuss/post/5883632/', '2024-10');
+const STRIPE_ST9: InterviewProcessSource = {
+  ...report('LeetCode Discuss', 'https://leetcode.com/discuss/post/5883632/', '2024-10'),
+  role: 'Software engineer 2',
+};
 const STRIPE_ROLE = 'Frontend engineers';
+// New.
+const STRIPE_ST10_FE_US_2022 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-engineer-united-states-march-1-2022-accepted-offer-positive-f4a7a2d5/`, '2022-03');
+const STRIPE_ST11_FE_SEATTLE_2022 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-software-engineer-seattle-wa-april-1-2022-accepted-offer-negative-3408828e/`, '2022-04');
+const STRIPE_ST12_FE_CANADA_2024 = report('Taro (approx.)', `${STRIPE_TARO}/frontend-software-engineer-canada-april-1-2024-no-offer-positive-1dec0d98/`, '2024-04');
+const STRIPE_ST13_FE_TORONTO_2024 = report('Taro', `${STRIPE_TARO}/front-end-developer-toronto-on-may-12-2024-no-offer-positive-82fbc177/`, '2024-05');
+const STRIPE_ST14_FE_SWEDEN_2025: InterviewProcessSource = {
+  ...report('Taro', `${STRIPE_TARO}/front-end-engineer-sweden-september-6-2025-no-offer-neutral-24f195b1/`, '2025-09'),
+  role: 'Front-end engineer',
+  location: 'Sweden',
+};
+const STRIPE_ST15_FE_TORONTO_2025 = report('Taro (approx.)', `${STRIPE_TARO}/front-end-engineer-toronto-on-july-1-2025-no-offer-positive-c811972d/`, '2025-07');
+const STRIPE_ST16_FE_VANCOUVER_2025: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${STRIPE_TARO}/front-end-engineer-vancouver-bc-june-1-2025-no-offer-positive-f815091d/`, '2025-06'),
+  role: 'Front-end engineer',
+  location: 'Canada',
+};
+const STRIPE_ST17_FE_2026 = report('Taro', `${STRIPE_TARO}/frontend-engineer-may-15-2026-no-offer-negative-0506f93d/`, '2026-05');
+const STRIPE_ST18_FE_2026 = report('Taro', `${STRIPE_TARO}/frontend-engineer-january-5-2026-no-offer-positive-67706351/`, '2026-01');
+const STRIPE_ST19_FE_DUBLIN_2025: InterviewProcessSource = {
+  ...report('Taro', `${STRIPE_TARO}/frontend-engineer-dublin-county-dublin-december-17-2025-no-offer-negative-8c6234dd/`, '2025-12'),
+  role: 'Frontend engineer',
+  location: 'Ireland',
+};
+const STRIPE_ST20_SENIOR_CANADA_2025 = report('Taro', `${STRIPE_TARO}/senior-frontend-developer-canada-september-29-2025-accepted-offer-positive-64d19da6/`, '2025-09');
+const STRIPE_ST21_FE_CANADA_2023 = report('Taro (approx.)', `${STRIPE_TARO}/front-end-developer-canada-june-1-2023-no-offer-neutral-9365163f/`, '2023-06');
+// A software engineering intern loop in Bengaluru; its integration round and its manager questions are kept by content.
+const STRIPE_ST22_INTERN_2025: InterviewProcessSource = {
+  ...report('Medium', 'https://medium.com/@diyaag2020/my-stripe-interview-experience-2025-2026-a-journey-to-the-final-round-19990fa6876a', '2025-10'),
+  role: 'Software engineering intern',
+  location: 'India',
+  outcome: 'no offer',
+};
+// Two San Francisco web roles, cited for their behavioural questions only.
+const STRIPE_ST23_WEBDEV_2017 = report('Taro', `${STRIPE_TARO}/web-developer-san-francisco-ca-june-19-2017-no-offer-negative-819c5a53/`, '2017-06');
+const STRIPE_ST24_WEB_2018: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${STRIPE_TARO}/web-designerdeveloper-san-francisco-ca-october-1-2018-no-offer-positive-f13544f0/`, '2018-10'),
+  role: 'Web designer and developer',
+};
+// Taro lists this account twice (9c09fcb2 and f11f37bd, the same text); only the first is cited.
+const STRIPE_ST25_SENIOR_2022 = report('Taro (approx.)', `${STRIPE_TARO}/senior-frontend-engineer-united-states-april-1-2022-no-offer-negative-9c09fcb2/`, '2022-04');
 
 const BYTEDANCE_CAMPUS = official('ByteDance: Early careers interview tips', 'https://jobs.bytedance.com/en/campus/interview-tips');
 const BYTEDANCE_TIKTOK_CAMPUS = official('TikTok: Early careers interview tips', 'https://careers.tiktok.com/m/campus/interview-tips');
@@ -561,7 +803,8 @@ const BOOKINGCOM_BK19_FE_2025: InterviewProcessSource = {
   role: 'Frontend developer',
 };
 
-// Datadog, Intuit and ServiceNow.
+// The Datadog Taro pages and both official pages were read again on 2026-11-13; LeetCode was not (blocked), so DD7 rests
+// on the 2026-10-20 reading in docs/references/company-interview-processes-2026-10.md.
 const DATADOG_CANDIDATE_EXPERIENCE = official('Datadog: Candidate experience', 'https://careers.datadoghq.com/candidate-experience/');
 const DATADOG_TARO = 'https://www.jointaro.com/interviews/companies/datadog/experiences';
 const DATADOG_DD1 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/`, '2024-10');
@@ -570,11 +813,21 @@ const DATADOG_DD3 = report('Taro (approx.)', `${DATADOG_TARO}/senior-software-en
 const DATADOG_DD4 = report('Taro (approx.)', `${DATADOG_TARO}/senior-software-engineer-frontend-france-october-1-2024-accepted-offer-positive-3bd8f875/`, '2024-10');
 const DATADOG_DD5 = report('Taro (approx.)', `${DATADOG_TARO}/software-engineer-front-end-paris-september-1-2024-accepted-offer-positive-ba0b1dd8/`, '2024-09');
 const DATADOG_DD6 = report('Taro (approx.)', `${DATADOG_TARO}/frontend-engineer-madrid-february-1-2024-accepted-offer-positive-a8de35e5/`, '2024-02');
-const DATADOG_DD7 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/7080135', '2025-05');
+// A senior frontend loop for a Paris role; the offer was withdrawn after team matching had been scheduled.
+const DATADOG_DD7: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/interview-experience/7080135', '2025-05'),
+  role: 'Senior frontend engineer',
+  location: 'France',
+  outcome: 'no offer',
+};
 const DATADOG_DD8 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-engineer-madrid-community-of-madrid-july-1-2025-no-offer-positive-f1c8b321/`, '2025-07');
 const DATADOG_DD9 = report('Taro', `${DATADOG_TARO}/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/`, '2025-11');
 const DATADOG_DD10 = report('Taro', `${DATADOG_TARO}/front-end-software-engineer-brazil-january-25-2024-accepted-offer-positive-c193fd19/`, '2024-01');
 const DATADOG_ROLE = 'Frontend engineers';
+// Added 2026-11-13: the two 2021 take-home loops from the research record and the 2024 Lisbon account the guide cites.
+const DATADOG_DD11 = report('Taro (approx.)', `${DATADOG_TARO}/software-engineer-front-end-new-york-ny-july-1-2021-no-offer-positive-2833c42b/`, '2021-07');
+const DATADOG_DD12 = report('Taro (approx.)', `${DATADOG_TARO}/senior-frontend-engineer-paris-april-1-2021-accepted-offer-positive-f33dca98/`, '2021-04');
+const DATADOG_LISBON_2024 = report('Taro (approx.)', `${DATADOG_TARO}/software-engineer-front-end-lisbon-lisbon-district-june-1-2024-no-offer-negative-945bab75/`, '2024-06');
 
 const INTUIT_HIRING = official('Intuit: Hiring process', 'https://www.intuit.com/careers/hiring-process/');
 const INTUIT_TARO = 'https://www.jointaro.com/interviews/companies/intuit/experiences';
@@ -664,7 +917,8 @@ const SERVICENOW_SN5 = report(
 );
 const SERVICENOW_ROLE = 'UI and frontend, IC2 to senior';
 
-// Revolut, Spotify and Zalando.
+// Revolut's Taro pages are anonymous interview reviews re-posted with Taro's own city and date, so the reporter shows
+// no place for them (TARO_UNRELIABLE_LOCATION). The Taro pages and both Blind posts were read again on 2026-11-13.
 const REVOLUT_BAR_RAISER = official('Revolut: Bar Raiser interview video', 'https://www.youtube.com/watch?v=zreFxR7MRuI');
 const REVOLUT_ENGINEERING = official('Revolut: Engineering careers page', 'https://www.revolut.com/careers/team/engineering/');
 const REVOLUT_TARO = 'https://www.jointaro.com/interviews/companies/revolut/experiences';
@@ -678,13 +932,29 @@ const REVOLUT_RV7 = report('Taro (approx.)', `${REVOLUT_TARO}/web-engineer-krako
 const REVOLUT_RV8 = report('Taro', `${REVOLUT_TARO}/senior-front-end-developer-lisbon-lisbon-district-april-24-2023-no-offer-positive-025ce14f/`, '2023-04');
 const REVOLUT_RV9 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-engineer-berlin-april-1-2022-accepted-offer-positive-aa0a7d87/`, '2022-04');
 const REVOLUT_RV10 = report('Taro', `${REVOLUT_TARO}/frontend-developer-portugal-november-5-2025-no-offer-neutral-c06a19bc/`, '2025-11');
-const REVOLUT_RV15_PLAN = report(
-  'Blind (plan)',
-  'https://www.teamblind.com/post/what-to-expect-in-revolut-frontend-engineer-interview-screening-technical-team-bar-raiser-qpgmtoum',
-  '2026-03',
-);
+// A frontend engineer at another company lists the stages they expect, before the interview; no place is stated.
+const REVOLUT_RV15_PLAN: InterviewProcessSource = {
+  ...report(
+    'Blind (plan)',
+    'https://www.teamblind.com/post/what-to-expect-in-revolut-frontend-engineer-interview-screening-technical-team-bar-raiser-qpgmtoum',
+    '2026-03',
+  ),
+  role: 'Frontend engineer',
+  outcome: 'in progress',
+};
 const REVOLUT_RV12 = report('Taro (approx.)', `${REVOLUT_TARO}/senior-frontend-software-engineer-porto-oporto-may-1-2024-no-offer-neutral-90611f7c/`, '2024-05');
-const REVOLUT_ROLE = 'Frontend engineers in European hubs';
+// Revolut's Taro places are not the candidates' (see above), so the role names no hub.
+const REVOLUT_ROLE = 'Frontend engineers';
+const REVOLUT_RV11 = report('Taro', `${REVOLUT_TARO}/front-end-developer-krakow-january-14-2025-no-offer-neutral-7759dda2/`, '2025-01');
+const REVOLUT_RV13 = report('Taro (approx.)', `${REVOLUT_TARO}/frontend-developer-lisbon-lisbon-district-november-1-2022-no-offer-negative-34908269/`, '2022-11');
+// Added 2026-11-13 for the question list: frontend reviews found on Taro beside the research record's accounts.
+const REVOLUT_FE_2024 = report('Taro (approx.)', `${REVOLUT_TARO}/front-end-developer-germany-april-1-2024-no-offer-negative-a0d10251/`, '2024-04');
+const REVOLUT_FE_2020 = report('Taro', `${REVOLUT_TARO}/frontend-engineer-united-kingdom-november-6-2020-no-offer-negative-6688b66c/`, '2020-11');
+// Dubai is missing from the reporter's Taro place table, so the role is given here; Revolut places stay unset.
+const REVOLUT_FE_HR_2025: InterviewProcessSource = {
+  ...report('Taro', `${REVOLUT_TARO}/frontend-developer-dubai-november-6-2025-no-offer-neutral-809e615c/`, '2025-11'),
+  role: 'Frontend developer',
+};
 
 const SPOTIFY_JOURNEY = official('Spotify: Start your journey', 'https://www.lifeatspotify.com/start-your-journey');
 const SPOTIFY_TARO = 'https://www.jointaro.com/interviews/companies/spotify/experiences';
@@ -700,12 +970,27 @@ const SPOTIFY_SP8 = report('Taro (approx.)', `${SPOTIFY_TARO}/web-engineer-unite
 const SPOTIFY_SP9 = report('Taro (approx.)', `${SPOTIFY_TARO}/software-engineer-new-york-ny-february-1-2025-no-offer-positive-0dc5e197/`, '2025-02');
 const SPOTIFY_ROLE = 'Web engineers';
 
+// Re-read 2026-11-13: both official pages, the Blind thread (ZA4) and ZA1 through the copy its author republished on
+// interviewexperiences.in (same date, role, city and rounds; LeetCode itself is not re-read). ZA2 and ZA3 come from
+// docs/references/company-interview-processes-2026-10.md. ZA1 and ZA2 report an offer without saying whether it was
+// accepted, so they carry no outcome; ZA3 names no role.
 const ZALANDO_HOW_WE_HIRE = official('Zalando: How we hire', 'https://jobs.zalando.com/en/how-we-hire');
 const ZALANDO_BLOG = official('Zalando: Technical interviews for software engineers', 'https://jobs.zalando.com/en/blog/technical-interview-for-software-engineers');
-const ZALANDO_ZA1 = report('LeetCode', 'https://leetcode.com/discuss/interview-experience/5501338/', '2024-07');
-const ZALANDO_ZA2 = report('LeetCode', 'https://leetcode.com/discuss/post/1076335/', '2020-12');
+const ZALANDO_ZA1: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/interview-experience/5501338/', '2024-07'),
+  role: 'Senior frontend engineer',
+  location: 'Germany',
+};
+const ZALANDO_ZA2: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/1076335/', '2020-12'),
+  role: 'Senior front-end engineer',
+  location: 'Germany',
+};
 const ZALANDO_ZA3 = report('LeetCode', 'https://leetcode.com/discuss/post/1249280/', '2021-07');
-const ZALANDO_ZA4 = report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02');
+const ZALANDO_ZA4: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/zalando-frontend-interviews-asih8pba', '2022-02'),
+  role: 'Frontend engineer',
+};
 const ZALANDO_ROLE = 'Frontend engineers';
 
 // xAI merged into SpaceX (closed 2026-02-02), rebranded as SpaceXAI in July 2026 and SpaceXSI in October 2026; the board slug is still
@@ -1090,17 +1375,56 @@ const OPENAI_OA1_SENIOR_FE_2024 = report(
   `${OPENAI_TARO}/senior-frontend-software-engineer-united-states-may-30-2024-no-offer-negative-32a807aa/`,
   '2024-05',
 );
-const OPENAI_OA2_FE_2024 = report('Blind', 'https://www.teamblind.com/post/preparing-for-openai-frontend-engineer-interview-hb1zxdy6', '2024-11');
+// Replaces the existing OPENAI_OA2_FE_2024 (same URL and date): the poster gives the role only.
+const OPENAI_OA2_FE_2024: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/preparing-for-openai-frontend-engineer-interview-hb1zxdy6', '2024-11'),
+  role: 'Frontend engineer',
+};
 const OPENAI_OA3_COMMENT_2023 = report('Blind comment', 'https://www.teamblind.com/post/openai-front-end-interview-aqcvdppv', '2023-08');
-const OPENAI_OA4_SWE_2023 = report('Blind', 'https://www.teamblind.com/post/openai-full-stack-swe-interview-experience-4zgmdu7u', '2023-02');
+const OPENAI_OA4_SWE_2023: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/openai-full-stack-swe-interview-experience-4zgmdu7u', '2023-02'),
+  role: 'Full-stack software engineer',
+};
 const OPENAI_OA5_PLAN_2025 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/open-ai-frontend-interview-dxwheejy', '2025-04');
-const OPENAI_OA6_PLAN_2026 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq', '2026-10');
+const OPENAI_OA6_PLAN_2026: InterviewProcessSource = {
+  ...report('Blind (recruiter plan)', 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq', '2026-10'),
+  role: 'Senior software engineer (mainly frontend)',
+};
 const OPENAI_OA7_FE_2024 = report(
   'Taro (approx.)',
   `${OPENAI_TARO}/front-end-developer-san-francisco-ca-december-1-2024-no-offer-neutral-550d792a/`,
   '2024-12',
 );
 const OPENAI_ROLE = 'Frontend candidates';
+// Question-list sources, read 2026-11-13: software engineer and full-stack loops, kept for their frontend and general
+// questions. OA8 is the Blind post the 2026-10-15 sources review cited for a map of tuples; its poster gives no role.
+const OPENAI_OA8_SCREEN_2024: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/Interview-Experience-at-Open-AI-LczeSqph', '2024-04'),
+  outcome: 'no offer',
+};
+// PracHub marks this account "Curated and edited by PracHub"; the interview month is the page's own.
+const OPENAI_OA9_SWE_2026: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/openai-software-engineer-interview-experience-chatgpt-system-design-vector-store-and-a-scheduler-debugging-round-rejected',
+    '2026-07',
+  ),
+  role: 'Software engineer',
+  outcome: 'no offer',
+};
+// The Aced page gives a relative date; April 2025 is the "Interviewed" month on Aced's OpenAI listing.
+const OPENAI_OA10_FULLSTACK_2025: InterviewProcessSource = {
+  ...report('Aced', 'https://www.aced.io/experiences/openai-software-engineer-interview-5a7d13', '2025-04'),
+  role: 'Full-stack engineer, Applied (L5)',
+  location: 'United States',
+  outcome: 'no offer',
+};
+// Aced's question page counts four reported interviews (two software engineers, an AI engineer and a frontend
+// engineer) and shares one account, OA10's.
+const OPENAI_PLAYGROUND_BANK: InterviewProcessSource = {
+  ...report('Aced question page', 'https://www.aced.io/questions/5827/design-openai-playground', '2026-11'),
+  reportForm: 'question-bank',
+};
 
 // Netflix publishes a process only for new graduates and interns. Netflix-tagged Blind commenters say teams run
 // their own loops, so every experienced-hire row names the account it comes from.
@@ -1112,7 +1436,13 @@ const NETFLIX_NF2_SENIOR_FE_2020 = report(
   `${NETFLIX_TARO}/senior-front-end-engineer-los-angeles-ca-october-1-2020-no-offer-positive-86100381/`,
   '2020-10',
 );
-const NETFLIX_NF3_SCREEN_2025 = report('LeetCode', 'https://leetcode.com/discuss/post/7421643/', '2025-12');
+// Replaces the existing NETFLIX_NF3_SCREEN_2025 (same URL and date, now with who reported it).
+const NETFLIX_NF3_SCREEN_2025: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/7421643/', '2025-12'),
+  role: 'Frontend engineer (L4 or L5)',
+  location: 'Poland',
+  outcome: 'no offer',
+};
 const NETFLIX_NF4_COMMENT_2024 = report('Blind comment', 'https://www.teamblind.com/post/netflix-frontend-onsite-interview-kodnou42', '2024-01');
 const NETFLIX_NF5_PLAN_2024 = report('Blind (recruiter plan)', 'https://www.teamblind.com/post/interview-rounds-for-netflix-vyxxuxco', '2024-02');
 const NETFLIX_NF6_FE_2022 = report('Blind', 'https://www.teamblind.com/post/Netflix-front-end-interview-N0UJeDug', '2022-03');
@@ -1127,6 +1457,32 @@ const NETFLIX_NF9_SENIOR_UI_2020 = report(
   `${NETFLIX_TARO}/senior-ui-developer-united-states-november-1-2020-no-offer-positive-285dbb68/`,
   '2020-11',
 );
+// Re-read 2026-11-13 for the question list. NF1 is also the guide's own source (netflix-preview-content.ts), spelled
+// the same way so the page counts it once. NF3 is not re-read: LeetCode now refuses our tools, so its role, place and
+// outcome come from docs/references/company-interview-processes-2026-10.md (read through GraphQL on 2026-10-22).
+const NETFLIX_NF1_SENIOR_FE_2024 = report(
+  'Taro (approx.)',
+  `${NETFLIX_TARO}/senior-frontend-engineer-warsaw-masovia-november-1-2024-no-offer-negative-c999399f/`,
+  '2024-11',
+);
+// Aced experience pages give relative dates; each month is the "Interviewed" month on Aced's Netflix listing, read
+// 2026-11-13. NF10 and NF11 are both L4 UI loops in the United States from September 2024 with five onsite rounds;
+// their screens differ, so they count as two accounts. NF11 says "Got offer" without saying whether it was accepted.
+const NETFLIX_NF10_UI_L4_2024: InterviewProcessSource = {
+  ...report('Aced', 'https://www.aced.io/experiences/netflix-software-engineer-interview-8a01a3', '2024-09'),
+  role: 'UI engineer (L4)',
+  location: 'United States',
+};
+const NETFLIX_NF11_UI_L4_2024: InterviewProcessSource = {
+  ...report('Aced', 'https://www.aced.io/experiences/netflix-software-engineer-interview-622c86', '2024-09'),
+  role: 'UI software engineer (L4)',
+  location: 'United States',
+};
+const NETFLIX_NF12_FULLSTACK_2024: InterviewProcessSource = {
+  ...report('Aced', 'https://www.aced.io/experiences/netflix-senior-software-engineer-interview-de66d8', '2024-12'),
+  role: 'Senior full-stack engineer (L5)',
+  location: 'United States',
+};
 
 // ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
 // so their dates are the interview months the pages implied when read.
@@ -1347,6 +1703,75 @@ const GITLAB_GL27_FE_2019 = report('Taro', `${GITLAB_TARO}/frontend-engineer-uni
 const GITLAB_GL28_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-australia-july-1-2019-accepted-offer-positive-0dcaf872/`, '2019-07');
 const GITLAB_GL35_FE_2018 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-saint-louis-missouri-june-1-2018-accepted-offer-positive-0a133d02/`, '2018-06');
 const GITLAB_GL44_FULLSTACK_2025 = report('Medium', 'https://medium.com/@vedantj03/how-i-got-into-gitlab-an-open-source-journey-7ecdad137307', '2025-04');
+// Added 2026-11-13 for the question list; every Taro page here was re-read that day. Places the Taro reporter does not
+// map (Paraguay, Texas, Israel, Colorado, Dublin, Cyprus) carry an authored role and country; the two engineering
+// manager accounts carry an authored role, since the reporter expects a role ending in a job word.
+const GITLAB_GL2_FE_2025 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-developer-canada-july-1-2025-no-offer-neutral-0819a05d/`, '2025-07');
+const GITLAB_GL6_FE_2022 = report('Taro', `${GITLAB_TARO}/frontend-developer-australia-november-24-2022-no-offer-neutral-5579e0b8/`, '2022-11');
+// Cited 2026-11-13 from the GitLab record: GL9 and GL5 met a hiring manager or the director before any technical round,
+// and GL11's loop added a quiz on frontend trivia. The reporter would read GL11's Amsterdam into the role, so it carries
+// an authored role and country.
+const GITLAB_GL9_SENIOR_FE_2022 = report('Taro (approx.)', `${GITLAB_TARO}/senior-frontend-developer-united-kingdom-march-1-2022-no-offer-negative-cbc54aec/`, '2022-03');
+const GITLAB_GL5_FULLSTACK_2023 = report('Taro', `${GITLAB_TARO}/full-stack-developer-united-states-january-18-2023-no-offer-positive-c1d15e3a/`, '2023-01');
+const GITLAB_GL11_SENIOR_2021: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/senior-software-engineer-amsterdam-netherlands-december-1-2021-no-offer-positive-c052e208/`, '2021-12'),
+  role: 'Senior software engineer',
+  location: 'Netherlands',
+};
+const GITLAB_GL8_FE_2022: InterviewProcessSource = {
+  ...report('Taro', `${GITLAB_TARO}/frontend-developer-paraguay-may-3-2022-no-offer-positive-0f872bc9/`, '2022-05'),
+  role: 'Frontend developer',
+  location: 'Paraguay',
+};
+const GITLAB_GL12_FE_2021: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/fronted-engineer-dallas-texas-august-1-2021-no-offer-negative-93c15bef/`, '2021-08'),
+  role: 'Frontend engineer',
+  location: 'United States',
+};
+const GITLAB_GL13_FE_2020: InterviewProcessSource = {
+  ...report('Taro', `${GITLAB_TARO}/front-end-developer-israel-october-27-2020-no-offer-negative-5ddef8c6/`, '2020-10'),
+  role: 'Front-end developer',
+  location: 'Israel',
+};
+const GITLAB_GL14_FULLSTACK_2020: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/full-stack-web-developer-denver-colorado-october-1-2020-accepted-offer-positive-8e27eabe/`, '2020-10'),
+  role: 'Full-stack web developer',
+  location: 'United States',
+};
+const GITLAB_GL15_FE_2020 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-march-1-2020-no-offer-negative-f66d2219/`, '2020-03');
+const GITLAB_GL17_FE_2020 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-germany-january-1-2020-no-offer-negative-faafe0e4/`, '2020-01');
+const GITLAB_GL26_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-united-states-october-1-2019-no-offer-negative-85ec2e9d/`, '2019-10');
+const GITLAB_GL30_SENIOR_2019 = report('Taro (approx.)', `${GITLAB_TARO}/senior-frontend-engineer-united-kingdom-april-1-2019-accepted-offer-positive-0ed9be90/`, '2019-04');
+const GITLAB_GL31_SENIOR_2019: InterviewProcessSource = {
+  ...report('Taro', `${GITLAB_TARO}/senior-front-end-developer-dublin-leinster-april-18-2019-no-offer-negative-bd947d4b/`, '2019-04'),
+  role: 'Senior front-end developer',
+  location: 'Ireland',
+};
+const GITLAB_GL32_FE_2019 = report('Taro (approx.)', `${GITLAB_TARO}/front-end-engineer-india-march-1-2019-no-offer-negative-488bc8ff/`, '2019-03');
+const GITLAB_GL33_SENIOR_2019: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/senior-front-end-engineer-cyprus-march-1-2019-no-offer-negative-d0ee6c70/`, '2019-03'),
+  role: 'Senior front-end engineer',
+  location: 'Cyprus',
+};
+const GITLAB_GL34_FE_2019: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/frontend-engineer-austin-texas-march-1-2019-no-offer-neutral-48782c3c/`, '2019-03'),
+  role: 'Frontend engineer',
+  location: 'United States',
+};
+const GITLAB_GL37_FE_2018: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/front-end-developer-paraguay-february-1-2018-no-offer-neutral-470ce452/`, '2018-02'),
+  role: 'Front-end developer',
+  location: 'Paraguay',
+};
+// Engineering manager candidates; only their frontend questions are used.
+const GITLAB_GLA1_EM_FE_2018: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/engineering-manager-united-states-march-1-2018-no-offer-negative-a9778509/`, '2018-03'),
+  role: 'Engineering manager (frontend)',
+};
+const GITLAB_GLA2_EM_2019: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${GITLAB_TARO}/engineering-manager-germany-march-1-2019-no-offer-negative-11a35430/`, '2019-03'),
+  role: 'Engineering manager',
+};
 
 // Capital One frontend accounts are Taro re-hosts of Glassdoor reviews with placeholder dates; the generic loop
 // and the official page are written for other roles, so they only back the shared stages.
@@ -1594,10 +2019,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   amazon: {
     title: 'Amazon Front End Engineer interview process',
     summary:
-      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Public accounts from 2020 to 2024 describe loops of four or five interviews, and accounts from 2019 and 2025 add the Leadership Principles questions.',
+      'Amazon\'s Front End Engineer preparation page describes three stages: an online assessment, a 60-minute phone screen and a loop of four 55-minute interviews. Front end candidates\' accounts from 2019 to 2025 describe loops of four or five interviews, most of them opening with Leadership Principles questions before the coding or design.',
     caveat:
-      'Each account describes one loop. Some added a bar raiser or a hiring-manager round, one 2020 phone screen had no behavioural questions, and one 2024 loop asked backend rather than frontend design. Confirm the format with your recruiter.',
-    checkedAt: '2026-11-06',
+      'Each account describes one loop. Some added a bar raiser or a hiring-manager round, one 2020 phone screen had no behavioural questions, and one 2024 loop asked backend rather than frontend design. No US account is newer than October 2024, so confirm the format with your recruiter.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Front End Engineer, experienced hires',
@@ -1605,41 +2030,61 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Online assessment',
             format:
-              '90 minutes for two coding questions in JavaScript, then 20 minutes of system design scenarios and an 8-minute multiple-choice work style survey. The code must compile for every question to move forward.',
+              'Two coding questions in JavaScript in 90 minutes, then 20 minutes of system design scenarios. An 8-minute multiple-choice work style survey follows; Amazon links a sample challenge on HackerRank, and the code must compile for every question to move forward. Accounts from 2020 and 2022 describe two LeetCode-medium problems; a 2025 Front End Engineer I candidate in India took a Mettl test with one coding question and multiple-choice questions, then a frontend assignment.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_OFFER_2020, AMAZON_BLIND_2022],
+            sources: [AMAZON_FEE_PREP, AMAZON_OFFER_2020, AMAZON_BLIND_2022, AMAZON_INDIA_2025],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
           },
           {
             stage: 'Phone screen',
             format:
-              '60 minutes with a leader on the team: half Leadership Principles questions, half front-end coding. Accounts vary: one 2020 screen had no behavioural questions, and a 2022 screen used two LeetCode problems.',
+              '60 minutes with a leader on the team: half Leadership Principles questions, half front-end coding. In the accounts a front end engineer or a development manager ran it. One 2020 screen had no behavioural questions and was eight short technical questions instead, and a Front End Engineer I screen from 2022, posted in January 2023, used LeetCode-style problems.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_PHONE_2020, AMAZON_PHONE_NO_LP_2020, AMAZON_BLIND_2022],
+            sources: [AMAZON_FEE_PREP, AMAZON_PHONE_2020, AMAZON_SEATTLE_2020, AMAZON_OFFER_2020, AMAZON_PHONE_NO_LP_2020, AMAZON_BLIND_2022],
             practice: { label: 'Todo list with local state', path: '/react/coding/react-todo-list' },
           },
           {
             stage: 'Loop: coding interviews',
             format:
-              'The page asks you to prepare for three interviews on logical and maintainable code, problem solving, and data structures and algorithms, written as syntactically correct code rather than pseudo code. Accounts describe live interface widgets and medium algorithm problems.',
+              'Three coding interviews on maintainable code, problem solving, and data structures and algorithms. Amazon\'s page asks for syntactically correct code rather than pseudo code. Accounts describe interface widgets built live, in React or in plain HTML, CSS and JavaScript, and algorithm problems of easy to medium difficulty, most hours opening with two Leadership Principles questions.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_SEATTLE_2020, AMAZON_VANCOUVER_2022, AMAZON_SEATTLE_2024],
-            practice: { label: 'Implement the new operator', path: '/javascript/coding/js-implement-new' },
+            sources: [
+              AMAZON_FEE_PREP,
+              AMAZON_SEATTLE_2020,
+              AMAZON_OFFER_2020,
+              AMAZON_ONSITE_2021,
+              AMAZON_VANCOUVER_2022,
+              AMAZON_SEATTLE_2024,
+              AMAZON_BLIND_2022,
+              AMAZON_INDIA_2025,
+            ],
+            practice: { label: 'Autocomplete search bar', path: '/react/coding/react-autocomplete-search-starter' },
           },
           {
             stage: 'Loop: front-end system design',
             format:
-              'At least one front-end system design question. You define the contract between the front end and the back end but are not expected to design the back-end API. One 2024 account was asked mostly backend design instead.',
+              'At least one front-end system design question, drawn on Bluescape. Amazon\'s page lists six objectives, from usability to scalability; you define the contract between the front end and the back end but are not expected to design the back-end API. In the accounts it filled one loop interview, run by the hiring manager in a 2022 Front End Engineer I loop; one 2024 round was mostly backend design.',
             appliesTo: AMAZON_ROLE,
             sources: [AMAZON_FEE_PREP, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022, AMAZON_SEATTLE_2024],
-            practice: { label: 'Resilient checkout and payment flow', path: '/system-design/resilient-checkout-payment-flow' },
+            practice: { label: 'Design an infinite scrolling list', path: '/system-design/infinite-scroll-list' },
           },
           {
             stage: 'Loop: Leadership Principles',
             format:
-              'Each interviewer typically asks two or three behavioural questions. Accounts also describe a bar raiser interview and a round with the hiring manager, which is often all behavioural.',
+              'Each interviewer typically asks two or three behavioural questions. Accounts describe two or three opening most loop interviews, 30 minutes of them in each round of a 2024 loop, a bar raiser interview, and a hiring manager round that is often all behavioural.',
             appliesTo: AMAZON_ROLE,
-            sources: [AMAZON_FEE_PREP, AMAZON_INTERVIEW_LOOP, AMAZON_HM_2019, AMAZON_OFFER_2020, AMAZON_ONSITE_2021, AMAZON_VANCOUVER_2022, AMAZON_BLIND_2022, AMAZON_FEE_I_2025],
+            sources: [
+              AMAZON_FEE_PREP,
+              AMAZON_INTERVIEW_LOOP,
+              AMAZON_HM_2019,
+              AMAZON_SEATTLE_2020,
+              AMAZON_OFFER_2020,
+              AMAZON_ONSITE_2021,
+              AMAZON_VANCOUVER_2022,
+              AMAZON_BLIND_2022,
+              AMAZON_SEATTLE_2024,
+              AMAZON_FEE_I_2025,
+            ],
             practice: { label: 'Leadership Principles questions and story drill', path: '/companies/amazon/preview', fragment: 'amazon-round-leadership-principles', drill: true },
           },
         ],
@@ -1657,9 +2102,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'New graduate first round',
-            format: 'One interview with an Amazonian, about 45 to 60 minutes.',
+            format:
+              'One interview with an Amazonian, about 45 to 60 minutes. A 2025 new-graduate phone screen in Dublin spent more than 40 minutes on Leadership Principles and asked no frontend questions.',
             appliesTo: 'Full-time new graduates',
-            sources: [AMAZON_STUDENT_PREP],
+            sources: [AMAZON_STUDENT_PREP, AMAZON_GRAD_SCREEN_2025],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
           },
           {
@@ -1667,9 +2113,462 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             format: 'Three to four interviews of 45 to 60 minutes each, coded in LiveCode.',
             appliesTo: 'Full-time new graduates',
             sources: [AMAZON_STUDENT_PREP],
-            practice: { label: 'Implement the new operator', path: '/javascript/coding/js-implement-new' },
+            practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: assessment and phone-screen problems given only as "LeetCode medium" or
+    // "LeetCode (easy to medium)", the 2025 India Mettl coding question and frontend assignment, "a few CSS questions"
+    // before the 2020 countdown timer, a 2020 "front end widget" and "really hard question", a 2021 round of "Leetcode
+    // questions off of amazon list", a 2022 bar raiser's coding "similar to the Thesaurus", and the 2022 FEE I
+    // "implementing a component" and hiring-manager design rounds, which name no prompt. The community list's "Star
+    // Rating" item carries no Amazon tag, so the star rating row cites the 2020 phone screen alone. Behavioural questions
+    // are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'five-star-rating-widget',
+        round: 'Phone screen',
+        kind: 'UI build',
+        topic: 'Star rating widget',
+        question:
+          'Build a small star rating widget from scratch in HTML, CSS and vanilla JavaScript: five grey stars in a row that turn gold when one is hovered or selected, together with every star rated below it. A star could be any element.',
+        sources: [AMAZON_PHONE_2020],
+        practice: { label: 'Star rating widget', path: '/react/coding/react-star-rating' },
+        answerGuide: 'five-star-rating-vanilla',
+      },
+      {
+        id: 'carousel-component',
+        round: 'Phone screen',
+        kind: 'UI build',
+        topic: 'Carousel component',
+        question:
+          'Implement a carousel component, then answer questions on how its state is managed and on other ways to handle it. The candidate built it in React.',
+        sources: [AMAZON_SEATTLE_2020],
+        practice: { label: 'Image slider with dots and previous and next', path: '/react/coding/react-image-slider' },
+        answerGuide: 'carousel-with-state-follow-ups',
+      },
+      {
+        id: 'coin-change',
+        round: 'Phone screen',
+        kind: 'Algorithm',
+        topic: 'Coin change',
+        question:
+          'The coin change problem, with a fixed set of coins that a greedy approach can solve, so dynamic programming was not needed.',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'modal-screen-to-requirements',
+        round: 'Phone screen',
+        kind: 'UI build',
+        topic: 'Modal screen',
+        question: 'Design and build a modal screen to a set of specific requirements, in a coding interview with a development manager.',
+        promptNotShared: true,
+        sources: [AMAZON_OFFER_2020],
+      },
+      {
+        id: 'block-vs-inline-elements',
+        round: 'Phone screen',
+        kind: 'Web fundamentals',
+        topic: 'Block vs inline elements',
+        question: 'What is the difference between block and inline elements?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+        practice: { label: 'Block-level and inline elements', path: '/html/trivia/html-block-inline-elements' },
+      },
+      {
+        id: 'reflow-vs-repaint',
+        round: 'Phone screen',
+        kind: 'Web fundamentals',
+        topic: 'Reflow vs repaint',
+        question: 'What is the difference between reflow and repaint?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+        practice: { label: 'Reflow and repaint in browsers', path: '/javascript/trivia/js-repaint-reflow' },
+      },
+      {
+        id: 'span-inside-div-with-dom-apis',
+        round: 'Phone screen',
+        kind: 'JavaScript',
+        topic: 'Adding an element with DOM APIs',
+        question: 'How do you add a span element inside a div element using web APIs?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+      },
+      {
+        id: 'css-preprocessors',
+        round: 'Phone screen',
+        kind: 'Web fundamentals',
+        topic: 'CSS preprocessors',
+        question: 'What are CSS preprocessors such as Sass and Less used for?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+      },
+      {
+        id: 'microtasks-and-macrotasks',
+        round: 'Phone screen',
+        kind: 'JavaScript',
+        topic: 'Microtasks and macrotasks',
+        question: 'How does the event loop handle microtasks and macrotasks?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+        practice: { label: 'Microtasks vs macrotasks', path: '/javascript/trivia/js-microtasks-vs-macrotasks' },
+      },
+      {
+        id: 'unit-vs-integration-testing',
+        round: 'Phone screen',
+        kind: 'Web fundamentals',
+        topic: 'Unit vs integration testing',
+        question: 'What is the difference between unit testing and integration testing?',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+      },
+      {
+        id: 'browser-memory-leaks',
+        round: 'Phone screen',
+        kind: 'Web fundamentals',
+        topic: 'Browser memory leaks',
+        question: 'How do you find memory leaks in the browser? The interviewer called it an open-ended question.',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+        practice: { label: 'Memory leak debugging', path: '/javascript/trivia/js-memory-leaks-common-sources' },
+      },
+      {
+        id: 'primes-up-to-n',
+        round: 'Phone screen',
+        kind: 'Algorithm',
+        topic: 'Primes up to n',
+        question: 'Find all the prime numbers up to n, then optimise the solution. It was the last of eight questions in a screen with no behavioural part.',
+        sources: [AMAZON_PHONE_NO_LP_2020],
+      },
+      {
+        id: 'array-function-polyfills',
+        round: 'Phone screen',
+        kind: 'JavaScript',
+        topic: 'Map, filter, reduce and sort polyfills',
+        question: 'Implement your own versions of the higher-order array functions map, reduce, filter and sort.',
+        sources: [AMAZON_LIST_2020],
+        practice: { label: 'Implement Array.prototype.map', path: '/javascript/coding/js-array-prototype-map' },
+      },
+      {
+        id: 'language-tabs-modal',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Language tabs in a modal',
+        question:
+          'From an image of a modal with three tabs named English, Spanish and French above a block of text, build it so that clicking a tab switches the text to that language. The candidate used React.',
+        sources: [AMAZON_SEATTLE_2020],
+        practice: { label: 'Tabs and multi-view switcher', path: '/react/coding/react-tabs-switcher' },
+        answerGuide: 'language-tabs-modal',
+      },
+      {
+        id: 'roman-numeral-conversion',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Integer and Roman numeral conversion',
+        question: 'Convert an integer to Roman numerals (LeetCode 12), then the reverse, Roman numerals to an integer (LeetCode 13).',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'countdown-timer',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Countdown timer',
+        question:
+          'After a few CSS questions, build a countdown timer. The interviewer called it a tough task for 30 minutes; the candidate designed it and wrote the state management but did not finish.',
+        sources: [AMAZON_SEATTLE_2020],
+        practice: { label: 'Countdown timer with start, pause and reset', path: '/react/coding/react-countdown-timer' },
+        answerGuide: 'countdown-timer-in-thirty-minutes',
+      },
+      {
+        id: 'referral-log-dependency',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Transitive dependency in referral logs',
+        question:
+          'Given logs that each hold a referral URL and a source URL, find whether two given URLs have a transitive dependency. The round opened with this problem before the Leadership Principles questions.',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'binary-tree-problem',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Binary tree problem',
+        question:
+          'An easy to medium binary tree problem, then questions on optimising its time and space, and finally a request to rework it so that it uses more memory.',
+        promptNotShared: true,
+        sources: [AMAZON_OFFER_2020],
+      },
+      {
+        id: 'constructor-and-prototype-method',
+        round: 'Loop: coding interviews',
+        kind: 'JavaScript',
+        topic: 'Constructor functions and prototypes',
+        question:
+          'An easy custom data structure question in JavaScript, then a follow-up: create a new constructor function and add your function to it as a method through its prototype.',
+        sources: [AMAZON_ONSITE_2021],
+        practice: { label: 'Implement the new operator', path: '/javascript/coding/js-implement-new' },
+      },
+      {
+        id: 'closures-event-loop-utilities',
+        round: 'Loop: coding interviews',
+        kind: 'JavaScript',
+        topic: 'Closures, event loop and utilities',
+        question: 'Questions on JavaScript closures and the event loop, then small JavaScript implementations of the kind BFE.dev collects.',
+        sources: [AMAZON_ONSITE_2021],
+      },
+      {
+        id: 'form-from-a-picture',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Form from a picture',
+        question: 'Implement a component from a picture using HTML; the picture was a simple form.',
+        sources: [AMAZON_ONSITE_2021],
+      },
+      {
+        id: 'paginated-seller-addresses',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Paginated address list',
+        question:
+          'As a seller with a list of addresses you ship to, show them five per page with previous and next buttons. The interviewer focused on when to disable and enable the buttons for the data size, the CSS layout, and modelling the data and props.',
+        sources: [AMAZON_VANCOUVER_2022],
+        practice: { label: 'Paginated data table', path: '/react/coding/react-pagination-table' },
+        answerGuide: 'paginated-address-widget',
+      },
+      {
+        id: 'thesaurus-class',
+        round: 'Loop: coding interviews',
+        kind: 'Practical coding',
+        topic: 'Thesaurus class',
+        question:
+          'An object-oriented design round: implement a Thesaurus class with easy access, insertion and search, storing related words without duplication or too much memory. The interviewer cared more about scalable, maintainable code than a clever algorithm.',
+        sources: [AMAZON_VANCOUVER_2022],
+      },
+      {
+        id: 'frontend-library-api',
+        round: 'Loop: coding interviews',
+        kind: 'JavaScript',
+        topic: 'API from a frontend library',
+        question: 'In a frontend whiteboarding round, implement an API from a frontend library; the account does not say which.',
+        promptNotShared: true,
+        sources: [AMAZON_BLIND_2022],
+      },
+      {
+        id: 'graph-search-topological-sort',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Graph search and topological sort',
+        question: 'A graph problem that depth-first or breadth-first search solves, then a follow-up that a topological sort solves.',
+        promptNotShared: true,
+        sources: [AMAZON_BLIND_2022],
+      },
+      {
+        id: 'file-explorer-from-ascii-sketch',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'File explorer interface',
+        question:
+          'Build something like the interface of a file explorer from an ASCII diagram of numbered entries with nested comments, which the interviewer described as comments on GitHub or in a readme. React was allowed.',
+        sources: [AMAZON_SEATTLE_2024],
+        practice: { label: 'File explorer tree with keyboard navigation', path: '/react/coding/react-file-explorer' },
+        answerGuide: 'file-explorer-from-ascii-sketch',
+      },
+      {
+        id: 'find-all-anagrams',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Find all anagrams in a string',
+        question: 'LeetCode\'s Find All Anagrams in a String (438), asked before the round\'s Leadership Principles questions.',
+        sources: [AMAZON_SEATTLE_2024],
+      },
+      {
+        id: 'unit-tests-for-a-small-problem',
+        round: 'Loop: coding interviews',
+        kind: 'Practical coding',
+        topic: 'Unit tests for a small problem',
+        question: 'Solve a simple coding problem, then write unit tests for it, in what the candidate took to be the bar raiser round.',
+        promptNotShared: true,
+        sources: [AMAZON_SEATTLE_2024],
+      },
+      {
+        id: 'zero-sum-triplet-in-bst',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Zero-sum triplet in a BST',
+        question: 'Find a triplet with sum 0 in a binary search tree; the candidate went from an in-order traversal to a sorted array and the 3Sum approach.',
+        sources: [AMAZON_INDIA_2025],
+        practice: { label: '3Sum: triplets that sum to zero', path: '/javascript/coding/js-three-sum' },
+      },
+      {
+        id: 'row-with-most-ones',
+        round: 'Loop: coding interviews',
+        kind: 'Algorithm',
+        topic: 'Row with the most 1s',
+        question: 'In a row-wise sorted matrix of 0s and 1s, up to 100,000 by 100,000, find the row with the most 1s, from brute force to a two-pointer approach.',
+        sources: [AMAZON_INDIA_2025],
+      },
+      {
+        id: 'recreate-ui-in-html-css',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'UI recreated in HTML and CSS',
+        question: 'Recreate a given UI live with HTML and CSS. The candidate built it in React with Tailwind CSS and also attempted plain HTML and CSS.',
+        sources: [AMAZON_INDIA_2025],
+      },
+      {
+        id: 'accordion',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Accordion',
+        question: 'Design an accordion, listed under front end whiteboard questions as an Amazon onsite question.',
+        promptNotShared: true,
+        sources: [AMAZON_LIST_2020],
+        practice: { label: 'Accordion and FAQ component', path: '/react/coding/react-accordion-faq' },
+      },
+      {
+        id: 'grid-with-search-and-sort',
+        round: 'Loop: coding interviews',
+        kind: 'UI build',
+        topic: 'Grid with search and sort',
+        question: 'Design a grid with HTML, CSS and JavaScript that supports search and sort, with event bubbling in scope, listed as an Amazon onsite question.',
+        sources: [AMAZON_LIST_2020],
+      },
+      {
+        id: 'image-service-design',
+        round: 'Loop: front-end system design',
+        kind: 'Frontend system design',
+        topic: 'Image service',
+        question:
+          'Design an image service, with two Leadership Principles questions in the same hour. The candidate, new to front-end design, started from database tables and backend API calls before page authorisation and cookies.',
+        sources: [AMAZON_OFFER_2020],
+        practice: { label: 'Image upload and preview case', path: '/system-design/image-upload-preview' },
+        answerGuide: 'image-service-frontend-design',
+      },
+      {
+        id: 'component-architecture-with-auth',
+        round: 'Loop: front-end system design',
+        kind: 'Frontend system design',
+        topic: 'Application component architecture',
+        question:
+          'Walk through the component architecture of an application, with questions on authentication.',
+        sources: [AMAZON_ONSITE_2021],
+      },
+      {
+        id: 'restaurant-ordering-app',
+        round: 'Loop: front-end system design',
+        kind: 'Frontend system design',
+        topic: 'Restaurant ordering app',
+        question: 'Design a restaurant listing application where users place orders and customise them with extras such as toppings and salads.',
+        sources: [AMAZON_VANCOUVER_2022],
+        answerGuide: 'image-service-frontend-design',
+      },
+      {
+        id: 'web-file-browser-design',
+        round: 'Loop: front-end system design',
+        kind: 'Frontend system design',
+        topic: 'Web file browser',
+        question:
+          'Design a file browser for the web. It replaced a backend design question once the candidate mentioned frontend experience, but the account says the questions that followed were mostly on the backend.',
+        sources: [AMAZON_SEATTLE_2024],
+      },
+    ],
+    // Left out: "Tell me about a time you went about the status quo?" (Seattle, 2019), whose wording is unclear, and
+    // questions from replies whose author cannot be confirmed as the poster. Amazon's own example questions stay in the
+    // Leadership Principles decoder on the guide.
+    behaviouralQuestions: [
+      {
+        id: 'negative-feedback',
+        question: 'Tell me about negative or tough feedback you received, and how you dealt with it.',
+        sources: [AMAZON_SEATTLE_2020, AMAZON_NYC_2019],
+      },
+      {
+        id: 'beyond-your-role',
+        question: 'Tell me about a time you went beyond what your role or responsibility required.',
+        sources: [AMAZON_SEATTLE_2020, AMAZON_NYC_2019, AMAZON_FEE_I_2025],
+      },
+      {
+        id: 'no-idea-what-was-going-on',
+        question: 'Tell me about a time you jumped into a problem with no idea what was going on.',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'favourite-language',
+        question: 'Which is your favourite programming language, and why?',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'few-requirements',
+        question: 'Tell me about a time you had too few requirements but had to start the work and deliver it.',
+        sources: [AMAZON_SEATTLE_2020, AMAZON_MEDIUM_2021],
+      },
+      {
+        id: 'messed-up',
+        question: 'Describe a time you messed up. What were the consequences?',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'handover',
+        question: 'Describe a time you had to hand something over to someone else.',
+        sources: [AMAZON_SEATTLE_2020],
+      },
+      {
+        id: 'tight-deadline',
+        question: 'Tell me about a time you worked to a tight deadline. How did you prioritise?',
+        sources: [AMAZON_HM_2019, AMAZON_FEE_I_2025],
+      },
+      {
+        id: 'disagreement-with-a-coworker',
+        question: 'Tell me about a disagreement or conflict with a coworker, and how you handled it.',
+        sources: [AMAZON_HM_2019, AMAZON_NYC_2019, AMAZON_MEDIUM_2025],
+      },
+      {
+        id: 'why-amazon',
+        question: 'Why Amazon?',
+        sources: [AMAZON_HM_2019, AMAZON_NYC_2019],
+      },
+      {
+        id: 'hardest-work',
+        question: 'What is the hardest problem or the toughest piece of work you have solved and are proud of?',
+        sources: [AMAZON_NYC_2019, AMAZON_MEDIUM_2025],
+      },
+      {
+        id: 'learned-something-new',
+        question: 'Tell me about a time you learned something new to deliver a task.',
+        sources: [AMAZON_NYC_2019],
+      },
+      {
+        id: 'failed-to-deliver',
+        question: 'Tell me about a time you could not deliver, or delivered something below the mark, and how you handled it.',
+        sources: [AMAZON_NYC_2019, AMAZON_MEDIUM_2021, AMAZON_MEDIUM_2025],
+      },
+      {
+        id: 'calculated-risk',
+        question: 'Tell me about a time you took a calculated risk.',
+        sources: [AMAZON_L5_NYC_2020],
+      },
+      {
+        id: 'short-versus-long-term',
+        question: 'Tell me about a time you had to weigh short-term against long-term costs.',
+        sources: [AMAZON_L5_NYC_2020],
+      },
+      {
+        id: 'shortcomings',
+        question: 'What are some of your shortcomings?',
+        sources: [AMAZON_L5_NYC_2020],
+      },
+      {
+        id: 'urgent-customer',
+        question: 'Tell me about a time you went out of your way to help a customer urgently. What did you do to make sure it never happened again?',
+        sources: [AMAZON_CUSTOMER_2021],
+      },
+      {
+        id: 'fifteen-day-deadline',
+        question: 'You have 15 days for work that would take two or three months. How do you handle it?',
+        sources: [AMAZON_FEE_I_2025],
+      },
+      {
+        id: 'without-telling-manager',
+        question: 'Tell me about something you did without telling your manager. Why did you not tell them?',
+        sources: [AMAZON_FEE_I_2025],
+      },
+      {
+        id: 'without-team-approval',
+        question: 'Tell me about a time you acted on requirements straight away, without your team\'s approval.',
+        sources: [AMAZON_MEDIUM_2021],
       },
     ],
   },
@@ -1677,30 +2576,30 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Public accounts from 2020 to 2026 describe an online assessment, often on Codility, a one-hour technical screen, and a final loop of three or four rounds: frontend coding in React or Angular, data structures and algorithms, frontend system design, and a hiring-manager or behavioural round.',
     caveat:
-      'Accounts say the format depends on the team, and several Blind posts were written before the interview, so they describe what a recruiter planned rather than a finished loop. Confirm the format with your recruiter.',
-    checkedAt: '2026-10-20',
+      'One intern called the format very team dependent, and several Blind posts were written before the interview, so they record what a recruiter planned rather than a finished loop. The question list also draws on intern loops, a 2022 full-stack new-grad loop and a 2020 general SDE-1 loop, keeping only their frontend, web and algorithm questions. Ask the recruiter which rounds your team runs.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend developer and engineer roles',
         stages: [
           {
             stage: 'Recruiter or HR call',
-            format: 'A recruiter or HR call came first in two accounts; in another, a brief introductory call followed the online assessment.',
+            format:
+              'A recruiter or HR call came first in two accounts; in a third, a short introductory call followed the assessment. In 2024 the recruiter checked visa status and availability for an on-site.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T4_FE_2024, TESLA_T1_FE_2025, TESLA_T5_FE_2022],
           },
           {
             stage: 'Online assessment',
             format:
-              'Often on Codility. One account lists 2 hours for 5 questions, another a three-hour assessment with a React like button question, and a third basic front-end framework tasks.',
+              'Often on Codility: 2 hours for 5 questions in a 2022 account, basic front-end framework tasks in a 2020 one. A 2021 assessment ran three hours: an HTML and CSS question, a React question and a string problem.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T5_FE_2022, TESLA_B4_CODILITY, TESLA_B3_CODILITY, TESLA_T2_FE_2021, TESLA_T6_FE_2020],
-            practice: { label: 'Color Contrast Ratio', path: '/javascript/coding/js-color-contrast-ratio' },
           },
           {
             stage: 'Technical screen',
             format:
-              'A one-hour phone or video interview. Accounts mention React questions about a take-home assessment plus a LeetCode easy problem, and a live React session with basic JavaScript questions and a search bar.',
+              'A one-hour phone or video interview, or a live React coding session. A 2025 session had basic JavaScript questions and a search bar; in 2022 a senior developer on the team asked React questions about the candidate\'s take-home and an easy LeetCode problem; a 2021 video round mixed JavaScript, HTML and React questions with a coding problem.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T5_FE_2022, TESLA_T2_FE_2021, TESLA_B2_TAKE_HOME, TESLA_T1_FE_2025],
             practice: { label: 'The one-hour screen, rehearsed', path: '/react/trivia/react-phone-screen-search-bar-rehearsal' },
@@ -1708,29 +2607,28 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Final loop: frontend coding',
             format:
-              'One or two frontend coding rounds in React, or an Angular round followed by a TypeScript and JavaScript round in one account. One recruiter said two of three coding rounds would be frontend-focused.',
+              'One or two React coding rounds, or an Angular round with a coding test and then a TypeScript and JavaScript round. The Angular loop is a 2024 Fremont one; a 2020 recruiter said two of three coding rounds would be frontend-focused, and a 2025 loop put its frontend round after the algorithm round.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T6_FE_2020, TESLA_T4_FE_2024, TESLA_B1_ONSITE_PLAN, TESLA_T3_FE_2025],
-            practice: { label: 'Forms: validation and required fields', path: '/html/coding/html-forms-validation-required' },
+            practice: { label: 'React interview preparation path', path: '/guides/framework-prep/react-prep-path' },
           },
           {
             stage: 'Final loop: data structures and algorithms',
-            format: 'One algorithm round, such as a LeetCode-style card game built on a deque.',
+            format: 'One LeetCode-style algorithm round, which a 2020 recruiter planned as one of three coding rounds.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T6_FE_2020, TESLA_B1_ONSITE_PLAN, TESLA_T3_FE_2025],
-            practice: { label: 'Shallow Clone', path: '/javascript/coding/js-shallow-clone' },
           },
           {
             stage: 'Final loop: frontend system design',
             format:
-              'A design round on a shared component, its API and the technologies to build it in one account, and on a car rental company in another.',
+              'One frontend system design round in the 2020 and 2024 onsite accounts. In the 2024 Fremont loop it was the last of three back-to-back interviews, run by a panel of the hiring manager, a back-end engineer and two full-stack engineers.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T6_FE_2020, TESLA_T4_FE_2024],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Final loop: hiring manager and behavioural',
-            format: 'A behavioural round; one recruiter\'s plan listed a 60-minute hiring-manager interview and a 30-minute product manager interview.',
+            format: 'A behavioural or hiring-manager round, with a product manager added in one recruiter\'s plan. That plan gave the hiring manager 60 minutes and the product manager 30.',
             appliesTo: TESLA_ROLE,
             sources: [TESLA_T6_FE_2020, TESLA_B1_ONSITE_PLAN],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
@@ -1756,7 +2654,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Technical rounds',
             format:
-              'One or two rounds: a React app with an API-backed autocomplete and a debounce discussion, then a medium binary search problem; React, CSS and JavaScript fundamentals with UI component design; or a 45-minute interview, half behavioural and half technical.',
+              'One or two rounds that vary by team, mixing React coding, algorithms and UI component design. A 2025 frontend and mobile intern had a 45-minute interview with a staff engineer, half behavioural and half technical.',
             appliesTo: 'Interns',
             sources: [TESLA_T7_INTERN_2025, TESLA_T8_INTERN_2025, TESLA_B7_INTERN, TESLA_T9_INTERN_2024],
             practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
@@ -1768,6 +2666,234 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             sources: [TESLA_T9_INTERN_2024],
           },
         ],
+      },
+    ],
+    // Kept by content: the frontend, web and algorithm questions of intern loops (T7, T8), a 2022 full-stack new-grad
+    // loop (L1) and a 2020 general SDE-1 loop (C1). The five questions of the 2022 Los Angeles account (T5) carry no
+    // round: the page lists them apart from its stages. Left out for want of a subject: the HTML and CSS question of the
+    // 2021 assessment and its video round's JavaScript, HTML and React questions (T2), "basic front-end framework tasks",
+    // "Front end using React" and "Algorithm" (T6), the Angular round with a coding test and the TypeScript and
+    // JavaScript round (T4), React questions about a take-home and a LeetCode easy (B2), React, CSS and JavaScript
+    // fundamentals (T8), a first-round React interview (T9), and an SDE-1 problem on consecutive elements that the
+    // research record names too loosely to state. Left out by content: Python dictionary problems and the Python
+    // backend round (L1), and "Design movements of Model X wings dancing" (T9), a vehicle design question with no
+    // interface named. Left out for their source: questions known only from Glassdoor, 1point3acres or GitHub (a
+    // JSON.stringify screen, a pull-request disagreement prompt, a React counter and tabs assessment, the round-one
+    // file with copy, dedupe and masking tasks, and published take-home briefs).
+    questions: [
+      {
+        id: 'search-bar',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'Search bar in React',
+        question: 'Implement a search bar in a live React coding session that also had basic JavaScript questions.',
+        sources: [TESLA_T1_FE_2025],
+        practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+      },
+      {
+        id: 'like-button',
+        round: 'Online assessment',
+        kind: 'React build',
+        topic: 'Like button in React',
+        question: 'Make a like button in React, the second of three questions in a three-hour online assessment.',
+        sources: [TESLA_T2_FE_2021],
+        practice: { label: 'React like button', path: '/react/coding/react-like-button' },
+      },
+      {
+        id: 'string-to-number-puzzle',
+        round: 'Online assessment',
+        kind: 'Algorithm',
+        topic: 'String manipulation puzzle',
+        question:
+          'Work through a string and delete some of its characters to arrive at a particular number, the last question of the same assessment; the account does not give the exact rule.',
+        promptNotShared: true,
+        sources: [TESLA_T2_FE_2021],
+      },
+      {
+        id: 'two-duplicate-numbers',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Duplicate numbers in an array',
+        question: 'Find the two numbers that appear twice in an array, the coding question of a one-hour video interview.',
+        sources: [TESLA_T2_FE_2021],
+      },
+      {
+        id: 'styled-react-component',
+        round: 'Final loop: frontend coding',
+        kind: 'React build',
+        topic: 'React component styled with CSS',
+        question:
+          'Implement a basic React component and style it with CSS, in the 45-minute frontend round of a full-stack new-grad loop. The candidate was turned down for the depth of their CSS.',
+        promptNotShared: true,
+        sources: [TESLA_L1_FULLSTACK_2022],
+      },
+      {
+        id: 'data-extraction-mock-ui',
+        round: 'Final loop: frontend coding',
+        kind: 'UI build',
+        topic: 'Data extraction and a mock UI',
+        question: 'A frontend round of data extraction and building a mock UI, which followed the algorithm round.',
+        promptNotShared: true,
+        sources: [TESLA_T3_FE_2025],
+      },
+      {
+        id: 'deque-card-game',
+        round: 'Final loop: data structures and algorithms',
+        kind: 'Algorithm',
+        topic: 'Card game with a deque',
+        question: 'Design a card game built on a deque, in a round of LeetCode-style questions that the candidate found straightforward.',
+        sources: [TESLA_T3_FE_2025],
+      },
+      {
+        id: 'shared-component-design',
+        round: 'Final loop: frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Shared component and its API',
+        question: 'Design a component shared across the application, with its API and the technologies you would build it with.',
+        promptNotShared: true,
+        sources: [TESLA_T6_FE_2020],
+        practice: { label: 'Component-driven design system architecture', path: '/system-design/component-design-system-architecture' },
+      },
+      {
+        id: 'car-rental-company-design',
+        round: 'Final loop: frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Car rental company design',
+        question: 'Design a system for a car rental company, the last of three back-to-back interviews in a front-end developer loop.',
+        sources: [TESLA_T4_FE_2024],
+        practice: { label: 'Design a car rental booking frontend', path: '/system-design/car-rental-booking-frontend' },
+      },
+      {
+        id: 'semantic-html5-tags',
+        kind: 'UI build',
+        topic: 'Semantic HTML5 tags',
+        question: 'Given a web page, swap its div elements for the HTML5 tags that fit each part.',
+        sources: [TESLA_T5_FE_2022],
+        practice: { label: 'Semantic page layout', path: '/html/coding/html-semantic-layout' },
+      },
+      {
+        id: 'position-boxes-css',
+        kind: 'UI build',
+        topic: 'Positioning boxes with CSS',
+        question: 'Place a given set of boxes on the page with CSS positioning.',
+        sources: [TESLA_T5_FE_2022],
+        practice: { label: 'Positioning: relative and absolute badge', path: '/css/coding/css-positioning-badge' },
+      },
+      {
+        id: 'login-form',
+        kind: 'UI build',
+        topic: 'Login form',
+        question: 'Build a simple login form.',
+        sources: [TESLA_T5_FE_2022],
+        practice: { label: 'Forms: validation and required fields', path: '/html/coding/html-forms-validation-required' },
+      },
+      {
+        id: 'react-context-themed-photos',
+        kind: 'React build',
+        topic: 'Themed photo list with React Context',
+        question: 'Fetch a set of photos and render them in the right theme, with the theme passed through React Context.',
+        sources: [TESLA_T5_FE_2022],
+        practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
+      },
+      {
+        id: 'colour-contrast',
+        kind: 'JavaScript',
+        topic: 'Colour contrast calculation',
+        question: 'Work out the contrast between given colours.',
+        sources: [TESLA_T5_FE_2022],
+        practice: { label: 'Colour contrast ratio', path: '/javascript/coding/js-color-contrast-ratio' },
+      },
+      {
+        id: 'api-autocomplete-react-app',
+        round: 'Technical rounds',
+        kind: 'React build',
+        topic: 'API-backed autocomplete in React',
+        question:
+          'Code a React app that calls an API and shows the results as an autocomplete list, then talk through debouncing and other optimisations.',
+        sources: [TESLA_T7_INTERN_2025],
+        practice: { label: 'React debounced search with a fake API', path: '/react/coding/react-debounced-search' },
+      },
+      {
+        id: 'binary-search-medium',
+        round: 'Technical rounds',
+        kind: 'Algorithm',
+        topic: 'Binary search problem',
+        question: 'A LeetCode medium solved with binary search, asked after the React app in the same round.',
+        promptNotShared: true,
+        sources: [TESLA_T7_INTERN_2025],
+      },
+      {
+        id: 'user-table-design',
+        kind: 'Frontend system design',
+        topic: 'User table design',
+        question: 'Design a user table, the question an intern on the Digital Experience team listed for the frontend role.',
+        sources: [TESLA_T8_INTERN_2025],
+        practice: { label: 'React paginated data table', path: '/react/coding/react-pagination-table' },
+      },
+      {
+        id: 'linked-list-intersection',
+        kind: 'Algorithm',
+        topic: 'Intersection of two linked lists',
+        question: 'Find the node where two linked lists meet.',
+        sources: [TESLA_L1_FULLSTACK_2022],
+      },
+      {
+        id: 'bucket-sort-two-pointers',
+        kind: 'Algorithm',
+        topic: 'Bucket sort with two pointers',
+        question: 'An algorithm problem solved with bucket sort and two pointers; the account does not name the problem.',
+        promptNotShared: true,
+        sources: [TESLA_L1_FULLSTACK_2022],
+      },
+      {
+        id: 'cookies-css-quiz',
+        kind: 'Web fundamentals',
+        topic: 'Cookies and CSS declarations',
+        question: 'A web quiz with questions on cookies and CSS declarations, in a general SDE-1 loop.',
+        promptNotShared: true,
+        sources: [TESLA_C1_SDE1_2020],
+        practice: { label: 'Cookie attributes', path: '/javascript/trivia/js-cookie-options' },
+      },
+      {
+        id: 'rotate-array',
+        kind: 'Algorithm',
+        topic: 'Rotate an array',
+        question: 'Rotate the elements of an array.',
+        sources: [TESLA_C1_SDE1_2020],
+      },
+      {
+        id: 'ways-to-reach-nth-stair',
+        kind: 'Algorithm',
+        topic: 'Ways to reach the n-th stair',
+        question: 'Count the ways to reach the n-th stair of a staircase.',
+        sources: [TESLA_C1_SDE1_2020],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'work-under-pressure',
+        question: 'Show that you can work under pressure and run several projects at the same time.',
+        sources: [TESLA_T6_FE_2020],
+      },
+      {
+        id: 'past-projects',
+        question: 'What projects have you worked on? In March 2025 an intern was also taken through the resume in depth.',
+        sources: [TESLA_T3_FE_2025, TESLA_T7_INTERN_2025],
+      },
+      {
+        id: 'why-tesla',
+        question: 'Why Tesla?',
+        sources: [TESLA_L1_FULLSTACK_2022],
+      },
+      {
+        id: 'busy-work-culture',
+        question: 'Would you accept a busy work culture?',
+        sources: [TESLA_L1_FULLSTACK_2022],
+      },
+      {
+        id: 'three-minutes-with-elon',
+        question: 'If you had three minutes with Elon, what would you tell him? A commenter had to answer it in writing after passing the full loop.',
+        sources: [TESLA_B4_CODILITY],
       },
     ],
   },
@@ -1900,6 +3026,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'valid-parentheses',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Valid Parentheses',
         question:
           'Check whether a string of brackets is balanced, with every opening bracket closed in the right order (LeetCode Valid Parentheses).',
         sources: [WALMART_W11_SDE3_UI, WALMART_W10_SDE3_UI, WALMART_W3_FE_INDIA],
@@ -1909,6 +3036,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'closures',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'JavaScript closures',
         question: 'Explain closures; one account went on to self-invoking functions.',
         sources: [WALMART_W10_SDE3_UI, WALMART_W55_FE, WALMART_W16_ENGINEER3],
         practice: { label: 'Explain closures', path: '/javascript/trivia/js-closures' },
@@ -1917,6 +3045,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'let-var-const',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Differences between let, var and const',
         question: 'Explain how let, var and const differ; one account added the kinds of functions JavaScript has.',
         sources: [WALMART_W10_SDE3_UI, WALMART_W3_FE_INDIA],
         practice: { label: 'Hoisting and the temporal dead zone', path: '/javascript/trivia/js-hoisting' },
@@ -1925,6 +3054,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'why-react',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React concepts',
+        topic: 'Why choose React over other frameworks',
         question: 'Why use React rather than other libraries or frameworks, such as Angular?',
         sources: [WALMART_W11_SDE3_UI, WALMART_W15_SDE2],
       },
@@ -1932,6 +3062,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'virtual-dom',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React concepts',
+        topic: 'Virtual DOM vs the DOM',
         question: 'What is the virtual DOM, and how does it differ from the DOM?',
         sources: [WALMART_W11_SDE3_UI, WALMART_W9_FE],
       },
@@ -1939,6 +3070,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'first-missing-positive',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'First Missing Positive',
         question: 'Find the smallest positive integer missing from an unsorted array (LeetCode First Missing Positive).',
         sources: [WALMART_W11_SDE3_UI],
       },
@@ -1946,6 +3078,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'two-sum',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Two Sum',
         question: 'Find the two numbers in an array that add up to a target (LeetCode Two Sum), given as a bonus after the first two problems.',
         sources: [WALMART_W11_SDE3_UI],
       },
@@ -1953,6 +3086,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'rotated-array-search-variation',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Variation on rotated sorted array search',
         question: 'A variation of searching a rotated sorted array, where the interviewer cared more about the approach than about complete code.',
         sources: [WALMART_W10_SDE3_UI],
       },
@@ -1960,6 +3094,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'rotated-array-search',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Search in a rotated sorted array',
         question: 'Search for a value in a rotated sorted array.',
         sources: [WALMART_W17_SDE3],
       },
@@ -1967,6 +3102,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'sort-a-stack',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Variant of sorting a stack',
         question: 'A stack problem close to sorting a stack, optimised with small hints from the interviewer.',
         sources: [WALMART_W10_SDE3_UI],
       },
@@ -1974,6 +3110,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'dp-and-sliding-window',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Dynamic programming and sliding windows',
         question: 'Problems on dynamic programming and sliding windows.',
         promptNotShared: true,
         sources: [WALMART_W35_SDE3],
@@ -1982,6 +3119,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'predict-the-winner',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Predict the Winner',
         question: 'Two players take numbers from either end of an array in turn: can the first player win? (LeetCode Predict the Winner)',
         sources: [WALMART_W8_SDE3],
       },
@@ -1989,6 +3127,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'meeting-rooms-variant',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Variant of Meeting Rooms II',
         question: 'A problem close to Meeting Rooms II, the fewest rooms a set of meetings needs, discussed but not coded for lack of time.',
         sources: [WALMART_W8_SDE3],
       },
@@ -1996,6 +3135,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'combination-sum-no-duplicates',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Combination Sum variant',
         question: 'A Combination Sum variant: find the combinations that add up to a target without counting duplicate elements.',
         sources: [WALMART_W17_SDE3],
       },
@@ -2003,6 +3143,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'all-subsets',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'All subsets of an array',
         question: 'Print every possible subset of an array.',
         sources: [WALMART_W17_SDE3],
       },
@@ -2010,6 +3151,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'next-greater-element',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Next Greater Element I',
         question: 'For each number of one array, find the next greater number in a second array (LeetCode Next Greater Element I).',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2017,6 +3159,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'add-one-to-number',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Add one to a digit array',
         question: 'Add one to a number given as an array of its digits.',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2024,6 +3167,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'median-of-data-stream',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Find Median from Data Stream',
         question: 'Keep the median of a stream of numbers as they arrive (LeetCode Find Median from Data Stream).',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2031,6 +3175,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'minimum-taps',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Minimum taps to water a garden',
         question: 'Find the fewest taps to open so that a whole garden is watered (LeetCode Minimum Number of Taps to Open to Water a Garden).',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2038,6 +3183,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'zigzag-diagonal-traversal',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Zigzag diagonal matrix traversal',
         question: 'Traverse a matrix along its diagonals in zigzag order.',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2045,6 +3191,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'number-of-islands',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Number of Islands',
         question: 'Count the islands in a grid of land and water (LeetCode Number of Islands).',
         sources: [WALMART_W55_FE, WALMART_W16_ENGINEER3],
       },
@@ -2052,6 +3199,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'max-profit-day-modified',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Most profitable selling day variant',
         question: 'A modified version of finding the most profitable day to sell, written on paper in a timed round.',
         sources: [WALMART_W16_ENGINEER3],
       },
@@ -2059,6 +3207,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'noble-integer',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Noble integer',
         question: 'Find a noble integer: a value in an array equal to the number of elements greater than it.',
         sources: [WALMART_W16_ENGINEER3],
       },
@@ -2066,6 +3215,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'dam-walls',
         round: 'DSA round',
         kind: 'Algorithm',
+        topic: 'Dam wall placement to save water',
         question: 'A real-world problem: place walls against water overflowing from a dam so that as much water as possible is saved, solvable with dynamic programming.',
         sources: [WALMART_W16_ENGINEER3],
       },
@@ -2073,6 +3223,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'optimise-heavy-recursion',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Optimising heavy recursive operations',
         question: 'How would you optimise a heavy recursive operation in JavaScript? The candidate answered with currying.',
         sources: [WALMART_W10_SDE3_UI],
         practice: { label: 'Memoization', path: '/javascript/coding/js-memoize-function' },
@@ -2081,6 +3232,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'usecontext-rerenders',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React concepts',
+        topic: 'useContext re-renders and prop drilling',
         question:
           'How do you keep components that use useContext from re-rendering needlessly, and how does Context remove prop drilling? The same round covered useMemo, useReducer and React design patterns.',
         sources: [WALMART_W10_SDE3_UI],
@@ -2090,6 +3242,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'ssr-above-the-fold',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Frontend system design',
+        topic: 'Above-the-fold SSR and hydration',
         question:
           'The part of a page above the fold is rendered on the server and a React component below it on the client: how do hydration and the parsing of HTML and JavaScript play out?',
         sources: [WALMART_W10_SDE3_UI],
@@ -2099,6 +3252,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'dropdown-component-api',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React build',
+        topic: 'Dropdown component API',
         question: 'Write the high-level API of a dropdown component that works as a single-select or a multi-select and accepts custom child components.',
         sources: [WALMART_W10_SDE3_UI],
         practice: { label: 'Select with compound components', path: '/react/coding/react-select-compound-api' },
@@ -2107,6 +3261,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'flexbox-positioning-stacking',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Web fundamentals',
+        topic: 'Flexbox, positioning and stacking contexts',
         question: 'CSS questions on flexbox layout, relative and absolute positioning, and how z-index and stacking contexts behave with absolute positioning.',
         sources: [WALMART_W10_SDE3_UI],
         practice: { label: 'How z-index works', path: '/css/trivia/css-z-index' },
@@ -2115,6 +3270,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'module-federation-performance',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Web fundamentals',
+        topic: 'Web performance and module federation',
         question: 'Performance techniques in the browser and in React, and the advanced concepts of module federation.',
         sources: [WALMART_W10_SDE3_UI],
         practice: { label: 'Code splitting and module federation', path: '/react/trivia/react-code-splitting-module-federation' },
@@ -2123,6 +3279,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'implement-usememo',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React build',
+        topic: 'useMemo implementation',
         question: 'Explain what useMemo is for, then implement it yourself.',
         sources: [WALMART_W11_SDE3_UI],
         practice: { label: 'Implement useMemo and a Context data provider', path: '/react/coding/react-implement-usememo-context' },
@@ -2131,6 +3288,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'implement-context-api',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React build',
+        topic: 'Context API implementation',
         question: 'Implement the Context API yourself, then extend it to hold the results of an API call.',
         sources: [WALMART_W11_SDE3_UI],
         practice: { label: 'Implement useMemo and a Context data provider', path: '/react/coding/react-implement-usememo-context' },
@@ -2139,6 +3297,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'responsive-vs-adaptive',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Web fundamentals',
+        topic: 'Responsive vs adaptive design',
         question: 'What is the difference between responsive and adaptive design, and which would you choose?',
         sources: [WALMART_W11_SDE3_UI],
         practice: { label: 'Making an element responsive', path: '/css/trivia/css-make-element-responsive' },
@@ -2147,6 +3306,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'two-pointer-problem',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Algorithm',
+        topic: 'Two-pointer problem',
         question: 'An easy-to-medium two-pointer problem, in a 60-minute online round that also covered frontend concepts.',
         promptNotShared: true,
         sources: [WALMART_W9_FE],
@@ -2155,6 +3315,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'output-prediction-scope',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Code output prediction and scope',
         question: 'Predict what given code prints, with questions on JavaScript basics and scope.',
         sources: [WALMART_W9_FE],
         practice: { label: 'Predict var hoisting and function shadowing', path: '/javascript/trivia/js-var-hoisting-shadowing-output' },
@@ -2163,6 +3324,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hooks-useeffect',
         round: 'JavaScript, React and web fundamentals',
         kind: 'React concepts',
+        topic: 'React hooks and useEffect',
         question: 'Questions on React hooks, most of them about useEffect.',
         sources: [WALMART_W9_FE],
         practice: { label: 'What useEffect is for', path: '/react/trivia/react-useeffect-purpose' },
@@ -2171,6 +3333,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'block-inline-flexbox',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Web fundamentals',
+        topic: 'Block vs inline elements and flexbox',
         question: 'How block and inline elements differ, and how flexbox lays out its children.',
         sources: [WALMART_W9_FE],
         practice: { label: 'Block and inline elements', path: '/html/trivia/html-block-inline-elements' },
@@ -2179,6 +3342,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'class-vs-id',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Web fundamentals',
+        topic: 'CSS class vs id',
         question: 'CSS questions such as when to use a class and when an id, in a UI round set for a full-stack candidate.',
         sources: [WALMART_W16_ENGINEER3],
         practice: { label: 'id and class attributes', path: '/html/trivia/html-id-vs-class' },
@@ -2187,6 +3351,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'sum-both-call-styles',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Sum with normal and curried calls',
         question: 'Write one sum function that works both as sum(a, b, c) and as sum(a)(b)(c).',
         sources: [WALMART_W37_SDE3_CHENNAI],
         practice: { label: 'Curry function', path: '/javascript/coding/js-curry-function' },
@@ -2195,6 +3360,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'chunk-array',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Split an array into chunks',
         question: 'Split an array into chunks of a given size.',
         sources: [WALMART_W37_SDE3_CHENNAI],
       },
@@ -2202,6 +3368,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'snippets-closures-currying-hoisting',
         round: 'JavaScript, React and web fundamentals',
         kind: 'JavaScript',
+        topic: 'Closures, currying, hoisting and call/bind/apply',
         question: 'Code snippets on closures, currying and hoisting, and when to use call, bind and apply.',
         sources: [WALMART_W37_SDE3_CHENNAI],
         practice: { label: 'call, apply and bind', path: '/javascript/trivia/js-call-apply-bind' },
@@ -2210,6 +3377,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'angular-lifecycle-services',
         round: 'JavaScript, React and web fundamentals',
         kind: 'Angular concepts',
+        topic: 'Angular lifecycle, services and communication',
         question: 'Angular questions on the component lifecycle, services and how components talk to each other.',
         sources: [WALMART_W37_SDE3_CHENNAI],
         practice: { label: 'Angular lifecycle hooks', path: '/angular/trivia/angular-lifecycle-hooks' },
@@ -2218,6 +3386,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'async-await-single-thread',
         round: 'DSA round',
         kind: 'JavaScript',
+        topic: 'Async/await, Promises and single threading',
         question: 'Write an async and await snippet and a Promise snippet and explain how each runs, then how JavaScript runs on a single thread.',
         sources: [WALMART_W17_SDE3],
         practice: { label: 'JavaScript event loop', path: '/javascript/trivia/js-event-loop' },
@@ -2226,6 +3395,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'measure-react-performance',
         round: 'Hiring manager',
         kind: 'React concepts',
+        topic: 'Measuring React performance',
         question: 'How do you measure the performance of a React application?',
         sources: [WALMART_W11_SDE3_UI],
         practice: { label: 'Performance profiling in browser DevTools', path: '/javascript/trivia/js-performance-profiling-workflow' },
@@ -2234,6 +3404,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'redux-hooks-shadow-dom',
         round: 'Technical rounds',
         kind: 'React concepts',
+        topic: 'Redux, React hooks and Shadow DOM',
         question: 'Questions on Redux, React hooks and the Shadow DOM.',
         sources: [WALMART_W2_SDE2_BENGALURU],
         practice: { label: 'Redux vs Context vs useState', path: '/react/trivia/react-state-management-redux' },
@@ -2242,6 +3413,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'circular-linked-list-delete',
         round: 'Technical rounds',
         kind: 'Algorithm',
+        topic: 'Delete from a circular linked list',
         question: 'Find a key in a circular linked list and delete it, leaving the list unchanged when the key is not there.',
         sources: [WALMART_W15_SDE2],
       },
@@ -2249,6 +3421,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'implement-queue',
         round: 'Technical rounds',
         kind: 'Algorithm',
+        topic: 'Linked list or array queue',
         question: 'Implement a queue of integers on a singly linked list or an array, with its enqueue and dequeue operations.',
         sources: [WALMART_W15_SDE2],
         practice: { label: 'Implement a stack and a queue', path: '/javascript/coding/js-stack-queue-implementation' },
@@ -2257,6 +3430,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-event-box-model',
         round: 'Technical rounds',
         kind: 'Web fundamentals',
+        topic: 'React events, box model, HTML basics',
         question: 'What is an event in React, what makes up the CSS box model, what does the universal selector do, and how do HTML elements differ from tags?',
         sources: [WALMART_W15_SDE2],
         practice: { label: 'The CSS box model', path: '/css/trivia/css-box-model' },
@@ -2265,6 +3439,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'angular-feature-until-tests-pass',
         round: 'Online assessment (2026 accounts)',
         kind: 'Practical coding',
+        topic: 'Angular feature against existing tests',
         question: 'Add a feature to an existing Angular project until its test cases pass.',
         promptNotShared: true,
         sources: [WALMART_W56_FULLSTACK_2026],
@@ -2273,6 +3448,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-event-listener-challenges',
         round: 'Coding screen',
         kind: 'React build',
+        topic: 'React event listener challenges',
         question: 'React code challenges built around event listeners: not difficult, but slow to finish in the time.',
         promptNotShared: true,
         sources: [WALMART_W6_SENIOR],
@@ -2281,6 +3457,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'binary-search-tree',
         round: 'Coding screen',
         kind: 'Algorithm',
+        topic: 'Binary search tree problem',
         question: 'A binary search tree problem, set as the code test of a staff frontend loop.',
         promptNotShared: true,
         sources: [WALMART_W1_STAFF_FE],
@@ -2289,6 +3466,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'stack-and-counting',
         round: 'Coding screen',
         kind: 'Algorithm',
+        topic: 'Stack-based counting problem',
         question: 'A problem solved with a stack and a count, in a CodePair interview for a team that works mostly in React Native.',
         promptNotShared: true,
         sources: [WALMART_W26_CODEPAIR],
@@ -2297,6 +3475,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'es6-output-snippets',
         round: 'Coding screen',
         kind: 'JavaScript',
+        topic: 'ES6 snippet output prediction',
         question: 'Say what basic ES6 code snippets print, on closures, hoisting and object methods, in a 30-minute exploratory call.',
         sources: [WALMART_W12_REACT_NATIVE],
         practice: { label: 'this in detached methods', path: '/javascript/trivia/js-this-keyword' },
@@ -2305,6 +3484,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'html-css-component-then-list',
         round: 'Coding rounds',
         kind: 'UI build',
+        topic: 'HTML/CSS component and React Native list',
         question: 'Write the HTML and CSS of a simple UI component in VS Code, then a horizontal list component with simple styles in a React Native playground.',
         sources: [WALMART_W12_REACT_NATIVE],
       },
@@ -2312,6 +3492,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'js-engine-react-optimisation',
         round: 'Coding rounds',
         kind: 'JavaScript',
+        topic: 'JavaScript engine and React optimisation',
         question:
           'How the JavaScript engine runs synchronous and asynchronous functions, and the React optimisation techniques: memoisation, code splitting, lazy loading, error boundaries, debouncing and throttling.',
         sources: [WALMART_W12_REACT_NATIVE],
@@ -2321,6 +3502,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hooks-and-their-use',
         round: 'Coding rounds',
         kind: 'React concepts',
+        topic: 'Core React hooks and their uses',
         question: 'What useState, useEffect, useMemo, useCallback, useRef and useReducer are for, and how a component uses each, with sample snippets.',
         sources: [WALMART_W12_REACT_NATIVE],
         practice: { label: 'Which React hooks to choose', path: '/react/trivia/react-hooks-youve-used' },
@@ -2329,6 +3511,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hard-recursion-problem',
         round: 'Coding rounds',
         kind: 'Algorithm',
+        topic: 'Hard recursion problem',
         question: 'A hard coding problem built on recursion, which the candidate answered in pseudo-code.',
         promptNotShared: true,
         sources: [WALMART_W20_SWE3_FE],
@@ -2337,6 +3520,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'vanilla-accordion',
         round: 'Coding rounds',
         kind: 'UI build',
+        topic: 'Vanilla JavaScript accordion',
         question: 'Build an accordion in plain JavaScript, in a round with no React questions.',
         sources: [WALMART_W55_FE],
         practice: { label: 'React accordion', path: '/react/coding/react-accordion-faq' },
@@ -2345,6 +3529,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'add-two-numbers-with-promises',
         round: 'Coding rounds',
         kind: 'JavaScript',
+        topic: 'Adding two numbers with Promises',
         question: 'Add two numbers using promises.',
         sources: [WALMART_W55_FE],
         practice: { label: 'Add two promises', path: '/javascript/coding/js-add-two-promises' },
@@ -2353,6 +3538,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'valid-anagram',
         round: 'Coding rounds',
         kind: 'Algorithm',
+        topic: 'Valid Anagram',
         question: 'Check whether two strings are anagrams of each other (LeetCode Valid Anagram).',
         sources: [WALMART_W55_FE],
         practice: { label: 'Valid Anagram', path: '/javascript/coding/js-valid-anagram' },
@@ -2361,6 +3547,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'best-time-to-buy-and-sell',
         round: 'Coding rounds',
         kind: 'Algorithm',
+        topic: 'Best stock buy and sell days',
         question: 'Find the best day to buy and the best later day to sell a stock (LeetCode Best Time to Buy and Sell Stock).',
         sources: [WALMART_W55_FE],
       },
@@ -2368,6 +3555,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hoisting-callback-hell-es6',
         round: 'Coding rounds',
         kind: 'JavaScript',
+        topic: 'Hoisting, callback hell and ES6 features',
         question: 'Explain hoisting, show callback hell with an example, and go through the ES6 features in detail.',
         sources: [WALMART_W55_FE],
         practice: { label: 'Promise chains and async and await', path: '/javascript/trivia/js-promises-async-await' },
@@ -2376,6 +3564,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-components-and-apis-design',
         round: 'System design',
         kind: 'Frontend system design',
+        topic: 'React components and back-end API design',
         question:
           'A design problem taken from a high-level design down to how React components talk to the back-end APIs, including the choice between polling and WebSockets.',
         promptNotShared: true,
@@ -2386,6 +3575,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'page-load-performance',
         round: 'System design',
         kind: 'Frontend system design',
+        topic: 'Page load and render performance',
         question:
           'How would you make the page load and render faster: lazy loading, resource hints, fewer and smaller requests, async or defer scripts, list virtualisation, and which Lighthouse metrics (FCP, LCP, TTI) you would track?',
         sources: [WALMART_W13_SWE3],
@@ -2395,6 +3585,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'xss-protection',
         round: 'System design',
         kind: 'Web fundamentals',
+        topic: 'Cross-site scripting protection',
         question: 'How do you protect a web application against cross-site scripting?',
         sources: [WALMART_W13_SWE3],
         practice: { label: 'DOM XSS prevention', path: '/javascript/trivia/js-xss-dom-sinks' },
@@ -2402,6 +3593,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'react-ui-with-performance',
         kind: 'React build',
+        topic: 'React UI built for performance',
         question: 'Build a UI application in React with optimisation and browser performance in mind, after theory questions on HTML, CSS, JavaScript and React.',
         promptNotShared: true,
         sources: [WALMART_W32_FE],
@@ -2409,18 +3601,21 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'debug-frontend-issues',
         kind: 'Web fundamentals',
+        topic: 'Debugging front-end issues',
         question: 'How would you go about debugging front-end issues? It was the only frontend question in that loop.',
         sources: [WALMART_W20_SWE3_FE],
       },
       {
         id: 'phone-keypad-words',
         kind: 'Algorithm',
+        topic: 'Words from phone keypad digits',
         question: 'Print every word that a string of phone keypad digits can spell.',
         sources: [WALMART_W5_SDE3_UI_2019],
       },
       {
         id: 'type-conversion',
         kind: 'JavaScript',
+        topic: 'JavaScript type conversion',
         question: 'How does JavaScript convert types internally?',
         sources: [WALMART_W5_SDE3_UI_2019],
         practice: { label: 'Type coercion', path: '/javascript/trivia/js-type-coercion' },
@@ -2494,8 +3689,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     summary:
       'Google\'s hiring pages describe recruiter conversations, possible assessments and a panel of interviews by video or in person. Front-end accounts from 2019 to 2026 describe one or two technical screens, then four or five interviews mixing algorithm coding, usually one JavaScript or frontend round and Googleyness, with a frontend-leaning design round from L5.',
     caveat:
-      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot for junior to mid-level roles on some US teams: an approved AI assistant in a code comprehension round, and a technical design discussion about a past project in the Googleyness round. Confirm the loop with your recruiter.',
-    checkedAt: '2026-11-06',
+      'The number of frontend rounds varies; one 2026 account had none, and a 2019 candidate went from a hiring-manager quiz straight to the onsite. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 news report describes a pilot for junior to mid-level roles on some US teams with an approved AI assistant in a code comprehension round. Confirm the loop with your recruiter.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Software engineers in front-end roles',
@@ -2514,22 +3709,24 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Technical screen',
-            format: 'About an hour of coding in a shared document, in JavaScript or on an algorithm problem; some candidates have two screens.',
+            format:
+              'About an hour of coding in a plain shared document, in JavaScript or on an algorithm problem. Some candidates have two screens, the second a JavaScript round in Google Docs in a 2023 account, and a 2022 account\'s editor had no syntax highlighting and no way to run the code.',
             appliesTo: 'Front-end candidates',
             sources: [GOOGLE_GO3, GOOGLE_GO4, GOOGLE_GO5, GOOGLE_GO6, GOOGLE_PHONE_2020],
-            practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+            practice: { label: 'Safe nested-path lookup', path: '/javascript/coding/js-get-by-path-1' },
           },
           {
             stage: 'Interview loop',
-            format: 'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round (more in two accounts), plus the Googleyness interview in its own row below.',
+            format:
+              'Four or five interviews by video or onsite: algorithm coding and usually one JavaScript or frontend round. Two accounts had more frontend rounds, and in a 2021 account every question started easy and grew to medium or hard once solved. The Googleyness interview has its own row below.',
             appliesTo: 'All candidates',
-            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8, GOOGLE_ONSITE_2019],
+            sources: [GOOGLE_HOW_WE_HIRE, GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO4, GOOGLE_GO7, GOOGLE_GO8, GOOGLE_ONSITE_2019, GOOGLE_L3L4_2019],
             practice: { label: 'Build a tree from a flat list', path: '/javascript/coding/js-build-tree-from-flat-list' },
           },
           {
             stage: 'Googleyness interview',
             format:
-              'About 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership; in three 2026 accounts it sat in a first, virtual stage with one technical round, before the onsite coding, and one early-career loop added 15 minutes of it to a technical interview.',
+              'About 45 minutes of behavioural and hypothetical questions, which several accounts call Googleyness and Leadership. In three 2026 accounts it sat in a first, virtual stage with one technical round, before the onsite coding, and one early-career loop added 15 minutes of it to a technical interview. A May 2026 press report describes a pilot on some US teams that adds a technical design discussion about a past project to this round.',
             appliesTo: 'All candidates',
             sources: [
               GOOGLE_INTERVIEW_TIPS,
@@ -2545,14 +3742,16 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               GOOGLE_GL_L3_2026,
               GOOGLE_GL_L4_2024,
               GOOGLE_GL_L4_BLR_2026,
+              GOOGLE_PILOT_PRESS_2026,
             ],
             practice: { label: 'Googleyness questions and story drill', path: '/companies/google/preview', fragment: 'google-round-googleyness', drill: true },
           },
           {
             stage: 'System design',
-            format: 'A design round with a frontend and API focus in most accounts; one L5 candidate reported a non-frontend design round.',
+            format:
+              'A design round with a frontend and API focus in most accounts; one L5 candidate reported a non-frontend design round. A 2019 front end onsite, level not stated, included an app design round.',
             appliesTo: 'L5 and above',
-            sources: [GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO8],
+            sources: [GOOGLE_GO1, GOOGLE_GO2, GOOGLE_GO8, GOOGLE_ONSITE_2019],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
@@ -2562,6 +3761,305 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             sources: [GOOGLE_GO2, GOOGLE_GO7],
           },
         ],
+      },
+    ],
+    // Row 1 is the question behind the guide's first prompt (a depth-first walk over a tree of nodes). It rests on the
+    // December 2020 Blind thread, a question bank whose poster mixed their own questions with ones found online; its
+    // other frontend items are rows without a round, and its algorithm puzzles stay out (see the proposal). Left out by
+    // content: the 2019 hiring manager's quiz on SQL and deadlocks, and a 2021 L5 design round spent implementing backend
+    // APIs. Left out for want of a subject: the 2022 L5 JavaScript round's two questions, unnamed design and screen tasks
+    // in Taro accounts, and the April 2026 Medium account's three algorithm rounds.
+    questions: [
+      {
+        id: 'dfs-over-html-nodes',
+        kind: 'JavaScript',
+        topic: 'DFS over HTML nodes',
+        question: 'Perform a depth-first search over the nodes of an HTML document.',
+        sources: [GOOGLE_FE_THREAD],
+        practice: { label: 'Find a node in a DOM tree', path: '/javascript/coding/js-dom-find-node' },
+        answerGuide: 'nested-navigation-tree',
+      },
+      {
+        id: 'throttle-wrapper',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Throttle',
+        question:
+          'Write a throttle wrapper for an expensive function, so that it runs at most once per time interval and calls in between do nothing, then handle parameters, including an unknown number of them.',
+        sources: [GOOGLE_PHONE_2020, GOOGLE_FE_THREAD],
+        practice: { label: 'Throttle function', path: '/javascript/coding/js-throttle' },
+      },
+      {
+        id: 'ambigram-problem',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Ambigram problem',
+        question:
+          'A problem about ambigrams that the candidate had not seen on any practice site, solved with left and right pointers, then an added requirement that took it from easy to medium.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO3],
+      },
+      {
+        id: 'large-data-display',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Displaying large sets of data',
+        question:
+          'How would you handle a large set of data and represent or display it to the user? The question then asked for a function that displays a large set of IP addresses.',
+        sources: [GOOGLE_GO3],
+      },
+      {
+        id: 'dom-manipulation-call',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'DOM manipulation',
+        question: 'A DOM manipulation question in a technical call; the commenter gives no further detail.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO8_DOM_2021],
+      },
+      {
+        id: 'combine-callback-results',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Combining callback results',
+        question:
+          'Write a function that takes a list of functions, such as a fetcher that takes user input and a callback, and consolidates all their results into one array, or returns an empty array.',
+        sources: [GOOGLE_ONSITE_2019],
+        practice: { label: 'Implement Promise.all', path: '/javascript/coding/js-promise-all' },
+      },
+      {
+        id: 'delayed-run-api',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Delayed-run API',
+        question:
+          'Design an API that takes a function and a duration and runs the function after that interval; a call made before the interval ends still waits for it.',
+        sources: [GOOGLE_ONSITE_2019],
+        practice: { label: 'Debounce function', path: '/javascript/coding/js-debounce' },
+        answerGuide: 'debounce-cancel-flush',
+      },
+      {
+        id: 'sequential-execution-queue',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Sequential execution queue',
+        question:
+          'Design an API that takes objects and runs each one only after the previous object in the queue has finished, and say how you know the previous one finished.',
+        sources: [GOOGLE_ONSITE_2019],
+      },
+      {
+        id: 'minimum-window-substring',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Minimum window substring',
+        question: 'A problem told as a story that reduced to LeetCode\'s Minimum Window Substring (76).',
+        sources: [GOOGLE_ONSITE_2019],
+      },
+      {
+        id: 'async-and-closures',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Async JavaScript and closures',
+        question: 'A front-end round on asynchronous JavaScript and closures, beside three algorithm rounds.',
+        promptNotShared: true,
+        sources: [GOOGLE_L3L4_2019],
+      },
+      {
+        id: 'promise-task-sequencing',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Task sequencing with promises',
+        question:
+          'A task-sequencing problem that began as a topological sort, then moved to promise methods for running the tasks in the order the interviewer wanted, coded in JavaScript.',
+        sources: [GOOGLE_GO7],
+      },
+      {
+        id: 'retry-and-promise-methods',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'Retry function and promise methods',
+        question: 'In the one frontend round, implement a retry function, then the promise methods then, catch and finally.',
+        sources: [GOOGLE_GO7],
+        practice: { label: 'Retry a promise-returning function with delay', path: '/javascript/coding/js-retry-with-delay' },
+      },
+      {
+        id: 'critical-rendering-path',
+        round: 'Interview loop',
+        kind: 'Web fundamentals',
+        topic: 'Critical rendering path',
+        question: 'Later in the same frontend round, talk about the critical rendering path and ways to optimise it.',
+        sources: [GOOGLE_GO7],
+        answerGuide: 'frontend-performance-network-security',
+      },
+      {
+        id: 'hash-map-and-set-problem',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Hash map and hash set problem',
+        question: 'An easy problem built on a hash map and a hash set, coded and run against test cases in about 30 minutes.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO7],
+      },
+      {
+        id: 'paths-in-2d-array',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Paths in a 2D array',
+        question: 'A second problem in that round: manipulating a 2D array to find paths.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO7],
+      },
+      {
+        id: 'string-manipulation-autocomplete',
+        round: 'Interview loop',
+        kind: 'JavaScript',
+        topic: 'String manipulation and autocomplete',
+        question: 'A string manipulation problem that led to implementing a basic autocomplete.',
+        sources: [GOOGLE_GO7],
+        practice: { label: 'React autocomplete', path: '/react/coding/react-autocomplete-search-starter' },
+        answerGuide: 'accessible-autocomplete',
+      },
+      {
+        id: 'graph-problem-bfs',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Graph problem',
+        question: 'A graph problem in a general coding round; the candidate solved about three quarters of it with breadth-first search.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO1],
+      },
+      {
+        id: 'quad-tree-problem',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Quad tree problem',
+        question:
+          'A coding problem the interviewer expected to be solved with a quad tree; the candidate took a graph approach, wrote part of it and talked through the quad tree steps afterwards.',
+        promptNotShared: true,
+        sources: [GOOGLE_GO1],
+      },
+      {
+        id: 'drone-shopping-app',
+        round: 'System design',
+        kind: 'Product design',
+        topic: 'Drone shopping app',
+        question: 'Design an app like Google Express in which drones shop for the items you order.',
+        sources: [GOOGLE_ONSITE_2019],
+      },
+      {
+        id: 'dom-number-table',
+        kind: 'UI build',
+        topic: 'Number table in the DOM',
+        question: 'Given N, print a table in the DOM filled with numbers in a set pattern.',
+        sources: [GOOGLE_FE_THREAD],
+      },
+      {
+        id: 'timeout-function-wrapper',
+        kind: 'JavaScript',
+        topic: 'Timeout function wrapper',
+        question: 'Write a function that takes f and returns a version of f that runs on a timeout.',
+        sources: [GOOGLE_FE_THREAD],
+      },
+      {
+        id: 'minesweeper-reveal',
+        kind: 'Algorithm',
+        topic: 'Minesweeper reveal',
+        question:
+          'Write Minesweeper\'s reveal(): return how many tiles a click shows, where clicking a bomb ends the game and clicking a zero reveals its neighbours.',
+        sources: [GOOGLE_FE_THREAD],
+      },
+      {
+        id: 'link-click-in-browser',
+        kind: 'Web fundamentals',
+        topic: 'What happens on a link click',
+        question: 'Describe what happens in the browser when a user clicks a link.',
+        sources: [GOOGLE_FE_THREAD],
+      },
+      {
+        id: 'google-doc-outline-view',
+        kind: 'UI build',
+        topic: 'Google Doc outline view',
+        question: 'Implement the outline view of a Google Doc page.',
+        sources: [GOOGLE_FE_THREAD],
+      },
+    ],
+    // Google's own example questions stay in the Googleyness decoder on the guide; these are the ones accounts report.
+    behaviouralQuestions: [
+      {
+        id: 'current-project-walkthrough',
+        question: 'Walk me through your current project, how it is structured and your role in it.',
+        sources: [GOOGLE_GO6],
+      },
+      {
+        id: 'unclear-requirements',
+        question: 'You have just joined a project with unclear requirements. How do you move forward?',
+        sources: [GOOGLE_GO6],
+      },
+      {
+        id: 'tight-deadline',
+        question:
+          'Tell me about a time you worked to a tight or strict deadline, and how you managed it. Follow-ups asked what you would do differently and how the team responded.',
+        sources: [GOOGLE_GO6, GOOGLE_GL_NEW_GRAD_2024],
+      },
+      {
+        id: 'teammate-takes-credit',
+        question: 'On a team project where everyone contributed, one teammate takes the credit. What do you do, and what if it keeps happening?',
+        sources: [GOOGLE_GL_ML_2025, GOOGLE_GL_NEW_GRAD_2024],
+      },
+      {
+        id: 'everything-is-p0',
+        question: 'You are overwhelmed with work and everything is marked P0. How do you tackle it?',
+        sources: [GOOGLE_GL_ML_2025],
+      },
+      {
+        id: 'too-many-tasks',
+        question: 'Tell me about a time you could not handle several tasks at once. How did you react and make amends?',
+        sources: [GOOGLE_GL_ML_2025],
+      },
+      {
+        id: 'helping-someone-fit-in',
+        question: 'Tell me about a time someone found it hard to fit into a culturally diverse team, and how you helped them.',
+        sources: [GOOGLE_GL_ML_2025],
+      },
+      {
+        id: 'overwhelmed-team-as-manager',
+        question: 'As a manager, you learn that people on your team feel overwhelmed. How do you approach it?',
+        sources: [GOOGLE_GL_ML_2025],
+      },
+      {
+        id: 'biggest-disappointment',
+        question: 'What is your biggest disappointment, and why do you think it happened?',
+        sources: [GOOGLE_GL_ML_2025],
+      },
+      {
+        id: 'most-rewarding-part',
+        question: 'What is the most rewarding part of developing something, for you?',
+        sources: [GOOGLE_GL_NEW_GRAD_2024],
+      },
+      {
+        id: 'conflicting-perspectives',
+        question: 'Tell me about a time you had conflicting perspectives with your teammates. Were your suggestions considered?',
+        sources: [GOOGLE_GL_NEW_GRAD_2024],
+      },
+      {
+        id: 'tough-decision',
+        question: 'Tell me about a tough decision you had to make, and what you weighed.',
+        sources: [GOOGLE_GL_NEW_GRAD_2024],
+      },
+      {
+        id: 'build-a-team',
+        question: 'How would you build a team?',
+        sources: [GOOGLE_GL_L4_2024],
+      },
+      {
+        id: 'underperforming-team',
+        question: 'You are appointed manager of an underperforming team. How do you handle it?',
+        sources: [GOOGLE_GL_L4_2024],
+      },
+      {
+        id: 'resolve-team-conflict',
+        question: 'How would you resolve a conflict within a team?',
+        sources: [GOOGLE_GL_L4_2024],
       },
     ],
   },
@@ -2815,64 +4313,301 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   stripe: {
     summary:
-      'Stripe\'s careers FAQ describes a recruiter screen, a technical or skills-based assessment and a series of interviews with the team. Frontend accounts from 2022 to 2025 describe a 60-minute multi-part CoderPad screen, then an onsite with a bug squash, an integration exercise, a programming exercise, frontend design and a manager conversation.',
+      'Stripe\'s careers FAQ says most processes include a recruiter screen, a technical or skills-based assessment and a series of interviews with the team you would join. Frontend accounts from 2022 to 2026 describe a recruiter call, an hour of live coding with an engineer, then an onsite of four or five interviews: a bug squash, an integration exercise, a programming exercise, frontend design and a conversation with the hiring manager.',
     caveat:
-      'The onsite rows rest on a few accounts and one recruiter\'s plan, and one candidate had a hiring manager interview instead of the bug squash. Confirm the rounds with your recruiter.',
-    checkedAt: '2026-10-20',
+      'The onsite rows rest on a handful of accounts and one recruiter\'s plan posted on Blind, and the mix changes: one candidate had a hiring manager interview in place of the bug squash, and a 2025 account lists bug fixing, deployment, testing and CI/CD among its four onsite rounds. In 2022 and 2024 accounts the recruiter described each interview in advance, so ask for that description.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers',
         stages: [
           {
             stage: 'Recruiter screen',
-            format: '30 minutes.',
+            format:
+              'About 30 minutes with a recruiter, by phone in the 2025 accounts, on your experience, your motivation and the role. One 2022 loop opened with a chat with the hiring manager about the team instead.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST1, STRIPE_ST3, STRIPE_ST5],
+            sources: [STRIPE_CAREERS, STRIPE_ST1, STRIPE_ST3, STRIPE_ST5, STRIPE_ST15_FE_TORONTO_2025, STRIPE_ST10_FE_US_2022],
           },
           {
             stage: 'Technical screen',
-            format: '60 minutes of live, multi-part coding in CoderPad, sometimes building a UI component; one screen was a three-part exercise.',
+            format:
+              'About 60 minutes of live coding with an engineer, in CoderPad or in your own editor. Accounts from 2022 to 2025 describe one exercise built in parts or two to four short ones, a small UI component in some screens and work on data in others; several let you choose the language, and one 2025 screen ran 40 to 45 minutes on Zoom. A 2026 account lists a separate coding exercise between this screen and the onsite.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_CAREERS, STRIPE_ST3, STRIPE_ST5, STRIPE_ST7, STRIPE_ST8, STRIPE_ST9],
+            sources: [
+              STRIPE_CAREERS,
+              STRIPE_ST3,
+              STRIPE_ST5,
+              STRIPE_ST7,
+              STRIPE_ST8,
+              STRIPE_ST9,
+              STRIPE_ST10_FE_US_2022,
+              STRIPE_ST13_FE_TORONTO_2024,
+              STRIPE_ST14_FE_SWEDEN_2025,
+              STRIPE_ST15_FE_TORONTO_2025,
+              STRIPE_ST16_FE_VANCOUVER_2025,
+              STRIPE_ST18_FE_2026,
+              STRIPE_ST25_SENIOR_2022,
+            ],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
             stage: 'Onsite: bug squash',
-            format: 'Find and fix bugs in an unfamiliar codebase.',
+            format:
+              'Fix a bug in a codebase you have not seen: reproduce it, find the cause and get the existing tests passing. Two 2022 accounts name a fork of an open-source project, and in 2024 the code was cloned from GitHub and run in the candidate\'s own environment. A commenter on a 2024 Blind thread had a hiring manager interview in place of this round.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST5, STRIPE_ST6_PLAN],
+            sources: [
+              STRIPE_ST1,
+              STRIPE_ST4,
+              STRIPE_ST5,
+              STRIPE_ST6_PLAN,
+              STRIPE_ST10_FE_US_2022,
+              STRIPE_ST11_FE_SEATTLE_2022,
+              STRIPE_ST12_FE_CANADA_2024,
+            ],
             practice: { label: 'Bug squash an unfamiliar invoicing repo', path: '/javascript/debug/js-debug-bug-squash-invoices' },
           },
           {
             stage: 'Onsite: integration',
-            format: 'Combine provided tools or APIs into a working feature.',
+            format:
+              'Build a working piece of a feature with tools or an API you are given, reading their documentation as you go. A 2023 account describes integrating two provided tools, and a 2025 intern loop gave a private repository, the API documentation and open internet access. A 2022 account from India rated this round and the bug squash the hardest.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST6_PLAN],
+            sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST6_PLAN, STRIPE_ST10_FE_US_2022, STRIPE_ST22_INTERN_2025],
             // Each onsite row gets its own practice, so the plan can fill all three rounds instead of one.
             practice: { label: 'Fetch JSON with a timeout and abort', path: '/javascript/coding/js-fetch-json-timeout' },
           },
           {
             stage: 'Onsite: programming exercise',
-            format: 'A coding exercise.',
+            format:
+              'A coding exercise with an engineer. A 2022 account from India says its questions were real-life scenarios rather than LeetCode-style problems, and a 2024 virtual onsite held three programming exercises, most cloned into the candidate\'s own environment.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_ST1, STRIPE_ST6_PLAN],
+            sources: [STRIPE_ST1, STRIPE_ST4, STRIPE_ST6_PLAN, STRIPE_ST10_FE_US_2022, STRIPE_ST12_FE_CANADA_2024],
             practice: { label: 'Parse a query string', path: '/javascript/coding/js-querystring-parse-1' },
           },
           {
             stage: 'Onsite: frontend design',
-            format: 'Design a frontend system or component.',
+            format:
+              'A design discussion, talked through rather than coded, about how you would structure a piece of frontend. Accounts from 2022 to 2024 call it frontend system design, an architecture design discussion or a deep dive into design.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_ST1, STRIPE_ST6_PLAN],
+            sources: [STRIPE_ST1, STRIPE_ST6_PLAN, STRIPE_ST10_FE_US_2022, STRIPE_ST12_FE_CANADA_2024, STRIPE_ST21_FE_CANADA_2023],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Onsite: manager conversation',
-            format: 'A conversation about goals and past work.',
+            format:
+              'A conversation with the hiring manager about your past work, how you work and your goals. A 2022 account describes behavioural and past-experience questions to judge culture fit, and a 2022 Seattle loop counted two behavioural interviews among its five.',
             appliesTo: STRIPE_ROLE,
-            sources: [STRIPE_ST1, STRIPE_ST6_PLAN],
+            sources: [
+              STRIPE_ST1,
+              STRIPE_ST6_PLAN,
+              STRIPE_ST10_FE_US_2022,
+              STRIPE_ST11_FE_SEATTLE_2022,
+              STRIPE_ST12_FE_CANADA_2024,
+              STRIPE_ST20_SENIOR_CANADA_2025,
+              STRIPE_ST22_INTERN_2025,
+            ],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: "build a component" (2024 Blind), a small UI component to match a working example
+    // (2022), a small self-contained JavaScript component (2022 senior), a React component on a shared editor (2017), a
+    // three-part coding task (2025), "everything you expect from a front-end tech interview" (2020), and the intern's
+    // HackerRank test, screen and data-handling exercise. They stay in the table. Behavioural questions are open, below.
+    questions: [
+      {
+        id: 'bug-in-unfamiliar-repository',
+        round: 'Onsite: bug squash',
+        kind: 'Practical coding',
+        topic: 'Bug in an unfamiliar repository',
+        question:
+          'Fix a bug in a codebase you have not seen: in 2024 a failing unit test in an existing codebase; in a 2022 United States account, a fork of a real open-source project with an issue and failing tests, where the candidate reproduced the failure, traced the root cause, explained the cleanest fix, implemented it and ran the whole suite.',
+        sources: [STRIPE_ST10_FE_US_2022, STRIPE_ST11_FE_SEATTLE_2022, STRIPE_ST12_FE_CANADA_2024, STRIPE_ST4],
+        practice: { label: 'Bug squash an unfamiliar invoicing repo', path: '/javascript/debug/js-debug-bug-squash-invoices' },
+      },
+      {
+        id: 'four-digit-code-entry',
+        round: 'Technical screen',
+        kind: 'UI build',
+        topic: 'Four-digit code entry form',
+        question: 'Build a form for entering a four-digit code, in the programming language of your choice.',
+        sources: [STRIPE_ST3],
+      },
+      {
+        id: 'passport-validation-form',
+        round: 'Technical screen',
+        kind: 'UI build',
+        topic: 'Passport validation form',
+        question:
+          'Build a form that validates passport details, set as three steps; the interviewer also looked for thorough test cases and the right accessibility attributes.',
+        sources: [STRIPE_ST14_FE_SWEDEN_2025],
+        practice: { label: 'Form validation with required fields', path: '/html/coding/html-forms-validation-required' },
+      },
+      {
+        id: 'nested-string-parsing',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Nested string parsing',
+        question:
+          'A three-part CoderPad exercise, framed as a real-life frontend scenario, on parsing a nested string; solving it called for a two-pointer approach.',
+        sources: [STRIPE_ST8],
+      },
+      {
+        id: 'employee-records-top-salaries',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Sorting and filtering employee records',
+        question:
+          'Given employees with a name, department, salary and years at the company: sort them by different fields, keep one department, take its three highest salaries, average them and return only the names, with filter, sort, slice, map and reduce.',
+        sources: [STRIPE_ST5],
+      },
+      {
+        id: 'transaction-data-problems',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Transaction data in a JavaScript object',
+        question:
+          'A series of problems in 40 to 45 minutes on a JavaScript object holding transaction data, like the data behind Stripe\'s client dashboard.',
+        sources: [STRIPE_ST15_FE_TORONTO_2025],
+        practice: { label: 'Group by', path: '/javascript/coding/js-group-by' },
+      },
+      {
+        id: 'ordered-list-conditional-styles',
+        round: 'Technical screen',
+        kind: 'UI build',
+        topic: 'Ordered list with conditional styles',
+        question:
+          'Given a list of items with properties, display them in a set order and style particular items when given conditions hold, in the language of your choice.',
+        sources: [STRIPE_ST13_FE_TORONTO_2024],
+      },
+      {
+        id: 'json-traversal',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'JSON traversal and manipulation',
+        question:
+          'Traverse and manipulate JSON objects in a timed screen; the author found it much easier for frontend engineers and JavaScript users and does not give the questions.',
+        promptNotShared: true,
+        sources: [STRIPE_ST9],
+        practice: { label: 'Implement lodash get', path: '/javascript/coding/js-lodash-get' },
+      },
+      {
+        id: 'finance-themed-algorithm',
+        round: 'Onsite: programming exercise',
+        kind: 'Algorithm',
+        topic: 'Finance-themed algorithm problem',
+        question: 'An algorithmic problem with a finance theme.',
+        promptNotShared: true,
+        sources: [STRIPE_ST10_FE_US_2022],
+      },
+      {
+        id: 'string-shortening',
+        kind: 'Algorithm',
+        topic: 'String shortening',
+        question:
+          'A multi-part exercise that opens with shortening a string to its first letter, the number of letters in between and its last letter, so the ten letters a to j become a8j.',
+        sources: [STRIPE_ST12_FE_CANADA_2024],
+      },
+      {
+        id: 'encode-decode-forms',
+        kind: 'React build',
+        topic: 'String encoding and decoding forms',
+        question:
+          'Build React forms that encode and decode strings with an algorithm you are given, the point being to use React state properly; pasting the provided snippets into the editor was disabled.',
+        sources: [STRIPE_ST17_FE_2026],
+      },
+      {
+        id: 'async-and-loops',
+        kind: 'JavaScript',
+        topic: 'Async code and loops',
+        question: 'JavaScript technical questions about asynchronous code and loops.',
+        promptNotShared: true,
+        sources: [STRIPE_ST20_SENIOR_CANADA_2025],
+        practice: { label: 'Promise chains and async/await', path: '/javascript/trivia/js-promises-async-await' },
+      },
+      {
+        id: 'live-api-calls',
+        round: 'Onsite: integration',
+        kind: 'Practical coding',
+        topic: 'Calls to Stripe production servers',
+        question: 'Program API calls against Stripe\'s real production servers, with error handling and some data manipulation.',
+        sources: [STRIPE_ST10_FE_US_2022],
+        practice: { label: 'Retry a promise-returning function with delay', path: '/javascript/coding/js-retry-with-delay' },
+      },
+      {
+        id: 'files-and-external-api',
+        round: 'Onsite: integration',
+        kind: 'Practical coding',
+        topic: 'Files and an external API',
+        question:
+          'Extract data from files with a library you learn from its docs, then call an external API, process its responses and keep the output updated, debugging as you go.',
+        sources: [STRIPE_ST22_INTERN_2025],
+      },
+      {
+        id: 'react-tooltip-architecture',
+        round: 'Onsite: frontend design',
+        kind: 'Frontend system design',
+        topic: 'Reusable React tooltip component',
+        question: 'Talk through how you would architect a reusable React component for tooltips.',
+        sources: [STRIPE_ST12_FE_CANADA_2024],
+        practice: { label: 'Component-driven design system architecture', path: '/system-design/component-design-system-architecture' },
+      },
+      {
+        id: 'stripe-page-design',
+        round: 'Onsite: frontend design',
+        kind: 'Frontend system design',
+        topic: 'Frontend design of a Stripe page',
+        question:
+          'Design the frontend of a real Stripe page: break it into components with their APIs and state, make it accessible and leave room for later changes.',
+        promptNotShared: true,
+        sources: [STRIPE_ST10_FE_US_2022],
+        practice: { label: 'UI component and state design from a mock', path: '/system-design/ui-component-state-from-mock' },
+      },
+      {
+        id: 'app-design-breakdown',
+        round: 'Onsite: frontend design',
+        kind: 'Frontend system design',
+        topic: 'Design breakdown of a given app',
+        question: 'Shown an app, say how you would design it, breaking it down and going deeper on the areas you prefer.',
+        promptNotShared: true,
+        sources: [STRIPE_ST21_FE_CANADA_2023],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'project-proud-or-impact',
+        question: 'Talk about a project you are proud of, or projects where you made an impact.',
+        sources: [STRIPE_ST19_FE_DUBLIN_2025, STRIPE_ST1],
+      },
+      {
+        id: 'difficult-recent-project',
+        question: 'Explain a project you worked on recently that was difficult.',
+        sources: [STRIPE_ST23_WEBDEV_2017],
+      },
+      {
+        id: 'staying-up-to-date',
+        question: 'How do you stay up to date with the latest technologies?',
+        sources: [STRIPE_ST23_WEBDEV_2017],
+      },
+      {
+        id: 'ideal-team',
+        question: 'What does an ideal team look like when working on a project?',
+        sources: [STRIPE_ST24_WEB_2018],
+      },
+      {
+        id: 'deadlines-and-task-breakdown',
+        question: 'How do you handle deadlines, and how do you break a task down?',
+        sources: [STRIPE_ST22_INTERN_2025],
+      },
+      {
+        id: 'unclear-requirements',
+        question: 'How do you work with teammates when the requirements are unclear or keep changing?',
+        sources: [STRIPE_ST22_INTERN_2025],
+      },
+      {
+        id: 'when-something-goes-wrong',
+        question: 'How do you react when something goes wrong?',
+        sources: [STRIPE_ST22_INTERN_2025],
       },
     ],
   },
@@ -3047,6 +4782,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'autocomplete-search-box',
         round: 'Frontend coding',
         kind: 'UI build',
+        topic: 'Autocomplete search box',
         question:
           'Build an autocomplete search box that suggests matches in a dropdown as the user types, and say which features are must-haves and which can wait; one 2023 account required plain JavaScript, HTML and CSS. Another lists API calls, highlighting the matched text, debounce or throttle, caching, keyboard navigation and error states.',
         sources: [BOOKINGCOM_BK2, BOOKINGCOM_BK1, BOOKINGCOM_BK11],
@@ -3056,6 +4792,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'tooltip',
         round: 'Frontend coding',
         kind: 'UI build',
+        topic: 'Tooltip component',
         question: 'Implement a tooltip, in the first of two live coding rounds.',
         sources: [BOOKINGCOM_BK11],
       },
@@ -3063,6 +4800,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-component-api-design-spec',
         round: 'Frontend coding',
         kind: 'React build',
+        topic: 'API-backed component to a design spec',
         question: 'With two senior frontend engineers, build a React component that renders data from an API endpoint and matches a given design spec.',
         sources: [BOOKINGCOM_BK5],
         practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
@@ -3071,6 +4809,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'prepared-app-new-feature',
         round: 'Frontend coding',
         kind: 'Practical coding',
+        topic: 'New feature in a prepared app',
         question: 'Add a new feature to an application prepared in advance, in the framework of your choice.',
         promptNotShared: true,
         sources: [BOOKINGCOM_BK6],
@@ -3079,6 +4818,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'get-api-display-components',
         round: 'Frontend coding',
         kind: 'UI build',
+        topic: 'Displaying GET request results',
         question: 'Make a GET request to an API and build the components that display what it returns, in the frontend round of a senior full-stack loop.',
         sources: [BOOKINGCOM_BK13_SENIOR_FULLSTACK],
         practice: { label: 'React debounced search with a fake API', path: '/react/coding/react-debounced-search' },
@@ -3087,6 +4827,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'attractions-by-review-score',
         round: 'HackerRank assessment',
         kind: 'React build',
+        topic: 'Attractions filtered by review score',
         question: 'Build the React side of a small app that lists the attractions whose average review score is at or above a score the user enters.',
         sources: [BOOKINGCOM_BK17_DEVTO],
         practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
@@ -3094,6 +4835,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'rxjs-angular-questions',
         kind: 'Angular concepts',
+        topic: 'RxJS, component structure and lifecycle',
         question: 'Questions on RxJS, on how Angular components are structured and on the Angular component lifecycle, in an interview without coding.',
         sources: [BOOKINGCOM_BK16_ANGULAR],
         practice: { label: 'Angular lifecycle hooks', path: '/angular/trivia/angular-lifecycle-hooks' },
@@ -3102,61 +4844,300 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   datadog: {
     summary:
-      'Datadog\'s candidate experience page describes an initial screen, interviews in rounds or panels with one step expected in person, and a take-home project for some roles. Frontend accounts from 2023 to 2025, mostly from Europe, describe a recruiter screen, an algorithm screen, React live coding, a second coding round, frontend system design, experience and values, then team matching.',
+      'Datadog\'s candidate experience page describes an initial screen, face-to-face interviews in rounds or panels with one step expected in person, and a take-home project and an executive interview for some roles. Frontend accounts from 2021 to 2025, most of them senior loops in France, Spain and Portugal, describe a recruiter screen, an algorithm screen on CoderPad, an hour of React live coding or a take-home, a harder coding round, frontend system design on Excalidraw, experience and values, then team matching.',
     caveat:
-      'One 2024 candidate could choose a take-home project instead of React live coding, and some loops had an interview in person at an office while others were fully virtual. Evidence from the US is thin.',
-    checkedAt: '2026-10-20',
+      'Round order and count vary between loops, and one 2024 candidate could choose the take-home instead of React live coding. Some loops held a round in person at an office while others stayed fully virtual, no frontend account reports the executive interview, and the only US account is a 2021 New York loop.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers, mostly in Europe',
         stages: [
           {
             stage: 'Recruiter screen',
-            format: 'About 30 minutes on background and a past project.',
+            format: 'About 30 minutes with a recruiter on your background and a past project, on Zoom in one account.',
             appliesTo: DATADOG_ROLE,
-            sources: [DATADOG_CANDIDATE_EXPERIENCE, DATADOG_DD1, DATADOG_DD3, DATADOG_DD5, DATADOG_DD6, DATADOG_DD9, DATADOG_DD10],
+            sources: [DATADOG_CANDIDATE_EXPERIENCE, DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD6, DATADOG_DD9, DATADOG_DD10, DATADOG_DD11],
           },
           {
             stage: 'Technical screen',
-            format: '40–60 minutes in CoderPad: two easy or medium algorithm problems in JavaScript or TypeScript.',
+            format: '40–60 minutes on CoderPad: two easy or medium algorithm problems in JavaScript or TypeScript.',
             appliesTo: DATADOG_ROLE,
-            sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD6, DATADOG_DD10],
+            sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD6, DATADOG_DD9, DATADOG_DD10, DATADOG_DD12],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'React live coding',
-            format: 'One hour: render a table or JSON data, then add search, sorting or filtering step by step.',
+            format: 'One hour of React on CoderPad with an engineer; in some loops the task grows one requirement at a time.',
             appliesTo: DATADOG_ROLE,
             sources: [DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD5, DATADOG_DD6, DATADOG_DD7, DATADOG_DD8, DATADOG_DD10],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
+            stage: 'Take-home project',
+            format: 'A small frontend app built at home, with 4–6 suggested hours (one 2021 account also gives 6–8); one 2024 candidate chose it over React live coding.',
+            appliesTo: 'Some roles',
+            sources: [DATADOG_CANDIDATE_EXPERIENCE, DATADOG_DD4, DATADOG_DD11, DATADOG_DD12],
+          },
+          {
             stage: 'Second coding round',
-            format: 'A harder or product-focused coding round with follow-up changes.',
+            format: 'One hour on CoderPad: a harder algorithm problem or a product-focused task, with follow-up changes.',
             appliesTo: DATADOG_ROLE,
-            sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD8, DATADOG_DD10],
+            sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD8, DATADOG_DD10, DATADOG_DD12],
           },
           {
             stage: 'Frontend system design',
-            format: 'One hour on a whiteboard tool: the UI, API endpoints and performance; held in person at an office in some loops.',
+            format: 'One hour on Excalidraw with an engineer: the UI, API endpoints and performance; at an office in some loops.',
             appliesTo: DATADOG_ROLE,
-            sources: [DATADOG_CANDIDATE_EXPERIENCE, DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD5, DATADOG_DD6, DATADOG_DD8, DATADOG_DD10],
-            practice: { label: 'Dashboard widgets design', path: '/system-design/dashboard-widgets-draggable-resizable' },
+            sources: [
+              DATADOG_DD1,
+              DATADOG_DD2,
+              DATADOG_DD3,
+              DATADOG_DD4,
+              DATADOG_DD5,
+              DATADOG_DD6,
+              DATADOG_DD8,
+              DATADOG_DD10,
+              DATADOG_DD12,
+              DATADOG_LISBON_2024,
+            ],
+            practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Experience and values',
             format: 'A project deep dive and behavioural questions, sometimes split into two rounds.',
             appliesTo: DATADOG_ROLE,
-            sources: [DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD6, DATADOG_DD7, DATADOG_DD8],
+            sources: [DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD6, DATADOG_DD7, DATADOG_DD8, DATADOG_DD12],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
           {
             stage: 'Team match',
             format: 'Short calls with prospective teams after the interviews.',
             appliesTo: 'Candidates who pass',
-            sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD7],
+            sources: [DATADOG_DD1, DATADOG_DD2, DATADOG_DD3, DATADOG_DD4, DATADOG_DD5, DATADOG_DD7],
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: screens given only by count and difficulty (DD5, DD7, DD10), "LeetCode easy:
+    // arrays, double pointers, strings, node trees" (DD6), a 2023 screen of "string manipulation" and "a graph problem"
+    // (DD3; possibly the pair DD4 names, which the account does not confirm), design rounds named only by what they
+    // covered (DD3, DD6), a "simple coding test" (DD5) and a medium/hard problem with system design (DD10). Taro's
+    // site-wide "Datadog Interview Questions" panel is tied to no account. Behavioural questions are in
+    // behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'real-time-sortable-table',
+        round: 'React live coding',
+        kind: 'React build',
+        topic: 'Sortable table of real-time data',
+        question: 'Create a React page that shows a table of real-time data, which the user can sort by any column.',
+        sources: [DATADOG_DD1],
+        practice: { label: 'React dynamic table', path: '/react/coding/react-dynamic-table' },
+        answerGuide: 'sortable-real-time-table',
+      },
+      {
+        id: 'incremental-table-filters-sorting',
+        round: 'React live coding',
+        kind: 'React build',
+        topic: 'Incremental table with filters and sorting',
+        question:
+          'Build a simple table in React, then add features such as filters and sorting one step at a time, without the full picture up front.',
+        sources: [DATADOG_DD8, DATADOG_DD2],
+        practice: { label: 'React filterable and searchable list', path: '/react/coding/react-filterable-user-list' },
+        answerGuide: 'incremental-live-coding-on-tables',
+      },
+      {
+        id: 'parse-data-into-existing-app',
+        round: 'React live coding',
+        kind: 'React build',
+        topic: 'Parsing and displaying data in React',
+        question:
+          'Parse some data and display it in an existing React app, with the interviewer watching hooks, efficiency and readability.',
+        sources: [DATADOG_DD3],
+      },
+      {
+        id: 'html-css-react-project',
+        round: 'React live coding',
+        kind: 'UI build',
+        topic: 'Accessible HTML and CSS in React',
+        question:
+          'A small project on pre-made formatting utilities, done with the interviewer\'s help: HTML and CSS basics with attention to accessibility and semantics, and React knowledge such as hooks.',
+        promptNotShared: true,
+        sources: [DATADOG_DD6],
+      },
+      {
+        id: 'load-monitoring-web-app',
+        round: 'Take-home project',
+        kind: 'UI build',
+        topic: 'Load monitoring web app',
+        question:
+          'A take-home: a small web app that monitors load, with time-series data in a chart and alerts. Suggested times were 4 to 6 hours, and one account also gives 6 to 8.',
+        promptNotShared: true,
+        sources: [DATADOG_DD4, DATADOG_DD11, DATADOG_DD12],
+      },
+      {
+        id: 'word-repetitions-in-paragraph',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Word repetitions in a paragraph',
+        question: 'Count how many times the words in a paragraph are repeated.',
+        sources: [DATADOG_DD4, DATADOG_DD1],
+        practice: { label: 'Find the maximum occurring character', path: '/javascript/coding/js-max-char' },
+        answerGuide: 'ordering-and-filtering-under-time',
+      },
+      {
+        id: 'sum-of-leaf-nodes',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Sum of binary tree leaf nodes',
+        question: 'A depth-first search problem: sum the leaf nodes of a binary tree.',
+        sources: [DATADOG_DD4],
+      },
+      {
+        id: 'ordering-and-filtering',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Ordering and filtering data',
+        question: 'A standard LeetCode-style exercise on ordering and filtering, solved on a call.',
+        promptNotShared: true,
+        sources: [DATADOG_DD9],
+        practice: { label: 'Implement Array.prototype.filter', path: '/javascript/coding/js-array-prototype-filter' },
+        answerGuide: 'ordering-and-filtering-under-time',
+      },
+      {
+        id: 'reshape-api-json',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Reshaping a JSON API response',
+        question: 'Parse a JSON object from an API into a specific format. The same account\'s on-site coding round was another JSON parsing exercise.',
+        sources: [DATADOG_DD11],
+      },
+      {
+        id: 'string-pattern-matching',
+        round: 'Second coding round',
+        kind: 'Algorithm',
+        topic: 'String pattern matching',
+        question:
+          'Write a function that checks whether a string matches a pattern, without regular expressions. In the 2023 loop the interviewer brought new criteria mid-session, and approaches included two pointers, dynamic programming, depth-first search and recursion.',
+        sources: [DATADOG_DD4, DATADOG_DD1, DATADOG_DD12, DATADOG_DD3],
+      },
+      {
+        id: 'multi-select-tag-matching',
+        round: 'Second coding round',
+        kind: 'Algorithm',
+        topic: 'Matching tags in a multi-select list',
+        question:
+          'Match the tags a user can add in a multi-select list, unifying tags from the same group. The candidate thought an inverted index was needed and over-complicated it; plain loops would have been simpler.',
+        sources: [DATADOG_DD8],
+      },
+      {
+        id: 'live-tail-log-view',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Live Tail view of real-time logs',
+        question: 'Design the frontend architecture to filter and display real-time logs, a Live Tail view.',
+        sources: [DATADOG_DD1],
+        practice: { label: 'Infinite scroll list design', path: '/system-design/infinite-scroll-list' },
+        answerGuide: 'live-tail-logs-architecture',
+      },
+      {
+        id: 'real-time-event-viewer',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Real-time event viewer architecture',
+        question: 'Sketch a possible architecture for a real-time event viewer.',
+        sources: [DATADOG_LISBON_2024],
+        practice: { label: 'Live comments for global streams', path: '/system-design/live-comments-global-stream' },
+        answerGuide: 'live-tail-logs-architecture',
+      },
+      {
+        id: 'log-data-visualisation',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Component for visualising log data',
+        question: 'Design a UI component that visualises arbitrary log data of arbitrary size, and discuss its performance trade-offs.',
+        sources: [DATADOG_DD12],
+        practice: { label: 'Infinite scroll list design', path: '/system-design/infinite-scroll-list' },
+      },
+      {
+        id: 'dashboard-multiple-widgets',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Dashboard with multiple widgets',
+        question: 'Design a dashboard that supports multiple widgets.',
+        sources: [DATADOG_DD8],
+        practice: { label: 'Drag-and-drop dashboard design', path: '/system-design/dashboard-widgets-draggable-resizable' },
+      },
+      {
+        id: 'monitors-app-design',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'App for handling monitors',
+        question:
+          'Design an app that handles monitors. The candidate kept to the frontend design and its key endpoints and treated the backend as a black box.',
+        sources: [DATADOG_DD4],
+      },
+      {
+        id: 'data-and-tables-design',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Data table frontend and API design',
+        question: 'A design round on frontend and API design, centred on data and tables.',
+        promptNotShared: true,
+        sources: [DATADOG_DD2],
+      },
+      {
+        id: 'tree-search-dfs',
+        kind: 'Algorithm',
+        topic: 'Finding information in a tree',
+        question: 'Find information in a tree with depth-first search, in one of the account\'s two live-coding rounds.',
+        promptNotShared: true,
+        sources: [DATADOG_DD12],
+      },
+      {
+        id: 'feature-or-major-bug-approach',
+        kind: 'Product design',
+        topic: 'Approaching a feature or major bug',
+        question: 'In an on-site interview, explain how you would approach developing a feature or fixing a major bug.',
+        sources: [DATADOG_DD9],
+        answerGuide: 'feature-or-major-bug-walkthrough',
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'why-datadog',
+        question: 'Why do you want to work at Datadog, and what would you want to do there?',
+        sources: [DATADOG_DD1, DATADOG_DD3, DATADOG_DD12],
+      },
+      {
+        id: 'conflict-at-work',
+        question: 'Tell me about a time you had a conflict at work.',
+        sources: [DATADOG_DD1],
+      },
+      {
+        id: 'many-production-bugs',
+        question: 'A project has many bugs in production: how would you approach the situation?',
+        sources: [DATADOG_DD1],
+      },
+      {
+        id: 'disagreeing-with-manager',
+        question: 'How do you handle disagreeing with your manager?',
+        sources: [DATADOG_DD8],
+      },
+      {
+        id: 'tough-feedback',
+        question: 'Tell me about a time you received tough feedback.',
+        sources: [DATADOG_DD6],
+      },
+      {
+        id: 'helped-your-team',
+        question: 'What did you do that helped your team?',
+        sources: [DATADOG_DD5],
+      },
+      {
+        id: 'long-difficult-project',
+        question: 'What was the most interesting or difficult project you worked on that took a long time to complete?',
+        sources: [DATADOG_DD12],
       },
     ],
   },
@@ -3256,6 +5237,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'countries-api-app',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'REST Countries API app',
         question:
           'Build an app that calls the REST Countries API and lists each country with its population, flag and languages, then add the features the interviewers ask for.',
         sources: [INTUIT_TARO_SWE_2022],
@@ -3266,6 +5248,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'typeahead-with-tests',
         round: 'Craft demonstration',
         kind: 'React build',
+        topic: 'Typeahead component with tests',
         question:
           'Implement a typeahead component as one of the stories you pick in the prepared repository, and test it with Jest and React Testing Library.',
         sources: [INTUIT_IN1],
@@ -3276,6 +5259,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'retry-with-delay',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Promise retry with delay',
         question: 'Write a function that retries a promise-returning function a given number of times, waiting a set delay between attempts.',
         sources: [INTUIT_IN1],
         practice: { label: 'Retry a promise-returning function with delay', path: '/javascript/coding/js-retry-with-delay' },
@@ -3285,6 +5269,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'promise-race-polyfill',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Promise.race polyfill',
         question: 'Explain how Promise.race differs from Promise.any, then implement Promise.race without the built-in.',
         sources: [INTUIT_IN1],
         practice: { label: 'Promise.any, the sibling combinator', path: '/javascript/coding/js-promise-any' },
@@ -3294,6 +5279,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'llm-story-streaming',
         round: 'Assessor or technical rounds',
         kind: 'Practical coding',
+        topic: 'Streaming LLM output',
         question:
           'Deliver a story that calls a provided LLM endpoint and streams the generated text onto the page, handling errors and testing the different outputs; the interviewer expected Server-Sent Events.',
         sources: [INTUIT_IN1],
@@ -3304,6 +5290,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'output-closures-and-concepts',
         round: 'Technical phone interview',
         kind: 'JavaScript',
+        topic: 'Hoisting, promise output and closures',
         question:
           'Predict the output of hoisting and promise snippets and explain closures and their uses. The same call asked about web security, React\'s memoisation hooks, Context versus Redux and accessibility.',
         sources: [INTUIT_IN1],
@@ -3314,6 +5301,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'currying-function',
         round: 'Technical phone interview',
         kind: 'JavaScript',
+        topic: 'Curry function',
         question: 'Write a function that curries another function, so its arguments can be passed one call at a time.',
         sources: [INTUIT_IN3],
         practice: { label: 'Curry function', path: '/javascript/coding/js-curry-function' },
@@ -3323,6 +5311,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'memoize-function',
         round: 'Technical phone interview',
         kind: 'JavaScript',
+        topic: 'Memoize function',
         question: 'Write a function that memoizes another function, returning cached results for arguments it has seen.',
         sources: [INTUIT_IN3],
         practice: { label: 'Memoization', path: '/javascript/coding/js-memoize-function' },
@@ -3332,6 +5321,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'identical-dom-trees',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Identical DOM trees',
         question: 'Write a function that checks whether two DOM trees are identical, comparing them node by node.',
         sources: [INTUIT_IN1],
         practice: { label: 'Walk twin DOM trees in step', path: '/javascript/coding/js-dom-twin-node' },
@@ -3341,6 +5331,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'nested-comments-indexeddb',
         round: 'Craft demonstration',
         kind: 'React build',
+        topic: 'Nested comments with IndexedDB',
         question:
           'Build a nested comment component that keeps its state in IndexedDB, with a test for adding a comment, as one of the stories you pick.',
         sources: [INTUIT_IN1],
@@ -3350,6 +5341,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'meeting-rooms-app',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Meeting rooms app',
         question: 'Build a Meeting Rooms app from the rough design the recruiter sent a day earlier, then extend it live with new features.',
         promptNotShared: true,
         sources: [INTUIT_IN6_SDE2_2021],
@@ -3360,6 +5352,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'event-management-system',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Event management system',
         question: 'Build an event management system over more than a week, then take the panel through slides, the code and its tests.',
         promptNotShared: true,
         sources: [INTUIT_IN3],
@@ -3370,6 +5363,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'crud-form-and-list',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'CRUD form and list',
         question:
           'Build a web app whose form adds an entry through a CRUD API and whose page shows the updated data, choosing what to build fully and what to stub within the hour.',
         sources: [INTUIT_IN15],
@@ -3379,6 +5373,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'api-data-on-the-spot',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Fetch and display API data',
         question: 'Get data from an API and display it in a front-end-only app, from a prompt given at the start of the round.',
         promptNotShared: true,
         sources: [INTUIT_BLIND_CRAFT_2022],
@@ -3389,6 +5384,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'sort-search-filter-app',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Sort, search and filter app',
         question: 'Build a frontend application with basic sorting, search and filtering, as a take-home you finish when it suits you.',
         promptNotShared: true,
         sources: [INTUIT_IN13],
@@ -3399,6 +5395,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'transactions-app',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Transactions app',
         question: 'Build a small transactions application as the craft task.',
         promptNotShared: true,
         sources: [INTUIT_HR_2022],
@@ -3407,6 +5404,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'chessboard-layout',
         round: 'Craft demonstration',
         kind: 'UI build',
+        topic: 'Chessboard layout',
         question: 'Lay out a chessboard with HTML, CSS and JavaScript, as the small project to finish before the interview.',
         sources: [INTUIT_IN5],
         practice: { label: 'React chessboard', path: '/react/coding/react-chessboard-click-highlight' },
@@ -3415,6 +5413,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'rendering-path-and-performance',
         round: 'Craft demonstration',
         kind: 'Web fundamentals',
+        topic: 'Critical rendering path and performance',
         question: 'Explain the critical rendering path, the DOM and the CSSOM, and how you would optimise a page\'s performance.',
         sources: [INTUIT_IN13],
         practice: { label: 'How the browser parses and renders HTML', path: '/html/trivia/html-parsing-rendering' },
@@ -3423,6 +5422,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'todo-machine-coding',
         round: 'Technical phone interview',
         kind: 'UI build',
+        topic: 'To-do app',
         question: 'Build a to-do app as a machine-coding task inside the phone interview.',
         promptNotShared: true,
         sources: [INTUIT_IN2],
@@ -3432,6 +5432,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'balanced-brackets',
         round: 'Technical phone interview',
         kind: 'Algorithm',
+        topic: 'Balanced brackets',
         question: 'Check whether the brackets in a string are balanced when the string also holds other characters.',
         sources: [INTUIT_IN1],
         practice: { label: 'Valid parentheses', path: '/javascript/coding/js-valid-parentheses' },
@@ -3440,6 +5441,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'connected-components',
         round: 'Technical phone interview',
         kind: 'Algorithm',
+        topic: 'Connected components',
         question: 'Solve a graph problem about connected components.',
         promptNotShared: true,
         sources: [INTUIT_IN1],
@@ -3448,6 +5450,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'coin-change',
         round: 'Technical phone interview',
         kind: 'Algorithm',
+        topic: 'Coin Change',
         question: 'Solve the coin change problem in the shortlisting round.',
         sources: [INTUIT_IN11],
       },
@@ -3455,6 +5458,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'performance-security-output',
         round: 'Technical phone interview',
         kind: 'Web fundamentals',
+        topic: 'Web performance, security and output snippets',
         question: 'Questions on web performance and security, and snippets whose output you predict.',
         promptNotShared: true,
         sources: [INTUIT_IN3],
@@ -3464,6 +5468,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'promises-and-classes',
         round: 'Technical phone interview',
         kind: 'JavaScript',
+        topic: 'Promises and classes',
         question: 'Questions on JavaScript promises and classes.',
         promptNotShared: true,
         sources: [INTUIT_IN2],
@@ -3472,6 +5477,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'debounce-like-api-calls',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Debouncing API calls',
         question: 'In a scenario-based round with an architect, write a function that controls repeated API calls the way debounce does.',
         sources: [INTUIT_IN13],
         practice: { label: 'Debounce function', path: '/javascript/coding/js-debounce' },
@@ -3480,6 +5486,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'currency-string-helper',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Currency string to integer',
         question:
           'Rewrite a helper from your craft project that converts a currency string to an integer, this time without String prototype methods or other built-ins.',
         sources: [INTUIT_IN12],
@@ -3488,6 +5495,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'performance-and-react-internals',
         round: 'Assessor or technical rounds',
         kind: 'React concepts',
+        topic: 'Front-end performance and React internals',
         question: 'Questions on front-end performance and React internals.',
         promptNotShared: true,
         sources: [INTUIT_IN12],
@@ -3496,6 +5504,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'three-sum-then-k-sum',
         round: 'Assessor or technical rounds',
         kind: 'Algorithm',
+        topic: '3Sum and kSum',
         question: 'Solve 3Sum, then generalise the solution to kSum.',
         sources: [INTUIT_IN6_SDE2_2021],
         practice: { label: '3Sum', path: '/javascript/coding/js-three-sum' },
@@ -3504,6 +5513,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'polyfills-and-recursion',
         round: 'Assessor or technical rounds',
         kind: 'JavaScript',
+        topic: 'Polyfills and recursion',
         question: 'JavaScript questions on polyfills and recursion in an hour-long round.',
         promptNotShared: true,
         sources: [INTUIT_IN6_SDE2_2021],
@@ -3512,6 +5522,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'microfrontends-vitals-workers',
         round: 'Hiring manager',
         kind: 'Frontend system design',
+        topic: 'Microfrontends, web vitals and workers',
         question: 'Discuss microfrontends, web vitals and workers.',
         promptNotShared: true,
         sources: [INTUIT_IN1],
@@ -3580,58 +5591,287 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   revolut: {
     summary:
-      'The Revolut engineering careers page lists four steps, an intro call with an IT recruiter, tech interviews, team fit and offer, without formats or durations; the Bar Raiser stage appears in the careers video, not in that list. Frontend accounts from 2022 to 2025 across European hubs describe a recruiter or HR screen, a HackerRank test with three algorithm tasks, an hour of React live coding, a system design round for mid and senior roles, a team fit conversation and a Bar Raiser interview.',
+      'The Revolut engineering careers page lists four steps, an intro call with an IT recruiter, tech interviews, team fit and offer, without formats or durations; the Bar Raiser stage appears in the careers video, not in that list. The frontend reviews, dated 2022 to 2025, fill in the shape: a recruiter or HR call, a HackerRank test with three algorithm tasks, about an hour of live coding in TypeScript and React, a design round for mid and senior roles, a team fit conversation and a Bar Raiser interview.',
     caveat:
-      'Almost every account is on Taro. The only account with an offer (2022) had neither a system design round nor a Bar Raiser, and the order of the HackerRank test and the recruiter call varies.',
-    checkedAt: '2026-10-20',
+      'Almost every account is an anonymous interview review re-posted on Taro, which gives each review its own city and date, so no place is shown and months are approximate. The only account with an offer (2022) had neither a separate design round nor a Bar Raiser, and the order of the HackerRank test and the recruiter call varies. The question list adds a review dated 2020.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers in European hubs',
         stages: [
           {
             stage: 'Recruiter or HR screen',
-            format: 'Background and salary; some recruiters ask a few JavaScript questions.',
+            format: 'A call on your background, salary and the next steps; some recruiters add a short check of JavaScript or React theory.',
             appliesTo: REVOLUT_ROLE,
-            sources: [REVOLUT_ENGINEERING, REVOLUT_RV2, REVOLUT_RV3, REVOLUT_RV5, REVOLUT_RV7, REVOLUT_RV12],
+            sources: [REVOLUT_ENGINEERING, REVOLUT_RV1, REVOLUT_RV2, REVOLUT_RV3, REVOLUT_RV5, REVOLUT_RV7, REVOLUT_RV12, REVOLUT_FE_HR_2025],
           },
           {
             stage: 'HackerRank assessment',
             format: 'Three algorithm tasks in 85–110 minutes, done at home before a deadline; sometimes before the recruiter call.',
             appliesTo: REVOLUT_ROLE,
-            sources: [REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV7, REVOLUT_RV9, REVOLUT_RV10],
+            sources: [REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV7, REVOLUT_RV9, REVOLUT_RV10, REVOLUT_RV11, REVOLUT_RV12, REVOLUT_RV13],
             practice: { label: 'Valid Parentheses', path: '/javascript/coding/js-valid-parentheses' },
             rehearsal: { label: 'Revolut HackerRank assessment, 3 problems in 85 minutes', path: '/javascript/coding/js-valid-parentheses' },
           },
           {
             stage: 'Live coding',
-            format: 'About an hour of React and TypeScript: fetch data from an API and render it with loading and error states, or extend a small app.',
+            format: 'About an hour of TypeScript and React with an interviewer, from a prepared boilerplate or in CodeSandbox.',
             appliesTo: REVOLUT_ROLE,
-            sources: [REVOLUT_RV1, REVOLUT_RV2, REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV8],
+            sources: [REVOLUT_RV1, REVOLUT_RV2, REVOLUT_RV3, REVOLUT_RV4, REVOLUT_RV5, REVOLUT_RV6, REVOLUT_RV7, REVOLUT_RV8],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
             stage: 'System design',
-            format: 'Product features and API contracts, or a whole system such as card delivery.',
+            format: 'A design round on a whiteboard, Excalidraw in a 2024 loop; a 2023 recruiter said it decides between mid and senior.',
             appliesTo: 'Mid and senior roles',
             sources: [REVOLUT_RV2, REVOLUT_RV4, REVOLUT_RV7],
             practice: { label: 'Resilient checkout and payment flow', path: '/system-design/resilient-checkout-payment-flow' },
           },
           {
             stage: 'Team fit',
-            format: 'A behavioural conversation with the team.',
+            format: 'A behavioural conversation about past experience.',
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_RV2, REVOLUT_RV9],
             practice: { label: 'Behavioral interview guide', path: '/guides/behavioral' },
           },
           {
             stage: 'Bar Raiser',
-            format: 'An interview on how you work and make decisions; listed in recent plans, with no first-hand account since 2022.',
+            format: 'An interview on how you work and make decisions; listed in recent plans, and no frontend review describes sitting it.',
             appliesTo: REVOLUT_ROLE,
             sources: [REVOLUT_BAR_RAISER, REVOLUT_RV1, REVOLUT_RV15_PLAN],
             // The guide's own Bar Raiser section, so the team-fit round keeps the behavioural guide in the plan.
             practice: { label: 'What the Bar Raiser covers', path: '/companies/revolut/preview', fragment: 'revolut-round-bar-raiser' },
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: HackerRank tasks given only by count or difficulty (RV4, RV5, RV6, RV9, RV11),
+    // "TypeScript questions" and "algo questions" (RV11), "React and state management" and a "STAR-based question"
+    // (RV9), "React questions" (RV2, RV8), "common JavaScript questions" (RV8), "some JavaScript questions" at a screen
+    // (RV3), a design interview on "part of the system" (RV7) and a 2020 home test, a React widget built to 98% code
+    // coverage (FE_2020). The Blind thread's replies (2022) give topics to study, not questions asked, and its bar
+    // raiser reply does not name the company. Taro's site-wide "Revolut Interview Questions" panel is tied to no review.
+    // The card delivery design keeps its frontend and API; the database and services the account adds are left out.
+    // Behavioural questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'typescript-fetch-and-render',
+        round: 'Live coding',
+        kind: 'Practical coding',
+        topic: 'Fetching and rendering data in TypeScript',
+        question:
+          'In an hour, on a prepared TypeScript boilerplate, fetch data from a source and render it: a loading state, the data held in state, fetching with error handling and types throughout, with an optimisation or unit tests if time allows.',
+        sources: [REVOLUT_RV1],
+        practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+        answerGuide: 'fetch-and-render-in-one-hour',
+      },
+      {
+        id: 'authenticated-api-in-react',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Authenticated API data in React',
+        question: 'In a pairing session, use a service API that needs authentication to display its data in a React component.',
+        sources: [REVOLUT_RV2],
+        practice: { label: 'Fetch JSON with timeout and abort', path: '/javascript/coding/js-fetch-json-timeout' },
+        answerGuide: 'authenticated-api-pairing',
+      },
+      {
+        id: 'mock-api-pagination-filtering',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Paginated, filterable API data in React',
+        question:
+          'In an hour of live coding in CodeSandbox, get the data from a mock API with fetch or Axios, show it in React, then add pagination and filtering.',
+        sources: [REVOLUT_RV6],
+        practice: { label: 'React paginated data table', path: '/react/coding/react-pagination-table' },
+      },
+      {
+        id: 'api-calls-mapping-and-tests',
+        round: 'Live coding',
+        kind: 'Practical coding',
+        topic: 'API data mapping and unit tests',
+        question: 'A live-coding round on calling an API, mapping the data and rendering it, handling errors and writing unit tests.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV4],
+        answerGuide: 'fetch-and-render-in-one-hour',
+      },
+      {
+        id: 'improve-existing-react-app',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Improving an existing React app',
+        question: 'After some React questions, a small coding task: improve an existing React app.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV8],
+      },
+      {
+        id: 'small-react-app',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Small React app',
+        question: 'Code a small React app online, with little time for it.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV5],
+      },
+      {
+        id: 'react-components-and-javascript-questions',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Building a few React components',
+        question: 'Implement a few components in React, then answer three JavaScript questions.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV7],
+      },
+      {
+        id: 'react-real-scenario-pairing',
+        round: 'Live coding',
+        kind: 'React build',
+        topic: 'Real-scenario React pairing task',
+        question: 'A React question set as a real scenario and worked through as pair programming.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV3],
+      },
+      {
+        id: 'react-reconciliation',
+        round: 'Recruiter or HR screen',
+        kind: 'React concepts',
+        topic: 'React reconciliation',
+        question: 'Explain the reconciliation process in React.',
+        sources: [REVOLUT_RV1, REVOLUT_RV3],
+        practice: { label: 'Reconciliation, keys and element type', path: '/react/trivia/react-diffing-algorithm' },
+        answerGuide: 'recruiter-theory-check',
+      },
+      {
+        id: 'microtasks-vs-macrotasks',
+        round: 'Recruiter or HR screen',
+        kind: 'JavaScript',
+        topic: 'Microtasks vs macrotasks',
+        question: 'Explain briefly how microtasks and macrotasks work in the event loop.',
+        sources: [REVOLUT_RV1],
+        practice: { label: 'Microtasks vs macrotasks', path: '/javascript/trivia/js-microtasks-vs-macrotasks' },
+        answerGuide: 'recruiter-theory-check',
+      },
+      {
+        id: 'dom-tree',
+        round: 'Recruiter or HR screen',
+        kind: 'Web fundamentals',
+        topic: 'The DOM tree',
+        question: 'What is the DOM tree?',
+        sources: [REVOLUT_RV1],
+        practice: { label: 'DOM tree structure and depth', path: '/html/trivia/html-dom-tree-structure' },
+        answerGuide: 'recruiter-theory-check',
+      },
+      {
+        id: 'sliding-window-problem',
+        round: 'HackerRank assessment',
+        kind: 'Algorithm',
+        topic: 'Sliding-window problem',
+        question: 'A standard sliding-window problem in a HackerRank JavaScript test.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV10],
+        practice: { label: 'Longest substring without repeating characters', path: '/javascript/coding/js-longest-substring-without-repeating' },
+        answerGuide: 'hackerrank-screen-three-tasks',
+      },
+      {
+        id: 'remove-anagrams-of-earlier-strings',
+        round: 'HackerRank assessment',
+        kind: 'Algorithm',
+        topic: 'Anagrams in an array of strings',
+        question:
+          'Given an array of strings, find the anagrams and remove each string that is an anagram of an earlier one. One account rates it the easy task of the three.',
+        sources: [REVOLUT_RV12, REVOLUT_RV13],
+        practice: { label: 'Valid Anagram', path: '/javascript/coding/js-valid-anagram' },
+      },
+      {
+        id: 'keypad-code-steps',
+        round: 'HackerRank assessment',
+        kind: 'Algorithm',
+        topic: 'Distance on a number keypad',
+        question: 'On a 3x3 keypad of the digits 1 to 9, count the steps needed to enter a code from the distances between the keys.',
+        sources: [REVOLUT_RV12, REVOLUT_RV13],
+      },
+      {
+        id: 'matrix-bucket-fills',
+        round: 'HackerRank assessment',
+        kind: 'Algorithm',
+        topic: 'Bucket fills to paint a matrix',
+        question:
+          'Each cell of a matrix holds a colour, and a bucket fill paints only adjacent cells: count the fills needed to paint the whole matrix. One account rates it the difficult task of the three.',
+        sources: [REVOLUT_RV12, REVOLUT_RV13],
+      },
+      {
+        id: 'graph-search-dfs',
+        round: 'HackerRank assessment',
+        kind: 'Algorithm',
+        topic: 'Graph search with depth-first search',
+        question: 'The hardest of three screening problems, which needed a graph-search algorithm, depth-first search.',
+        promptNotShared: true,
+        sources: [REVOLUT_RV8],
+      },
+      {
+        id: 'product-features-and-apis',
+        round: 'System design',
+        kind: 'Frontend system design',
+        topic: 'Product features and their APIs',
+        question: 'Suggest product features, then design the APIs through which the frontend talks to other services.',
+        sources: [REVOLUT_RV2],
+        answerGuide: 'frontend-system-design-api-contracts',
+      },
+      {
+        id: 'card-delivery-system',
+        round: 'System design',
+        kind: 'Frontend system design',
+        topic: 'Physical card delivery system',
+        question: 'Design Revolut\'s physical card delivery system, from its API to its frontend.',
+        sources: [REVOLUT_RV4],
+        answerGuide: 'frontend-system-design-api-contracts',
+      },
+      {
+        id: 'javascript-event-loop',
+        kind: 'JavaScript',
+        topic: 'How the JavaScript event loop works',
+        question: 'Describe how the event loop works in JavaScript.',
+        sources: [REVOLUT_RV7, REVOLUT_RV2],
+        practice: { label: 'JavaScript event loop visualiser', path: '/javascript/trivia/js-event-loop' },
+      },
+      {
+        id: 'javascript-main-thread',
+        kind: 'JavaScript',
+        topic: 'The JavaScript main thread',
+        question: 'Explain the main thread in JavaScript.',
+        sources: [REVOLUT_RV3],
+      },
+      {
+        id: 'how-react-works',
+        kind: 'React concepts',
+        topic: 'How React works',
+        question: 'Tell me how React works.',
+        sources: [REVOLUT_FE_2024],
+      },
+      {
+        id: 'mutating-javascript-methods',
+        kind: 'JavaScript',
+        topic: 'Mutating JavaScript methods',
+        question: 'Which JavaScript methods mutate the value they are called on?',
+        sources: [REVOLUT_FE_2020],
+        practice: { label: 'References, mutation and Object.freeze', path: '/javascript/trivia/js-mutability-vs-immutability' },
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'most-challenging-situation',
+        question: 'What was the most challenging situation or task in your work, technically, and how did you handle it?',
+        sources: [REVOLUT_FE_HR_2025, REVOLUT_RV8],
+      },
+      {
+        id: 'proudest-project',
+        question: 'Which project are you most proud of?',
+        sources: [REVOLUT_FE_HR_2025],
+      },
+      {
+        id: 'working-in-a-team',
+        question: 'Questions on how you work in a team; the account does not give their wording.',
+        sources: [REVOLUT_RV2],
       },
     ],
   },
@@ -3692,68 +5932,245 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   zalando: {
     summary:
-      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts, two of them from Berlin, between 2019 and 2024 describe a Codility take-home, then a final day with a review of the take-home, JavaScript fundamentals, coding, system design and a manager conversation.',
+      'Zalando\'s hiring page describes a 30-minute talent acquisition call, a case study such as a coding exercise, a hiring manager conversation and three to five final interviews. Frontend accounts posted from 2020 to 2024, two of them from Berlin, describe a take-home, on Codility in 2022 and 2024, then a final day; in 2024 it held a review of the take-home, JavaScript fundamentals, system design and a manager conversation, and the 2020 onsite also had a coding interview.',
     caveat:
-      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, and two of the three complete loops are from Berlin.',
-    checkedAt: '2026-10-20',
+      'Zalando\'s own pages disagree on whether the hiring manager comes before or after the coding challenge. Only one detailed account is from after 2022, a 2024 senior one from Berlin, and all but one of the reported questions come from it.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers, Berlin',
         stages: [
           {
             stage: 'Talent acquisition call',
-            format: '30 minutes on motivation and salary.',
+            format: '30 minutes with a talent acquisition partner on motivation, expectations and salary.',
             appliesTo: 'Tech roles',
             sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG],
           },
           {
             stage: 'Coding challenge',
-            format: 'An assessment at home: a Codility challenge of two to three hours in 2022 and 2024 (a React and Node app, easy algorithm problems); the 2020 account named no platform and had three working days.',
+            format:
+              'An assessment done at home: a Codility challenge of two to three hours in 2022 and 2024. In 2024 it was a React and Node app and in 2022 easy algorithm problems; the 2020 account named no platform and gave three working days for a React question and an API design question.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_ZA1, ZALANDO_ZA2, ZALANDO_ZA4],
             practice: { label: 'React fetch and render a list', path: '/react/coding/react-fetch-list-states' },
           },
           {
             stage: 'Hiring manager',
-            format: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical, and in 2020 it was half of a two-hour phone stage.',
+            format:
+              '45 to 60 minutes on the official pages, about past work and how you collaborate. A Blind commenter describes it as non-technical, and in 2020 it was half of a two-hour phone stage.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_HOW_WE_HIRE, ZALANDO_BLOG, ZALANDO_ZA2, ZALANDO_ZA3, ZALANDO_ZA4],
           },
           {
             stage: 'Final: take-home review',
-            format: 'A discussion of the submitted code, 45 minutes in the 2024 account.',
-            appliesTo: 'Senior roles',
+            format: 'A discussion of the submitted code, 45 minutes with a senior software engineer in the 2024 account.',
+            appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_ZA1, ZALANDO_ZA3],
           },
           {
             stage: 'Final: JavaScript fundamentals',
-            format: 'One hour with frontend engineers.',
+            format:
+              'One hour of questions from two senior frontend engineers in 2024, on JavaScript, the browser and web tooling. An account posted in 2021 about a 2019 interview lists basic and advanced JavaScript and framework questions.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_BLOG, ZALANDO_ZA1, ZALANDO_ZA2, ZALANDO_ZA3],
             practice: { label: 'The event loop', path: '/javascript/trivia/js-event-loop' },
           },
           {
             stage: 'Final: coding',
-            format: 'One hour of live coding.',
+            format: 'One hour of live coding; Zalando\'s blog says interviewers expect clarifying questions and a discussion of complexity.',
             appliesTo: 'Some loops',
             sources: [ZALANDO_BLOG, ZALANDO_ZA2],
           },
           {
             stage: 'Final: system design',
-            format: 'One hour, leaning toward backend topics such as a load balancer.',
+            format:
+              'One hour; in 2024 a senior principal engineer set a backend-leaning problem. Zalando\'s blog lists architecture, scalability, technology choices, resilience and security among what the round assesses.',
             appliesTo: ZALANDO_ROLE,
             sources: [ZALANDO_BLOG, ZALANDO_ZA1, ZALANDO_ZA2, ZALANDO_ZA3],
             practice: { label: 'Frontend system design blueprint', path: '/guides/system-design-blueprint' },
           },
           {
             stage: 'Final: engineering manager or HR',
-            format: '45 minutes.',
+            format: '45 minutes with the engineering manager in 2024, on teamwork and leading a team; the 2020 onsite had an HR interview.',
             appliesTo: 'Senior roles',
             sources: [ZALANDO_ZA1, ZALANDO_ZA2],
             // The hiring-manager round takes the general behavioural guide; this one gets its own page.
             practice: { label: 'Common behavioral questions', path: '/guides/behavioral/common-questions' },
           },
         ],
+      },
+    ],
+    // All but one row come from the 2024 senior account (ZA1), re-read through its republished copy. Left out for want
+    // of a subject: the 2020 assessment's React question (ZA2) and the 2019 "Basic and Advanced JavaScript + FrameWork
+    // questions" (ZA3); they stay in the table. Left out by content: the 2020 API design question (ZA2), the 2024 system
+    // design with a load balancer and database reads and writes (ZA1), the same round's Docker, CI/CD, automated testing
+    // and Git hooks topics (ZA1), and the 2019 advice to expect an e-commerce system design (ZA3), which names neither
+    // the task nor whether it was frontend. Left out for their source: questions known only from Glassdoor (a memoize
+    // function, a class-to-function refactor, a hover menu, the event loop, a shopping-cart design) and the 2018 to 2019
+    // Codility task texts on GitHub.
+    questions: [
+      {
+        id: 'search-box-take-home',
+        round: 'Coding challenge',
+        kind: 'React build',
+        topic: 'Search box with suggestions',
+        question:
+          'In a three-hour Codility take-home, build the React side of a React and Node app: a search box that suggests matches as the user types, with thorough unit tests and performance work such as debouncing.',
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'React autocomplete search', path: '/react/coding/react-autocomplete-search-starter' },
+      },
+      {
+        id: 'array-string-problems',
+        round: 'Coding challenge',
+        kind: 'Algorithm',
+        topic: 'Array and string manipulation',
+        question: 'Easy LeetCode-style problems on array and string manipulation, in a Codility test of about two hours.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA4],
+      },
+      {
+        id: 'debounce-from-scratch',
+        round: 'Final: take-home review',
+        kind: 'JavaScript',
+        topic: 'Debounce function',
+        question: 'While reviewing the take-home, write your own debounce function.',
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
+      },
+      {
+        id: 'removed-imports',
+        round: 'Final: take-home review',
+        kind: 'React concepts',
+        topic: 'Removing imports from a React app',
+        question: 'What would happen to the submitted React application if its imports were removed?',
+        sources: [ZALANDO_ZA1],
+      },
+      {
+        id: 'optimise-search-app',
+        round: 'Final: take-home review',
+        kind: 'Frontend system design',
+        topic: 'Optimising the search box app',
+        question: 'How could the submitted search box application be optimised further?',
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Real-time search with debounce and caching', path: '/system-design/realtime-search-debounce-cache' },
+      },
+      {
+        id: 'loading-and-rendering',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'Script loading and page rendering',
+        question:
+          'How the browser builds and renders a page: the DOM tree and parsing, async and defer, the CSSOM, FCP and TTI, server-side rendering, and blocking versus non-blocking loading.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'HTML parsing and rendering order', path: '/html/trivia/html-parsing-rendering' },
+      },
+      {
+        id: 'css-specificity',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'CSS specificity',
+        question: 'Questions on CSS specificity, in the same hour.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Cascade, specificity and !important', path: '/css/trivia/css-cascade-order' },
+      },
+      {
+        id: 'html5-semantics',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'HTML5 semantics',
+        question: 'Questions on HTML5 semantics, in the same hour.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Semantic HTML elements', path: '/html/trivia/html-semantic-elements' },
+      },
+      {
+        id: 'web-accessibility',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'Web accessibility',
+        question: 'Web accessibility: roles, alt text, aria-hidden, screen readers such as VoiceOver, and sprites versus SVG.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'ARIA roles', path: '/html/trivia/html-aria-roles' },
+      },
+      {
+        id: 'types-objects-prototypes',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'JavaScript',
+        topic: 'Types, objects and prototypes',
+        question: 'JavaScript fundamentals: types, functions, objects and prototypes.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Prototypal inheritance', path: '/javascript/trivia/js-prototypal-inheritance' },
+      },
+      {
+        id: 'es6-features',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'JavaScript',
+        topic: 'ES6 array methods and destructuring',
+        question: 'ES6 features: map, object destructuring, filter and Array.prototype.some.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'map, filter and reduce', path: '/javascript/trivia/js-map-filter-reduce' },
+      },
+      {
+        id: 'builder-pattern-solid',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'JavaScript',
+        topic: 'Builder pattern and SOLID',
+        question: 'Design patterns: the Builder pattern and the SOLID principles.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'JavaScript design patterns', path: '/javascript/trivia/js-design-patterns' },
+      },
+      {
+        id: 'web-security',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'Web security',
+        question: 'Web security: request headers, cookies, clickjacking and XSS.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'DOM XSS prevention', path: '/javascript/trivia/js-xss-dom-sinks' },
+      },
+      {
+        id: 'webpack-bundling',
+        round: 'Final: JavaScript fundamentals',
+        kind: 'Web fundamentals',
+        topic: 'Webpack, minification and bundling',
+        question: 'Build tools: Webpack, minification, bundling and making the bundle smaller.',
+        promptNotShared: true,
+        sources: [ZALANDO_ZA1],
+        practice: { label: 'Tree shaking and unused imports', path: '/javascript/trivia/js-tree-shaking' },
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'code-breaks-production',
+        question: 'What would you do straight away if your code broke production?',
+        sources: [ZALANDO_ZA1],
+      },
+      {
+        id: 'lack-of-motivation',
+        question: 'How do you deal with a lack of motivation?',
+        sources: [ZALANDO_ZA1],
+      },
+      {
+        id: 'team-conflict',
+        question: 'How do you resolve conflicts within a team?',
+        sources: [ZALANDO_ZA1],
+      },
+      {
+        id: 'leading-a-team',
+        question: 'What is your vision for leading a team?',
+        sources: [ZALANDO_ZA1],
+      },
+      {
+        id: 'cross-functional-teams',
+        question: 'How comfortable are you working with cross-functional teams?',
+        sources: [ZALANDO_ZA1],
       },
     ],
   },
@@ -3846,6 +6263,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-chat-interface-live-review',
         round: 'React coding interview',
         kind: 'React build',
+        topic: 'Chat interface',
         question: 'In a one-hour pair-coding session, build a chat interface in React while an engineer from the team reviews your code live.',
         sources: [XAI_X1_FE_2025],
         practice: { label: 'Chat UI with a streaming response', path: '/react/coding/react-chat-streaming-ui' },
@@ -3855,6 +6273,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'what-usecallback-does',
         round: 'React coding interview',
         kind: 'React concepts',
+        topic: 'useCallback',
         question: 'What does the useCallback hook do? One of the React questions asked during the pair-coding build.',
         sources: [XAI_X1_FE_2025],
         practice: { label: 'useMemo vs useCallback: when memoising makes it slower', path: '/react/trivia/react-usememo-vs-usecallback' },
@@ -3863,6 +6282,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'what-useref-is-for',
         round: 'React coding interview',
         kind: 'React concepts',
+        topic: 'useRef',
         question: 'Explain what useRef is for and how you would use it in a component.',
         sources: [XAI_X2_SPECIALIST_2025],
         practice: { label: 'useRef vs useState: why changing a ref does not re-render', path: '/react/trivia/react-useref-vs-usestate' },
@@ -3871,6 +6291,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'four-hour-demo-product',
         round: 'Take-home and code-reading final',
         kind: 'Practical coding',
+        topic: 'Demo product on the xAI API',
         question:
           'Pick one of six xAI prompts and build a demoable product in four hours, using AI assistants and the provided X and xAI API keys, then explain in a video which systems you used and why; this candidate improved X search with Grok.',
         sources: [XAI_X7_MTS_2025],
@@ -3879,6 +6300,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'token-queue-class',
         round: 'Take-home and code-reading final',
         kind: 'Practical coding',
+        topic: 'LLM token queue class',
         question:
           'Read an existing class of 70 to 100 lines and implement the missing part that splits LLM input into token-sized queues and returns them; follow-ups asked how the class is structured and where its data moves.',
         sources: [XAI_X7_MTS_2025],
@@ -3887,6 +6309,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'key-value-transactions',
         round: 'Coding assessment in a language of your choice',
         kind: 'Practical coding',
+        topic: 'Key-value database with transactions',
         question: 'Design and code a key-value database with set plus begin, commit and abort for transactions, then support nested transactions.',
         sources: [XAI_X8_SAFETY_2025],
       },
@@ -3894,6 +6317,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'stateful-list-iterator',
         round: 'Coding assessment in a language of your choice',
         kind: 'Practical coding',
+        topic: 'Stateful list iterator',
         question:
           'Implement an iterator over a list with next, hasNext, getState and setState, then make a list of iterators behave as one; follow-ups asked about edge cases and input that is not a list.',
         sources: [XAI_X8_SAFETY_2025],
@@ -4010,6 +6434,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'generic-memoize-function',
         round: 'Security and framework rounds',
         kind: 'JavaScript',
+        topic: 'Generic memoisation function',
         question: 'Write a generic memoization function that caches results by their arguments.',
         sources: [JPMORGAN_JP11],
         practice: { label: 'Memoization', path: '/javascript/coding/js-memoize-function' },
@@ -4019,6 +6444,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'generic-async-promise-hook',
         round: 'Live coding',
         kind: 'React build',
+        topic: 'Generic async promise hook',
         question:
           'Live-code a generic async promise hook in React, with generic types and a useEffect cleanup function expected.',
         sources: [JPMORGAN_JP1],
@@ -4029,6 +6455,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'explain-a-closure',
         round: 'Frontend technical conversation',
         kind: 'JavaScript',
+        topic: 'Closures',
         question: 'What is a closure in JavaScript?',
         sources: [JPMORGAN_JP2, JPMORGAN_JP4, JPMORGAN_JP12],
         practice: { label: 'Explain closures in JavaScript', path: '/javascript/trivia/js-closures' },
@@ -4038,6 +6465,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'reduce-polyfill',
         round: 'Security and framework rounds',
         kind: 'JavaScript',
+        topic: 'Array reduce polyfill',
         question: 'Write a polyfill for the array reduce method.',
         sources: [JPMORGAN_JP11],
         practice: { label: 'Implement Array.prototype.reduce', path: '/javascript/coding/js-array-prototype-reduce' },
@@ -4047,6 +6475,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'priority-todo-list',
         round: 'Live coding',
         kind: 'React build',
+        topic: 'Priority to-do list',
         question:
           'Build a to-do list in React where each task has a high, medium or low priority that can be updated, and whole tasks can be deleted.',
         sources: [JPMORGAN_JP8],
@@ -4057,6 +6486,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'shallow-deep-clone-object-assign',
         round: 'Frontend technical conversation',
         kind: 'JavaScript',
+        topic: 'Shallow vs deep clone and Object.assign',
         question: 'What is the difference between a shallow and a deep clone, and what is a use case for Object.assign?',
         sources: [JPMORGAN_JP2],
         practice: { label: 'Shallow copy versus deep copy', path: '/javascript/trivia/js-shallow-vs-deep-copy' },
@@ -4066,6 +6496,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'usecallback-vs-usememo',
         round: 'Frontend technical conversation',
         kind: 'React concepts',
+        topic: 'useCallback vs useMemo',
         question: 'What is the difference between useCallback and useMemo?',
         sources: [JPMORGAN_JP2],
         practice: { label: 'useMemo versus useCallback', path: '/react/trivia/react-usememo-vs-usecallback' },
@@ -4075,6 +6506,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'usestate-vs-useref',
         round: 'Frontend technical conversation',
         kind: 'React concepts',
+        topic: 'useState vs useRef',
         question: 'What is the difference between the useState hook and the useRef hook?',
         sources: [JPMORGAN_JP3],
         practice: { label: 'useRef versus useState', path: '/react/trivia/react-useref-vs-usestate' },
@@ -4083,6 +6515,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'search-bar-suggestions',
         kind: 'React build',
+        topic: 'Search bar with suggestions',
         question:
           'Write a function component with a search bar over a group of strings that shows matching suggestions as the user types.',
         sources: [JPMORGAN_J14_FULLSTACK_2025],
@@ -4092,6 +6525,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'pull-request-review',
         round: 'Super day',
         kind: 'Practical coding',
+        topic: 'Pull request review',
         question:
           'Spend about ten minutes reviewing a pull request and say what is wrong with it; the code held hardcoded credentials and poor variable names.',
         sources: [JPMORGAN_JP15],
@@ -4100,6 +6534,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'how-react-works-react-over-angular',
         round: 'Frontend technical conversation',
         kind: 'React concepts',
+        topic: 'How React works, React vs Angular',
         question: 'How does React work, and why would a developer choose React over Angular?',
         sources: [JPMORGAN_JP7],
         practice: { label: 'What problem React solves', path: '/react/trivia/react-core-problem-and-non-goals' },
@@ -4108,6 +6543,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'promises-generators-currying',
         round: 'Security and framework rounds',
         kind: 'JavaScript',
+        topic: 'Promises, generators and currying',
         question: 'Questions on promises and asynchronous behaviour, generator functions, object manipulation, pure functions and currying.',
         promptNotShared: true,
         sources: [JPMORGAN_JP11],
@@ -4118,6 +6554,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'security-and-react-topics',
         round: 'Security and framework rounds',
         kind: 'Web fundamentals',
+        topic: 'XSS and secure React components',
         question:
           'Questions on XSS, the security principles you apply at work, React lifecycle methods and their part in keeping a web application secure, and designing components that limit vulnerabilities and keep data private.',
         promptNotShared: true,
@@ -4128,6 +6565,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'event-loop-react-optimisation',
         round: 'Frontend technical conversation',
         kind: 'JavaScript',
+        topic: 'Event loop and React optimisation',
         question: 'Questions on the JavaScript event loop and on React optimisation techniques.',
         promptNotShared: true,
         sources: [JPMORGAN_JP12],
@@ -4136,6 +6574,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'var-let-const-scope-hooks',
         kind: 'JavaScript',
+        topic: 'var, let and const',
         question:
           'What is the difference between var, let and const? The list then moved on to scope, promises, useEffect and higher-order components.',
         sources: [JPMORGAN_J14_FULLSTACK_2025],
@@ -4144,6 +6583,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'context-then-hoc',
         kind: 'React concepts',
+        topic: 'React context',
         question:
           'What is React context? An answer that mentioned higher-order components drew a follow-up on when a higher-order component would be used.',
         sources: [JPMORGAN_J3_FE_2022],
@@ -4153,6 +6593,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'benefits-of-reduce',
         kind: 'JavaScript',
+        topic: 'Benefits of array reduce',
         question: 'Explain the benefits of the array reduce method.',
         sources: [JPMORGAN_J3_FE_2022],
         practice: { label: 'map, filter and reduce', path: '/javascript/trivia/js-map-filter-reduce' },
@@ -4161,6 +6602,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'function-component-coding',
         round: 'Live coding',
         kind: 'React build',
+        topic: 'Function component coding',
         question: 'Coding on React function components, in a panel whose other questions followed the CV.',
         promptNotShared: true,
         sources: [JPMORGAN_JP6],
@@ -4169,6 +6611,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'count-weekdays-in-a-year',
         round: 'Live coding',
         kind: 'Algorithm',
+        topic: 'Weekday counts in a year',
         question: 'Count how often each weekday occurs in a given year, in Python.',
         sources: [JPMORGAN_JP8],
       },
@@ -4176,6 +6619,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'what-is-cors',
         round: 'Frontend technical conversation',
         kind: 'Web fundamentals',
+        topic: 'CORS (cross-origin resource sharing)',
         question: 'What is CORS?',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Handle CORS in a frontend app', path: '/javascript/trivia/js-secure-cors-handling' },
@@ -4185,6 +6629,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'cookie-session-local-storage',
         round: 'Frontend technical conversation',
         kind: 'Web fundamentals',
+        topic: 'Cookies vs session and local storage',
         question: 'What is the difference between a cookie, session storage and local storage?',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Cookie, sessionStorage and localStorage', path: '/javascript/trivia/js-cookie-sessionstorage-localstorage' },
@@ -4194,6 +6639,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'javascript-prototype',
         round: 'Frontend technical conversation',
         kind: 'JavaScript',
+        topic: 'Object prototypes',
         question: 'What is a prototype in JavaScript?',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Prototypal inheritance in JavaScript', path: '/javascript/trivia/js-prototypal-inheritance' },
@@ -4202,6 +6648,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'arrow-vs-normal-function',
         round: 'Frontend technical conversation',
         kind: 'JavaScript',
+        topic: 'Arrow vs normal functions',
         question: 'What is the difference between an arrow function and a normal function?',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Arrow functions versus regular functions', path: '/javascript/trivia/js-arrow-vs-regular-functions' },
@@ -4210,6 +6657,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'lru-cache',
         round: 'Frontend technical conversation',
         kind: 'Algorithm',
+        topic: 'LRU cache',
         question: 'How would you implement an LRU cache?',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Create an LRU cache', path: '/javascript/coding/js-create-lru-cache' },
@@ -4218,6 +6666,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'balanced-brackets',
         round: 'Frontend technical conversation',
         kind: 'Algorithm',
+        topic: 'Balanced brackets',
         question: 'Check whether the brackets in a string are balanced.',
         sources: [JPMORGAN_JP14],
         practice: { label: 'Valid parentheses', path: '/javascript/coding/js-valid-parentheses' },
@@ -4226,6 +6675,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'delete-linked-list-node',
         round: 'Frontend technical conversation',
         kind: 'Algorithm',
+        topic: 'Deleting a linked list node',
         question: 'Delete a node from a linked list.',
         sources: [JPMORGAN_JP14],
       },
@@ -4233,6 +6683,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-redux-typescript-experience',
         round: 'Frontend technical conversation',
         kind: 'React concepts',
+        topic: 'React, Redux and TypeScript experience',
         question:
           'How much have you used React, what do you know about Redux, what is going on in React lately, and which new TypeScript features do you like?',
         sources: [JPMORGAN_JP5],
@@ -4242,6 +6693,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'stateless-component-lifecycle',
         round: 'Frontend technical conversation',
         kind: 'React concepts',
+        topic: 'Stateless components and React lifecycle',
         question: 'What is a stateless component, and what are the benefits and drawbacks of the React lifecycle?',
         sources: [JPMORGAN_JP5],
         practice: { label: 'Function versus class components', path: '/react/trivia/react-functional-vs-class-components' },
@@ -4430,6 +6882,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hotel-search-page-design',
         round: 'Architecture interview',
         kind: 'Frontend system design',
+        topic: 'Hotel search page',
         question:
           'Design the front end of a hotel search page from scratch, given a wireframe of date, city and guest inputs, filters and result cards: scalable, maintainable and observable, with real-time chat, for a million users and several teams that deploy features independently.',
         sources: [AGODA_A1_BANGKOK_2026],
@@ -4440,6 +6893,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'client-storage-and-auth-token',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Client storage and authentication tokens',
         question:
           'What are the ways to store data on the client, and where would you keep the authentication token, with the advantages, drawbacks and security implications of each place?',
         sources: [AGODA_A1_BANGKOK_2026],
@@ -4450,6 +6904,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'csrf-and-xss',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'CSRF and XSS',
         question: 'What are CSRF and XSS, how does each happen, and how do you mitigate them?',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'DOM XSS prevention', path: '/javascript/trivia/js-xss-dom-sinks' },
@@ -4459,6 +6914,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'pipeline-then-async-limit',
         round: 'Frontend Platform interview',
         kind: 'JavaScript',
+        topic: 'Function pipeline with concurrency limit',
         question:
           'Implement a pipeline function that runs a value through a list of functions, then extend it so that asynchronous steps run under a concurrency limit.',
         sources: [AGODA_A4_STAFF_2025],
@@ -4469,6 +6925,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'ssg-ssr-csr-isr',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'SSG, SSR, CSR and ISR',
         question: 'Explain SSG, SSR, CSR and ISR.',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'SSR and hydration in React', path: '/react/trivia/react-ssr-hydration' },
@@ -4478,6 +6935,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'cdn-caching-and-updates',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'CDN caching and updates',
         question: 'How does a CDN work, what would you cache in it, and how do updates reach the cached copies?',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'CDN and HTTP caching for frontend delivery', path: '/javascript/trivia/content-delivery-caching-strategies-streaming' },
@@ -4487,6 +6945,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-state-and-filter-state',
         round: 'Frontend Platform interview',
         kind: 'React concepts',
+        topic: 'State options and query-string filters',
         question:
           'What are the ways to hold state in React, and on a hotel booking page would you keep the selected filters in component state or in the query string?',
         sources: [AGODA_A1_BANGKOK_2026],
@@ -4497,6 +6956,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'page-speed-and-core-web-vitals',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Page speed and Core Web Vitals',
         question: 'Which techniques make a page land faster, and how do you measure a page\'s performance with Core Web Vitals?',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'Optimise a page\'s load time', path: '/javascript/trivia/web-performance-optimize-load-time' },
@@ -4506,6 +6966,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hotel-booking-page-entities',
         round: 'Frontend Platform interview',
         kind: 'Frontend system design',
+        topic: 'Hotel booking page entities',
         question: 'List the core entities of a hotel booking page.',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'The web-fundamentals hour on a hotel booking page', path: '/javascript/trivia/js-web-fundamentals-hour-hotel-booking' },
@@ -4515,6 +6976,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'search-to-pay-funnel',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Search-to-payment funnel tracking',
         question: 'How would you track how many users go from search to view to booking to payment, and how many remain at each step?',
         sources: [AGODA_A1_BANGKOK_2026],
         practice: { label: 'The web-fundamentals hour on a hotel booking page', path: '/javascript/trivia/js-web-fundamentals-hour-hotel-booking' },
@@ -4524,6 +6986,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'testing-strategies-and-outside-failures',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Testing strategies and external failures',
         question:
           'Which testing strategies would you use, such as unit, integration and screenshot tests, with an example and a boundary case for each, and how do you handle test failures that your own code did not cause?',
         sources: [AGODA_A1_BANGKOK_2026],
@@ -4534,6 +6997,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'lighthouse-scores',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Lighthouse score improvements',
         question: 'How would you improve a page\'s Lighthouse scores, covering LCP, FID, TTI and TBT?',
         sources: [AGODA_A5_FULL_STACK_2025],
         practice: { label: 'Optimise a page\'s load time', path: '/javascript/trivia/web-performance-optimize-load-time' },
@@ -4543,6 +7007,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'session-management-and-promises',
         round: 'Frontend Platform interview',
         kind: 'JavaScript',
+        topic: 'Session management and promises',
         question: 'JavaScript questions on session management and promises, with scenario-based follow-ups.',
         promptNotShared: true,
         sources: [AGODA_A5_FULL_STACK_2025],
@@ -4552,6 +7017,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-unit-integration-e2e',
         round: 'Frontend Platform interview',
         kind: 'Web fundamentals',
+        topic: 'Unit, integration and end-to-end tests',
         question: 'Compare unit, integration and end-to-end testing for a React app.',
         sources: [AGODA_A5_FULL_STACK_2025],
         practice: { label: 'Testing strategy: edge cases and boundaries', path: '/javascript/trivia/js-testing-edge-cases-strategy' },
@@ -4560,6 +7026,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'rank-transform-array',
         round: 'Coding interview',
         kind: 'Algorithm',
+        topic: 'Rank Transform of an Array',
         question: 'Replace each number in an array with its rank among the distinct values (LeetCode 1331, Rank Transform of an Array).',
         sources: [AGODA_A1_BANGKOK_2026],
       },
@@ -4567,6 +7034,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'climbing-stairs-three-steps',
         round: 'Coding interview',
         kind: 'Algorithm',
+        topic: 'Climbing Stairs variant',
         question: 'Count the ways to climb n stairs taking 1, 2 or 3 steps at a time, a variant of LeetCode 70, Climbing Stairs.',
         sources: [AGODA_A1_BANGKOK_2026],
       },
@@ -4574,6 +7042,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'coding-hour-tests-and-pr-checklist',
         round: 'Coding interview',
         kind: 'Practical coding',
+        topic: 'Test cases and pull request checklist',
         question:
           'After the problems: which test cases would you write for your solution, what other kinds of tests are there, and what should you check before raising a pull request?',
         sources: [AGODA_A1_BANGKOK_2026],
@@ -4584,6 +7053,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'molecular-weight-formula',
         round: 'Coding interview',
         kind: 'Algorithm',
+        topic: 'Chemical formula molecular weight',
         question:
           'Compute the molecular weight of a chemical formula that may contain nested parentheses and multipliers, where C is 12, H is 1 and O is 8.',
         sources: [AGODA_A12_BANGALORE_2025],
@@ -4593,6 +7063,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'js-basics-and-promises',
         round: 'Coding interview',
         kind: 'JavaScript',
+        topic: 'Language basics and promises',
         question: 'JavaScript basics and promises, asked in a phone screen of an hour or more.',
         promptNotShared: true,
         sources: [AGODA_A12_BANGALORE_2025],
@@ -4602,6 +7073,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'sliding-window-problem',
         round: 'Coding interview',
         kind: 'Algorithm',
+        topic: 'Sliding window technique',
         question: 'A sliding-window problem in the same phone screen.',
         promptNotShared: true,
         sources: [AGODA_A12_BANGALORE_2025],
@@ -4611,6 +7083,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'sort-array-in-place',
         round: 'Coding interview',
         kind: 'Algorithm',
+        topic: 'In-place array sort',
         question: 'Sort an array in place.',
         sources: [AGODA_T1_SENIOR_FE_2024],
       },
@@ -4618,6 +7091,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'doctor-appointment-booking',
         round: 'Architecture interview',
         kind: 'Frontend system design',
+        topic: 'Doctor appointment booking app',
         question: 'Design a doctor appointment booking application in the high-level design round.',
         sources: [AGODA_A4_STAFF_2025],
         practice: { label: 'Design a car rental booking frontend', path: '/system-design/car-rental-booking-frontend' },
@@ -4626,6 +7100,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'cdn-and-cdn-services',
         round: 'Architecture interview',
         kind: 'Web fundamentals',
+        topic: 'CDNs and CDN services',
         question: 'What is a CDN, and which CDN services can you name?',
         sources: [AGODA_A33_STAFF_2025],
         practice: { label: 'CDN and HTTP caching for frontend delivery', path: '/javascript/trivia/content-delivery-caching-strategies-streaming' },
@@ -4635,6 +7110,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hackerrank-rest-api-question',
         round: 'HackerRank assessment',
         kind: 'Practical coding',
+        topic: 'Basic coding with a REST API',
         question: 'Basic coding questions in the HackerRank test, one of them using a REST API.',
         promptNotShared: true,
         sources: [AGODA_T6_FULL_STACK_2024],
@@ -4644,6 +7120,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'stock-dashboard-take-home',
         round: 'Online assessment or take-home',
         kind: 'React build',
+        topic: 'Stock data dashboard',
         question:
           'Build a React and TypeScript single-page app that fetches stock data from an API and shows it in paginated tables with summary statistics: the lowest value, the average open price for one year and the longest streak of days that closed above the open.',
         sources: [AGODA_A2_GURGAON_2025],
@@ -4654,6 +7131,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'longest-substring-without-repeating',
         round: 'Coding round',
         kind: 'Algorithm',
+        topic: 'Longest substring without repeating characters',
         question: 'Find the longest substring without repeating characters.',
         sources: [AGODA_A2_GURGAON_2025],
         practice: { label: 'Longest substring without repeating characters', path: '/javascript/coding/js-longest-substring-without-repeating' },
@@ -4662,6 +7140,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'debounce-utility',
         round: 'Coding round',
         kind: 'JavaScript',
+        topic: 'Debounce utility function',
         question: 'Write a debounced utility function in JavaScript.',
         sources: [AGODA_A2_GURGAON_2025],
         practice: { label: 'Debounce', path: '/javascript/coding/js-debounce' },
@@ -4670,6 +7149,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'array-and-hash-map-problems',
         round: 'Coding round',
         kind: 'Algorithm',
+        topic: 'Array and hash map problems',
         question: 'A straightforward array question and a medium hash-map problem.',
         promptNotShared: true,
         sources: [AGODA_A13_SDE2_2024],
@@ -4678,6 +7158,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'travel-booking-frontend-architecture',
         round: 'Platform or architecture round',
         kind: 'Frontend system design',
+        topic: 'Travel booking site architecture',
         question:
           'Design a scalable front-end architecture for a travel booking site like Agoda that handles high traffic, uses micro-frontends, renders SEO-friendly pages with SSR or SSG and includes performance optimisations.',
         sources: [AGODA_A2_GURGAON_2025],
@@ -4688,6 +7169,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'hoisting-classes-ssr-csr',
         round: 'Platform or architecture round',
         kind: 'JavaScript',
+        topic: 'Hoisting, classes, SSR and CSR',
         question: 'Questions on JavaScript hoisting, how classes behave, and SSR versus CSR.',
         promptNotShared: true,
         sources: [AGODA_A7_GURGAON_2025],
@@ -4697,6 +7179,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'atomic-design-and-testing',
         round: 'Platform or architecture round',
         kind: 'Web fundamentals',
+        topic: 'Atomic design, testing and debugging',
         question: 'Questions on structuring a front end with atomic design, and on testing and debugging practice.',
         promptNotShared: true,
         sources: [AGODA_A7_GURGAON_2025],
@@ -4704,6 +7187,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'add-functionality-to-react-page',
         kind: 'React build',
+        topic: 'Adding features to an existing page',
         question: 'Add functionality to an existing React web page in an online session, with Google allowed and the interviewer helping.',
         promptNotShared: true,
         sources: [AGODA_T5_FULL_STACK_2025],
@@ -4711,6 +7195,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'react-usecontext-and-hooks',
         kind: 'React concepts',
+        topic: 'useContext and React hooks',
         question: 'What is useContext in React, and how would you use each of the React hooks?',
         sources: [AGODA_A32_SWE_2025],
         practice: { label: 'Which React hooks you have used, and when', path: '/react/trivia/react-hooks-youve-used' },
@@ -4718,6 +7203,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'website-load-steps',
         kind: 'Web fundamentals',
+        topic: 'From website request to page load',
         question: 'What does your device go through from requesting a website until the page has loaded?',
         sources: [AGODA_A32_SWE_2025],
         practice: { label: 'How the browser parses and renders HTML', path: '/html/trivia/html-parsing-rendering' },
@@ -4725,6 +7211,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'react-app-performance',
         kind: 'React concepts',
+        topic: 'React application performance',
         question: 'How would you improve the performance of a React application?',
         sources: [AGODA_A32_SWE_2025],
         practice: { label: 'Why a component re-renders when its props did not change', path: '/react/trivia/react-rerender-decision-and-render' },
@@ -4732,18 +7219,21 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'flashcard-after-explaining-a-tool',
         kind: 'UI build',
+        topic: 'Simple tool explanation and flashcard',
         question: 'Explain a tool from your own project as simply as you would to a child, then machine-code a flashcard.',
         sources: [AGODA_A6_FULL_STACK_2024],
       },
       {
         id: 'planes-stopped-before-landing',
         kind: 'Algorithm',
+        topic: 'Stopping planes before landing',
         question: 'Planes descend at given speeds and you can shoot down one per second: find the most planes you can stop from landing.',
         sources: [AGODA_A6_FULL_STACK_2024],
       },
       {
         id: 'grid-paths-with-obstacles',
         kind: 'Algorithm',
+        topic: 'Grid paths with obstacles',
         question: 'Count the paths a robot can take through a grid with obstacles, moving only right or down.',
         sources: [AGODA_A6_FULL_STACK_2024],
       },
@@ -4925,10 +7415,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   openai: {
     summary:
-      'OpenAI\'s interview guide describes résumé review, introductory calls, team-specific assessments and 4 to 6 hours of final interviews. Frontend accounts from 2023 to 2026 confirm the recruiter call and a two-part technical screen; no frontend account read for this page describes the final loop.',
+      'OpenAI\'s interview guide describes résumé review, introductory calls, team-specific assessments and 4 to 6 hours of final interviews. Frontend and full-stack accounts from 2023 to 2026 report a recruiter call, then a technical screen in two parts, coding and system design; only software engineer and full-stack accounts reach the final loop.',
     caveat:
-      'Thin evidence: one senior frontend account, one 2023 software engineer onsite, one commenter and three Blind posts written before the interview. Whether algorithm problems appear is not settled by the accounts read, and the guide says formats vary by team.',
-    checkedAt: '2026-10-22',
+      'Thin evidence: two frontend accounts on Taro, one of which ended at the HR screen, a frontend candidate\'s updates and a commenter on Blind, and two recruiter plans; a 2023 full-stack account adds to the final interviews, and the question list adds other loops from 2024 to 2026, kept for their frontend and general questions. The guide says formats vary by team, and the JavaScript option in a 2026 plan came with a prep guide on algorithms.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers',
@@ -4942,31 +7432,31 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Recruiter or hiring-manager call',
             format:
-              'A recruiting coordinator schedules a conversation with the hiring manager or recruiter about work experience, motivations and goals. One 2024 account ended after this video screening.',
+              'A conversation with the hiring manager or recruiter about work experience, motivations and goals, per the guide. A 2024 frontend candidate\'s call and a 2025 full-stack recruiter screen were about motivation; one 2024 account ended after this video screening.',
             appliesTo: 'All candidates',
-            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA6_PLAN_2026, OPENAI_OA7_FE_2024],
+            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA6_PLAN_2026, OPENAI_OA7_FE_2024, OPENAI_OA10_FULLSTACK_2025],
           },
           {
             stage: 'Technical screen',
             format:
-              'Two back-to-back parts in one 2024 senior account: refactoring existing code, then a systems design question, with neither interviewer a frontend engineer. Another 2024 candidate fixed a piece of JavaScript; a 2023 commenter had a React exercise in CoderPad; a 2025 plan lists frontend coding, then system design or architecture.',
+              'Coding, then system design, back to back in a 2024 senior frontend screen, neither run by a frontend engineer. A 2025 full-stack Applied screen ran its design and coding parts over about two and a quarter hours with a break, with googling for syntax allowed and any AI use to be declared. A 2024 frontend candidate found both parts easy; a 2023 commenter had a React exercise in CoderPad; a 2025 recruiter plan lists frontend coding, then system design or architecture.',
             appliesTo: OPENAI_ROLE,
-            sources: [OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA3_COMMENT_2023, OPENAI_OA5_PLAN_2025],
+            sources: [OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024, OPENAI_OA3_COMMENT_2023, OPENAI_OA5_PLAN_2025, OPENAI_OA10_FULLSTACK_2025],
             practice: { label: 'AI chat composer and streaming turn', path: '/system-design/ai-chat-textarea-design' },
           },
           {
             stage: 'Agentic coding option',
             format:
-              'In October 2026 one senior candidate could choose between a 60-minute JavaScript coding interview and a 60-minute agentic coding interview in a Python codebase with AI tools. The guide says some formats allow AI tools and others assess independent problem solving.',
+              'In October 2026 one senior candidate could pick a 60-minute JavaScript interview or a 60-minute agentic one. The agentic interview runs in a Python codebase with AI tools, and the JavaScript option came with a prep guide on arrays, queues, maps, trees, sorting, searching, dynamic programming and backtracking. The interview guide says some formats allow AI tools and others assess independent problem solving.',
             appliesTo: 'One 2026 plan',
             sources: [OPENAI_OA6_PLAN_2026, OPENAI_INTERVIEW_GUIDE],
           },
           {
             stage: 'Final interviews',
             format:
-              '4 to 6 hours with 4 to 6 people over 1 to 2 days, virtual by default with an onsite option in San Francisco, per the guide. The one onsite account, a 2023 software engineer loop, had a project presentation, a design round mixing backend and frontend, and frontend coding.',
-            appliesTo: 'All candidates',
-            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA4_SWE_2023],
+              'Per the guide, 4 to 6 hours with 4 to 6 people over 1 to 2 days, virtual by default or onsite in San Francisco. A 2023 full-stack loop had a project presentation, then an onsite with a design round mixing backend and frontend, and frontend coding. A 2025 full-stack Applied onsite of about four hours had a coding round on existing code, a project presentation with slides and a leadership conversation; a 2026 software engineer onsite had system design, coding in Python, and debugging in an existing repository from bug reports.',
+            appliesTo: 'All candidates, per the guide; not reported in a frontend-titled loop',
+            sources: [OPENAI_INTERVIEW_GUIDE, OPENAI_OA4_SWE_2023, OPENAI_OA10_FULLSTACK_2025, OPENAI_OA9_SWE_2026],
           },
           {
             stage: 'Decision',
@@ -4977,13 +7467,113 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         ],
       },
     ],
+    // Left out for want of a subject: a React exercise in CoderPad (2023 commenter), a phone-screen question that
+    // "kept increasing in complexity" and an onsite design and frontend coding round named without subjects (2023),
+    // and the coding and design rounds recruiter plans list. Left out by content: the 2024 webhook service design
+    // (caching, database design, message-queue retries, a REST service), a 2026 job scheduler debugging round (a heap,
+    // a thread, an async scheduler) and the database choice the 2024 text-area design asked about. Behavioural
+    // questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'chatgpt-in-a-text-area',
+        round: 'Technical screen',
+        kind: 'Frontend system design',
+        topic: 'ChatGPT-style chat in a text area',
+        question:
+          'Design ChatGPT, but in a text area. It was the systems design half of a two-part screen, set by an interviewer who, the candidate says, was not a frontend engineer and did not fully understand how the application would work for a user.',
+        sources: [OPENAI_OA1_SENIOR_FE_2024],
+        practice: { label: 'AI chat composer and streaming turn', path: '/system-design/ai-chat-textarea-design' },
+        answerGuide: 'streaming-chat-composer',
+      },
+      {
+        id: 'refactor-existing-code',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Refactoring existing code',
+        question:
+          'Refactor existing code, in a language the interviewer asked you to pick, and cover its edge cases. A 2024 frontend candidate remembers it as a piece of JavaScript that needed fixing.',
+        promptNotShared: true,
+        sources: [OPENAI_OA1_SENIOR_FE_2024, OPENAI_OA2_FE_2024],
+        practice: { label: 'Stop a helper mutating its input', path: '/javascript/debug/js-debug-mutating-input' },
+      },
+      {
+        id: 'openai-playground-design',
+        round: 'Technical screen',
+        kind: 'Frontend system design',
+        topic: 'OpenAI Playground design',
+        question:
+          'Design a version of the OpenAI Playground for developers, starting from its UI screens. The interviewer left it to you what to focus on and what to abstract away, including whether serving the model was in scope.',
+        sources: [OPENAI_OA10_FULLSTACK_2025, OPENAI_PLAYGROUND_BANK],
+      },
+      {
+        id: 'credit-pool-with-expirations',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Credit pool with expirations',
+        question:
+          'Given issued credits, used credits and rules such as expirations, write the algorithm that computes a user\'s ending credit pool, and get it to pass the test cases.',
+        sources: [OPENAI_OA10_FULLSTACK_2025],
+      },
+      {
+        id: 'map-of-tuples-crud',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Map data structure over tuples',
+        question:
+          'Code a map-type data structure with create, update and delete operations, around maintaining a list of tuples; the follow-ups needed sorting and merging.',
+        sources: [OPENAI_OA8_SCREEN_2024],
+      },
+      {
+        id: 'chatgpt-system-design',
+        round: 'Final interviews',
+        kind: 'Frontend system design',
+        topic: 'ChatGPT system design',
+        question:
+          'Design ChatGPT, at first without worrying about scale or persisting anything. Later: why use SSE rather than WebSocket, and how would you optimise the frontend so that long conversations still render well?',
+        sources: [OPENAI_OA9_SWE_2026],
+        practice: { label: 'SSE vs WebSocket trade-offs', path: '/javascript/trivia/sse-vs-websocket-real-time' },
+        answerGuide: 'frontend-system-design-conversation-history',
+      },
+      {
+        id: 'refactor-for-new-requirements',
+        round: 'Final interviews',
+        kind: 'Practical coding',
+        topic: 'Refactoring messy code for new requirements',
+        question:
+          'Refactor messy code so that it handles new requirements while the existing tests keep passing. Follow-ups: which abstractions or class structure would help it scale, and can it keep its current behaviour while meeting the new cases?',
+        sources: [OPENAI_OA10_FULLSTACK_2025],
+      },
+      {
+        id: 'simplified-vector-store',
+        round: 'Final interviews',
+        kind: 'Algorithm',
+        topic: 'Simplified vector store',
+        question:
+          'Implement a simplified vector store: add(index, val) inserts a string at an index and shifts everything after it back by one, and get(index) returns the value there. A plain linked list was too slow to read, so the interviewer hinted at a linked list with a checkpoint every k nodes.',
+        sources: [OPENAI_OA9_SWE_2026],
+      },
+    ],
+    // Same-question accounts share a row. Left out: questions about the candidate's own project in the 2025
+    // presentation round (its LLM, evals, a vector database for SQL schemas, scale).
+    behaviouralQuestions: [
+      {
+        id: 'why-openai',
+        question: 'Why OpenAI?',
+        sources: [OPENAI_OA2_FE_2024, OPENAI_OA10_FULLSTACK_2025],
+      },
+      {
+        id: 'conflict-resolved',
+        question: 'Tell me about a time you had a conflict with someone and how you resolved it.',
+        sources: [OPENAI_OA10_FULLSTACK_2025],
+      },
+    ],
   },
   netflix: {
     summary:
-      'Netflix publishes a process only for new graduates and interns: a take-home assessment, then two or about two to three rounds. Accounts for experienced frontend and UI roles from 2020 to 2025 describe recruiter and hiring-manager conversations, a live JavaScript screen or a take-home, and an onsite of about four interviews; Netflix-tagged commenters say each team runs its own loop.',
+      'Netflix publishes a process only for new graduates and interns: a take-home assessment, then two or about two to three rounds. Accounts of experienced frontend, UI and full-stack loops from 2020 to 2025 describe recruiter and hiring-manager conversations, a live screen or a take-home, and an onsite of four or five interviews split between technical and behavioural; Netflix-tagged commenters say each team runs its own loop.',
     caveat:
-      'Thin evidence: two complete 2020 loops, one 2025 screen, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and a 2024 senior account counted eight stages without naming them.',
-    checkedAt: '2026-10-22',
+      'Thin evidence: two complete 2020 loops, a 2021 account of one manager talk and a 2024 Warsaw account on Taro, three 2024 loops on Aced, a 2025 screen, a March 2022 post about a loop a few years earlier, one recruiter plan and commenters. The order differs between accounts, some loops use a take-home and others a live screen, and the Warsaw account counts eight stages without naming them.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Experienced frontend and UI engineers',
@@ -4992,38 +7582,39 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Recruiter conversation',
             format:
-              'A long conversation in the 2020 account. A 2024 commenter was rejected after a recruiter screen that included a few light technical questions.',
+              'A long conversation in the 2020 account. A 2024 full-stack recruiter screen was about the culture memo and what you want from the role, and a 2024 commenter was rejected after a recruiter screen that included a few light technical questions.',
             appliesTo: 'All candidates',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF5_PLAN_2024, NETFLIX_NF6_FE_2022],
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF5_PLAN_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF11_UI_L4_2024, NETFLIX_NF12_FULLSTACK_2024],
           },
           {
             stage: 'Hiring-manager conversation',
             format:
-              'A long behavioural interview with a UI manager before the take-home in the 2020 account; a Netflix-tagged commenter in 2024 expects a manager screen before any technical round. A 2021 senior account describes only a confrontational talk with the would-be manager.',
+              'A long behavioural interview with a UI manager came before the take-home in the 2020 account. In a 2024 full-stack loop the hiring manager\'s call came after the technical screen and was behavioural; a Netflix-tagged commenter in 2024 expects a manager screen before any technical round, and a 2021 senior account describes only a confrontational talk with the would-be manager.',
             appliesTo: 'Most loops',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF8_SENIOR_FE_2021],
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF4_COMMENT_2024, NETFLIX_NF6_FE_2022, NETFLIX_NF8_SENIOR_FE_2021, NETFLIX_NF12_FULLSTACK_2024],
             practice: { label: 'Netflix culture questions and story drill', path: '/companies/netflix/preview', fragment: 'netflix-round-culture', drill: true },
           },
           {
             stage: 'Technical screen',
             format:
-              'One hour with three small JavaScript tasks in a 2025 Poland screen for an L4 or L5 frontend role: flatten a nested object, write expect and toBe style matchers, and combine two async calls so that one failure still shows the other result. A 2024 recruiter plan also opens with a technical screen.',
-            appliesTo: 'Loops without a take-home',
-            sources: [NETFLIX_NF3_SCREEN_2025, NETFLIX_NF5_PLAN_2024, NETFLIX_NF6_FE_2022],
-            practice: { label: 'Promise.all vs allSettled', path: '/javascript/trivia/js-promise-combinators-all-allsettled-race-any' },
+              'One hour of three small JavaScript tasks in a 2025 screen in Poland for an L4 or L5 frontend role. In 2024 a 60-minute CoderPad round for a senior full-stack role was a React build, and two UI engineer L4 screens were a frontend system design, one of them in place of the live coding the candidate had been promised. A 2024 recruiter plan also opens with a technical screen, and a 2020 senior UI loop began with a technical phone screen.',
+            appliesTo: 'Most loops',
+            sources: [NETFLIX_NF3_SCREEN_2025, NETFLIX_NF12_FULLSTACK_2024, NETFLIX_NF10_UI_L4_2024, NETFLIX_NF11_UI_L4_2024, NETFLIX_NF5_PLAN_2024, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF6_FE_2022],
+            practice: { label: 'Debounce function', path: '/javascript/coding/js-debounce' },
           },
           {
             stage: 'Take-home',
-            format: 'A build exercise reviewed later in the loop, in the 2020 account and in a loop from before 2022 that ended with a culture conversation.',
+            format:
+              'A UI built at home, in two 2020 accounts, one of which reviewed it in the onsite. A March 2022 post describes a loop from a few years earlier in which questions on why it was built that way followed, then a culture conversation.',
             appliesTo: 'Some loops',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF6_FE_2022],
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF6_FE_2022],
           },
           {
             stage: 'Onsite',
             format:
-              'One coding interview, a take-home review and two behavioural interviews in 2020, with no LeetCode-type questions; another 2020 account had half a day of technical interviews and half a day of behavioural ones with senior leadership and product. A 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
-            appliesTo: 'All candidates',
-            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF5_PLAN_2024],
+              'In 2020, one coding interview, a take-home review and two behavioural interviews, with no LeetCode-type questions. Another 2020 loop had half a day of technical interviews with engineers and half a day of behavioural ones with senior leadership and product, ending with a senior manager. Two 2024 UI engineer L4 onsites had five rounds, three technical and two behavioural; a 2024 senior full-stack onsite had a React build, a system design talked through without a diagram, and two behavioural rounds, the last with a skip-level manager. A 2024 recruiter plan for an L4 Web UI role lists two technical and two behavioural rounds, possibly algorithms and system design.',
+            appliesTo: 'Every complete loop in the accounts',
+            sources: [NETFLIX_NF2_SENIOR_FE_2020, NETFLIX_NF9_SENIOR_UI_2020, NETFLIX_NF10_UI_L4_2024, NETFLIX_NF11_UI_L4_2024, NETFLIX_NF12_FULLSTACK_2024, NETFLIX_NF5_PLAN_2024],
           },
         ],
       },
@@ -5045,6 +7636,182 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             sources: [NETFLIX_NEW_GRADS, NETFLIX_INTERNSHIPS],
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: the subject areas a 2020 senior UI developer lists for the technical rounds
+    // (software design, state management, browser capabilities, JavaScript internals, CSS), "html, css, js specific"
+    // and "softball technical questions" from 2024 commenters, a take-home whose subject is not named, an algorithmic
+    // or system design round a recruiter plan only expects, and two coding rounds a 2024 UI onsite names without tasks.
+    // Behavioural questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'filter-api-results-by-search-input',
+        kind: 'JavaScript',
+        topic: 'Filtering API results by search input',
+        question:
+          'How would you filter results from a REST API dynamically, based on what the user types into a search input? The candidate answered with a debounce, and the discussion turned to the delay a 200 ms debounce adds.',
+        sources: [NETFLIX_NF1_SENIOR_FE_2024],
+        practice: { label: 'React debounced search with a fake API', path: '/react/coding/react-debounced-search' },
+        answerGuide: 'resilient-title-search',
+      },
+      {
+        id: 'netflix-app-frontend-design',
+        round: 'Technical screen',
+        kind: 'Frontend system design',
+        topic: 'Netflix app frontend design',
+        question:
+          'Design the frontend of the current Netflix app, talked through as a system design with the interviewer.',
+        sources: [NETFLIX_NF11_UI_L4_2024],
+        practice: { label: 'Netflix Continue Watching frontend system design', path: '/system-design/netflix-scale-expansion' },
+        answerGuide: 'continue-watching-system-design',
+      },
+      {
+        id: 'internal-tool-screenshot-data-structure',
+        round: 'Technical screen',
+        kind: 'Frontend system design',
+        topic: 'Data model from a tool screenshot',
+        question:
+          'Given a screenshot of one of Netflix\'s internal tools, think through its frontend system design, then write out in CoderPad the data structure you would build it on.',
+        sources: [NETFLIX_NF10_UI_L4_2024],
+      },
+      {
+        id: 'event-log-config-table',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'Collapsible config table in React',
+        question:
+          'In 60 minutes in CoderPad, build a React component that shows event log stream configurations: first as a plain table, then with each JSON configuration collapsible, then with collapse-all and expand-all controls. The interviewer asked how you were thinking about hooks, effects, memoization and data fetching.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'flatten-nested-object',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Flattening a nested object',
+        question: 'Write a function that flattens a nested object into a single level, the first of three tasks in a one-hour screen.',
+        sources: [NETFLIX_NF3_SCREEN_2025],
+      },
+      {
+        id: 'expect-tobe-matchers',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Assertion matchers like expect and toBe',
+        question: 'Write expect and toBe style test matchers, the second task of the same one-hour screen.',
+        sources: [NETFLIX_NF3_SCREEN_2025],
+      },
+      {
+        id: 'two-async-calls-partial-failure',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Partial results from two async calls',
+        question:
+          'Combine two async calls, one fetching videos and one fetching likes, so that when one of them fails the other\'s result still shows. The last of the three tasks.',
+        sources: [NETFLIX_NF3_SCREEN_2025],
+        practice: { label: 'Promise.all vs allSettled', path: '/javascript/trivia/js-promise-combinators-all-allsettled-race-any' },
+      },
+      {
+        id: 'netflix-like-ui-take-home',
+        round: 'Take-home',
+        kind: 'UI build',
+        topic: 'Netflix-like UI',
+        question: 'Build a Netflix-like UI as a take-home assignment; the account gives no brief beyond that.',
+        promptNotShared: true,
+        sources: [NETFLIX_NF9_SENIOR_UI_2020],
+        answerGuide: 'accessible-continue-watching-row',
+      },
+      {
+        id: 'collapsible-list-component',
+        round: 'Onsite',
+        kind: 'React build',
+        topic: 'Collapsible list component',
+        question:
+          'Build a collapsible list component in React. Follow-ups: how should it behave when a filter changes the data and some items disappear, how does React handle the rendering and updates here, and what would you do if the list got very large?',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+        answerGuide: 'personalized-row-rendering',
+      },
+      {
+        id: 'event-logging-client-libraries',
+        round: 'Onsite',
+        kind: 'Product design',
+        topic: 'Client libraries for event logging',
+        question:
+          'You are building an event logging product: would you build and own the client libraries yourself, or have each team build its own from your documentation? The benefits of your choice, where it fails over time, how team bandwidth changes the answer, and the pain points across teams.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'styling-and-state-opinions',
+        round: 'Onsite',
+        kind: 'Web fundamentals',
+        topic: 'Opinions on styling and state management',
+        question:
+          'A round on your own opinions about engineering decisions such as styling and state management; the candidate advises giving personal views rather than how a former company did things.',
+        promptNotShared: true,
+        sources: [NETFLIX_NF11_UI_L4_2024],
+      },
+      {
+        id: 'content-platform-caching',
+        kind: 'Web fundamentals',
+        topic: 'Caching strategies for a content platform',
+        question:
+          'Talk through caching strategies for a content platform, fitted to what the business needs; the account names the subject but not the prompt.',
+        promptNotShared: true,
+        sources: [NETFLIX_NF1_SENIOR_FE_2024],
+        practice: { label: 'Streaming platform caching architecture', path: '/javascript/trivia/content-delivery-caching-strategies-streaming' },
+        answerGuide: 'streaming-caching-failure-states',
+      },
+      {
+        id: 'array-and-dom-manipulation',
+        kind: 'JavaScript',
+        topic: 'Array and DOM manipulation',
+        question:
+          'Coding the candidate calls trivial: array manipulation and JavaScript fundamentals, DOM manipulation in particular, with no LeetCode-type problems. The account does not say in which round.',
+        promptNotShared: true,
+        sources: [NETFLIX_NF2_SENIOR_FE_2020],
+      },
+    ],
+    // Same-question accounts share a row. Left out: the 2020 advice to study the memo and discuss it at length (the
+    // memo row asks it), questions about the candidate's own project, and a confrontational 2021 manager talk.
+    behaviouralQuestions: [
+      {
+        id: 'culture-memo-resonates',
+        question: 'Which parts of the culture memo resonate most with you, and which surprised you or do not resonate?',
+        sources: [NETFLIX_NEW_GRADS, NETFLIX_INTERNSHIPS, NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'convince-teammates',
+        question: 'Tell me about a time you had to convince your teammates of something they were originally against.',
+        sources: [NETFLIX_NF9_SENIOR_UI_2020],
+      },
+      {
+        id: 'disagreed-with-decision',
+        question:
+          'Tell me about a time you disagreed with a decision, and how you voiced it; a later round asked for one where you could not persuade people, and for a second example.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'gave-feedback',
+        question: 'Tell me about a time you gave feedback.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'received-critical-feedback',
+        question: 'Tell me about a time you received critical feedback from a manager or lead, and how you grew from it afterwards.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'feedback-from-someone-you-lead',
+        question: 'Tell me about a time you received feedback from someone you were leading or working closely with.',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'what-you-want-from-the-role',
+        question: 'What are you looking for in a new role, and what in this job description resonates with you?',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
+      },
+      {
+        id: 'who-fits-the-team',
+        question: 'What kind of candidate do you think fits this team best?',
+        sources: [NETFLIX_NF12_FULLSTACK_2024],
       },
     ],
   },
@@ -5145,6 +7912,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'audio-transcript-highlight',
         round: 'Live technical round',
         kind: 'React debugging',
+        topic: 'Audio player transcript highlighting',
         question:
           'In a small React audio player with a transcript, find what is broken and build the missing logic so the text being spoken highlights as the audio plays.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
@@ -5155,6 +7923,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'fake-voice-service-component',
         round: 'Live technical round',
         kind: 'React build',
+        topic: 'Voice service component',
         question:
           'Build a small React component or app around an ElevenLabs voice service with an engineer; in the 2026 account the service was a fake known only from its types, and the code was never run.',
         sources: [ELEVENLABS_EL8_SENIOR_2026, ELEVENLABS_EL9_SENIOR_2025, ELEVENLABS_EL3_2024],
@@ -5163,6 +7932,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'assessment-react-and-algorithm-tasks',
         round: 'Coding assessment',
         kind: 'React and algorithms',
+        topic: 'Front-end tasks and LeetCode-style problems',
         question:
           'React and JavaScript tasks beside LeetCode-style problems in the timed assessment: two front-end and two algorithm questions in one 2026 account, four tasks in 90 minutes with the hardest last in another.',
         promptNotShared: true,
@@ -5174,6 +7944,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'dubbing-review-interface',
         round: 'Product or design round',
         kind: 'Product design',
+        topic: 'Dubbing project review interface',
         question:
           'Replace a voice-dubbing project tracked in a spreadsheet with an interface for reviewing progress, handling feedback and working with voice actors; a follow-up asked for it to feel more like a video player than a document.',
         sources: [ELEVENLABS_EC3_2025, ELEVENLABS_BANK],
@@ -5184,6 +7955,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'coderpad-react-bug',
         round: 'Coding assessment',
         kind: 'React debugging',
+        topic: 'Component bug fix',
         question: 'Fix a bug in a React component, in a CoderPad round that also held LeetCode problems.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
@@ -5193,6 +7965,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'coderpad-finish-react-component',
         round: 'Coding assessment',
         kind: 'React build',
+        topic: 'Finishing a partly written component',
         question: 'Finish the implementation of a partly written React component, in the same CoderPad round.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
@@ -5201,6 +7974,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'live-practical-fix',
         round: 'Live technical round',
         kind: 'Practical coding',
+        topic: 'Live practical bug fix',
         question: 'Fix a practical, real-life problem live while working through it with the interviewer.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL1_SENIOR_2026],
@@ -5211,6 +7985,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'transcription-studio-roadmap',
         round: 'Product or design round',
         kind: 'Product design',
+        topic: 'Transcription studio feature roadmap',
         question:
           'For an audio transcription studio used by dubbing teams, propose features, prioritise them and turn them into a roadmap; the follow-ups covered the task list view, the transcription view, authentication and roles.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
@@ -5219,6 +7994,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'dubbing-re-review-status',
         round: 'Live technical round',
         kind: 'Practical coding',
+        topic: 'Re-review marking in a dubbing workflow',
         question:
           'Write functions for a dubbing workflow kept in a spreadsheet that apply edits and approvals, and mark which lines, and the files above them, need review again after a line is re-recorded.',
         sources: [ELEVENLABS_EC3_2025, ELEVENLABS_BANK],
@@ -5227,6 +8003,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'folder-permissions',
         round: 'Live technical round',
         kind: 'Practical coding',
+        topic: 'Inherited folder permissions over time',
         question:
           'Folders allow or deny users and groups, permissions are inherited unless a folder overrides them, and each change is timestamped: check whether a user can open a file at a given time.',
         sources: [ELEVENLABS_EC5_FDE_2025, ELEVENLABS_EL22_2024, ELEVENLABS_EL23_2024, ELEVENLABS_BANK],
@@ -5235,6 +8012,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'adapt-product-key-account',
         round: 'Product or design round',
         kind: 'Product design',
+        topic: 'Adapting a product for key accounts',
         question: 'Adapt an ElevenLabs product so that a particular kind of key account can use it.',
         sources: [ELEVENLABS_EL20_GROWTH_2026],
       },
@@ -5242,6 +8020,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'valid-sudoku',
         round: 'Coding assessment',
         kind: 'Algorithm',
+        topic: 'Valid Sudoku',
         question: 'Check whether a partly filled Sudoku board is valid (LeetCode\'s Valid Sudoku).',
         sources: [ELEVENLABS_EL3_2024],
       },
@@ -5249,6 +8028,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'next-larger-distinct-digits',
         round: 'Coding assessment',
         kind: 'Algorithm',
+        topic: 'Next larger number sharing no digits',
         question: 'Find the next number larger than n that shares no digit with n.',
         sources: [ELEVENLABS_EC6_2026],
       },
@@ -5256,6 +8036,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'merge-equal-level-stones',
         round: 'Coding assessment',
         kind: 'Algorithm',
+        topic: 'Merging equal-level stones',
         question: 'Repeatedly merge stones of equal level and return the fewest stones that can remain.',
         sources: [ELEVENLABS_EC6_2026],
       },
@@ -5263,6 +8044,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'shirt-colours-no-repeat',
         round: 'Coding assessment',
         kind: 'Algorithm',
+        topic: 'Lowest-cost shirt colour sequence',
         question: 'Choose the lowest-cost sequence of shirt colours with no colour used twice in a row.',
         sources: [ELEVENLABS_EC6_2026],
       },
@@ -5270,6 +8052,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'map-queue-bfs-problems',
         round: 'Coding assessment',
         kind: 'Algorithm',
+        topic: 'Maps, queues and breadth-first traversal',
         question: 'Three assessment problems on maps, queues and breadth-first traversal, the first two easy and the last medium to hard.',
         promptNotShared: true,
         sources: [ELEVENLABS_EC4_2026],
@@ -5277,6 +8060,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'merge-sorted-drop-duplicates',
         kind: 'Algorithm',
+        topic: 'Merging sorted lists without duplicates',
         question: 'Merge sorted lists into one and drop the duplicates.',
         sources: [ELEVENLABS_EL16_2026],
         practice: { label: 'Merge two sorted arrays', path: '/javascript/coding/js-merge-sorted-arrays' },
@@ -5284,12 +8068,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'reverse-linked-list',
         kind: 'Algorithm',
+        topic: 'Linked list reversal',
         question: 'Reverse a linked list.',
         sources: [ELEVENLABS_BANK],
       },
       {
         id: 'longest-substring-no-repeats',
         kind: 'Algorithm',
+        topic: 'Longest substring without repeating characters',
         question: 'Find the longest substring without repeating characters.',
         sources: [ELEVENLABS_BANK],
         practice: { label: 'Longest substring without repeating characters', path: '/javascript/coding/js-longest-substring-without-repeating' },
@@ -5416,6 +8202,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'tree-filter-then-ui',
         round: 'Phone or video interviews',
         kind: 'UI build',
+        topic: 'Filtering and rendering an n-ary tree',
         question:
           'In an n-ary tree, remove every node whose value contains a given substring, together with its subtree, and return the filtered tree; then build a UI that renders it with correct indentation and shows its content for the input value.',
         sources: [WAYMO_WM1_SENIOR_FE_2026],
@@ -5426,6 +8213,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'angular-debug-user-issues',
         round: 'Virtual onsite',
         kind: 'UI debugging',
+        topic: 'Angular fixes from user reports',
         question: 'Debug a piece of Angular UI code and fix it from a few issues its users reported.',
         promptNotShared: true,
         sources: [WAYMO_WM1_SENIOR_FE_2026],
@@ -5436,6 +8224,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'promise-coding-question',
         round: 'Virtual onsite',
         kind: 'JavaScript',
+        topic: 'Promise-based coding task',
         question: 'A coding question built on Promises, in plain TypeScript or JavaScript.',
         promptNotShared: true,
         sources: [WAYMO_WM1_SENIOR_FE_2026],
@@ -5446,6 +8235,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'ai-chat-frontend-design',
         round: 'Virtual onsite',
         kind: 'Frontend system design',
+        topic: 'AI chat application',
         question: 'Design an AI chat application, frontend focused.',
         sources: [WAYMO_WM1_SENIOR_FE_2026],
         practice: { label: 'Design an AI chat composer and streaming turn', path: '/system-design/ai-chat-textarea-design' },
@@ -5455,6 +8245,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'debounced-autocomplete',
         round: 'Virtual onsite',
         kind: 'UI build',
+        topic: 'Debounced autocomplete search',
         question: 'Build an autocomplete search bar that debounces what the user types.',
         sources: [WAYMO_WM1_SENIOR_FE_2026],
         practice: { label: 'React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
@@ -5464,6 +8255,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'generic-tree-viewer',
         round: 'JavaScript and UI round',
         kind: 'UI build',
+        topic: 'Generic tree viewer component',
         question:
           'Build a generic tree viewer component for hierarchical data, like a file explorer: render it recursively with semantic lists, let folders expand and collapse, and discuss event delegation and its trade-offs.',
         sources: [WAYMO_WM2_SWE_2026],
@@ -5574,6 +8366,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'file-explorer-react',
         round: 'Technical screen',
         kind: 'React build',
+        topic: 'Nested file explorer',
         question:
           'Build a file explorer in React from nested folder data: each row shows a file or folder icon beside its name, and clicking a folder shows its children beneath it. A 2024 candidate said it was judged on working behaviour more than styling.',
         sources: [ANDURIL_AN6_SCREEN_2025, ANDURIL_AN2_FOLDER_2024, ANDURIL_AN10_INTERN_2023],
@@ -5584,6 +8377,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'es6-class-then-framework',
         round: 'Technical screen',
         kind: 'UI build',
+        topic: 'ES6 class component in plain JavaScript',
         question:
           'From a blank file, build a component as an ES6 class with three specified methods in plain JavaScript, then set it up in a framework of your choice.',
         promptNotShared: true,
@@ -5594,6 +8388,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'timer-class-react-app',
         kind: 'React build',
+        topic: 'Timer class and timer app',
         question: 'Write a timer class in JavaScript, then build a React app around it.',
         sources: [ANDURIL_AN11_FE_FOCUS_2024],
         practice: { label: 'React countdown timer with start, pause and reset', path: '/react/coding/react-countdown-timer' },
@@ -5602,6 +8397,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'autocomplete-search-react',
         kind: 'React build',
+        topic: 'Autocomplete search',
         question: 'Design an autocomplete search feature in React.',
         sources: [ANDURIL_AN5_TIP_2024],
         practice: { label: 'React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
@@ -5610,6 +8406,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'lodash-style-utilities',
         kind: 'JavaScript',
+        topic: 'Lodash-style flatten, map and reduce',
         question: 'Lodash-style utility questions: write your own flatten, map and reduce.',
         sources: [ANDURIL_AN4_CLEARED_2024],
         practice: { label: 'Flatten one level', path: '/javascript/coding/js-flatten-once' },
@@ -5619,6 +8416,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'drone-zone-sensor-class',
         round: 'Technical screen',
         kind: 'Practical coding',
+        topic: 'Drone zone sensor class',
         question:
           'A drone senses objects in a zone and reports what it finds: write a class with two methods that retrieve and send data to an external source.',
         sources: [ANDURIL_AN30_SWE_2024],
@@ -5627,6 +8425,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'largest-sensor-distance',
         round: 'Technical screen',
         kind: 'Algorithm',
+        topic: 'Largest sensor distance',
         question:
           'Given two integer arrays, take each number in the first array and its closest number in the second; their difference is a sensor distance. Return the largest sensor distance.',
         sources: [ANDURIL_AN34_SWE_2023],
@@ -5634,12 +8433,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'course-schedule-topological-sort',
         kind: 'Algorithm',
+        topic: 'Course Schedule topological sort',
         question: 'Decide whether all the courses can be finished given their prerequisites, a topological sort (LeetCode\'s Course Schedule).',
         sources: [ANDURIL_AN31_SWE_2025],
       },
       {
         id: 'medium-dynamic-programming',
         kind: 'Algorithm',
+        topic: 'Dynamic programming problem',
         question: 'A dynamic programming problem of LeetCode medium difficulty, in an interview the candidate called friendly.',
         promptNotShared: true,
         sources: [ANDURIL_AN35_DP_2022],
@@ -5647,6 +8448,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'bfs-dfs-with-follow-ups',
         kind: 'Algorithm',
+        topic: 'Breadth-first and depth-first search',
         question: 'Breadth-first and depth-first search questions of LeetCode medium difficulty, each pushed further by harder follow-ups.',
         promptNotShared: true,
         sources: [ANDURIL_AN35_BFS_2023],
@@ -5654,6 +8456,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'hard-graph-problems',
         kind: 'Algorithm',
+        topic: 'Data structure and graph problems',
         question: 'LeetCode-style data structure and graph problems, which the candidate found hard, in rounds of 45 to 60 minutes.',
         promptNotShared: true,
         sources: [ANDURIL_AN33_SWE_2025],
@@ -5674,10 +8477,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   gitlab: {
     summary:
-      'GitLab publishes one frontend loop for every level: a short written assessment, a recruiter screening call, a merge request you review on your own time and then improve in a 90-minute technical interview, a behavioral interview and an interview with a Director of Engineering. Public accounts from 2018 to 2025 describe the same order.',
+      'GitLab publishes one frontend loop for every level: a short written assessment, a recruiter screening call, a merge request you review on your own time and then improve in a 90-minute technical interview, a behavioral interview and an interview with a Director of Engineering. Public accounts from 2018 to 2025 describe these steps, but in a 2022, a 2023 and a 2025 account a hiring manager or director came before any technical round.',
     caveat:
-      'Stages and durations come from the GitLab handbook; exercise details come from accounts dated 2018 to 2025.',
-    checkedAt: '2026-10-23',
+      'Stages and durations come from the GitLab handbook; the details come from accounts dated 2018 to 2025, most of them anonymous interview reviews re-posted on Taro with placeholder dates. The question list adds 2019 loops with an hour of JavaScript questions or a senior theory call, and a 2021 Senior Software Engineer loop added a quiz on frontend trivia; the handbook describes none of these rounds.',
+    checkedAt: '2026-11-13',
     variants: [
       {
         title: 'Frontend engineers, all levels',
@@ -5685,44 +8488,57 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Written assessment',
             format:
-              'A short written assessment after applying. Older accounts describe open-ended technical questions answered in writing, such as what happens in the browser while a page loads.',
+              'A short written assessment sent after you apply. Accounts from 2018 and 2019 describe open-ended technical questions answered in writing, by email or in an online form, one set arriving within minutes of applying; a 2022 account calls it a take-home written assignment.',
             appliesTo: 'Selected applicants',
-            sources: [GITLAB_JOB_FAMILY, GITLAB_GL27_FE_2019, GITLAB_GL35_FE_2018, GITLAB_GL24_FE_2019],
-            practice: { label: 'How browsers parse and render', path: '/html/trivia/html-parsing-rendering' },
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL27_FE_2019, GITLAB_GL35_FE_2018, GITLAB_GL24_FE_2019, GITLAB_GL31_SENIOR_2019, GITLAB_GL6_FE_2022],
+            // The page-load task practises a locked written question, so the open link is the broad fundamentals quiz.
+            practice: { label: 'Frontend fundamentals quiz', path: '/guides/interview-blueprint/quiz' },
           },
           {
             stage: 'Recruiter screening call',
-            format: '30 to 40 minutes on video: background, motivation, experience with each listed skill, location, notice period and salary range.',
+            format: '30 to 40 minutes on video: background, motivation and experience with each skill the posting lists. The recruiter also asks about location, notice period and salary range.',
             appliesTo: 'All candidates',
-            sources: [GITLAB_JOB_FAMILY, GITLAB_CANDIDATE_FAQ, GITLAB_GL4_FE_2024, GITLAB_GL1_FE_2025],
+            sources: [GITLAB_JOB_FAMILY, GITLAB_CANDIDATE_FAQ, GITLAB_GL4_FE_2024, GITLAB_GL1_FE_2025, GITLAB_GL32_FE_2019],
           },
           {
             stage: 'Merge request review',
             format:
-              'A self-contained merge request on a small application arrives at least 72 hours before the call; up to an hour of review, finished a day ahead. Reports name Vue, HTML, CSS, Haml and Jest unit tests.',
+              'A self-contained merge request on a small app arrives at least 72 hours before the call. You review it for up to an hour and finish a day ahead. Accounts from 2019 to 2024 name Vue, HTML, CSS, Haml and Jest, and in 2020 the exercise was a pull request in GitLab\'s own codebase.',
             appliesTo: 'Frontend engineers',
-            sources: [GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL3_FE_2024, GITLAB_GL4_FE_2024, GITLAB_GL10_FE_2021, GITLAB_GL16_FE_2020],
+            sources: [
+              GITLAB_TECHNICAL_INTERVIEW,
+              GITLAB_GL3_FE_2024,
+              GITLAB_GL4_FE_2024,
+              GITLAB_GL10_FE_2021,
+              GITLAB_GL15_FE_2020,
+              GITLAB_GL16_FE_2020,
+              GITLAB_GL20_FE_2019,
+              GITLAB_GL21_FE_2019,
+              GITLAB_GL9_SENIOR_FE_2022,
+            ],
             practice: { label: 'Review a Vue merge request', path: '/vue/coding/vue-issue-list-merge-request-review' },
           },
           {
             stage: 'Technical interview',
             format:
-              '90 minutes on video with screen sharing: walk through your review, then write code to improve the merge request, with a frontend engineer or a frontend engineering manager.',
+              '90 minutes on video with screen sharing, with a frontend engineer or a frontend engineering manager. You walk through your review, then write code to improve the merge request; in a 2024 account the interviewer stayed silent while the candidate coded.',
             appliesTo: 'Frontend engineers',
-            sources: [GITLAB_JOB_FAMILY, GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL4_FE_2024, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
-            practice: { label: 'Build a spy function', path: '/javascript/coding/js-create-spy-function' },
+            sources: [GITLAB_JOB_FAMILY, GITLAB_TECHNICAL_INTERVIEW, GITLAB_GL4_FE_2024, GITLAB_GL3_FE_2024, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+            // The spy-function task practises a locked testing row, so the open link is a plain Vue build.
+            practice: { label: 'Vue todo list', path: '/vue/coding/vue-todo-list' },
           },
           {
             stage: 'Behavioral interview',
-            format: '45 minutes with an engineering manager: STAR questions, sometimes with high-level technical questions.',
+            format:
+              '45 minutes with an engineering manager: STAR questions, sometimes with high-level technical questions. One 2019 account counted 20 to 25 STAR questions, and in a 2021 account the round turned into technical questions.',
             appliesTo: 'All candidates',
-            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019],
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019, GITLAB_GL28_FE_2019, GITLAB_GL12_FE_2021],
           },
           {
             stage: 'Director interview',
-            format: '60 minutes with a Director of Engineering on past experience and values, with a few technical questions in some accounts.',
+            format: '60 minutes with a Director of Engineering on past experience and values. Some accounts add a few technical questions.',
             appliesTo: 'All candidates',
-            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019],
+            sources: [GITLAB_JOB_FAMILY, GITLAB_GL20_FE_2019, GITLAB_GL21_FE_2019, GITLAB_GL35_FE_2018],
             // The behavioural round takes the general guide; past experience calls for prepared stories.
             practice: { label: 'Crafting STAR stories', path: '/guides/behavioral/stories' },
           },
@@ -5736,7 +8552,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       },
       {
         title: 'Full-stack engineers',
-        note: 'Full-stack candidates get two technical interviews, each on its own merge request.',
+        note: 'In full-stack accounts from 2020, 2022 and 2025 the candidate had two technical interviews, one backend and one frontend; in the 2022 account each was on its own merge request.',
         stages: [
           {
             stage: 'Recruiter screening call',
@@ -5746,7 +8562,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           },
           {
             stage: 'Backend technical interview',
-            format: '90 minutes on a merge request reviewed before the call and improved during it; Ruby, Rails, testing and database topics.',
+            format: '90 minutes on a merge request reviewed before the call and improved during it. Topics: Ruby, Rails, testing and databases.',
             appliesTo: 'Full-stack engineers',
             sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025],
           },
@@ -5754,15 +8570,359 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
             stage: 'Frontend technical interview',
             format: '90 minutes on a second merge request that needs Vue, HTML and CSS changes; JavaScript, Vue.js and testing.',
             appliesTo: 'Full-stack engineers',
-            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025, GITLAB_GL18_FULLSTACK_2020],
+            sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL44_FULLSTACK_2025, GITLAB_GL18_FULLSTACK_2020, GITLAB_GL11_SENIOR_2021],
           },
           {
             stage: 'Manager and director interviews',
             format: 'About an hour each on behavioral and situational questions, values and how you work.',
             appliesTo: 'All candidates',
-            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL44_FULLSTACK_2025],
+            sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL44_FULLSTACK_2025, GITLAB_GL5_FULLSTACK_2023],
           },
         ],
+      },
+    ],
+    // Left out for want of a subject: the merge request accounts that describe only the format (2019 to 2023, GL9, GL10,
+    // GL12, GL17, GL20 to GL23, GL28, GL35, GL5, the 2019 blog post), the 2021 "trivia quiz in FE tech", the 2019 live
+    // coding "from JS standards to weird CSS selectors", the 2022 written take-home, "how your process is architecting
+    // things", pros and cons of two unnamed programming languages, and a 2024 Blind round on logic, backwards
+    // compatibility and design patterns (role not stated). Left out as history: the 2016 and 2017 loops, a different
+    // format before the merge request. Behavioural questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'vue-merge-request-review',
+        round: 'Merge request review',
+        kind: 'Practical coding',
+        topic: 'Vue merge request review',
+        question:
+          'Review a merge request on a small Vue app on your own time and request the changes that would improve it, then make them in a 90-minute live coding session. In 2024 it was a simple Vue 2 app that called an API, ran some operations on the data and rendered its UI conditionally.',
+        sources: [GITLAB_GL4_FE_2024, GITLAB_GL3_FE_2024],
+        practice: { label: 'Review a Vue merge request', path: '/vue/coding/vue-issue-list-merge-request-review' },
+        answerGuide: 'review-vue-merge-request-live',
+      },
+      {
+        id: 'repeated-api-calls',
+        round: 'Technical interview',
+        kind: 'UI debugging',
+        topic: 'Repeated API calls in a component',
+        question:
+          'Find the performance problem in the merge request\'s Vue component. One 2024 candidate cached the data in the component and cut the unnecessary API calls; another saw only afterwards that a button click called the same endpoint every time, when the data could load once, on mount or on the first click, and stay in component data. The second also suspected a retry while loop that could turn infinite, and was told to look at performance in Vue.',
+        sources: [GITLAB_GL3_FE_2024, GITLAB_GL4_FE_2024],
+        practice: { label: 'Fix an async race in a fetch helper', path: '/javascript/debug/js-debug-async-race' },
+        answerGuide: 'stop-refetching-on-click',
+      },
+      {
+        id: 'mobile-layout-from-mock',
+        round: 'Technical interview',
+        kind: 'UI build',
+        topic: 'Mobile layout to match a mock',
+        question:
+          'Make the merge request\'s view work on mobile: one 2024 account had to match a mobile mock, and both 2024 candidates used media queries, one with Flexbox. The feedback in one account asked for deeper CSS.',
+        sources: [GITLAB_GL4_FE_2024, GITLAB_GL3_FE_2024],
+        practice: { label: 'Responsive Flexbox navbar', path: '/css/coding/css-flexbox-navbar' },
+        answerGuide: 'fix-markup-match-mobile-mock',
+      },
+      {
+        id: 'jest-unit-tests',
+        round: 'Technical interview',
+        kind: 'Practical coding',
+        topic: 'Keeping Jest unit tests passing',
+        question:
+          'The 2024 merge request came with unit tests in Jest: resolve the issue it targets and keep the tests passing. The candidate who stopped there was turned down, with feedback to look into performance testing a Vue.js app.',
+        sources: [GITLAB_GL4_FE_2024],
+        practice: { label: 'Build a spy function', path: '/javascript/coding/js-create-spy-function' },
+        answerGuide: 'make-unit-tests-catch-bug',
+      },
+      {
+        id: 'gitlab-codebase-pull-request',
+        round: 'Merge request review',
+        kind: 'Practical coding',
+        topic: 'Invalid HTML and plain JavaScript',
+        question:
+          'Review a 2020 pull request on a Haml page with a Vue instance attached, given no instructions beyond the review. It had two parts: badly invalid HTML to comment on and fix, and plain JavaScript inside the Vue file to convert to Vue; the unit tests and the CI pipeline were also failing.',
+        sources: [GITLAB_GL16_FE_2020],
+      },
+      {
+        id: 'scss-haml-merge-request',
+        round: 'Merge request review',
+        kind: 'Practical coding',
+        topic: 'Small SCSS, JavaScript and Haml change',
+        question:
+          'Review a small merge request of about 30 lines of SCSS, 10 of JavaScript and 30 of HTML and Haml against its requirements, after running it locally. In the call the interviewer asked which changes you suggested and how you would implement them, and said there were too few.',
+        sources: [GITLAB_GL15_FE_2020],
+      },
+      {
+        id: 'flux-and-vuex',
+        round: 'Written assessment',
+        kind: 'Web fundamentals',
+        topic: 'The Flux pattern and Vuex',
+        question: 'GitLab\'s frontend is mostly Vue.js with Vuex: describe in writing what the Flux model is and what the pattern gains you.',
+        sources: [GITLAB_GL35_FE_2018],
+        practice: { label: 'What Vuex is for', path: '/vue/trivia/vuex-state-management' },
+      },
+      {
+        id: 'browser-page-load',
+        round: 'Written assessment',
+        kind: 'Web fundamentals',
+        topic: 'How a browser loads a page',
+        question: 'Describe in writing, in as much detail as you can, what happens in the browser while it loads a page.',
+        sources: [GITLAB_GL35_FE_2018, GITLAB_GL27_FE_2019],
+        practice: { label: 'How browsers parse and render HTML', path: '/html/trivia/html-parsing-rendering' },
+        answerGuide: 'written-page-load-answer',
+      },
+      {
+        id: 'xss-and-prevention',
+        round: 'Written assessment',
+        kind: 'Web fundamentals',
+        topic: 'XSS and how to prevent it',
+        question: 'Explain what XSS is and how it can be prevented, in a form of open-ended questions sent after applying.',
+        sources: [GITLAB_GL31_SENIOR_2019, GITLAB_GLA2_EM_2019],
+        practice: { label: 'DOM XSS prevention', path: '/javascript/trivia/js-xss-dom-sinks' },
+      },
+      {
+        id: 'framework-or-plain-javascript',
+        round: 'Written assessment',
+        kind: 'Web fundamentals',
+        topic: 'Framework or plain JavaScript',
+        question: 'Why and when would you use a JavaScript framework, or React rather than plain JavaScript? Asked in two written forms of open-ended questions.',
+        sources: [GITLAB_GL31_SENIOR_2019, GITLAB_GLA2_EM_2019],
+      },
+      {
+        id: 'cors',
+        kind: 'Web fundamentals',
+        topic: 'CORS',
+        question: 'Explain CORS; asked in writing in one 2019 loop and aloud in another.',
+        sources: [GITLAB_GL31_SENIOR_2019, GITLAB_GL30_SENIOR_2019],
+        practice: { label: 'Handling CORS in a frontend app', path: '/javascript/trivia/js-secure-cors-handling' },
+      },
+      {
+        id: 'slow-loading-list',
+        kind: 'Frontend system design',
+        topic: 'Speeding up a slow-loading list',
+        question: 'Explain how you would optimise a list that loads slowly.',
+        sources: [GITLAB_GL30_SENIOR_2019],
+        practice: { label: 'Infinite scroll list design', path: '/system-design/infinite-scroll-list' },
+      },
+      {
+        id: 'tagged-search-box',
+        kind: 'Frontend system design',
+        topic: 'Tagged search box',
+        question: 'Explain how you would implement a search box that takes tags.',
+        sources: [GITLAB_GL30_SENIOR_2019],
+        practice: { label: 'Vue chips input with autocomplete', path: '/vue/coding/vue-chips-input-autocomplete' },
+      },
+      {
+        id: 'this-keyword',
+        kind: 'JavaScript',
+        topic: 'The this keyword',
+        question: 'Explain the this keyword in JavaScript, in an hour of JavaScript questions.',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Why this is undefined in a callback', path: '/javascript/trivia/js-this-keyword' },
+      },
+      {
+        id: 'closures',
+        kind: 'JavaScript',
+        topic: 'Closures',
+        question: 'What is a closure? Asked in the same hour of JavaScript questions.',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Explain closures', path: '/javascript/trivia/js-closures' },
+      },
+      {
+        id: 'call-apply-bind',
+        kind: 'JavaScript',
+        topic: 'Call, apply and bind',
+        question: 'How do call, apply and bind differ?',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Call, apply and bind', path: '/javascript/trivia/js-call-apply-bind' },
+      },
+      {
+        id: 'event-loop',
+        kind: 'JavaScript',
+        topic: 'The event loop',
+        question: 'What is the event loop?',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Event loop visualizer', path: '/javascript/trivia/js-event-loop' },
+      },
+      {
+        id: 'event-propagation',
+        kind: 'Web fundamentals',
+        topic: 'Event propagation and bubbling',
+        question: 'Explain event propagation and bubbling.',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Bubbling, capturing and event delegation', path: '/javascript/trivia/js-event-delegation' },
+      },
+      {
+        id: 'es6-classes',
+        kind: 'JavaScript',
+        topic: 'ES6 classes',
+        question: 'Why would you use ES6 classes?',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Classes in JavaScript', path: '/javascript/trivia/js-classes' },
+      },
+      {
+        id: 'vue-reactivity',
+        kind: 'Web fundamentals',
+        topic: 'Vue reactivity',
+        question: 'Explain how Vue\'s reactivity works.',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'The Vue reactivity system', path: '/vue/trivia/vue-reactivity-system' },
+      },
+      {
+        id: 'virtual-dom',
+        kind: 'Web fundamentals',
+        topic: 'The virtual DOM',
+        question: 'What is the virtual DOM?',
+        sources: [GITLAB_GL34_FE_2019],
+        practice: { label: 'Vue virtual DOM and diffing', path: '/vue/trivia/vue-virtual-dom-diffing' },
+      },
+      {
+        id: 'linked-list',
+        kind: 'Algorithm',
+        topic: 'Linked list',
+        question:
+          'Build a linked list in JavaScript while sharing your screen: a 10-minute pair-programming exercise in one account; in another, finished halfway with the interviewer\'s guidance.',
+        sources: [GITLAB_GL34_FE_2019, GITLAB_GLA1_EM_FE_2018],
+      },
+      {
+        id: 'rem-and-em',
+        kind: 'Web fundamentals',
+        topic: 'CSS rem and em units',
+        question: 'What are rem and em?',
+        sources: [GITLAB_GL33_SENIOR_2019],
+        practice: { label: 'em, rem, % and px', path: '/css/trivia/css-units-em-rem-percent-px' },
+      },
+      {
+        id: 'responsive-meta-tag',
+        kind: 'Web fundamentals',
+        topic: 'Meta tag for responsive pages',
+        question: 'Which meta tag do you need to make a web page responsive?',
+        sources: [GITLAB_GL8_FE_2022],
+        practice: { label: 'Essential tags in the HTML head', path: '/html/coding/html-head-seo-basics' },
+      },
+      {
+        id: 'framework-dom-rendering',
+        round: 'Behavioral interview',
+        kind: 'Web fundamentals',
+        topic: 'How frameworks render to the DOM',
+        question: 'Explain how two different frontend frameworks render elements to the DOM.',
+        promptNotShared: true,
+        sources: [GITLAB_GL12_FE_2021],
+      },
+      {
+        id: 'hotel-elevator-system',
+        round: 'Director interview',
+        kind: 'Product design',
+        topic: 'Hotel elevator system',
+        question: 'At a very high level, what would you do to build an elevator system for a hotel?',
+        sources: [GITLAB_GL35_FE_2018],
+      },
+      {
+        id: 'gitlab-ui-change',
+        kind: 'Product design',
+        topic: 'A UI change to GitLab',
+        question: 'Name something GitLab, or another piece of software you use, should change in its UI, and say how you would implement it.',
+        sources: [GITLAB_GL20_FE_2019],
+      },
+    ],
+    // Left out as screening logistics: compensation, the current tech stack, Agile experience, Rails or Vue experience,
+    // "describe your work at x", "tell me about yourself", "have you used GitLab", what you want from your next role.
+    behaviouralQuestions: [
+      {
+        id: 'why-gitlab',
+        question: 'Why do you want to work at GitLab?',
+        sources: [
+          GITLAB_GL1_FE_2025,
+          GITLAB_GL13_FE_2020,
+          GITLAB_GL17_FE_2020,
+          GITLAB_GL18_FULLSTACK_2020,
+          GITLAB_GL20_FE_2019,
+          GITLAB_GL32_FE_2019,
+          GITLAB_GLA2_EM_2019,
+        ],
+      },
+      {
+        id: 'creative-problem-solving',
+        question: 'Tell me about a time you approached a problem creatively.',
+        sources: [GITLAB_GL2_FE_2025, GITLAB_GL1_FE_2025],
+      },
+      {
+        id: 'iterated-on-a-problem',
+        question: 'Tell me about a time you iterated on a problem.',
+        sources: [GITLAB_GL21_FE_2019],
+      },
+      {
+        id: 'mistake-or-failure',
+        question: 'Tell me about a mistake or a failure: how did you put it right, and what did you learn?',
+        sources: [GITLAB_GL21_FE_2019, GITLAB_GL13_FE_2020, GITLAB_GL6_FE_2022, GITLAB_GL18_FULLSTACK_2020],
+      },
+      {
+        id: 'bug-in-production',
+        question: 'Tell me about a time you introduced a bug into production.',
+        sources: [GITLAB_GL20_FE_2019],
+      },
+      {
+        id: 'difficult-bug',
+        question: 'Describe a particularly difficult bug you had to debug, and how you solved it.',
+        sources: [GITLAB_GL37_FE_2018],
+      },
+      {
+        id: 'disagreement',
+        question: 'Tell me about a disagreement with a peer or coworker, such as one where you knew they were wrong, and how you resolved it.',
+        sources: [GITLAB_GL13_FE_2020, GITLAB_GL18_FULLSTACK_2020],
+      },
+      {
+        id: 'proud-project',
+        question: 'Tell me about a project you were proud of.',
+        sources: [GITLAB_GL7_FULLSTACK_2022, GITLAB_GL18_FULLSTACK_2020],
+      },
+      {
+        id: 'behind-schedule',
+        question: 'Tell me about a time you were under high time pressure and behind schedule. How did you approach it?',
+        sources: [GITLAB_GL13_FE_2020],
+      },
+      {
+        id: 'no-progress-problem',
+        question: 'Tell me about a problem everyone was focused on while nobody made progress.',
+        sources: [GITLAB_GL12_FE_2021],
+      },
+      {
+        id: 'why-this-team',
+        question: 'Why this team?',
+        sources: [GITLAB_GL20_FE_2019],
+      },
+      {
+        id: 'like-about-gitlab',
+        question: 'What do you like about the GitLab product?',
+        sources: [GITLAB_GL13_FE_2020],
+      },
+      {
+        id: 'interest-in-security',
+        question: 'Tell me about your interest in security.',
+        sources: [GITLAB_GL13_FE_2020],
+      },
+      {
+        id: 'complex-code',
+        question: 'Explain a complex piece of code you worked on.',
+        sources: [GITLAB_GL28_FE_2019],
+      },
+      {
+        id: 'explain-to-non-programmer',
+        question: 'How would you explain a technology, by analogy, to someone who knows nothing about programming?',
+        sources: [GITLAB_GL24_FE_2019],
+      },
+      {
+        id: 'why-new-position',
+        question: 'Why are you looking for a new position, or leaving your current one?',
+        sources: [GITLAB_GL18_FULLSTACK_2020, GITLAB_GL4_FE_2024, GITLAB_GL35_FE_2018],
+      },
+      {
+        id: 'remote-work',
+        question: 'Have you worked remotely, or for a remote organization, before?',
+        sources: [GITLAB_GL35_FE_2018, GITLAB_GL26_FE_2019],
+      },
+      {
+        id: 'time-conflict-work-style',
+        question: 'Give examples of how you manage your time, handle conflict and like to work.',
+        sources: [GITLAB_GL14_FULLSTACK_2020],
       },
     ],
   },
@@ -5867,6 +9027,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'credit-card-application-page',
         round: 'Power Day: frontend design',
         kind: 'Frontend system design',
+        topic: 'Credit card application and confirmation',
         question:
           'Design a credit card application page, where an applicant enters their details, and the confirmation page that follows it. The round was a conversation, with a screen whiteboard for notes.',
         sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO3_SENIOR_2024],
@@ -5877,6 +9038,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'credit-card-account-design',
         round: 'Power Day: frontend design',
         kind: 'Frontend system design',
+        topic: 'Credit card account design',
         question: 'Design a credit card account.',
         promptNotShared: true,
         sources: [CAPITALONE_CO4_SENIOR_2024],
@@ -5885,6 +9047,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'spa-structure-from-requirements',
         round: 'Power Day: frontend design',
         kind: 'Frontend system design',
+        topic: 'Single-page app architecture',
         question:
           'Given a set of requirements, say how you would structure and build the web application as a single-page app: component structure, routing, data flow, Redux and API calls, with deeper questions on the framework.',
         sources: [CAPITALONE_CO6_FRONTEND_2022, CAPITALONE_CO5_SENIOR_2023],
@@ -5895,6 +9058,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'electric-meter-usage-web-app',
         round: 'Power Day: frontend design',
         kind: 'Frontend system design',
+        topic: 'Electric meter usage web app',
         question:
           'Design the web app of an electric-meter system, where customers and admins see their utility usage; the account\'s tip was to give the UI and UX design real attention.',
         sources: [CAPITALONE_CO52_2021],
@@ -5903,6 +9067,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'spa-build-pair-programming',
         round: 'Power Day: frontend technical',
         kind: 'UI build',
+        topic: 'Pair-programmed single-page app',
         question: 'Build a single-page application with the interviewer, in a round that ran more like pair programming than a coding test.',
         promptNotShared: true,
         sources: [CAPITALONE_CO1_LEAD_2024],
@@ -5912,6 +9077,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'react-project-components',
         round: 'Power Day: frontend technical',
         kind: 'React build',
+        topic: 'Components in a small React project',
         question:
           'Work on a small React project tied to the role while the interviewer watches how you build components, your syntax and your coding style.',
         promptNotShared: true,
@@ -5922,6 +9088,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'angular-form-validations',
         round: 'Power Day: frontend technical',
         kind: 'UI build',
+        topic: 'Angular form validation',
         question: 'Wire validation into an existing Angular form so that the right rules fire on its fields.',
         sources: [CAPITALONE_CO5_SENIOR_2023],
         practice: { label: 'Form validation with required fields', path: '/html/coding/html-forms-validation-required' },
@@ -5931,6 +9098,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'angular-form-message-list',
         round: 'Power Day: frontend technical',
         kind: 'UI build',
+        topic: 'Angular message list form',
         question:
           'Starting from a base Angular component, build a form that adds messages to a list, with the form control\'s data flow in focus; the same hour covered JavaScript syntax and performance.',
         sources: [CAPITALONE_CO6_FRONTEND_2022],
@@ -5941,6 +9109,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'permutations-of-a-number',
         round: 'Power Day: frontend technical',
         kind: 'Algorithm',
+        topic: 'Permutations of a number',
         question: 'Write an algorithm that finds all the permutations of a number.',
         sources: [CAPITALONE_CO12_SENIOR_2020],
       },
@@ -5948,6 +9117,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'intern-budgeting-bug',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Budgeting program bug',
         question:
           'Find the bug in a budgeting program an intern wrote, reading it in Java, C++, Node.js or Python, and explain it without coding the fix.',
         sources: [CAPITALONE_CO2_SENIOR_2024, CAPITALONE_CO49_COMMENT_2023],
@@ -5958,6 +9128,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'cost-calculation-faulty-algorithm',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Cost calculation algorithm fix',
         question:
           'Work a business case on cost calculation: agree the requirements, run example calculations to a formula, then find and fix the algorithm in a faulty code sample, talking it through without formal tests.',
         sources: [CAPITALONE_CO6_FRONTEND_2022],
@@ -5968,6 +9139,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'refactor-badly-written-code',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Refactoring badly written code',
         question:
           'Read badly written code, say what it does, then refactor or improve it, weighing the designs and trade-offs you propose.',
         promptNotShared: true,
@@ -5979,6 +9151,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'banking-chatbot-case',
         round: 'Power Day: case',
         kind: 'Product design',
+        topic: 'Banking chatbot',
         question:
           'A case on a bank\'s chatbot: talk through what it brings customers and how they would use it. In one 2023 loop the case went on to code read against a table of data, then improvements to that code.',
         sources: [CAPITALONE_CO5_SENIOR_2023, CAPITALONE_CO59_LEAD_2023, CAPITALONE_CO60_SENIOR_2024, CAPITALONE_CO34_COMMENTS_2026],
@@ -5987,6 +9160,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'ai-feature-case',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'AI feature case and code review',
         question: 'A case about an AI feature, then a code review in which you dry-run the code with sample input, then a small change to it.',
         promptNotShared: true,
         sources: [CAPITALONE_CO32_SENIOR_LEAD_2026],
@@ -5995,6 +9169,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'virtual-card-transaction-validation',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Virtual card transaction validation',
         question: 'A code-based case on a virtual credit card network: check whether its cards and transactions are valid.',
         sources: [CAPITALONE_CO16_FULLSTACK_2025, CAPITALONE_CO34_COMMENTS_2026],
       },
@@ -6002,6 +9177,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'ec2-cost-table-debug',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'EC2 instance cost debugging',
         question: 'Analyse a table of EC2 instances priced by CPU and location, then debug a method that sums their cost.',
         sources: [CAPITALONE_CO34_COMMENTS_2026],
         practice: { label: 'Find the bug in an intern\'s budget summary', path: '/javascript/debug/js-debug-intern-budget-summary' },
@@ -6011,6 +9187,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'testing-and-failing-script',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Testing and a failing script',
         question: 'Talk about testing and when to use it, then fix a script that throws an error, following the business rules you are given.',
         sources: [CAPITALONE_CO53_SENIOR_2024],
       },
@@ -6018,6 +9195,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'boolean-if-else-method',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Boolean if-else chain',
         question: 'Work through a method that takes three boolean values and runs them through a long chain of if-else statements.',
         promptNotShared: true,
         sources: [CAPITALONE_CO52_2021],
@@ -6026,6 +9204,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'acquired-codebase-if-else',
         round: 'Power Day: case',
         kind: 'Practical coding',
+        topic: 'Codebase merge and if-else debugging',
         question: 'Discuss merging an acquired company\'s codebase into your own, then debug an if-else statement.',
         sources: [CAPITALONE_CO57_TDP_2020],
       },
@@ -6033,6 +9212,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'diagonal-matrix-traverse',
         round: 'Online assessment',
         kind: 'Algorithm',
+        topic: 'Diagonal Traverse',
         question: 'A variation of LeetCode\'s Diagonal Traverse (498): walk a 2D matrix diagonal by diagonal. The account rates it the set\'s medium problem.',
         sources: [CAPITALONE_CO6_FRONTEND_2022],
       },
@@ -6040,6 +9220,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'k-diff-pairs',
         round: 'Online assessment',
         kind: 'Algorithm',
+        topic: 'K-diff Pairs in an Array',
         question: 'A variation of LeetCode\'s K-diff Pairs in an Array (532): count the distinct pairs whose difference is k. The account rates it the set\'s hard problem.',
         sources: [CAPITALONE_CO6_FRONTEND_2022],
       },
@@ -6047,6 +9228,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'array-and-weighted-graph-problems',
         round: 'Online assessment',
         kind: 'Algorithm',
+        topic: 'Array navigation and weighted graph',
         question: 'The same set\'s other problems: a simple array navigation task and a question on an undirected weighted graph.',
         promptNotShared: true,
         sources: [CAPITALONE_CO6_FRONTEND_2022],
@@ -6055,6 +9237,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'banking-system-in-levels',
         round: 'Power Day',
         kind: 'Practical coding',
+        topic: 'Banking system class',
         question:
           'Build a banking system as a class, part by part: create accounts and add money, transfer between accounts, then report the most active accounts, each part building on the last.',
         sources: [CAPITALONE_CO35_COMMENT_2025, CAPITALONE_CO53_SENIOR_2024, CAPITALONE_CO34_COMMENTS_2026],
@@ -6063,6 +9246,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'trie-in-levels',
         round: 'Power Day',
         kind: 'Algorithm',
+        topic: 'Object-oriented trie',
         question: 'An object-oriented exercise on a trie in three levels, each adding features to the one before.',
         promptNotShared: true,
         sources: [CAPITALONE_CO32_SENIOR_LEAD_2026],
@@ -6071,6 +9255,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'api-call-and-parse',
         round: 'Power Day',
         kind: 'Practical coding',
+        topic: 'Calling and parsing an API',
         question: 'Write code that calls an API and parses its response in several different ways.',
         promptNotShared: true,
         sources: [CAPITALONE_CO34_COMMENTS_2026],
@@ -6078,6 +9263,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'two-sum-closest-to-zero',
         kind: 'Algorithm',
+        topic: 'Two sum closest to zero',
         question: 'Given an array, find the two numbers whose sum is closest to zero.',
         sources: [CAPITALONE_CO52_2021, CAPITALONE_CO20_WEB_2022],
         practice: { label: '3Sum: triplets that sum to zero', path: '/javascript/coding/js-three-sum' },
@@ -6085,6 +9271,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'count-character-in-string',
         kind: 'Algorithm',
+        topic: 'Character count in a string',
         question: 'Given a string, count how many times a given character appears in it.',
         sources: [CAPITALONE_CO59_LEAD_2023],
         practice: { label: 'Count vowels', path: '/javascript/coding/js-count-vowels' },
@@ -6092,12 +9279,14 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
       {
         id: 'rotating-box-gravity',
         kind: 'Algorithm',
+        topic: 'Rotating box with gravity',
         question: 'Implement gravity for the items inside a box that rotates and contains obstacles.',
         sources: [CAPITALONE_CO62_LEAD_2025],
       },
       {
         id: 'minesweeper',
         kind: 'UI build',
+        topic: 'Minesweeper game',
         question: 'Build the game Minesweeper.',
         promptNotShared: true,
         sources: [CAPITALONE_CO14_FE_2020],

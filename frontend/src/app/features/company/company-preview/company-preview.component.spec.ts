@@ -19,6 +19,9 @@ import { companySetLine } from '../company-plan/company-plan.format';
 import { CompanyPlanService } from '../company-plan/company-plan.service';
 import { CompanyPreviewComponent } from './company-preview.component';
 import { FreeUnlockService } from './free-unlock.service';
+import { OPENAI_COPY, OPENAI_PRACTICE_PROMPTS, OPENAI_PREVIEW_DESCRIPTION, OPENAI_PREVIEW_TITLE, OPENAI_RESOURCE_LINKS } from './openai-preview-content';
+import { GOOGLE_COPY, GOOGLE_PREVIEW_DESCRIPTION, GOOGLE_PREVIEW_TITLE, GOOGLE_RESOURCE_LINKS } from './google-preview-content';
+import { NETFLIX_COPY, NETFLIX_PREVIEW_DESCRIPTION, NETFLIX_PREVIEW_TITLE, NETFLIX_RESOURCE_LINKS, NETFLIX_SOURCES, NETFLIX_SOURCE_BOUNDARY } from './netflix-preview-content';
 import type { AuthoredCompanyPreview } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
@@ -125,61 +128,90 @@ describe('CompanyPreviewComponent', () => {
     return fixture;
   }
 
-  it('publishes OpenAI-specific title, meta, canonical, robots, and schema', async () => {
-    await createComponent('openai');
+  describe('the inline guides (OpenAI, Google, Netflix) with a reported-question list', () => {
+    const INLINE = [
+      { slug: 'openai', title: OPENAI_PREVIEW_TITLE, description: OPENAI_PREVIEW_DESCRIPTION, h1: 'OpenAI Frontend Interview Questions', cta: 'Unlock the full OpenAI practice set', copy: OPENAI_COPY.subtitle, links: OPENAI_RESOURCE_LINKS.map((link) => link.path) },
+      { slug: 'google', title: GOOGLE_PREVIEW_TITLE, description: GOOGLE_PREVIEW_DESCRIPTION, h1: 'Google Frontend Interview Questions', cta: 'Unlock the full Google practice set', copy: GOOGLE_COPY.caveat, links: GOOGLE_RESOURCE_LINKS.map((link) => link.path) },
+      { slug: 'netflix', title: NETFLIX_PREVIEW_TITLE, description: NETFLIX_PREVIEW_DESCRIPTION, h1: 'Netflix Frontend Interview Questions', cta: 'Continue with the full Netflix practice set', copy: NETFLIX_COPY.subtitle, links: NETFLIX_RESOURCE_LINKS.map((link) => link.path) },
+    ] as const;
+    const host = (): HTMLElement => fixture.nativeElement;
+    const total = (slug: string) => COMPANY_INTERVIEW_PROCESSES[slug].questions!.length;
 
-    expect(seo.updateTags).toHaveBeenCalled();
-    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
-    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
+    it('publishes a title and description with the count filled, and no ItemList beside the locked list', async () => {
+      for (const guide of INLINE) {
+        await createComponent(guide.slug);
+        const payload = seo.updateTags.calls.mostRecent().args[0] as any;
+        const graph = payload.jsonLd as any[];
+        const collection = graph.find((node) => node?.['@type'] === 'CollectionPage');
+        expect(payload.title).withContext(guide.slug).toBe(guide.title.replace('{#questions}', String(total(guide.slug))));
+        expect(payload.description).withContext(guide.slug).toBe(guide.description.replace('{#questions}', String(total(guide.slug))));
+        expect(payload.title + payload.description).withContext(guide.slug).not.toContain('{');
+        expect(payload.canonical).withContext(guide.slug).toBe(`/companies/${guide.slug}/preview`);
+        expect(payload.robots).withContext(guide.slug).toBe('index,follow');
+        expect(collection.dateModified).withContext(guide.slug).toBe(seoContentDateModified(collection.url));
+        expect(collection.isAccessibleForFree).withContext(guide.slug).toBeFalse();
+        expect(collection.hasPart).withContext(guide.slug).toEqual([{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }]);
+        expect(collection.mainEntity).withContext(guide.slug).toBeUndefined();
+        expect(graph.some((node) => node?.['@type'] === 'ItemList')).withContext(guide.slug).toBeFalse();
+        expect(graph.find((node) => node?.['@type'] === 'BreadcrumbList')?.itemListElement?.[2]?.name).withContext(guide.slug).toBe(guide.h1);
+      }
+      expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
+    });
 
-    expect(payload.title).toBe('OpenAI Frontend Interview: 5 Practice Questions + Prep Guide');
-    expect(payload.description).toBe(
-      'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.',
-    );
-    expect(payload.canonical).toBe('/companies/openai/preview');
-    expect(payload.robots).toBe('index,follow');
-    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
-    expect(collection?.disambiguatingDescription).toBe(
-      'Editorial practice groupings, not verified official interview questions or endorsements.',
-    );
-    expect(collection?.mainEntity?.description).toBe(
-      'Editorial practice groupings, not verified official interview questions or endorsements.',
-    );
-    expect(collection?.mainEntity?.itemListElement?.length).toBe(5);
-    expect(collection?.mainEntity?.itemListElement?.[0]?.name).toBe('Streaming chat composer');
-    expect(breadcrumb?.itemListElement?.[2]?.name).toBe('OpenAI Frontend Interview Questions');
-    expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
-    expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
-  });
+    it('renders the question list in place of the prompt cards, with the copy, trust note and closing call of each guide', async () => {
+      for (const guide of INLINE) {
+        await createComponent(guide.slug);
+        const text = host().textContent ?? '';
+        expect(host().querySelector('h1')?.textContent?.trim()).withContext(guide.slug).toBe(guide.h1);
+        expect(host().querySelectorAll('.company-prompt, .openai-prompt').length).withContext(guide.slug).toBe(0);
+        const rows = host().querySelectorAll('[data-testid="company-question-row"]');
+        expect(rows.length).withContext(guide.slug).toBe(total(guide.slug));
+        // The first row is open, with its answer guide; the others name their topic over a locked question.
+        expect(rows[0].querySelector('.cq-row__question.premium-locked')).withContext(guide.slug).toBeNull();
+        expect(rows[1].querySelector('[data-testid="company-question-topic"]')?.textContent?.trim()).withContext(guide.slug)
+          .toBe(COMPANY_INTERVIEW_PROCESSES[guide.slug].questions![1].topic);
+        expect(text).withContext(guide.slug).toContain(guide.copy);
+        expect(text).withContext(guide.slug).toContain(guide.cta);
+        expect(text).withContext(guide.slug).toContain(`${total(guide.slug)} reported questions`);
+        expect(text).withContext(guide.slug).not.toContain('{');
+        expect(text).withContext(guide.slug).not.toContain('representative prompts');
+        expect(host().querySelector('[data-testid="company-practice-disclaimer"]')).withContext(guide.slug).not.toBeNull();
+        // The sources close the page, behind one toggle; no source is linked above them.
+        expect(host().querySelector('[data-testid="company-guide-sources"]')).withContext(guide.slug).not.toBeNull();
+      }
+      expect(host().textContent).not.toContain('Openai');
+    });
 
-  it('renders OpenAI public landing content without premium item title leakage', async () => {
-    const fixture = await createComponent('openai');
-    const host: HTMLElement = fixture.nativeElement;
-    const text = host.textContent || '';
+    it('keeps the free practice links of each guide on the page', async () => {
+      for (const guide of INLINE) {
+        await createComponent(guide.slug);
+        const hrefs = Array.from(host().querySelectorAll<HTMLAnchorElement>('a')).map((anchor) => anchor.getAttribute('href'));
+        for (const path of guide.links) expect(hrefs).withContext(guide.slug).toContain(path);
+      }
+    });
 
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('OpenAI Frontend Interview Questions');
-    expect(text).toContain('Streaming chat composer');
-    expect(text).toContain('Stop/regenerate and stale stream handling');
-    expect(text).toContain('React state + optimistic messages');
-    expect(text).toContain('Accessibility/keyboard interaction');
-    expect(text).toContain('Frontend system design/conversation history');
-    expect(text).toContain('Strong answer should cover');
-    expect(text).toContain('Walk through stale stream handling before you code');
-    expect(text).toContain('Day 7');
-    expect(text).toContain(
-      'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.',
-    );
-    expect(text).toContain('Unlock the full OpenAI practice set');
-    expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
-      'Editorial practice groupings, not verified official interview questions or endorsements.',
-    );
+    it('gives the open OpenAI row an answer guide from its prompt intent and rubric, without empty parts', async () => {
+      await createComponent('openai');
+      const first = host().querySelector('[data-testid="company-question-row"]') as HTMLElement;
+      const prompt = OPENAI_PRACTICE_PROMPTS.find((item) => item.id === COMPANY_INTERVIEW_PROCESSES['openai'].questions![0].answerGuide)!;
+      const reported = COMPANY_INTERVIEW_PROCESSES['openai'].questions![0];
+      expect(first.querySelector('.cq-row__title')?.textContent?.trim()).toBe(reported.topic);
+      expect(first.querySelector('[data-testid="company-question-reported"]')?.textContent?.trim()).toBe(reported.question);
+      expect(first.querySelector('[data-testid="company-question-guide-title"]')?.textContent?.trim()).toBe(`Answer guide: ${prompt.title}`);
+      expect(first.textContent).toContain(prompt.intent);
+      expect(first.textContent).not.toContain('What this measures');
+      expect(first.textContent).not.toContain('Common miss');
+    });
 
-    expect(text).not.toContain('Openai');
-    expect(text).not.toContain('Chat UI with Streaming Response');
-    expect(text).not.toContain('AI Chat Text Area (ChatGPT-Style)');
-    expect(text).not.toContain('AI UX Resilience and Control Patterns');
+    it('lists the Netflix sources first in the closing list, then those of the table and the questions, once each', async () => {
+      await createComponent('netflix');
+      const list = host().querySelector('[data-testid="company-guide-sources"]') as HTMLElement;
+      const labels = Array.from(list.querySelectorAll('.guide-sources__list li')).map((item) => item.textContent ?? '');
+      NETFLIX_SOURCES.forEach((source, index) => expect(labels[index]).withContext(source.url).toContain(source.label));
+      expect(list.textContent).toContain(NETFLIX_SOURCE_BOUNDARY.title);
+      const urls = Array.from(list.querySelectorAll('.guide-sources__list li a')).map((anchor) => anchor.getAttribute('href'));
+      expect(new Set(urls).size).toBe(urls.length);
+    });
   });
 
   it('uses the shared ByteDance brand casing in the generic preview and metadata', async () => {
@@ -363,308 +395,6 @@ describe('CompanyPreviewComponent', () => {
     expect(promptLinks.every((link) => !(link.nativeElement as HTMLAnchorElement).getAttribute('href')?.includes('?'))).toBeTrue();
   });
 
-  it('keeps contextual OpenAI links on free public practice pages', async () => {
-    const fixture = await createComponent('openai');
-    const host: HTMLElement = fixture.nativeElement;
-    const hrefs = Array.from(host.querySelectorAll<HTMLAnchorElement>('a')).map((anchor) =>
-      anchor.getAttribute('href'),
-    );
-
-    expect(hrefs).toContain('/javascript/trivia/ai-streaming-data-handling');
-    expect(hrefs).toContain('/javascript/trivia/chat-conversation-state-management');
-    expect(hrefs).toContain('/javascript/trivia/sse-vs-websocket-real-time');
-    expect(hrefs).toContain('/javascript/trivia/ai-ux-integration-challenges');
-    expect(hrefs).toContain('/javascript/coding/js-stream-to-text');
-    expect(hrefs).toContain('/javascript/coding/js-take-latest');
-  });
-
-  it('publishes exact Google metadata and a linked seven-item schema graph synchronously', async () => {
-    await createComponent('google');
-
-    expect(seo.updateTags).toHaveBeenCalled();
-    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
-    const itemList = graph.find((entry: any) => entry?.['@type'] === 'ItemList');
-    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
-
-    expect(payload.title).toBe('Google Frontend Interview Questions: 7 Prompts + Prep Guide');
-    expect(payload.description).toBe(
-      'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.',
-    );
-    expect(payload.canonical).toBe('/companies/google/preview');
-    expect(payload.robots).toBe('index,follow');
-
-    expect(collection?.url).toBe('https://frontendatlas.com/companies/google/preview');
-    expect(collection?.name).toBe('Google Frontend Interview Questions: 7 Prompts + Prep Guide');
-    expect(collection?.headline).toBe('Google Frontend Interview Questions');
-    expect(collection?.inLanguage).toBe('en');
-    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
-    expect(collection?.isAccessibleForFree).toBeFalse();
-    expect(collection?.hasPart?.[0]?.cssSelector).toBe('.premium-locked');
-    expect(collection?.mainEntity?.['@id']).toBe(
-      'https://frontendatlas.com/companies/google/preview#practice-prompts',
-    );
-    expect(collection?.disambiguatingDescription).toBe(
-      'Editorial practice groupings, not verified official interview questions or endorsements.',
-    );
-    expect(collection?.mentions?.length).toBe(8);
-
-    expect(itemList?.['@id']).toBe(
-      'https://frontendatlas.com/companies/google/preview#practice-prompts',
-    );
-    expect(itemList?.itemListElement?.length).toBe(7);
-    expect(itemList?.description).toBe(
-      'Editorial practice groupings, not verified official interview questions or endorsements.',
-    );
-    expect(itemList?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'Traverse and transform a nested navigation tree',
-      'Implement debounce with cancel and flush',
-      'Build an accessible autocomplete',
-      'Keep only the latest async result',
-      'Handle delegated events in a dynamic list',
-      'Reason about frontend performance, networking, and security',
-      'Design search suggestions for a large interactive list',
-    ]);
-    expect(itemList?.itemListElement?.[0]?.url).toBe(
-      'https://frontendatlas.com/companies/google/preview#nested-navigation-tree',
-    );
-    expect(itemList?.itemListElement?.[6]?.url).toBe(
-      'https://frontendatlas.com/companies/google/preview#search-suggestions-large-list-design',
-    );
-    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'FrontendAtlas',
-      'Company Frontend Interview Questions',
-      'Google Frontend Interview Questions',
-    ]);
-
-    expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
-    expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
-  });
-
-  it('renders the complete public Google guide before its premium CTA without catalog leakage', async () => {
-    const fixture = await createComponent('google');
-    const host: HTMLElement = fixture.nativeElement;
-    const text = host.textContent || '';
-
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Google Frontend Interview Questions');
-    expect(host.querySelector('.preview-breadcrumb span:last-child')?.textContent?.trim()).toBe(
-      'Google Frontend Interview Questions',
-    );
-    expect(text).toContain('Public Google prep guide');
-    expect(text).toContain('What to study first for a Google frontend interview');
-    expect(text).toContain('Current process note — reviewed October 2026');
-    expect(text).toContain('Seven Google frontend interview practice questions');
-    expect(text).toContain('Walk through autocomplete request ordering before you code');
-    expect(text).toContain('A 7-day Google frontend interview preparation plan');
-    expect(text).toContain('Common Google frontend interview preparation questions');
-    expect(text).toContain('Free public practice');
-    expect(text).toContain('Day 7');
-    expect(text).toContain('Deliverable:');
-    expect(text).toContain(
-      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.',
-    );
-    expect(text).toContain('Is Google frontend preparation React-only?');
-    expect(text).toContain('Does the reported 2026 AI-assisted pilot apply to every frontend candidate?');
-
-    const promptIds = [
-      'nested-navigation-tree',
-      'debounce-cancel-flush',
-      'accessible-autocomplete',
-      'take-latest-async-results',
-      'dom-event-delegation',
-      'frontend-performance-network-security',
-      'search-suggestions-large-list-design',
-    ];
-    for (const id of promptIds) {
-      expect(host.querySelector(`#${id}`)).withContext(`visible prompt #${id}`).not.toBeNull();
-    }
-
-    const freePractice = host.querySelector('#google-free-practice')?.closest('section');
-    const premiumCta = host.querySelector('#google-premium-route')?.closest('section');
-    expect(freePractice).not.toBeNull();
-    expect(premiumCta).not.toBeNull();
-    const ctaFollowsPublicPractice = freePractice && premiumCta
-      ? Boolean(freePractice.compareDocumentPosition(premiumCta) & Node.DOCUMENT_POSITION_FOLLOWING)
-      : false;
-    expect(ctaFollowsPublicPractice).toBeTrue();
-
-    expect(host.querySelector('fa-question-row')).toBeNull();
-    expect(host.querySelector('code')).toBeNull();
-    expect(text).not.toContain('known questions');
-    expect(text).not.toContain('Curry Function');
-    expect(text).not.toContain('Image Slider (Dots + Previous/Next)');
-  });
-
-  it('renders only validated contextual Google practice links in the public guide', async () => {
-    const fixture = await createComponent('google');
-    const host: HTMLElement = fixture.nativeElement;
-    const hrefs = Array.from(host.querySelectorAll<HTMLAnchorElement>('a')).map((anchor) =>
-      anchor.getAttribute('href'),
-    );
-    const resourcePaths = [
-      '/javascript/coding/js-get-by-path-1',
-      '/javascript/coding/js-debounce',
-      '/react/coding/react-autocomplete-search-starter',
-      '/javascript/coding/js-take-latest',
-      '/javascript/trivia/js-event-delegation',
-      '/javascript/trivia/web-performance-optimize-load-time',
-      '/system-design/infinite-scroll-list',
-      '/javascript/trivia/js-compare-two-objects',
-    ];
-
-    for (const path of resourcePaths) {
-      expect(hrefs).withContext(`public resource ${path}`).toContain(path);
-    }
-
-    expect(host.textContent).toContain('optional framework-specific implementation drill');
-    expect(hrefs).toContain('/companies');
-    expect(hrefs).toContain('/pricing?src=company_preview_google');
-  });
-
-  it('publishes exact Netflix metadata and a linked six-item schema graph synchronously', async () => {
-    await createComponent('netflix');
-
-    expect(seo.updateTags).toHaveBeenCalled();
-    const payload = seo.updateTags.calls.mostRecent().args[0] as any;
-    const graph = Array.isArray(payload?.jsonLd) ? payload.jsonLd : [];
-    const collection = graph.find((entry: any) => entry?.['@type'] === 'CollectionPage');
-    const itemList = graph.find((entry: any) => entry?.['@type'] === 'ItemList');
-    const breadcrumb = graph.find((entry: any) => entry?.['@type'] === 'BreadcrumbList');
-
-    expect(payload.title).toBe('Netflix Frontend and UI Engineer Interview Questions: 6 Prompts');
-    expect(payload.description).toBe(
-      'Prepare for a Netflix frontend or UI engineer interview with 6 prompts on JavaScript, React, streaming UI, performance, accessibility and system design.',
-    );
-    expect(payload.canonical).toBe('/companies/netflix/preview');
-    expect(payload.robots).toBe('index,follow');
-
-    expect(collection?.url).toBe('https://frontendatlas.com/companies/netflix/preview');
-    expect(collection?.headline).toBe('Netflix Frontend Interview Questions');
-    expect(collection?.dateModified).toBe(seoContentDateModified(collection.url));
-    expect(collection?.isAccessibleForFree).toBeFalse();
-    expect(collection?.hasPart?.[0]?.cssSelector).toBe('.premium-locked');
-    expect(collection?.mainEntity?.['@id']).toBe(
-      'https://frontendatlas.com/companies/netflix/preview#practice-prompts',
-    );
-    expect(collection?.mentions?.length).toBe(8);
-    expect(collection?.disambiguatingDescription).toContain(
-      'not leaked or confirmed Netflix interview questions',
-    );
-
-    expect(itemList?.['@id']).toBe(
-      'https://frontendatlas.com/companies/netflix/preview#practice-prompts',
-    );
-    expect(itemList?.numberOfItems).toBe(6);
-    expect(itemList?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'Implement resilient title search',
-      'Build an accessible Continue Watching row',
-      'Stop personalized rows from re-rendering unnecessarily',
-      'Reason about streaming delivery, caching, and failure states',
-      'Design Continue Watching for regional and device scale',
-      'Defend a consequential frontend decision',
-    ]);
-    expect(itemList?.itemListElement?.[0]?.url).toBe(
-      'https://frontendatlas.com/companies/netflix/preview#resilient-title-search',
-    );
-    expect(itemList?.itemListElement?.[5]?.url).toBe(
-      'https://frontendatlas.com/companies/netflix/preview#consequential-frontend-decision',
-    );
-    expect(breadcrumb?.itemListElement?.map((item: any) => item.name)).toEqual([
-      'FrontendAtlas',
-      'Company Frontend Interview Questions',
-      'Netflix Frontend Interview Questions',
-    ]);
-
-    expect(questionService.loadAllQuestionSummaries).not.toHaveBeenCalled();
-    expect(questionService.loadSystemDesign).not.toHaveBeenCalled();
-  });
-
-  it('renders the complete public Netflix guide before its premium CTA without catalog leakage', async () => {
-    const fixture = await createComponent('netflix');
-    const host: HTMLElement = fixture.nativeElement;
-    const text = host.textContent || '';
-
-    expect(host.querySelector('h1')?.textContent?.trim()).toBe('Netflix Frontend Interview Questions');
-    expect(host.querySelector('.preview-breadcrumb span:last-child')?.textContent?.trim()).toBe(
-      'Netflix Frontend Interview Questions',
-    );
-    expect(text).toContain('Prepare for product judgment, not Netflix trivia');
-    expect(text).toContain('What Netflix publishes—and what you still need to confirm');
-    expect(text).toContain('Three product contexts for practicing transferable frontend judgment');
-    expect(text).toContain('Six Netflix frontend interview practice questions');
-    expect(text).toContain('Scope Continue Watching before drawing architecture boxes');
-    expect(text).toContain('A 7-day Netflix frontend interview preparation plan');
-    expect(text).toContain('Common Netflix frontend interview preparation questions');
-    expect(text).toContain('Sources and evidence limits');
-    expect(text).toContain('Day 7');
-    expect(text).toContain('Deliverable:');
-    expect(text).toContain(
-      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.',
-    );
-    expect(text).toContain('Are these real Netflix interview questions?');
-
-    const promptIds = [
-      'resilient-title-search',
-      'accessible-continue-watching-row',
-      'personalized-row-rendering',
-      'streaming-caching-failure-states',
-      'continue-watching-system-design',
-      'consequential-frontend-decision',
-    ];
-    for (const id of promptIds) {
-      expect(host.querySelector(`#${id}`)).withContext(`visible prompt #${id}`).not.toBeNull();
-    }
-
-    const freePractice = host.querySelector('#netflix-free-practice')?.closest('section');
-    const sourceNotes = host.querySelector('#netflix-source-notes')?.closest('section');
-    const premiumCta = host.querySelector('#netflix-premium-route')?.closest('section');
-    expect(freePractice).not.toBeNull();
-    expect(sourceNotes).not.toBeNull();
-    expect(premiumCta).not.toBeNull();
-    expect(
-      sourceNotes && premiumCta
-        ? Boolean(sourceNotes.compareDocumentPosition(premiumCta) & Node.DOCUMENT_POSITION_FOLLOWING)
-        : false,
-    ).toBeTrue();
-
-    expect(host.querySelector('fa-question-row')).toBeNull();
-    expect(host.querySelector('code')).toBeNull();
-    expect(text).not.toContain('known questions');
-    expect(text).not.toContain('Curry Function');
-    expect(text).not.toContain('Toast Notification System');
-    expect(host.querySelector('a[href*="/react/coding/react-counter"]')).toBeNull();
-  });
-
-  it('links the Netflix guide only to its selected public resources and labelled official context', async () => {
-    const fixture = await createComponent('netflix');
-    const host: HTMLElement = fixture.nativeElement;
-    const hrefs = Array.from(host.querySelectorAll<HTMLAnchorElement>('a')).map((anchor) =>
-      anchor.getAttribute('href'),
-    );
-    const resourcePaths = [
-      '/javascript/coding/js-debounce',
-      '/javascript/coding/js-take-latest',
-      '/react/trivia/react-rerender-decision-and-render',
-      '/javascript/trivia/content-delivery-caching-strategies-streaming',
-      '/system-design/infinite-scroll-list',
-      '/system-design/dashboard-widgets-draggable-resizable',
-      '/guides/system-design-blueprint/performance',
-      '/guides/behavioral/stories',
-    ];
-
-    for (const path of resourcePaths) {
-      expect(hrefs).withContext(`public resource ${path}`).toContain(path);
-    }
-
-    expect(hrefs).not.toContain('/system-design/netflix-scale-expansion');
-    expect(hrefs).toContain('https://jobs.netflix.com/careers/engineering');
-    expect(hrefs).toContain('https://jobs.netflix.com/culture');
-    expect(hrefs).toContain('https://jobs.netflix.com/careers/new-grads');
-    expect(hrefs).toContain('/companies');
-    expect(hrefs).toContain('/pricing?src=company_preview_netflix');
-  });
-
   it('renders the official preparation pages table only for companies that publish one', async () => {
     const microsoft = await createComponent('microsoft');
     const microsoftHost: HTMLElement = microsoft.nativeElement;
@@ -839,10 +569,10 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('lists the sources the process table cites after the guide sources, and counts them all in the gates', async () => {
-      await createComponent('revolut');
+      await createComponent('shopee');
       const host: HTMLElement = fixture.nativeElement;
       const rows = Array.from(host.querySelectorAll('.company-source-list article'));
-      const guideRows = AUTHORED_COMPANY_PREVIEWS['revolut'].sources.items.length;
+      const guideRows = AUTHORED_COMPANY_PREVIEWS['shopee'].sources.items.length;
       expect(rows.length).toBeGreaterThan(guideRows);
       expect(rows[guideRows].querySelector('p')?.textContent).toMatch(/read for the process table, where it describes the /);
       // The cited-only sources wait behind one closed line with their count; the guide's own notes stay open.
@@ -857,18 +587,6 @@ describe('CompanyPreviewComponent', () => {
       const reports = rows.filter((row) => row.querySelector('a')?.getAttribute('rel')?.includes('nofollow')).length;
       const word = countWord(reports);
       expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public frontend accounts inform this guide`);
-    });
-
-    it('states the prompt count of an inline guide from the prompts it renders', async () => {
-      for (const slug of ['openai', 'google', 'netflix']) {
-        await createComponent(slug);
-        const host: HTMLElement = fixture.nativeElement;
-        const chip = Array.from(host.querySelectorAll('.preview-chip')).map((node) => node.textContent?.trim() ?? '').find((text) => /representative prompts$/.test(text));
-        expect(chip).withContext(slug).toBeDefined();
-        const prompts = host.querySelectorAll('article.company-prompt, article.openai-prompt').length;
-        expect(chip).withContext(slug).toBe(`${prompts} representative prompts`);
-        TestBed.resetTestingModule();
-      }
     });
 
     it('keeps the source notes in the page but closed, and puts the round decoders after the prompts', async () => {
@@ -964,8 +682,8 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a followed link by where it sits and where it goes, but not a jump within the page', async () => {
-      // Revolut keeps the layout without a question list: its sources sit in their own section.
-      await createComponent('revolut');
+      // CrowdStrike keeps the layout without a question list until batch 3: its sources sit in their own section.
+      await createComponent('crowdstrike');
       const host: HTMLElement = fixture.nativeElement;
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const follow = (selector: string): HTMLAnchorElement => {
@@ -1079,7 +797,7 @@ describe('CompanyPreviewComponent', () => {
     };
 
     it('opens the first three prompts and keeps the details of the rest under a blur, with their title and opening still readable', async () => {
-      await createComponent('datadog');
+      await createComponent('servicenow');
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
       expect(cards.length).toBeGreaterThan(3);
@@ -1098,14 +816,14 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('keeps a free practice link readable under a locked prompt, and blurs only the name of a Premium one', async () => {
-      await createComponent('gitlab');
+      await createComponent('crowdstrike');
       const cards = prompts(fixture.nativeElement);
       const link = (index: number) => cards[index].querySelector('.company-resource-link--inline') as HTMLElement;
       // Prompts 4 and 5 lead to free pages, prompt 1 to a Premium page.
       expect(link(3).classList).not.toContain('company-link--locked');
       expect(link(3).hasAttribute('inert')).toBeFalse();
       expect(link(3).closest('.company-prompt__details')).toBeNull();
-      expect(link(3).textContent?.trim()).toBe('Build a spy function like Jest mocks (free)');
+      expect(link(3).textContent?.trim()).toBe('Study DOM XSS sinks and safe APIs (free)');
       expect(link(0).classList).toContain('company-link--premium');
       expect(link(0).hasAttribute('inert')).toBeFalse();
       expect(link(0).querySelector('.company-link__label')?.textContent).toBe('Premium task for this prompt');
@@ -1115,7 +833,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('names the locked prompts in a card right after the third one, leading into the plan', async () => {
-      await createComponent('datadog');
+      await createComponent('servicenow');
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
       const card = host.querySelector('[data-testid="company-prompt-gate"]') as HTMLElement;
@@ -1123,29 +841,32 @@ describe('CompanyPreviewComponent', () => {
       expect(cards[2].nextElementSibling).toBe(card);
       expect(gate()).toEqual({
         title: 'The answer guides for prompts 4 and 5 are in Premium',
-        line: 'Premium opens their answer guides and the full Datadog practice set. Your plan shows what opens for your date, and the price.',
-        button: 'Build my Datadog plan →',
-        href: '/companies?company=datadog',
+        line: 'Premium opens their answer guides and the full ServiceNow practice set. Your plan shows what opens for your date, and the price.',
+        button: 'Build my ServiceNow plan →',
+        href: '/companies?company=servicenow',
       });
     });
 
     it('words the card for one, two or more locked prompts', async () => {
-      // Amazon, not Google: Google sits behind the account gate, which words its card differently.
-      await createComponent('amazon');
-      expect(gate()?.title).toBe('The answer guides for prompts 4 to 7 are in Premium');
-      // No guide without a question list has four prompts today, so Datadog's first four stand in.
-      const datadog = AUTHORED_COMPANY_PREVIEWS['datadog'];
-      await createComponent('datadog', undefined, {
+      // ServiceNow keeps its prompt cards until batch 3; its five prompts, cut or padded, stand in for each case.
+      const servicenow = AUTHORED_COMPANY_PREVIEWS['servicenow'];
+      const withPrompts = (count: number) => ({
         ...AUTHORED_COMPANY_PREVIEWS,
-        datadog: { ...datadog, prompts: { ...datadog.prompts, items: datadog.prompts.items.slice(0, 4) } },
+        servicenow: {
+          ...servicenow,
+          prompts: {
+            ...servicenow.prompts,
+            items: Array.from({ length: count }, (_, index) => ({ ...servicenow.prompts.items[index % 5], id: `prompt-${index}` })),
+          },
+        },
       });
+      await createComponent('servicenow', undefined, withPrompts(7));
+      expect(gate()?.title).toBe('The answer guides for prompts 4 to 7 are in Premium');
+      await createComponent('servicenow', undefined, withPrompts(4));
       expect(prompts(fixture.nativeElement).length).toBe(4);
       expect(gate()?.title).toBe('The answer guide for prompt 4 is in Premium');
-      await createComponent('openai');
+      await createComponent('servicenow');
       expect(gate()?.title).toBe('The answer guides for prompts 4 and 5 are in Premium');
-      // OpenAI's prompts sit in two columns, so its card follows the list.
-      expect((fixture.nativeElement.querySelector('.openai-prompt-list') as HTMLElement).nextElementSibling?.getAttribute('data-testid'))
-        .toBe('company-prompt-gate');
     });
 
     it('tells search engines which part of each guide with locked prompts needs Premium', async () => {
@@ -1160,7 +881,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a click on the card as its own surface', async () => {
-      await createComponent('datadog');
+      await createComponent('servicenow');
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const link = fixture.nativeElement.querySelector('[data-testid="company-prompt-gate"] a') as HTMLAnchorElement;
       link.addEventListener('click', (event) => event.preventDefault());
@@ -1261,7 +982,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('locks a Premium practice link under an open prompt, and words the closing call without naming a Premium task', async () => {
-      await createComponent('amazon');
+      await createComponent('servicenow');
       const first = host().querySelector('.company-prompt') as HTMLElement;
       const link = first.querySelector('.company-resource-link--inline') as HTMLElement;
       // A readable, clickable label; the page's name stays in the DOM under the lock, out of snippets.
@@ -1271,7 +992,7 @@ describe('CompanyPreviewComponent', () => {
       expect(link.querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
       expect(first.querySelector('.company-link__tag')).toBeNull();
       expect(host().querySelector('.company-guide-cta p:not(.preview-kicker)')?.textContent?.trim())
-        .toBe(`Premium opens prompts 4 to 7 with their answer guides, every question in the Amazon set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
+        .toBe(`Premium opens prompts 4 and 5 with their answer guides, every question in the ServiceNow set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
     });
 
     it('counts locked samples as exercises, so a widget in three frameworks is one', async () => {
@@ -1400,23 +1121,6 @@ describe('CompanyPreviewComponent', () => {
     const gateCard = (testId: string) => host().querySelector(`[data-testid="${testId}"]`) as HTMLElement | null;
     const lockedParts = () => host().querySelectorAll('.premium-locked').length;
 
-    it('lists Netflix\'s own sources, with the account its debounce tasks are modelled on, then the table\'s, and counts them once', async () => {
-      await createComponent('netflix');
-      expect(fixture.componentInstance.detailLocked()).toBeTrue();
-      const section = host().querySelector('[aria-labelledby="netflix-source-notes"]') as HTMLElement;
-      const links = Array.from(section.querySelectorAll('.company-source-list article a')) as HTMLAnchorElement[];
-      const warsaw = links.find((link) => link.href.includes('senior-frontend-engineer-warsaw-masovia-november-1-2024'));
-      expect(warsaw?.rel).toContain('nofollow');
-      // The sources only the process table cites follow the guide's own list, behind one toggle.
-      expect(section.querySelector('[data-testid="company-sources-more"]')).not.toBeNull();
-      const reports = links.filter((link) => link.rel.includes('nofollow')).length;
-      const counted = `${reports} public reports and ${links.length - reports} official pages`;
-      expect(gateCard('company-sources-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
-        .toBe(`${counted}, each with a note on what it can and cannot establish.`);
-      expect(gateCard('company-process-gate')?.querySelector('.company-prompt-gate__line')?.textContent)
-        .toBe(`${counted}, linked on the rounds they describe and in the sources list. Premium adds the answer guides and the practice.`);
-    });
-
     it('shows a visitor the structure and a lead-in, and keeps the rest in the page for search engines', async () => {
       await createComponent('meta');
       expect(fixture.componentInstance.tier()).toBe('guest');
@@ -1501,16 +1205,19 @@ describe('CompanyPreviewComponent', () => {
       const drill = (round: string) => host().querySelector(`[aria-labelledby="${round}"] app-behavioral-drill`) as HTMLElement | null;
       const pickable = (element: HTMLElement) => Array.from(element.querySelectorAll('.drill__questions input')).filter((input) => !(input as HTMLInputElement).disabled).length;
 
-      // Amazon is outside the gate: every question is open and no card asks for an account.
-      await createComponent('amazon');
-      const amazon = drill('amazon-round-leadership-principles') as HTMLElement;
-      expect(pickable(amazon)).toBe(11);
-      expect(amazon.querySelector('.premium-locked')).toBeNull();
-      expect(gateCard('company-drill-gate')).toBeNull();
-      expect(host().querySelectorAll('[data-testid="company-round-fact-tag"]').length).toBe(0);
+      // Outside the gate every question is open and no card asks for an account: Amazon, and Google and Netflix, whose
+      // question lists replaced their gate.
+      for (const [slug, round] of [['amazon', 'amazon-round-leadership-principles'], ['google', 'google-round-googleyness'], ['netflix', 'netflix-round-culture']]) {
+        await createComponent(slug);
+        const open = drill(round) as HTMLElement;
+        expect(pickable(open)).withContext(slug).toBe(open.querySelectorAll('.drill__questions input').length);
+        expect(open.querySelector('.premium-locked')).withContext(slug).toBeNull();
+        expect(gateCard('company-drill-gate')).withContext(slug).toBeNull();
+        expect(host().querySelectorAll('[data-testid="company-round-fact-tag"]').length).withContext(slug).toBe(0);
+      }
 
-      // Meta's decoder is authored, Google's and Netflix's are their own layouts, Apple's comes from its editorial notes.
-      for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['google', 'google-round-googleyness'], ['netflix', 'netflix-round-culture'], ['apple', 'apple-round-team-conversations']]) {
+      // Meta's decoder is authored, Apple's comes from its editorial notes.
+      for (const [slug, round] of [['meta', 'meta-round-behavioural'], ['apple', 'apple-round-team-conversations']]) {
         await createComponent(slug, undefined, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
         const section = drill(round) as HTMLElement;
         const total = section.querySelectorAll('.drill__questions input').length;
@@ -1544,7 +1251,7 @@ describe('CompanyPreviewComponent', () => {
       expect(gateCard('company-prompt-gate')).toBeNull();
 
       user.set(null);
-      await createComponent('datadog');
+      await createComponent('servicenow');
       expect(fixture.componentInstance.gated()).toBeFalse();
       expect(fixture.componentInstance.openPrompts()).toBe(3);
       expect(gateCard('company-process-gate')).toBeNull();
@@ -1560,17 +1267,18 @@ describe('CompanyPreviewComponent', () => {
     const graph = () => (seo.updateTags.calls.mostRecent().args[0] as any).jsonLd as any[];
     const readable = (el: Element | null) => Boolean(el) && !el!.closest('.premium-locked');
 
-    it('leaves out a catalog sample that is a locked question\'s practice task', async () => {
-      const process = COMPANY_INTERVIEW_PROCESSES['walmart'];
-      const held = process.questions!.slice(1).find((question) => question.practice)!;
-      const heldId = held.practice!.path.split('/').pop()!;
+    it('shows a catalog guide\'s question list in place of its editorial sample, and says what its counts are', async () => {
       const sample = (id: string, title: string) => ({ id, title, kind: 'trivia' as const, tech: 'javascript' as const, difficulty: 'intermediate' as const, access: 'free' as const });
       await createComponent('walmart', {
         slug: 'walmart', mode: 'catalog', counts: { all: 2, coding: 0, trivia: 2, system: 0, debug: 0 },
-        samples: [sample(heldId, 'The locked question\'s practice'), sample('js-unrelated-sample', 'An unrelated sample')],
+        samples: [sample('js-closures', 'Explain closures'), sample('js-unrelated-sample', 'An unrelated sample')],
       }, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
-      expect(host().querySelector(`[data-testid="company-preview-question-${heldId}"]`)).toBeNull();
-      expect(host().querySelector('[data-testid="company-preview-question-js-unrelated-sample"]')).not.toBeNull();
+      expect(host().querySelector('[data-testid="company-question-list"]')).not.toBeNull();
+      expect(host().querySelector('[aria-label="Sample editorial practice prompts"]')).toBeNull();
+      expect(host().querySelector('[data-testid^="company-preview-question-"]')).toBeNull();
+      const chips = Array.from(host().querySelectorAll('.preview-chip')).map((chip) => chip.textContent?.trim());
+      expect(chips).toContain(`${COMPANY_INTERVIEW_PROCESSES['walmart'].questions!.length} reported questions`);
+      expect(host().querySelector('[data-testid="company-preview-counts"]')?.textContent?.trim()).toBe('Practice set: Concepts 2');
     });
 
     it('replaces the prompt cards with the list, keeps the first question open and locks the rest in the page', async () => {

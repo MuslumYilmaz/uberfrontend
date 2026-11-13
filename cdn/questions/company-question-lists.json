@@ -619,6 +619,553 @@
         }
       ]
     },
+    "amazon": {
+      "total": 37,
+      "rounds": [
+        {
+          "stage": "Phone screen",
+          "count": 13
+        },
+        {
+          "stage": "Loop: coding interviews",
+          "count": 20
+        },
+        {
+          "stage": "Loop: front-end system design",
+          "count": 4
+        }
+      ],
+      "roundNotStated": 0,
+      "newestAccount": "2025-01",
+      "questions": [
+        {
+          "id": "five-star-rating-widget",
+          "round": "Phone screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-star-rating",
+            "access": "premium"
+          },
+          "answerGuide": "five-star-rating-vanilla"
+        },
+        {
+          "id": "carousel-component",
+          "round": "Phone screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-image-slider",
+            "access": "premium"
+          },
+          "answerGuide": "carousel-with-state-follow-ups"
+        },
+        {
+          "id": "coin-change",
+          "round": "Phone screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "modal-screen-to-requirements",
+          "round": "Phone screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "block-vs-inline-elements",
+          "round": "Phone screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-block-inline-elements",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "reflow-vs-repaint",
+          "round": "Phone screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-repaint-reflow",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "span-inside-div-with-dom-apis",
+          "round": "Phone screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "css-preprocessors",
+          "round": "Phone screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "microtasks-and-macrotasks",
+          "round": "Phone screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "unit-vs-integration-testing",
+          "round": "Phone screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "browser-memory-leaks",
+          "round": "Phone screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-memory-leaks-common-sources",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "primes-up-to-n",
+          "round": "Phone screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "array-function-polyfills",
+          "round": "Phone screen",
+          "kind": "JavaScript",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-array-prototype-map",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "language-tabs-modal",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-tabs-switcher",
+            "access": "premium"
+          },
+          "answerGuide": "language-tabs-modal"
+        },
+        {
+          "id": "roman-numeral-conversion",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "countdown-timer",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-countdown-timer",
+            "access": "premium"
+          },
+          "answerGuide": "countdown-timer-in-thirty-minutes"
+        },
+        {
+          "id": "referral-log-dependency",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "binary-tree-problem",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "constructor-and-prototype-method",
+          "round": "Loop: coding interviews",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-10",
+          "newUntil": "2021-12-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-implement-new",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "closures-event-loop-utilities",
+          "round": "Loop: coding interviews",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-10",
+          "newUntil": "2021-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "form-from-a-picture",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-10",
+          "newUntil": "2021-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "paginated-seller-addresses",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-04",
+          "newUntil": "2022-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-pagination-table",
+            "access": "premium"
+          },
+          "answerGuide": "paginated-address-widget"
+        },
+        {
+          "id": "thesaurus-class",
+          "round": "Loop: coding interviews",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-04",
+          "newUntil": "2022-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "frontend-library-api",
+          "round": "Loop: coding interviews",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-01",
+          "newUntil": "2023-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "graph-search-topological-sort",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-01",
+          "newUntil": "2023-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "file-explorer-from-ascii-sketch",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-file-explorer",
+            "access": "premium"
+          },
+          "answerGuide": "file-explorer-from-ascii-sketch"
+        },
+        {
+          "id": "find-all-anagrams",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "unit-tests-for-a-small-problem",
+          "round": "Loop: coding interviews",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "zero-sum-triplet-in-bst",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-01",
+          "newUntil": "2025-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-three-sum",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "row-with-most-ones",
+          "round": "Loop: coding interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-01",
+          "newUntil": "2025-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "recreate-ui-in-html-css",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-01",
+          "newUntil": "2025-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "accordion",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-accordion-faq",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "grid-with-search-and-sort",
+          "round": "Loop: coding interviews",
+          "kind": "UI build",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "image-service-design",
+          "round": "Loop: front-end system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-06",
+          "newUntil": "2020-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/image-upload-preview",
+            "access": "premium"
+          },
+          "answerGuide": "image-service-frontend-design"
+        },
+        {
+          "id": "component-architecture-with-auth",
+          "round": "Loop: front-end system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-10",
+          "newUntil": "2021-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "restaurant-ordering-app",
+          "round": "Loop: front-end system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-04",
+          "newUntil": "2022-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "image-service-frontend-design"
+        },
+        {
+          "id": "web-file-browser-design",
+          "round": "Loop: front-end system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
     "anduril": {
       "total": 11,
       "rounds": [
@@ -1352,6 +1899,306 @@
         }
       ]
     },
+    "datadog": {
+      "total": 19,
+      "rounds": [
+        {
+          "stage": "Technical screen",
+          "count": 4
+        },
+        {
+          "stage": "React live coding",
+          "count": 4
+        },
+        {
+          "stage": "Take-home project",
+          "count": 1
+        },
+        {
+          "stage": "Second coding round",
+          "count": 2
+        },
+        {
+          "stage": "Frontend system design",
+          "count": 6
+        }
+      ],
+      "roundNotStated": 2,
+      "newestAccount": "2025-11",
+      "questions": [
+        {
+          "id": "real-time-sortable-table",
+          "round": "React live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-dynamic-table",
+            "access": "premium"
+          },
+          "answerGuide": "sortable-real-time-table"
+        },
+        {
+          "id": "incremental-table-filters-sorting",
+          "round": "React live coding",
+          "kind": "React build",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-filterable-user-list",
+            "access": "premium"
+          },
+          "answerGuide": "incremental-live-coding-on-tables"
+        },
+        {
+          "id": "parse-data-into-existing-app",
+          "round": "React live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-07",
+          "newUntil": "2023-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "html-css-react-project",
+          "round": "React live coding",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-02",
+          "newUntil": "2024-04-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "load-monitoring-web-app",
+          "round": "Take-home project",
+          "kind": "UI build",
+          "accounts": 3,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "word-repetitions-in-paragraph",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-max-char",
+            "access": "premium"
+          },
+          "answerGuide": "ordering-and-filtering-under-time"
+        },
+        {
+          "id": "sum-of-leaf-nodes",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "ordering-and-filtering",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-array-prototype-filter",
+            "access": "premium"
+          },
+          "answerGuide": "ordering-and-filtering-under-time"
+        },
+        {
+          "id": "reshape-api-json",
+          "round": "Technical screen",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-07",
+          "newUntil": "2021-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "string-pattern-matching",
+          "round": "Second coding round",
+          "kind": "Algorithm",
+          "accounts": 4,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "multi-select-tag-matching",
+          "round": "Second coding round",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-07",
+          "newUntil": "2025-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "live-tail-log-view",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/infinite-scroll-list",
+            "access": "free"
+          },
+          "answerGuide": "live-tail-logs-architecture"
+        },
+        {
+          "id": "real-time-event-viewer",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-06",
+          "newUntil": "2024-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/live-comments-global-stream",
+            "access": "premium"
+          },
+          "answerGuide": "live-tail-logs-architecture"
+        },
+        {
+          "id": "log-data-visualisation",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-04",
+          "newUntil": "2021-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/infinite-scroll-list",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "dashboard-multiple-widgets",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-07",
+          "newUntil": "2025-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/dashboard-widgets-draggable-resizable",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "monitors-app-design",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "data-and-tables-design",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "tree-search-dfs",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-04",
+          "newUntil": "2021-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "feature-or-major-bug-approach",
+          "round": null,
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "feature-or-major-bug-walkthrough"
+        }
+      ]
+    },
     "elevenlabs": {
       "total": 19,
       "rounds": [
@@ -1634,6 +2481,797 @@
             "route": "/javascript/coding/js-longest-substring-without-repeating",
             "access": "premium"
           },
+          "answerGuide": null
+        }
+      ]
+    },
+    "gitlab": {
+      "total": 27,
+      "rounds": [
+        {
+          "stage": "Written assessment",
+          "count": 4
+        },
+        {
+          "stage": "Merge request review",
+          "count": 3
+        },
+        {
+          "stage": "Technical interview",
+          "count": 3
+        },
+        {
+          "stage": "Behavioral interview",
+          "count": 1
+        },
+        {
+          "stage": "Director interview",
+          "count": 1
+        }
+      ],
+      "roundNotStated": 15,
+      "newestAccount": "2024-03",
+      "questions": [
+        {
+          "id": "vue-merge-request-review",
+          "round": "Merge request review",
+          "kind": "Practical coding",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-03",
+          "newUntil": "2024-05-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/vue/coding/vue-issue-list-merge-request-review",
+            "access": "premium"
+          },
+          "answerGuide": "review-vue-merge-request-live"
+        },
+        {
+          "id": "repeated-api-calls",
+          "round": "Technical interview",
+          "kind": "UI debugging",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-03",
+          "newUntil": "2024-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/debug/js-debug-async-race",
+            "access": "free"
+          },
+          "answerGuide": "stop-refetching-on-click"
+        },
+        {
+          "id": "mobile-layout-from-mock",
+          "round": "Technical interview",
+          "kind": "UI build",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-03",
+          "newUntil": "2024-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/css/coding/css-flexbox-navbar",
+            "access": "free"
+          },
+          "answerGuide": "fix-markup-match-mobile-mock"
+        },
+        {
+          "id": "jest-unit-tests",
+          "round": "Technical interview",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-02",
+          "newUntil": "2024-04-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-create-spy-function",
+            "access": "free"
+          },
+          "answerGuide": "make-unit-tests-catch-bug"
+        },
+        {
+          "id": "gitlab-codebase-pull-request",
+          "round": "Merge request review",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-02",
+          "newUntil": "2020-04-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "scss-haml-merge-request",
+          "round": "Merge request review",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "flux-and-vuex",
+          "round": "Written assessment",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2018-06",
+          "newUntil": "2018-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/vue/trivia/vuex-state-management",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "browser-page-load",
+          "round": "Written assessment",
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2019-08",
+          "newUntil": "2019-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-parsing-rendering",
+            "access": "free"
+          },
+          "answerGuide": "written-page-load-answer"
+        },
+        {
+          "id": "xss-and-prevention",
+          "round": "Written assessment",
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2019-04",
+          "newUntil": "2019-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-xss-dom-sinks",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "framework-or-plain-javascript",
+          "round": "Written assessment",
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2019-04",
+          "newUntil": "2019-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "cors",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2019-04",
+          "newUntil": "2019-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-secure-cors-handling",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "slow-loading-list",
+          "round": null,
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-04",
+          "newUntil": "2019-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/infinite-scroll-list",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "tagged-search-box",
+          "round": null,
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-04",
+          "newUntil": "2019-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/vue/coding/vue-chips-input-autocomplete",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "this-keyword",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-this-keyword",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "closures",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-closures",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "call-apply-bind",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-call-apply-bind",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "event-loop",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-event-loop",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "event-propagation",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-event-delegation",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "es6-classes",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-classes",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "vue-reactivity",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/vue/trivia/vue-reactivity-system",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "virtual-dom",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/vue/trivia/vue-virtual-dom-diffing",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "linked-list",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "rem-and-em",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/css/trivia/css-units-em-rem-percent-px",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "responsive-meta-tag",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/coding/html-head-seo-basics",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "framework-dom-rendering",
+          "round": "Behavioral interview",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-08",
+          "newUntil": "2021-10-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "hotel-elevator-system",
+          "round": "Director interview",
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2018-06",
+          "newUntil": "2018-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "gitlab-ui-change",
+          "round": null,
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-12",
+          "newUntil": "2020-02-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
+    "google": {
+      "total": 24,
+      "rounds": [
+        {
+          "stage": "Technical screen",
+          "count": 4
+        },
+        {
+          "stage": "Interview loop",
+          "count": 13
+        },
+        {
+          "stage": "System design",
+          "count": 1
+        }
+      ],
+      "roundNotStated": 6,
+      "newestAccount": "2022-07",
+      "questions": [
+        {
+          "id": "dfs-over-html-nodes",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/coding/js-dom-find-node",
+            "access": "premium"
+          },
+          "answerGuide": "nested-navigation-tree"
+        },
+        {
+          "id": "throttle-wrapper",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 1,
+          "latest": "2020-04",
+          "newUntil": "2020-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-throttle",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "ambigram-problem",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-07",
+          "newUntil": "2022-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "large-data-display",
+          "round": "Technical screen",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-07",
+          "newUntil": "2022-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "dom-manipulation-call",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-09",
+          "newUntil": "2021-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "combine-callback-results",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-07",
+          "newUntil": "2019-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-promise-all",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "delayed-run-api",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-07",
+          "newUntil": "2019-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-debounce",
+            "access": "free"
+          },
+          "answerGuide": "debounce-cancel-flush"
+        },
+        {
+          "id": "sequential-execution-queue",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-07",
+          "newUntil": "2019-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "minimum-window-substring",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-07",
+          "newUntil": "2019-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "async-and-closures",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-11",
+          "newUntil": "2020-01-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "promise-task-sequencing",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "retry-and-promise-methods",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-retry-with-delay",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "critical-rendering-path",
+          "round": "Interview loop",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "frontend-performance-network-security"
+        },
+        {
+          "id": "hash-map-and-set-problem",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "paths-in-2d-array",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "string-manipulation-autocomplete",
+          "round": "Interview loop",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-autocomplete-search-starter",
+            "access": "free"
+          },
+          "answerGuide": "accessible-autocomplete"
+        },
+        {
+          "id": "graph-problem-bfs",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-06",
+          "newUntil": "2022-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "quad-tree-problem",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-06",
+          "newUntil": "2022-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "drone-shopping-app",
+          "round": "System design",
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-07",
+          "newUntil": "2019-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "dom-number-table",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "timeout-function-wrapper",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "minesweeper-reveal",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "link-click-in-browser",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "google-doc-outline-view",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 0,
+          "banks": 1,
+          "latest": null,
+          "newUntil": null,
+          "open": false,
+          "unlockable": false,
+          "practice": null,
           "answerGuide": null
         }
       ]
@@ -2573,6 +4211,1308 @@
             "route": "/react/trivia/react-functional-vs-class-components",
             "access": "free"
           },
+          "answerGuide": null
+        }
+      ]
+    },
+    "netflix": {
+      "total": 13,
+      "rounds": [
+        {
+          "stage": "Technical screen",
+          "count": 6
+        },
+        {
+          "stage": "Take-home",
+          "count": 1
+        },
+        {
+          "stage": "Onsite",
+          "count": 3
+        }
+      ],
+      "roundNotStated": 3,
+      "newestAccount": "2025-12",
+      "questions": [
+        {
+          "id": "filter-api-results-by-search-input",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-11",
+          "newUntil": "2025-01-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-debounced-search",
+            "access": "premium"
+          },
+          "answerGuide": "resilient-title-search"
+        },
+        {
+          "id": "netflix-app-frontend-design",
+          "round": "Technical screen",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-09",
+          "newUntil": "2024-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/netflix-scale-expansion",
+            "access": "premium"
+          },
+          "answerGuide": "continue-watching-system-design"
+        },
+        {
+          "id": "internal-tool-screenshot-data-structure",
+          "round": "Technical screen",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-09",
+          "newUntil": "2024-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "event-log-config-table",
+          "round": "Technical screen",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-12",
+          "newUntil": "2025-03-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "flatten-nested-object",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "expect-tobe-matchers",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "two-async-calls-partial-failure",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "netflix-like-ui-take-home",
+          "round": "Take-home",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-11",
+          "newUntil": "2021-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "accessible-continue-watching-row"
+        },
+        {
+          "id": "collapsible-list-component",
+          "round": "Onsite",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-12",
+          "newUntil": "2025-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "personalized-row-rendering"
+        },
+        {
+          "id": "event-logging-client-libraries",
+          "round": "Onsite",
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-12",
+          "newUntil": "2025-03-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "styling-and-state-opinions",
+          "round": "Onsite",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-09",
+          "newUntil": "2024-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "content-platform-caching",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-11",
+          "newUntil": "2025-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/content-delivery-caching-strategies-streaming",
+            "access": "free"
+          },
+          "answerGuide": "streaming-caching-failure-states"
+        },
+        {
+          "id": "array-and-dom-manipulation",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-10",
+          "newUntil": "2020-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
+    "openai": {
+      "total": 8,
+      "rounds": [
+        {
+          "stage": "Technical screen",
+          "count": 5
+        },
+        {
+          "stage": "Final interviews",
+          "count": 3
+        }
+      ],
+      "roundNotStated": 0,
+      "newestAccount": "2026-07",
+      "questions": [
+        {
+          "id": "chatgpt-in-a-text-area",
+          "round": "Technical screen",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/system-design/ai-chat-textarea-design",
+            "access": "free"
+          },
+          "answerGuide": "streaming-chat-composer"
+        },
+        {
+          "id": "refactor-existing-code",
+          "round": "Technical screen",
+          "kind": "Practical coding",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-11",
+          "newUntil": "2025-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/debug/js-debug-mutating-input",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "openai-playground-design",
+          "round": "Technical screen",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 1,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "credit-pool-with-expirations",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "map-of-tuples-crud",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "chatgpt-system-design",
+          "round": "Final interviews",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-07",
+          "newUntil": "2026-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/sse-vs-websocket-real-time",
+            "access": "free"
+          },
+          "answerGuide": "frontend-system-design-conversation-history"
+        },
+        {
+          "id": "refactor-for-new-requirements",
+          "round": "Final interviews",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "simplified-vector-store",
+          "round": "Final interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-07",
+          "newUntil": "2026-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
+    "revolut": {
+      "total": 22,
+      "rounds": [
+        {
+          "stage": "Recruiter or HR screen",
+          "count": 3
+        },
+        {
+          "stage": "HackerRank assessment",
+          "count": 5
+        },
+        {
+          "stage": "Live coding",
+          "count": 8
+        },
+        {
+          "stage": "System design",
+          "count": 2
+        }
+      ],
+      "roundNotStated": 4,
+      "newestAccount": "2025-11",
+      "questions": [
+        {
+          "id": "typescript-fetch-and-render",
+          "round": "Live coding",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": "fetch-and-render-in-one-hour"
+        },
+        {
+          "id": "authenticated-api-in-react",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-fetch-json-timeout",
+            "access": "free"
+          },
+          "answerGuide": "authenticated-api-pairing"
+        },
+        {
+          "id": "mock-api-pagination-filtering",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-02",
+          "newUntil": "2024-04-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-pagination-table",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "api-calls-mapping-and-tests",
+          "round": "Live coding",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "fetch-and-render-in-one-hour"
+        },
+        {
+          "id": "improve-existing-react-app",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-04",
+          "newUntil": "2023-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "small-react-app",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-components-and-javascript-questions",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-09",
+          "newUntil": "2023-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-real-scenario-pairing",
+          "round": "Live coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-03",
+          "newUntil": "2025-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-reconciliation",
+          "round": "Recruiter or HR screen",
+          "kind": "React concepts",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-diffing-algorithm",
+            "access": "free"
+          },
+          "answerGuide": "recruiter-theory-check"
+        },
+        {
+          "id": "microtasks-vs-macrotasks",
+          "round": "Recruiter or HR screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-microtasks-vs-macrotasks",
+            "access": "free"
+          },
+          "answerGuide": "recruiter-theory-check"
+        },
+        {
+          "id": "dom-tree",
+          "round": "Recruiter or HR screen",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-04",
+          "newUntil": "2025-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-dom-tree-structure",
+            "access": "free"
+          },
+          "answerGuide": "recruiter-theory-check"
+        },
+        {
+          "id": "sliding-window-problem",
+          "round": "HackerRank assessment",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-longest-substring-without-repeating",
+            "access": "premium"
+          },
+          "answerGuide": "hackerrank-screen-three-tasks"
+        },
+        {
+          "id": "remove-anagrams-of-earlier-strings",
+          "round": "HackerRank assessment",
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-valid-anagram",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "keypad-code-steps",
+          "round": "HackerRank assessment",
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "matrix-bucket-fills",
+          "round": "HackerRank assessment",
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "graph-search-dfs",
+          "round": "HackerRank assessment",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-04",
+          "newUntil": "2023-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "product-features-and-apis",
+          "round": "System design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "frontend-system-design-api-contracts"
+        },
+        {
+          "id": "card-delivery-system",
+          "round": "System design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "frontend-system-design-api-contracts"
+        },
+        {
+          "id": "javascript-event-loop",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-event-loop",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "javascript-main-thread",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-03",
+          "newUntil": "2025-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "how-react-works",
+          "round": null,
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "mutating-javascript-methods",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-11",
+          "newUntil": "2021-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-mutability-vs-immutability",
+            "access": "free"
+          },
+          "answerGuide": null
+        }
+      ]
+    },
+    "stripe": {
+      "total": 17,
+      "rounds": [
+        {
+          "stage": "Technical screen",
+          "count": 7
+        },
+        {
+          "stage": "Onsite: bug squash",
+          "count": 1
+        },
+        {
+          "stage": "Onsite: integration",
+          "count": 2
+        },
+        {
+          "stage": "Onsite: programming exercise",
+          "count": 1
+        },
+        {
+          "stage": "Onsite: frontend design",
+          "count": 3
+        }
+      ],
+      "roundNotStated": 3,
+      "newestAccount": "2026-05",
+      "questions": [
+        {
+          "id": "bug-in-unfamiliar-repository",
+          "round": "Onsite: bug squash",
+          "kind": "Practical coding",
+          "accounts": 4,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/debug/js-debug-bug-squash-invoices",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "four-digit-code-entry",
+          "round": "Technical screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-08",
+          "newUntil": "2025-10-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "passport-validation-form",
+          "round": "Technical screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/coding/html-forms-validation-required",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "nested-string-parsing",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "employee-records-top-salaries",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-03",
+          "newUntil": "2025-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "transaction-data-problems",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-07",
+          "newUntil": "2025-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-group-by",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "ordered-list-conditional-styles",
+          "round": "Technical screen",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-05",
+          "newUntil": "2024-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "json-traversal",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-10",
+          "newUntil": "2024-12-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-lodash-get",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "finance-themed-algorithm",
+          "round": "Onsite: programming exercise",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "string-shortening",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "encode-decode-forms",
+          "round": null,
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-05",
+          "newUntil": "2026-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "async-and-loops",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-promises-async-await",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "live-api-calls",
+          "round": "Onsite: integration",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-retry-with-delay",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "files-and-external-api",
+          "round": "Onsite: integration",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-10",
+          "newUntil": "2025-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-tooltip-architecture",
+          "round": "Onsite: frontend design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-04",
+          "newUntil": "2024-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/component-design-system-architecture",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "stripe-page-design",
+          "round": "Onsite: frontend design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ui-component-state-from-mock",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "app-design-breakdown",
+          "round": "Onsite: frontend design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-06",
+          "newUntil": "2023-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
+    "tesla": {
+      "total": 22,
+      "rounds": [
+        {
+          "stage": "Online assessment",
+          "count": 2
+        },
+        {
+          "stage": "Technical screen",
+          "count": 2
+        },
+        {
+          "stage": "Final loop: frontend coding",
+          "count": 2
+        },
+        {
+          "stage": "Final loop: data structures and algorithms",
+          "count": 1
+        },
+        {
+          "stage": "Final loop: frontend system design",
+          "count": 2
+        },
+        {
+          "stage": "Technical rounds",
+          "count": 2
+        }
+      ],
+      "roundNotStated": 11,
+      "newestAccount": "2025-11",
+      "questions": [
+        {
+          "id": "search-bar",
+          "round": "Technical screen",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-10",
+          "newUntil": "2025-12-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-autocomplete-search-starter",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "like-button",
+          "round": "Online assessment",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-01",
+          "newUntil": "2021-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-like-button",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "string-to-number-puzzle",
+          "round": "Online assessment",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-01",
+          "newUntil": "2021-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "two-duplicate-numbers",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-01",
+          "newUntil": "2021-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "styled-react-component",
+          "round": "Final loop: frontend coding",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-10",
+          "newUntil": "2022-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "data-extraction-mock-ui",
+          "round": "Final loop: frontend coding",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "deque-card-game",
+          "round": "Final loop: data structures and algorithms",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "shared-component-design",
+          "round": "Final loop: frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-12",
+          "newUntil": "2021-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/component-design-system-architecture",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "car-rental-company-design",
+          "round": "Final loop: frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-01",
+          "newUntil": "2024-03-31",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/car-rental-booking-frontend",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "semantic-html5-tags",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/coding/html-semantic-layout",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "position-boxes-css",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/css/coding/css-positioning-badge",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "login-form",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/coding/html-forms-validation-required",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "react-context-themed-photos",
+          "round": null,
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "colour-contrast",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-color-contrast-ratio",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "api-autocomplete-react-app",
+          "round": "Technical rounds",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-03",
+          "newUntil": "2025-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-debounced-search",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "binary-search-medium",
+          "round": "Technical rounds",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-03",
+          "newUntil": "2025-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "user-table-design",
+          "round": null,
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-01",
+          "newUntil": "2025-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-pagination-table",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "linked-list-intersection",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-10",
+          "newUntil": "2022-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "bucket-sort-two-pointers",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-10",
+          "newUntil": "2022-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "cookies-css-quiz",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-11",
+          "newUntil": "2021-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-cookie-options",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "rotate-array",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-11",
+          "newUntil": "2021-01-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "ways-to-reach-nth-stair",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-11",
+          "newUntil": "2021-01-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
           "answerGuide": null
         }
       ]
@@ -3854,6 +6794,245 @@
           "open": false,
           "unlockable": false,
           "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
+    "zalando": {
+      "total": 14,
+      "rounds": [
+        {
+          "stage": "Coding challenge",
+          "count": 2
+        },
+        {
+          "stage": "Final: take-home review",
+          "count": 3
+        },
+        {
+          "stage": "Final: JavaScript fundamentals",
+          "count": 9
+        }
+      ],
+      "roundNotStated": 0,
+      "newestAccount": "2024-07",
+      "questions": [
+        {
+          "id": "search-box-take-home",
+          "round": "Coding challenge",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-autocomplete-search-starter",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "array-string-problems",
+          "round": "Coding challenge",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-02",
+          "newUntil": "2022-04-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "debounce-from-scratch",
+          "round": "Final: take-home review",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-debounce",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "removed-imports",
+          "round": "Final: take-home review",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "optimise-search-app",
+          "round": "Final: take-home review",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/realtime-search-debounce-cache",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "loading-and-rendering",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-parsing-rendering",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "css-specificity",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/css/trivia/css-cascade-order",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "html5-semantics",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-semantic-elements",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "web-accessibility",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/html/trivia/html-aria-roles",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "types-objects-prototypes",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-prototypal-inheritance",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "es6-features",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-map-filter-reduce",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "builder-pattern-solid",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-design-patterns",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "web-security",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-xss-dom-sinks",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "webpack-bundling",
+          "round": "Final: JavaScript fundamentals",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-tree-shaking",
+            "access": "free"
+          },
           "answerGuide": null
         }
       ]

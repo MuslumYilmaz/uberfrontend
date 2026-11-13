@@ -23,11 +23,11 @@ import { LEVEL_LABELS, WHEN_LABELS, companySetLine, joinNames } from '../company
 import type { CompanyPlanService } from '../company-plan/company-plan.service';
 import { companyBrandFor } from '../../../shared/company-branding';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
-import type { AuthoredCompanyPreview, AuthoredPracticePrompt, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
+import type { AuthoredCompanyPreview, AuthoredPracticePrompt, AuthoredSectionCopy, AuthoredSource } from '../../../shared/company-previews/authored-company-preview.model';
 import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-previews/authored-company-previews';
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
-import { companyEvidence, evidenceFrom, fillAuthoredPreview, type CompanyEvidence, type CompanyEvidenceCounts } from './company-evidence';
+import { UNCITED_SOURCE, companyEvidence, evidenceFrom, fillAuthoredPreview, fillCompanyCounts, type CompanyEvidence, type CompanyEvidenceCounts } from './company-evidence';
 // Not the plan's family helper: an import from shared/company-previews would date every guide by this component.
 import { FRAMEWORK_FAMILY_BY_ID } from '../../../shared/framework-families';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
@@ -55,6 +55,7 @@ import {
 } from '../../../shared/ui/question-row/fa-question-row.component';
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import {
+  GOOGLE_COPY,
   GOOGLE_PRACTICE_PROMPTS,
   GOOGLE_PREP_SEQUENCE,
   GOOGLE_PREVIEW_CANONICAL_PATH,
@@ -68,6 +69,7 @@ import {
   GOOGLE_RESOURCE_LINKS,
 } from './google-preview-content';
 import {
+  NETFLIX_COPY,
   NETFLIX_PRACTICE_PROMPTS,
   NETFLIX_PREP_SEQUENCE,
   NETFLIX_PREVIEW_CANONICAL_PATH,
@@ -80,33 +82,24 @@ import {
   NETFLIX_CULTURE_SPOTLIGHT,
   NETFLIX_ROLE_LENSES,
   NETFLIX_SOURCES,
+  NETFLIX_SOURCE_BOUNDARY,
   NETFLIX_WALKTHROUGH_STEPS,
 } from './netflix-preview-content';
 import { InlineCodeComponent } from '../../../shared/ui/inline-code/inline-code.component';
 import { BehavioralDrillComponent } from './behavioral-drill/behavioral-drill.component';
+import {
+  OPENAI_COPY,
+  OPENAI_PRACTICE_PROMPTS,
+  OPENAI_PREP_SEQUENCE,
+  OPENAI_PREVIEW_CANONICAL_PATH,
+  OPENAI_PREVIEW_DESCRIPTION,
+  OPENAI_PREVIEW_H1,
+  OPENAI_PREVIEW_TITLE,
+  OPENAI_RESOURCE_LINKS,
+  OPENAI_SOURCE_BOUNDARY,
+  OPENAI_TRUST_NOTE,
+} from './openai-preview-content';
 
-type OpenAiPracticePrompt = {
-  id: string;
-  title: string;
-  intent: string;
-  rubric: string[];
-};
-
-type OpenAiPrepDay = {
-  day: string;
-  focus: string;
-};
-
-type OpenAiResourceLink = {
-  label: string;
-  route: string[];
-  path: string;
-};
-
-const OPENAI_PREVIEW_TITLE = 'OpenAI Frontend Interview: 5 Practice Questions + Prep Guide';
-const OPENAI_PREVIEW_H1 = 'OpenAI Frontend Interview Questions';
-const OPENAI_PREVIEW_DESCRIPTION =
-  'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.';
 type RelatedCompanyLink = {
   slug: string;
   label: string;
@@ -169,139 +162,6 @@ function lockedAccess(locked: boolean): Record<string, unknown> {
 }
 
 const premiumAccess = (item: { access?: string } | null | undefined) => item?.access === 'premium';
-
-const OPENAI_PREVIEW_CANONICAL_PATH = '/companies/openai/preview';
-const OPENAI_TRUST_NOTE =
-  'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.';
-
-const OPENAI_RESOURCE_LINKS: OpenAiResourceLink[] = [
-  {
-    label: 'AI streaming data handling',
-    route: ['/javascript', 'trivia', 'ai-streaming-data-handling'],
-    path: '/javascript/trivia/ai-streaming-data-handling',
-  },
-  {
-    label: 'Chat conversation state management',
-    route: ['/javascript', 'trivia', 'chat-conversation-state-management'],
-    path: '/javascript/trivia/chat-conversation-state-management',
-  },
-  {
-    label: 'SSE vs WebSocket trade-offs',
-    route: ['/javascript', 'trivia', 'sse-vs-websocket-real-time'],
-    path: '/javascript/trivia/sse-vs-websocket-real-time',
-  },
-  {
-    label: 'AI UX integration challenges',
-    route: ['/javascript', 'trivia', 'ai-ux-integration-challenges'],
-    path: '/javascript/trivia/ai-ux-integration-challenges',
-  },
-  {
-    label: 'ReadableStream to text',
-    route: ['/javascript', 'coding', 'js-stream-to-text'],
-    path: '/javascript/coding/js-stream-to-text',
-  },
-  {
-    label: 'takeLatest request handling',
-    route: ['/javascript', 'coding', 'js-take-latest'],
-    path: '/javascript/coding/js-take-latest',
-  },
-];
-
-const OPENAI_PRACTICE_PROMPTS: OpenAiPracticePrompt[] = [
-  {
-    id: 'streaming-chat-composer',
-    title: 'Streaming chat composer',
-    intent:
-      'Build a composer that accepts a user message, renders the user bubble immediately, and appends an assistant response as streamed chunks arrive.',
-    rubric: [
-      'Readable state shape for messages, draft input, pending request id, and stream status.',
-      'Incremental text rendering without blocking typing, selection, or scroll position.',
-      'Error and retry states that preserve the user prompt and partial assistant text.',
-      'Clear separation between transport code and rendering logic.',
-    ],
-  },
-  {
-    id: 'stop-regenerate-stale-stream-handling',
-    title: 'Stop/regenerate and stale stream handling',
-    intent:
-      'Add stop and regenerate controls while ensuring old chunks cannot mutate the latest assistant message after cancellation or a second request.',
-    rubric: [
-      'AbortController or equivalent cancellation path for active stream work.',
-      'A request token, generation id, or takeLatest guard before every state write.',
-      'Predictable UI states for stopping, stopped, regenerating, failed, and complete.',
-      'Cleanup for readers, timers, event listeners, and pending promises.',
-    ],
-  },
-  {
-    id: 'react-state-optimistic-messages',
-    title: 'React state + optimistic messages',
-    intent:
-      'Model optimistic user messages and assistant placeholders in React without duplicating messages or losing order when network responses resolve late.',
-    rubric: [
-      'Immutable message updates keyed by stable ids instead of array index assumptions.',
-      'Optimistic user bubble creation before the network call completes.',
-      'Rollback or retry behavior for failed sends without deleting the draft context.',
-      'Derived rendering for pending, partial, and final assistant messages.',
-    ],
-  },
-  {
-    id: 'accessibility-keyboard-interaction',
-    title: 'Accessibility/keyboard interaction',
-    intent:
-      'Make the chat input, send button, stop control, regenerate action, and message list usable from keyboard and assistive technology.',
-    rubric: [
-      'Correct textarea behavior for Enter, Shift+Enter, focus restoration, and disabled states.',
-      'Accessible button names that change with send, stop, and regenerate modes.',
-      'Live region strategy for streamed assistant output without excessive announcements.',
-      'Visible focus states and logical tab order across composer and message actions.',
-      'Respect for reduced motion and high-contrast reading needs.',
-    ],
-  },
-  {
-    id: 'frontend-system-design-conversation-history',
-    title: 'Frontend system design/conversation history',
-    intent:
-      'Design the frontend architecture for conversation history, message virtualization, search, local recovery, and sync with server-side threads.',
-    rubric: [
-      'Data model for threads, messages, streaming drafts, attachments, and pagination cursors.',
-      'Cache and persistence plan for recent conversations, offline recovery, and invalidation.',
-      'Virtualized rendering and scroll anchoring for long conversations.',
-      'Privacy, retention, and redaction considerations for sensitive chat content.',
-      'Observability for latency, stream failures, and client-side rendering errors.',
-    ],
-  },
-];
-
-const OPENAI_PREP_SEQUENCE: OpenAiPrepDay[] = [
-  {
-    day: 'Day 1',
-    focus: 'Review streaming fundamentals: ReadableStream, SSE/WebSocket trade-offs, cancellation, and how partial text becomes UI state.',
-  },
-  {
-    day: 'Day 2',
-    focus: 'Implement a small stream-to-text utility and write tests for chunk order, decoding, cancellation, and error paths.',
-  },
-  {
-    day: 'Day 3',
-    focus: 'Build the chat composer shell with draft state, optimistic user messages, assistant placeholders, loading states, and retry copy.',
-  },
-  {
-    day: 'Day 4',
-    focus: 'Add stop, regenerate, and stale-stream guards. Force slow responses locally and prove old chunks cannot update the newest request.',
-  },
-  {
-    day: 'Day 5',
-    focus: 'Audit accessibility: keyboard flow, button names, focus restoration, live announcements, visible focus, and reduced-motion behavior.',
-  },
-  {
-    day: 'Day 6',
-    focus: 'Design conversation history: thread model, pagination, virtualization, local recovery, privacy constraints, and cache invalidation.',
-  },
-  {
-    day: 'Day 7',
-    focus: 'Run a timed mock: explain trade-offs first, code the smallest reliable slice, then review edge cases and testing strategy aloud.',
-  },
-];
 
 @Component({
     selector: 'app-company-preview',
@@ -379,6 +239,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly openAiPracticePrompts = OPENAI_PRACTICE_PROMPTS;
   readonly openAiPrepSequence = OPENAI_PREP_SEQUENCE;
   readonly openAiResourceLinks = OPENAI_RESOURCE_LINKS;
+  readonly openAiCopy = OPENAI_COPY;
   readonly googleH1 = GOOGLE_PREVIEW_H1;
   readonly googleTrustNote = GOOGLE_PREVIEW_TRUST_NOTE;
   readonly googleProcessNote = GOOGLE_PROCESS_NOTE;
@@ -387,6 +248,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly googleFaqs = GOOGLE_PREVIEW_FAQS;
   readonly googleResourceLinks = GOOGLE_RESOURCE_LINKS;
   readonly googleGoogleyness = GOOGLE_GOOGLEYNESS_SPOTLIGHT;
+  readonly googleCopy = GOOGLE_COPY;
   readonly netflixH1 = NETFLIX_PREVIEW_H1;
   readonly netflixTrustNote = NETFLIX_PREVIEW_TRUST_NOTE;
   readonly netflixRoleLenses = NETFLIX_ROLE_LENSES;
@@ -397,6 +259,7 @@ export class CompanyPreviewComponent implements OnInit {
   readonly netflixResourceLinks = NETFLIX_RESOURCE_LINKS;
   readonly netflixSources = NETFLIX_SOURCES;
   readonly netflixCulture = NETFLIX_CULTURE_SPOTLIGHT;
+  readonly netflixCopy = NETFLIX_COPY;
   data: CompanyPreviewResolved = {
     slug: '',
     mode: 'catalog',
@@ -467,6 +330,8 @@ export class CompanyPreviewComponent implements OnInit {
 
   /** The guide's practice prompts by id: a question's answer guide is one of them. */
   answerGuides: Readonly<Record<string, AuthoredPracticePrompt>> = {};
+  /** The counts an inline guide (Google, Netflix, OpenAI) fills its tokens with. */
+  inlineCounts: CompanyEvidenceCounts | null = null;
   /** Every source once, with who reported it and when, for the list at the end of the page. */
   guideSourceRows: readonly GuideSourceRow[] = [];
 
@@ -778,10 +643,28 @@ export class CompanyPreviewComponent implements OnInit {
       ? companyEvidence(authored, this.interviewProcess)
       : this.isNetflixPreview ? evidenceFrom(NETFLIX_SOURCES, NETFLIX_PRACTICE_PROMPTS.length, this.interviewProcess) : null;
     this.authoredPreview = authored && this.evidence ? fillAuthoredPreview(authored, this.evidence.counts) : null;
-    this.answerGuides = Object.fromEntries((this.authoredPreview?.prompts.items ?? []).map((prompt) => [prompt.id, prompt]));
-    // A catalog guide has no sources list of its own: the reported items' accounts and the table's make it up.
+    // The inline guides keep their prompts beside the component; with a question list they are its answer guides.
+    // OpenAI's prompts carry an intent and a rubric, which read as the statement and the strong answer.
+    const prompts: readonly AuthoredPracticePrompt[] = this.authoredPreview?.prompts.items
+      ?? (this.isGooglePreview ? GOOGLE_PRACTICE_PROMPTS
+        : this.isNetflixPreview ? NETFLIX_PRACTICE_PROMPTS
+          : this.isOpenAiPreview ? OPENAI_PRACTICE_PROMPTS.map((prompt) => ({
+            id: prompt.id, title: prompt.title, statement: prompt.intent, whatThisMeasures: '', clarifyFirst: [],
+            strongAnswer: prompt.rubric, commonMiss: '', resourceLabel: '', resourcePath: '',
+          })) : []);
+    this.answerGuides = Object.fromEntries(prompts.map((prompt) => [prompt.id, prompt]));
+    // An inline guide fills its count tokens from the same evidence its sources list shows.
+    this.inlineCounts = this.evidence?.counts
+      ?? (this.isGooglePreview || this.isOpenAiPreview ? evidenceFrom([], prompts.length, this.interviewProcess).counts : null);
+    // A catalog guide has no list of its own: the table's and the questions' sources come first, each with a note on
+    // where the page uses it, then the accounts only its reported items rest on. Google and OpenAI show no reported
+    // items, so their table and questions make it up.
+    const inline = this.isGooglePreview || this.isOpenAiPreview;
+    const cited = evidenceFrom([], 0, this.interviewProcess).sources;
+    const seen = new Set(cited.map((source) => source.url));
     this.guideSourceRows = this.sourceRows(
-      this.evidence?.sources ?? evidenceFrom(this.reportedItemSources(resolved?.reports ?? []), 0, this.interviewProcess).sources,
+      this.evidence?.sources
+        ?? [...cited, ...(inline ? [] : this.reportedItemSources(resolved?.reports ?? []).filter((source) => !seen.has(source.url)))],
     );
     this.editorialNotes = this.authoredPreview || this.isOpenAiPreview || this.isGooglePreview || this.isNetflixPreview
       ? null
@@ -792,11 +675,6 @@ export class CompanyPreviewComponent implements OnInit {
       counts: { all: 0, coding: 0, trivia: 0, system: 0, debug: 0 },
       samples: [],
     };
-    // Beside a question list, a sample that is a locked question's practice task would name what the lock holds back;
-    // the list carries that task, so the sample is left out.
-    const held = new Set((this.features.lockedQuestions ? (this.interviewProcess?.questions ?? []).slice(1) : [])
-      .flatMap((question) => (question.practice ? [question.practice.path.split('/').pop()] : [])));
-    if (held.size) this.data = { ...this.data, samples: this.data.samples.filter((item) => !held.has(item.id)) };
     this.reportedSampleKeys = new Set((this.data.reports ?? []).map((item) => `${item.kind}:${item.id}`));
 
     if (this.isOpenAiPreview) {
@@ -849,6 +727,23 @@ export class CompanyPreviewComponent implements OnInit {
       .filter(([count]) => count > 0)
       .map(([count, kind]) => `${kind} ${count}`)
       .join(' · ');
+  }
+
+  /** An inline guide's text with its count tokens filled. */
+  fillInline(text: string): string {
+    return this.inlineCounts ? fillCompanyCounts(text, this.inlineCounts) : text;
+  }
+
+  /** The source boundary shown with the sources at the end of the page. */
+  get sourceBoundary(): AuthoredSectionCopy | null {
+    return this.authoredPreview?.sourceBoundary
+      ?? (this.isOpenAiPreview ? OPENAI_SOURCE_BOUNDARY : this.isNetflixPreview ? NETFLIX_SOURCE_BOUNDARY : null);
+  }
+
+  /** "19 reported questions", for the hero of an inline guide with a question list. */
+  reportedQuestionsChip(): string {
+    const total = this.questionSummary()?.total ?? 0;
+    return `${total} reported ${total === 1 ? 'question' : 'questions'}`;
   }
 
   promptCountLabel(count: number): string {
@@ -937,13 +832,13 @@ export class CompanyPreviewComponent implements OnInit {
       '@type': 'CollectionPage',
       '@id': `${canonicalUrl}#collection`,
       url: canonicalUrl,
-      name: OPENAI_PREVIEW_TITLE,
+      name: this.fillInline(OPENAI_PREVIEW_TITLE),
       headline: OPENAI_PREVIEW_H1,
-      description: OPENAI_PREVIEW_DESCRIPTION,
+      description: this.fillInline(OPENAI_PREVIEW_DESCRIPTION),
       disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
       ...(dateModified ? { dateModified } : {}),
-      ...lockedAccess(this.gated() || OPENAI_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
+      ...lockedAccess(this.questionSummary() ? this.features.lockedQuestions : this.gated() || OPENAI_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
       about: [
         { '@type': 'Thing', name: 'OpenAI frontend interview practice' },
         { '@type': 'Thing', name: 'Streaming chat frontend practice' },
@@ -954,16 +849,19 @@ export class CompanyPreviewComponent implements OnInit {
         name: link.label,
         url: this.seo.buildCanonicalUrl(link.path),
       })),
-      mainEntity: {
-        '@type': 'ItemList',
-        description: COMPANY_PRACTICE_DISCLAIMER,
-        itemListElement: OPENAI_PRACTICE_PROMPTS.map((prompt, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          name: prompt.title,
-          url: `${canonicalUrl}#${prompt.id}`,
-        })),
-      },
+      // With the question list the locked rows are the Premium part, and no ItemList names what a visitor cannot read.
+      ...(this.questionSummary() ? {} : {
+        mainEntity: {
+          '@type': 'ItemList',
+          description: COMPANY_PRACTICE_DISCLAIMER,
+          itemListElement: OPENAI_PRACTICE_PROMPTS.map((prompt, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: prompt.title,
+            url: `${canonicalUrl}#${prompt.id}`,
+          })),
+        },
+      }),
     };
 
     const breadcrumb = {
@@ -991,8 +889,8 @@ export class CompanyPreviewComponent implements OnInit {
     };
 
     this.seo.updateTags({
-      title: OPENAI_PREVIEW_TITLE,
-      description: OPENAI_PREVIEW_DESCRIPTION,
+      title: this.fillInline(OPENAI_PREVIEW_TITLE),
+      description: this.fillInline(OPENAI_PREVIEW_DESCRIPTION),
       robots: 'index,follow',
       canonical: OPENAI_PREVIEW_CANONICAL_PATH,
       jsonLd: [collectionPage, breadcrumb],
@@ -1021,13 +919,13 @@ export class CompanyPreviewComponent implements OnInit {
       '@type': 'CollectionPage',
       '@id': `${canonicalUrl}#collection`,
       url: canonicalUrl,
-      name: GOOGLE_PREVIEW_TITLE,
+      name: this.fillInline(GOOGLE_PREVIEW_TITLE),
       headline: GOOGLE_PREVIEW_H1,
-      description: GOOGLE_PREVIEW_DESCRIPTION,
+      description: this.fillInline(GOOGLE_PREVIEW_DESCRIPTION),
       disambiguatingDescription: COMPANY_PRACTICE_DISCLAIMER,
       inLanguage: 'en',
       ...(dateModified ? { dateModified } : {}),
-      ...lockedAccess(this.gated() || GOOGLE_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
+      ...lockedAccess(this.questionSummary() ? this.features.lockedQuestions : this.gated() || GOOGLE_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
       about: [
         { '@type': 'Thing', name: 'Google frontend interview preparation' },
         { '@type': 'Thing', name: 'JavaScript and browser APIs' },
@@ -1039,7 +937,7 @@ export class CompanyPreviewComponent implements OnInit {
         name: link.label,
         url: this.seo.buildCanonicalUrl(link.path),
       })),
-      mainEntity: { '@id': itemListId },
+      ...(this.questionSummary() ? {} : { mainEntity: { '@id': itemListId } }),
     };
 
     const breadcrumb = {
@@ -1068,11 +966,11 @@ export class CompanyPreviewComponent implements OnInit {
     };
 
     this.seo.updateTags({
-      title: GOOGLE_PREVIEW_TITLE,
-      description: GOOGLE_PREVIEW_DESCRIPTION,
+      title: this.fillInline(GOOGLE_PREVIEW_TITLE),
+      description: this.fillInline(GOOGLE_PREVIEW_DESCRIPTION),
       robots: 'index,follow',
       canonical: GOOGLE_PREVIEW_CANONICAL_PATH,
-      jsonLd: [collectionPage, itemList, breadcrumb],
+      jsonLd: this.questionSummary() ? [collectionPage, breadcrumb] : [collectionPage, itemList, breadcrumb],
     });
   }
 
@@ -1098,13 +996,13 @@ export class CompanyPreviewComponent implements OnInit {
       '@type': 'CollectionPage',
       '@id': `${canonicalUrl}#collection`,
       url: canonicalUrl,
-      name: NETFLIX_PREVIEW_TITLE,
+      name: this.fillInline(NETFLIX_PREVIEW_TITLE),
       headline: NETFLIX_PREVIEW_H1,
-      description: NETFLIX_PREVIEW_DESCRIPTION,
+      description: this.fillInline(NETFLIX_PREVIEW_DESCRIPTION),
       disambiguatingDescription: NETFLIX_PREVIEW_TRUST_NOTE,
       inLanguage: 'en',
       ...(dateModified ? { dateModified } : {}),
-      ...lockedAccess(this.gated() || NETFLIX_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
+      ...lockedAccess(this.questionSummary() ? this.features.lockedQuestions : this.gated() || NETFLIX_PRACTICE_PROMPTS.length > OPEN_PROMPTS),
       about: [
         { '@type': 'Thing', name: 'Netflix frontend interview preparation' },
         { '@type': 'Thing', name: 'JavaScript and React user interfaces' },
@@ -1116,7 +1014,7 @@ export class CompanyPreviewComponent implements OnInit {
         name: link.label,
         url: this.seo.buildCanonicalUrl(link.path),
       })),
-      mainEntity: { '@id': itemListId },
+      ...(this.questionSummary() ? {} : { mainEntity: { '@id': itemListId } }),
     };
 
     const breadcrumb = {
@@ -1145,11 +1043,11 @@ export class CompanyPreviewComponent implements OnInit {
     };
 
     this.seo.updateTags({
-      title: NETFLIX_PREVIEW_TITLE,
-      description: NETFLIX_PREVIEW_DESCRIPTION,
+      title: this.fillInline(NETFLIX_PREVIEW_TITLE),
+      description: this.fillInline(NETFLIX_PREVIEW_DESCRIPTION),
       robots: 'index,follow',
       canonical: NETFLIX_PREVIEW_CANONICAL_PATH,
-      jsonLd: [collectionPage, itemList, breadcrumb],
+      jsonLd: this.questionSummary() ? [collectionPage, breadcrumb] : [collectionPage, itemList, breadcrumb],
     });
   }
 
@@ -1266,6 +1164,7 @@ export class CompanyPreviewComponent implements OnInit {
     const byUrl = new Map<string, AuthoredSource>();
     for (const item of reports) {
       for (const source of item.sources ?? []) {
+        if (UNCITED_SOURCE.test(source.url)) continue;
         if (!byUrl.has(source.url)) {
           byUrl.set(source.url, { label: source.label, url: source.url, kind: 'report', note: 'A public account behind one of the practice tasks tagged for this company.' });
         }
@@ -1285,7 +1184,7 @@ export class CompanyPreviewComponent implements OnInit {
     for (const question of [...(process?.questions ?? []), ...(process?.behaviouralQuestions ?? [])]) question.sources.forEach(cite);
     return sources.map((source) => {
       const cited = byUrl.get(source.url);
-      const account = cited?.kind === 'report' && cited.reportForm !== 'question-bank';
+      const account = cited?.kind === 'report' && !cited.reportForm;
       return {
         label: source.label,
         url: source.url,

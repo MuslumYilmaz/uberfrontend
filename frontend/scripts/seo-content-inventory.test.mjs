@@ -422,7 +422,7 @@ test('actual interview process edits re-date only the company whose stages or so
     .filter(([route, entry]) => before.get(route)?.fingerprint !== entry.fingerprint).map(([route]) => route);
   const edits = [
     // A stage inside the registry literal.
-    ["format: '60 minutes on two or three easy-to-medium problems.',", "format: '60 minutes on two or three problems.',", '/companies/walmart/preview'],
+    ["format: '60 minutes on two or three easy-to-medium problems, with a discussion of time complexity.',", "format: '60 minutes on two or three problems, with a discussion of time complexity.',", '/companies/walmart/preview'],
     // Source constants outside the literal: catalog companies (Walmart, Tesla) as well as authored ones.
     ["'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-06'", "'https://www.teamblind.com/post/tesla-frontend-onsite-bvg7rws6', '2020-07'", '/companies/tesla/preview'],
     ["label: 'Amazon FEE prep page',", "label: 'Amazon Front End Engineer prep page',", '/companies/amazon/preview'],
@@ -452,6 +452,7 @@ test('actual interview process edits re-date only the company whose stages or so
 test('company previews are dated by their own content: shared template and component edits re-date no company', () => {
   const template = `${APP}features/company/company-preview/company-preview.component.html`;
   const component = `${APP}features/company/company-preview/company-preview.component.ts`;
+  const openai = `${APP}features/company/company-preview/openai-preview-content.ts`;
   const read = currentReader();
   const before = buildSeoInventory(read);
   const companyChanges = (overrides) => [...buildSeoInventory(currentReader(overrides))]
@@ -467,7 +468,7 @@ test('company previews are dated by their own content: shared template and compo
     [template, html.replace('<p class="preview-kicker">Time-sensitive context</p>', '<p class="preview-kicker">Time-sensitive note</p>'), ['/companies/google/preview']],
     [template, html.replace('<h2 id="openai-unlock">Unlock the full OpenAI practice set</h2>', '<h2 id="openai-unlock">Open the full OpenAI practice set</h2>'), ['/companies/openai/preview']],
     [template, html.replace('<h2 id="netflix-premium-route">Continue with the full Netflix practice set</h2>', '<h2 id="netflix-premium-route">Open the full Netflix practice set</h2>'), ['/companies/netflix/preview']],
-    [component, ts.replace('not leaked or confirmed OpenAI interview questions', 'not leaked or confirmed OpenAI interview prompts'), ['/companies/openai/preview']],
+    [openai, read.read(openai).replace('OpenAI has confirmed none of them', 'OpenAI confirmed none of them'), ['/companies/openai/preview']],
     // So does the method that publishes an inline-branch company's structured data.
     [component, ts.replace("name: 'Google frontend interview preparation' }", "name: 'Google frontend interview prep' }"), ['/companies/google/preview']],
   ];
@@ -486,10 +487,11 @@ test('wiring a company-keyed registry into the preview re-dates only the compani
   assert.notEqual(withoutEntry, read.read(registry));
   const before = buildSeoInventory(currentReader({ [registry]: withoutEntry }));
   const original = read.read(component);
-  // As before the interview process tables shipped: no import, no getter.
+  // As before the interview process tables shipped: no import, no getter, and no question list read from them.
   const modified = original
     .replace('  COMPANY_INTERVIEW_PROCESSES,\n  type CompanyInterviewProcess,\n', '  type CompanyInterviewProcess,\n')
-    .replace('  get interviewProcess(): CompanyInterviewProcess | null {\n    return COMPANY_INTERVIEW_PROCESSES[this.slug] ?? null;\n  }\n', '');
+    .replace('  get interviewProcess(): CompanyInterviewProcess | null {\n    return COMPANY_INTERVIEW_PROCESSES[this.slug] ?? null;\n  }\n', '')
+    .replaceAll('COMPANY_INTERVIEW_PROCESSES[this.guide().slug]', 'null');
   assert.ok(!modified.includes('COMPANY_INTERVIEW_PROCESSES'));
   assert.notEqual(modified, original);
   const changes = [...buildSeoInventory(currentReader({ [registry]: withoutEntry, [component]: modified }))]

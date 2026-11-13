@@ -133,7 +133,7 @@ export class CompanyInterviewProcessComponent {
 
   /** "Newest: Senior software engineer, United States · Jan 2026", or the official pages when no account backs the round. */
   newestReporter(stage: InterviewProcessStage): string {
-    const reports = stage.sources.filter((source) => source.kind === 'report' && source.reportForm !== 'question-bank');
+    const reports = stage.sources.filter((source) => source.kind === 'report' && !source.reportForm);
     const newest = [...reports].sort((a, b) => b.date.localeCompare(a.date))[0];
     if (newest) return `Newest: ${describeReporter(newest)} · ${this.formatMonth(newest.date)}`;
     return stage.sources.filter((source) => source.kind === 'official').map((source) => source.label).join(' · ');

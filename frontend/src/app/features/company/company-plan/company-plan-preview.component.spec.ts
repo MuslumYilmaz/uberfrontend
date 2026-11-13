@@ -331,11 +331,11 @@ describe('CompanyPlanPreviewComponent', () => {
     });
 
     it('the night before an interview, points a phone at the guide to read', () => {
-      setup({ companies: 'datadog', when: 'tomorrow', level: 'senior' });
-      expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the Datadog guide: its rounds and open prompts.');
+      setup({ companies: 'servicenow', when: 'tomorrow', level: 'senior' });
+      expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ServiceNow guide: its rounds and open prompts.');
       // The guide's five prompts keep three open; Premium opens the other two answer guides, which read on a phone.
       expect(text('.preview__phone-note')).toContain('Premium also opens the answer guides for prompts 4 and 5 there, readable on this phone tonight.');
-      expect(testId('company-plan-phone-note')?.querySelector('a')?.getAttribute('href')).toBe('/companies/datadog/preview');
+      expect(testId('company-plan-phone-note')?.querySelector('a')?.getAttribute('href')).toBe('/companies/servicenow/preview');
     });
 
     it('the night before an interview, points a phone at the reported questions of a guide that lists them', () => {

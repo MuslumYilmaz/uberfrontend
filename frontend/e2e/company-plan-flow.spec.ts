@@ -125,8 +125,8 @@ test.describe('company plan, five people', () => {
     await expect(switchLine.getByRole('button', { name: 'Interviewing as a student or new graduate?' })).toBeVisible();
     await expect(page.getByTestId('company-plan-open-task')).toHaveCount(3);
     const phoneNote = page.getByTestId('company-plan-phone-note');
-    await expect(phoneNote).toContainText('Tonight on a phone, read the Amazon guide: its rounds and open prompts.');
-    await expect(phoneNote).toContainText('Premium also opens the answer guides for prompts 4 to 7 there, readable on this phone tonight.');
+    await expect(phoneNote).toContainText('Tonight on a phone, read the Amazon guide: its rounds and its open reported question.');
+    await expect(phoneNote).toContainText(/Premium also opens its other \d+ reported questions there, readable on this phone tonight\./);
     await expect(phoneNote.getByRole('link', { name: 'Read the Amazon guide' })).toHaveAttribute('href', '/companies/amazon/preview');
     expect(await overflow(page)).toBe(0);
 
@@ -399,9 +399,10 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your Agoda plan is ready' })).toBeVisible();
   });
 
-  test('Ferhat reads the Google guide behind the account gate: a visitor gets the lead-in, a free account the rounds and sources, Premium the answer guides', async ({ page }) => {
+  // Meta still shows prompt cards behind the account gate; Google now shows the reported-question list instead.
+  test('Ferhat reads the Meta guide behind the account gate: a visitor gets the lead-in, a free account the rounds and sources, Premium the answer guides', async ({ page }) => {
     // As a visitor: every round in full with its counts but no evidence links, and the first prompt; two gates to a free account.
-    await page.goto('/companies/google/preview');
+    await page.goto('/companies/meta/preview');
     const process = page.getByTestId('company-interview-process');
     await expect(process.locator('.premium-locked')).toHaveCount(0);
     await expect(process.locator('.interview-process__sources')).toHaveCount(0);
@@ -409,7 +410,7 @@ test.describe('company plan from a company guide', () => {
     await expect(process.locator('.interview-process__tag').first()).toHaveText('Free account');
     const processGate = page.getByTestId('company-process-gate');
     await expect(processGate).toContainText('The sources behind each round open with a free account');
-    await expect(processGate.getByRole('link', { name: 'Create a free account' })).toHaveAttribute('href', /^\/auth\/signup\?redirectTo=%2Fcompanies%2Fgoogle%2Fpreview/);
+    await expect(processGate.getByRole('link', { name: 'Create a free account' })).toHaveAttribute('href', /^\/auth\/signup\?redirectTo=%2Fcompanies%2Fmeta%2Fpreview/);
     await expect(processGate.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', /^\/auth\/login\?redirectTo=/);
     const prompts = page.locator('.company-prompt');
     await expect(prompts.nth(0).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
@@ -419,7 +420,7 @@ test.describe('company plan from a company guide', () => {
 
     // As a free account: every round and source, every prompt statement; the answer guides past the first wait for Premium.
     await signIn(page, newAccount());
-    await page.goto('/companies/google/preview');
+    await page.goto('/companies/meta/preview');
     await expect(page.getByTestId('company-process-gate')).toHaveCount(0);
     await expect(process.locator('.interview-process__tag')).toHaveCount(0);
     // A stacked table keeps each row's sources behind "Show the sources"; a wide one shows them at once.

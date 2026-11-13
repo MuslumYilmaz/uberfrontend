@@ -46,7 +46,8 @@
   color: var(--uf-text-primary);
 }
 
-.guide-sources .guide-sources__gate {
+.guide-sources .guide-sources__gate,
+.guide-sources .guide-sources__scope {
   margin-bottom: 12px;
 }
 

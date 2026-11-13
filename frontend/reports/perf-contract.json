@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-13T10:00:02.937Z",
+  "generatedAt": "2026-11-13T13:48:54.186Z",
   "strictMode": true,
   "buildDir": "dist/frontendatlas/browser",
   "thresholds": {
@@ -11,8 +11,8 @@
     "showcaseLazyHeavyBytes": 620000
   },
   "metrics": {
-    "initialBytes": 1458259,
-    "eagerJsBytes": 1246547,
+    "initialBytes": 1458322,
+    "eagerJsBytes": 1246610,
     "eagerJsFileCount": 55,
     "modulePreloadBytes": 74860,
     "modulePreloadCount": 10,
@@ -20,9 +20,9 @@
     "entryScriptCount": 2,
     "stylesheetBytes": 211712,
     "stylesheetCount": 14,
-    "totalHtmlBytes": 68638018,
+    "totalHtmlBytes": 68948088,
     "htmlFileCount": 645,
-    "codingHtmlBytes": 597759,
+    "codingHtmlBytes": 597626,
     "sentryLazyChunkBytes": 0,
     "sentryLazyChunkFile": null,
     "showcaseLazyHeavyBytes": 0,
@@ -32,72 +32,77 @@
     {
       "route": "/coding",
       "file": "dist/frontendatlas/browser/coding/index.html",
-      "bytes": 597759
+      "bytes": 597626
     },
     {
       "route": "/companies/walmart/preview",
       "file": "dist/frontendatlas/browser/companies/walmart/preview/index.html",
-      "bytes": 309226
+      "bytes": 308932
     },
     {
       "route": "/interview-questions/essential",
       "file": "dist/frontendatlas/browser/interview-questions/essential/index.html",
-      "bytes": 296677
+      "bytes": 296719
     },
     {
       "route": "/companies/agoda/preview",
       "file": "dist/frontendatlas/browser/companies/agoda/preview/index.html",
-      "bytes": 258329
+      "bytes": 264011
     },
     {
       "route": "/guides/framework-prep/angular-prep-path",
       "file": "dist/frontendatlas/browser/guides/framework-prep/angular-prep-path/index.html",
-      "bytes": 256247
+      "bytes": 256222
     },
     {
       "route": "/guides/framework-prep/vue-prep-path",
       "file": "dist/frontendatlas/browser/guides/framework-prep/vue-prep-path/index.html",
-      "bytes": 241687
+      "bytes": 241712
     },
     {
       "route": "/guides/framework-prep/react-prep-path",
       "file": "dist/frontendatlas/browser/guides/framework-prep/react-prep-path/index.html",
-      "bytes": 232484
+      "bytes": 232525
     },
     {
       "route": "/",
       "file": "dist/frontendatlas/browser/index.html",
-      "bytes": 230739
-    },
-    {
-      "route": "/react/trivia/react-stale-state-closures",
-      "file": "dist/frontendatlas/browser/react/trivia/react-stale-state-closures/index.html",
-      "bytes": 224871
-    },
-    {
-      "route": "/companies/booking-com/preview",
-      "file": "dist/frontendatlas/browser/companies/booking-com/preview/index.html",
-      "bytes": 222459
-    },
-    {
-      "route": "/companies/bytedance/preview",
-      "file": "dist/frontendatlas/browser/companies/bytedance/preview/index.html",
-      "bytes": 211416
-    },
-    {
-      "route": "/javascript/trivia/js-promises-async-await",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-promises-async-await/index.html",
-      "bytes": 210037
+      "bytes": 230764
     },
     {
       "route": "/companies/tesla/preview",
       "file": "dist/frontendatlas/browser/companies/tesla/preview/index.html",
-      "bytes": 207910
+      "bytes": 225020
+    },
+    {
+      "route": "/react/trivia/react-stale-state-closures",
+      "file": "dist/frontendatlas/browser/react/trivia/react-stale-state-closures/index.html",
+      "bytes": 224839
+    },
+    {
+      "route": "/companies/amazon/preview",
+      "file": "dist/frontendatlas/browser/companies/amazon/preview/index.html",
+      "bytes": 222615
+    },
+    {
+      "route": "/companies/stripe/preview",
+      "file": "dist/frontendatlas/browser/companies/stripe/preview/index.html",
+      "bytes": 220655
+    },
+    {
+      "route": "/companies/bytedance/preview",
+      "file": "dist/frontendatlas/browser/companies/bytedance/preview/index.html",
+      "bytes": 211508
+    },
+    {
+      "route": "/javascript/trivia/js-promises-async-await",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-promises-async-await/index.html",
+      "bytes": 210014
     },
     {
       "route": "/companies/apple/preview",
       "file": "dist/frontendatlas/browser/companies/apple/preview/index.html",
-      "bytes": 207587
+      "bytes": 207693
     },
     {
       "route": "/system-design/ai-agent-run-inspector",
@@ -107,27 +112,22 @@
     {
       "route": "/javascript/trivia/js-equality-vs-strict-equality",
       "file": "dist/frontendatlas/browser/javascript/trivia/js-equality-vs-strict-equality/index.html",
-      "bytes": 203945
-    },
-    {
-      "route": "/javascript/trivia/js-escape-vs-sanitize",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-escape-vs-sanitize/index.html",
-      "bytes": 200421
-    },
-    {
-      "route": "/javascript/trivia/js-cookie-options",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-cookie-options/index.html",
-      "bytes": 199842
-    },
-    {
-      "route": "/javascript/trivia/js-check-data-type-with-typeof",
-      "file": "dist/frontendatlas/browser/javascript/trivia/js-check-data-type-with-typeof/index.html",
-      "bytes": 199581
+      "bytes": 203993
     },
     {
       "route": "/companies/jpmorgan/preview",
       "file": "dist/frontendatlas/browser/companies/jpmorgan/preview/index.html",
-      "bytes": 197196
+      "bytes": 201084
+    },
+    {
+      "route": "/javascript/trivia/js-escape-vs-sanitize",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-escape-vs-sanitize/index.html",
+      "bytes": 200608
+    },
+    {
+      "route": "/javascript/trivia/js-cookie-options",
+      "file": "dist/frontendatlas/browser/javascript/trivia/js-cookie-options/index.html",
+      "bytes": 200074
     }
   ],
   "bundleStatsSource": null,

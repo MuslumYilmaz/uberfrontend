@@ -37,6 +37,7 @@ export class CompanyGuideSourcesComponent {
   readonly viewer = input<CompanyGuideViewer>('guest');
 
   readonly headingId = computed(() => `${this.slug()}-sources`);
+  readonly hasAccounts = computed(() => this.sources().some((row) => row.kind === 'report'));
   readonly signupParams = computed(() => ({ redirectTo: `/companies/${this.slug()}/preview` }));
 
   when(row: GuideSourceRow): string {

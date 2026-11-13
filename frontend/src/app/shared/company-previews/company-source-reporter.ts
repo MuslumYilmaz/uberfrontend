@@ -136,9 +136,9 @@ export function sourceReporter(source: InterviewProcessSource): SourceReporter |
   return { ...(role ? { role } : {}), ...(location ? { location } : {}), ...(outcome ? { outcome } : {}) };
 }
 
-/** "Senior software engineer, United States", "Candidate question bank". Null for official pages. */
+/** "Senior software engineer, United States", "Candidate question bank". Null for official pages and press reports. */
 export function describeReporter(source: InterviewProcessSource): string | null {
-  if (source.kind === 'official') return null;
+  if (source.kind === 'official' || source.reportForm === 'press') return null;
   if (source.reportForm === 'question-bank') return 'Candidate question bank';
   const reporter = sourceReporter(source);
   const role = reporter?.role ?? 'Role not stated';

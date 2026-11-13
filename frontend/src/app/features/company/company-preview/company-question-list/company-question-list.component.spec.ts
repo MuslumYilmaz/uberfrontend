@@ -22,10 +22,10 @@ function acme(rows: number): CompanyInterviewProcess {
     checkedAt: '2026-11-01',
     variants: [{ title: 'Engineers', stages: [{ stage: 'Coding round', format: 'f', appliesTo: 'a', sources: [] }] }],
     questions: [
-      { id: 'open-one', round: 'Coding round', kind: 'React build', question: 'Build the open widget.', sources: [account('0000000a', '2026-10')] },
-      { id: 'with-task', round: 'Coding round', kind: 'React debugging', question: 'Fix the locked widget.', sources: [account('0000000b', '2024-03')], practice: { label: 'Fix it', path: '/react/coding/react-x' } },
-      { id: 'bare', kind: 'Algorithm', question: 'Solve the bare puzzle.', sources: [account('0000000c', '2025-01')] },
-      ...Array.from({ length: rows - 3 }, (_, i) => ({ id: `extra-${i}`, kind: 'Algorithm' as const, question: `Extra ${i}.`, sources: [account(`000001${String(i).padStart(2, '0')}`, '2023-01')] })),
+      { id: 'open-one', round: 'Coding round', kind: 'React build', topic: 'Open widget', question: 'Build the open widget.', sources: [account('0000000a', '2026-10')] },
+      { id: 'with-task', round: 'Coding round', kind: 'React debugging', topic: 'Locked widget fix', question: 'Fix the locked widget.', sources: [account('0000000b', '2024-03')], practice: { label: 'Fix it', path: '/react/coding/react-x' } },
+      { id: 'bare', kind: 'Algorithm', topic: 'Bare puzzle', question: 'Solve the bare puzzle.', sources: [account('0000000c', '2025-01')] },
+      ...Array.from({ length: rows - 3 }, (_, i) => ({ id: `extra-${i}`, kind: 'Algorithm' as const, topic: `Extra puzzle ${i}`, question: `Extra ${i}.`, sources: [account(`000001${String(i).padStart(2, '0')}`, '2023-01')] })),
     ],
     behaviouralQuestions: [{ id: 'why-acme', question: 'Why Acme?', sources: [account('0000000d', '2025-06')] }],
   };
@@ -123,6 +123,18 @@ describe('CompanyQuestionListComponent', () => {
     (host.querySelector('[data-testid="company-question-more"]') as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(rows(host).filter((row) => row.classList.contains('cq-row--hidden')).length).toBe(0);
+  });
+
+  it('names each locked question by its topic, outside the lock, and keeps the wording locked', () => {
+    const host = create('guest');
+    const row = host.querySelectorAll<HTMLElement>('[data-testid="company-question-row"]')[1];
+    const topic = row.querySelector('[data-testid="company-question-topic"]') as HTMLElement;
+    expect(topic.textContent?.trim()).toBe('Locked widget fix');
+    expect(topic.closest('.premium-locked')).toBeNull();
+    expect(row.querySelector('.cq-row__question.premium-locked')?.textContent?.trim()).toBe('Fix the locked widget.');
+    expect(row.querySelector('.cq-row__locked')?.getAttribute('aria-label')).toContain('Locked widget fix');
+    // The open row shows its own title, not a second topic line.
+    expect(host.querySelector('[data-testid="company-question-row"]')?.querySelector('[data-testid="company-question-topic"]')).toBeNull();
   });
 
   it('shows the behavioural questions open, with how often they were reported', () => {
