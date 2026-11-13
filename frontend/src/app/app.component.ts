@@ -135,7 +135,9 @@ export class AppComponent implements OnInit, OnDestroy {
         const url = e.urlAfterRedirects || e.url;
         this.currentUrl.set(url);
         this.configureRouteRuntime(url);
-        this.analytics.trackPageView(url);
+        // The router sets the new page's title right after NavigationEnd, in the same task. Reporting the page view
+        // a microtask later files it under that title instead of the previous page's.
+        queueMicrotask(() => this.analytics.trackPageView(url));
       });
 
     if (!this.isBrowser) return;

@@ -1,13 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { SafeHtmlPipe } from '../../core/pipes/safe-html.pipe';
 
-type FaqItem = { q: string; a: string; id?: string };
+/**
+ * A routed link under an answer. Answers are sanitized HTML strings, where a link can neither route inside the app
+ * nor pick up this component's styles, so a link that has to do either goes here.
+ */
+export type FaqLink = { label: string; to: string[]; queryParams?: Record<string, string>; testId?: string };
+type FaqItem = { q: string; a: string; id?: string; link?: FaqLink };
 type FaqGroup = { title: string; items: FaqItem[]; id?: string };
 
 @Component({
     selector: 'app-faq-section',
-    imports: [CommonModule, SafeHtmlPipe],
+    imports: [CommonModule, RouterLink, SafeHtmlPipe],
     templateUrl: './faq-section.component.html',
     styleUrls: ['./faq-section.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,6 +27,8 @@ export class FaqSectionComponent {
   @Input() initialOpenId?: string;
   @Input() singleOpen = true;
   @Input() flush = false;
+  /** The id of the item whose answer link was clicked; the link itself still routes. */
+  @Output() linkClick = new EventEmitter<string>();
 
   openId: string | null = null;
   openSet = new Set<string>();

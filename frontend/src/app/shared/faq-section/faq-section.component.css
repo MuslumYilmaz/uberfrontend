@@ -107,6 +107,14 @@
   font-weight: 600;
 }
 
+/* A link from the item's link field sits under the answer text, at the answer's size. */
+.faq-a-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
 .faq-a a:hover {
   color: var(--uf-accent-strong);
   text-decoration-color: color-mix(in srgb, var(--uf-accent) 90%, transparent);

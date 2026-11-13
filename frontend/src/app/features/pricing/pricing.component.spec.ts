@@ -1,4 +1,7 @@
 import { WritableSignal, signal } from '@angular/core';
+import { PricingCountedTableComponent } from './components/pricing-counted-table/pricing-counted-table.component';
+import { PricingPlansSectionComponent } from './components/pricing-plans-section/pricing-plans-section.component';
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -82,7 +85,7 @@ describe('PricingComponent', () => {
       src: 'pricing_page',
       surface: 'pricing_page',
       page: 'pricing',
-      page_layout: 'interview_sprint_v3',
+      page_layout: 'counted_v1',
       offer_version: 'interview_sprint_v3',
       checkout_surface: 'hosted_new_tab',
       recommended_plan: 'quarterly',
@@ -172,19 +175,79 @@ describe('PricingComponent', () => {
     expect(component.checkoutSurface).toBe('overlay');
     expect(component.regionalPricing).toEqual(jasmine.objectContaining({ countryCode: 'TR', multiplier: 0.5 }));
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-regional-line"]')?.textContent || '').toContain('Prices for Türkiye');
-    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$9.67');
+    expect(fixture.nativeElement.querySelector('.pr-card--quarterly s[data-list-price]')?.textContent?.trim()).toBe('$29');
     expect(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card').length).toBe(3);
     expect(fixture.nativeElement.querySelector('[data-testid="pricing-lifetime-secondary"]')).toBeTruthy();
     expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
-      page_layout: 'interview_sprint_v2',
+      page_layout: 'counted_v1',
       offer_version: 'interview_sprint_v2',
       checkout_surface: 'overlay',
     }));
   });
 
+  it('shows the counted table under the assurance line on a sprint offer and tracks a locked example with the plans context', async () => {
+    fixture = TestBed.createComponent(PricingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    const table = page.querySelector('[data-testid="pricing-counted-table"]') as HTMLElement;
+    expect(table).toBeTruthy();
+    expect(table.closest('app-pricing-plans-section')).toBeTruthy();
+    expect(page.querySelector('[data-testid="pricing-assurance"]')!.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(page.querySelector('.plan-compare')).toBeNull();
+    // Table, then the help line, then the FAQ it links to.
+    const help = page.querySelector('[data-testid="pricing-help-line"]') as HTMLElement;
+    expect(table.compareDocumentPosition(help) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(help.compareDocumentPosition(page.querySelector('#pricing-faq')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // A checkout notice (a blocked window, a retry) stays next to the buttons that raised it, above the table.
+    const plans = fixture.debugElement.query(By.directive(PricingPlansSectionComponent)).componentInstance as PricingPlansSectionComponent;
+    plans.checkoutNotice = 'Your browser blocked the checkout window.';
+    fixture.detectChanges();
+    expect(page.querySelector('[data-testid="checkout-notice"]')!.compareDocumentPosition(table) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    fixture.debugElement.query(By.directive(PricingCountedTableComponent)).componentInstance.exampleClick.emit({
+      previewType: 'counted_react',
+      destination: '/react/coding/react-pagination-table',
+    });
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_unlock_preview_clicked', jasmine.objectContaining({
+      preview_type: 'counted_react',
+      destination: '/react/coding/react-pagination-table',
+      surface: 'pricing_page',
+    }));
+  });
+
+  it('keeps the old Free vs Premium table, and no counted table, when the backend selects the baseline offer', async () => {
+    billingCheckoutStub.getCheckoutConfig.and.resolveTo({
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      planDetails: {
+        monthly: { amountCents: 1200, currency: 'USD', interval: 'month', intervalCount: 1, taxInclusive: true },
+        quarterly: { amountCents: 2900, currency: 'USD', interval: 'month', intervalCount: 3, taxInclusive: true },
+        annual: { amountCents: 7900, currency: 'USD', interval: 'year', intervalCount: 1, taxInclusive: true },
+        lifetime: { amountCents: 19900, currency: 'USD', interval: 'one_time', intervalCount: null, taxInclusive: true },
+      },
+      offerVersion: 'pricing_baseline_v1',
+      checkoutSurface: 'hosted_new_tab',
+    } as any);
+    fixture = TestBed.createComponent(PricingComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelector('.plan-compare')).toBeTruthy();
+    expect(page.querySelector('[data-testid="pricing-counted-table"]')).toBeNull();
+    expect(analyticsStub.track).toHaveBeenCalledWith('pricing_page_viewed', jasmine.objectContaining({
+      page_layout: 'interview_sprint_v1',
+      offer_version: 'pricing_baseline_v1',
+    }));
+  });
+
   describe('with a company plan waiting', () => {
     const strip = () => fixture.nativeElement.querySelector('[data-testid="company-plan-pricing-strip"]') as HTMLElement | null;
-    const firstCardLines = () => Array.from(fixture.nativeElement.querySelectorAll('.pr-grid .pr-card')[0].querySelectorAll('.features li'))
+    const planLeadLines = () => Array.from(fixture.nativeElement.querySelectorAll('[data-testid="pricing-plan-lead"] li'))
       .map((item) => (item as HTMLElement).textContent?.trim());
 
     async function render(url: string): Promise<void> {
@@ -207,31 +270,31 @@ describe('PricingComponent', () => {
 
       expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')?.textContent?.trim())
         .toBe('Your interview is this week, so a month of Premium is enough.');
-      const recommended = fixture.nativeElement.querySelector('.pr-rec') as HTMLElement;
+      const recommended = fixture.nativeElement.querySelector('.pr-plan--rec') as HTMLElement;
       expect(recommended.textContent).toContain('Monthly');
-      expect(recommended.textContent).toContain('Recommended');
-      expect(fixture.nativeElement.querySelectorAll('.pr-rec').length).toBe(1);
+      expect(recommended.textContent).toContain('Interview in 1–2 weeks');
+      expect(fixture.nativeElement.querySelectorAll('.pr-plan--rec').length).toBe(1);
     });
 
     it('keeps the quarter recommended, with no note, when the interview is further away', async () => {
       plansStub.answers.set({ companies: [{ slug: 'elevenlabs' }], when: 'later', level: 'senior' });
       await render('/?src=company_plan_elevenlabs');
       expect(strip()?.querySelector('[data-testid="company-plan-pricing-note"]')).toBeNull();
-      expect((fixture.nativeElement.querySelector('.pr-rec') as HTMLElement).textContent).toContain('Quarterly');
+      expect((fixture.nativeElement.querySelector('.pr-plan--rec') as HTMLElement).textContent).toContain('Quarterly');
     });
 
-    it('shows the plan above the plans and opens every card with it', async () => {
+    it('shows the plan above the plans and its lines on the recommended card', async () => {
       await render('/?src=company_plan_elevenlabs');
 
       expect(strip()?.querySelector('h2')?.textContent?.trim()).toBe('Your ElevenLabs plan is waiting');
       expect(strip()?.querySelector('p')?.textContent?.trim()).toMatch(/^6 tasks for next week, about \d+ hours?( \d+ minutes)?\. \d are open now, \d open with Premium\./);
       expect(strip()?.querySelector('a')?.getAttribute('href')).toBe('/companies/preview');
-      expect(firstCardLines()).toEqual([
+      expect(planLeadLines()).toEqual([
         jasmine.stringMatching(/^The (locked task|\d locked tasks) in your ElevenLabs plan$/),
         `${PLAN_DATA.general.premiumCounts.react} Premium React tasks with a live preview`,
         `${PLAN_DATA.general.premiumCounts.systemDesign} Premium system design walkthroughs`,
-        'Cancel before the next renewal',
       ]);
+      expect(fixture.nativeElement.querySelector('[data-testid="pricing-plan-lead"]')?.closest('.pr-plan--rec')).toBeTruthy();
     });
 
     it('finds the plan again after the visitor signs in on the way', async () => {
@@ -250,7 +313,7 @@ describe('PricingComponent', () => {
     it('leaves the page as it was without a company plan source, for a general plan and for Premium members', async () => {
       await render('/');
       expect(strip()).toBeNull();
-      expect(firstCardLines()[0]).toBe('Full Premium content');
+      expect(planLeadLines()).toEqual([]);
       expect(plansStub.loadData).not.toHaveBeenCalled();
 
       await render('/?src=company_plan_general');

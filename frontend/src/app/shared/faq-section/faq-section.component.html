@@ -31,6 +31,15 @@
             role="region">
             <div class="faq-a-inner">
               <p [innerHTML]="item.a | safeHtml"></p>
+              <!-- Out of the tab order while the answer is collapsed, so focus never lands on a hidden link. -->
+              <a
+                *ngIf="item.link as link"
+                class="faq-a-link"
+                [routerLink]="link.to"
+                [queryParams]="link.queryParams"
+                [attr.data-testid]="link.testId || null"
+                [attr.tabindex]="isOpen(getId(item, i, getGroupKey(group, gi))) ? null : -1"
+                (click)="linkClick.emit(getId(item, i, getGroupKey(group, gi)))">{{ link.label }}</a>
             </div>
           </div>
         </div>
@@ -56,6 +65,14 @@
           role="region">
           <div class="faq-a-inner">
             <p [innerHTML]="item.a | safeHtml"></p>
+            <a
+              *ngIf="item.link as link"
+              class="faq-a-link"
+              [routerLink]="link.to"
+              [queryParams]="link.queryParams"
+              [attr.data-testid]="link.testId || null"
+              [attr.tabindex]="isOpen(getId(item, i)) ? null : -1"
+              (click)="linkClick.emit(getId(item, i))">{{ link.label }}</a>
           </div>
         </div>
       </div>

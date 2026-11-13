@@ -11283,7 +11283,8 @@
           {
             "type": "waitForText",
             "selector": ".value",
-            "text": "00:09"
+            "text": "00:09",
+            "timeoutMs": 2500
           },
           {
             "type": "click",

@@ -99,10 +99,12 @@ for (const relativePath of [
   assert.ok(!template.includes('data-testid="premium-preview"'), `${relativePath}: duplicated legacy teaser is still visible`);
 }
 
-const pricingSource = fs.readFileSync(
-  path.join(repoRoot, 'frontend/src/app/features/pricing/components/pricing-plans-section/pricing-plans-section.component.ts'),
-  'utf8',
-);
+// The baseline offer's comparison table links its previews from the plans section; the counted pricing page links its
+// locked examples from the generated counts.
+const pricingSource = [
+  'frontend/src/app/features/pricing/components/pricing-plans-section/pricing-plans-section.component.ts',
+  'frontend/src/app/generated/pricing-counts.ts',
+].map((relativePath) => fs.readFileSync(path.join(repoRoot, relativePath), 'utf8')).join('\n');
 for (const route of [
   '/react/coding/react-contact-form-starter',
   '/system-design/multi-step-form-autosave',

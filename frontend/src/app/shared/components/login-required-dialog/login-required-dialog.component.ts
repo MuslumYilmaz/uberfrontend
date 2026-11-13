@@ -15,6 +15,12 @@ export type AuthPromptContext =
   | 'pricing_checkout'
   | 'unknown';
 
+/**
+ * The account step before a purchase: what is being bought and paid today, why the account comes first, and the
+ * purchase terms. Only the pricing checkout passes it; every other prompt keeps its two-button layout.
+ */
+export type AuthPromptAccountStep = { kicker: string; reason: string; assurance: string };
+
 @Component({
     selector: 'app-login-required-dialog',
     imports: [CommonModule, RouterModule, FaButtonComponent, FaDialogComponent],
@@ -66,12 +72,100 @@ export type AuthPromptContext =
       text-align: left;
     }
 
-    .auth-prompt__disclosure a { color: var(--uf-text-secondary); }
+    /* Grey on grey text needs the underline to read as a link (axe link-in-text-block). */
+    .auth-prompt__disclosure a {
+      color: var(--uf-text-secondary);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .auth-prompt__heading { display: grid; gap: 8px; min-width: 0; }
+
+    .auth-prompt__kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--uf-text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .auth-prompt__step {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: var(--uf-accent);
+      color: var(--uf-bg);
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+
+    .auth-prompt__title--step {
+      color: var(--uf-text-primary);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .auth-prompt__body--step { grid-template-columns: minmax(0, 1fr); }
+
+    /* The account step stacks the three ways in, then the sign-in line, the reason and the purchase terms. */
+    .auth-prompt__actions--step {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .auth-prompt__actions--step button[faButton] { width: 100%; }
+
+    .auth-prompt__account {
+      display: grid;
+      gap: 6px;
+      margin-top: 4px;
+      padding-top: 12px;
+      border-top: 1px solid var(--uf-border-subtle);
+      text-align: left;
+    }
+
+    .auth-prompt__account p,
+    .auth-prompt__assurance { margin: 0; line-height: 1.5; text-align: left; }
+
+    .auth-prompt__signin { color: var(--uf-text-secondary); font-size: 14px; }
+
+    /* A sign-in action that reads as a link inside its sentence. */
+    .auth-prompt__link {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--uf-accent);
+      font: inherit;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+    }
+
+    .auth-prompt__link:focus-visible {
+      outline: 2px solid var(--uf-accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .auth-prompt__reason,
+    .auth-prompt__assurance { color: var(--uf-text-tertiary); font-size: 12px; text-wrap: pretty; }
 
     @media (max-width: 600px) {
       .auth-prompt__body { grid-template-columns: 1fr; }
       .auth-prompt__actions { flex-direction: column-reverse; }
-      .auth-prompt__actions button { width: 100%; }
+      .auth-prompt__actions button[faButton] { width: 100%; }
+      .auth-prompt__title--step { font-size: 20px; }
       .auth-prompt__actions--direct { grid-template-columns: 1fr; }
       .auth-prompt__disclosure { grid-column: 1; }
     }
@@ -84,19 +178,26 @@ export type AuthPromptContext =
       [dismissableMask]="true"
       [closable]="true"
       [showFooter]="true"
-      width="min(560px, calc(100vw - 32px))"
+      [width]="accountStep ? 'min(520px, calc(100vw - 32px))' : 'min(560px, calc(100vw - 32px))'"
       closeAriaLabel="Close account prompt">
-      <span faDialogHeader data-testid="login-required-title">{{ title }}</span>
+      <span faDialogHeader class="auth-prompt__heading">
+        <span class="auth-prompt__kicker" *ngIf="accountStep as step">
+          <span class="auth-prompt__step" aria-hidden="true">1</span>
+          <span data-testid="login-required-kicker">{{ step.kicker }}</span>
+        </span>
+        <span data-testid="login-required-title" [class.auth-prompt__title--step]="accountStep">{{ title }}</span>
+      </span>
 
-      <div class="auth-prompt__body" data-testid="login-required-dialog">
-        <span class="auth-prompt__icon" aria-hidden="true"><i class="pi pi-user-plus"></i></span>
+      <div class="auth-prompt__body" [class.auth-prompt__body--step]="accountStep" data-testid="login-required-dialog">
+        <span class="auth-prompt__icon" aria-hidden="true" *ngIf="!accountStep"><i class="pi pi-user-plus"></i></span>
         <p data-testid="login-required-body">{{ body }}</p>
       </div>
 
       <div
         faDialogFooter
         class="auth-prompt__actions"
-        [class.auth-prompt__actions--direct]="directAuthActions"
+        [class.auth-prompt__actions--direct]="directAuthActions && !accountStep"
+        [class.auth-prompt__actions--step]="directAuthActions && accountStep"
         [attr.data-testid]="directAuthActions ? 'login-required-direct-actions' : null">
         <ng-container *ngIf="directAuthActions; else standardAuthActions">
           <button
@@ -124,6 +225,7 @@ export type AuthPromptContext =
             Continue with email
           </button>
           <button
+            *ngIf="!accountStep"
             type="button"
             faButton
             variant="neutral"
@@ -135,6 +237,20 @@ export type AuthPromptContext =
             By continuing, you agree to the <a routerLink="/legal/terms">Terms</a> and
             acknowledge the <a routerLink="/legal/privacy">Privacy Policy</a>.
           </p>
+          <ng-container *ngIf="accountStep as step">
+            <div class="auth-prompt__account">
+              <p class="auth-prompt__signin">
+                Already have an account?
+                <button
+                  type="button"
+                  class="auth-prompt__link"
+                  data-testid="login-required-email-login"
+                  (click)="choose('login')">Sign in</button>
+              </p>
+              <p class="auth-prompt__reason" data-testid="login-required-reason">{{ step.reason }}</p>
+            </div>
+            <p class="auth-prompt__assurance" data-testid="login-required-assurance">{{ step.assurance }}</p>
+          </ng-container>
         </ng-container>
 
         <ng-template #standardAuthActions>
@@ -172,6 +288,8 @@ export class LoginRequiredDialogComponent implements OnChanges {
   @Input() directAuthActions = false;
   @Input() offerVersion = 'pricing_baseline_v1';
   @Input() checkoutSurface: 'hosted_new_tab' | 'overlay' = 'hosted_new_tab';
+  /** Shown with the direct actions only; see AuthPromptAccountStep. */
+  @Input() accountStep: AuthPromptAccountStep | null = null;
 
   private shownForOpenCycle = false;
   private actionInFlight = false;

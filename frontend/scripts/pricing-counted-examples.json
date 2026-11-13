@@ -1,0 +1,52 @@
+{
+  "$comment": "Locked examples the pricing page names in its counted table. scripts/gen-pricing-counts.mjs checks that each one is a Premium item of its row (a company example must carry the company tag, a format example must be a Premium rehearsal) and stops when one is freed, moved or deleted. Labels are short display names; the route is what the page links to.",
+  "react": [
+    { "route": "/react/coding/react-pagination-table", "label": "Paginated Data Table" },
+    { "route": "/react/coding/react-debounced-search", "label": "Debounced Search" },
+    { "route": "/react/coding/react-multi-step-signup", "label": "Multi-step Signup" },
+    { "route": "/react/coding/react-shopping-cart", "label": "Shopping Cart" }
+  ],
+  "angular": [
+    { "route": "/angular/coding/angular-shopping-cart-mini", "label": "Shopping Cart Mini" },
+    { "route": "/angular/coding/angular-pagination-table", "label": "Pagination Table" },
+    { "route": "/angular/coding/angular-nested-comments", "label": "Nested Comments" },
+    { "route": "/angular/coding/angular-star-rating", "label": "Star Rating" }
+  ],
+  "vue": [
+    { "route": "/vue/coding/vue-issue-list-merge-request-review", "label": "Merge Request Review" },
+    { "route": "/vue/coding/vue-debounced-search", "label": "Debounced Search" },
+    { "route": "/vue/coding/vue-tabs-switcher", "label": "Tabs" },
+    { "route": "/vue/coding/vue-pagination-table", "label": "Pagination Table" }
+  ],
+  "javascript": [
+    { "route": "/javascript/coding/js-throttle", "label": "Throttle" },
+    { "route": "/javascript/coding/js-autocomplete-engine", "label": "Autocomplete Engine" },
+    { "route": "/javascript/coding/js-concurrency-map-limit", "label": "Concurrency-Limited Map" },
+    { "route": "/javascript/coding/js-streaming-ndjson-parser", "label": "Streaming NDJSON Parser" }
+  ],
+  "debug": [
+    { "route": "/javascript/debug/js-debug-bug-squash-invoices", "label": "Invoicing repo bug squash" },
+    { "route": "/javascript/debug/js-debug-intern-budget-summary", "label": "Intern budget summary case" }
+  ],
+  "systemDesign": [
+    { "route": "/system-design/hotel-search-page-frontend", "label": "Hotel Search" },
+    { "route": "/system-design/messaging-inbox-frontend", "label": "Messaging Inbox" },
+    { "route": "/system-design/netflix-scale-expansion", "label": "Netflix Continue Watching" },
+    { "route": "/system-design/multi-step-form-autosave", "label": "Multi-step Form Autosave" }
+  ],
+  "tradeoffsIncidents": [
+    { "route": "/tradeoffs/csr-vs-ssr-vs-rsc-react-rendering", "label": "CSR vs SSR vs RSC" },
+    { "route": "/tradeoffs/web-worker-vs-main-thread-heavy-compute", "label": "Web Worker vs main thread" },
+    { "route": "/incidents/context-rerender-storm", "label": "Context rerender storm" },
+    { "route": "/incidents/autosave-overwrites-latest-edit", "label": "Autosave overwrites the latest draft" }
+  ],
+  "companyGuides": [
+    { "route": "/javascript/debug/js-debug-bug-squash-invoices", "label": "Stripe invoicing bug squash", "company": "stripe" },
+    { "route": "/react/coding/react-chat-streaming-ui", "label": "OpenAI streaming chat UI", "company": "openai" },
+    { "route": "/react/coding/react-debug-transcript-sync", "label": "ElevenLabs transcript debug", "company": "elevenlabs" }
+  ],
+  "formats": [
+    { "rehearsal": "meta-full-loop-coding", "label": "Meta coding round" },
+    { "rehearsal": "walmart-karat-screen", "label": "Walmart Karat screen" }
+  ]
+}
