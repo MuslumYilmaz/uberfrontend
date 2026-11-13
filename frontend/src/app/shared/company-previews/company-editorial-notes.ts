@@ -128,36 +128,45 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'bytedance',
     title: 'ByteDance and TikTok Frontend Interview Process and Prep',
     h1: 'ByteDance and TikTok Frontend Interview Questions',
-    description: 'How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.',
+    description:
+      'How public reports describe ByteDance and TikTok frontend loops: HackerRank or CodeSignal assessments, a DSA round, a frontend round and a design round.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Early-careers pages from ByteDance and TikTok plus public interview reports from 2020 to 2025: assessments on HackerRank or CodeSignal, two technical rounds and a hiring manager round, with regional variants.',
+      subtitle:
+        'ByteDance and TikTok publish interview tips for students and graduates only, so the loops on this page come from candidates who posted between 2020 and 2025, in the United States, Singapore and Australia. A table for each loop shape sets out the rounds, then come the questions candidates reported; the first, a tooltip component built and run in HackerRank in a 2024 loop, is open to every reader.',
     },
-    intro: ['ByteDance and TikTok publish interview tips for early careers only, linked below. The experienced loop comes from public accounts, nine outside Taro and about sixteen on it, six of them new-graduate or intern loops, which agree on the core shape and differ on what the hiring manager round contains.'],
+    intro: [
+      'The two early-careers pages, linked below, tell candidates to expect two to three interviews on coding, algorithms and design, and suggest practising on HackerRank and Nowcoder; the TikTok page adds that an assessment depends on the role and region. Everything else comes from candidates: Blind threads posted in 2023 and 2024, LeetCode posts from 2020 to 2025, a summer 2022 loop written up on ExplainThis in January 2023, and Taro accounts from 2021 to 2025. Three of the Blind posters wrote before they had a result.',
+    ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'Two technical rounds and a hiring manager round, by region',
-      paragraphs: ['US accounts describe an online assessment for some candidates, a 15 to 30 minute recruiter call, two technical rounds of about an hour, one on algorithms and one on frontend, then a hiring manager round that often includes frontend system design, and an HR conversation.'],
+      paragraphs: [
+        'Most accounts from 2022 to 2024, the bulk of them from the United States, start with a short call: 15 minutes in a 2022 Seattle loop, 30 in a 2024 loop. Two live coding rounds follow, one LeetCode-style and one frontend, then a hiring manager round that turned to system design in three 2024 loops. The 2025 US accounts open with a timed online test instead, and two of them close with a behavioural round. A summer 2022 loop of three technical rounds and an HR round took two weeks from application to the last interview.',
+      ],
       bullets: [
         {
-          text: 'Assessments run on CodeSignal in one 2025 account and on an unnamed platform in two others; HackerRank appears in the new-graduate and intern accounts. One 2025 Singapore CodeSignal task was a single frontend problem in four levels; a US assessment had four questions in 70 minutes.',
+          text: 'The online test: four questions in 70 minutes on CodeSignal in a 2025 Seattle account, in React, Vue or Angular, and multiple-choice questions with two LeetCode-medium problems in another 2025 US account. A 2025 Singapore test was one frontend problem in four levels.',
           link: {
             label: 'See the US stages',
             fragment: 'bytedance-interview-process-1',
           },
         },
         {
-          text: 'The frontend round builds a React component or a JavaScript utility: a tooltip component in one account, a throttle function with a fetch-and-render task in another, LeetCode 784 plus React coding in a third.',
+          text: 'In the frontend round you build a UI component or write a JavaScript utility live, with short questions on JavaScript, React and CSS. Two 2024 candidates did it on HackerRank, one of them building the tooltip that opens the question list below, and a 2022 Seattle candidate could pick two algorithm problems or one algorithm and one frontend problem.',
         },
         {
-          text: 'Singapore and Australia loops add an HR call and two or three technical rounds; two candidates skipped the assessment.',
+          text: 'One 2024 loop added a product manager round on cross-functional work and a final round with a department leader, which a TikTok employee replying on the thread called a wildcard. On a December 2023 Blind thread, TikTok and ByteDance employees disagreed on whether the hiring manager round is behavioural only.',
+        },
+        {
+          text: 'Singapore and Australia loops run two or three technical rounds of about an hour that mix fundamentals with coding; several add a hiring manager or director round, and most end with HR. Two Singapore candidates had no online test, and a 2025 Singapore loop took a week.',
           link: {
             label: 'See the Singapore and Australia stages',
             fragment: 'bytedance-interview-process-2',
           },
         },
         {
-          text: 'New graduates and interns take an assessment with multiple-choice, algorithm and debugging questions, then one to three technical interviews and a manager or behavioural round.',
+          text: 'New graduates and interns take a timed test of up to two hours, on HackerRank where the platform is named, then one to three technical interviews, often LeetCode-style, and a manager or behavioural round; in a 2020 and a 2021 loop the manager round ended with a coding question.',
           link: {
             label: 'See the early-careers stages',
             fragment: 'bytedance-interview-process-3',
@@ -167,38 +176,38 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'Rehearse the reported rounds in order',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      title: 'Build and run a component first, then the design round',
+      intro: 'The open question is a component built and run in front of the interviewer, so a free component task leads. Short spoken answers, a JavaScript utility and the guides for the design and behavioural rounds follow, in the order of the US table.',
       steps: [
         {
-          label: 'Build a tree from a flat list',
-          path: '/javascript/coding/js-build-tree-from-flat-list',
+          label: 'Build a dropdown as a JavaScript class, then port it to React',
+          path: '/react/coding/react-vanilla-dropdown-port',
           access: 'free',
-          why: 'Reported in a 2023 new-graduate loop: create a tree from a flat array of objects.',
+          why: 'For the open question, a tooltip built in HackerRank and run for the interviewer: a small component that opens and closes, written in plain JavaScript and then in React. The dropdown is our pick; no account reports one.',
         },
         {
-          label: 'The event loop',
-          path: '/javascript/trivia/js-event-loop',
+          label: 'Frontend fundamentals quiz',
+          path: '/guides/interview-blueprint/quiz',
           access: 'free',
-          why: 'Output-order questions on setTimeout and promises recur in the frontend round.',
+          why: 'Short spoken answers on JavaScript, React, CSS and the browser, which the technical rounds in these accounts mix with coding.',
         },
         {
-          label: 'CSS cascade and specificity',
-          path: '/css/trivia/css-cascade-order',
+          label: 'Debounce',
+          path: '/javascript/coding/js-debounce',
           access: 'free',
-          why: 'Specificity questions appear in the same round.',
+          why: 'A small JavaScript utility written from scratch, the other shape the frontend round takes; debounce is our pick, not a reported task.',
         },
         {
-          label: 'Implement Array.prototype.map',
-          path: '/javascript/coding/js-array-prototype-map',
-          access: 'premium',
-          why: 'A representative drill for the reported task of implementing a built-in method.',
+          label: 'Frontend system design blueprint',
+          path: '/guides/system-design-blueprint',
+          access: 'free',
+          why: 'For the hiring manager round, which turned to system design in three 2024 loops, and for the design discussion that closed a 2022 technical round.',
         },
         {
-          label: 'Implement Array.prototype.reduce',
-          path: '/javascript/coding/js-array-prototype-reduce',
-          access: 'premium',
-          why: 'A second drill for the same reported task.',
+          label: 'Behavioral interview guide',
+          path: '/guides/behavioral',
+          access: 'free',
+          why: 'For the product manager, department leader and HR conversations; the behavioural questions from these accounts sit open below the reported questions.',
         },
       ],
     },
@@ -208,15 +217,15 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'Is the hiring manager round behavioural only?',
-          answer: 'Accounts disagree. Several describe frontend system design or React and JavaScript questions in it; others describe a conversation about experience only.',
+          answer: 'Accounts disagree. In three 2024 loops the hiring manager asked a system design question, and in one also React and JavaScript questions and a short coding problem; one poster later called the design in their loop front end specific. On a December 2023 Blind thread the poster’s recruiter said it could include technical questions, and TikTok and ByteDance employees replying split between behavioural only and likely coding.',
         },
         {
-          question: 'Where does system design appear?',
-          answer: 'It varies by account: inside a technical round in a 2022 loop, inside the hiring manager round in three others.',
+          question: 'Does every loop start with an online test?',
+          answer: 'No. The 2025 US accounts open with one, but most 2022 to 2024 accounts start with a recruiter call, and two Singapore candidates had no test at all. The TikTok early-careers page says an assessment depends on the role and region.',
         },
         {
-          question: 'Does every loop start with an assessment?',
-          answer: 'No. Two Singapore accounts had none, and the TikTok early-careers page says the assessment depends on the role and region.',
+          question: 'Where do the reported questions come from?',
+          answer: 'From candidates’ posts on Blind, LeetCode and Taro and one blog post on ExplainThis, dated 2020 to 2025, written here in our words. Many come from new-graduate, intern and Singapore loops, and none is confirmed by ByteDance or TikTok.',
         },
       ],
     },
@@ -229,35 +238,44 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'What Microsoft publishes about its hiring loop and what public reports add for frontend roles: machine coding, JS and React concepts, DSA and design rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Microsoft publishes its own hiring tips; public interview reports from 2020 to 2025 add the frontend detail: a short recruiter call, machine coding in JavaScript or React, concept rounds, algorithms and design. Loops differ by team and country.',
+      subtitle:
+        'Microsoft’s hiring tips give the loop in general terms; frontend candidates interviewed in Bangalore, Tel Aviv, Belgrade and the United States between 2020 and 2025 add the rounds: a machine-coding build in plain JavaScript or React, JavaScript and React concepts, algorithms, design and a hiring manager. The first reported question, a weekly calendar view from a 2020 machine-coding round, is open to every reader.',
     },
-    intro: ['Microsoft publishes official hiring guidance, linked below. It covers the shape of the loop and its rules rather than frontend content, so the round-by-round detail comes from public interview reports.'],
+    intro: [
+      'Microsoft’s own hiring pages, linked below, explain how its loop works and what candidates may not do, with nothing specific to frontend. The rounds and questions come from candidates: a 2020 dev.to post by a Software Engineer II (UI) who accepted an offer in Bangalore, LeetCode posts from 2020 to 2025 and Taro accounts from Bangalore, Tel Aviv, New York and Belgrade. Two of these candidates, in 2022 and 2024, applied for frontend roles and were interviewed almost only on algorithms.',
+    ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'Two to six rounds, set by the team',
-      paragraphs: ['The official pages describe a brief screening conversation and two to four conversations of up to an hour each, by phone, on Teams or in person, with no outside assistance unless explicitly permitted. Frontend accounts fill in the rounds.'],
+      title: 'From a single interview to six rounds',
+      paragraphs: [
+        'Microsoft’s hiring tips describe, for some candidates, a brief screening conversation, then usually two to four conversations of up to an hour with potential teammates and cross-functional colleagues, by phone, on Teams or in person. The frontend accounts vary more: a 2020 Bangalore loop ran six rounds and a 2021 one five, the 2024 senior and SDE 2 loops four, and a 2022 Tel Aviv loop two one-hour interviews after a short HR call.',
+      ],
       bullets: [
         {
-          text: 'Machine coding, two hours in the one account that gives a duration: plain JavaScript in the 2020 to 2021 accounts from Bangalore, React components in the 2024 to 2025 accounts.',
+          text: 'In three Bangalore loops from 2020 and 2021 machine coding came first: a UI build, two hours long in one of them and limited to plain JavaScript, HTML and CSS in the two prompts that name a stack. A fourth 2020 Bangalore candidate had about 40 minutes of an hour-long phone round for a UI build, and three accounts from 2024 and 2025 build React components.',
           link: {
             label: 'See the frontend stages',
             fragment: 'microsoft-interview-process-1',
           },
         },
         {
-          text: 'JavaScript and React concepts: output questions, polyfills and promises. One 2025 account wrote a useEffect polyfill and built a step form in React.',
+          text: 'Concept rounds ask for output predictions, polyfills and promise work in JavaScript and React; a 2020 round began with ten minutes on the candidate’s own machine-coding code.',
         },
         {
-          text: 'Algorithms and problem solving, where two frontend candidates were asked mostly non-frontend questions.',
+          text: 'Algorithm problems appear in six of the accounts. In 2022 and 2024 two frontend candidates were interviewed on little else, one of them by a backend developer.',
         },
         {
-          text: 'Design rounds: low-level design in the older accounts, an application or component design in 2024.',
+          text: 'Design meant class design in a 2020 and a 2021 loop; in 2024 a senior loop opened with system design and an SDE 2 loop had a component design round.',
         },
         {
-          text: 'Loop sizes run from two interviews to five or six; a 2020 account ended with a senior leader conversation.',
+          text: 'A 2020 loop ended with an As Appropriate round: an hour with an interviewer at GM or Partner level, which the candidate warns is not a formality.',
+          link: {
+            label: 'See the As Appropriate round',
+            fragment: 'microsoft-interview-process-1-stage-as-appropriate-round',
+          },
         },
         {
-          text: 'Students get an initial and a final interview, both virtual.',
+          text: 'Students get an initial interview and, if selected, a final one, both virtual.',
           link: {
             label: 'See the student stages',
             fragment: 'microsoft-interview-process-2',
@@ -267,50 +285,44 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     },
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'Rehearse the concept rounds, then the builds',
-      intro: 'Free items first, then the premium set. The coding items here are editorial groupings; no public account reports them as Microsoft prompts.',
+      title: 'Start with the calendar, then the concept rounds',
+      intro: 'The open weekly calendar leads, with the grid layout and date handling it needs. The promise and output questions of the concept rounds follow, then a small React component and a short algorithm warm-up; the design and hiring manager rounds have their guides in the process table.',
       steps: [
         {
-          label: 'Promises and async/await',
+          label: 'CSS grid card gallery',
+          path: '/css/coding/css-grid-card-gallery',
+          access: 'free',
+          why: 'The open weekly calendar is seven day columns side by side, and the 2020 Software Engineer II (UI) account advises knowing flexbox or grid for the machine-coding round.',
+        },
+        {
+          label: 'Format a date in a time zone',
+          path: '/javascript/coding/js-format-date-timezone',
+          access: 'free',
+          why: 'The calendar moves a week at a time, jumps back to today and places events that start at any minute, so its date arithmetic has to be right before the layout matters.',
+        },
+        {
+          label: 'Promise chains and async/await',
           path: '/javascript/trivia/js-promises-async-await',
           access: 'free',
-          why: 'Promises are a reported theme of the concept rounds.',
+          why: 'Promises come up in the concept rounds of five accounts between 2020 and 2025.',
         },
         {
-          label: 'Arrow functions versus regular functions',
-          path: '/javascript/trivia/js-arrow-vs-regular-functions',
+          label: 'The event loop',
+          path: '/javascript/trivia/js-event-loop',
           access: 'free',
-          why: 'Output questions in the concept rounds lean on this and scope rules.',
+          why: 'Rounds in 2020, 2021 and 2025 asked what a snippet prints or returns; work out the order before you run the code.',
         },
         {
-          label: 'Passing by value and by reference',
-          path: '/javascript/trivia/js-passing-by-value-and-by-reference',
+          label: 'React fetch and render a list',
+          path: '/react/coding/react-fetch-list-states',
           access: 'free',
-          why: 'A frequent output-prediction topic.',
+          why: 'Three accounts from 2024 and 2025 built React components in their coding rounds; start with a small one that fetches data and shows its loading, error and empty states.',
         },
         {
-          label: 'Spread versus rest parameters',
-          path: '/javascript/trivia/js-spread-vs-rest-parameters',
+          label: 'Valid Parentheses',
+          path: '/javascript/coding/js-valid-parentheses',
           access: 'free',
-          why: 'Syntax questions from the JavaScript concept round that follows machine coding.',
-        },
-        {
-          label: 'Compare two objects',
-          path: '/javascript/trivia/js-compare-two-objects',
-          access: 'free',
-          why: 'A warm-up for the problem-solving round.',
-        },
-        {
-          label: 'Snake game in Angular',
-          path: '/angular/coding/angular-snake-game',
-          access: 'free',
-          why: 'An editorial grouping that rehearses a timed UI build like the machine coding round.',
-        },
-        {
-          label: 'Chessboard click highlight in React',
-          path: '/react/coding/react-chessboard-click-highlight',
-          access: 'premium',
-          why: 'An editorial grouping for a React component build under time.',
+          why: 'Six of the accounts include algorithm problems. This one is a warm-up we picked, not a reported Microsoft question.',
         },
       ],
     },
@@ -320,15 +332,18 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       items: [
         {
           question: 'How many rounds should I expect?',
-          answer: 'The official page says two to four conversations. Two Bangalore accounts from 2020 and 2021 report five or six rounds, a third reports four, and 2024 accounts report four, so the team decides.',
+          answer:
+            'Microsoft’s hiring tips say most interviews include two to four conversations of up to an hour. The accounts run from a single live-coding interview in a 2024 Belgrade loop, after an HR introduction and a test task it gives no detail on, to six rounds in a 2020 Bangalore loop; the 2024 senior and SDE 2 loops had four. Your recruiter can confirm the number for your team.',
         },
         {
-          question: 'Are the interviews virtual or on site?',
-          answer: 'The student page says every student interview is virtual; the general hiring page allows phone, Teams or in person.',
+          question: 'What happens in the machine coding round?',
+          answer:
+            'You build a UI within the round. A 2020 Software Engineer II (UI) candidate had two hours, could put questions to the interviewer and notes that a starter zip may be provided; another 2020 Bangalore candidate coded for about 40 minutes of an hour-long phone round with two interviewers and was asked to run the code when time ran out. Two Bangalore prompts from 2020 and 2021 allowed only JavaScript, HTML and CSS, while three accounts from 2024 and 2025 built React components. The weekly calendar at the top of the reported questions can be read in full.',
         },
         {
-          question: 'Can I use AI or other help during the interview?',
-          answer: 'The official page allows no outside assistance unless it is explicitly permitted.',
+          question: 'Are these questions confirmed by Microsoft?',
+          answer:
+            'No. They come from candidates’ posts on LeetCode, dev.to and Taro between 2020 and 2025, and the wording here is ours.',
         },
       ],
     },
@@ -762,69 +777,94 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'uber',
     title: 'Uber Frontend Interview Process and Practice Questions',
     h1: 'Uber Frontend Interview Questions and Process',
-    description: 'Uber publishes its frontend loop: a HackerRank assessment, a coding and design phone screen, and three 60 minute interviews. Public reports add the detail.',
+    description: 'Uber publishes its frontend loop: a HackerRank assessment, a coding and design phone screen, and three 60-minute interviews. Public reports add the detail.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Uber is one of the few companies with an official frontend interview guide. This page pairs it with public interview reports from 2021 to 2026 and the practice items that fit each stage.',
+      subtitle:
+        'Uber publishes its frontend interview loop on its careers site. This page sets those steps beside what candidates reported between 2018 and 2026, round by round, then lists the questions they were asked; the poll widget reported in 2025 and 2026 is open to every reader.',
     },
-    intro: ['The official guide, linked below, lists every stage for levels L3 to L6+ and says the steps may vary by role, location and business need. Two of the public accounts come from India and one from Brazil; the others do not say where they interviewed.'],
+    intro: [
+      'Uber’s frontend engineering interview guide, linked below, covers levels L3 to L6+ and says the steps may vary by role, location and business needs; a senior engineer based in Chile describes his own loop on the same careers site. The rest comes from candidates: LeetCode posts from 2021 to 2026, a 2022 Medium account of a frontend loop that brought an offer, Taro accounts from Bengaluru (2018 and 2022) and Brazil (2025), and two full-stack loops, on Medium in 2024 and LeetCode in 2026, used only for their frontend, algorithm and behavioural questions. Four accounts place the candidate in India and one in Brazil; the others do not say where.',
+    ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
       title: 'The official loop and what candidates met',
-      paragraphs: ['The guide describes a 30-minute recruiter call, a HackerRank coding assessment, a 60-minute phone screen on coding plus design and architecture, then three 60-minute interviews: algorithms and data structures, depth in specialization, and collaboration and leadership. A published candidate story adds a separate system design round and a hiring manager conversation about past projects.'],
+      paragraphs: [
+        'The guide describes a 30-minute call with a recruiter or sourcer, a HackerRank coding assessment, a 60-minute online phone screen on coding plus design and architecture, then three 60-minute interviews: algorithms and data structures, depth in specialization, and collaboration and leadership. The senior engineer’s story and the accounts that describe the onsite also have a separate design round.',
+      ],
       bullets: [
         {
-          text: 'A November 2022 account took a 35-minute CodeSignal test with two algorithm questions and eight frontend multiple-choice questions rather than HackerRank; the other 2022 accounts mention no assessment.',
-          link: {
-            label: 'See the assessment stage',
-            fragment: 'uber-interview-process-1',
-          },
+          text: 'Accounts from 2021 and 2022 name CodeSignal rather than HackerRank: a 2021 phone screen in its sandbox, a 2022 senior screen, and a 35-minute test in 2022 of two algorithm questions and eight multiple-choice questions, mostly on what JavaScript and CSS code outputs.',
+          link: { label: 'See the assessment stage', fragment: 'uber-interview-process-1-stage-online-assessment' },
         },
         {
-          text: 'The phone screen sometimes builds a React component; the specialization round is a UI build or a JavaScript problem, in plain JavaScript in two accounts.',
+          text: 'The phone screen was a UI build (in any framework, in React or on CodeSignal), a JavaScript utility, or algorithm and JavaScript questions. A 2022 interviewer did not expect a working solution, and a 2025 India screen decided within ten minutes whether the other four rounds ran the same day.',
+          link: { label: 'See the phone screen stage', fragment: 'uber-interview-process-1-stage-phone-screen' },
         },
         {
-          text: 'Mid-level and senior accounts report a separate system design round; three of them designed a calendar: a collaborative calendar in 2022 and Google Calendar in two 2025 loops.',
+          text: 'The specialization round was a UI build or a JavaScript problem: vanilla JavaScript in a 2022 loop and, at the interviewer’s request, in a 2025 India loop; React with MDN open in a 2025 L5A loop. The 2022 Medium account, whose loop brought an offer, says Uber scored the two coding rounds together before the design and hiring manager rounds, and the 2025 L5A account says both had to be passed.',
         },
         {
-          text: 'Two accounts got different rounds than the recruiter had announced, and one candidate did every round in a single day.',
+          text: 'Recruiter labels can differ from what a round holds: a 2025 candidate whom HR told to expect an algorithms round got something else, and a 2026 candidate, after recruiters and Uber’s documents pointed to algorithms, got the poll widget. In a 2025 India loop the recruiter said a strong hire from the hiring manager was needed to move forward.',
         },
       ],
     },
+    roundSpotlights: [
+      {
+        id: 'depth-in-specialization',
+        kicker: 'Round decoder',
+        title: 'The Uber depth in specialization round: a UI build or a JavaScript problem',
+        lede: [
+          'Uber’s frontend guide lists it as Interview 2, Software Engineering: Depth in Specialization (Coding 2), a 60-minute interview that follows the algorithms interview; the senior engineer’s story on Uber’s site calls it Specialization (Web). Candidates describe one UI build or one JavaScript problem in the hour, and two loops asked for vanilla JavaScript.',
+          'A 2025 candidate called it the riskiest interview of the loop because it can be either kind, and got a JavaScript problem after preparing a UI build. A 2022 candidate who received an offer and a 2025 L5A candidate say the two coding rounds decide whether the design and hiring manager rounds go ahead.',
+        ],
+        facts: [
+          { label: 'Position in the loop', value: 'Interview 2 of the three after the phone screen in the official guide. A 2022 Medium loop and a 2025 L5A loop had it as the second of two coding rounds that decided whether the design and hiring manager rounds went ahead; a 2022 Bengaluru loop and a 2025 loop held it after the design round.' },
+          { label: 'What you build', value: 'A UI component or small app, or a JavaScript problem. A 2022 round tested DOM manipulation and asynchronous code in vanilla JavaScript; a 2025 L5A round was a React build.' },
+          { label: 'Framework', value: 'Vanilla JavaScript in a 2022 loop and, at the interviewer’s request, in a 2025 India loop; any framework or vanilla JavaScript in a 2022 Bengaluru loop; React in the 2025 L5A loop in Bangalore.' },
+          { label: 'What you may look up', value: 'MDN documentation in the 2025 L5A loop; in another 2025 loop the interviewer let the candidate search the web during a JavaScript problem.' },
+          { label: 'What the interviewer looks for', value: 'Modular, functional JavaScript, DOM manipulation, ES6 and problem solving, in the 2022 Medium loop that brought an offer.' },
+          { label: 'Sources', value: 'Uber’s frontend guide and the engineer’s story, a 2022 Medium account, a 2022 Taro account from Bengaluru and LeetCode posts from 2025; the page’s closing sources list links each of them.' },
+        ],
+        practiceLink: { label: 'Build a dropdown in vanilla JavaScript, then port it to React', path: '/react/coding/react-vanilla-dropdown-port' },
+        processLink: { label: 'See the specialization row in the reported process', fragment: 'uber-interview-process-1-stage-frontend-specialization' },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the screen, then the specialization round',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      intro:
+        'Uber’s accounts differ most in the screen and the specialization round: a UI build in one loop, a JavaScript problem or an algorithm in the next, and vanilla JavaScript whenever the interviewer asks for it. The free tasks rehearse each of those shapes; the Premium case is for the separate design round that mid-level and senior accounts describe.',
       steps: [
         {
-          label: 'CSS position: relative, absolute and fixed',
-          path: '/css/trivia/css-position-relative-absolute-fixed',
+          label: 'Fetch and render a list with loading, error and empty states',
+          path: '/react/coding/react-fetch-list-states',
           access: 'free',
-          why: 'CSS position came up in a 2025 recruiter call.',
+          why: 'For screens like the 2022 Bengaluru one, which asked for a UI component in React: one component with every request state, finished and talked through within the hour.',
         },
         {
-          label: 'CSS visibility versus display',
-          path: '/css/trivia/css-visibility-vs-display',
+          label: 'Build a dropdown as a JavaScript class, then port it to React',
+          path: '/react/coding/react-vanilla-dropdown-port',
           access: 'free',
-          why: 'CSS display came up in the same call.',
+          why: 'Specialization rounds in 2022 and 2025 asked for vanilla JavaScript, and a 2025 L5A round for React: build the widget without a framework first, then port it.',
         },
         {
-          label: 'Promises and async/await',
-          path: '/javascript/trivia/js-promises-async-await',
+          label: 'Retry a promise-returning function with delay',
+          path: '/javascript/coding/js-retry-with-delay',
           access: 'free',
-          why: 'A 2025 loop had a round on promises.',
+          why: 'Promises and timers without a UI, for the JavaScript problems candidates reported from 2018 to 2025.',
         },
         {
-          label: 'Truthy, falsy and strict equality',
-          path: '/javascript/trivia/js-truthy-falsy-pass-by-value-reference-strict-equality-use-case',
+          label: 'Valid Parentheses',
+          path: '/javascript/coding/js-valid-parentheses',
           access: 'free',
-          why: 'An editorial grouping for the JavaScript side of the specialization round.',
+          why: 'A short algorithm in JavaScript: a 2025 candidate with four years of React called it a mistake not to have practised LeetCode-style problems in JavaScript before the specialization round.',
         },
         {
-          label: 'Concurrency map with a limit',
-          path: '/javascript/coding/js-concurrency-map-limit',
+          label: 'Design a real-time messaging inbox',
+          path: '/system-design/messaging-inbox-frontend',
           access: 'premium',
-          why: 'Reported as a mapLimit task in a 2022 CodeSignal phone screen.',
+          why: 'For the hour-long design round: requirements, components, API and data flow, data models, client storage and performance, the areas the 2022 and 2025 accounts were questioned on, on a product none of them reports.',
         },
       ],
     },
@@ -833,20 +873,20 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       title: 'Common questions about Uber frontend interviews',
       items: [
         {
-          question: 'HackerRank or CodeSignal?',
-          answer: 'The official guide names HackerRank. The 2021 and 2022 accounts used CodeSignal, so expect either and check your invitation.',
-        },
-        {
           question: 'Is design a separate round?',
-          answer: 'The guide puts design inside the phone screen. The published candidate story and four accounts describe a separate system design round, usually for mid-level and senior candidates.',
+          answer: 'The guide folds design and architecture into the phone screen and lists no design interview after it. The senior engineer’s story on Uber’s site and the accounts that describe the onsite have a separate design round, an hour long where the 2022 and 2025 accounts give its length.',
         },
         {
           question: 'Do recruiter labels match the rounds?',
-          answer: 'Not in two accounts: candidates told to expect an algorithms round got a frontend task instead. Prepare for both.',
+          answer: 'Not reliably. A 2025 candidate whom HR told to expect an algorithms round got something else, a 2026 candidate got the poll widget after recruiters and Uber’s documents pointed to algorithms, and a 2025 candidate who prepared a UI build for the specialization round got a JavaScript problem. The 2026 candidate’s advice is to be ready for JavaScript and asynchronous code, React, and a medium algorithm with a hard follow-up in any round.',
+        },
+        {
+          question: 'Which language should I use?',
+          answer: 'The senior engineer’s story on Uber’s site says the algorithms interview accepts any language. Two specialization rounds asked for vanilla JavaScript, and a 2025 candidate with four years of React called it a mistake to arrive at that round without LeetCode-style practice in JavaScript.',
         },
       ],
     },
-    about: ['Uber frontend interview preparation'],
+    about: ['Uber frontend interview preparation', 'Uber depth in specialization interview round'],
   },
   apple: {
     slug: 'apple',
@@ -855,67 +895,86 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     description: 'How public reports describe Apple frontend interviews: a recruiter call, a 45 to 60 minute coding screen in React, JS or TS, and a team loop of 4 to 7 rounds.',
     hero: {
       kicker: 'Public preview and process notes',
-      subtitle: 'Apple publishes general interview tips but no process or frontend guide, so this page rests on public interview reports from 2021 to 2025: a technical screen, then a team loop of four to seven rounds whose mix differs by team.',
+      subtitle:
+        'Apple’s careers site has interview tips but no process page, so the loop here comes from frontend candidates who posted between 2019 and 2026: a recruiter call, in some teams a hiring manager conversation, a 45 to 60 minute screen in JavaScript, TypeScript or React, then a team loop, usually four to seven interviews, whose mix each team sets. The reported questions follow the table, opening with a 2025 screen task: nested tabs built from a flat list.',
     },
-    intro: ['The Apple careers site has a general interview-tips page, linked below, with advice before, during and after an interview and a note that some roles include a technical assessment or coding exercises; it lists no stages and no frontend content. Of the twelve public accounts behind this page, ten are for frontend roles; five of those describe both a screen and a team loop, mostly of frontend coding, the rest describe one stage, and all differ on what the team decides.'],
+    intro: [
+      'Apple’s careers site has an interview tips page, linked below, with general advice, three example questions on how you have performed in the past and a note that some roles add a presentation, a case study, a technical assessment or coding exercises; it lists no stages. Everything else comes from candidates: frontend, UI and web engineering accounts on Taro from 2019 to 2026, mostly from the United States with others from India, Sweden and Denmark; two Blind threads from senior candidates; a 2022 Hyderabad account on Medium; a 2025 IC3 post on LeetCode; and two full-stack loops posted on LeetCode in 2025 and 2026, whose frontend and algorithm questions are kept. Two of the 2026 Taro accounts came through outside channels: a contract interview in Austin and a loop run through a consultancy in Malmö.',
+    ],
     reportsDescribe: {
       kicker: 'What public interview reports describe',
-      title: 'A screen, then a team loop of four to seven rounds',
-      paragraphs: ['Most accounts start with a recruiter call, sometimes a hiring manager conversation, then a technical screen of 45 to 60 minutes in React, JavaScript or TypeScript. The team loop runs four to seven interviews of 30 to 45 minutes, mostly JavaScript, React and CSS coding and concepts.'],
+      title: 'A screen, then a team loop of four to seven rounds in most accounts',
+      paragraphs: [
+        'Most accounts that describe the start open with a recruiter call, and in some teams a hiring manager conversation comes before the screen or is the screen. Screens that give a length run 45 to 60 minutes, by video or phone, mostly JavaScript, TypeScript or React coding with questions on the stack. In most accounts the team loop runs four to seven interviews of 30 to 60 minutes, mostly JavaScript, React and CSS coding and concepts, with algorithm problems in some loops; a 2026 loop in Malmö had two interviews on site.',
+      ],
       bullets: [
         {
-          text: 'One 2025 account describes a one-hour online assessment with two coding questions and 20 multiple-choice questions before the recruiter call.',
+          text: 'A 2025 IC3 account began with a one-hour online assessment of two coding questions and 20 multiple-choice questions; the recruiter called about a week later.',
           link: {
             label: 'See the assessment stage',
             fragment: 'apple-interview-process-1',
           },
         },
         {
-          text: 'One screen was mostly conversational with about 15 minutes of coding in CoderPad; another asked for an autocomplete search bar in TypeScript with Vue or React.',
+          text: 'Screens differ: about 15 minutes of coding in a mostly conversational 2022 screen, about six small JavaScript tasks in a 2022 account from Denmark and six JavaScript coding challenges in a 2023 account from Sweden, no coding at all in a 2026 first round, and two 30-minute halves, an algorithm problem and frontend theory, in a 2026 full-stack screen.',
+          link: {
+            label: 'See the technical screen',
+            fragment: 'apple-interview-process-1-stage-technical-screen',
+          },
         },
         {
-          text: 'Loop composition differs by team: four coding rounds with no behavioural and no system design round in one 2025 account, one behavioural round in another, two cross-functional interviews in a third.',
+          text: 'Loops differ by team: four coding rounds and no behavioural or system design round in a 2025 senior loop, two cross-functional interviews and a joint hiring manager and senior manager interview in another 2025 loop, and two interviews on site after a remote one in a 2026 loop in Malmö, run through a consultancy.',
         },
         {
-          text: 'Two accounts ended with a director: a meeting after the loop in 2025, and a round on behaviour and culture fit in 2024.',
+          text: 'A few loops end with a director or department lead: a final chat with the department lead in a 2021 loop that ended in an offer, a director of engineering round on behaviour and culture fit in 2024, and a meeting with the director in 2025.',
+        },
+        {
+          text: 'Silence comes up in several accounts: two 2022 candidates got no detail of the rounds beforehand, one heard nothing for six weeks after seven interviews, and a 2025 Cupertino process ran for more than four months.',
         },
       ],
     },
-    // The hiring manager row of the process table links here. Apple publishes nothing on these interviews, so every
-    // fact and question comes from the accounts on that row and the team loop row (read 2026-11-09).
+    // The hiring manager row of the process table links here. Apple publishes no description of these interviews, so
+    // every fact comes from the accounts on the hiring manager and team loop rows, and three drill questions from
+    // Apple's interview tips page (the tips page and the Taro accounts re-read 2026-11-13).
     roundSpotlights: [
       {
         id: 'team-conversations',
         kicker: 'Round decoder',
         title: 'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
         lede: [
-          'Apple publishes no interview process and its frontend loops differ by team, but most accounts include conversations beside the coding: a hiring manager conversation before or as the screen, behavioural or cross-functional interviews in some team loops, and a director at the end of a few.',
-          'They are conversations about your own work and your reasons for the move: past projects and responsibilities, why you are changing jobs, why Apple, and the team and product you would join.',
+          'Apple publishes no description of its interview rounds and its frontend loops differ by team, but many accounts include conversations beside the coding: a hiring manager conversation before or as the screen, behavioural or cross-functional interviews in some team loops, and a director or department lead at the end of a few.',
+          'They are conversations about your own work and your reasons for the move: past projects and responsibilities, why you are changing jobs, why Apple and why this role, how you collaborate, and in one 2025 round with a senior manager, Apple’s values.',
         ],
         facts: [
-          { label: 'Hiring manager conversation', value: 'Before the screen, or as the screen itself. In a 2024 senior account it covered past experience, the projects worked on, behavioural questions, the reasons for changing jobs and the motivation to join Apple (Taro, 2024).' },
-          { label: 'In the team loop', value: 'Two cross-functional interviews and a joint hiring manager and senior manager interview among five (Taro, 2025); a behaviour round about what you work on, your roles and responsibilities, then the team and product (Medium, 2022). One 2025 senior loop had four coding rounds and none of these.' },
-          { label: 'The director', value: 'A director of engineering round on behavioural questions and culture fit closed a 2024 senior loop (Taro, 2024); a 2025 account ended with a meeting with the director (Taro, 2025).' },
-          { label: 'What Apple publishes', value: 'Nothing on these interviews: the Apple careers site has general interview tips, linked in the official pages table, and no description of the rounds.' },
-          { label: 'Sources', value: 'Public frontend accounts from 2022 to 2025, on the hiring manager and team loop rows of the process table.' },
+          { label: 'Hiring manager conversation', value: 'Before the screen, or as the screen itself. A 2024 senior account from Hyderabad lists past experience, projects, behavioural questions, reasons for changing jobs and the motivation to join Apple; a 2025 full-stack account adds why the role and where you see yourself. In 2020 and 2021 accounts the hiring manager ran a technical interview instead.' },
+          { label: 'In the team loop', value: 'Two cross-functional interviews and a joint hiring manager and senior manager interview among five (Taro, 2025); a behaviour round on what you work on, your roles and responsibilities, then the team and product (Medium, 2022); a behavioural round with a senior manager on how you have shown Apple’s values (LeetCode, 2025). One 2025 senior loop had four coding rounds and none of these (Blind, 2025).' },
+          { label: 'The director', value: 'A director of engineering round on behavioural questions and culture fit closed a 2024 senior loop on site in Hyderabad (Taro, 2024); a 2025 account ended with a meeting with the director, and a 2021 account that ended in an offer with a final chat with the department lead (Taro).' },
+          { label: 'What Apple publishes', value: 'An interview tips page, linked in the official pages table, that says to prepare for open-ended questions about how you performed in past work and gives three examples: working with a team to accomplish a goal, working under pressure to meet a deadline, and the areas you need to develop further. It describes no rounds.' },
+          { label: 'Sources', value: 'Frontend and full-stack accounts from 2020 to 2026 on the hiring manager and team loop rows of the process table, and Apple’s interview tips page.' },
         ],
         practiceLink: { label: 'Draft your stories with the STAR stories guide', path: '/guides/behavioral/stories' },
         processLink: { label: 'See the hiring manager row in the reported process', fragment: 'apple-interview-process-1-stage-hiring-manager-conversation' },
-        // One question per topic the accounts name.
         drill: {
-          note: 'Apple publishes no questions for these interviews; each question here is a topic an account names, asked as one question.',
+          note: 'Three questions come from Apple’s interview tips page; each of the others is a topic an account names, asked as one question.',
           questions: [
             { id: 'project', text: 'Walk me through a project you worked on: what you built and what you were responsible for.', source: 'Medium, 2022' },
+            { id: 'biggest-challenge', text: 'What was the biggest challenge in your project work, and how did you handle it?', source: 'Taro, 2021' },
             { id: 'why-change', text: 'Why are you looking to change jobs?', source: 'Taro, 2024', kind: 'view' },
             { id: 'why-apple', text: 'Why do you want to join Apple?', source: 'Taro, 2024', kind: 'view' },
-            { id: 'team-and-product', text: 'What interests you about this team and its product?', source: 'Medium, 2022', kind: 'view' },
-            { id: 'cross-functional', text: 'Tell me about working closely with a designer or a product manager.', source: 'Taro, 2025: cross-functional interviews' },
+            { id: 'apple-values', text: 'How have you shown Apple’s values, such as deep expertise and a drive for excellence, in your career?', source: 'LeetCode, 2025' },
+            { id: 'team-goal', text: 'Tell me about a time when you worked with a team to accomplish a goal.', source: 'Apple’s interview tips page' },
+            { id: 'deadline', text: 'Give me an example of when you worked under pressure to meet a deadline.', source: 'Apple’s interview tips page' },
+            { id: 'develop-further', text: 'What areas do you think you need to develop further?', source: 'Apple’s interview tips page', kind: 'view' },
+            { id: 'cross-functional', text: 'Tell me about a project where you worked closely with people from another team or function.', source: 'Taro, 2025: cross-functional interviews' },
             { id: 'accessibility', text: 'Tell me about accessibility work you have done.', source: 'Medium, 2022' },
+            { id: 'team-and-product', text: 'What interests you about this team and its product?', source: 'Medium, 2022', kind: 'view' },
           ],
           checks: [
             'I can say why this team and its product, not only why Apple.',
             'My reasons for changing jobs fit in two sentences.',
             'I can walk through my role on each project on my résumé.',
+            'I have one story about a deadline under pressure and one about reaching a goal with a team.',
+            'I can name one area I am still developing and what I am doing about it.',
           ],
         },
       },
@@ -923,37 +982,43 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     prepSteps: {
       kicker: 'How to prepare with this grouping',
       title: 'Rehearse the screen, then the coding loop',
-      intro: 'Free items first, then the premium set. Each item is a practice version modelled on a reported round, not a leaked question.',
+      intro: 'The open nested-tabs question leads: build the tree from the flat list, then render it level by level. A small stateful React component follows for the timed loop rounds, an algorithm warm-up for the problems some screens and loops add, and the stories guide for the hiring manager, cross-functional and director conversations.',
       steps: [
         {
-          label: 'Theme variables and dark mode',
-          path: '/css/coding/css-theme-variables-dark-mode',
-          access: 'free',
-          why: 'Reported as building a light and dark theme.',
-        },
-        {
-          label: 'Build a tree from a flat list',
+          label: 'Build a tree from a flat list of nodes',
           path: '/javascript/coding/js-build-tree-from-flat-list',
           access: 'free',
-          why: 'A nested-tabs-from-a-flat-list task described in a 2025 account.',
+          why: 'The open question: a 2025 IC3 screen asked for nested tabs from a flat list of tabs with parent ids. This is the first half, turning the list into a tree.',
         },
         {
-          label: 'Vue autocomplete search',
-          path: '/vue/coding/vue-autocomplete-search',
+          label: 'Filter a tree by substring and render it indented',
+          path: '/javascript/coding/js-filter-tree-render-indented',
           access: 'free',
-          why: 'The autocomplete search bar reported in a 2022 screen, in one of the two frameworks offered.',
+          why: 'The second half of the same task: walk the tree and render each level under its parent.',
         },
         {
-          label: 'Remove Duplicates',
-          path: '/javascript/coding/js-unique-array',
-          access: 'premium',
-          why: 'Reported in a 2019 account as concatenating two arrays and finding the unique elements.',
+          label: 'Todo list with local state',
+          path: '/react/coding/react-todo-list',
+          access: 'free',
+          why: 'Team loops in these accounts are mostly React and JavaScript coding against the clock; a 2025 senior loop gave two of its seven problems about 12 minutes each.',
         },
         {
-          label: 'Stack and queue, with a min stack',
-          path: '/javascript/coding/js-stack-queue-implementation',
+          label: 'Valid parentheses',
+          path: '/javascript/coding/js-valid-parentheses',
+          access: 'free',
+          why: 'A warm-up for the LeetCode-style problems that several screens and loops add beside the frontend work, from easy ones in screens to a hard one in a 2025 senior loop.',
+        },
+        {
+          label: 'STAR stories guide',
+          path: '/guides/behavioral/stories',
+          access: 'free',
+          why: 'For the hiring manager, cross-functional and director conversations; the round decoder above lists the topics the accounts name and the three example questions on Apple’s tips page.',
+        },
+        {
+          label: 'File explorer tree with keyboard navigation',
+          path: '/react/coding/react-file-explorer',
           access: 'premium',
-          why: 'Reported as a min stack.',
+          why: 'The nested-tabs task taken further in React: a tree component that expands, collapses and answers the keyboard.',
         },
       ],
     },
@@ -962,16 +1027,16 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
       title: 'Common questions about Apple frontend interviews',
       items: [
         {
-          question: 'Does Apple publish a preparation page?',
-          answer: 'Only a general interview-tips page, linked in the official pages table; it lists no stages. Every stage here comes from public interview reports.',
-        },
-        {
           question: 'Is there a system design round?',
-          answer: 'Rarely in the frontend-titled accounts: the onsite technical round of a 2024 senior account included frontend system design questions, and one 2025 account says its loop had four coding rounds with no behavioural and no system design round.',
+          answer: 'Not as a fixed round. A 2025 senior loop had four coding rounds and no system design; in other loops design came up inside a technical round, and the system design round of a 2025 full-stack loop went deep into the candidate’s own past projects instead of a new design.',
         },
         {
           question: 'Is the loop the same for every team?',
-          answer: 'No. One account had seven 30-minute interviews, another five 45-minute ones, and the behavioural and cross-functional rounds appear in some teams only.',
+          answer: 'No. A 2025 Cupertino candidate wrote that each team has its own rounds. One account had seven 30-minute interviews, another five 45-minute ones, a 2025 loop added two cross-functional interviews, and a 2026 loop in Malmö, run through a consultancy, had two interviews on site after a remote one.',
+        },
+        {
+          question: 'Where do the reported questions come from?',
+          answer: 'From candidates’ posts on Taro, Blind, Medium and LeetCode dated 2019 to 2026, written here in our words; two full-stack loops and two 2026 interviews that came through outside channels add their frontend and algorithm questions. None is confirmed by Apple.',
         },
       ],
     },
@@ -981,80 +1046,142 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
     slug: 'airbnb',
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
-    description: 'How public Airbnb frontend accounts and the official careers FAQ describe the loop: a technical screen, UI and JavaScript coding, and frontend system design.',
+    description:
+      'How public Airbnb frontend accounts and the official careers FAQ describe the loop: a technical screen, UI and JavaScript coding, and frontend system design.',
     hero: {
-      kicker: 'Public preview',
-      subtitle: 'Two coding components, one of them in three frameworks, a system design case and two concept items grouped under Airbnb, plus the official careers FAQ and a sourced table of what public frontend accounts describe.',
+      kicker: 'Public preview and process notes',
+      subtitle:
+        'Airbnb’s careers FAQ gives only the general shape of its process, so the loop here comes from people who interviewed for frontend, front-end-heavy and full-stack roles between 2019 and 2025: a recruiter call, a technical screen that changes from one account to the next, then UI and JavaScript coding, a frontend design round and a deep dive into a past project. The questions they reported follow the rounds, and the first, a card game to build and style, is open to every reader.',
     },
-    intro: ['The official careers FAQ, linked below, says the process can involve a test, a video or an event, that candidates meet several members of the team, and gives response times; it also warns about recruiting scams. Public frontend accounts fill in the rest: the table below lists what they report, with a link to each one.'],
+    intro: [
+      'The careers FAQ, linked below, says the process depends on the position and may involve a test, a video or an event, that meeting several people on the current team is a priority, and that Airbnb aims to answer applications within three to four weeks; it also warns about recruiting scams. The rest comes from candidates: anonymous reviews re-posted on Taro from 2022 to 2025, Blind threads from 2021 to 2024, LeetCode posts from 2019 and 2025, and two PracHub pages about 2025 software engineer loops, edited by PracHub and published in August 2026. Several accounts carry a software engineer or full-stack title but describe frontend rounds.',
+    ],
+    reportsDescribe: {
+      kicker: 'What public interview reports describe',
+      title: 'A screen that changes, then coding, design and one project in depth',
+      paragraphs: [
+        'After the recruiter call, short in a 2025 account, the technical screen is where accounts differ most: a UI build followed by product questions, a LeetCode-hard problem for a candidate whose prep material promised frontend concepts, and, in one poster’s later edit, a common UI component or a design question. The later rounds, a virtual onsite in a 2022 account, are drawn from one or two UI coding rounds in React or plain DOM code, a JavaScript round, a frontend design discussion, a deep dive into a past project and a core values interview or behavioural questions. Most accounts list tasks without naming their round, so the table groups them by type.',
+      ],
+      bullets: [
+        {
+          text: 'The card game, styled in the 2025 version, comes from a 2025 staff loop and a 2022 loop and opens the question list; the other builds the accounts name are listed after it.',
+          link: { label: 'See the UI coding stage', fragment: 'airbnb-interview-process-1-stage-coding-ui-or-react' },
+        },
+        {
+          text: 'Algorithms divide the accounts: none for a 2024 front-end developer in Mexico, not much for a 2022 commenter joining as a senior front end engineer, and a LeetCode-hard problem for two 2025 candidates.',
+          link: { label: 'See the algorithms stage', fragment: 'airbnb-interview-process-1-stage-algorithms' },
+        },
+        {
+          text: 'Slow recruiting comes up in several accounts: almost two weeks to hear back after a 2022 onsite, a final round months after the first in a 2024 senior account, and months of recruiter silence after team matching in another.',
+        },
+      ],
+    },
+    roundSpotlights: [
+      {
+        id: 'ui-coding-round',
+        kicker: 'Round decoder',
+        title: 'The Airbnb UI coding round: what candidates built and how it went',
+        lede: [
+          'In the UI coding round you build an interface live, in React or with plain DOM code. A 2025 staff frontend candidate and a 2022 front-end engineer were both asked for a card game, and the 2025 prompt asked for styling as well; that question opens the list below and is open to every reader.',
+          'The 2025 staff loop had two coding challenges, which the candidate found unrelated to the job. In 2024 a frontend candidate whose loop had a DOM or React round and a separate JavaScript round finished neither before time ran out, and a software engineer who found the loop not difficult advised studying vanilla JavaScript.',
+        ],
+        facts: [
+          {
+            label: 'Position in the loop',
+            value: 'One or two rounds after the technical screen. The rest of the loop can hold a JavaScript round, a design round and a project deep dive, in no order the accounts agree on.',
+          },
+          {
+            label: 'What you build',
+            value: 'A card game in a 2025 and a 2022 account, styled as well in the 2025 one. The other builds that accounts name are in the question list, under this round or with no round stated.',
+          },
+          {
+            label: 'Framework',
+            value: 'React or plain DOM code in the round list of a 2024 frontend loop. A 2021 onsite had an HTML, CSS and JavaScript round, and a 2022 commenter joining as a senior front end engineer found the interviews mostly JavaScript and CSS with some React.',
+          },
+          {
+            label: 'Length',
+            value: 'No account gives this round a length. The 2024 candidate who ran out of time did so in both coding rounds.',
+          },
+          {
+            label: 'Sources',
+            value: 'Taro reviews from 2022, 2024 and 2025 and Blind posts from 2021, 2022 and 2024, each listed in the sources at the foot of this page.',
+          },
+        ],
+        practiceLink: { label: 'Rehearse a turn-based game in React (Premium)', path: '/react/coding/react-tictactoe' },
+        processLink: { label: 'See the UI coding row in the reported process', fragment: 'airbnb-interview-process-1-stage-coding-ui-or-react' },
+      },
+    ],
     prepSteps: {
       kicker: 'How to prepare with this grouping',
-      title: 'The booking widget screen and the chat design',
-      intro: 'Free items first, then the premium set. The booking widget and the messaging inbox are practice versions modelled on reported rounds, not leaked questions: a 2025 full-stack account describes the booking widget screen, and two accounts report a chat app design. Closures and the event loop are named as JavaScript fundamentals in a 2024 Blind comment about an Airbnb frontend loop. The chips input is an editorial grouping with no Airbnb account behind it.',
+      title: 'One item for each reported round',
+      intro: 'Free items first, for the rounds a free task fits; then two Premium items, a small game for the UI coding round, where the open card game sits, and a design case built from a mock.',
       steps: [
         {
-          label: 'Closures',
-          path: '/javascript/trivia/js-closures',
+          label: 'React autocomplete search',
+          path: '/react/coding/react-autocomplete-search-starter',
           access: 'free',
-          why: 'A staple of JavaScript concept rounds.',
+          why: 'A common UI component, the kind a 2025 poster says the screen can ask for. A 2024 screen counted only code that passed every test case.',
         },
         {
-          label: 'The event loop',
-          path: '/javascript/trivia/js-event-loop',
+          label: 'Frontend fundamentals quiz',
+          path: '/guides/interview-blueprint/quiz',
           access: 'free',
-          why: 'A staple of JavaScript concept rounds.',
+          why: 'Fifteen minutes on browser rendering, CSS layout, JavaScript and HTTP caching, for the JavaScript round a 2024 frontend loop listed beside its DOM or React round.',
         },
         {
-          label: 'Listing booking widget in React',
-          path: '/react/coding/react-listing-booking-widget',
-          access: 'premium',
-          why: 'The 40-minute build of the reported screen: price a stay from dates and guests, grey out booked dates and confirm in a dialog.',
+          label: 'Frontend system design blueprint',
+          path: '/guides/system-design-blueprint',
+          access: 'free',
+          why: 'For the design round, which a 2024 frontend candidate describes as state, data, APIs, trade-offs and optimisations.',
         },
         {
-          label: 'Real-time messaging inbox',
-          path: '/system-design/messaging-inbox-frontend',
-          access: 'premium',
-          why: 'A design-level practice version of the chat app round: WebSocket reconnects, offline sends and message order.',
+          label: 'Behavioural stories',
+          path: '/guides/behavioral/stories',
+          access: 'free',
+          why: 'For the deep dive into one past project, which an Airbnb-badged commenter called the technical experience interview.',
         },
         {
-          label: 'Chips input with autocomplete in React',
-          path: '/react/coding/react-chips-input-autocomplete',
-          access: 'premium',
-          why: 'A component build with keyboard handling and suggestions.',
+          label: 'DSA for frontend loops',
+          path: '/guides/interview-blueprint/dsa-for-fe',
+          access: 'free',
+          why: 'Accounts disagree on algorithms, and two 2025 candidates got a LeetCode-hard problem.',
         },
         {
-          label: 'Chips input with autocomplete in Angular',
-          path: '/angular/coding/angular-chips-input-autocomplete',
+          label: 'React tic-tac-toe',
+          path: '/react/coding/react-tictactoe',
           access: 'premium',
-          why: 'The same component in Angular.',
+          why: 'A turn-based game kept in React state, the nearest task in our library to the card game; our pick, not a reported Airbnb task.',
         },
         {
-          label: 'Chips input with autocomplete in Vue',
-          path: '/vue/coding/vue-chips-input-autocomplete',
+          label: 'UI component and state design from a mock',
+          path: '/system-design/ui-component-state-from-mock',
           access: 'premium',
-          why: 'The same component in Vue.',
+          why: 'Components, state and data worked out from a given screen, for a design round on a frontend app or component.',
         },
       ],
     },
     faqs: {
       kicker: 'Preparation FAQ',
-      title: 'Common questions about this Airbnb page',
+      title: 'Common questions about Airbnb frontend interviews',
       items: [
         {
           question: 'Do Airbnb frontend interviews include algorithm questions?',
-          answer: 'Accounts disagree. One from 2024 reports no algorithms, while two from 2025 report a LeetCode-hard problem, one in the technical screen and one as a 45-minute coding round. Ask your recruiter which rounds your loop has.',
+          answer:
+            'Accounts disagree. A 2024 front-end developer in Mexico had none and a 2022 commenter joining as a senior front end engineer had not much, while a 2021 onsite had one array problem. In 2025 two candidates got a LeetCode-hard problem, one in a technical screen they had been told would cover frontend concepts and one as a 45-minute onsite puzzle. Ask your recruiter which rounds your loop has.',
         },
         {
-          question: 'How current are these reports?',
-          answer: 'The newest frontend account cited here is from about September 2025, so confirm the current format with your recruiter.',
+          question: 'How recent are these accounts?',
+          answer:
+            'The newest interviews described took place in 2025, the latest around September. Two PracHub pages about 2025 software engineer loops came out in August 2026, and no account of a 2026 frontend interview was found, so check the current format with your recruiter.',
         },
         {
-          question: 'Does Airbnb publish interview guidance?',
-          answer: 'The careers FAQ linked in the official pages table covers the shape of the process, response times and a warning about recruiting scams.',
+          question: 'Where do the reported questions come from?',
+          answer:
+            'From anonymous reviews re-posted on Taro, Blind threads, LeetCode posts and two PracHub pages edited by PracHub, about interviews from 2019 to 2025. Each question is paraphrased, none is confirmed by Airbnb, and several come from software engineer and full-stack loops, kept because their content is frontend, JavaScript or algorithms.',
         },
       ],
     },
-    about: ['Airbnb frontend interview preparation'],
+    about: ['Airbnb frontend interview preparation', 'Airbnb UI coding round'],
   },
 };
 

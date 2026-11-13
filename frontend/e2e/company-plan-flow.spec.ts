@@ -354,17 +354,16 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your ElevenLabs plan at a glance' })).toBeVisible();
   });
 
-  test('a guest on the Airbnb guide reads the free questions, sees Premium names only under a blur, and is led into the plan', async ({ page }) => {
+  test('a guest on the Airbnb guide reads the open first question, sees the others locked with their topics, and is led into the plan', async ({ page }) => {
     await page.goto('/companies/airbnb/preview');
-    // The process stays open; only the names of the Premium practice pages (star rating, messaging case) are blurred.
-    await expect(page.getByTestId('company-interview-process')).toContainText('Explain closures');
-    await expect(page.locator('.interview-process__locked')).toHaveCount(2);
+    // The process stays open; only the name of the Premium practice page in it is blurred.
+    await expect(page.getByTestId('company-interview-process')).toContainText('React autocomplete search');
+    await expect(page.locator('.interview-process__locked')).toHaveCount(1);
     await expect(page.locator('[data-testid="company-prep-steps"] .company-locked').first()).toHaveAttribute('inert', '');
-    await expect(page.getByTestId('company-preview-question-js-closures')).toContainText('Explain Closures in JavaScript');
-    await expect(page.locator('.sample-list .fa-question-row__concealed').first()).toBeVisible();
-    const gate = page.getByTestId('company-sample-gate');
-    await expect(gate).toContainText('The locked questions open with Premium');
-    await gate.getByRole('link', { name: 'Build my Airbnb plan' }).click();
+    const list = page.getByTestId('company-question-list');
+    await expect(list.locator('.cq-row').first()).toContainText('Card game UI');
+    await expect(list.locator('.cq-row__question.premium-locked').first()).toHaveAttribute('data-nosnippet', '');
+    await page.getByTestId('company-question-offer').getByRole('link', { name: 'Build my Airbnb plan first' }).click();
     await expect(page).toHaveURL('/companies?company=airbnb');
   });
 
@@ -399,54 +398,37 @@ test.describe('company plan from a company guide', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Your Agoda plan is ready' })).toBeVisible();
   });
 
-  // Meta still shows prompt cards behind the account gate; Google now shows the reported-question list instead.
-  test('Ferhat reads the Meta guide behind the account gate: a visitor gets the lead-in, a free account the rounds and sources, Premium the answer guides', async ({ page }) => {
-    // As a visitor: every round in full with its counts but no evidence links, and the first prompt; two gates to a free account.
+  // Every guide now shows the reported-question list, which replaced the account gate: the rounds, the first question and
+  // the source names are open, the source links open with a free account and the other questions with Premium.
+  test('Ferhat reads the Meta guide: a visitor gets the rounds, the first question and the source names, a free account the source links', async ({ page }) => {
     await page.goto('/companies/meta/preview');
     const process = page.getByTestId('company-interview-process');
-    await expect(process.locator('.premium-locked')).toHaveCount(0);
-    await expect(process.locator('.interview-process__sources')).toHaveCount(0);
-    await expect(process.locator('.interview-process__strength').first()).toBeVisible();
-    await expect(process.locator('.interview-process__tag').first()).toHaveText('Free account');
-    const processGate = page.getByTestId('company-process-gate');
-    await expect(processGate).toContainText('The sources behind each round open with a free account');
-    await expect(processGate.getByRole('link', { name: 'Create a free account' })).toHaveAttribute('href', /^\/auth\/signup\?redirectTo=%2Fcompanies%2Fmeta%2Fpreview/);
-    await expect(processGate.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', /^\/auth\/login\?redirectTo=/);
-    const prompts = page.locator('.company-prompt');
-    await expect(prompts.nth(0).locator('.company-prompt__details')).not.toHaveAttribute('inert', /.*/);
-    await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveAttribute('data-nosnippet', '');
-    await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');
-    await expect(page.getByTestId('company-prompt-gate')).toContainText(/Prompts 2 to \d+ open with a free account/);
+    await expect(process.locator('.interview-process__reporter').first()).toBeVisible();
+    await expect(process.locator('a[href^="http"]')).toHaveCount(0);
+    const list = page.getByTestId('company-question-list');
+    await expect(list.locator('.cq-row__question.premium-locked').first()).toHaveAttribute('data-nosnippet', '');
+    const sources = page.getByTestId('company-guide-sources');
+    await expect(sources.getByTestId('company-guide-sources-gate')).toContainText('The links open with a free account.');
+    await expect(sources.locator('a[href^="http"]')).toHaveCount(0);
 
-    // As a free account: every round and source, every prompt statement; the answer guides past the first wait for Premium.
     await signIn(page, newAccount());
     await page.goto('/companies/meta/preview');
-    await expect(page.getByTestId('company-process-gate')).toHaveCount(0);
-    await expect(process.locator('.interview-process__tag')).toHaveCount(0);
-    // A stacked table keeps each row's sources behind "Show the sources"; a wide one shows them at once.
-    await expect(process.locator('.interview-process__sources').first()).toBeAttached();
-    const sourcesToggle = process.locator('.interview-process__toggle').first();
-    if (await sourcesToggle.isVisible()) {
-      await expect(async () => {
-        await sourcesToggle.click();
-        await expect(sourcesToggle).toHaveAttribute('aria-expanded', 'true', { timeout: 1000 });
-      }).toPass();
-    }
-    await expect(process.locator('.interview-process__sources a').first()).toBeVisible();
-    await expect(prompts.nth(1).locator('.company-prompt__statement .premium-locked')).toHaveCount(0);
-    await expect(prompts.nth(1).locator('.company-prompt__details')).toHaveAttribute('inert', '');
-    await expect(page.getByTestId('company-prompt-gate')).toContainText(/The answer guides for prompts 2 to \d+ are in Premium/);
+    await expect(sources.getByTestId('company-guide-sources-gate')).toHaveCount(0);
+    await expect(sources.locator('a[href^="http"]').first()).toBeAttached();
+    // The other questions stay locked for a free account.
+    await expect(list.locator('.cq-row__question.premium-locked').first()).toBeAttached();
     expect(await overflow(page)).toBe(0);
   });
 
-  test('Hande drills a Meta behavioural question on a phone: her story survives a reload, and a free account opens the other questions', async ({ page }) => {
+  test('Hande drills a Meta behavioural question on a phone: her story survives a reload, and each question keeps its own', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/companies/meta/preview');
     const drill = page.getByTestId('behavioral-drill');
     await drill.scrollIntoViewIfNeeded();
+    // The behavioural questions are open on a guide with the reported-question list, so a visitor picks any of them.
     await expect(drill.getByTestId('behavioral-drill-question-disagreement')).toBeChecked();
-    await expect(drill.getByTestId('behavioral-drill-question-criticism')).toBeDisabled();
-    await expect(drill.getByTestId('company-drill-gate')).toContainText('The other 8 questions open with a free account');
+    await expect(drill.getByTestId('behavioral-drill-question-criticism')).toBeEnabled();
+    await expect(drill.getByTestId('company-drill-gate')).toHaveCount(0);
 
     await drill.getByTestId('behavioral-drill-situation').fill('Design and I disagreed on the checkout error states a week before launch.');
     await drill.getByTestId('behavioral-drill-action').fill('We met, we listed the cases and our designer drew them.');
@@ -459,9 +441,6 @@ test.describe('company plan from a company guide', () => {
     await expect(drill.getByTestId('behavioral-drill-situation')).toHaveValue('Design and I disagreed on the checkout error states a week before launch.');
     await expect(drill.getByTestId('behavioral-drill-check-0')).toBeChecked();
 
-    await signIn(page, newAccount());
-    await page.goto('/companies/meta/preview');
-    await expect(drill.getByTestId('company-drill-gate')).toHaveCount(0);
     await drill.getByTestId('behavioral-drill-question-criticism').check();
     await expect(drill.getByTestId('behavioral-drill-asked')).toContainText('criticism you received');
     await expect(drill.getByTestId('behavioral-drill-situation')).toHaveValue('');

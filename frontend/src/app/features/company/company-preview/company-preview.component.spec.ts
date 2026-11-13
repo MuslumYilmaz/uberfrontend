@@ -27,7 +27,7 @@ import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../.
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { buildCompanyEditorialNotesFixture } from '../../../shared/company-previews/company-editorial-notes.spec-fixture';
-import { COMPANY_INTERVIEW_PROCESSES } from '../../../shared/company-previews/company-interview-processes';
+import { COMPANY_INTERVIEW_PROCESSES, type CompanyInterviewProcess } from '../../../shared/company-previews/company-interview-processes';
 import { summariseQuestionList } from '../../../shared/company-previews/company-question-list';
 
 describe('CompanyPreviewComponent', () => {
@@ -42,6 +42,25 @@ describe('CompanyPreviewComponent', () => {
   const planData = { schemaVersion: 1 } as unknown as CompanyPlanData;
   let plans: { loadData: jasmine.Spy; buildPlan: jasmine.Spy };
   let freeUnlocks: jasmine.SpyObj<FreeUnlockService>;
+
+  /**
+   * Every guide now lists its reported questions. A guide without the list still renders the earlier layout (prompt
+   * cards, catalog samples, the account gate), so the specs of that layout take a guide's list away for one test.
+   */
+  const restoreLists: (() => void)[] = [];
+  function withoutList(...slugs: string[]): void {
+    const processes = COMPANY_INTERVIEW_PROCESSES as Record<string, CompanyInterviewProcess>;
+    for (const slug of slugs) {
+      const process = processes[slug];
+      if (!process?.questions) continue;
+      const rest: { -readonly [K in keyof CompanyInterviewProcess]?: CompanyInterviewProcess[K] } = { ...process };
+      delete rest.questions;
+      delete rest.behaviouralQuestions;
+      processes[slug] = rest as CompanyInterviewProcess;
+      restoreLists.push(() => { processes[slug] = process; });
+    }
+  }
+  afterEach(() => restoreLists.splice(0).forEach((restore) => restore()));
 
   /** The plan code arrives through a dynamic import, after the render that asked for it. */
   async function settle(): Promise<void> {
@@ -419,6 +438,7 @@ describe('CompanyPreviewComponent', () => {
   });
 
   it('lists sourced items in a public reports block and marks sourced samples, only when reports exist', async () => {
+    withoutList('microsoft', 'bytedance');
     const reportUrl = 'https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l';
     const reported = {
       id: 'js-build-tree-from-flat-list', kind: 'coding' as const, tech: 'javascript' as const, title: 'Build a Tree from a Flat List of Nodes', access: 'free' as const,
@@ -452,6 +472,7 @@ describe('CompanyPreviewComponent', () => {
   });
 
   it('frames generic company previews as editorial practice groupings', async () => {
+    withoutList('apple');
     const fixture = await createComponent('apple');
     const host: HTMLElement = fixture.nativeElement;
     const text = host.textContent || '';
@@ -468,6 +489,7 @@ describe('CompanyPreviewComponent', () => {
   });
 
   it('renders resolved samples immediately and replaces metadata and samples when the company slug changes', async () => {
+    withoutList('microsoft', 'bytedance');
     await createComponent('microsoft', {
       slug: 'microsoft', mode: 'catalog',
       counts: { all: 2, coding: 1, trivia: 1, system: 0, debug: 0 },
@@ -569,6 +591,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('lists the sources the process table cites after the guide sources, and counts them all in the gates', async () => {
+      withoutList('shopee');
       await createComponent('shopee');
       const host: HTMLElement = fixture.nativeElement;
       const rows = Array.from(host.querySelectorAll('.company-source-list article'));
@@ -586,7 +609,7 @@ describe('CompanyPreviewComponent', () => {
       expect(host.querySelector('.preview-subtitle')?.textContent).not.toContain('{');
       const reports = rows.filter((row) => row.querySelector('a')?.getAttribute('rel')?.includes('nofollow')).length;
       const word = countWord(reports);
-      expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public frontend accounts inform this guide`);
+      expect(host.textContent).toContain(`${word.charAt(0).toUpperCase()}${word.slice(1)} public accounts sit behind this guide`);
     });
 
     it('keeps the source notes in the page but closed, and puts the round decoders after the prompts', async () => {
@@ -633,6 +656,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('keeps the catalog preview for slugs outside the registry', async () => {
+      withoutList('apple');
       await createComponent('apple', undefined, registry);
       const host: HTMLElement = fixture.nativeElement;
       expect(host.querySelector('[data-testid="authored-company-preview"]')).toBeNull();
@@ -682,6 +706,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a followed link by where it sits and where it goes, but not a jump within the page', async () => {
+      withoutList('crowdstrike');
       // CrowdStrike keeps the layout without a question list until batch 3: its sources sit in their own section.
       await createComponent('crowdstrike');
       const host: HTMLElement = fixture.nativeElement;
@@ -786,6 +811,18 @@ describe('CompanyPreviewComponent', () => {
 
   describe('the prompts a visitor reads before Premium', () => {
     const prompts = (host: HTMLElement) => Array.from(host.querySelectorAll<HTMLElement>('.company-prompt, .openai-prompt'));
+    // ServiceNow's prompts, cut or padded, on its guide without the question list, stand in for each prompt count.
+    const withPrompts = (count: number) => {
+      const servicenow = AUTHORED_COMPANY_PREVIEWS['servicenow'];
+      const items = servicenow.prompts.items;
+      return {
+        ...AUTHORED_COMPANY_PREVIEWS,
+        servicenow: {
+          ...servicenow,
+          prompts: { ...servicenow.prompts, items: Array.from({ length: count }, (_, index) => ({ ...items[index % items.length], id: `prompt-${index}` })) },
+        },
+      };
+    };
     const gate = () => {
       const card = fixture.nativeElement.querySelector('[data-testid="company-prompt-gate"]') as HTMLElement | null;
       return card && {
@@ -797,6 +834,7 @@ describe('CompanyPreviewComponent', () => {
     };
 
     it('opens the first three prompts and keeps the details of the rest under a blur, with their title and opening still readable', async () => {
+      withoutList('servicenow');
       await createComponent('servicenow');
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
@@ -816,6 +854,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('keeps a free practice link readable under a locked prompt, and blurs only the name of a Premium one', async () => {
+      withoutList('crowdstrike');
       await createComponent('crowdstrike');
       const cards = prompts(fixture.nativeElement);
       const link = (index: number) => cards[index].querySelector('.company-resource-link--inline') as HTMLElement;
@@ -833,7 +872,8 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('names the locked prompts in a card right after the third one, leading into the plan', async () => {
-      await createComponent('servicenow');
+      withoutList('servicenow');
+      await createComponent('servicenow', undefined, withPrompts(5));
       const host: HTMLElement = fixture.nativeElement;
       const cards = prompts(host);
       const card = host.querySelector('[data-testid="company-prompt-gate"]') as HTMLElement;
@@ -848,24 +888,13 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('words the card for one, two or more locked prompts', async () => {
-      // ServiceNow keeps its prompt cards until batch 3; its five prompts, cut or padded, stand in for each case.
-      const servicenow = AUTHORED_COMPANY_PREVIEWS['servicenow'];
-      const withPrompts = (count: number) => ({
-        ...AUTHORED_COMPANY_PREVIEWS,
-        servicenow: {
-          ...servicenow,
-          prompts: {
-            ...servicenow.prompts,
-            items: Array.from({ length: count }, (_, index) => ({ ...servicenow.prompts.items[index % 5], id: `prompt-${index}` })),
-          },
-        },
-      });
+      withoutList('servicenow');
       await createComponent('servicenow', undefined, withPrompts(7));
       expect(gate()?.title).toBe('The answer guides for prompts 4 to 7 are in Premium');
       await createComponent('servicenow', undefined, withPrompts(4));
       expect(prompts(fixture.nativeElement).length).toBe(4);
       expect(gate()?.title).toBe('The answer guide for prompt 4 is in Premium');
-      await createComponent('servicenow');
+      await createComponent('servicenow', undefined, withPrompts(5));
       expect(gate()?.title).toBe('The answer guides for prompts 4 and 5 are in Premium');
     });
 
@@ -881,6 +910,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a click on the card as its own surface', async () => {
+      withoutList('servicenow', 'airbnb');
       await createComponent('servicenow');
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const link = fixture.nativeElement.querySelector('[data-testid="company-prompt-gate"] a') as HTMLAnchorElement;
@@ -909,6 +939,7 @@ describe('CompanyPreviewComponent', () => {
       .map((step) => [step.querySelector('.company-resource-link')?.textContent?.trim(), step.classList.contains('company-locked'), step.hasAttribute('inert')]);
 
     it('keeps a visitor from reading Premium names in a catalog guide, with free ones, chips and the process open', async () => {
+      withoutList('airbnb');
       await createComponent('airbnb', AIRBNB, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
 
       const paidTitle = row('react-chips-input-autocomplete').querySelector('.fa-question-row__title') as HTMLElement;
@@ -917,8 +948,8 @@ describe('CompanyPreviewComponent', () => {
       expect(row('react-chips-input-autocomplete').textContent).toContain('Premium');
       expect(row('js-closures').querySelector('.fa-question-row__concealed')).toBeNull();
 
-      expect(lockedSteps()).toContain(['Closures', false, false]);
-      expect(lockedSteps()).toContain(['Chips input with autocomplete in React', true, true]);
+      expect(lockedSteps()).toContain(['React autocomplete search', false, false]);
+      expect(lockedSteps()).toContain(['React tic-tac-toe', true, true]);
       // A blurred step carries no link: the Premium page's address is not in the row.
       expect(host().querySelector('[data-testid="company-prep-steps"] li > div.company-locked a')).toBeNull();
       expect(host().querySelector('[data-testid="company-prep-steps"] li > div:not(.company-locked) a')).not.toBeNull();
@@ -927,10 +958,10 @@ describe('CompanyPreviewComponent', () => {
       expect(report.classList).toContain('company-link--locked');
       expect(report.hasAttribute('inert')).toBeTrue();
 
-      // The real Airbnb table: the star rating and the messaging case rows link Premium pages.
+      // The real Airbnb table: the UI coding row links a Premium page, the technical screen a free one.
       const process = host().querySelector('app-company-interview-process') as HTMLElement;
-      expect(process.querySelectorAll('.interview-process__locked').length).toBe(2);
-      expect(process.textContent).toContain('Explain closures');
+      expect(process.querySelectorAll('.interview-process__locked').length).toBe(1);
+      expect(process.textContent).toContain('React autocomplete search');
 
       const gate = host().querySelector('[data-testid="company-sample-gate"]') as HTMLElement;
       expect(gate.querySelector('.company-prompt-gate__title')?.textContent).toBe('The locked questions open with Premium');
@@ -952,6 +983,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('renders catalog notes whose bullets carry no link, and labels only the blurred links as Premium tasks', async () => {
+      withoutList('airbnb');
       // Notes may end with a bullet that has no link at all, as Walmart's did before its question list; the page must
       // not break on it.
       const notes: CompanyEditorialNotesRegistry = {
@@ -982,6 +1014,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('locks a Premium practice link under an open prompt, and words the closing call without naming a Premium task', async () => {
+      withoutList('servicenow');
       await createComponent('servicenow');
       const first = host().querySelector('.company-prompt') as HTMLElement;
       const link = first.querySelector('.company-resource-link--inline') as HTMLElement;
@@ -992,7 +1025,7 @@ describe('CompanyPreviewComponent', () => {
       expect(link.querySelector('.premium-locked')?.hasAttribute('data-nosnippet')).toBeTrue();
       expect(first.querySelector('.company-link__tag')).toBeNull();
       expect(host().querySelector('.company-guide-cta p:not(.preview-kicker)')?.textContent?.trim())
-        .toBe(`Premium opens prompts 4 and 5 with their answer guides, every question in the ServiceNow set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
+        .toBe(`Premium opens prompt 4 with its answer guide, every question in the ServiceNow set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
     });
 
     it('counts locked samples as exercises, so a widget in three frameworks is one', async () => {
@@ -1005,6 +1038,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('counts a click on the sample card as its own surface', async () => {
+      withoutList('airbnb');
       await createComponent('airbnb', AIRBNB, AUTHORED_COMPANY_PREVIEWS, COMPANY_EDITORIAL_NOTES);
       spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
       const link = host().querySelector('[data-testid="company-sample-gate"] a') as HTMLAnchorElement;
@@ -1019,6 +1053,8 @@ describe('CompanyPreviewComponent', () => {
       Array.from(fixture.nativeElement.querySelectorAll(selector) as NodeListOf<HTMLElement>).map((element) => getComputedStyle(element).display !== 'none');
 
     it('hides the lock chip and the call to unlock on every kind of guide, which a visitor still sees', async () => {
+      // Apple stands for a catalog guide with sample cards, the layout of a guide without a reported-question list.
+      withoutList('apple');
       const guides: [string, string[]][] = [
         ['elevenlabs', ['.preview-chip--locked-set', '.company-guide-cta']],
         ['google', ['.preview-chip--lock', '.company-guide-cta']],
@@ -1086,6 +1122,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('shows a member every catalog sample without saying which ones are locked', async () => {
+      withoutList('microsoft');
       await createComponent('microsoft', {
         slug: 'microsoft', mode: 'catalog',
         counts: { all: 2, coding: 1, trivia: 1, system: 0, debug: 0 },
@@ -1122,6 +1159,7 @@ describe('CompanyPreviewComponent', () => {
     const lockedParts = () => host().querySelectorAll('.premium-locked').length;
 
     it('shows a visitor the structure and a lead-in, and keeps the rest in the page for search engines', async () => {
+      withoutList('meta');
       await createComponent('meta');
       expect(fixture.componentInstance.tier()).toBe('guest');
       expect(fixture.componentInstance.detailLocked()).toBeTrue();
@@ -1178,6 +1216,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('opens what each round asks, the sources and every prompt statement for a free account, and keeps the answer guides for Premium', async () => {
+      withoutList('meta');
       user.set(FREE_ACCOUNT);
       await createComponent('meta');
       expect(fixture.componentInstance.tier()).toBe('account');
@@ -1202,6 +1241,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('puts a story drill under each behavioural decoder that the gate opens one question of, for a visitor', async () => {
+      withoutList('meta', 'apple');
       const drill = (round: string) => host().querySelector(`[aria-labelledby="${round}"] app-behavioral-drill`) as HTMLElement | null;
       const pickable = (element: HTMLElement) => Array.from(element.querySelectorAll('.drill__questions input')).filter((input) => !(input as HTMLInputElement).disabled).length;
 
@@ -1243,6 +1283,7 @@ describe('CompanyPreviewComponent', () => {
     });
 
     it('opens everything for a member and leaves a guide outside the gate as it was', async () => {
+      withoutList('meta', 'servicenow');
       user.set(MEMBER);
       await createComponent('meta');
       expect(fixture.componentInstance.tier()).toBe('member');
@@ -1278,7 +1319,7 @@ describe('CompanyPreviewComponent', () => {
       expect(host().querySelector('[data-testid^="company-preview-question-"]')).toBeNull();
       const chips = Array.from(host().querySelectorAll('.preview-chip')).map((chip) => chip.textContent?.trim());
       expect(chips).toContain(`${COMPANY_INTERVIEW_PROCESSES['walmart'].questions!.length} reported questions`);
-      expect(host().querySelector('[data-testid="company-preview-counts"]')?.textContent?.trim()).toBe('Practice set: Concepts 2');
+      expect(host().querySelector('[data-testid="company-preview-counts"]')?.textContent?.trim()).toBe('FrontendAtlas practice set: Concepts 2');
     });
 
     it('replaces the prompt cards with the list, keeps the first question open and locks the rest in the page', async () => {

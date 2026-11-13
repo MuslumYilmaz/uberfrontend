@@ -331,7 +331,11 @@ describe('CompanyPlanPreviewComponent', () => {
     });
 
     it('the night before an interview, points a phone at the guide to read', () => {
-      setup({ companies: 'servicenow', when: 'tomorrow', level: 'senior' });
+      // Every guide in the data now lists its reported questions; one without the list still names its open prompts.
+      const raw = structuredClone(rawPlanData) as unknown as { companies: Record<string, Record<string, unknown>> };
+      delete raw.companies['servicenow']['questionCount'];
+      raw.companies['servicenow']['promptCount'] = 5;
+      setup({ companies: 'servicenow', when: 'tomorrow', level: 'senior' }, { data: raw as unknown as CompanyPlanData });
       expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ServiceNow guide: its rounds and open prompts.');
       // The guide's five prompts keep three open; Premium opens the other two answer guides, which read on a phone.
       expect(text('.preview__phone-note')).toContain('Premium also opens the answer guides for prompts 4 and 5 there, readable on this phone tonight.');

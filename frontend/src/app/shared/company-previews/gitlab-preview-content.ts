@@ -240,7 +240,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
+    kicker: 'Mini walkthrough',
     title: 'Plan the merge request review before the call',
     intro:
       'The handbook suggests up to an hour of review, finished at least a day before the call.',

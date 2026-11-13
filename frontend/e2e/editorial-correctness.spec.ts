@@ -48,7 +48,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/servicenow/preview',
-    expected: 'Prepare for product judgment, not ServiceNow trivia',
+    expected: 'What the ServiceNow rounds test: the language itself, then problems against a clock',
   },
   {
     path: '/companies/amazon/preview',
@@ -56,7 +56,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/meta/preview',
-    expected: 'Prepare for product judgment, not Meta trivia',
+    expected: 'What Meta front end rounds reward: plain JavaScript and DOM code, written from memory against the clock',
   },
   {
     path: '/companies/revolut/preview',
@@ -64,7 +64,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/spotify/preview',
-    expected: 'Prepare for product judgment, not Spotify trivia',
+    expected: 'What Spotify web loops test: JavaScript, the DOM and CSS by hand, without a framework',
   },
   {
     path: '/companies/jpmorgan/preview',
@@ -80,7 +80,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/shopee/preview',
-    expected: 'Prepare for product judgment, not Shopee trivia',
+    expected: 'What Shopee frontend rounds reward: JavaScript written from memory, and the web platform explained exactly',
   },
   {
     path: '/companies/anduril/preview',

@@ -163,7 +163,8 @@ test('generic company sample/count hydration shells fail and authored previews p
   const f = fixture(t, ['/', '/companies', route, authored]);
   const companySamples = new Map([['microsoft', { count: 2, requiredIds: new Set(['one', 'two']) }]]);
   const companyCounts = { microsoft: { all: 2, coding: 2, trivia: 0, system: 0 }, google: { all: 1, coding: 1, trivia: 0, system: 0 } };
-  const audit = () => f.audit({ companySamples, companyCounts });
+  // Every real guide now lists its questions; this one stands for a catalog guide without the list.
+  const audit = () => f.audit({ companySamples, companyCounts, listedCompanies: new Set() });
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 2)}${companyLink(authored, 1)}</section>`);
   assert.match(failures(audit()), /Company preview missing or unexpected initial-HTML samples/);
@@ -190,7 +191,7 @@ test('a catalog guide with a reported-question list shows the list instead of sa
   });
   f.page('/', link('/companies'));
   f.page('/companies', `<section data-testid="company-index-list">${companyLink(route, 3)}</section>`);
-  const preview = '<span class="preview-chip">5 reported questions</span><span data-testid="company-preview-counts">Practice set: Coding 2 · Concepts 1</span>';
+  const preview = '<span class="preview-chip">5 reported questions</span><span data-testid="company-preview-counts">FrontendAtlas practice set: Coding 2 · Concepts 1</span>';
   f.page(route, `${preview}<section data-testid="company-question-list"></section>`);
   assert.deepEqual(audit().failures, []);
   f.page(route, preview);

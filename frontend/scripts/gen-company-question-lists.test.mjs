@@ -150,7 +150,7 @@ test('every Taro source in the process data parses to a job title, and every pla
   }
   const taro = [...sources.values()].filter((source) => source.url.includes('jointaro.com'));
   assert.ok(taro.length > 150);
-  const countries = new Set(['United States', 'United Kingdom', 'India', 'Poland', 'Spain', 'Germany', 'France', 'Canada', 'Australia', 'Singapore', 'Netherlands', 'Portugal', 'Brazil', 'Israel', 'Serbia', 'Mexico', 'Denmark', 'Romania', 'Turkey', 'Bangladesh', 'Georgia', 'Finland', 'Sweden', 'Ireland', 'Cyprus', 'Paraguay']);
+  const countries = new Set(['United States', 'United Kingdom', 'India', 'Poland', 'Spain', 'Germany', 'France', 'Canada', 'Australia', 'Singapore', 'Netherlands', 'Portugal', 'Brazil', 'Israel', 'Serbia', 'Mexico', 'Denmark', 'Romania', 'Turkey', 'Bangladesh', 'Georgia', 'Finland', 'Sweden', 'Ireland', 'Cyprus', 'Paraguay', 'Italy', 'Nigeria', 'Belgium']);
   for (const source of taro) {
     const { role, location, outcome } = reporter.sourceReporter(source);
     // A place missing from the dictionary would stay in the role, which then ends in a city instead of a job word. An
