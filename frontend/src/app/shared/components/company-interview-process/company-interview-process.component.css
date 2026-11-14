@@ -195,13 +195,6 @@
 }
 
 .interview-process .interview-process__try-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--uf-accent);
   white-space: nowrap;
 }
 

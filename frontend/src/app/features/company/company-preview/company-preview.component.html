@@ -881,7 +881,8 @@
     </div>
     <ul class="company-related-guides__list" [class.company-related-guides__list--collapsed]="!relatedExpanded()">
       <li *ngFor="let c of relatedCompanyLinks">
-        <a class="company-resource-link company-resource-link--inline" [routerLink]="c.link">{{ c.label }} frontend interview questions</a>
+        <!-- The chip shows the company; the rest of the link's name is read by assistive tech and search. -->
+        <a class="company-resource-link company-resource-link--inline" [routerLink]="c.link">{{ c.label }}<span class="company-related-guides__rest"> frontend interview questions</span></a>
       </li>
     </ul>
     <!-- A phone shows the first few guides; every link stays in the page. -->
@@ -896,7 +897,7 @@
 
   <!-- Each day's title stays open; what the day holds opens with a free account. -->
   <ng-template #lockedPrepDays let-days>
-      <ol class="company-prep-sequence" data-testid="company-prep-plan-days">
+      <ol class="company-prep-sequence company-prep-sequence--days" data-testid="company-prep-plan-days">
         <li *ngFor="let item of days">
           <strong>{{ item.day }}</strong>
           <div>
@@ -908,12 +909,13 @@
           </div>
         </li>
       </ol>
-      <p class="company-prep-gate" *ngIf="planLocked()" data-testid="company-prep-plan-gate">
-        What each day holds opens with a free account, and your plan saves to your interview date.
-        <a [routerLink]="['/auth/signup']" [queryParams]="{ redirectTo: '/companies/' + slug + '/preview' }">Create a free account</a>
-        <span aria-hidden="true"> · </span>
-        <a [routerLink]="['/auth/login']" [queryParams]="{ redirectTo: '/companies/' + slug + '/preview' }">Sign in</a>
-      </p>
+      <div class="company-prep-gate" *ngIf="planLocked()" data-testid="company-prep-plan-gate">
+        <p>What each day holds opens with a free account, and your plan saves to your interview date.</p>
+        <span class="company-prep-gate__actions">
+          <a faButton variant="neutral" size="sm" [routerLink]="['/auth/signup']" [queryParams]="{ redirectTo: '/companies/' + slug + '/preview' }">Create a free account</a>
+          <a [routerLink]="['/auth/login']" [queryParams]="{ redirectTo: '/companies/' + slug + '/preview' }">Sign in</a>
+        </span>
+      </div>
   </ng-template>
 
   <!-- The one line every guide carries, after its title rather than before it. -->

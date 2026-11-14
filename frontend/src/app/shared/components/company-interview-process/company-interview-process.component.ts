@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FaButtonComponent } from '../../ui/button/fa-button.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { isProActive } from '../../../core/utils/entitlements.util';
 import { isPremiumRoute } from '../../../core/utils/premium-route.util';
@@ -23,7 +24,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 @Component({
   selector: 'app-company-interview-process',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FaButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './company-interview-process.component.html',
   styleUrl: './company-interview-process.component.css',
@@ -153,6 +154,15 @@ export class CompanyInterviewProcessComponent {
     if (path.includes('/trivia/')) return 'a free concept question';
     if (path.startsWith('/system-design/')) return 'a free system design walkthrough';
     return 'a free task';
+  }
+
+  /** The button under the try-now line says what it opens. */
+  tryNowAction(path: string): string {
+    if (path.endsWith('/quiz')) return 'Take the free quiz';
+    if (path.startsWith('/guides/')) return 'Read the free guide';
+    if (path.includes('/trivia/')) return 'Open the free question';
+    if (path.startsWith('/system-design/')) return 'Open the free walkthrough';
+    return 'Start the free task';
   }
 
   /** The questions no source places in a round lead to the first of them. */
