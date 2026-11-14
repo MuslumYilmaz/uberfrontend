@@ -148,7 +148,8 @@ test('every Taro source in the process data parses to a job title, and every pla
       for (const source of question.sources) sources.set(source.url, source);
     }
   }
-  const taro = [...sources.values()].filter((source) => source.url.includes('jointaro.com'));
+  // By host, not by substring: a URL that only mentions the domain elsewhere is not a Taro page.
+  const taro = [...sources.values()].filter((source) => new URL(source.url).hostname === 'www.jointaro.com');
   assert.ok(taro.length > 150);
   const countries = new Set(['United States', 'United Kingdom', 'India', 'Poland', 'Spain', 'Germany', 'France', 'Canada', 'Australia', 'Singapore', 'Netherlands', 'Portugal', 'Brazil', 'Israel', 'Serbia', 'Mexico', 'Denmark', 'Romania', 'Turkey', 'Bangladesh', 'Georgia', 'Finland', 'Sweden', 'Ireland', 'Cyprus', 'Paraguay', 'Italy', 'Nigeria', 'Belgium']);
   for (const source of taro) {
