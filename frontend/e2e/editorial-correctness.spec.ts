@@ -24,11 +24,11 @@ const publicCopyCases = [
   },
   {
     path: '/companies/google/preview',
-    expected: 'These free practice pages reinforce the same transferable skills.',
+    expected: 'What to study first for a Google frontend interview',
   },
   {
     path: '/companies/netflix/preview',
-    expected: 'Prepare for product judgment, not Netflix trivia',
+    expected: 'What Netflix\'s rounds reward: plain JavaScript, code a reviewer can follow, and the culture memo',
   },
   {
     path: '/companies/waymo/preview',
@@ -40,39 +40,39 @@ const publicCopyCases = [
   },
   {
     path: '/companies/datadog/preview',
-    expected: 'Prepare for product judgment, not Datadog trivia',
+    expected: 'What Datadog frontend loops reward: tables of moving data, and algorithms done cleanly',
   },
   {
     path: '/companies/intuit/preview',
-    expected: 'Prepare for product judgment, not Intuit trivia',
+    expected: 'What Intuit panels push on',
   },
   {
     path: '/companies/servicenow/preview',
-    expected: 'Prepare for product judgment, not ServiceNow trivia',
+    expected: 'What the ServiceNow rounds test: the language itself, then problems against a clock',
   },
   {
     path: '/companies/amazon/preview',
-    expected: 'Prepare for product judgment, not Amazon trivia',
+    expected: 'What Amazon front end loops reward: a working widget early, and a story for every principle',
   },
   {
     path: '/companies/meta/preview',
-    expected: 'Prepare for product judgment, not Meta trivia',
+    expected: 'What Meta front end rounds reward: plain JavaScript and DOM code, written from memory against the clock',
   },
   {
     path: '/companies/revolut/preview',
-    expected: 'Prepare for product judgment, not Revolut trivia',
+    expected: 'What Revolut frontend loops test: request state in TypeScript, then algorithms against a clock',
   },
   {
     path: '/companies/spotify/preview',
-    expected: 'Prepare for product judgment, not Spotify trivia',
+    expected: 'What Spotify web loops test: JavaScript, the DOM and CSS by hand, without a framework',
   },
   {
     path: '/companies/jpmorgan/preview',
-    expected: 'Prepare for product judgment, not JPMorgan Chase trivia',
+    expected: 'Learn the recurring questions, then rehearse your team\'s shape',
   },
   {
     path: '/companies/agoda/preview',
-    expected: 'Prepare for product judgment, not Agoda trivia',
+    expected: 'Practise talking: in the newest loop only the coding hour asked for code',
   },
   {
     path: '/companies/xai/preview',
@@ -80,11 +80,11 @@ const publicCopyCases = [
   },
   {
     path: '/companies/shopee/preview',
-    expected: 'Prepare for product judgment, not Shopee trivia',
+    expected: 'What Shopee frontend rounds reward: JavaScript written from memory, and the web platform explained exactly',
   },
   {
     path: '/companies/anduril/preview',
-    expected: 'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
+    expected: 'What Anduril frontend loops reward: working UI inside the hour, in React or plain JavaScript',
   },
   {
     path: '/companies/gitlab/preview',

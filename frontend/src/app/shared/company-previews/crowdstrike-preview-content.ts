@@ -1,10 +1,13 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * CrowdStrike frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported frontend accounts (reviews re-hosted on Taro and one Blind thread, 2021 to 2025), on CrowdStrike's
- * interviewing and Emerging Talent pages, and on the two frontend postings open in October 2026. Nothing here is a
- * leaked, confirmed or official CrowdStrike question. The take-home task is described only in the public report's words.
+ * CrowdStrike frontend interview guide. The reported questions live with the process table
+ * (company-interview-processes.ts); the five prompts here are the answer guides of the take-home, review, fundamentals,
+ * security and dashboard rows. The questions come from anonymous reviews re-hosted on Taro (2020 to 2025) and from two
+ * Blind threads; CrowdStrike's interviewing and Emerging Talent pages give the official steps, and the two UK frontend
+ * postings open in October 2026 give the stack. Every cited page was read again on 2026-11-13. The take-home brief is
+ * not public: the guide describes the task only in the 2025 account's words and links no candidate solution. Nothing
+ * here is a leaked, confirmed or official CrowdStrike question.
  */
 const CROWDSTRIKE_EM_FE_2025_URL =
   'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/';
@@ -29,6 +32,8 @@ const CROWDSTRIKE_UI_OFFER_2022_URL =
 const CROWDSTRIKE_UI_OFFER_2022_LABEL = 'Public report: Taro UI engineer loop, 2022';
 const CROWDSTRIKE_BLIND_2024_URL = 'https://www.teamblind.com/post/crowdstrike-frontend-interview-jmjmpz0w';
 const CROWDSTRIKE_BLIND_2024_LABEL = 'Public report: Blind senior frontend interview thread, 2024';
+const CROWDSTRIKE_BLIND_ONSITE_2022_URL = 'https://www.teamblind.com/post/crowdstrike-frontend-interview-5n8jmgs4';
+const CROWDSTRIKE_BLIND_ONSITE_2022_LABEL = 'Public report: Blind comment on a senior frontend interview thread, 2022';
 const CROWDSTRIKE_INTERVIEWING_URL = 'https://www.crowdstrike.com/en-us/careers/interviewing/';
 const CROWDSTRIKE_EMERGING_TALENT_URL = 'https://www.crowdstrike.com/en-us/careers/university-interns/';
 const CROWDSTRIKE_FALCON_COMPLETE_POSTING_URL =
@@ -39,10 +44,10 @@ const CROWDSTRIKE_DATA_PLATFORM_POSTING_URL =
 export const CROWDSTRIKE_PREVIEW_TITLE = 'CrowdStrike Frontend Interview Questions and Take-Home Review Guide';
 export const CROWDSTRIKE_PREVIEW_H1 = 'CrowdStrike Frontend Interview Questions';
 export const CROWDSTRIKE_PREVIEW_DESCRIPTION =
-  'CrowdStrike frontend interview: the take-home file table and its review round (what engineers ask), spoken web fundamentals, the AI rule and 5 practice prompts.';
+  'CrowdStrike frontend interview: the take-home file table and its review round, spoken web fundamentals, the AI rule and {#questions} reported questions.';
 export const CROWDSTRIKE_PREVIEW_CANONICAL_PATH = '/companies/crowdstrike/preview';
 export const CROWDSTRIKE_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official CrowdStrike questions.';
+  'These questions come from CrowdStrike candidates: most wrote Glassdoor reviews, which Taro republishes in reworded form and often dates only to the month, and a few posted on Blind. Each question is retold in our words, CrowdStrike has not confirmed any of them, and every answer outline is FrontendAtlas\'s own. CrowdStrike has not published the take-home brief and this guide does not reproduce it, so the open question gives the task only as the 2025 account words it.';
 
 export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'crowdstrike',
@@ -55,53 +60,53 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public CrowdStrike prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts and by CrowdStrike careers pages: a recruiter call, a manager conversation, spoken web fundamentals and security questions with engineers, a take-home UI build, and a review of that build.',
+      'CrowdStrike frontend and UI accounts from the United States, 2021 to 2025, describe a recruiter call, a manager conversation, spoken web fundamentals with engineers, a UI take-home and a review of that take-home; one 2022 account instead ended with an all-day virtual on-site. Under the table are the {questions} questions candidates reported in these and other CrowdStrike loops from 2020 to 2025; the first, the take-home table, is open.',
     caveat:
-      '{reports} frontend-focused accounts from 2021 to 2025 inform this guide, most of them reviews re-hosted on Taro, one a Blind thread. We found no frontend account from 2026. Both frontend roles open in October 2026 are in the United Kingdom, where one 2024 report exists, so confirm the rounds with your recruiter.',
-    chips: ['5 practice prompts', 'Take-home review, web fundamentals, security', 'Full practice set requires Premium'],
+      'Most of these accounts are anonymous reviews that Taro re-posts, many dated only to the month, and none of the frontend accounts is from 2026. Both frontend roles open in October 2026 are in the United Kingdom, where a single 2024 account exists, so check the rounds of your loop with the recruiter.',
+    chips: ['{#questions} reported questions', '{#reports} public reports, 2020–2026', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
     title: 'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
     paragraphs: [
-      'In most United States accounts from 2021 to 2025, a recruiter call and a conversation with a hiring manager or engineering manager come early. Engineers, often two, then ask short spoken questions on JavaScript, HTML, CSS and browser security. The accounts describe definitions and examples rather than algorithm problems.',
-      'Seven of the US accounts describe a take-home build and four describe a review of it; two say the review was with two engineers. The one named task is a table of downloadable files and their details, built from a screenshot. In the 2025 review, the engineers asked what the candidate would change and how to add filtering and sorting. They also asked when to load each file\'s status, how to handle thousands of entries, and what happens when someone selects all, moves to another page and deselects a few rows.',
+      'Most reported questions are short spoken definitions. The 2025 manager loop lists twelve, from var, let and const to XSS, and calls its round with two engineers mostly fundamentals; eight subjects come up in two accounts each: those two, event bubbling, the CSS box model, CORS, what happens after a URL is entered, closures and frontend performance. Answer in a sentence or two with one example. The 2023 candidate thought the engineers wanted memorised definitions, and a 2022 interviewer asked whether JavaScript is single-threaded right after the candidate had said so in an answer about promises.',
+      'Seven US accounts describe a take-home build, and the one named task is the open question: a table of downloadable files and their details, built from a screenshot. In the 2025 review the engineers asked what the candidate would change, how to add filtering and sorting, whether to generalise the component, when to load each file\'s status, how to handle thousands of entries and what select all does across pages. Write your trade-offs down before the review; in 2022 the reviewers did not know React, the framework one candidate had chosen.',
     ],
   },
   sourceBoundary: {
-    kicker: 'Source boundary · checked October 2026',
-    title: 'What the public accounts establish',
+    kicker: 'Source boundary · checked November 2026',
+    title: 'Where the CrowdStrike accounts come from and where they stop',
     paragraphs: [
-      'The fullest United States accounts from 2021 to 2025 describe one order: recruiter, manager, a round with engineers, a take-home and a review round, sometimes followed by a culture or team conversation. Other accounts list fewer rounds or a different order.',
-      'Outside the United States, each country has one report. The United Kingdom report from 2024 describes a home task, the Denmark report from 2025 live coding and a whiteboard design, and the Canada report from 2025 a technical phone screen and a dashboard design question. CrowdStrike\'s interviewing page describes the general steps for all roles and leaves the number of interviews to the recruiter.',
+      'Most accounts behind this guide are Glassdoor reviews re-posted on Taro, from US frontend and UI loops between 2021 and 2025; Taro rewrites their text and dates many of them to the first of a month. On Blind, a senior candidate\'s 2024 thread describes the fundamentals round, and a 2022 comment describes a screening and an on-site with UI builds. The question list also draws on a 2023 UI internship, a 2020 account and a 2024 general software engineer loop, and the behavioural questions on two 2026 commenters in a Blind thread about a full-stack role.',
+      'Outside the United States there is one frontend account each from London in 2024, Denmark in 2025 and Canada in 2025, and none of the frontend accounts is from 2026. CrowdStrike\'s interviewing page, last modified on 20 October 2026, lists eight general hiring steps, says your recruiter will explain the steps for your role and rules out AI tools in interviews and assessments unless you are told to use them.',
     ],
   },
   roundSpotlights: [
     {
       id: 'take-home-review',
       kicker: 'Round decoder',
-      title: 'CrowdStrike take-home build and review round for frontend engineers: what was asked',
+      title: 'The CrowdStrike frontend take-home and the review round after it',
       lede: [
-        'Seven of the United States frontend accounts at CrowdStrike describe a take-home UI build and four describe a review of it with engineers, after a recruiter call, a hiring-manager conversation and a spoken web-fundamentals round. The one named task is a table of downloadable files and their details, built from a screenshot; one report was allowed any language or framework, one names a 4-hour project, and the 2024 United Kingdom report had a week for a task estimated at 5 hours.',
-        'In the review, engineers, two of them in two reports, go through the submission: what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it copes with thousands of rows, and what happens when someone selects all, moves to another page and deselects a few rows.',
+        'Seven United States frontend and UI accounts from 2021 to 2025 describe a take-home task and four describe a review of it; the four that give an order put it after a manager conversation and a round with engineers. The one named task is the open question below: a table of downloadable files and their details, built from a screenshot.',
+        'In the review, engineers, two in two accounts, go through what you submitted and how you would develop it; the questions from the 2025 review are in the list. In 2022 one review talked through some pseudo code without a whiteboard, and in another the reviewers did not know React, the framework the candidate had picked.',
       ],
       facts: [
-        { label: 'Position in the loop', value: 'After the recruiter call, the hiring-manager conversation and the web-fundamentals round with engineers; sometimes followed by a culture interview, a collaboration panel or an informational talk with the manager.' },
-        { label: 'The build', value: 'A table of downloadable files and their details from a screenshot; any language or framework in one report; a 4-hour project in one report; in the United Kingdom report a week for a task estimated at 5 hours, on which the candidate spent 10, with a reply nearly three weeks later.' },
-        { label: 'The review', value: 'What you would change; filtering and sorting; generalising the component; when to load each file\'s status; thousands of rows; select all across pages.' },
-        { label: 'Who runs it', value: 'Engineers from the team, two of them in two reports.' },
+        { label: 'Position in the loop', value: 'In the four accounts that give an order, after a manager conversation and a round with engineers, on fundamentals in two of them; a culture interview, a collaboration panel or a last talk with the hiring manager followed in some loops.' },
+        { label: 'The build', value: 'In 2025 a table of downloadable files and their details from a screenshot. One 2022 account could use any language or framework, a 2021 account had 4 hours for its project, and in London in 2024 a task estimated at 5 hours took the candidate 10 within the week allowed.' },
+        { label: 'The review', value: 'Engineers, two in two accounts, on your submission and its further development: pseudo code but no whiteboard in one 2022 account, reviewers who did not know React in another.' },
         { label: 'AI rule', value: 'CrowdStrike\'s interviewing page, last modified on 20 October 2026, requires interviews and assessments to be completed without AI unless you are explicitly asked to use AI tools; ask the recruiter whether the take-home follows the same rule.' },
         { label: 'Ember', value: 'Both frontend postings open in October 2026 name Ember and React; in one 2024 report the only feedback after a rejection named Ember; no public account lists an Ember question.' },
-        { label: 'Sources', value: 'Taro re-hosted frontend and UI accounts from 2021 to 2025, a Blind thread from 2024 and CrowdStrike\'s interviewing page. All are listed under Sources below with what each can establish.' },
+        { label: 'Where this comes from', value: 'Reviews of US frontend and UI loops from 2021 to 2025 re-posted on Taro, the 2024 London review and CrowdStrike\'s interviewing page, all in the sources list at the end of the page.' },
       ],
-      practiceLink: { label: 'Rehearse the review: defend and extend your table', fragment: 'take-home-review-defend-extend' },
+      practiceLink: { label: 'Start with the table markup in the free tables and accessibility task', path: '/html/coding/html-tables-accessibility' },
       processLink: { label: 'See the take-home rows in the reported process', fragment: 'crowdstrike-interview-process-1-stage-take-home-review' },
     },
   ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Ember, React and very large data as practice contexts',
-    intro: 'These lenses come from the two frontend postings open in October 2026. Choose the one closest to the role.',
+    intro:
+      'All three come from the two UK frontend postings open in October 2026, not from interview accounts: no account lists an Ember, Web Components or LLM question.',
     items: [
       {
         title: 'Ember at the core, React inside Web Component hosts',
@@ -113,46 +118,47 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         title: 'UI surfaces on top of LLMs and agents',
         description:
-          'The Data Platform Experiences posting lists experience building UI on top of LLMs, agents or MCP-style tooling as a bonus, and the Falcon Complete posting asks for experience using AI technologies in your work.',
+          'The Data Platform Experiences posting lists experience building UI on top of LLMs, agents or MCP-style tooling among its bonus points, and both postings ask for experience using AI technologies in your work.',
         practiceFocus:
           'Streaming responses, cancel and retry, showing tool steps and partial results, and not rendering model output as raw HTML.',
       },
       {
         title: 'Very large data, accessibility and tests',
         description:
-          'The Falcon Complete posting describes evergreen browsers and very large amounts of data, asks for genuinely accessible interfaces, and names Playwright, QUnit or Mocha for testing. The Data Platform Experiences posting asks for charting libraries and interactive dashboards.',
+          'The Falcon Complete posting describes evergreen browsers and truly massive amounts of data, asks for genuinely accessible interfaces, and names Playwright, QUnit or Mocha for testing. The Data Platform Experiences posting asks for charting libraries and interactive dashboards.',
         practiceFocus:
           'Paging and virtualisation for big tables, accessible tables and charts, and tests for edge cases such as select all across pages.',
       },
     ],
   },
   prompts: {
-    kicker: 'Representative practice prompts',
-    title: 'Five CrowdStrike frontend interview practice questions',
+    kicker: 'Answer guides',
+    title: 'CrowdStrike answer guides: the take-home, its review and the spoken rounds',
     intro:
-      'For each prompt, clarify the scope, say your structure out loud, handle the edge cases, and test them. Each prompt links to the public report it is modelled on and to a practice page.',
-    itemListName: 'Five CrowdStrike frontend interview practice prompts',
+      'Each guide serves one or more rows of the list, with the questions to ask first, an answer outline and the usual mistake.',
+    itemListName: 'CrowdStrike answer guides',
     items: [
       {
         id: 'downloadable-files-table-select-all',
-        title: 'Build a downloadable-files table with select all',
+        title: 'Build the downloadable-files table from a screenshot',
         statement:
-          'From a screenshot, build a table of downloadable files and their details that shows whether each file is available for download. Then add select all, and keep the selection correct when someone selects all, moves to another page and deselects a few rows.',
+          'From a screenshot, build a table of a few downloadable files and their details, in code you can walk through and extend in the review that follows.',
         whatThisMeasures:
-          'Turning a visual into semantic, accessible markup, modelling selection state, and thinking about scale before a reviewer asks.',
+          'Turning a visual into semantic, accessible markup, a data model you can name, and code a reviewer can read without you.',
         clarifyFirst: [
-          'Ask how many rows to expect, whether the data is paged on the server, and whether select all means the visible page or every matching file.',
-          'Ask what an unavailable file should do in the table.',
+          'Ask which framework you may use and how long the task should take, since accounts report anything from a 4-hour limit to a week.',
+          'Ask what the reviewers will look at, and whether tests and a short README count.',
         ],
         strongAnswer: [
-          'Use a real table with a caption, header cells with scope, and one labelled checkbox per row.',
-          'Store selection as a mode plus exceptions, such as all except these ids, so select all does not need every id loaded.',
-          'Key the selection by a stable file id, not a row position, so sorting or paging never moves a selection to another file.',
-          'Test select all, deselecting after paging, a file whose availability changes, and an empty list.',
+          'Write the data model from the screenshot first: one object per file with a stable id and each detail the screenshot shows, kept as typed values rather than display strings.',
+          'Use a real table with a caption and header cells with scope, so a screen reader can move by row and column.',
+          'Keep the table, its rows and the cell formatting in separate pieces, and keep data loading out of all three.',
+          'Show loading, error and empty states, and test them along with long file names and keyboard use.',
+          'Leave a short README with the trade-offs you made and what you would change with another day, since the review starts from your code.',
         ],
         commonMiss:
-          'Keeping selected ids for the current page only, so select all and paging silently lose or invent selections.',
-        resourceLabel: 'Build the downloadable-files table with select all across pages (Premium)',
+          'Copying the screenshot with nested divs: the table loses its headers for a screen reader, and there is no data model to extend when the review asks for more.',
+        resourceLabel: 'Build the downloadable-files table (Premium)',
         resourcePath: '/react/coding/react-files-table-select-all',
         reportedRound: { label: CROWDSTRIKE_EM_FE_2025_LABEL, url: CROWDSTRIKE_EM_FE_2025_URL },
       },
@@ -160,9 +166,9 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         id: 'take-home-review-defend-extend',
         title: 'Defend and extend your take-home in review',
         statement:
-          'Two reviewers open your table and ask what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, and how it would cope with thousands of entries.',
+          'Two reviewers open your table and ask what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it would cope with thousands of entries, and what happens when someone selects all, moves to another page and deselects a few.',
         whatThisMeasures:
-          'Owning your design decisions, extending code without rewriting it, and reasoning about data loading and scale.',
+          'Owning your design decisions, extending code without rewriting it, and reasoning about data loading, selection and scale.',
         clarifyFirst: [
           'Before the review, write down the trade-offs you made and what you would do with another day.',
           'Ask whether filtering and sorting run on the client or the server, since that decides how selection and paging behave.',
@@ -173,6 +179,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Generalise only what a second use needs, such as column definitions and a row id, not a setting for every case.',
           'For file status, compare loading it with the list, on demand for visible rows, and by polling or push, and choose by how often it changes.',
           'For thousands of entries, page or virtualise the rows and keep selection independent of what is rendered.',
+          'For select all, store a mode plus exceptions keyed by file id, all except these or none except these, so select all, a page change and a few deselections stay correct without loading every id, and show the header checkbox as mixed.',
         ],
         commonMiss: 'Defending every line instead of saying what you would change, or proposing a full rewrite.',
         resourceLabel: 'Read the take-home review answer guide (Premium)',
@@ -183,7 +190,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         id: 'web-fundamentals-rapid-round',
         title: 'Web fundamentals rapid round',
         statement:
-          'Two engineers ask short fundamentals questions: var, let and const; bubbling and event delegation; promises and deeply nested promises; bind, call and apply; CSS specificity; and managing z-index. Answer each in under a minute with one example.',
+          'Two engineers ask short fundamentals questions: var, let and const; bubbling and event delegation; promises and deeply nested promises; bind, call and apply; CSS specificity; and managing z-index. Other accounts add the box model and copying objects. Answer each in under a minute with one example.',
         whatThisMeasures: 'Precise definitions, quick examples, and calm answers when a follow-up goes one level deeper.',
         clarifyFirst: [
           'If a question is ambiguous, say in one sentence which reading you are answering, then answer it.',
@@ -194,6 +201,7 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
           'Know the edges: the temporal dead zone for let and const, stopPropagation versus delegation, and a rejected promise with no handler.',
           'Explain specificity as a comparison of selectors, and z-index through stacking contexts rather than bigger numbers.',
           'Show how bind, call and apply each set this, and flatten nested promises by returning them or using async and await.',
+          'Name content, padding, border and margin and what box-sizing changes, and contrast a spread copy, which shares nested objects, with structuredClone.',
         ],
         commonMiss:
           'Answering with a long story instead of a definition, or guessing a syntax detail instead of saying how you would check it.',
@@ -249,80 +257,81 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
-    title: 'Scope select all across pages before you code',
-    intro: 'The select-all questions from the 2025 review depend on how selection is stored, so decide it first and say why.',
+    kicker: 'Mini walkthrough',
+    title: 'Plan the take-home table before you write code',
+    intro:
+      'The 2025 account gives the task in one line: a table of a few downloadable files and their details, from a screenshot. Settle these points first, so that you can explain each one in the review.',
     steps: [
       {
-        title: 'Define select all',
+        title: 'Read the screenshot as data',
         description:
-          'Agree whether it means the visible page, every loaded row or every file that matches the current filter. Each answer changes the data model.',
+          'List the columns and the details each file shows, decide the type of each value, and pick the field that identifies a file. Write that model down before any markup.',
       },
       {
-        title: 'Choose the selection model',
+        title: 'Choose real table markup',
         description:
-          'An explicit set of ids is simple and fine when every row is loaded. With server paging, store a mode plus exceptions, all except these ids or none except these ids, so select all, a page change and a few deselections stay correct without loading every id.',
+          'A table with a caption, header cells with scope and one row per file, so a screen reader can move by row and column. Actions are buttons or links, not clickable cells.',
       },
       {
-        title: 'Decide when file status loads',
+        title: 'Split the components',
         description:
-          'Load availability with each page if it rarely changes, fetch it for visible rows if it is expensive, and poll or subscribe only while a file\'s status can still change. Show unavailable files clearly and say whether they can be selected.',
+          'A table, a row and the cells that format each value, with data loading kept outside them, so a reviewer can change one part without reading the rest.',
       },
       {
-        title: 'Expose the mixed state',
+        title: 'Key every row by a stable file id',
         description:
-          'Set the header checkbox to checked, unchecked or mixed, with the indeterminate property on a native checkbox or aria-checked="mixed" on a custom one, so assistive technology reports a partial selection.',
+          'Rows keyed by id keep their state when the list is later sorted, filtered or paged, which is where the 2025 review went next.',
       },
       {
-        title: 'Plan for thousands of rows',
+        title: 'Cover the states',
         description:
-          'Page or virtualise the rows, keep the selection model independent of the rendered rows, and when the server needs the selection, send the mode plus exceptions instead of every id.',
+          'Loading, an error with a retry and an empty list, each visible and tested, along with long file names and keyboard-only use.',
       },
       {
-        title: 'Test the edges',
+        title: 'Leave a short README',
         description:
-          'Select all and then deselect on page two, change a filter after select all, an empty result, a file that becomes unavailable while selected, and keyboard-only selection.',
+          'What you built, what you left out and why, and what you would change with another day: the 2025 review asked the candidate what they would change.',
       },
     ],
   },
   prepPlan: {
     kicker: 'Actionable preparation',
     title: 'A 7-day CrowdStrike frontend interview preparation plan',
-    intro: 'Every day ends with code, a test, a written answer, or a question you can use in the real process.',
+    intro: 'One day for each part of the loops the accounts describe, with the take-home and its review in the middle of the week and a design day drawn from the Denmark and Canada accounts.',
     days: [
       {
         day: 'Day 1',
-        focus: 'JavaScript fundamentals: var, let and const, bubbling and delegation, promises, and bind, call and apply.',
-        artifact: 'One-minute spoken answers with one example each, recorded and timed.',
+        focus: 'Spoken fundamentals: short definitions of core JavaScript and DOM concepts, each with one example and one pitfall, said aloud.',
+        artifact: 'Twenty timed answers of a minute or less, with the ones you hesitated on marked for a second pass.',
       },
       {
         day: 'Day 2',
-        focus: 'CSS and the browser: specificity, z-index and stacking contexts, the box model, and what happens after a URL is entered.',
-        artifact: 'A one-page sheet of definitions and pitfalls.',
+        focus: 'CSS and the browser: the cascade, layout and rendering, explained aloud with a small example for each.',
+        artifact: 'A one-page sheet of definitions and pitfalls you can read in five minutes.',
       },
       {
         day: 'Day 3',
-        focus: 'Security and accessibility: XSS sinks and defences, what CORS does and does not protect, and accessibility concerns for a data table.',
-        artifact: 'Two answers you can give in two minutes each, with one code example.',
+        focus: 'Security and accessibility: the web security and accessibility basics a security company\'s UI depends on, each explained with one example.',
+        artifact: 'Two answers of two minutes each, with one code example.',
       },
       {
         day: 'Day 4',
-        focus: 'Build the files table: semantic markup, row checkboxes, availability, paging and select all with exceptions.',
-        artifact: 'A working table with tests for select all, deselecting after paging and an empty list.',
+        focus: 'The take-home table: build the open question\'s table of downloadable files from a screenshot of your own, with semantic markup and tests.',
+        artifact: 'A working table, its tests and a README of the trade-offs you made.',
       },
       {
         day: 'Day 5',
-        focus: 'Extend it: filtering and sorting in the URL, a generalised column definition, and status loading for visible rows.',
-        artifact: 'A short list of what you would change and why, ready for the review round.',
+        focus: 'Review rehearsal: have a friend read your table for 30 minutes, then add one feature they choose without rewriting what works.',
+        artifact: 'Notes on what they asked and how you answered.',
       },
       {
         day: 'Day 6',
-        focus: 'Design: a real-time dashboard with batching, downsampling and stale-data signals.',
-        artifact: 'A 20-minute design you can explain on a whiteboard.',
+        focus: 'Design round: sketch the frontend architecture of a data-heavy screen on a whiteboard and explain it in 20 minutes.',
+        artifact: 'One diagram with the data flow, the state and what you would measure.',
       },
       {
         day: 'Day 7',
-        focus: 'Manager and closing rounds: past projects, decisions you made, how you handle disagreement and how you work with other teams.',
+        focus: 'Manager and closing rounds: past projects and the decisions behind them, how you handle conflict, and how you work with other teams.',
         artifact: 'Five stories, plus questions for the recruiter about the rounds, the take-home and the rules on AI tools.',
       },
     ],
@@ -334,17 +343,17 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'What is the CrowdStrike take-home review round?',
         answer:
-          'A call in which engineers, two of them in two reports, go through the take-home you submitted: what you would change, how you would add filtering and sorting, whether the component should be generalised, when to load each file\'s status, how it copes with thousands of rows, and what select all means across pages. Prepare the trade-offs you made and one or two changes you would make yourself.',
+          'A call in which engineers, two of them in two accounts, go through the take-home you submitted and how you would develop it further. In 2022 one review talked through some pseudo code without a whiteboard, and in another the reviewers did not know React, the framework the candidate had chosen. The questions asked in the 2025 review are in the list above.',
       },
       {
         question: 'Are these the real CrowdStrike questions?',
         answer:
-          'No. They are FrontendAtlas practice versions modelled on round types in public, self-reported accounts. Some fundamentals questions repeat across accounts, but treat the exact wording and the take-home brief as unknown.',
+          'They come from candidates\' own reports, mostly Glassdoor reviews republished by Taro, and the wording here is ours; CrowdStrike has confirmed none of them. Eight subjects come up in two accounts each, the rest in one. CrowdStrike has not published the take-home brief and this guide does not reproduce it, so the open question gives the task only as the 2025 account describes it.',
       },
       {
         question: 'Is there a LeetCode round?',
         answer:
-          'The frontend accounts name no algorithm round, and two describe the technical questions as not the LeetCode kind. CrowdStrike\'s interviewing page lists coding among the possible assessments and names Codeinterview.io for live coding, and one 2025 account from Denmark had a 90-minute live coding exercise. Ask your recruiter which format your loop uses.',
+          'No frontend account describes one, and three say outright that there was no LeetCode-style or algorithm round. CrowdStrike\'s interviewing page lists coding among the possible assessments and names Codeinterview.io for live coding; a 2025 Denmark loop had a 90-minute live coding exercise, and a 2025 Canada phone screen included coding challenges. Ask your recruiter which format your loop uses.',
       },
       {
         question: 'Do I need to know Ember?',
@@ -365,137 +374,122 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   resourceLinks: {
     kicker: 'Free public practice',
-    title: 'Build the underlying skills with free practice',
-    intro: 'These public pages cover the table, loading, fundamentals, security and real-time skills used by the practice prompts.',
+    title: 'Free practice for the CrowdStrike round formats',
+    intro: 'Free tasks for the formats the accounts describe, from the take-home table\'s markup to the manager conversations.',
     items: [
       {
         label: 'Tables and accessibility',
-        description: 'Caption, header cells and scope: the markup half of the file table.',
+        description: 'Caption, header cells and scope: the markup the open take-home question starts from.',
         path: '/html/coding/html-tables-accessibility',
       },
       {
-        label: 'Infinite scroll system design',
-        description: 'Paging, windowing and request state for thousands of rows.',
-        path: '/system-design/infinite-scroll-list',
+        label: 'Fetch and render a list',
+        description: 'A small React build with the loading, error and empty states a list of records needs.',
+        path: '/react/coding/react-fetch-list-states',
       },
       {
-        label: 'Poll until with timeout and abort',
-        description: 'Polling mechanics for a file status that changes while the user waits.',
-        path: '/javascript/coding/js-poll-until',
+        label: 'Frontend fundamentals quiz',
+        description: 'A 15-minute check of browser, CSS, JavaScript and HTTP basics before the spoken round.',
+        path: '/guides/interview-blueprint/quiz',
       },
       {
-        label: 'Bubbling, capturing and event delegation',
-        description: 'One handler for many row checkboxes, and the propagation questions around it.',
-        path: '/javascript/trivia/js-event-delegation',
+        label: 'Shadow DOM and web components',
+        description: 'Custom elements and the shadow DOM, for postings that bring Web Components and Lit into an Ember app.',
+        path: '/html/trivia/html-shadow-dom',
       },
       {
-        label: 'Block scope versus function scope',
-        description: 'The var, let and const question in two of the accounts.',
-        path: '/javascript/trivia/js-block-scoped-or-function-scoped',
+        label: 'Frontend system design blueprint',
+        description: 'A method for a whiteboard design round such as the 2025 Denmark one.',
+        path: '/guides/system-design-blueprint',
       },
       {
-        label: 'The box model and box-sizing',
-        description: 'The CSS box model question in two of the accounts.',
-        path: '/css/trivia/css-box-model',
-      },
-      {
-        label: 'Promise chains and async/await',
-        description: 'Promises, chaining and the nested promises follow-up.',
-        path: '/javascript/trivia/js-promises-async-await',
-      },
-      {
-        label: 'DOM XSS sinks and safe APIs',
-        description: 'Dangerous sinks, safe DOM APIs and Trusted Types for the XSS question.',
-        path: '/javascript/trivia/js-xss-dom-sinks',
-      },
-      {
-        label: 'Handling CORS securely',
-        description: 'What CORS controls and how to fix errors without opening every origin.',
-        path: '/javascript/trivia/js-secure-cors-handling',
-      },
-      {
-        label: 'SSE versus WebSocket',
-        description: 'Choosing the transport for a real-time dashboard.',
-        path: '/javascript/trivia/sse-vs-websocket-real-time',
+        label: 'STAR stories',
+        description: 'A structure for the manager, culture and team conversations.',
+        path: '/guides/behavioral/stories',
       },
     ],
   },
   sources: {
     kicker: 'Public interview reports and official context',
     title: 'Sources and evidence limits',
-    intro:
-      'The guide is built on these public interview reports, two CrowdStrike careers pages and the two frontend postings open in October 2026. Each note says what the source can and cannot establish.',
+    intro: 'The notes say what each source adds to this guide.',
     items: [
       {
         label: CROWDSTRIKE_EM_FE_2025_LABEL,
         url: CROWDSTRIKE_EM_FE_2025_URL,
-        note: 'A re-hosted Glassdoor review of an engineering manager loop with an offer. It establishes seven rounds, a round with two engineers on fundamentals, the take-home table of downloadable files built from a screenshot, and a review of it. Manager rounds may not apply to every role.',
+        note: 'An engineering manager loop that Taro marks as an accepted offer: a recruiter screen, a behavioural hiring manager round, two managers, two engineers on fundamentals, the take-home table from a screenshot, a follow-up with two engineers and a culture interview. Its manager rounds may not apply to individual contributors.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_LIST_ROUND_2023_LABEL,
         url: CROWDSTRIKE_LIST_ROUND_2023_URL,
-        note: 'A re-hosted Glassdoor review with a placeholder date and no offer. It establishes a recruiter interview, a round with a senior engineering manager, and two engineers taking turns through textbook-style questions. Its questions, not tied to a round, include XSS and the box model.',
+        note: 'A senior loop that Taro dates only to December 2023, without an offer: a recruiter interview, technical discussion with a senior engineering manager, then two engineers taking turns through definition questions, and a generic rejection six days later.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_REVIEW_2022_LABEL,
         url: CROWDSTRIKE_REVIEW_2022_URL,
-        note: 'A re-hosted Glassdoor review without an offer, with specifics withheld under an NDA. It establishes a take-home that could be built in any language or framework, a later round to discuss the implementation, and standard JavaScript questions that were not the LeetCode kind.',
+        note: 'A senior loop without an offer, its questions withheld under an NDA: five rounds including HR, a take-home in any language or framework, and a review in which the interviewers did not know React, the candidate\'s choice.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_UI_OFFER_2022_LABEL,
         url: CROWDSTRIKE_UI_OFFER_2022_URL,
-        note: 'A re-hosted Glassdoor review from a referral that led to an offer, with specifics withheld under an NDA. It establishes a manager interview with technical questions, an interview with two engineers, a take-home, a code review of it with two engineers and a final manager talk.',
+        note: 'A referral that led to an offer, all on Zoom and with questions withheld under an NDA: a manager interview with some technical knowledge questions, two engineers on the role and values, the take-home, a code review of it with two engineers and a final talk about the team.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_UK_2024_LABEL,
         url: CROWDSTRIKE_UK_2024_URL,
-        note: 'A re-hosted Glassdoor review from the United Kingdom with a placeholder date and no offer. It establishes two stages of questions read from a list, a home task estimated at 5 hours that took 10, and a rejection whose only feedback named Ember. Its listed questions include CORS.',
+        note: 'The only London account, without an offer: two stages of questions read from a list, a home task estimated at 5 hours that took 10, and a rejection whose only feedback was about Ember.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_DENMARK_2025_LABEL,
         url: CROWDSTRIKE_DENMARK_2025_URL,
-        note: 'A re-hosted Glassdoor review without an offer. It establishes a 90-minute live coding exercise in a language of the candidate\'s choice and a whiteboard design whose requirements were sent in advance. It also lists a question on frontend optimization.',
+        note: 'The only Denmark account, without an offer: a 90-minute live coding exercise in a language of the candidate\'s choice, then a whiteboard design whose requirements were sent in advance.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_CANADA_2025_LABEL,
         url: CROWDSTRIKE_CANADA_2025_URL,
-        note: 'A re-hosted Glassdoor review with a placeholder date and wording that reads as heavily rewritten. It establishes a recruiter screening, a technical phone screen with coding challenges and architectural discussions, and a real-time dashboard design question in an unstated round.',
+        note: 'The only Canada account, dated only to January 2025 and worded as if heavily rewritten: a recruiter screening, a technical phone screen with coding challenges and architectural discussions, and one design question in an unstated round.',
         kind: 'report',
       },
       {
         label: CROWDSTRIKE_BLIND_2024_LABEL,
         url: CROWDSTRIKE_BLIND_2024_URL,
-        note: 'A short first-person thread. The poster wrote that the recruiter described a trivia-style round on JavaScript, CSS and frontend fundamentals, and confirmed it afterwards. Later replies under the same name mention a take-home and a discussion of it, not attributed to the poster.',
+        note: 'A senior candidate\'s own thread: before the interview the recruiter described a trivia-style round on JavaScript, CSS and frontend fundamentals, and afterwards the poster confirmed it. Replies in 2025 under the same name mention a take-home and a discussion of it, but the page does not attribute them to the poster.',
+        kind: 'report',
+      },
+      {
+        label: CROWDSTRIKE_BLIND_ONSITE_2022_LABEL,
+        url: CROWDSTRIKE_BLIND_ONSITE_2022_URL,
+        note: 'A commenter who declined an offer at the Senior level, answering a 2022 question about the senior frontend loop: a screening on JavaScript in depth, then an on-site with two UI builds and quizzes on performance and JavaScript patterns. The interview date is not given.',
         kind: 'report',
       },
       {
         label: 'CrowdStrike Careers: Interviewing at CrowdStrike',
         url: CROWDSTRIKE_INTERVIEWING_URL,
-        note: 'Official page for all roles, last modified on 20 October 2026. It lists eight steps from application to background check and names coding, system design, a business case, a presentation or a mock customer call as possible assessments. It has no frontend-specific text.',
+        note: 'CrowdStrike\'s page for all roles, last modified on 20 October 2026: eight steps from application to background check, possible assessments from coding to a mock customer call, Codeinterview.io for live coding, and no AI unless you are asked to use it. Nothing on it is specific to frontend roles.',
         kind: 'official',
       },
       {
         label: 'CrowdStrike Careers: Emerging Talent Programs',
         url: CROWDSTRIKE_EMERGING_TALENT_URL,
-        note: 'Official page for internships and new graduate roles. It describes up to three rounds of interviews and a technical assessment for technical positions. It does not describe experienced frontend loops.',
+        note: 'CrowdStrike\'s page for internships and new graduate roles: up to three interview rounds, and a technical assessment for technical positions. It does not cover experienced frontend loops.',
         kind: 'official',
       },
       {
         label: 'CrowdStrike: Sr. Engineer - Front End posting (R30396)',
         url: CROWDSTRIKE_FALCON_COMPLETE_POSTING_URL,
-        note: 'Official posting for a remote role in the United Kingdom on the Falcon Complete Core Engineering team, read in October 2026. It names Ember and React, Playwright, QUnit or Mocha, accessible interfaces and very large amounts of data; it says nothing about the interview.',
+        note: 'A remote United Kingdom role on Falcon Complete Core Engineering, read in October 2026: Ember and React, Playwright, QUnit or Mocha, accessible interfaces and very large amounts of data. It says nothing about the interview.',
         kind: 'official',
       },
       {
         label: 'CrowdStrike: Sr. Engineer, Frontend - Data Platform Experiences posting (R30313)',
         url: CROWDSTRIKE_DATA_PLATFORM_POSTING_URL,
-        note: 'Official posting for a hybrid role in the United Kingdom, read in October 2026. It describes Ember at the core with Web Components and Lit coming in, React mostly on AI-adjacent surfaces inside Web Component hosts, TypeScript, data visualisation and UI on top of LLMs and agents.',
+        note: 'A hybrid London role on the new Data Platform Experiences team, read in October 2026: Ember at the core with Web Components and Lit coming in, React on AI-adjacent surfaces inside Web Component hosts, TypeScript, charts and dashboards, and UI on top of LLMs and agents.',
         kind: 'official',
       },
     ],
@@ -504,15 +498,15 @@ export const CROWDSTRIKE_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full CrowdStrike practice set',
     copy:
-      'Premium unlocks the downloadable-files table task with its Pressure Mode, the take-home review answer guide, the real-time model training dashboard case and the wider premium library for the same skills.',
+      'Premium opens every locked CrowdStrike question with its practice task and answer guide, and the rest of the Premium library.',
     buttonLabel: 'Unlock the full CrowdStrike practice set',
     src: 'company_preview_crowdstrike',
   },
   about: [
     'CrowdStrike frontend interview preparation',
-    'Frontend take-home and review round',
+    'CrowdStrike frontend take-home and review round',
     'Web fundamentals and browser security interview questions',
-    'Select all across pages in a data table',
+    'Downloadable files table take-home',
   ],
   indexAnchorLabel: 'CrowdStrike frontend interview questions',
 };

@@ -86,7 +86,7 @@ describe('ShowcaseInterviewPanelComponent', () => {
       'Google', 'Meta', 'Amazon', 'Uber',
       'ElevenLabs', 'Agoda', 'Capital One', 'Intuit', 'Revolut', 'Stripe', 'GitLab', 'Walmart',
     ]);
-    expect(options[4].querySelector('.interview-option__signature')?.textContent).toBe('90-minute assessment');
+    expect(options[4].querySelector('.interview-option__signature')?.textContent).toBe('Timed coding assessment');
     expect(options[9].getAttribute('href')).toBe('/companies?company=stripe&from=home');
 
     const all = menu.querySelector<HTMLAnchorElement>('.interview-menu__all') as HTMLAnchorElement;

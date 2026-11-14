@@ -51,8 +51,8 @@
       "company": "agoda",
       "title": "Agoda coding interview",
       "round": "coding-interview",
-      "summary": "Public accounts of Agoda's coding interview describe 60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, then questions on test cases and the pull-request process. This rehearsal gives the two problems 45 minutes, so the questions still fit in the hour.",
-      "planNote": "The round runs 60 minutes; its last 15 go to questions on test cases and pull requests.",
+      "summary": "Public accounts of Agoda's coding interview describe 60 minutes on HackerRank with an engineer: two easy-to-medium DSA problems in JavaScript, then a few spoken follow-up questions. This rehearsal gives the two problems 45 minutes, so the questions still fit in the hour.",
+      "planNote": "The round runs 60 minutes, with a few spoken follow-up questions after the problems.",
       "minutes": 45,
       "order": "sequential",
       "items": [

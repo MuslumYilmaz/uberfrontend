@@ -93,6 +93,8 @@ export type CompanyPlanDataCompany = {
   readonly sourceCount?: number;
   /** How many practice prompts the company's guide carries; the answer guides past the open ones are Premium. */
   readonly promptCount?: number;
+  /** How many reported questions the guide lists, for a guide with a question list; the ones after the first are locked. */
+  readonly questionCount?: number;
   readonly variants: readonly CompanyPlanDataList[];
 };
 
@@ -159,6 +161,8 @@ export type PlannedCompany = {
   readonly sourceCount: number;
   /** The guide's practice prompts; zero for a guide without them. */
   readonly promptCount: number;
+  /** The guide's reported questions; zero for a guide without a question list. */
+  readonly questionCount: number;
   readonly list: { readonly id: string; readonly title: string; readonly chosen: boolean; readonly sourceCount: number; readonly unordered?: true };
   /** "These rounds come from Bangkok." and the questions that switch to the other lists. */
   readonly switchLine: { readonly text: string; readonly options: readonly { readonly listId: string; readonly ask: string }[] } | null;
@@ -659,6 +663,7 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
     checkedAt: company.checkedAt,
     sourceCount: company.sourceCount ?? list.sourceCount,
     promptCount: company.promptCount ?? 0,
+    questionCount: company.questionCount ?? 0,
     list: { id: list.id, title: list.title, chosen: switched, sourceCount: list.sourceCount, ...(list.unordered ? { unordered: true as const } : {}) },
     switchLine: company.variants.length > 1
       ? {
@@ -693,8 +698,10 @@ export function buildCompanyPlan(data: CompanyPlanData, input: CompanyPlanInput)
 
   const warnings: string[] = [];
   for (const { company, list, switched } of chosen) {
+    // Said of the rounds this plan follows: another list of the same company may come from this level.
     if (!switched && list.reported && !list.reported.levels.includes(input.level)) {
-      warnings.push(`No report from a ${LEVEL_WORDS[input.level]} candidate at ${company.name}. These accounts come from ${list.reported.who}. Confirm the loop with your recruiter.`);
+      const rounds = chosen.length > 1 ? `the ${company.name} rounds` : 'these rounds';
+      warnings.push(`None of the accounts behind ${rounds} comes from a ${LEVEL_WORDS[input.level]} candidate: they come from ${list.reported.who}. Confirm the loop with your recruiter.`);
     }
     if (list.newestReport && olderThanCutoff(list.newestReport, input.today)) {
       const subject = chosen.length > 1 ? `the ${company.name} rounds` : 'these rounds';

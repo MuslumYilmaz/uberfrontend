@@ -3,12 +3,22 @@ import type { RehearsalDefinition } from '../../core/models/rehearsal.model';
 import { isPremiumRoute } from '../../core/utils/premium-route.util';
 import { rehearsalHeading } from '../../features/coding/rehearsal/rehearsal-panel.component';
 import { COMPANY_BRANDS } from '../company-branding';
-import { COMPANY_INTERVIEW_PROCESSES } from './company-interview-processes';
+import { COMPANY_INTERVIEW_PROCESSES, type InterviewProcessSource } from './company-interview-processes';
 import { COMPANY_PLAN_ROUNDS } from './company-plan-rounds';
 
 // Snippet-only, templated or brief-hosting sites: never evidence for a public process table.
 const BANNED_HOSTS = [/(^|\.)glassdoor\./, /(^|\.)1point3acres\.com$/, /(^|\.)prepfully\.com$/, /(^|\.)dataford\.io$/, /(^|\.)github\.com$/];
 const ABSOLUTE_WORDS = /\b(always|never|guaranteed|every candidate)\b/i;
+
+function expectReadableSource(source: InterviewProcessSource, checkedMonth: string): void {
+  const url = new URL(source.url);
+  expect(url.protocol).withContext(source.url).toBe('https:');
+  expect(BANNED_HOSTS.some((host) => host.test(url.hostname))).withContext(source.url).toBeFalse();
+  expect(source.date).withContext(source.url).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
+  expect(source.date <= checkedMonth).withContext(`${source.url} dated after the check`).toBeTrue();
+  expect(['official', 'report']).toContain(source.kind);
+  expect(source.label.trim().length).withContext(source.url).toBeGreaterThan(0);
+}
 
 describe('company interview processes', () => {
   const entries = Object.entries(COMPANY_INTERVIEW_PROCESSES);
@@ -73,16 +83,12 @@ describe('company interview processes', () => {
             expect(stage.practice.fragment).withContext(where).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
           }
 
-          for (const source of stage.sources) {
-            const url = new URL(source.url);
-            expect(url.protocol).withContext(source.url).toBe('https:');
-            expect(BANNED_HOSTS.some((host) => host.test(url.hostname))).withContext(source.url).toBeFalse();
-            expect(source.date).withContext(source.url).toMatch(/^\d{4}-(0[1-9]|1[0-2])$/);
-            expect(source.date <= checkedMonth).withContext(`${source.url} dated after the check`).toBeTrue();
-            expect(['official', 'report']).toContain(source.kind);
-            expect(source.label.trim().length).withContext(source.url).toBeGreaterThan(0);
-          }
+          for (const source of stage.sources) expectReadableSource(source, checkedMonth);
         }
+      }
+      // The question list is held to the stage table's source rules.
+      for (const question of [...(process.questions ?? []), ...(process.behaviouralQuestions ?? [])]) {
+        for (const source of question.sources) expectReadableSource(source, checkedMonth);
       }
     });
   }

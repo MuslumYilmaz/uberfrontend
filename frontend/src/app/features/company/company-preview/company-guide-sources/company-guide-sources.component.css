@@ -1,0 +1,70 @@
+:host {
+  display: block;
+}
+
+/* Small and quiet on purpose: the list is there for attribution, not as the page's next step. */
+.guide-sources {
+  padding: 18px 0 0;
+  border-top: 1px solid var(--uf-border-subtle);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--uf-text-secondary);
+}
+
+.guide-sources p {
+  margin: 0;
+}
+
+.guide-sources__summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.guide-sources__summary h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uf-text-secondary);
+}
+
+.guide-sources__boundary,
+.guide-sources__list li {
+  display: grid;
+  gap: 4px;
+  max-width: 76ch;
+}
+
+.guide-sources__boundary {
+  margin: 4px 0 14px;
+}
+
+.guide-sources__boundary-title,
+.guide-sources__label {
+  font-weight: 600;
+  color: var(--uf-text-primary);
+}
+
+.guide-sources .guide-sources__gate,
+.guide-sources .guide-sources__scope {
+  margin-bottom: 12px;
+}
+
+.guide-sources__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-sources a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.guide-sources__who {
+  color: var(--uf-text-secondary);
+}

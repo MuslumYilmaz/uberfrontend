@@ -138,9 +138,8 @@ const minutesLabel = (minutes: number) => {
  * A behavioural question practised in writing: pick one of the company's questions, tell one story in the STAR or
  * CAR parts (a view in one field, a "How would you…" as an approach and a time it was done), read what the text
  * itself shows (length against the length we suggest, "we" against "I", a number in the result), then tick the checks.
- * On a gated guide a visitor without an account practises the first question; the page projects its free account card
- * under the list ([drillGate]). The draft stays on this device and is read once the page is in the browser, so the
- * server HTML and the first render match.
+ * The draft stays on this device and is read once the page is in the browser, so the server HTML and the first render
+ * match.
  */
 @Component({
   selector: 'app-behavioral-drill',
@@ -151,17 +150,12 @@ const minutesLabel = (minutes: number) => {
 })
 export class BehavioralDrillComponent {
   private readonly drillSignal = signal<BehavioralDrill | null>(null);
-  private readonly open = signal(Number.POSITIVE_INFINITY);
 
   @Input({ required: true }) set drill(value: BehavioralDrill) {
     this.drillSignal.set(value);
   }
   /** The guide's slug: ids on the page and the draft's key. */
   @Input({ required: true }) company!: string;
-  /** How many questions this reader can pick, in order; the rest show under the blur. */
-  @Input() set openQuestions(value: number) {
-    this.open.set(value);
-  }
 
   private readonly picked = signal<string | null>(null);
   readonly shape = signal<BehavioralDrillShape>('star');
@@ -170,11 +164,11 @@ export class BehavioralDrillComponent {
   readonly questions = computed(() => this.drillSignal()?.questions ?? []);
   readonly note = computed(() => this.drillSignal()?.note ?? '');
 
-  /** The picked question while it is open to this reader, otherwise the first one. */
+  /** The picked question while the drill still holds it, otherwise the first one. */
   readonly question = computed<BehavioralDrillQuestion | null>(() => {
     const questions = this.questions();
     const index = questions.findIndex((question) => question.id === this.picked());
-    return questions[index >= 0 && !this.locked(index) ? index : 0] ?? null;
+    return questions[index >= 0 ? index : 0] ?? null;
   });
 
   /** A story is told in the parts of the shape picked; a view in one field; a "How would you…" as an approach and an example. */
@@ -226,10 +220,6 @@ export class BehavioralDrillComponent {
       this.parts();
       afterNextRender(() => this.fields?.forEach((field) => fit(field.nativeElement)), { injector: this.injector });
     });
-  }
-
-  locked(index: number): boolean {
-    return index >= this.open();
   }
 
   id(suffix: string): string {

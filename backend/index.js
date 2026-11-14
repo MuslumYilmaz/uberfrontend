@@ -314,6 +314,7 @@ app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
 // ---- Company plan routes ----
 app.use('/api/users/me/company-plan', require('./routes/company-plan'));
+app.use('/api/users/me/free-unlock', require('./routes/free-unlock'));
 
 // ---- Progress routes ----
 // Authenticated-only manual solved sync. Guest solve attempts are intentionally not persisted.

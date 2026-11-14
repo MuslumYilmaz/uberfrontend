@@ -1039,10 +1039,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   /** Whether this visitor meets a lock on the list's task at that index. */
   private lockedAt(index: number): boolean {
+    const id = this.practice ? this.practice.items[index]?.id : this.allQuestions[index]?.id;
     const access = this.practice
-      ? this.practice.items[index]?.access ?? this.findQuestionById(this.practice.items[index]?.id ?? '')?.access
+      ? this.practice.items[index]?.access ?? this.findQuestionById(id ?? '')?.access
       : this.allQuestions[index]?.access;
-    return !!access && isQuestionLockedForTier({ access }, this.auth.user());
+    return !!access && isQuestionLockedForTier({ access, id }, this.auth.user());
   }
 
   private adjacentPracticeItem(offset: 1 | -1) {

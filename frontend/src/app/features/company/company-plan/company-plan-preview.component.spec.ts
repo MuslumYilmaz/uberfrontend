@@ -1,3 +1,4 @@
+import type { FreeUnlock } from '../../../core/models/free-unlock.model';
 import { computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
@@ -72,7 +73,10 @@ describe('CompanyPlanPreviewComponent', () => {
   let navigate: jasmine.Spy;
   let plans: { save: jasmine.Spy; track: jasmine.Spy; loadData: jasmine.Spy; saved: ReturnType<typeof signal<any>>; answers: any; buildPlan: any };
 
-  function setup(params: Record<string, string>, options: { viewer?: Viewer; saved?: CompanyPlanAnswers | null; data?: CompanyPlanData | null } = {}) {
+  function setup(
+    params: Record<string, string>,
+    options: { viewer?: Viewer; saved?: CompanyPlanAnswers | null; data?: CompanyPlanData | null; freeUnlock?: FreeUnlock } = {},
+  ) {
     const viewer = options.viewer ?? 'guest';
     const saved = signal<any>(options.saved ?? null);
     plans = {
@@ -91,7 +95,9 @@ describe('CompanyPlanPreviewComponent', () => {
         today: TODAY,
       }),
     };
-    const user = viewer === 'guest' ? null : { _id: 'a', entitlements: viewer === 'premium' ? { pro: { status: 'lifetime' } } : { pro: { status: 'none' } } };
+    const user = viewer === 'guest'
+      ? null
+      : { _id: 'a', entitlements: viewer === 'premium' ? { pro: { status: 'lifetime' } } : { pro: { status: 'none' } }, freeUnlock: options.freeUnlock ?? null };
     TestBed.configureTestingModule({
       imports: [CompanyPlanPreviewComponent],
       providers: [
@@ -120,7 +126,7 @@ describe('CompanyPlanPreviewComponent', () => {
       setup(ELEVENLABS);
       expect(text('h1')).toBe('Your ElevenLabs plan at a glance');
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'React, from reports']);
-      expect(text('.preview__evidence')).toBe('Rounds and tasks from 7 public sources, last checked Oct 22, 2026. These are practice versions, not leaked questions.');
+      expect(text('.preview__evidence')).toBe('Rounds and tasks from 25 public sources, last checked Nov 3, 2026. These are practice versions, not leaked questions.');
       expect(host.textContent).not.toContain('Which framework');
     });
 
@@ -152,6 +158,18 @@ describe('CompanyPlanPreviewComponent', () => {
       // "Fix async race in `fetchWithCache`" shows its code as code.
       expect(rows.map((row) => row.querySelector('code')?.textContent)).toContain('fetchWithCache');
       expect(rows.some((row) => row.textContent?.includes('`'))).toBeFalse();
+    });
+
+    it('opens the Premium task a free account opened with its free unlock, and counts it with the open ones', () => {
+      setup(ELEVENLABS, { viewer: 'free' });
+      const locked = fixture.componentInstance.restTasks().find((row) => row.locked)!;
+      const count = (fact: string) => fact.match(/(\d+) open now, (\d+) with Premium/)!.slice(1).map(Number);
+      const [open, premium] = count(fixture.componentInstance.facts()[0]);
+      TestBed.resetTestingModule();
+      setup(ELEVENLABS, { viewer: 'free', freeUnlock: { company: 'elevenlabs', questionId: 'q', practiceId: locked.task.id, unlockedAt: '2026-11-13T00:00:00.000Z' } });
+      const row = fixture.componentInstance.restTasks().find((candidate) => candidate.task.id === locked.task.id)!;
+      expect(row.locked).toBeFalse();
+      expect(count(fixture.componentInstance.facts()[0])).toEqual([open + 1, premium - 1]);
     });
 
     it('names every task in the rest of the plan, locks the Premium ones with their round, source and a lock, and leaves free ones open', () => {
@@ -246,7 +264,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(facts[0]).toMatch(new RegExp(`^6 tasks for next week, about \\d+ hours?( \\d+ minutes)?: ${open} open now, ${6 - open} with Premium(, plus \\d free warm-ups? outside the plan)?$`));
       expect(facts[1]).toMatch(/^All 5 reported rounds in order, (with their tasks and your progress|tasks on \d of them, and your progress)$/);
       expect(facts).toContain(companySetLine([{ name: 'ElevenLabs', counts: set }]));
-      expect(facts.some((fact) => fact.includes(`The full ElevenLabs set: ${set.all} questions`))).toBeTrue();
+      expect(facts.some((fact) => fact.includes(`The FrontendAtlas ElevenLabs practice set: ${set.all} questions`))).toBeTrue();
       expect(facts[facts.length - 1]).toBe(`Premium opens all ${PREMIUM_QUESTION_COUNT} Premium questions, including ${DATA.general.premiumCounts.react} React tasks and ${DATA.general.premiumCounts.systemDesign} system design walkthroughs`);
     });
 
@@ -330,11 +348,13 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(all('company-plan-open-task').length).toBe(3);
     });
 
-    it('the night before an interview, points a phone at the guide to read', () => {
+    it('the night before an interview, points a phone at the reported questions of a guide that lists them', () => {
       setup({ ...ELEVENLABS, when: 'tomorrow' });
-      expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ElevenLabs guide: its rounds and open prompts.');
-      // The guide's five prompts keep three open; Premium opens the other two answer guides, which read on a phone.
-      expect(text('.preview__phone-note')).toContain('Premium also opens the answer guides for prompts 4 and 5 there, readable on this phone tonight.');
+      expect(text('.preview__phone-note')).toContain('Tonight on a phone, read the ElevenLabs guide: its rounds and its open reported question.');
+      // The first reported question is open; Premium opens the rest, which read on a phone.
+      const locked = DATA.companies['elevenlabs'].questionCount! - 1;
+      expect(text('.preview__phone-note')).toContain(`Premium also opens its other ${locked} reported questions there, readable on this phone tonight.`);
+      expect(text('.preview__phone-note')).not.toContain('prompt');
       expect(testId('company-plan-phone-note')?.querySelector('a')?.getAttribute('href')).toBe('/companies/elevenlabs/preview');
     });
   });
@@ -421,8 +441,9 @@ describe('CompanyPlanPreviewComponent', () => {
     });
 
     it('builds the plan in the chosen framework, says whose choice it is, and offers the way back to the reports', () => {
-      setup({ ...ELEVENLABS, framework: 'angular' });
-      expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'Angular, your choice']);
+      // This week's ElevenLabs plan holds a task with an Angular version.
+      setup({ ...ELEVENLABS, when: 'this-week', framework: 'angular' });
+      expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['This week', 'Senior', 'Angular, your choice']);
       const plan = fixture.componentInstance.plan()!;
       expect(plan.tasks.some((task) => task.tech === 'angular')).toBeTrue();
       expect(plan.tasks.filter((task) => task.family).every((task) => task.tech === 'angular')).toBeTrue();
@@ -431,7 +452,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(line?.textContent).toContain('Tasks with an Angular version, and the extra practice, follow Angular, your choice; the rest stay as reported.');
       const back = Array.from(line?.querySelectorAll('button') ?? []).find((button) => button.textContent === 'Back to the reports') as HTMLButtonElement;
       back.click();
-      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'next-week', level: 'senior' });
+      expect(plans.save).toHaveBeenCalledOnceWith({ companies: [{ slug: 'elevenlabs' }], when: 'this-week', level: 'senior' });
       expect(navigate.calls.mostRecent().args[1].queryParams['framework']).toBeUndefined();
 
       testId('company-plan-build')?.click();
@@ -445,12 +466,12 @@ describe('CompanyPlanPreviewComponent', () => {
 
     it('warns about a level the accounts do not cover and about old reports', () => {
       setup({ companies: 'agoda', when: 'next-week', level: 'junior' });
-      expect(all('company-plan-warning')[0].textContent).toContain('No report from a junior candidate at Agoda.');
+      expect(all('company-plan-warning')[0].textContent).toContain('None of the accounts behind these rounds comes from a junior candidate');
     });
 
     it('warns when the newest report behind the rounds is old', () => {
-      setup({ companies: 'booking-com', when: 'next-week', level: 'mid' });
-      expect(all('company-plan-warning').some((warning) => warning.textContent?.includes('The newest report behind these rounds is from July 2023.'))).toBeTrue();
+      setup({ companies: 'zalando', when: 'next-week', level: 'mid' });
+      expect(all('company-plan-warning').some((warning) => warning.textContent?.includes('The newest report behind these rounds is from July 2024.'))).toBeTrue();
     });
   });
 

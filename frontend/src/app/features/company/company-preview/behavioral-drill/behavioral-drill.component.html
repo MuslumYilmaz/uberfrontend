@@ -12,7 +12,7 @@
     <fieldset class="drill__group">
       <legend class="drill__legend">Pick a question</legend>
       <ul class="drill__questions">
-        @for (item of questions(); track item.id; let i = $index) {
+        @for (item of questions(); track item.id) {
           <li class="drill__question">
             <label class="drill__choice">
               <input
@@ -20,23 +20,14 @@
                 [name]="id('question')"
                 [value]="item.id"
                 [checked]="question()?.id === item.id"
-                [disabled]="locked(i)"
                 (change)="pick(item.id)"
                 [attr.data-testid]="'behavioral-drill-question-' + item.id" />
-              @if (locked(i)) {
-                <span class="drill__locked premium-locked" data-nosnippet inert>
-                  {{ item.text }} <span class="drill__source">{{ item.source }}</span>
-                </span>
-                <span class="drill__tag">Free account</span>
-              } @else {
-                <span>{{ item.text }} <span class="drill__source">{{ item.source }}</span></span>
-              }
+              <span>{{ item.text }} <span class="drill__source">{{ item.source }}</span></span>
             </label>
           </li>
         }
       </ul>
     </fieldset>
-    <ng-content select="[drillGate]"></ng-content>
 
     @if (question(); as current) {
       @if (kind() === 'story') {

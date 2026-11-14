@@ -89,7 +89,7 @@ export class PricingComponent implements OnInit {
     const answers = this.companyPlans.answers();
     if (!data || !answers || isProActive(this.auth.user())) return null;
     const plan = this.companyPlans.buildPlan(data, answers);
-    return plan.general ? null : companyPlanPricingCopy(data, answers, plan);
+    return plan.general ? null : companyPlanPricingCopy(data, answers, plan, this.auth.user()?.freeUnlock?.practiceId ?? null);
   });
 
   constructor(
