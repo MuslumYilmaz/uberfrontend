@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   Injector,
   PLATFORM_ID,
   TransferState,
@@ -13,8 +14,9 @@ import {
   output,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
-import { isPlatformServer } from '@angular/common';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
@@ -82,6 +84,13 @@ export function practiceTaskId(path: string): string {
   return path.startsWith('/guides/') ? path : path.slice(path.lastIndexOf('/') + 1);
 }
 
+/** The trailer's three scenes and the second each starts at; `scripts/trailer/` captures the screens and builds it. */
+const TRAILER_STEPS: readonly { readonly text: string; readonly from: number }[] = [
+  { text: 'A Premium task in the real editor, with a live preview.', from: 0 },
+  { text: 'Run the checks: each failing check says what failed.', from: 5.6 },
+  { text: 'Pressure Mode: the interviewer adds a constraint every round.', from: 11.6 },
+];
+
 /** "a", "a and b", "a, b and c". */
 function listOf(parts: readonly string[]): string {
   return parts.length < 2 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
@@ -146,8 +155,70 @@ export class CompanyQuestionListComponent {
   readonly choosing = signal<string | null>(null);
   private readonly injector = inject(Injector);
   private readonly fragment = toSignal(inject(ActivatedRoute, { optional: true })?.fragment ?? of(null), { initialValue: null });
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  readonly trailerSource = '/assets/media/premium-trailer.mp4';
+  readonly trailerPoster = '/assets/media/premium-trailer-poster.jpg';
+  readonly trailerSteps = TRAILER_STEPS;
+  /** The scene on screen, so its caption stands out. */
+  readonly trailerStep = signal(0);
+  /** With reduced motion or Save-Data the trailer does not play by itself: it shows its controls and waits. */
+  readonly trailerManual = signal(false);
+  /** The trailer is a screen away from view. A browser fetches a poster as soon as the page has one, so it waits for this. */
+  readonly trailerNear = signal(false);
+  private readonly trailer = viewChild<ElementRef<HTMLVideoElement>>('trailer');
 
   constructor() {
+    // The trailer plays while half of it is in view and pauses out of it; the video loads only when it plays.
+    effect((onCleanup) => {
+      const video = this.trailer()?.nativeElement;
+      if (!video || !this.isBrowser) return;
+      const observable = typeof IntersectionObserver !== 'undefined';
+      const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+      const manual = !observable || saveData || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+      untracked(() => {
+        this.trailerManual.set(manual);
+        if (!observable) this.trailerNear.set(true);
+      });
+      // A video the app creates gets the muted attribute but not the property, and autoplay needs the property.
+      video.muted = true;
+      const onTime = () => {
+        const step = TRAILER_STEPS.reduce((current, candidate, index) => (video.currentTime >= candidate.from ? index : current), 0);
+        if (step !== untracked(this.trailerStep)) this.trailerStep.set(step);
+      };
+      let played = false;
+      const onPlaying = () => {
+        if (played) return;
+        played = true;
+        this.analytics.track('company_trailer_played', { company: this.slug(), viewer: this.viewer(), manual });
+      };
+      video.addEventListener('timeupdate', onTime);
+      video.addEventListener('playing', onPlaying);
+      let near: IntersectionObserver | null = null;
+      if (observable) {
+        near = new IntersectionObserver(([entry]) => {
+          if (!entry?.isIntersecting) return;
+          this.trailerNear.set(true);
+          near?.disconnect();
+        }, { rootMargin: '100% 0px' });
+        near.observe(video);
+      }
+      let observer: IntersectionObserver | null = null;
+      if (!manual) {
+        observer = new IntersectionObserver(([entry]) => {
+          if (entry?.isIntersecting) void video.play().catch(() => this.trailerManual.set(true));
+          else video.pause();
+        }, { threshold: 0.5 });
+        observer.observe(video);
+      }
+      onCleanup(() => {
+        near?.disconnect();
+        observer?.disconnect();
+        video.removeEventListener('timeupdate', onTime);
+        video.removeEventListener('playing', onPlaying);
+      });
+    });
+
     // A link to a row behind "Show all" (a round's count in the process table, a shared address) opens the list there.
     effect(() => {
       const fragment = this.fragment();
@@ -243,6 +314,12 @@ export class CompanyQuestionListComponent {
     if (!tasks.size) return null;
     const solved = [...tasks].filter((task) => practised.has(task)).length;
     return { solved, total: tasks.size };
+  });
+
+  /** The same count as a share, for the bar under the line. */
+  readonly progressPercent = computed(() => {
+    const count = this.progress();
+    return count ? Math.round((count.solved / count.total) * 100) : 0;
   });
 
   /** Said of this list's tasks, so it does not read as another count of the company's set or of a plan. */

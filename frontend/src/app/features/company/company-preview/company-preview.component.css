@@ -411,30 +411,86 @@
   gap: 5px;
 }
 
-.company-prep-gate {
-  max-width: 72ch;
-  font-size: 14px;
-  color: var(--uf-text-primary);
+/* The 7-day plan's days as small cards in a grid: the day, its focus, and what it holds. */
+.company-prep-sequence--days {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
 }
 
-/* Read as links, like the question list's, not as the sentence around them. */
-.company-prep-gate a {
+.company-prep-sequence--days li {
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-text-primary) 10%);
+}
+
+.company-prep-sequence--days > li > strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--uf-accent);
+}
+
+.company-prep-sequence--days .company-prep-sequence__title {
+  font-size: 14px;
+}
+
+.company-prep-sequence--days .company-prep-sequence__body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--uf-text-secondary);
+}
+
+/* Locked, a day's text stays in the page for search as one blurred line. */
+.company-prep-sequence--days .company-prep-sequence__body.company-locked {
+  max-height: 1.5em;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.company-prep-gate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--uf-border-subtle);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--uf-text-secondary);
+}
+
+.company-prep-gate p {
+  margin: 0;
+  max-width: 64ch;
+}
+
+.company-prep-gate__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+/* Read as links, like the question list's, not as the sentence around them. Buttons keep their own colours. */
+.company-prep-gate a:not([faButton]) {
   color: var(--uf-text-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-/* A Premium prep section shows a few blurred lines that fade out; its text stays in the page for search. */
+/* A Premium prep section shows one blurred line under its title; its text stays in the page for search. */
 .company-prep-body {
   display: grid;
   gap: 10px;
 }
 
 .company-prep-body--locked {
-  max-height: 7.5rem;
+  max-height: 1.75rem;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, currentColor 45%, transparent);
-  mask-image: linear-gradient(to bottom, currentColor 45%, transparent);
   pointer-events: none;
 }
 
@@ -664,6 +720,19 @@
   font-size: 14px;
   overflow-wrap: normal;
   word-break: normal;
+}
+
+/* The words after the company name: in the link's name, out of the chip. */
+.company-related-guides__rest {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .openai-cta,

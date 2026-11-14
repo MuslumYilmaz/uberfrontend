@@ -154,6 +154,78 @@ describe('CompanyQuestionListComponent', () => {
     expect(group.querySelector('.cq-behavioural__intro')?.textContent?.trim()).toBe('Open to everyone: 1 question from one public source.');
   });
 
+  describe('the Premium trailer in the offer', () => {
+    type Callback = (entries: Partial<IntersectionObserverEntry>[]) => void;
+    /** The trailer's observers: `near` a screen ahead of view (it has a root margin), `inView` half in view. */
+    let observers: { near?: Callback; inView?: Callback };
+    let realObserver: typeof IntersectionObserver;
+    beforeEach(() => {
+      observers = {};
+      realObserver = window.IntersectionObserver;
+      (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = class {
+        constructor(callback: Callback, options?: IntersectionObserverInit) { observers[options?.rootMargin ? 'near' : 'inView'] = callback; }
+        observe(): void {}
+        disconnect(): void {}
+      };
+    });
+    afterEach(() => {
+      (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = realObserver;
+    });
+    const video = (host: HTMLElement) => host.querySelector('[data-testid="company-question-trailer"] video') as HTMLVideoElement;
+
+    it('shows a visitor a silent trailer that loads nothing, not even its poster, before it comes near', async () => {
+      const host = create('guest');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(video(host).getAttribute('preload')).toBe('none');
+      expect(video(host).hasAttribute('muted')).toBeTrue();
+      expect(video(host).hasAttribute('autoplay')).toBeFalse();
+      expect(video(host).hasAttribute('poster')).withContext('poster before it is near').toBeFalse();
+      observers.near!([{ isIntersecting: true }]);
+      fixture.detectChanges();
+      expect(video(host).getAttribute('poster')).toBe('/assets/media/premium-trailer-poster.jpg');
+      expect(video(host).querySelector('source')?.getAttribute('src')).toBe('/assets/media/premium-trailer.mp4');
+      expect(Array.from(host.querySelectorAll('.cq-offer__steps li'), (li) => li.textContent?.trim())).toEqual([
+        'A Premium task in the real editor, with a live preview.',
+        'Run the checks: each failing check says what failed.',
+        'Pressure Mode: the interviewer adds a constraint every round.',
+      ]);
+    });
+
+    it('plays while half of it is in view and pauses out of it', async () => {
+      const play = spyOn(HTMLMediaElement.prototype, 'play').and.returnValue(Promise.resolve());
+      const pause = spyOn(HTMLMediaElement.prototype, 'pause');
+      const host = create('guest');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(observers.inView).withContext('observed').toBeDefined();
+      expect(video(host).muted).toBeTrue();
+      observers.inView!([{ isIntersecting: true }]);
+      expect(play).toHaveBeenCalledTimes(1);
+      observers.inView!([{ isIntersecting: false }]);
+      expect(pause).toHaveBeenCalledTimes(1);
+    });
+
+    it('waits with its controls and poster for a reader who asked for reduced motion', async () => {
+      spyOn(window, 'matchMedia').and.returnValue({ matches: true } as MediaQueryList);
+      const play = spyOn(HTMLMediaElement.prototype, 'play').and.returnValue(Promise.resolve());
+      const host = create('guest');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(video(host).hasAttribute('controls')).toBeTrue();
+      expect(observers.inView).toBeUndefined();
+      observers.near!([{ isIntersecting: true }]);
+      fixture.detectChanges();
+      expect(video(host).getAttribute('poster')).toBe('/assets/media/premium-trailer-poster.jpg');
+      expect(play).not.toHaveBeenCalled();
+    });
+
+    it('is not shown to a member, who gets no offer', () => {
+      expect(create('member').querySelector('[data-testid="company-question-trailer"]')).toBeNull();
+    });
+  });
+
   describe('what a locked row holds', () => {
     const guide: AuthoredPracticePrompt = {
       id: 'g-bare', title: 'Solve the bare puzzle', statement: 'Solve it.', whatThisMeasures: 'Care.', clarifyFirst: [],

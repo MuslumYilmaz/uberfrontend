@@ -99,7 +99,7 @@
       <div class="interview-process__try" data-testid="company-interview-process-try">
         <!-- The stage leads, so its own capitals stay (HackerRank, Power Day); the task is our pick, not a reported question. -->
         <p><strong>{{ task.stage }}:</strong> try {{ task.label }} now, {{ tryNowKind(task.path) }} we picked for this round.</p>
-        <a class="interview-process__try-link" [routerLink]="task.path" [state]="returnState">Start the free task <span aria-hidden="true">→</span></a>
+        <a faButton variant="neutral" size="sm" class="interview-process__try-link" [routerLink]="task.path" [state]="returnState">{{ tryNowAction(task.path) }} <span aria-hidden="true">→</span></a>
       </div>
     }
   </section>
