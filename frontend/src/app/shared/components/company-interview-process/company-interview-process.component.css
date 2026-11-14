@@ -137,6 +137,74 @@
   color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
 
+/* Who reported the round and when, in place of links: the guide lists its sources once, at the end. */
+.interview-process__reporter {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
+}
+
+/* How many reported questions sit behind a round; the lock says they open further down, not here. */
+.interview-process .interview-process__qcount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--uf-accent);
+  text-decoration: none;
+}
+
+.interview-process .interview-process__qcount:hover {
+  text-decoration: underline;
+}
+
+.interview-process__unplaced {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--uf-text-secondary) 92%, transparent);
+}
+
+.interview-process__try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uf-space-2) var(--uf-space-4);
+  padding: 14px 16px;
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-surface-2) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, transparent);
+}
+
+.interview-process__try p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--uf-text-secondary) 96%, transparent);
+}
+
+.interview-process__try strong {
+  color: var(--uf-text-primary);
+}
+
+.interview-process .interview-process__try-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uf-accent);
+  white-space: nowrap;
+}
+
 .interview-process__sources {
   margin: 4px 0 0;
   padding: 0;

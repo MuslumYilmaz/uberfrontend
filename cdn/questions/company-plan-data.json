@@ -238,13 +238,29 @@
       "access": "free",
       "minutes": 14
     },
+    "/guides/framework-prep/react-prep-path": {
+      "id": "/guides/framework-prep/react-prep-path",
+      "title": "React interview preparation path",
+      "route": "/guides/framework-prep/react-prep-path",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/guides/interview-blueprint/dsa-for-fe": {
       "id": "/guides/interview-blueprint/dsa-for-fe",
-      "title": "DSA for frontend loops",
+      "title": "Data structures and algorithms for frontend loops",
       "route": "/guides/interview-blueprint/dsa-for-fe",
       "kind": "guide",
       "access": "free",
       "minutes": 18
+    },
+    "/guides/interview-blueprint/quiz": {
+      "id": "/guides/interview-blueprint/quiz",
+      "title": "Frontend fundamentals quiz",
+      "route": "/guides/interview-blueprint/quiz",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
     },
     "/guides/system-design-blueprint": {
       "id": "/guides/system-design-blueprint",
@@ -448,6 +464,19 @@
         "ui"
       ],
       "family": "nested-comments"
+    },
+    "angular-onpush-change-detection-debugging-real-bug": {
+      "id": "angular-onpush-change-detection-debugging-real-bug",
+      "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
+      "route": "/angular/trivia/angular-onpush-change-detection-debugging-real-bug",
+      "kind": "trivia",
+      "tech": "angular",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
     },
     "angular-pagination-table": {
       "id": "angular-pagination-table",
@@ -1017,6 +1046,19 @@
         "js"
       ]
     },
+    "js-async-race-conditions": {
+      "id": "js-async-race-conditions",
+      "title": "Async Race Conditions and Stale UI Updates",
+      "route": "/javascript/trivia/js-async-race-conditions",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "js-autocomplete-engine": {
       "id": "js-autocomplete-engine",
       "title": "Autocomplete Engine: Debounced Suggestions That Never Go Stale",
@@ -1210,19 +1252,6 @@
       "focus": [
         "js",
         "algo"
-      ]
-    },
-    "js-create-lru-cache": {
-      "id": "js-create-lru-cache",
-      "title": "Create an LRU Cache (Bounded Memory)",
-      "route": "/javascript/coding/js-create-lru-cache",
-      "kind": "coding",
-      "tech": "javascript",
-      "access": "free",
-      "minutes": 45,
-      "focus": [
-        "algo",
-        "js"
       ]
     },
     "js-create-spy-function": {
@@ -1732,6 +1761,19 @@
         "js"
       ]
     },
+    "js-memoization": {
+      "id": "js-memoization",
+      "title": "What is memoization in JavaScript?",
+      "route": "/javascript/trivia/js-memoization",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "js-memoize-function": {
       "id": "js-memoize-function",
       "title": "Memoization",
@@ -1860,19 +1902,6 @@
       "focus": [
         "js",
         "algo"
-      ]
-    },
-    "js-promise-combinators-all-allsettled-race-any": {
-      "id": "js-promise-combinators-all-allsettled-race-any",
-      "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
-      "route": "/javascript/trivia/js-promise-combinators-all-allsettled-race-any",
-      "kind": "trivia",
-      "tech": "javascript",
-      "access": "free",
-      "minutes": 10,
-      "focus": [
-        "concepts",
-        "js"
       ]
     },
     "js-promises-async-await": {
@@ -2596,6 +2625,19 @@
         "ui"
       ]
     },
+    "react-keys-in-lists": {
+      "id": "react-keys-in-lists",
+      "title": "What is the significance of keys in lists in React?",
+      "route": "/react/trivia/react-keys-in-lists",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "react-like-button": {
       "id": "react-like-button",
       "title": "React Like Button (Toggle + Counter)",
@@ -2715,19 +2757,6 @@
         "ui"
       ],
       "family": "snake-game"
-    },
-    "react-ssr-hydration": {
-      "id": "react-ssr-hydration",
-      "title": "How do SSR and hydration work in React? Server-rendered above the fold, client-only below",
-      "route": "/react/trivia/react-ssr-hydration",
-      "kind": "trivia",
-      "tech": "react",
-      "access": "free",
-      "minutes": 10,
-      "focus": [
-        "concepts",
-        "js"
-      ]
     },
     "react-star-rating": {
       "id": "react-star-rating",
@@ -2893,7 +2922,7 @@
         "js-add-strings",
         "js-recover-bst-swapped-nodes"
       ],
-      "detail": "Add Large Integers as Strings, then Recover a BST with Two Swapped Nodes. The round runs 60 minutes; its last 15 go to questions on test cases and pull requests. On a laptop or tablet."
+      "detail": "Add Large Integers as Strings, then Recover a BST with Two Swapped Nodes. The round runs 60 minutes, with a few spoken follow-up questions after the problems. On a laptop or tablet."
     },
     "rehearsal-booking-com-hackerrank-assessment": {
       "id": "rehearsal-booking-com-hackerrank-assessment",
@@ -2957,6 +2986,14 @@
       "route": "/system-design/resilient-checkout-payment-flow",
       "kind": "system-design",
       "access": "free",
+      "minutes": 45
+    },
+    "scalable-notifications-feed": {
+      "id": "scalable-notifications-feed",
+      "title": "Scalable Notifications Feed (Real-time)",
+      "route": "/system-design/scalable-notifications-feed",
+      "kind": "system-design",
+      "access": "premium",
       "minutes": 45
     },
     "sse-vs-websocket-real-time": {
@@ -3287,9 +3324,10 @@
       "name": "Agoda",
       "signature": "Frontend Platform interview",
       "framework": "react",
-      "checkedAt": "2026-10-21",
-      "sourceCount": 16,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 26,
       "promptCount": 5,
+      "questionCount": 38,
       "variants": [
         {
           "id": "bangkok",
@@ -3354,7 +3392,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes on HackerRank: two easy-to-medium DSA problems in JavaScript, then questions on test cases.",
+              "note": "60 minutes on HackerRank: two easy-to-medium DSA problems in JavaScript, then a few spoken follow-up questions.",
               "focus": [
                 "algo",
                 "js",
@@ -3382,11 +3420,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes on HackerRank: web fundamentals, a JavaScript implementation or a component and state discussion.",
+              "note": "60 minutes on HackerRank: spoken questions, a JavaScript implementation or a front-end architecture discussion.",
               "focus": [
-                "ui",
-                "js",
-                "concepts"
+                "js"
               ],
               "sources": [
                 {
@@ -3501,14 +3537,14 @@
           ],
           "tasks": [
             {
-              "id": "/guides/interview-blueprint/dsa-for-fe",
+              "id": "js-build-tree-from-flat-list",
               "lead": true,
               "rounds": [
                 "coding-interview"
               ]
             },
             {
-              "id": "js-cookie-sessionstorage-localstorage",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "frontend-platform-interview"
@@ -3597,7 +3633,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "HTML, CSS and JavaScript questions online, or a take-home such as a React and TypeScript stock dashboard.",
+              "note": "An online assessment of HTML/CSS and JavaScript questions, or a React and TypeScript take-home.",
               "focus": [
                 "css",
                 "ui",
@@ -3662,7 +3698,7 @@
                 "coding",
                 "design"
               ],
-              "note": "JavaScript depth such as hoisting and SSR versus CSR, or an hour of frontend architecture for a booking site.",
+              "note": "Spoken JavaScript and front-end questions, or a 60-minute front-end architecture design.",
               "focus": [
                 "js",
                 "concepts"
@@ -3721,15 +3757,14 @@
           ],
           "tasks": [
             {
-              "id": "js-debounce",
+              "id": "js-once",
               "lead": true,
               "rounds": [
                 "coding-round"
-              ],
-              "prompt": true
+              ]
             },
             {
-              "id": "react-ssr-hydration",
+              "id": "/guides/system-design-blueprint",
               "lead": true,
               "rounds": [
                 "platform-or-architecture-round"
@@ -3803,15 +3838,16 @@
       "name": "Airbnb",
       "signature": "UI coding round",
       "framework": "react",
-      "checkedAt": "2026-11-02",
-      "sourceCount": 16,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 19,
       "promptCount": 0,
+      "questionCount": 13,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers, mostly 2024 to 2025",
           "unordered": true,
-          "sourceCount": 16,
+          "sourceCount": 17,
           "newestReport": "2025-09",
           "rounds": [
             {
@@ -3820,8 +3856,10 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "One account describes a short call about experience.",
+              "note": "A short call about your experience, in a 2025 front-end engineer account.",
               "focus": [
+                "algo",
+                "js",
                 "concepts"
               ],
               "sources": [
@@ -3832,6 +3870,10 @@
                 {
                   "label": "Taro",
                   "date": "2025-05"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2024-02"
                 }
               ]
             },
@@ -3841,10 +3883,12 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Varies by account: a UI component, a store-style design question, a booking widget or a LeetCode-hard problem.",
+              "note": "Content varies by account, from building UI to a LeetCode-hard algorithm problem.",
               "focus": [
                 "algo",
+                "css",
                 "ui",
+                "js",
                 "concepts"
               ],
               "sources": [
@@ -3861,7 +3905,7 @@
                   "date": "2025-05"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "coding-ui-or-react",
@@ -3869,9 +3913,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Build UI: a styled card game, a photo gallery, a star rating or another React or DOM task.",
+              "note": "UI built live in React or plain DOM code; a card game in a 2025 and a 2022 account.",
               "focus": [
-                "ui"
+                "css",
+                "ui",
+                "js"
               ],
               "sources": [
                 {
@@ -3887,7 +3933,7 @@
                   "date": "2024-10"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 4
             },
             {
               "id": "coding-javascript",
@@ -3895,9 +3941,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Currying, callbacks, async, closures and prototypes in one account, vanilla JavaScript in another.",
+              "note": "JavaScript coding without a framework, a round of its own in a 2024 frontend loop.",
               "focus": [
-                "js"
+                "ui",
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -3921,7 +3969,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "Design a frontend app or component: state, data, APIs, trade-offs and optimisations.",
+              "note": "A spoken design of a frontend app or component.",
               "focus": [
                 "ui"
               ],
@@ -3939,7 +3987,7 @@
                   "date": "2024-12"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "experience-deep-dive",
@@ -3947,7 +3995,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "An experience round on a past project in depth, in one account a project the candidate led.",
+              "note": "One past project discussed in depth, in one account a project the candidate led.",
               "sources": [
                 {
                   "label": "Taro",
@@ -3959,10 +4007,10 @@
                 },
                 {
                   "label": "Blind comment",
-                  "date": "2022-04"
+                  "date": "2024-03"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "core-values-or-behavioural",
@@ -3970,7 +4018,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "A core values interview in one account, behavioural questions in others.",
+              "note": "A core values interview besides the onsite, in a 2024 account from Mexico.",
               "focus": [
                 "concepts"
               ],
@@ -4021,7 +4069,7 @@
               "kinds": [
                 "outcome"
               ],
-              "note": "Conversations with hiring managers after the interviews.",
+              "note": "Conversations with a few hiring managers after the interviews, in one 2024 senior account.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -4032,17 +4080,6 @@
           ],
           "tasks": [
             {
-              "id": "messaging-inbox-frontend",
-              "report": {
-                "publisher": "Taro",
-                "date": "2025-02"
-              },
-              "rounds": [
-                "frontend-system-design"
-              ],
-              "lead": true
-            },
-            {
               "id": "react-autocomplete-search-starter",
               "lead": true,
               "rounds": [
@@ -4050,17 +4087,24 @@
               ]
             },
             {
-              "id": "react-star-rating",
+              "id": "react-tictactoe",
               "lead": true,
               "rounds": [
                 "coding-ui-or-react"
               ]
             },
             {
-              "id": "js-closures",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "coding-javascript"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "lead": true,
+              "rounds": [
+                "frontend-system-design"
               ]
             },
             {
@@ -4095,7 +4139,20 @@
               ]
             },
             {
+              "id": "messaging-inbox-frontend",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-02"
+              },
+              "rounds": [
+                "frontend-system-design"
+              ]
+            },
+            {
               "id": "react-chips-input-autocomplete"
+            },
+            {
+              "id": "js-closures"
             },
             {
               "id": "js-event-loop"
@@ -4112,9 +4169,10 @@
       "aliases": [
         "AWS"
       ],
-      "checkedAt": "2026-11-06",
+      "checkedAt": "2026-11-13",
       "sourceCount": 24,
       "promptCount": 7,
+      "questionCount": 37,
       "variants": [
         {
           "id": "experienced",
@@ -4122,7 +4180,7 @@
           "from": "experienced hires",
           "ask": "Interviewing as an experienced hire?",
           "default": true,
-          "sourceCount": 12,
+          "sourceCount": 13,
           "newestReport": "2025-07",
           "rounds": [
             {
@@ -4133,6 +4191,7 @@
               ],
               "note": "90 minutes for two JavaScript coding questions, then system design scenarios and a work style survey.",
               "focus": [
+                "algo",
                 "js",
                 "concepts"
               ],
@@ -4142,14 +4201,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2023-01"
+                  "label": "LeetCode",
+                  "date": "2025-01"
                 },
                 {
-                  "label": "LeetCode",
-                  "date": "2020-06"
+                  "label": "Blind",
+                  "date": "2023-01"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "phone-screen",
@@ -4177,7 +4237,7 @@
                   "date": "2020-06"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 3
             },
             {
               "id": "loop-coding-interviews",
@@ -4188,7 +4248,10 @@
               "note": "Three interviews on maintainable code, problem solving, and data structures and algorithms.",
               "focus": [
                 "algo",
-                "ui"
+                "css",
+                "ui",
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -4197,14 +4260,14 @@
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2024-10"
+                  "date": "2025-01"
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2022-04"
+                  "date": "2024-10"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 5
             },
             {
               "id": "loop-front-end-system-design",
@@ -4212,7 +4275,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "At least one front-end system design question.",
+              "note": "At least one front-end system design question, drawn on Bluescape.",
               "sources": [
                 {
                   "label": "Amazon FEE prep page",
@@ -4253,7 +4316,7 @@
                   "date": "2025-07"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 7
             }
           ],
           "tasks": [
@@ -4262,8 +4325,7 @@
               "lead": true,
               "rounds": [
                 "online-assessment"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "react-todo-list",
@@ -4273,14 +4335,14 @@
               ]
             },
             {
-              "id": "js-implement-new",
+              "id": "react-autocomplete-search-starter",
               "lead": true,
               "rounds": [
                 "loop-coding-interviews"
               ]
             },
             {
-              "id": "resilient-checkout-payment-flow",
+              "id": "infinite-scroll-list",
               "lead": true,
               "rounds": [
                 "loop-front-end-system-design"
@@ -4368,6 +4430,7 @@
                 "date": "2020-04"
               },
               "rounds": [
+                "phone-screen",
                 "loop-coding-interviews"
               ],
               "prompt": true
@@ -4379,6 +4442,7 @@
                 "date": "2020-04"
               },
               "rounds": [
+                "phone-screen",
                 "loop-coding-interviews"
               ],
               "prompt": true
@@ -4390,9 +4454,17 @@
                 "date": "2020-04"
               },
               "rounds": [
+                "phone-screen",
                 "loop-coding-interviews"
               ],
               "prompt": true
+            },
+            {
+              "id": "react-file-explorer",
+              "prompt": true,
+              "rounds": [
+                "loop-coding-interviews"
+              ]
             },
             {
               "id": "react-chips-input-autocomplete"
@@ -4421,7 +4493,8 @@
           "ask": "Interviewing as a student or new graduate?",
           "unordered": true,
           "students": true,
-          "sourceCount": 1,
+          "sourceCount": 2,
+          "newestReport": "2025-08",
           "rounds": [
             {
               "id": "internship-interviews",
@@ -4448,10 +4521,17 @@
                 "coding"
               ],
               "note": "One interview with an Amazonian, about 45 to 60 minutes.",
+              "focus": [
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "Amazon student prep page",
                   "date": "2026-10"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-08"
                 }
               ]
             },
@@ -4483,11 +4563,10 @@
               "lead": true,
               "rounds": [
                 "new-graduate-first-round"
-              ],
-              "prompt": true
+              ]
             },
             {
-              "id": "js-implement-new",
+              "id": "js-debounce",
               "lead": true,
               "rounds": [
                 "new-graduate-final-stage"
@@ -4552,9 +4631,10 @@
       "name": "Anduril",
       "signature": "Onsite",
       "framework": "react",
-      "checkedAt": "2026-10-23",
-      "sourceCount": 12,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 17,
       "promptCount": 5,
+      "questionCount": 11,
       "variants": [
         {
           "id": "us",
@@ -4562,7 +4642,7 @@
           "from": "frontend engineers in the United States",
           "ask": "Interviewing for a full-time role?",
           "default": true,
-          "sourceCount": 7,
+          "sourceCount": 8,
           "newestReport": "2025-04",
           "rounds": [
             {
@@ -4571,7 +4651,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Resume and past experience.",
+              "note": "A call about your resume and past experience.",
               "focus": [
                 "algo",
                 "ui",
@@ -4599,11 +4679,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "About an hour with an applied frontend problem, such as a file explorer in React in two accounts.",
+              "note": "About an hour on one applied frontend problem rather than a LeetCode puzzle, built live and usually in React.",
               "focus": [
                 "algo",
-                "ui",
-                "js"
+                "ui"
               ],
               "sources": [
                 {
@@ -4645,11 +4724,11 @@
                   "date": "2024-12"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2023-10"
+                  "label": "Blind comment",
+                  "date": "2024-04"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "decision",
@@ -4685,17 +4764,11 @@
               "prompt": true
             },
             {
-              "id": "react-countdown-timer",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-12"
-              },
-              "rounds": [
-                "technical-screen",
-                "onsite"
-              ],
+              "id": "js-stack-queue-implementation",
               "lead": true,
-              "prompt": true
+              "rounds": [
+                "onsite"
+              ]
             },
             {
               "id": "react-vanilla-dropdown-port",
@@ -4711,15 +4784,27 @@
               "prompt": true
             },
             {
+              "id": "react-countdown-timer",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-12"
+              },
+              "rounds": [
+                "technical-screen",
+                "onsite"
+              ],
+              "prompt": true
+            },
+            {
               "id": "js-flatten-once",
               "report": {
                 "publisher": "Blind",
-                "date": "2024-05"
+                "date": "2024-04"
               },
-              "prompt": true,
               "rounds": [
-                "technical-screen"
-              ]
+                "onsite"
+              ],
+              "prompt": true
             },
             {
               "id": "react-autocomplete-search-starter",
@@ -4765,7 +4850,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Build a small application; the reported task is a file explorer in React where clicking a folder shows its children.",
+              "note": "Two technical rounds in which the candidate built a small application.",
               "focus": [
                 "ui"
               ],
@@ -4818,13 +4903,6 @@
               "prompt": true
             },
             {
-              "id": "js-flatten-once",
-              "prompt": true,
-              "rounds": [
-                "two-technical-rounds"
-              ]
-            },
-            {
               "id": "react-autocomplete-search-starter",
               "prompt": true,
               "rounds": [
@@ -4833,6 +4911,9 @@
             },
             {
               "id": "react-vanilla-dropdown-port"
+            },
+            {
+              "id": "js-flatten-once"
             },
             {
               "id": "react-countdown-timer"
@@ -4849,14 +4930,15 @@
       "signature": "Team loop",
       "framework": "react",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 12,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 26,
       "promptCount": 0,
+      "questionCount": 66,
       "variants": [
         {
           "id": "main",
           "title": "Frontend roles (the loop varies by team)",
-          "sourceCount": 12,
+          "sourceCount": 20,
           "newestReport": "2026-06",
           "rounds": [
             {
@@ -4867,6 +4949,9 @@
               ],
               "note": "One hour: two coding questions and 20 multiple-choice questions.",
               "focus": [
+                "algo",
+                "ui",
+                "js",
                 "concepts"
               ],
               "sources": [
@@ -4882,7 +4967,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A short call.",
+              "note": "A call with a recruiter about your experience and the role.",
               "sources": [
                 {
                   "label": "LeetCode",
@@ -4897,7 +4982,7 @@
                   "date": "2022-07"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 3
             },
             {
               "id": "hiring-manager-conversation",
@@ -4905,7 +4990,11 @@
               "kinds": [
                 "people"
               ],
-              "note": "Before the screen, or as the screen itself.",
+              "note": "A conversation with the hiring manager before the screen, or as the screen itself.",
+              "focus": [
+                "algo",
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "LeetCode",
@@ -4920,7 +5009,7 @@
                   "date": "2025-02"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "technical-screen",
@@ -4928,27 +5017,28 @@
               "kinds": [
                 "coding"
               ],
-              "note": "45–60 minutes of React, JavaScript or TypeScript coding, sometimes with an algorithm problem.",
+              "note": "Usually 45–60 minutes of React, JavaScript or TypeScript coding, sometimes with an algorithm problem.",
               "focus": [
                 "algo",
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
                   "label": "LeetCode",
-                  "date": "2025-06"
+                  "date": "2026-06"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2025-03"
+                  "label": "Taro",
+                  "date": "2026-03"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2023-10"
+                  "label": "Taro",
+                  "date": "2026-02"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 12
             },
             {
               "id": "team-loop",
@@ -4957,8 +5047,9 @@
                 "coding",
                 "people"
               ],
-              "note": "Four to seven interviews of 30–45 minutes, mostly JavaScript, React and CSS coding and concepts.",
+              "note": "Usually four to seven interviews of 30–60 minutes, mostly JavaScript, React and CSS coding and concepts.",
               "focus": [
+                "algo",
                 "css",
                 "ui",
                 "js",
@@ -4966,27 +5057,27 @@
               ],
               "sources": [
                 {
+                  "label": "LeetCode",
+                  "date": "2026-06"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2026-02"
+                },
+                {
                   "label": "Blind",
                   "date": "2025-03"
-                },
-                {
-                  "label": "LeetCode",
-                  "date": "2025-03"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2025-02"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 9
             }
           ],
           "tasks": [
             {
-              "id": "react-autocomplete-search-starter",
+              "id": "js-build-tree-from-flat-list",
               "report": {
-                "publisher": "Taro",
-                "date": "2022-08"
+                "publisher": "LeetCode Discuss",
+                "date": "2025-06"
               },
               "rounds": [
                 "technical-screen"
@@ -5008,13 +5099,12 @@
               ]
             },
             {
-              "id": "js-build-tree-from-flat-list",
+              "id": "react-autocomplete-search-starter",
               "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2025-06"
+                "publisher": "Taro",
+                "date": "2022-08"
               },
               "rounds": [
-                "online-assessment",
                 "technical-screen"
               ]
             },
@@ -5107,15 +5197,16 @@
       "name": "Booking.com",
       "signature": "Fit interview",
       "framework": "react",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 12,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 18,
       "promptCount": 0,
+      "questionCount": 7,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers, 2021 to 2023",
-          "sourceCount": 12,
-          "newestReport": "2023-07",
+          "sourceCount": 17,
+          "newestReport": "2025-09",
           "rounds": [
             {
               "id": "hackerrank-assessment",
@@ -5136,15 +5227,15 @@
                   "date": "2023-06"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2022-03"
+                  "label": "dev.to",
+                  "date": "2022-10"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2022-03"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "recruiter-call",
@@ -5152,7 +5243,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A short call; some calls include a few technical questions.",
+              "note": "A short call, 15 minutes in one full-stack account; some calls include a few technical questions.",
               "focus": [
                 "concepts"
               ],
@@ -5162,15 +5253,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Code360",
-                  "date": "2023-04"
+                  "label": "Taro",
+                  "date": "2025-09"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2022-03"
+                  "label": "Code360",
+                  "date": "2023-04"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 4
             },
             {
               "id": "frontend-coding",
@@ -5178,26 +5269,27 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One or two rounds of about 60 minutes: build a component such as an autocomplete, or extend a prepared app.",
+              "note": "One or two live rounds of about 60 minutes, building a UI component in plain JavaScript, HTML and CSS or React.",
               "focus": [
+                "css",
                 "ui",
                 "js"
               ],
               "sources": [
                 {
-                  "label": "enginebogie",
-                  "date": "2023-05"
+                  "label": "Taro",
+                  "date": "2025-09"
                 },
                 {
-                  "label": "Code360",
-                  "date": "2023-04"
+                  "label": "Taro",
+                  "date": "2025-08"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2023-01"
+                  "label": "Taro",
+                  "date": "2025-05"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 9
             },
             {
               "id": "fit-interview",
@@ -5205,8 +5297,12 @@
               "kinds": [
                 "people"
               ],
-              "note": "A conversation with engineering managers; 60 minutes in one full-stack account.",
+              "note": "A conversation, the last round, with engineering managers in one account; 60 minutes in one full-stack account.",
               "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2025-08"
+                },
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-01"
@@ -5214,13 +5310,9 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2022-05"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2022-03"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             }
           ],
           "tasks": [
@@ -5253,8 +5345,12 @@
               "id": "react-debounced-search",
               "report": {
                 "publisher": "Taro",
-                "date": "2023-07"
-              }
+                "date": "2023-07",
+                "approx": true
+              },
+              "rounds": [
+                "frontend-coding"
+              ]
             },
             {
               "id": "js-debounce",
@@ -5325,9 +5421,10 @@
       "aliases": [
         "TikTok"
       ],
-      "checkedAt": "2026-10-20",
-      "sourceCount": 25,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 29,
       "promptCount": 0,
+      "questionCount": 57,
       "variants": [
         {
           "id": "us",
@@ -5335,7 +5432,7 @@
           "from": "candidates in the United States",
           "ask": "Interviewing in the United States?",
           "default": true,
-          "sourceCount": 10,
+          "sourceCount": 11,
           "newestReport": "2025-10",
           "rounds": [
             {
@@ -5344,9 +5441,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "CodeSignal or an unnamed platform, with multiple-choice and LeetCode-style questions and a frontend task.",
+              "note": "A timed online test that opened the 2025 US accounts, before any interview.",
               "focus": [
                 "algo",
+                "ui",
                 "concepts"
               ],
               "sources": [
@@ -5370,7 +5468,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "15–30 minutes.",
+              "note": "A call about your experience and the interview plan, 30 minutes in a 2024 account.",
               "sources": [
                 {
                   "label": "Blind",
@@ -5393,11 +5491,13 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Usually two rounds of about an hour: one algorithm round and one frontend round.",
+              "note": "Two live coding rounds in most accounts, 60 minutes in one: a LeetCode-style algorithm round and a frontend round.",
               "focus": [
                 "algo",
+                "css",
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -5413,7 +5513,7 @@
                   "date": "2024-09"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 7
             },
             {
               "id": "hiring-manager-round",
@@ -5422,8 +5522,9 @@
                 "design",
                 "people"
               ],
-              "note": "Experience questions plus frontend system design or React and JavaScript questions.",
+              "note": "A round with the hiring manager that turned to system design in three 2024 accounts.",
               "focus": [
+                "algo",
                 "ui",
                 "js",
                 "concepts"
@@ -5445,15 +5546,41 @@
               "moreSources": 2
             },
             {
+              "id": "product-manager-round",
+              "name": "Product manager round",
+              "kinds": [
+                "people"
+              ],
+              "note": "A cross-functional interview with a product manager in one 2024 loop.",
+              "sources": [
+                {
+                  "label": "Blind",
+                  "date": "2024-09"
+                }
+              ]
+            },
+            {
+              "id": "department-leader-round",
+              "name": "Department leader round",
+              "kinds": [
+                "people",
+                "design"
+              ],
+              "note": "A final round with a department leader in one 2024 loop.",
+              "sources": [
+                {
+                  "label": "Blind",
+                  "date": "2024-09"
+                }
+              ]
+            },
+            {
               "id": "hr-or-behavioural-round",
               "name": "HR or behavioural round",
               "kinds": [
                 "people"
               ],
-              "note": "Behavioural and culture questions.",
-              "focus": [
-                "concepts"
-              ],
+              "note": "A closing behavioural or HR interview on teamwork, communication and culture fit.",
               "sources": [
                 {
                   "label": "Taro",
@@ -5467,7 +5594,8 @@
                   "label": "Taro (approx.)",
                   "date": "2024-03"
                 }
-              ]
+              ],
+              "moreSources": 1
             }
           ],
           "tasks": [
@@ -5545,11 +5673,14 @@
           "rounds": [
             {
               "id": "online-assessment",
-              "name": "Online assessment",
+              "name": "CodeSignal assessment",
               "kinds": [
                 "coding"
               ],
-              "note": "A CodeSignal task for some candidates; others skipped the assessment.",
+              "note": "One frontend problem in four levels on CodeSignal, after a resume screen, in a 2025 Singapore account.",
+              "focus": [
+                "algo"
+              ],
               "sources": [
                 {
                   "label": "Taro",
@@ -5567,13 +5698,15 @@
             },
             {
               "id": "technical-rounds",
-              "name": "Technical rounds",
+              "name": "Technical rounds (Singapore and Australia)",
               "kinds": [
-                "coding"
+                "coding",
+                "design"
               ],
-              "note": "Two or three rounds of about an hour on JavaScript and React fundamentals and LeetCode-style problems.",
+              "note": "Two or three live rounds of about an hour that mix JavaScript, React, HTML and CSS questions with coding.",
               "focus": [
                 "algo",
+                "css",
                 "ui",
                 "js",
                 "concepts"
@@ -5584,24 +5717,24 @@
                   "date": "2025-10"
                 },
                 {
-                  "label": "LeetCode",
-                  "date": "2025-02"
+                  "label": "Taro",
+                  "date": "2025-09"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-09"
+                  "label": "LeetCode",
+                  "date": "2025-02"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 4
             },
             {
               "id": "hiring-manager-round",
-              "name": "Hiring manager round",
+              "name": "Hiring manager or director round",
               "kinds": [
                 "people",
                 "coding"
               ],
-              "note": "A round with the hiring manager; in one account it was the third technical round.",
+              "note": "A round with the hiring manager, the third technical round in a 2023 Singapore account.",
               "sources": [
                 {
                   "label": "Taro",
@@ -5610,6 +5743,10 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-11"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2021-06"
                 }
               ]
             },
@@ -5617,13 +5754,17 @@
               "id": "hr-round",
               "name": "HR round",
               "kinds": [
-                "recruiter"
+                "people"
               ],
-              "note": "A final HR conversation.",
+              "note": "A closing interview with HR, behavioural in a 2021 Australia loop.",
               "sources": [
                 {
                   "label": "Taro",
                   "date": "2025-10"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2024-05"
                 },
                 {
                   "label": "Taro",
@@ -5677,16 +5818,16 @@
           "from": "new graduates and interns",
           "ask": "Interviewing as a new graduate or intern?",
           "students": true,
-          "sourceCount": 7,
-          "newestReport": "2025-02",
+          "sourceCount": 10,
+          "newestReport": "2025-03",
           "rounds": [
             {
               "id": "online-assessment",
-              "name": "Online assessment",
+              "name": "Early-careers online assessment",
               "kinds": [
                 "coding"
               ],
-              "note": "Multiple-choice, algorithm and debugging questions, up to about 110 minutes.",
+              "note": "A timed test of 110 minutes to two hours, on HackerRank where the accounts name a platform.",
               "focus": [
                 "debug",
                 "algo",
@@ -5706,7 +5847,7 @@
                   "date": "2024-08"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 4
             },
             {
               "id": "technical-interviews",
@@ -5715,9 +5856,11 @@
                 "coding",
                 "design"
               ],
-              "note": "Two to three interviews on coding, algorithms and design, per the early-careers pages; accounts describe one to three.",
+              "note": "ByteDance's early-careers page tells candidates to expect two to three interviews on coding, algorithms and design.",
               "focus": [
-                "algo"
+                "algo",
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -5725,33 +5868,39 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-05"
+                  "label": "Taro",
+                  "date": "2025-03"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2023-01"
+                  "label": "Taro (approx.)",
+                  "date": "2024-05"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 4
             },
             {
               "id": "manager-or-behavioural-round",
               "name": "Manager or behavioural round",
               "kinds": [
-                "people"
+                "people",
+                "coding"
               ],
-              "note": "A final manager or behavioural interview.",
+              "note": "A final interview with the hiring manager or a behavioural interviewer, about your projects and resume.",
               "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2025-03"
+                },
                 {
                   "label": "Taro (approx.)",
                   "date": "2024-05"
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2020-12"
+                  "date": "2021-10"
                 }
-              ]
+              ],
+              "moreSources": 1
             }
           ],
           "tasks": [
@@ -5759,9 +5908,10 @@
               "id": "js-build-tree-from-flat-list",
               "report": {
                 "publisher": "Blind",
-                "date": "2023-01"
+                "date": "2022-12"
               },
               "rounds": [
+                "online-assessment",
                 "technical-interviews"
               ]
             },
@@ -5808,8 +5958,9 @@
       "framework": "react",
       "mixed": true,
       "checkedAt": "2026-10-23",
-      "sourceCount": 14,
+      "sourceCount": 30,
       "promptCount": 5,
+      "questionCount": 29,
       "variants": [
         {
           "id": "senior",
@@ -5857,8 +6008,7 @@
               ],
               "note": "CodeSignal, about 70 minutes, four LeetCode-style questions in most accounts and three in one.",
               "focus": [
-                "algo",
-                "concepts"
+                "algo"
               ],
               "sources": [
                 {
@@ -5882,10 +6032,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "A conversational design of a credit card application page, or the structure of a web app from requirements.",
-              "focus": [
-                "ui"
-              ],
+              "note": "About an hour of frontend design talked through with an engineer rather than coded, with a screen whiteboard for notes.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -5908,7 +6055,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A small framework task judged on structure, syntax and coding style, such as an Angular form with validations.",
+              "note": "About an hour of hands-on work in a frontend framework, graded on component structure, syntax and coding style.",
               "focus": [
                 "ui"
               ],
@@ -5933,10 +6080,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A business scenario read through code: find a bug, fix a faulty algorithm or refactor badly written code.",
+              "note": "A business scenario worked through existing code: reading it, tracing example numbers and explaining what to fix.",
               "focus": [
-                "debug",
-                "algo"
+                "debug"
               ],
               "sources": [
                 {
@@ -6019,6 +6165,27 @@
               "prompt": true
             },
             {
+              "id": "js-debug-nullish-defaults",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-07",
+                "approx": true
+              },
+              "rounds": [
+                "online-assessment",
+                "power-day-frontend-technical",
+                "power-day-case"
+              ],
+              "lead": true
+            },
+            {
+              "id": "react-fetch-list-states",
+              "lead": true,
+              "rounds": [
+                "power-day-frontend-technical"
+              ]
+            },
+            {
               "id": "js-debug-intern-budget-summary",
               "report": {
                 "publisher": "Taro",
@@ -6028,8 +6195,18 @@
               "rounds": [
                 "power-day-case"
               ],
-              "lead": true,
               "prompt": true
+            },
+            {
+              "id": "multi-step-form-autosave",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-07",
+                "approx": true
+              },
+              "rounds": [
+                "power-day-frontend-design"
+              ]
             },
             {
               "id": "html-forms-validation-required",
@@ -6042,31 +6219,6 @@
                 "online-assessment",
                 "power-day-frontend-technical",
                 "power-day-case"
-              ],
-              "lead": true
-            },
-            {
-              "id": "js-debug-nullish-defaults",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-07",
-                "approx": true
-              },
-              "rounds": [
-                "online-assessment",
-                "power-day-frontend-technical",
-                "power-day-case"
-              ]
-            },
-            {
-              "id": "multi-step-form-autosave",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-07",
-                "approx": true
-              },
-              "rounds": [
-                "power-day-frontend-design"
               ]
             },
             {
@@ -6096,6 +6248,24 @@
               "prompt": true
             },
             {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-maze-path",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
               "id": "react-state-management-redux"
             }
           ]
@@ -6120,10 +6290,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A timed assessment; in 2024, four LeetCode questions in 70 minutes, and solving two still led to an invitation.",
+              "note": "A timed assessment; in 2024, four LeetCode problems in 70 minutes, and solving two still led to an invitation.",
               "focus": [
-                "algo",
-                "concepts"
+                "algo"
               ],
               "sources": [
                 {
@@ -6144,7 +6313,7 @@
                 "design",
                 "people"
               ],
-              "note": "Four interviews: in 2024 front-end design, behavioral, a case study and a technical build of a single-page app.",
+              "note": "Four interviews in one day: in 2024 frontend design, a behavioral round, a case study and a frontend technical round.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -6177,12 +6346,29 @@
           ],
           "tasks": [
             {
-              "id": "js-debug-mutating-input",
+              "id": "/guides/system-design-blueprint",
               "lead": true,
               "rounds": [
                 "power-day"
-              ],
-              "prompt": true
+              ]
+            },
+            {
+              "id": "js-valid-parentheses",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-maze-path",
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "rounds": [
+                "online-assessment"
+              ]
             },
             {
               "id": "ui-component-state-from-mock",
@@ -6193,6 +6379,9 @@
             },
             {
               "id": "html-forms-validation-required"
+            },
+            {
+              "id": "js-debug-mutating-input"
             },
             {
               "id": "js-debug-nullish-defaults"
@@ -6218,9 +6407,10 @@
       "signature": "Take-home review",
       "framework": "javascript",
       "mixed": true,
-      "checkedAt": "2026-10-26",
-      "sourceCount": 27,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 31,
       "promptCount": 5,
+      "questionCount": 38,
       "variants": [
         {
           "id": "us",
@@ -6266,37 +6456,8 @@
               ],
               "sources": [
                 {
-                  "label": "Taro",
-                  "date": "2025-09"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-07"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-05"
-                }
-              ],
-              "moreSources": 4
-            },
-            {
-              "id": "web-fundamentals-with-engineers",
-              "name": "Web fundamentals with engineers",
-              "kinds": [
-                "coding"
-              ],
-              "note": "Spoken questions from engineers on JavaScript, the CSS box model, accessibility, XSS and other security topics.",
-              "focus": [
-                "algo",
-                "css",
-                "js",
-                "concepts"
-              ],
-              "sources": [
-                {
-                  "label": "Taro",
-                  "date": "2025-11"
+                  "label": "CrowdStrike interviewing page",
+                  "date": "2026-10"
                 },
                 {
                   "label": "Taro",
@@ -6310,12 +6471,39 @@
               "moreSources": 5
             },
             {
+              "id": "web-fundamentals-with-engineers",
+              "name": "Web fundamentals with engineers",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Spoken technical questions from engineers, two of them in five accounts.",
+              "focus": [
+                "algo",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2025-11"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2025-09"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2024-08"
+                }
+              ],
+              "moreSources": 8
+            },
+            {
               "id": "take-home-build",
               "name": "Take-home build",
               "kinds": [
                 "coding"
               ],
-              "note": "A small UI built at home; one report was allowed any language or framework.",
+              "note": "A small UI built at home, from a screenshot in the 2025 account.",
               "focus": [
                 "css",
                 "ui"
@@ -6343,7 +6531,7 @@
                 "coding",
                 "design"
               ],
-              "note": "Engineers go through the submission: what you would change and how you would add filtering and sorting.",
+              "note": "A call with engineers, two in two accounts, on the take-home you submitted and how you would develop it further.",
               "focus": [
                 "ui"
               ],
@@ -6424,20 +6612,11 @@
               "lead": true
             },
             {
-              "id": "js-event-delegation",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "web-fundamentals-with-engineers"
-              ],
-              "prompt": true
-            },
-            {
-              "id": "react-take-home-table-review-questions",
-              "lead": true,
-              "rounds": [
-                "take-home-review"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "/guides/behavioral/evaluation-areas",
@@ -6480,6 +6659,20 @@
               ]
             },
             {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "web-fundamentals-with-engineers"
+              ]
+            },
+            {
+              "id": "js-event-delegation",
+              "prompt": true,
+              "rounds": [
+                "web-fundamentals-with-engineers"
+              ]
+            },
+            {
               "id": "js-xss-dom-sinks",
               "prompt": true,
               "rounds": [
@@ -6494,9 +6687,6 @@
             },
             {
               "id": "js-promises-async-await"
-            },
-            {
-              "id": "js-secure-cors-handling"
             }
           ]
         },
@@ -6520,10 +6710,8 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One 2024 report: two stages of questions read from a list to prevent bias, about two weeks for both.",
+              "note": "One 2024 report: two stages of technical questions read from a list to prevent bias, about two weeks for both.",
               "focus": [
-                "css",
-                "js",
                 "concepts"
               ],
               "sources": [
@@ -6540,6 +6728,9 @@
                 "coding"
               ],
               "note": "One 2024 report: a week to deliver a task estimated at 5 hours; the candidate spent 10.",
+              "focus": [
+                "ui"
+              ],
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -6581,7 +6772,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "One 2025 report: a whiteboard exercise on a system whose requirements were sent in advance.",
+              "note": "One 2025 report: a whiteboard exercise on a system whose requirements were sent in advance, so it could be prepared.",
               "sources": [
                 {
                   "label": "Taro",
@@ -6592,8 +6783,14 @@
           ],
           "tasks": [
             {
-              "id": "js-secure-cors-handling",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
+              "rounds": [
+                "technical-questions-two-stages"
+              ]
+            },
+            {
+              "id": "js-event-loop",
               "rounds": [
                 "technical-questions-two-stages"
               ]
@@ -6693,7 +6890,6 @@
               "note": "Up to three interview rounds.",
               "focus": [
                 "ui",
-                "js",
                 "concepts"
               ],
               "sources": [
@@ -6768,14 +6964,15 @@
       "name": "Datadog",
       "signature": "React live coding",
       "framework": "react",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 12,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 15,
       "promptCount": 5,
+      "questionCount": 19,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers, mostly in Europe",
-          "sourceCount": 11,
+          "sourceCount": 14,
           "newestReport": "2025-11",
           "rounds": [
             {
@@ -6784,7 +6981,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "About 30 minutes on background and a past project.",
+              "note": "About 30 minutes with a recruiter on your background and a past project, on Zoom in one account.",
               "sources": [
                 {
                   "label": "Datadog: Candidate experience",
@@ -6796,10 +6993,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-10"
+                  "date": "2025-09"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 7
             },
             {
               "id": "technical-screen",
@@ -6807,15 +7004,15 @@
               "kinds": [
                 "coding"
               ],
-              "note": "40–60 minutes in CoderPad: two easy or medium algorithm problems in JavaScript or TypeScript.",
+              "note": "40–60 minutes on CoderPad: two easy or medium algorithm problems in JavaScript or TypeScript.",
               "focus": [
                 "algo",
                 "js"
               ],
               "sources": [
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-10"
+                  "label": "Taro",
+                  "date": "2025-11"
                 },
                 {
                   "label": "Taro (approx.)",
@@ -6823,10 +7020,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-09"
+                  "date": "2024-10"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 5
             },
             {
               "id": "react-live-coding",
@@ -6834,7 +7031,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One hour: render a table or JSON data, then add search, sorting or filtering step by step.",
+              "note": "One hour of React on CoderPad with an engineer; in some loops the task grows one requirement at a time.",
               "focus": [
                 "ui"
               ],
@@ -6855,35 +7052,12 @@
               "moreSources": 5
             },
             {
-              "id": "second-coding-round",
-              "name": "Second coding round",
+              "id": "take-home-project",
+              "name": "Take-home project",
               "kinds": [
                 "coding"
               ],
-              "note": "A harder or product-focused coding round with follow-up changes.",
-              "sources": [
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2025-07"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-10"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-10"
-                }
-              ],
-              "moreSources": 3
-            },
-            {
-              "id": "frontend-system-design",
-              "name": "Frontend system design",
-              "kinds": [
-                "design"
-              ],
-              "note": "One hour on a whiteboard tool: the UI, API endpoints and performance; held in person at an office in some loops.",
+              "note": "A small frontend app built at home, with 4–6 suggested hours; one 2024 candidate chose it over React live coding.",
               "focus": [
                 "ui"
               ],
@@ -6894,14 +7068,66 @@
                 },
                 {
                   "label": "Taro (approx.)",
+                  "date": "2024-10"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2021-07"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "second-coding-round",
+              "name": "Second coding round",
+              "kinds": [
+                "coding"
+              ],
+              "note": "One hour on CoderPad: a harder algorithm problem or a product-focused task, with follow-up changes.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-07"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2024-10"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2024-10"
+                }
+              ],
+              "moreSources": 4
+            },
+            {
+              "id": "frontend-system-design",
+              "name": "Frontend system design",
+              "kinds": [
+                "design"
+              ],
+              "note": "One hour on Excalidraw with an engineer: the UI, API endpoints and performance; at an office in some loops.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [
+                {
+                  "label": "Taro (approx.)",
                   "date": "2025-09"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-07"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2024-10"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 7
             },
             {
               "id": "experience-and-values",
@@ -6927,7 +7153,7 @@
                   "date": "2025-05"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 6
             },
             {
               "id": "team-match",
@@ -6938,19 +7164,19 @@
               "note": "Short calls with prospective teams after the interviews.",
               "sources": [
                 {
+                  "label": "Taro (approx.)",
+                  "date": "2025-09"
+                },
+                {
                   "label": "LeetCode",
                   "date": "2025-05"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2024-10"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-10"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             }
           ],
           "tasks": [
@@ -6969,7 +7195,7 @@
               ]
             },
             {
-              "id": "dashboard-widgets-draggable-resizable",
+              "id": "/guides/system-design-blueprint",
               "lead": true,
               "rounds": [
                 "frontend-system-design"
@@ -6988,17 +7214,20 @@
                 "publisher": "Taro",
                 "date": "2025-11"
               },
-              "prompt": true,
               "rounds": [
                 "technical-screen"
-              ]
+              ],
+              "prompt": true
             },
             {
               "id": "js-array-sort",
               "report": {
                 "publisher": "Taro",
                 "date": "2025-11"
-              }
+              },
+              "rounds": [
+                "technical-screen"
+              ]
             },
             {
               "id": "js-update-at-index",
@@ -7081,11 +7310,12 @@
     },
     "elevenlabs": {
       "name": "ElevenLabs",
-      "signature": "90-minute assessment",
+      "signature": "Timed coding assessment",
       "framework": "react",
-      "checkedAt": "2026-10-22",
-      "sourceCount": 7,
-      "promptCount": 5,
+      "checkedAt": "2026-11-03",
+      "sourceCount": 25,
+      "promptCount": 4,
+      "questionCount": 19,
       "variants": [
         {
           "id": "main",
@@ -7098,7 +7328,7 @@
             ],
             "who": "senior, frontend and full-stack candidates"
           },
-          "sourceCount": 6,
+          "sourceCount": 15,
           "newestReport": "2026-10",
           "rounds": [
             {
@@ -7107,22 +7337,25 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Background and what interests you about ElevenLabs; in the 2026 account it came after the technical assessment.",
+              "note": "A call about your background and why ElevenLabs.",
+              "focus": [
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "ElevenLabs careers FAQ",
                   "date": "2026-10"
                 },
                 {
-                  "label": "Aced",
-                  "date": "2026-07"
+                  "label": "Taro",
+                  "date": "2026-10"
                 },
                 {
                   "label": "Aced",
-                  "date": "2025-11"
+                  "date": "2026-07"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 5
             },
             {
               "id": "coding-assessment",
@@ -7130,27 +7363,27 @@
               "kinds": [
                 "coding"
               ],
-              "note": "The format varies; a 90-minute assessment in the 2026 account, React and algorithm problems in others.",
+              "note": "A timed test of about 90 minutes, often on CoderPad, with React or JavaScript tasks beside LeetCode-style problems.",
               "focus": [
-                "debug",
                 "algo",
-                "ui"
+                "ui",
+                "js"
               ],
               "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2026-10"
+                },
                 {
                   "label": "Aced",
                   "date": "2026-07"
                 },
                 {
-                  "label": "Aced",
-                  "date": "2025-11"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2025-05"
+                  "label": "Taro",
+                  "date": "2026-07"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 7
             },
             {
               "id": "live-technical-round",
@@ -7158,10 +7391,8 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Pair work with an engineer: fixing a practical problem, debugging a small React app or building a component.",
+              "note": "About an hour of pair work with an engineer, mostly in React on a small app or component.",
               "focus": [
-                "debug",
-                "algo",
                 "ui"
               ],
               "sources": [
@@ -7170,15 +7401,15 @@
                   "date": "2026-07"
                 },
                 {
-                  "label": "Aced",
-                  "date": "2025-11"
+                  "label": "Taro",
+                  "date": "2026-05"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-08"
+                  "label": "Taro",
+                  "date": "2026-01"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 5
             },
             {
               "id": "product-or-design-round",
@@ -7186,8 +7417,12 @@
               "kinds": [
                 "design"
               ],
-              "note": "A product or decomposition interview in the 2025 accounts, a system design interview in a 2024 account.",
+              "note": "A product discussion, a product decomposition or a system design interview.",
               "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2026-09"
+                },
                 {
                   "label": "Aced",
                   "date": "2025-11"
@@ -7195,12 +7430,9 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-05"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2024-08"
                 }
-              ]
+              ],
+              "moreSources": 4
             },
             {
               "id": "final-conversation",
@@ -7208,21 +7440,22 @@
               "kinds": [
                 "people"
               ],
-              "note": "A call with the CTO in 2025; the careers FAQ names a founder or Bar Raiser.",
+              "note": "A call with the CTO, a co-founder or the head of the organisation; the careers FAQ names a founder or Bar Raiser.",
               "sources": [
                 {
                   "label": "ElevenLabs careers FAQ",
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-05"
+                  "label": "Taro",
+                  "date": "2026-09"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-08"
+                  "date": "2025-05"
                 }
-              ]
+              ],
+              "moreSources": 2
             }
           ],
           "tasks": [
@@ -7244,7 +7477,6 @@
                 "date": "2026-07"
               },
               "rounds": [
-                "coding-assessment",
                 "live-technical-round"
               ],
               "lead": true
@@ -7295,8 +7527,7 @@
               "id": "js-stream-to-text",
               "rounds": [
                 "coding-assessment"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "js-debug-stale-closure-autosave",
@@ -7319,9 +7550,10 @@
       "name": "GitLab",
       "signature": "Merge request review",
       "framework": "vue",
-      "checkedAt": "2026-10-23",
-      "sourceCount": 20,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 39,
       "promptCount": 5,
+      "questionCount": 27,
       "variants": [
         {
           "id": "frontend",
@@ -7329,7 +7561,7 @@
           "from": "frontend engineers",
           "ask": "Interviewing as a frontend engineer?",
           "default": true,
-          "sourceCount": 15,
+          "sourceCount": 21,
           "newestReport": "2025-10",
           "rounds": [
             {
@@ -7338,8 +7570,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A short written assessment after applying.",
+              "note": "A short written assessment sent after you apply.",
               "focus": [
+                "ui",
                 "concepts"
               ],
               "sources": [
@@ -7348,15 +7581,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2019-11"
+                  "label": "Taro",
+                  "date": "2022-11"
                 },
                 {
-                  "label": "Taro",
-                  "date": "2019-08"
+                  "label": "Taro (approx.)",
+                  "date": "2019-11"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 3
             },
             {
               "id": "recruiter-screening-call",
@@ -7379,7 +7612,7 @@
                   "date": "2025-10"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "merge-request-review",
@@ -7407,7 +7640,7 @@
                   "date": "2024-02"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 6
             },
             {
               "id": "technical-interview",
@@ -7430,10 +7663,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-02"
+                  "date": "2024-03"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "behavioral-interview",
@@ -7452,14 +7685,14 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2019-12"
+                  "date": "2021-08"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2019-12"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "director-interview",
@@ -7484,7 +7717,8 @@
                   "label": "Taro (approx.)",
                   "date": "2019-12"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "references-and-offer",
@@ -7525,26 +7759,18 @@
               "prompt": true
             },
             {
-              "id": "js-create-spy-function",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-02",
-                "approx": true
-              },
-              "rounds": [
-                "merge-request-review",
-                "technical-interview"
-              ],
-              "lead": true,
-              "prompt": true
-            },
-            {
-              "id": "html-parsing-rendering",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "written-assessment"
-              ],
-              "prompt": true
+              ]
+            },
+            {
+              "id": "vue-todo-list",
+              "lead": true,
+              "rounds": [
+                "technical-interview"
+              ]
             },
             {
               "id": "/guides/behavioral/stories",
@@ -7561,7 +7787,8 @@
                 "approx": true
               },
               "rounds": [
-                "merge-request-review"
+                "merge-request-review",
+                "technical-interview"
               ],
               "prompt": true
             },
@@ -7573,7 +7800,21 @@
                 "approx": true
               },
               "rounds": [
-                "merge-request-review"
+                "merge-request-review",
+                "technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-create-spy-function",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-02",
+                "approx": true
+              },
+              "rounds": [
+                "merge-request-review",
+                "technical-interview"
               ],
               "prompt": true
             },
@@ -7585,6 +7826,13 @@
               }
             },
             {
+              "id": "html-parsing-rendering",
+              "prompt": true,
+              "rounds": [
+                "written-assessment"
+              ]
+            },
+            {
               "id": "vue-lifecycle-hooks"
             }
           ]
@@ -7594,7 +7842,7 @@
           "title": "Full-stack engineers",
           "from": "full-stack engineers",
           "ask": "Interviewing as a full-stack engineer?",
-          "sourceCount": 3,
+          "sourceCount": 5,
           "newestReport": "2025-04",
           "rounds": [
             {
@@ -7628,7 +7876,7 @@
               "kinds": [
                 "other"
               ],
-              "note": "90 minutes on a merge request reviewed before the call and improved during it; Ruby, Rails, testing and database topics.",
+              "note": "90 minutes on a merge request reviewed before the call and improved during it.",
               "focus": [
                 "debug"
               ],
@@ -7667,9 +7915,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2020-01"
+                  "date": "2021-12"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "manager-and-director-interviews",
@@ -7685,6 +7934,10 @@
                 {
                   "label": "Medium",
                   "date": "2025-04"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2023-01"
                 },
                 {
                   "label": "Taro (approx.)",
@@ -7723,14 +7976,15 @@
       "name": "Google",
       "signature": "Hiring committee",
       "framework": "javascript",
-      "checkedAt": "2026-11-06",
-      "sourceCount": 20,
-      "promptCount": 7,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 23,
+      "promptCount": 4,
+      "questionCount": 24,
       "variants": [
         {
           "id": "main",
           "title": "Software engineers in front-end roles",
-          "sourceCount": 20,
+          "sourceCount": 22,
           "newestReport": "2026-09",
           "rounds": [
             {
@@ -7822,7 +8076,7 @@
                   "date": "2022-07"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 5
             },
             {
               "id": "googleyness-interview",
@@ -7848,7 +8102,7 @@
                   "date": "2020-05"
                 }
               ],
-              "moreSources": 10
+              "moreSources": 11
             },
             {
               "id": "system-design",
@@ -7870,7 +8124,8 @@
                   "label": "Blind comment",
                   "date": "2021-06"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "hiring-committee-and-team-match",
@@ -7893,16 +8148,11 @@
           ],
           "tasks": [
             {
-              "id": "js-debounce",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2019-07"
-              },
+              "id": "js-get-by-path-1",
+              "lead": true,
               "rounds": [
-                "interview-loop",
                 "technical-screen"
               ],
-              "lead": true,
               "prompt": true
             },
             {
@@ -7958,6 +8208,17 @@
               ]
             },
             {
+              "id": "js-debounce",
+              "report": {
+                "publisher": "LeetCode Discuss",
+                "date": "2019-07"
+              },
+              "rounds": [
+                "interview-loop"
+              ],
+              "prompt": true
+            },
+            {
               "id": "js-promise-all",
               "report": {
                 "publisher": "LeetCode Discuss",
@@ -7968,38 +8229,10 @@
               ]
             },
             {
-              "id": "js-get-by-path-1",
-              "prompt": true,
-              "rounds": [
-                "assessment"
-              ]
-            },
-            {
-              "id": "js-take-latest",
-              "prompt": true,
-              "rounds": [
-                "assessment"
-              ]
-            },
-            {
-              "id": "js-event-delegation",
-              "prompt": true,
-              "rounds": [
-                "assessment"
-              ]
-            },
-            {
               "id": "web-performance-optimize-load-time",
               "prompt": true,
               "rounds": [
                 "assessment"
-              ]
-            },
-            {
-              "id": "infinite-scroll-list",
-              "prompt": true,
-              "rounds": [
-                "system-design"
               ]
             },
             {
@@ -8034,14 +8267,15 @@
       "name": "Intuit",
       "signature": "Craft demonstration",
       "framework": "react",
-      "checkedAt": "2026-10-20",
+      "checkedAt": "2026-11-13",
       "sourceCount": 20,
       "promptCount": 5,
+      "questionCount": 30,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers",
-          "sourceCount": 14,
+          "sourceCount": 16,
           "newestReport": "2026-08",
           "rounds": [
             {
@@ -8058,6 +8292,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
+                  "date": "2022-09"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2022-04"
                 }
               ]
@@ -8068,7 +8306,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "45–75 minutes on JavaScript, promises, performance, security, React and an algorithm problem.",
+              "note": "45–75 minutes with an engineer: spoken JavaScript and React questions and an algorithm problem.",
               "focus": [
                 "algo",
                 "ui",
@@ -8089,7 +8327,7 @@
                   "date": "2025-01"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 4
             },
             {
               "id": "craft-demonstration",
@@ -8097,7 +8335,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Build a task from user stories, present it, walk through the code and add features live.",
+              "note": "Build a small app against a brief, then demo it to a panel, walk through the code and change it on request.",
               "focus": [
                 "ui"
               ],
@@ -8111,11 +8349,11 @@
                   "date": "2025-11"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-08"
+                  "label": "Taro",
+                  "date": "2025-01"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 9
             },
             {
               "id": "assessor-or-technical-rounds",
@@ -8127,7 +8365,8 @@
               "focus": [
                 "algo",
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -8188,7 +8427,7 @@
                   "date": "2025-01"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 6
             },
             {
               "id": "team-matching",
@@ -8218,13 +8457,6 @@
               "lead": true,
               "rounds": [
                 "craft-demonstration"
-              ]
-            },
-            {
-              "id": "js-sleep",
-              "lead": true,
-              "rounds": [
-                "assessor-or-technical-rounds"
               ]
             },
             {
@@ -8371,12 +8603,13 @@
         "JP Morgan"
       ],
       "checkedAt": "2026-10-21",
-      "sourceCount": 25,
+      "sourceCount": 29,
       "promptCount": 5,
+      "questionCount": 28,
       "variants": [
         {
           "id": "main",
-          "title": "Front-end and React engineers, team-run loops, 2021 to 2026",
+          "title": "Front-end and React engineers, team-run loops, 2017 to 2026",
           "sourceCount": 24,
           "newestReport": "2026-05",
           "rounds": [
@@ -8393,14 +8626,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-08"
+                  "label": "Aced",
+                  "date": "2026-05"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2021-01"
+                  "date": "2025-08"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "online-assessment",
@@ -8434,8 +8668,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "About an hour on JavaScript fundamentals, React hooks and lifecycle, framework choice and your resume.",
+              "note": "About an hour of spoken questions on JavaScript, React and browser fundamentals and on your CV.",
               "focus": [
+                "algo",
                 "ui",
                 "js",
                 "concepts"
@@ -8462,7 +8697,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "30 to 90 minutes: a small React build such as a to-do list with priorities, or paper coding.",
+              "note": "30 to 90 minutes with an interviewer: a small React build, or simple paper coding with a tech lead.",
               "focus": [
                 "ui"
               ],
@@ -8558,37 +8793,29 @@
               "id": "/guides/interview-blueprint/dsa-for-fe",
               "lead": true,
               "rounds": [
-                "online-assessment"
+                "online-assessment",
+                "super-day"
               ]
             },
             {
-              "id": "js-closures",
+              "id": "js-memoization",
               "lead": true,
               "rounds": [
                 "frontend-technical-conversation"
-              ],
-              "prompt": true
-            },
-            {
-              "id": "react-todo-list",
-              "lead": true,
-              "rounds": [
-                "live-coding"
-              ],
-              "prompt": true
-            },
-            {
-              "id": "js-xss-dom-sinks",
-              "lead": true,
-              "rounds": [
-                "security-and-framework-rounds"
               ]
             },
             {
-              "id": "js-create-lru-cache",
+              "id": "react-keys-in-lists",
               "lead": true,
               "rounds": [
-                "super-day"
+                "live-coding"
+              ]
+            },
+            {
+              "id": "js-async-race-conditions",
+              "lead": true,
+              "rounds": [
+                "security-and-framework-rounds"
               ]
             },
             {
@@ -8632,13 +8859,24 @@
               "prompt": true
             },
             {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "live-coding"
+              ]
+            },
+            {
+              "id": "js-closures",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-conversation"
+              ]
+            },
+            {
               "id": "js-event-loop"
             },
             {
-              "id": "js-cookie-sessionstorage-localstorage"
-            },
-            {
-              "id": "react-usememo-vs-usecallback"
+              "id": "js-xss-dom-sinks"
             }
           ]
         }
@@ -8652,9 +8890,10 @@
         "Facebook",
         "Instagram"
       ],
-      "checkedAt": "2026-10-20",
-      "sourceCount": 17,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 19,
       "promptCount": 7,
+      "questionCount": 23,
       "variants": [
         {
           "id": "ic4-ic6",
@@ -8670,7 +8909,7 @@
             ],
             "who": "IC4 to IC6 candidates"
           },
-          "sourceCount": 15,
+          "sourceCount": 16,
           "newestReport": "2025-06",
           "rounds": [
             {
@@ -8679,8 +8918,9 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Background and interest; some recruiters ask a short JavaScript quiz.",
+              "note": "A call about your background and interest in Meta; some recruiters add a short JavaScript quiz.",
               "focus": [
+                "css",
                 "js",
                 "concepts"
               ],
@@ -8698,7 +8938,7 @@
                   "date": "2022-03"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "initial-technical-screen",
@@ -8706,7 +8946,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Coding with an engineer in CoderPad, in JavaScript: one or two problems in 45–60 minutes.",
+              "note": "A JavaScript coding interview with an engineer: 60 minutes on Meta's prep page, 45 in its guide.",
               "focus": [
                 "algo",
                 "js"
@@ -8725,7 +8965,7 @@
                   "date": "2024-03"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "full-loop-coding",
@@ -8736,6 +8976,7 @@
               "note": "About two problems in about 40 minutes, in JavaScript, with no dynamic programming.",
               "focus": [
                 "algo",
+                "css",
                 "js"
               ],
               "sources": [
@@ -8760,7 +9001,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "45 minutes without code: the front end of a product, or a component such as autocomplete or typeahead.",
+              "note": "A 45-minute design interview with no coding, in Meta's guide, which names Excalidraw among the loop's tools.",
               "focus": [
                 "ui"
               ],
@@ -8770,15 +9011,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-06"
+                  "label": "Meta: Hiring process",
+                  "date": "2026-10"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2022-03"
+                  "label": "Taro (approx.)",
+                  "date": "2025-06"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "full-loop-behavioural",
@@ -8786,7 +9027,11 @@
               "kinds": [
                 "people"
               ],
-              "note": "A 45-minute session.",
+              "note": "A 45-minute interview about your background, past projects and the impact you want to make, in Meta's guide.",
+              "focus": [
+                "css",
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "Meta: FEE full loop prep",
@@ -8806,16 +9051,11 @@
           ],
           "tasks": [
             {
-              "id": "js-flatten-once",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-10"
-              },
+              "id": "js-array-foreach",
+              "lead": true,
               "rounds": [
-                "initial-technical-screen",
-                "full-loop-coding"
-              ],
-              "lead": true
+                "initial-technical-screen"
+              ]
             },
             {
               "id": "js-debounce",
@@ -8925,6 +9165,17 @@
               "prompt": true
             },
             {
+              "id": "js-flatten-once",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-10"
+              },
+              "rounds": [
+                "initial-technical-screen",
+                "full-loop-coding"
+              ]
+            },
+            {
               "id": "js-array-sort"
             },
             {
@@ -8970,11 +9221,11 @@
           "rounds": [
             {
               "id": "recruiter-call",
-              "name": "Recruiter call",
+              "name": "Internship recruiter call",
               "kinds": [
                 "recruiter"
               ],
-              "note": "A screening call; some recruiters ask basic JavaScript questions.",
+              "note": "A screening call with a recruiter, with basic JavaScript questions in the 2021 and 2022 accounts.",
               "focus": [
                 "js",
                 "concepts"
@@ -8996,9 +9247,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One or two JavaScript interviews by video.",
+              "note": "One or two JavaScript coding interviews; the 2022 account says its two were by video call.",
               "focus": [
-                "js"
+                "ui",
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -9121,9 +9374,10 @@
       "name": "Microsoft",
       "signature": "Machine coding",
       "framework": "react",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 11,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 12,
       "promptCount": 0,
+      "questionCount": 45,
       "variants": [
         {
           "id": "frontend",
@@ -9131,7 +9385,8 @@
           "from": "frontend roles, and the loop varies by team",
           "ask": "Interviewing for a full-time role?",
           "default": true,
-          "sourceCount": 10,
+          "unordered": true,
+          "sourceCount": 11,
           "newestReport": "2025-11",
           "rounds": [
             {
@@ -9140,7 +9395,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A short call.",
+              "note": "A short call before the interviews.",
               "sources": [
                 {
                   "label": "Microsoft: Hiring tips",
@@ -9163,10 +9418,12 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A UI build: plain JavaScript in 2020–2021 accounts, React components in 2024–2025 accounts.",
+              "note": "A UI build: plain JavaScript in the 2020–2021 prompts that name a stack, mostly React in 2024–2025 accounts.",
               "focus": [
+                "css",
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -9182,7 +9439,7 @@
                   "date": "2024-06"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "javascript-and-react-concepts",
@@ -9190,8 +9447,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Output questions, polyfills and promises.",
+              "note": "Questions and short coding tasks on JavaScript and React: output prediction, polyfills and promises.",
               "focus": [
+                "algo",
                 "ui",
                 "js",
                 "concepts"
@@ -9218,10 +9476,9 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Coding problems; some frontend candidates were asked mostly non-frontend questions.",
+              "note": "Data-structure and algorithm problems, usually one or two per round.",
               "focus": [
-                "algo",
-                "concepts"
+                "algo"
               ],
               "sources": [
                 {
@@ -9245,9 +9502,11 @@
               "kinds": [
                 "design"
               ],
-              "note": "Low-level design in 2020–2021 accounts; application or component design in 2024 accounts.",
+              "note": "Low-level class design in two Bangalore loops from 2020 and 2021, application or component design in 2024.",
               "focus": [
-                "ui"
+                "algo",
+                "ui",
+                "concepts"
               ],
               "sources": [
                 {
@@ -9269,9 +9528,10 @@
               "id": "behavioural-and-hiring-manager",
               "name": "Behavioural and hiring manager",
               "kinds": [
-                "people"
+                "people",
+                "coding"
               ],
-              "note": "Hiring-manager rounds that were technical in the 2020 and 2021 accounts and behavioural in 2024.",
+              "note": "A hiring manager round, technical in a 2020 and a 2021 Bangalore loop.",
               "sources": [
                 {
                   "label": "LeetCode",
@@ -9287,6 +9547,24 @@
                 }
               ],
               "moreSources": 1
+            },
+            {
+              "id": "as-appropriate",
+              "name": "As Appropriate round",
+              "kinds": [
+                "people",
+                "coding"
+              ],
+              "note": "A final one-hour round with an interviewer at GM or Partner level, in a 2020 Bangalore loop.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [
+                {
+                  "label": "dev.to",
+                  "date": "2020-10"
+                }
+              ]
             }
           ],
           "tasks": [
@@ -9362,7 +9640,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A first interview.",
+              "note": "An initial interview, held virtually like every student interview.",
               "sources": [
                 {
                   "label": "Microsoft: Student interviewing",
@@ -9376,7 +9654,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A second, final interview for those selected; student interviews are virtual.",
+              "note": "A second and final interview for students selected after the first, also virtual.",
               "sources": [
                 {
                   "label": "Microsoft: Student interviewing",
@@ -9431,9 +9709,10 @@
       "signature": "Take-home",
       "framework": "javascript",
       "mixed": true,
-      "checkedAt": "2026-10-22",
-      "sourceCount": 14,
-      "promptCount": 6,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 15,
+      "promptCount": 5,
+      "questionCount": 13,
       "variants": [
         {
           "id": "experienced",
@@ -9441,7 +9720,7 @@
           "from": "experienced engineers",
           "ask": "Interviewing as an experienced engineer?",
           "default": true,
-          "sourceCount": 7,
+          "sourceCount": 10,
           "newestReport": "2025-12",
           "rounds": [
             {
@@ -9456,19 +9735,19 @@
               ],
               "sources": [
                 {
+                  "label": "Aced",
+                  "date": "2024-12"
+                },
+                {
+                  "label": "Aced",
+                  "date": "2024-09"
+                },
+                {
                   "label": "Blind (recruiter plan)",
                   "date": "2024-02"
-                },
-                {
-                  "label": "Blind comment",
-                  "date": "2024-01"
-                },
-                {
-                  "label": "Blind",
-                  "date": "2022-03"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 3
             },
             {
               "id": "hiring-manager-conversation",
@@ -9482,19 +9761,19 @@
               ],
               "sources": [
                 {
+                  "label": "Aced",
+                  "date": "2024-12"
+                },
+                {
                   "label": "Blind comment",
                   "date": "2024-01"
                 },
                 {
                   "label": "Blind",
                   "date": "2022-03"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2021-08"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "technical-screen",
@@ -9504,6 +9783,7 @@
               ],
               "note": "One hour with three small JavaScript tasks in a 2025 screen for an L4 or L5 frontend role.",
               "focus": [
+                "ui",
                 "js"
               ],
               "sources": [
@@ -9512,14 +9792,15 @@
                   "date": "2025-12"
                 },
                 {
-                  "label": "Blind (recruiter plan)",
-                  "date": "2024-02"
+                  "label": "Aced",
+                  "date": "2024-12"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2022-03"
+                  "label": "Aced",
+                  "date": "2024-09"
                 }
-              ]
+              ],
+              "moreSources": 4
             },
             {
               "id": "take-home",
@@ -9527,14 +9808,19 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A build exercise reviewed later in the loop, in the 2020 account and in a loop from before 2022.",
+              "note": "A UI built at home, in two 2020 accounts, one of which reviewed it in the onsite.",
               "focus": [
-                "ui"
+                "ui",
+                "concepts"
               ],
               "sources": [
                 {
                   "label": "Blind",
                   "date": "2022-03"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2020-11"
                 },
                 {
                   "label": "Taro (approx.)",
@@ -9558,41 +9844,39 @@
               ],
               "sources": [
                 {
-                  "label": "Blind (recruiter plan)",
-                  "date": "2024-02"
+                  "label": "Aced",
+                  "date": "2024-12"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2020-11"
+                  "label": "Aced",
+                  "date": "2024-09"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2020-10"
+                  "label": "Aced",
+                  "date": "2024-09"
                 }
-              ]
+              ],
+              "moreSources": 3
             }
           ],
           "tasks": [
             {
-              "id": "/companies/netflix/preview#netflix-round-culture",
-              "lead": true,
-              "rounds": [
-                "hiring-manager-conversation"
-              ]
-            },
-            {
-              "id": "js-promise-combinators-all-allsettled-race-any",
+              "id": "js-debounce",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-11"
+              },
               "lead": true,
               "rounds": [
                 "technical-screen"
               ]
             },
             {
-              "id": "js-debounce",
-              "report": {
-                "publisher": "Taro",
-                "date": "2024-11"
-              }
+              "id": "/companies/netflix/preview#netflix-round-culture",
+              "lead": true,
+              "rounds": [
+                "hiring-manager-conversation"
+              ]
             },
             {
               "id": "react-debounced-search",
@@ -9753,14 +10037,15 @@
       "signature": "Agentic coding option",
       "framework": "react",
       "mixed": true,
-      "checkedAt": "2026-10-22",
-      "sourceCount": 8,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 12,
       "promptCount": 0,
+      "questionCount": 8,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers",
-          "sourceCount": 8,
+          "sourceCount": 10,
           "newestReport": "2026-10",
           "rounds": [
             {
@@ -9794,11 +10079,11 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-12"
+                  "label": "Aced",
+                  "date": "2025-04"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "technical-screen",
@@ -9807,11 +10092,9 @@
                 "coding",
                 "design"
               ],
-              "note": "Refactoring then systems design in one 2024 account; a JavaScript fix or a React exercise in others.",
+              "note": "Coding, then system design, back to back in a 2024 senior frontend screen, neither run by a frontend engineer.",
               "focus": [
-                "debug",
-                "ui",
-                "js"
+                "ui"
               ],
               "sources": [
                 {
@@ -9819,15 +10102,15 @@
                   "date": "2025-04"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2024-11"
+                  "label": "Aced",
+                  "date": "2025-04"
                 },
                 {
-                  "label": "Taro",
-                  "date": "2024-05"
+                  "label": "Blind",
+                  "date": "2024-11"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "agentic-coding-option",
@@ -9861,6 +10144,7 @@
               ],
               "note": "4 to 6 hours with 4 to 6 people over 1 to 2 days, per the guide.",
               "focus": [
+                "debug",
                 "ui"
               ],
               "sources": [
@@ -9869,10 +10153,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2023-02"
+                  "label": "PracHub (curated)",
+                  "date": "2026-07"
+                },
+                {
+                  "label": "Aced",
+                  "date": "2025-04"
                 }
-              ]
+              ],
+              "moreSources": 1
             },
             {
               "id": "decision",
@@ -9940,14 +10229,15 @@
       "name": "Revolut",
       "signature": "Bar Raiser",
       "framework": "react",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 17,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 21,
       "promptCount": 5,
+      "questionCount": 22,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers in European hubs",
-          "sourceCount": 14,
+          "sourceCount": 17,
           "newestReport": "2026-03",
           "rounds": [
             {
@@ -9956,10 +10246,10 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Background and salary; some recruiters ask a few JavaScript questions.",
+              "note": "A call on your background, salary and the next steps; some recruiters add a short check of JavaScript or React theory.",
               "focus": [
-                "js",
-                "concepts"
+                "ui",
+                "js"
               ],
               "sources": [
                 {
@@ -9967,15 +10257,15 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-05"
+                  "label": "Taro",
+                  "date": "2025-11"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2025-03"
+                  "date": "2025-05"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 5
             },
             {
               "id": "hackerrank-assessment",
@@ -9993,15 +10283,15 @@
                   "date": "2025-11"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2024-05"
+                  "label": "Taro",
+                  "date": "2025-01"
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-04"
+                  "date": "2024-05"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 6
             },
             {
               "id": "live-coding",
@@ -10009,7 +10299,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "About an hour of React and TypeScript: render API data with loading and error states, or extend a small app.",
+              "note": "About an hour of TypeScript and React with an interviewer, from a prepared boilerplate or in CodeSandbox.",
               "focus": [
                 "ui",
                 "js"
@@ -10025,10 +10315,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2024-05"
+                  "date": "2025-03"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 5
             },
             {
               "id": "system-design",
@@ -10036,7 +10326,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "Product features and API contracts, or a whole system such as card delivery.",
+              "note": "A design round on a whiteboard, Excalidraw in a 2024 loop; a 2023 recruiter said it decides between mid and senior.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -10058,7 +10348,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "A behavioural conversation with the team.",
+              "note": "A behavioural conversation about past experience.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -10076,7 +10366,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "An interview on how you work and make decisions; listed in recent plans, with no first-hand account since 2022.",
+              "note": "An interview on how you work and make decisions; listed in recent plans, and no frontend review describes sitting it.",
               "sources": [
                 {
                   "label": "Revolut: Bar Raiser interview video",
@@ -10195,9 +10485,10 @@
       "signature": "Design or machine coding",
       "framework": "javascript",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 11,
-      "promptCount": 5,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 15,
+      "promptCount": 4,
+      "questionCount": 30,
       "variants": [
         {
           "id": "main",
@@ -10210,8 +10501,8 @@
             ],
             "who": "IC2 to senior candidates"
           },
-          "sourceCount": 5,
-          "newestReport": "2026-02",
+          "sourceCount": 8,
+          "newestReport": "2025-11",
           "rounds": [
             {
               "id": "screening-call",
@@ -10219,14 +10510,18 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A short screening conversation.",
+              "note": "A short call with a recruiter or HR on your background, your projects and what you want next.",
               "sources": [
                 {
                   "label": "Medium",
                   "date": "2025-09"
                 },
                 {
-                  "label": "Taro",
+                  "label": "Blind",
+                  "date": "2022-10"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2022-03"
                 }
               ]
@@ -10237,10 +10532,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "About an hour in one account: closures, promises, polyfills and output prediction.",
+              "note": "JavaScript questions and one to three coding problems, an hour long in a 2023 account.",
               "focus": [
                 "algo",
                 "css",
+                "ui",
                 "js",
                 "concepts"
               ],
@@ -10267,12 +10563,16 @@
                 "coding",
                 "design"
               ],
-              "note": "Deeper JavaScript, algorithm problems, or high- and low-level design.",
+              "note": "A harder JavaScript round or an hour of algorithm problems, three of them in a 2023 account.",
               "focus": [
                 "algo",
                 "js"
               ],
               "sources": [
+                {
+                  "label": "Blind (plan)",
+                  "date": "2025-11"
+                },
                 {
                   "label": "Medium",
                   "date": "2025-09"
@@ -10280,13 +10580,9 @@
                 {
                   "label": "LeetCode",
                   "date": "2025-03"
-                },
-                {
-                  "label": "LeetCode",
-                  "date": "2023-09"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "design-or-machine-coding",
@@ -10294,18 +10590,20 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A small web app in plain JavaScript, or a UI in React, Angular or plain JavaScript.",
+              "note": "A small web app to design and build in plain JavaScript, or a coding problem and a UI to build.",
               "focus": [
+                "algo",
+                "css",
                 "ui",
                 "js"
               ],
               "sources": [
                 {
-                  "label": "Taro",
+                  "label": "Taro (approx.)",
                   "date": "2024-02"
                 },
                 {
-                  "label": "Taro",
+                  "label": "Taro (approx.)",
                   "date": "2022-03"
                 }
               ]
@@ -10317,76 +10615,29 @@
                 "people",
                 "design"
               ],
-              "note": "A hiring-manager round mixing JavaScript questions, a design task and behavioural questions.",
+              "note": "The hiring manager's round: JavaScript questions, a coding or design task, behavioural questions, or a mix of them.",
               "focus": [
                 "js",
                 "concepts"
               ],
               "sources": [
                 {
+                  "label": "Blind (plan)",
+                  "date": "2025-11"
+                },
+                {
                   "label": "Medium",
                   "date": "2025-09"
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2025-03"
-                },
-                {
-                  "label": "LeetCode",
-                  "date": "2023-09"
+                  "date": "2025-06"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 4
             }
           ],
           "tasks": [
-            {
-              "id": "js-closures",
-              "lead": true,
-              "rounds": [
-                "javascript-fundamentals"
-              ]
-            },
-            {
-              "id": "js-valid-parentheses",
-              "lead": true,
-              "rounds": [
-                "second-technical-round"
-              ]
-            },
-            {
-              "id": "react-todo-list",
-              "lead": true,
-              "rounds": [
-                "design-or-machine-coding"
-              ]
-            },
-            {
-              "id": "js-map-vs-object",
-              "lead": true,
-              "rounds": [
-                "hiring-manager"
-              ],
-              "prompt": true
-            },
-            {
-              "id": "notification-toast-system",
-              "report": {
-                "publisher": "Blind",
-                "date": "2021-09"
-              },
-              "prompt": true,
-              "rounds": [
-                "second-technical-round"
-              ]
-            },
-            {
-              "id": "react-nested-comments",
-              "report": {
-                "publisher": "LeetCode Discuss",
-                "date": "2026-02"
-              }
-            },
             {
               "id": "js-array-foreach",
               "report": {
@@ -10396,6 +10647,28 @@
               "rounds": [
                 "javascript-fundamentals",
                 "second-technical-round"
+              ],
+              "lead": true
+            },
+            {
+              "id": "js-valid-parentheses",
+              "lead": true,
+              "rounds": [
+                "second-technical-round"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states",
+              "lead": true,
+              "rounds": [
+                "design-or-machine-coding"
+              ]
+            },
+            {
+              "id": "/guides/behavioral/stories",
+              "lead": true,
+              "rounds": [
+                "hiring-manager"
               ]
             },
             {
@@ -10439,6 +10712,27 @@
                 "publisher": "Blind",
                 "date": "2021-09"
               }
+            },
+            {
+              "id": "notification-toast-system",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-09"
+              }
+            },
+            {
+              "id": "react-nested-comments",
+              "report": {
+                "publisher": "Blind",
+                "date": "2021-09"
+              }
+            },
+            {
+              "id": "js-map-vs-object",
+              "prompt": true,
+              "rounds": [
+                "javascript-fundamentals"
+              ]
             }
           ]
         }
@@ -10448,14 +10742,15 @@
       "name": "Shopee",
       "signature": "CS-fundamentals round",
       "framework": "react",
-      "checkedAt": "2026-10-21",
-      "sourceCount": 15,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 21,
       "promptCount": 5,
+      "questionCount": 133,
       "variants": [
         {
           "id": "ho-chi-minh",
           "title": "Front-end engineers, Ho Chi Minh City, 2025",
-          "from": "candidates in Ho Chi Minh City",
+          "from": "one account of a Ho Chi Minh City loop",
           "ask": "Interviewing in Ho Chi Minh City?",
           "default": true,
           "sourceCount": 1,
@@ -10467,7 +10762,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Personal details, expected salary and whether the candidate is willing to move to Saigon.",
+              "note": "Ho Chi Minh City loop, from one account: personal details, expected salary and whether you would move to Saigon.",
               "sources": [
                 {
                   "label": "Viblo",
@@ -10486,7 +10781,8 @@
                 "algo",
                 "css",
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -10502,7 +10798,7 @@
                 "coding",
                 "design"
               ],
-              "note": "Design a system based on your current work, then HTTP, TCP/UDP, WebSocket and encryption questions.",
+              "note": "A design discussion that starts from your current work, then networking and security fundamentals.",
               "focus": [
                 "concepts"
               ],
@@ -10519,7 +10815,10 @@
               "kinds": [
                 "people"
               ],
-              "note": "A week later: how the candidate had worked with a colleague who held a different view, and how it was resolved.",
+              "note": "After a pass notice a week later: how the candidate works, handles problems and communicates, and past difficulties.",
+              "focus": [
+                "algo"
+              ],
               "sources": [
                 {
                   "label": "Viblo",
@@ -10533,7 +10832,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "Future direction and expectations at Shopee compared with the previous job; the offer came a few days later.",
+              "note": "A light last round on future direction and expectations at Shopee, compared with the previous job.",
               "sources": [
                 {
                   "label": "Viblo",
@@ -10554,14 +10853,6 @@
                 "cs-fundamentals-round"
               ],
               "lead": true,
-              "prompt": true
-            },
-            {
-              "id": "http-caching-basics",
-              "lead": true,
-              "rounds": [
-                "cs-fundamentals-round"
-              ],
               "prompt": true
             },
             {
@@ -10595,24 +10886,6 @@
               "prompt": true
             },
             {
-              "id": "css-inline-centering",
-              "report": {
-                "publisher": "GoodJob",
-                "date": "2021-01"
-              },
-              "prompt": true,
-              "rounds": [
-                "frontend-technical-round"
-              ]
-            },
-            {
-              "id": "js-shallow-clone",
-              "report": {
-                "publisher": "GoodJob",
-                "date": "2021-01"
-              }
-            },
-            {
               "id": "js-deep-clone"
             },
             {
@@ -10622,10 +10895,19 @@
               "id": "js-memoize-function"
             },
             {
+              "id": "js-shallow-clone"
+            },
+            {
+              "id": "css-inline-centering"
+            },
+            {
               "id": "js-flatten-once"
             },
             {
               "id": "js-valid-parentheses"
+            },
+            {
+              "id": "css-cascade-order"
             }
           ]
         },
@@ -10635,7 +10917,7 @@
           "from": "fresh graduates in Singapore",
           "ask": "Interviewing as a fresh graduate in Singapore?",
           "students": true,
-          "sourceCount": 4,
+          "sourceCount": 5,
           "newestReport": "2022-01",
           "rounds": [
             {
@@ -10644,7 +10926,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A 70-minute test in the 2022 account: multiple-choice on systems and networking plus two array problems.",
+              "note": "A 70-minute test in the 2022 account: multiple-choice on systems and networking plus two coding problems.",
               "focus": [
                 "algo",
                 "concepts"
@@ -10657,12 +10939,16 @@
                 {
                   "label": "PTT",
                   "date": "2021-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2020-10"
                 }
               ]
             },
             {
               "id": "technical-video-rounds",
-              "name": "Technical video rounds",
+              "name": "Technical rounds on a shared editor",
               "kinds": [
                 "coding"
               ],
@@ -10671,7 +10957,6 @@
                 "algo",
                 "css",
                 "ui",
-                "js",
                 "concepts"
               ],
               "sources": [
@@ -10711,17 +10996,10 @@
           ],
           "tasks": [
             {
-              "id": "css-cascade-order",
+              "id": "/guides/interview-blueprint/dsa-for-fe",
               "lead": true,
               "rounds": [
                 "technical-video-rounds"
-              ]
-            },
-            {
-              "id": "css-inline-centering",
-              "prompt": true,
-              "rounds": [
-                "online-assessment"
               ]
             },
             {
@@ -10746,22 +11024,25 @@
               "id": "js-shallow-clone"
             },
             {
+              "id": "css-inline-centering"
+            },
+            {
               "id": "js-flatten-once"
             },
             {
               "id": "js-valid-parentheses"
             },
             {
-              "id": "css-position-relative-absolute-fixed"
+              "id": "css-cascade-order"
             }
           ]
         },
         {
           "id": "mainland-china",
-          "title": "Campus and social hires, mainland China, in Chinese, 2019 to 2025",
+          "title": "Campus and social hires, mainland China, in Chinese, 2019 to 2022",
           "from": "candidates in mainland China",
           "ask": "Interviewing in mainland China?",
-          "sourceCount": 7,
+          "sourceCount": 8,
           "newestReport": "2022-04",
           "rounds": [
             {
@@ -10784,10 +11065,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "JavaScript, CSS, HTTP and framework basics plus one or two small algorithms.",
+              "note": "JavaScript, CSS, HTTP and framework basics plus one to three short coding tasks.",
               "focus": [
-                "algo",
                 "css",
+                "ui",
                 "js",
                 "concepts"
               ],
@@ -10802,10 +11083,10 @@
                 },
                 {
                   "label": "Nowcoder",
-                  "date": "2020-07"
+                  "date": "2020-08"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "second-technical-interview",
@@ -10813,9 +11094,8 @@
               "kinds": [
                 "coding"
               ],
-              "note": "React internals, HTTP/2, webpack performance, CDN and scenario questions, project depth and a second coding task.",
+              "note": "Deeper framework, tooling and performance questions, scenarios, project depth and often a second coding task.",
               "focus": [
-                "ui",
                 "concepts"
               ],
               "sources": [
@@ -10825,14 +11105,14 @@
                 },
                 {
                   "label": "Nowcoder",
-                  "date": "2020-07"
+                  "date": "2020-08"
                 },
                 {
-                  "label": "Juejin",
-                  "date": "2020-03"
+                  "label": "Nowcoder",
+                  "date": "2020-07"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 2
             },
             {
               "id": "hr-interview-and-offer",
@@ -10862,6 +11142,13 @@
           ],
           "tasks": [
             {
+              "id": "/guides/interview-blueprint/quiz",
+              "lead": true,
+              "rounds": [
+                "first-technical-interview"
+              ]
+            },
+            {
               "id": "js-memoize-function",
               "report": {
                 "publisher": "Nowcoder",
@@ -10871,20 +11158,7 @@
                 "first-technical-interview",
                 "second-technical-interview"
               ],
-              "lead": true,
               "prompt": true
-            },
-            {
-              "id": "js-implement-new",
-              "report": {
-                "publisher": "Juejin",
-                "date": "2020-03"
-              },
-              "rounds": [
-                "first-technical-interview",
-                "second-technical-interview"
-              ],
-              "lead": true
             },
             {
               "id": "js-valid-parentheses",
@@ -10920,17 +11194,21 @@
               ]
             },
             {
+              "id": "js-implement-new",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ]
+            },
+            {
               "id": "http-caching-basics",
               "prompt": true,
               "rounds": [
                 "first-technical-interview"
-              ]
-            },
-            {
-              "id": "css-inline-centering",
-              "prompt": true,
-              "rounds": [
-                "application-or-referral-then-a-written-test"
               ]
             },
             {
@@ -10946,6 +11224,150 @@
               "id": "js-shallow-clone"
             },
             {
+              "id": "css-inline-centering"
+            }
+          ]
+        },
+        {
+          "id": "taipei",
+          "title": "Front-end and software engineers, Taipei, 2021 to 2023",
+          "from": "candidates in Taipei",
+          "ask": "Interviewing in Taipei?",
+          "sourceCount": 2,
+          "newestReport": "2023-06",
+          "rounds": [
+            {
+              "id": "hr-phone-screen",
+              "name": "HR phone screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A 30-minute HR call on background and the job in the 2021 account; the 2023 account lists an HR conversation first.",
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2023-06"
+                },
+                {
+                  "label": "GoodJob",
+                  "date": "2021-01"
+                }
+              ]
+            },
+            {
+              "id": "onsite-written-test",
+              "name": "Onsite written test",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A 90-minute written test on site: seven questions on JavaScript, CSS and React, rated junior level by the candidate.",
+              "focus": [
+                "css",
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2021-01"
+                }
+              ]
+            },
+            {
+              "id": "team-interviews",
+              "name": "Team interviews",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "Panels with a product manager and a tech lead on practical work, or a manager round and a peer round.",
+              "focus": [
+                "algo",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2023-06"
+                },
+                {
+                  "label": "GoodJob",
+                  "date": "2021-01"
+                }
+              ]
+            },
+            {
+              "id": "senior-manager-conversation",
+              "name": "Senior-manager conversation",
+              "kinds": [
+                "people"
+              ],
+              "note": "A last round with a senior manager, mostly a chat, in the 2023 account.",
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2023-06"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "/guides/interview-blueprint/quiz",
+              "lead": true,
+              "rounds": [
+                "onsite-written-test"
+              ]
+            },
+            {
+              "id": "css-inline-centering",
+              "report": {
+                "publisher": "GoodJob",
+                "date": "2021-01"
+              },
+              "rounds": [
+                "onsite-written-test",
+                "team-interviews"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-shallow-clone",
+              "report": {
+                "publisher": "GoodJob",
+                "date": "2021-01"
+              },
+              "rounds": [
+                "onsite-written-test",
+                "team-interviews"
+              ]
+            },
+            {
+              "id": "css-positioning-badge"
+            },
+            {
+              "id": "js-create-deferred-promise"
+            },
+            {
+              "id": "js-deep-clone"
+            },
+            {
+              "id": "js-filter-tree-render-indented"
+            },
+            {
+              "id": "js-implement-new"
+            },
+            {
+              "id": "js-memoize-function"
+            },
+            {
+              "id": "js-flatten-once"
+            },
+            {
+              "id": "js-valid-parentheses"
+            },
+            {
               "id": "css-cascade-order"
             }
           ]
@@ -10957,15 +11379,16 @@
       "signature": "Web practical",
       "framework": "javascript",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 17,
-      "promptCount": 7,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 37,
+      "promptCount": 5,
+      "questionCount": 29,
       "variants": [
         {
           "id": "main",
-          "title": "Web engineers, United States and Canada",
-          "sourceCount": 11,
-          "newestReport": "2025-02",
+          "title": "Web and full-stack engineers",
+          "sourceCount": 31,
+          "newestReport": "2026-03",
           "rounds": [
             {
               "id": "recruiter-call",
@@ -10973,22 +11396,22 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A short call on background and why Spotify.",
+              "note": "A video or phone call with a recruiter, 5 to 30 minutes in the accounts, on your background and why Spotify.",
               "sources": [
                 {
                   "label": "Spotify: Start your journey",
-                  "date": "2026-10"
+                  "date": "2026-11"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2025-06"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-02"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 7
             },
             {
               "id": "technical-screen",
@@ -10996,28 +11419,29 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60–75 minutes with one or two engineers: JavaScript and CSS questions, an easy algorithm or an HTML and CSS mockup.",
+              "note": "60 to 90 minutes with one or two engineers: JavaScript and CSS questions and a coding task.",
               "focus": [
                 "algo",
                 "css",
+                "ui",
                 "js",
                 "concepts"
               ],
               "sources": [
                 {
                   "label": "Spotify: Start your journey",
-                  "date": "2026-10"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2025-02"
+                  "date": "2026-11"
                 },
                 {
                   "label": "Taro",
-                  "date": "2022-08"
+                  "date": "2025-06"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-06"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 16
             },
             {
               "id": "final-web-practical",
@@ -11025,7 +11449,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A plain HTML, CSS and JavaScript build, such as a form that fetches from an API, or web domain questions.",
+              "note": "An hour in plain HTML, CSS and JavaScript: a small feature or app to build, or web domain questions.",
               "focus": [
                 "css",
                 "ui",
@@ -11034,19 +11458,19 @@
               ],
               "sources": [
                 {
+                  "label": "Blind",
+                  "date": "2026-03"
+                },
+                {
                   "label": "Taro (approx.)",
                   "date": "2025-02"
                 },
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-09"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 7
             },
             {
               "id": "final-algorithms",
@@ -11054,11 +11478,15 @@
               "kinds": [
                 "coding"
               ],
-              "note": "An easy to medium LeetCode-style problem.",
+              "note": "An hour on one or two coding problems, very basic to LeetCode medium in most accounts and hard in one 2025 loop.",
               "focus": [
                 "algo"
               ],
               "sources": [
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-06"
+                },
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-02"
@@ -11066,13 +11494,9 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-04"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 8
             },
             {
               "id": "final-system-design",
@@ -11080,8 +11504,12 @@
               "kinds": [
                 "design"
               ],
-              "note": "Product design that includes the backend.",
+              "note": "An hour designing a product end to end, backend included.",
               "sources": [
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-06"
+                },
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-02"
@@ -11089,13 +11517,9 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-04"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 8
             },
             {
               "id": "final-values",
@@ -11103,27 +11527,30 @@
               "kinds": [
                 "people"
               ],
-              "note": "A values interview; one account had it with the hiring manager.",
+              "note": "Values and behavioural questions, an hour with the hiring manager in a 2022 account and 30 minutes in a 2021 one.",
+              "focus": [
+                "concepts"
+              ],
               "sources": [
+                {
+                  "label": "Spotify: Interview FAQ",
+                  "date": "2026-11"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-06"
+                },
                 {
                   "label": "Taro (approx.)",
                   "date": "2025-02"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2023-04"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-08"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 8
             }
           ],
           "tasks": [
             {
-              "id": "js-event-loop",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "technical-screen"
@@ -11137,7 +11564,7 @@
               ]
             },
             {
-              "id": "js-valid-parentheses",
+              "id": "/guides/interview-blueprint/dsa-for-fe",
               "lead": true,
               "rounds": [
                 "final-algorithms"
@@ -11158,14 +11585,9 @@
               ]
             },
             {
-              "id": "react-debounced-search",
-              "report": {
-                "publisher": "Blind",
-                "date": "2022-04"
-              },
+              "id": "js-dom-renderer",
               "rounds": [
-                "final-web-practical",
-                "final-algorithms"
+                "final-web-practical"
               ]
             },
             {
@@ -11173,20 +11595,6 @@
               "prompt": true,
               "rounds": [
                 "final-web-practical"
-              ]
-            },
-            {
-              "id": "react-image-slider",
-              "prompt": true,
-              "rounds": [
-                "final-web-practical"
-              ]
-            },
-            {
-              "id": "js-sleep",
-              "prompt": true,
-              "rounds": [
-                "technical-screen"
               ]
             },
             {
@@ -11204,7 +11612,24 @@
               ]
             },
             {
+              "id": "js-sleep",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "scalable-notifications-feed",
+              "prompt": true,
+              "rounds": [
+                "final-system-design"
+              ]
+            },
+            {
               "id": "js-unique-array"
+            },
+            {
+              "id": "react-image-slider"
             }
           ]
         }
@@ -11214,15 +11639,16 @@
       "name": "Stripe",
       "signature": "Bug squash",
       "framework": "javascript",
-      "checkedAt": "2026-10-20",
-      "sourceCount": 9,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 25,
       "promptCount": 0,
+      "questionCount": 17,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers",
-          "sourceCount": 9,
-          "newestReport": "2025-09",
+          "sourceCount": 21,
+          "newestReport": "2026-01",
           "rounds": [
             {
               "id": "recruiter-screen",
@@ -11230,7 +11656,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "30 minutes.",
+              "note": "About 30 minutes with a recruiter, by phone in the 2025 accounts, on your experience, your motivation and the role.",
               "sources": [
                 {
                   "label": "Stripe: Careers FAQ",
@@ -11242,10 +11668,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2025-03"
+                  "date": "2025-07"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 3
             },
             {
               "id": "technical-screen",
@@ -11264,14 +11690,14 @@
                 },
                 {
                   "label": "Taro",
-                  "date": "2025-09"
+                  "date": "2026-01"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-08"
+                  "label": "Taro",
+                  "date": "2025-09"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 10
             },
             {
               "id": "onsite-bug-squash",
@@ -11279,7 +11705,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Find and fix bugs in an unfamiliar codebase.",
+              "note": "Fix a bug in a codebase you have not seen: reproduce it, find the cause and get the existing tests passing.",
               "focus": [
                 "debug"
               ],
@@ -11294,10 +11720,10 @@
                 },
                 {
                   "label": "Taro (approx.)",
-                  "date": "2023-10"
+                  "date": "2024-04"
                 }
               ],
-              "moreSources": 1
+              "moreSources": 4
             },
             {
               "id": "onsite-integration",
@@ -11305,8 +11731,16 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Combine provided tools or APIs into a working feature.",
+              "note": "Build a working piece of a feature with tools or an API you are given, reading their documentation as you go.",
+              "focus": [
+                "debug",
+                "ui"
+              ],
               "sources": [
+                {
+                  "label": "Medium",
+                  "date": "2025-10"
+                },
                 {
                   "label": "Blind (recruiter plan)",
                   "date": "2024-11"
@@ -11314,12 +11748,9 @@
                 {
                   "label": "Taro (approx.)",
                   "date": "2023-10"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2022-11"
                 }
-              ]
+              ],
+              "moreSources": 2
             },
             {
               "id": "onsite-programming-exercise",
@@ -11327,7 +11758,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A coding exercise.",
+              "note": "A coding exercise with an engineer.",
+              "focus": [
+                "algo",
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "Blind (recruiter plan)",
@@ -11335,9 +11770,14 @@
                 },
                 {
                   "label": "Taro (approx.)",
+                  "date": "2024-04"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2023-10"
                 }
-              ]
+              ],
+              "moreSources": 2
             },
             {
               "id": "onsite-frontend-design",
@@ -11345,10 +11785,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "Design a frontend system or component.",
-              "focus": [
-                "ui"
-              ],
+              "note": "A design discussion, talked through rather than coded, about how you would structure a piece of frontend.",
               "sources": [
                 {
                   "label": "Blind (recruiter plan)",
@@ -11356,9 +11793,14 @@
                 },
                 {
                   "label": "Taro (approx.)",
+                  "date": "2024-04"
+                },
+                {
+                  "label": "Taro (approx.)",
                   "date": "2023-10"
                 }
-              ]
+              ],
+              "moreSources": 2
             },
             {
               "id": "onsite-manager-conversation",
@@ -11366,17 +11808,25 @@
               "kinds": [
                 "people"
               ],
-              "note": "A conversation about goals and past work.",
+              "note": "A conversation with the hiring manager about your past work, how you work and your goals.",
+              "focus": [
+                "concepts"
+              ],
               "sources": [
+                {
+                  "label": "Medium",
+                  "date": "2025-10"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2025-09"
+                },
                 {
                   "label": "Blind (recruiter plan)",
                   "date": "2024-11"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2023-10"
                 }
-              ]
+              ],
+              "moreSources": 4
             }
           ],
           "tasks": [
@@ -11485,9 +11935,10 @@
       "signature": "Frontend system design",
       "framework": "react",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 15,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 17,
       "promptCount": 0,
+      "questionCount": 22,
       "variants": [
         {
           "id": "engineers",
@@ -11504,7 +11955,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "A recruiter or HR call came first in two accounts; in another, a brief introductory call followed the online assessment.",
+              "note": "A recruiter or HR call came first in two accounts; in a third, a short introductory call followed the assessment.",
               "sources": [
                 {
                   "label": "Taro",
@@ -11528,6 +11979,8 @@
               ],
               "note": "Often on Codility: one account lists 2 hours for 5 questions, another a three-hour assessment.",
               "focus": [
+                "algo",
+                "css",
                 "ui",
                 "concepts"
               ],
@@ -11553,9 +12006,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A one-hour phone or video interview.",
+              "note": "A one-hour phone or video interview, or a live React coding session.",
               "focus": [
                 "algo",
+                "css",
                 "ui",
                 "js",
                 "concepts"
@@ -11584,6 +12038,7 @@
               ],
               "note": "One or two frontend coding rounds in React, or an Angular round followed by a TypeScript and JavaScript round.",
               "focus": [
+                "algo",
                 "ui",
                 "js"
               ],
@@ -11609,7 +12064,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One algorithm round, such as a LeetCode-style card game built on a deque.",
+              "note": "One LeetCode-style algorithm round, which a 2020 recruiter planned as one of three coding rounds.",
               "focus": [
                 "algo"
               ],
@@ -11623,7 +12078,7 @@
                   "date": "2020-12"
                 },
                 {
-                  "label": "Blind",
+                  "label": "Blind (recruiter plan)",
                   "date": "2020-06"
                 }
               ]
@@ -11634,10 +12089,7 @@
               "kinds": [
                 "design"
               ],
-              "note": "A design round on a shared component and its API in one account, on a car rental company in another.",
-              "focus": [
-                "ui"
-              ],
+              "note": "One frontend system design round in the 2020 and 2024 onsite accounts.",
               "sources": [
                 {
                   "label": "Taro (approx.)",
@@ -11662,7 +12114,7 @@
                   "date": "2020-12"
                 },
                 {
-                  "label": "Blind",
+                  "label": "Blind (recruiter plan)",
                   "date": "2020-06"
                 }
               ]
@@ -11684,46 +12136,17 @@
           ],
           "tasks": [
             {
-              "id": "js-shallow-clone",
-              "report": {
-                "publisher": "GitHub",
-                "date": "2025-08"
-              },
-              "lead": true,
-              "rounds": [
-                "final-loop-data-structures-and-algorithms"
-              ]
-            },
-            {
-              "id": "html-forms-validation-required",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-01",
-                "approx": true
-              },
-              "rounds": [
-                "online-assessment",
-                "final-loop-frontend-coding"
-              ],
-              "lead": true
-            },
-            {
-              "id": "js-color-contrast-ratio",
-              "report": {
-                "publisher": "Taro",
-                "date": "2022-01",
-                "approx": true
-              },
-              "rounds": [
-                "online-assessment"
-              ],
-              "lead": true
-            },
-            {
               "id": "react-phone-screen-search-bar-rehearsal",
               "lead": true,
               "rounds": [
                 "technical-screen"
+              ]
+            },
+            {
+              "id": "/guides/framework-prep/react-prep-path",
+              "lead": true,
+              "rounds": [
+                "final-loop-frontend-coding"
               ]
             },
             {
@@ -11755,6 +12178,13 @@
               }
             },
             {
+              "id": "js-shallow-clone",
+              "report": {
+                "publisher": "GitHub",
+                "date": "2025-08"
+              }
+            },
+            {
               "id": "car-rental-booking-frontend",
               "report": {
                 "publisher": "Taro",
@@ -11777,7 +12207,29 @@
               ]
             },
             {
+              "id": "html-forms-validation-required",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-01",
+                "approx": true
+              },
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
               "id": "html-semantic-layout",
+              "report": {
+                "publisher": "Taro",
+                "date": "2022-01",
+                "approx": true
+              },
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-color-contrast-ratio",
               "report": {
                 "publisher": "Taro",
                 "date": "2022-01",
@@ -11855,13 +12307,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One or two rounds, such as a React autocomplete backed by an API, then a medium binary search problem.",
+              "note": "One or two rounds that vary by team, mixing React coding, algorithms and UI component design.",
               "focus": [
                 "algo",
-                "css",
-                "ui",
-                "js",
-                "concepts"
+                "ui"
               ],
               "sources": [
                 {
@@ -11944,23 +12393,23 @@
       "signature": "Frontend specialization",
       "framework": "javascript",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 11,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 16,
       "promptCount": 0,
+      "questionCount": 30,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers, L3 to L5A",
           "reported": {
             "levels": [
-              "junior",
               "mid",
               "senior"
             ],
-            "who": "L3 to L5A candidates"
+            "who": "L4 to L5A candidates"
           },
-          "sourceCount": 11,
-          "newestReport": "2026-04",
+          "sourceCount": 12,
+          "newestReport": "2025-11",
           "rounds": [
             {
               "id": "recruiter-call",
@@ -11968,8 +12417,9 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "30 minutes; one 2025 account had technical questions at this stage.",
+              "note": "Virtual and 30 minutes with a recruiter or sourcer in the official guide.",
               "focus": [
+                "css",
                 "concepts"
               ],
               "sources": [
@@ -11982,7 +12432,7 @@
                   "date": "2025-10"
                 },
                 {
-                  "label": "Taro",
+                  "label": "Taro (approx.)",
                   "date": "2022-04"
                 }
               ]
@@ -11996,6 +12446,8 @@
               "note": "HackerRank in the official guide; a 35-minute CodeSignal test in a 2022 account.",
               "focus": [
                 "algo",
+                "css",
+                "js",
                 "concepts"
               ],
               "sources": [
@@ -12019,9 +12471,12 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes of coding, sometimes a React UI component.",
+              "note": "60 minutes online in the official guide, on coding plus design and architecture.",
               "focus": [
-                "ui"
+                "algo",
+                "ui",
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -12034,10 +12489,10 @@
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2025-06"
+                  "date": "2025-10"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "algorithms-and-data-structures",
@@ -12045,9 +12500,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes; one account calls it the bar raiser round.",
+              "note": "60 minutes in the official guide, as Interview 1 (Coding 1).",
               "focus": [
-                "algo"
+                "algo",
+                "js"
               ],
               "sources": [
                 {
@@ -12063,7 +12519,7 @@
                   "date": "2025-11"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 5
             },
             {
               "id": "frontend-specialization",
@@ -12071,7 +12527,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes: a UI build or a JavaScript problem, in plain JavaScript in two accounts.",
+              "note": "60 minutes in the official guide, as Interview 2: depth in specialization (Coding 2).",
               "focus": [
                 "algo",
                 "ui",
@@ -12088,10 +12544,10 @@
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2026-04"
+                  "date": "2025-11"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 4
             },
             {
               "id": "system-design",
@@ -12099,7 +12555,10 @@
               "kinds": [
                 "design"
               ],
-              "note": "Frontend architecture; three accounts were asked to design a calendar.",
+              "note": "A separate design round in every account that describes the onsite; the official guide has none after the screen.",
+              "focus": [
+                "ui"
+              ],
               "sources": [
                 {
                   "label": "Uber: Landing the job as a front end engineer",
@@ -12111,10 +12570,10 @@
                 },
                 {
                   "label": "LeetCode",
-                  "date": "2025-06"
+                  "date": "2025-09"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "collaboration-and-leadership",
@@ -12122,7 +12581,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "60 minutes with the hiring manager on past projects and behaviour.",
+              "note": "60 minutes in the official guide, as Interview 3: collaboration and leadership.",
               "sources": [
                 {
                   "label": "Uber: Frontend engineering interview guide",
@@ -12137,7 +12596,7 @@
                   "date": "2025-11"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             }
           ],
           "tasks": [
@@ -12214,9 +12673,10 @@
       "signature": "JavaScript and React round",
       "framework": "react",
       "mixed": true,
-      "checkedAt": "2026-10-20",
-      "sourceCount": 16,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 31,
       "promptCount": 0,
+      "questionCount": 69,
       "variants": [
         {
           "id": "sde3-ui",
@@ -12238,7 +12698,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "60 minutes on two or three easy-to-medium problems.",
+              "note": "60 minutes on two or three easy-to-medium problems, with a discussion of time complexity.",
               "focus": [
                 "algo"
               ],
@@ -12292,7 +12752,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "A 60-minute hiring-manager round, focused on past projects and experience in one account.",
+              "note": "A 60-minute hiring-manager round on past projects and experience, with some technical follow-ups in one account.",
               "sources": [
                 {
                   "label": "Medium",
@@ -12337,7 +12797,7 @@
               "lead": true
             },
             {
-              "id": "react-ssr-hydration",
+              "id": "/guides/interview-blueprint/quiz",
               "lead": true,
               "rounds": [
                 "javascript-react-and-web-fundamentals"
@@ -12413,7 +12873,7 @@
             ],
             "who": "SDE-2 and frontend engineer candidates"
           },
-          "sourceCount": 3,
+          "sourceCount": 4,
           "newestReport": "2024-12",
           "rounds": [
             {
@@ -12450,10 +12910,12 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Two technical rounds: a medium LeetCode problem in any language, then a round focused on React.",
+              "note": "Two technical rounds of about an hour: data structures or a medium LeetCode problem, then React questions.",
               "focus": [
                 "algo",
-                "ui"
+                "css",
+                "ui",
+                "concepts"
               ],
               "sources": [
                 {
@@ -12463,6 +12925,10 @@
                 {
                   "label": "Taro",
                   "date": "2024-11"
+                },
+                {
+                  "label": "Code360",
+                  "date": "2021-03"
                 }
               ]
             },
@@ -12498,7 +12964,7 @@
               ]
             },
             {
-              "id": "react-state-management-redux",
+              "id": "/guides/framework-prep/react-prep-path",
               "lead": true,
               "rounds": [
                 "technical-rounds"
@@ -12509,7 +12975,10 @@
               "report": {
                 "publisher": "Naukri Code360",
                 "date": "2021-03"
-              }
+              },
+              "rounds": [
+                "technical-rounds"
+              ]
             },
             {
               "id": "react-debug-api-misuse"
@@ -12549,7 +13018,7 @@
           "from": "Software Engineer III and senior roles",
           "ask": "Interviewing for Software Engineer III or a senior role?",
           "default": true,
-          "sourceCount": 10,
+          "sourceCount": 12,
           "newestReport": "2026-09",
           "rounds": [
             {
@@ -12600,7 +13069,7 @@
                   "date": "2024-06"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             },
             {
               "id": "coding-rounds",
@@ -12639,6 +13108,7 @@
               ],
               "note": "One or two design rounds: high-level system design, or design questions about past projects.",
               "focus": [
+                "algo",
                 "concepts"
               ],
               "sources": [
@@ -12647,15 +13117,15 @@
                   "date": "2025-04"
                 },
                 {
-                  "label": "Blind comment",
-                  "date": "2024-07"
+                  "label": "dev.to",
+                  "date": "2025-03"
                 },
                 {
-                  "label": "Blind",
-                  "date": "2024-01"
+                  "label": "Blind comment",
+                  "date": "2024-07"
                 }
               ],
-              "moreSources": 3
+              "moreSources": 4
             },
             {
               "id": "behavioural-and-hiring-manager",
@@ -12790,9 +13260,10 @@
       "name": "Waymo",
       "signature": "Virtual onsite",
       "framework": "angular",
-      "checkedAt": "2026-10-22",
-      "sourceCount": 6,
+      "checkedAt": "2026-11-13",
+      "sourceCount": 5,
       "promptCount": 6,
+      "questionCount": 6,
       "variants": [
         {
           "id": "frontend",
@@ -12852,7 +13323,7 @@
                 "coding",
                 "design"
               ],
-              "note": "Up to five interviews of about 45 minutes with potential teammates and cross-functional partners, per the hiring page.",
+              "note": "Up to five interviewers, potential teammates and cross-functional partners, about 45 minutes each, per the hiring page.",
               "focus": [
                 "debug",
                 "algo",
@@ -12878,17 +13349,6 @@
           ],
           "tasks": [
             {
-              "id": "js-debounce",
-              "report": {
-                "publisher": "PracHub",
-                "date": "2026-05"
-              },
-              "rounds": [
-                "virtual-onsite"
-              ],
-              "lead": true
-            },
-            {
               "id": "js-filter-tree-render-indented",
               "report": {
                 "publisher": "PracHub",
@@ -12899,6 +13359,13 @@
               ],
               "lead": true,
               "prompt": true
+            },
+            {
+              "id": "angular-onpush-change-detection-debugging-real-bug",
+              "lead": true,
+              "rounds": [
+                "virtual-onsite"
+              ]
             },
             {
               "id": "ai-chat-textarea-design",
@@ -12942,6 +13409,16 @@
                 "virtual-onsite"
               ],
               "prompt": true
+            },
+            {
+              "id": "js-debounce",
+              "report": {
+                "publisher": "PracHub",
+                "date": "2026-05"
+              },
+              "rounds": [
+                "virtual-onsite"
+              ]
             },
             {
               "id": "js-fetch-json-timeout",
@@ -12990,7 +13467,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "Current role and backend experience, interest in Waymo and an overview of the process.",
+              "note": "A recruiter call on the current role and backend experience, interest in Waymo and the shape of the process.",
               "sources": [
                 {
                   "label": "LeetCode",
@@ -13022,10 +13499,11 @@
               "kinds": [
                 "coding"
               ],
-              "note": "Build a generic tree viewer component for hierarchical data, like a file explorer.",
+              "note": "A UI component built in plain JavaScript with no framework, followed by questions on the choices behind it.",
               "focus": [
                 "ui",
-                "js"
+                "js",
+                "concepts"
               ],
               "sources": [
                 {
@@ -13068,13 +13546,6 @@
           ],
           "tasks": [
             {
-              "id": "js-build-tree-from-flat-list",
-              "lead": true,
-              "rounds": [
-                "javascript-and-ui-round"
-              ]
-            },
-            {
               "id": "angular-debounced-search"
             },
             {
@@ -13113,13 +13584,14 @@
         "x.ai"
       ],
       "checkedAt": "2026-10-21",
-      "sourceCount": 13,
-      "promptCount": 4,
+      "sourceCount": 15,
+      "promptCount": 1,
+      "questionCount": 7,
       "variants": [
         {
           "id": "main",
           "title": "Frontend engineers, London and Bay Area, from postings 2025-03 to 2026-02 and one London account",
-          "sourceCount": 9,
+          "sourceCount": 10,
           "newestReport": "2026-02",
           "rounds": [
             {
@@ -13177,7 +13649,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "\"Write a small app in React\" in TypeScript; 45 minutes in London; one or two interviews on Bay Area teams.",
+              "note": "A small React app in TypeScript on Google Meet: 45 minutes in London, one or two interviews on Bay Area teams.",
               "focus": [
                 "ui",
                 "js",
@@ -13241,6 +13713,10 @@
                 {
                   "label": "Grok Studio posting",
                   "date": "2025-04"
+                },
+                {
+                  "label": "Aced",
+                  "date": "2025-11"
                 }
               ]
             },
@@ -13308,7 +13784,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A four-hour AI-assisted product build, then a one-hour in-person session on an existing class.",
+              "note": "A four-hour take-home with AI coding assistants allowed, then a one-hour in-person coding round on existing code.",
               "focus": [
                 "ui"
               ],
@@ -13332,8 +13808,7 @@
                 "react-coding-interview",
                 "html-css-interview"
               ],
-              "lead": true,
-              "prompt": true
+              "lead": true
             },
             {
               "id": "react-fetch-list-states",
@@ -13346,8 +13821,7 @@
                 "react-coding-interview",
                 "html-css-interview"
               ],
-              "lead": true,
-              "prompt": true
+              "lead": true
             },
             {
               "id": "ai-chat-textarea-design",
@@ -13358,8 +13832,7 @@
               "lead": true,
               "rounds": [
                 "systems-hands-on"
-              ],
-              "prompt": true
+              ]
             },
             {
               "id": "/guides/behavioral/stories",
@@ -13411,9 +13884,10 @@
       "name": "Zalando",
       "signature": "Take-home review",
       "framework": "react",
-      "checkedAt": "2026-10-20",
+      "checkedAt": "2026-11-13",
       "sourceCount": 6,
       "promptCount": 0,
+      "questionCount": 14,
       "variants": [
         {
           "id": "main",
@@ -13427,7 +13901,7 @@
               "kinds": [
                 "recruiter"
               ],
-              "note": "30 minutes on motivation and salary.",
+              "note": "30 minutes with a talent acquisition partner on motivation, expectations and salary.",
               "sources": [
                 {
                   "label": "Zalando: How we hire",
@@ -13472,7 +13946,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "30–60 minutes on the official pages; a Blind commenter describes it as non-technical.",
+              "note": "45 to 60 minutes on the official pages; a Blind commenter describes it as non-technical.",
               "sources": [
                 {
                   "label": "Zalando: How we hire",
@@ -13496,7 +13970,7 @@
                 "coding",
                 "design"
               ],
-              "note": "A discussion of the submitted code, 45 minutes in the 2024 account.",
+              "note": "A discussion of the submitted code, 45 minutes with a senior software engineer in the 2024 account.",
               "focus": [
                 "ui"
               ],
@@ -13517,7 +13991,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One hour with frontend engineers.",
+              "note": "One hour of questions from two senior frontend engineers in 2024, on JavaScript, the browser and web tooling.",
               "focus": [
                 "js",
                 "concepts"
@@ -13544,7 +14018,10 @@
               "kinds": [
                 "coding"
               ],
-              "note": "One hour of live coding.",
+              "note": "One hour of live coding; Zalando's blog says interviewers expect clarifying questions and a discussion of complexity.",
+              "focus": [
+                "concepts"
+              ],
               "sources": [
                 {
                   "label": "Zalando: Technical interviews for software engineers",
@@ -13562,7 +14039,10 @@
               "kinds": [
                 "design"
               ],
-              "note": "One hour, leaning toward backend topics such as a load balancer.",
+              "note": "One hour; in 2024 a senior principal engineer set a backend-leaning problem.",
+              "focus": [
+                "algo"
+              ],
               "sources": [
                 {
                   "label": "Zalando: Technical interviews for software engineers",
@@ -13585,7 +14065,7 @@
               "kinds": [
                 "people"
               ],
-              "note": "45 minutes.",
+              "note": "45 minutes with the engineering manager in 2024, on teamwork and leading a team; the 2020 onsite had an HR interview.",
               "sources": [
                 {
                   "label": "LeetCode",

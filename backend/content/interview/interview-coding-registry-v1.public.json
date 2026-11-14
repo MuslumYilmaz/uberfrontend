@@ -2680,7 +2680,7 @@
       "track": "react"
     },
     {
-      "contentHash": "7550c909123406d707ce92af1a81a881d52ea7fb268ce5f94afa79e40c722af8",
+      "contentHash": "ccb4f94398a0d99e62ea6906bf52f650dd065daf32721e5c11243328795ac39a",
       "enabled": true,
       "id": "int-code-react-senior-debounced-search-v1",
       "level": "senior",
@@ -2735,7 +2735,7 @@
       "revision": 1,
       "roundLimit": 4,
       "runner": "framework-preview",
-      "sourceContentVersion": "2026-01-30",
+      "sourceContentVersion": "2026-11-13",
       "sourceQuestionId": "react-debounced-search",
       "starterAsset": "assets/sb/react/question/react-debounced-search.v1.json",
       "starterFiles": [

@@ -4292,7 +4292,6 @@
     "companies": [
       "netflix",
       "revolut",
-      "spotify",
       "booking-com"
     ],
     "sources": [
@@ -4321,14 +4320,6 @@
         "note": "One account describes a pairing session that used a service API with authentication to display data in a React component, followed by a frontend system-design round. This search component practises the fetch-and-render part; it is not the reported exercise."
       },
       {
-        "label": "Blind: Spotify web engineer final round, April 2022",
-        "url": "https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg",
-        "company": "spotify",
-        "publisher": "Blind",
-        "date": "2022-04",
-        "note": "One web engineer account with an offer describes the practical round as building a form, fetching from the Spotify API based on the input and rendering the results into the DOM. This React search is a practice version of that shape; the reported round was framework-free."
-      },
-      {
         "label": "Taro: Booking.com senior full stack engineer interview, 2023",
         "url": "https://www.jointaro.com/interviews/companies/bookingcom/experiences/senior-full-stack-engineer-amsterdam-july-1-2023-no-offer-negative-cb57c4dd/",
         "company": "booking-com",
@@ -4338,7 +4329,7 @@
       }
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-13",
     "seo": {
       "title": "Build Debounced Search in React",
       "description": "Create a search experience that delays rapid input triggers and handles loading, empty, success, and error result states."

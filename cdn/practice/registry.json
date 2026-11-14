@@ -4345,7 +4345,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-10-14",
+    "updatedAt": "2026-11-13",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-filter-tree-render-indented"
   },
@@ -7774,7 +7774,7 @@
     ],
     "access": "premium",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-01-30",
+    "updatedAt": "2026-11-13",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-debounced-search"
   },

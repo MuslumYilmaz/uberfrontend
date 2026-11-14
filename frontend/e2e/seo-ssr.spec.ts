@@ -3,7 +3,14 @@ import { loadSitemapDateMap, schemaDateMatchesSitemap } from '../scripts/seo-sit
 import { parse, serialize, DefaultTreeAdapterMap } from 'parse5';
 import { PRIORITY_LINK_SURFACES, priorityLinksFor, type PriorityLinkSurface } from './priority-links';
 import { PREP_MENU_ROUTES } from './prep-menu';
-import { GATED_COMPANY_GUIDES } from '../src/app/features/company/company-preview/company-guide-gate';
+import { readFileSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
+
+// Guides whose process lists reported questions take the redesigned layout: no source link above the end of the page,
+// the questions in one list with the first open, and no ItemList naming the locked ones.
+const QUESTION_LIST_GUIDES: ReadonlySet<string> = new Set(
+  Object.keys(JSON.parse(readFileSync(resolvePath(__dirname, '../../cdn/questions/company-question-lists.json'), 'utf8')).companies),
+);
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -600,33 +607,16 @@ const RAW_HTML_CASES: Array<{
 const HOME_TITLE = 'Frontend Interview Prep: Questions, Coding & System Design';
 
 const GOOGLE_PREVIEW_PATH = '/companies/google/preview';
-const GOOGLE_PREVIEW_TITLE = 'Google Frontend Interview Questions: 7 Prompts + Prep Guide';
+const GOOGLE_PREVIEW_TITLE = 'Google Frontend Interview Questions: 24 Reported + Prep Guide';
 const GOOGLE_PREVIEW_DESCRIPTION =
-  'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.';
+  'Google frontend interview: the screens, the loop and the Googleyness round explained, with 24 reported questions and the behavioural questions asked.';
 const GOOGLE_PREVIEW_H1 = 'Google Frontend Interview Questions';
-const GOOGLE_PREVIEW_PROMPTS = [
-  { id: 'nested-navigation-tree', title: 'Traverse and transform a nested navigation tree' },
-  { id: 'debounce-cancel-flush', title: 'Implement debounce with cancel and flush' },
-  { id: 'accessible-autocomplete', title: 'Build an accessible autocomplete' },
-  { id: 'take-latest-async-results', title: 'Keep only the latest async result' },
-  { id: 'dom-event-delegation', title: 'Handle delegated events in a dynamic list' },
-  {
-    id: 'frontend-performance-network-security',
-    title: 'Reason about frontend performance, networking, and security',
-  },
-  {
-    id: 'search-suggestions-large-list-design',
-    title: 'Design search suggestions for a large interactive list',
-  },
-] as const;
+// The free practice list; the reported-question list replaced the prompt cards and their ItemList.
 const GOOGLE_PREVIEW_RESOURCES = [
   '/javascript/coding/js-get-by-path-1',
-  '/javascript/coding/js-debounce',
-  '/react/coding/react-autocomplete-search-starter',
-  '/javascript/coding/js-take-latest',
+  '/javascript/coding/js-build-tree-from-flat-list',
+  '/html/trivia/html-dom-tree-structure',
   '/javascript/trivia/js-event-delegation',
-  '/javascript/trivia/web-performance-optimize-load-time',
-  '/system-design/infinite-scroll-list',
   '/javascript/trivia/js-compare-two-objects',
 ] as const;
 const GOOGLE_PREVIEW_INBOUND_PAGES = [
@@ -637,46 +627,17 @@ const GOOGLE_PREVIEW_INBOUND_PAGES = [
 ] as const;
 
 const NETFLIX_PREVIEW_PATH = '/companies/netflix/preview';
-const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend and UI Engineer Interview Questions: 6 Prompts';
+const NETFLIX_PREVIEW_TITLE = 'Netflix Frontend and UI Engineer Interview Questions: 13 Reported';
 const NETFLIX_PREVIEW_DESCRIPTION =
-  'Prepare for a Netflix frontend or UI engineer interview with 6 prompts on JavaScript, React, streaming UI, performance, accessibility and system design.';
+  'Netflix frontend and UI interview: recruiter and manager calls, a live screen or a take-home, the onsite, and 13 questions candidates reported.';
 const NETFLIX_PREVIEW_H1 = 'Netflix Frontend Interview Questions';
-const NETFLIX_PREVIEW_PROMPTS = [
-  { id: 'resilient-title-search', title: 'Implement resilient title search' },
-  { id: 'accessible-continue-watching-row', title: 'Build an accessible Continue Watching row' },
-  {
-    id: 'personalized-row-rendering',
-    title: 'Stop personalized rows from re-rendering unnecessarily',
-  },
-  {
-    id: 'streaming-caching-failure-states',
-    title: 'Reason about streaming delivery, caching, and failure states',
-  },
-  {
-    id: 'continue-watching-system-design',
-    title: 'Design Continue Watching for regional and device scale',
-  },
-  {
-    id: 'consequential-frontend-decision',
-    title: 'Defend a consequential frontend decision',
-  },
-] as const;
+// The free practice list; the reported-question list replaced the prompt cards and their ItemList.
 const NETFLIX_PREVIEW_RESOURCES = [
   '/javascript/coding/js-debounce',
+  '/javascript/trivia/debounce-vs-throttle-search-input',
   '/javascript/coding/js-take-latest',
-  '/react/trivia/react-rerender-decision-and-render',
-  '/javascript/trivia/content-delivery-caching-strategies-streaming',
-  '/system-design/infinite-scroll-list',
-  '/system-design/dashboard-widgets-draggable-resizable',
-  '/guides/system-design-blueprint/performance',
+  '/javascript/trivia/js-closures',
   '/guides/behavioral/stories',
-] as const;
-const NETFLIX_OFFICIAL_SOURCES = [
-  'https://jobs.netflix.com/careers/engineering',
-  'https://jobs.netflix.com/culture',
-  'https://jobs.netflix.com/careers/new-grads',
-  'https://netflixtechblog.com/crafting-a-high-performance-tv-user-interface-using-react-3350e5a6ad3b',
-  'https://netflixtechblog.com/lumen-custom-self-service-dashboarding-for-netflix-8c56b541548c',
 ] as const;
 const NETFLIX_PREVIEW_INBOUND_PAGES = [
   { path: '/', anchor: 'View Netflix preview' },
@@ -686,7 +647,7 @@ const NETFLIX_PREVIEW_INBOUND_PAGES = [
 ] as const;
 
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES): the notes
-// wrap the unchanged counts, samples, process table, reports and official pages.
+// wrap the unchanged counts, process table, question list and official pages.
 const EDITORIAL_NOTE_CASES = [
   {
     label: 'Walmart',
@@ -695,7 +656,7 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Walmart Frontend Interview Questions and Process',
     headings: [
       'Three loop shapes, by role and region',
-      'Walmart Frontend Engineering Assessment and Karat interview: what each one asks',
+      'Walmart Frontend Engineering Assessment and Karat interview: how each one runs',
       'Rehearse the reported rounds in order',
       'Common questions about Walmart frontend interviews',
     ],
@@ -705,7 +666,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -718,7 +678,7 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'ByteDance and TikTok Frontend Interview Questions',
     headings: [
       'Two technical rounds and a hiring manager round, by region',
-      'Rehearse the reported rounds in order',
+      'Build and run a component first, then the design round',
       'Common questions about ByteDance and TikTok frontend interviews',
     ],
     markers: [
@@ -726,11 +686,10 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/javascript/coding/js-build-tree-from-flat-list',
+    practicePath: '/react/coding/react-vanilla-dropdown-port',
   },
   {
     label: 'Microsoft',
@@ -738,8 +697,8 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Microsoft Frontend Interview Process and Practice Guide',
     h1: 'Microsoft Frontend Interview Questions and Process',
     headings: [
-      'Two to six rounds, set by the team',
-      'Rehearse the concept rounds, then the builds',
+      'From a single interview to six rounds',
+      'Start with the calendar, then the concept rounds',
       'Common questions about Microsoft frontend interviews',
     ],
     markers: [
@@ -747,7 +706,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -760,7 +718,7 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Tesla Frontend Interview Questions and Process',
     headings: [
       'Assessment, screen, then a three or four round onsite',
-      'Rehearse the reported stages in order',
+      'Start with the search bar, then the onsite rounds',
       'Common questions about Tesla frontend interviews',
     ],
     markers: [
@@ -768,11 +726,10 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/javascript/coding/js-color-contrast-ratio',
+    practicePath: '/react/coding/react-autocomplete-search-starter',
   },
   {
     label: 'Booking.com',
@@ -781,7 +738,7 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Booking.com Frontend Interview Questions and Process',
     headings: [
       'HackerRank test, recruiter call, coding rounds, fit interview',
-      'Booking.com fit interview for frontend engineers: what it is and how to prepare',
+      'The Booking.com fit interview: who runs it and where it falls',
       'Rehearse the autocomplete round first',
       'Common questions about Booking.com frontend interviews',
     ],
@@ -790,7 +747,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -811,7 +767,6 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
@@ -824,7 +779,7 @@ const EDITORIAL_NOTE_CASES = [
     h1: 'Stripe Frontend Interview Questions and Process',
     headings: [
       'A multi-part screen, then an onsite of four or five rounds',
-      'Rehearse the bug squash and the JSON screen',
+      'Start with the bug squash',
       'Common questions about Stripe frontend interviews',
     ],
     markers: [
@@ -832,11 +787,10 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/javascript/debug/js-debug-async-race',
+    practicePath: '/javascript/debug/js-debug-off-by-one',
   },
   {
     label: 'Uber',
@@ -853,11 +807,10 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/css/trivia/css-position-relative-absolute-fixed',
+    practicePath: '/react/coding/react-fetch-list-states',
   },
   {
     label: 'Apple',
@@ -865,9 +818,7 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Apple Frontend Interview Process and Practice Questions',
     h1: 'Apple Frontend Interview Questions and Process',
     headings: [
-      'A screen, then a team loop of four to seven rounds',
-      'Apple frontend team conversations: the hiring manager, cross-functional and director interviews',
-      'Practise one question',
+      'A screen, then a team loop of four to seven rounds in most accounts',
       'Rehearse the screen, then the coding loop',
       'Common questions about Apple frontend interviews',
     ],
@@ -876,11 +827,10 @@ const EDITORIAL_NOTE_CASES = [
       'data-testid="company-reports-describe"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/css/coding/css-theme-variables-dark-mode',
+    practicePath: '/javascript/coding/js-build-tree-from-flat-list',
   },
   {
     label: 'Airbnb',
@@ -888,18 +838,18 @@ const EDITORIAL_NOTE_CASES = [
     title: 'Airbnb Frontend Interview Practice and Official FAQ',
     h1: 'Airbnb Frontend Interview Practice',
     headings: [
-      'The booking widget screen and the chat design',
-      'Common questions about this Airbnb page',
+      'A screen that changes, then coding, design and one project in depth',
+      'The Airbnb UI coding round: what candidates built and how it went',
+      'Common questions about Airbnb frontend interviews',
     ],
     markers: [
       'data-testid="company-editorial-intro"',
       'data-testid="company-interview-process"',
       'data-testid="company-prep-steps"',
-      '>Sample FrontendAtlas practice prompts</h2>',
       'data-testid="company-editorial-faqs"',
       'class="cta-stack"',
     ],
-    practicePath: '/javascript/trivia/js-closures',
+    practicePath: '/react/coding/react-autocomplete-search-starter',
   },
 ] as const;
 
@@ -907,36 +857,25 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Waymo',
     path: '/companies/waymo/preview',
-    title: 'Waymo Frontend Interview Questions: 6 Prompts + Prep Guide',
+    title: 'Waymo Frontend Interview Questions: 6 Reported + Prep Guide',
     description:
-      'Prepare for a Waymo frontend interview with 6 prompts modelled on a public 2026 report: tree filter and UI, Angular debugging, Promises, AI chat, autocomplete.',
+      'Prepare for a Waymo frontend interview with 6 reported questions from 2026 reports: the tree filter screen, Angular debugging and a four-round onsite.',
     h1: 'Waymo Frontend Interview Questions',
     kicker: 'Public Waymo prep guide',
     headings: [
       'Prepare for product judgment, not Waymo trivia',
-      'What the report establishes, and what you still need to confirm',
-      'Six Waymo frontend interview practice questions',
+      'What these Waymo accounts show, and what they leave to the recruiter',
+      'questions candidates reported',
       'Scope the tree filter before writing the first line',
       'A 7-day Waymo frontend interview preparation plan',
       'Common Waymo frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Waymo questions',
-    prompts: [
-      { id: 'tree-filter-render', title: 'Filter a tree by substring and render it indented' },
-      { id: 'tree-filter-ui', title: 'Build a UI for the filtered tree' },
-      { id: 'angular-bug-reports-debugging', title: 'Fix an Angular screen from three user bug reports' },
-      { id: 'promise-contract-typescript', title: 'Implement a Promise contract in TypeScript' },
-      { id: 'ai-chat-frontend-design', title: 'Design the frontend of an AI chat application' },
-      { id: 'debounced-autocomplete', title: 'Build an autocomplete search bar with debounce' },
-    ],
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
-      '/javascript/coding/js-create-deferred-promise',
       '/javascript/coding/js-take-latest',
-      '/react/coding/react-autocomplete-search-starter',
-      '/system-design/ai-chat-textarea-design',
       '/angular/trivia/angular-http-what-actually-cancels-request',
       '/angular/trivia/angular-onpush-change-detection-debugging-real-bug',
     ],
@@ -948,28 +887,21 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/elevenlabs/preview',
     title: 'ElevenLabs Frontend Interview Questions and Coding Assessment Guide',
     description:
-      'ElevenLabs frontend interview: the coding assessment formats (90-minute test, CoderPad React fix, take-home), the live technical round, and 5 practice prompts.',
+      'ElevenLabs frontend interview: the coding assessment (a 90-minute test, often on CoderPad, or a take-home), the live technical round and 19 reported questions.',
     h1: 'ElevenLabs Frontend Interview Questions',
     kicker: 'Public ElevenLabs prep guide',
     headings: [
       'Prepare for product judgment, not ElevenLabs trivia',
-      'What the public pages establish, and what you still need to confirm',
-      'ElevenLabs coding assessment and live technical round: what the formats were and what was asked',
-      'Five ElevenLabs frontend interview practice questions',
+      'What these accounts can tell you, and what to ask the recruiter',
+      'ElevenLabs coding assessment and live technical round: how each one runs',
+      'questions candidates reported',
       'Scope the transcript highlight before writing the first line',
       'A 7-day ElevenLabs frontend interview preparation plan',
       'Common ElevenLabs frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official ElevenLabs questions',
-    prompts: [
-      { id: 'audio-transcript-sync', title: 'Synchronise audio playback with transcript highlighting' },
-      { id: 'dubbing-review-interface', title: 'Design a review and collaboration interface for a voice-dubbing project' },
-      { id: 'fix-a-practical-react-problem', title: 'Fix a practical React problem live with the interviewer' },
-      { id: 'timed-assessment-react-and-algorithms', title: 'Clear a 90-minute technical assessment before the first call' },
-      { id: 'streaming-audio-and-text-ui', title: 'Stream generated audio and text to the screen without losing control' },
-    ],
     resources: [
       '/javascript/coding/js-stream-to-text',
       '/javascript/coding/js-poll-until',
@@ -984,37 +916,29 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Datadog',
     path: '/companies/datadog/preview',
-    title: 'Datadog Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Datadog Frontend Interview Questions: 19 Reported + Prep Guide',
     description:
-      'Prepare for a Datadog frontend interview with 5 practice prompts: sortable real-time tables, Live Tail log architecture, timed sorting and filtering.',
+      'Datadog frontend interview: the CoderPad algorithm screen, React live coding, the take-home, frontend system design on Excalidraw and 19 reported questions.',
     h1: 'Datadog Frontend Interview Questions',
     kicker: 'Public Datadog prep guide',
     headings: [
-      'Prepare for product judgment, not Datadog trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'Five Datadog frontend interview practice questions',
+      'What Datadog frontend loops reward: tables of moving data, and algorithms done cleanly',
+      'Who wrote these Datadog accounts, and what they leave out',
+      'questions candidates reported',
       'Scope the sortable real-time table before writing the first line',
       'A 7-day Datadog frontend interview preparation plan',
       'Common Datadog frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the Datadog rounds',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Datadog questions',
-    prompts: [
-      { id: 'sortable-real-time-table', title: 'Build a table of real-time data that sorts by any column' },
-      { id: 'live-tail-logs-architecture', title: 'Design the frontend architecture of a Live Tail log view' },
-      { id: 'ordering-and-filtering-under-time', title: 'Solve an ordering-and-filtering exercise under time' },
-      { id: 'incremental-live-coding-on-tables', title: 'Survive incremental live coding on data and tables' },
-      { id: 'feature-or-major-bug-walkthrough', title: 'Explain how you would build a feature or fix a major bug' },
-    ],
+    trustFragment: 'most from senior frontend loops in France, Spain and Portugal',
     resources: [
-      '/javascript/coding/js-update-at-index',
-      '/javascript/coding/js-count-vowels',
-      '/javascript/debug/js-debug-numeric-sort',
-      '/system-design/infinite-scroll-list',
-      '/incidents/search-typing-lag',
-      '/tradeoffs/sse-vs-websocket-live-dashboard',
+      '/react/coding/react-fetch-list-states',
+      '/react/trivia/react-keys-in-lists',
+      '/react/trivia/react-derived-state-anti-pattern',
+      '/guides/interview-blueprint/dsa-for-fe',
       '/guides/system-design-blueprint/performance',
+      '/guides/behavioral/stories',
     ],
     reportUrl:
       'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/',
@@ -1024,34 +948,24 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/intuit/preview',
     title: 'Intuit Frontend Interview Questions and Craft Demo Guide',
     description:
-      'Intuit frontend interview: the Craft Demo explained (the brief, the length, what the panel grades), the AI round, and 5 practice prompts from public reports.',
+      'Intuit frontend interview: the Craft Demo explained (the brief, the length, what the panel grades), the AI round, and 30 reported questions from public reports.',
     h1: 'Intuit Frontend Interview Questions',
     kicker: 'Public Intuit prep guide',
     headings: [
-      'Prepare for product judgment, not Intuit trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'Intuit Craft Demo for frontend candidates: what it is and what was asked',
-      'Five Intuit frontend interview practice questions',
+      'What Intuit panels push on',
+      'Where these accounts come from, and what to settle with the recruiter',
+      'Intuit Craft Demo for frontend candidates: how the build and the panel run',
+      'questions candidates reported',
       'Scope the craft demo app before the panel joins',
       'A 7-day Intuit frontend interview preparation plan',
       'Common Intuit frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Intuit questions',
-    prompts: [
-      { id: 'craft-demo-build-and-extend', title: 'Build a small app from a brief, then extend it live in the craft demo' },
-      { id: 'typeahead-in-an-unfamiliar-codebase', title: 'Implement a typeahead in a codebase you received yesterday, then test it' },
-      { id: 'promise-retry-and-race-polyfill', title: 'Implement a promise retry with delay, then a Promise.race polyfill' },
-      { id: 'llm-user-story-with-streaming', title: 'Deliver an LLM user story with streaming output, error handling and tests' },
-      { id: 'javascript-fundamentals-under-questioning', title: 'Answer JavaScript fundamentals under questioning: currying, memoization, output prediction, DOM comparison' },
-    ],
+    trustFragment: 'None is an official or leaked Intuit question',
     resources: [
-      '/javascript/coding/js-promise-any',
-      '/javascript/coding/js-stream-to-text',
-      '/javascript/coding/js-sleep',
-      '/react/coding/react-autocomplete-search-starter',
-      '/javascript/trivia/js-hoisting',
+      '/react/coding/react-fetch-list-states',
+      '/guides/interview-blueprint/dsa-for-fe',
       '/javascript/trivia/js-xss-dom-sinks',
       '/react/trivia/react-usememo-vs-usecallback',
     ],
@@ -1061,38 +975,24 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'ServiceNow',
     path: '/companies/servicenow/preview',
-    title: 'ServiceNow Frontend Interview Questions: 5 Prompts + Guide',
+    title: 'ServiceNow Frontend Interview Questions: 30 Reported + Prep Guide',
     description:
-      'Prepare for a ServiceNow frontend interview with 5 practice prompts: polyfills with edge cases, closures and output prediction, a tiny virtual DOM, UI design.',
+      'ServiceNow frontend interview: the screening call, JavaScript and algorithm rounds, a design or machine-coding round, the hiring manager and 30 reported questions.',
     h1: 'ServiceNow Frontend Interview Questions',
     kicker: 'Public ServiceNow prep guide',
     headings: [
-      'Prepare for product judgment, not ServiceNow trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'Five ServiceNow frontend interview practice questions',
-      'Scope the map polyfill before writing the first line',
+      'What the ServiceNow rounds test: the language itself, then problems against a clock',
+      'questions candidates reported',
+      'Four decisions before your map polyfill runs',
       'A 7-day ServiceNow frontend interview preparation plan',
       'Common ServiceNow frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free drills for a JavaScript-first loop',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official ServiceNow questions',
-    prompts: [
-      { id: 'polyfills-with-edge-cases', title: 'Write polyfills for built-in methods and defend the edge cases' },
-      { id: 'closures-and-output-prediction', title: 'Predict console output and write loop counters that prove you understand closures' },
-      { id: 'tiny-virtual-dom-renderer', title: 'Implement a tiny virtual DOM renderer' },
-      { id: 'ui-design-and-data-flow', title: 'Design the components and data flow of a UI feature: notification panel, nested comments or autocomplete' },
-      { id: 'fundamentals-over-frameworks', title: 'Explain Map versus Object and other fundamentals without leaning on a framework' },
-    ],
+    trustFragment: 'Candidates posted these accounts on LeetCode Discuss',
     resources: [
       '/javascript/coding/js-array-foreach',
-      '/javascript/coding/js-create-counter',
-      '/javascript/coding/js-implement-bind',
-      '/javascript/trivia/js-map-vs-object',
-      '/javascript/trivia/js-closures',
-      '/javascript/trivia/js-var-hoisting-shadowing-output',
-      '/system-design/notification-toast-system',
-      '/system-design/infinite-scroll-list',
+      '/javascript/trivia/js-this-keyword',
     ],
     reportUrl:
       'https://medium.com/@karunakumari000532/my-servicenow-software-engineer-ui-interview-experience-2025-23f315b960dc',
@@ -1100,86 +1000,53 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Amazon',
     path: '/companies/amazon/preview',
-    title: 'Amazon Frontend Interview Questions: 7 Prompts + Prep Guide',
+    title: 'Amazon Frontend Interview Questions: 37 Reported + Prep Guide',
     description:
-      'Prepare for an Amazon front end engineer interview with 7 practice prompts: star rating, carousel, paginated addresses, countdown timer, image service design.',
+      'Amazon front end engineer interview: the assessment, phone screen and loop explained, 37 reported questions and the Leadership Principles questions asked.',
     h1: 'Amazon Frontend Interview Questions',
     kicker: 'Public Amazon prep guide',
     headings: [
-      'Prepare for product judgment, not Amazon trivia',
-      'What the official page and the public accounts establish, and what you still need to confirm',
+      'What Amazon front end loops reward: a working widget early, and a story for every principle',
+      'What Amazon\'s page fixes, what candidates add, and the gap after 2024',
       'Amazon Leadership Principles questions for front end engineers: what was asked',
-      'Practise one question',
-      'Seven Amazon frontend interview practice questions',
-      'Scope the paginated address widget before writing the first line',
+      'questions candidates reported',
+      'Scope a coding-round component before writing the first line',
       'A 7-day Amazon frontend interview preparation plan',
       'Common Amazon frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the skills Amazon\'s rounds draw on',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Amazon questions',
-    prompts: [
-      { id: 'five-star-rating-vanilla', title: 'Build a five-star rating widget in vanilla HTML, CSS and JavaScript' },
-      { id: 'carousel-with-state-follow-ups', title: 'Implement a carousel component, then defend its state management' },
-      { id: 'language-tabs-modal', title: 'Recreate a modal with language tabs from an image' },
-      { id: 'countdown-timer-in-thirty-minutes', title: 'Design and build a countdown timer in thirty minutes' },
-      { id: 'paginated-address-widget', title: 'Code a paginated widget of seller addresses, five per page' },
-      { id: 'image-service-frontend-design', title: 'Design the frontend of an image service or a restaurant ordering app' },
-      { id: 'file-explorer-from-ascii-sketch', title: 'Build the interface of a file explorer from an ASCII sketch' },
-    ],
+    trustFragment: 'own posts on LeetCode Discuss, Blind and Medium between 2019 and 2025',
     resources: [
+      '/react/coding/react-autocomplete-search-starter',
+      '/system-design/infinite-scroll-list',
       '/javascript/coding/js-build-tree-from-flat-list',
-      '/javascript/coding/js-implement-new',
-      '/javascript/coding/js-create-counter',
-      '/javascript/coding/js-sleep',
       '/react/coding/react-todo-list',
-      '/css/coding/css-forms-pseudoclasses',
-      '/javascript/trivia/js-repaint-reflow',
-      '/system-design/resilient-checkout-payment-flow',
+      '/javascript/coding/js-sleep',
+      '/guides/behavioral/stories',
     ],
     reportUrl: 'https://leetcode.com/discuss/post/546992/',
   },
   {
     label: 'Meta',
     path: '/companies/meta/preview',
-    title: 'Meta Frontend Interview Questions: 7 Prompts + Prep Guide',
+    title: 'Meta Frontend Interview Questions: 23 Reported + Prep Guide',
     description:
-      'Prepare for a Meta front end engineer interview with 7 practice prompts: map from scratch, clearAllTimeout, memoization, DOM traversal, autocomplete design.',
+      'Meta front end engineer interview: the recruiter call, the JavaScript screen, the loop\'s coding, design and behavioural rounds, and 23 reported questions.',
     h1: 'Meta Frontend Interview Questions',
     kicker: 'Public Meta prep guide',
     headings: [
-      'Prepare for product judgment, not Meta trivia',
-      'What the official pages and the public accounts establish, and what you still need to confirm',
-      // The behavioural decoder and its drill render on the server, with the questions a visitor cannot pick yet.
-      'Meta behavioural interview for front end engineers: the five signals and what was asked',
-      'Practise one question',
-      'Tell me about a hard bug you debugged.',
-      'Seven Meta frontend interview practice questions',
-      'Scope clearAllTimeout before writing the first line',
+      'What Meta front end rounds reward: plain JavaScript and DOM code, written from memory against the clock',
+      'questions candidates reported',
+      'Settle what map promises before you write it',
       'A 7-day Meta frontend interview preparation plan',
       'Common Meta frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Meta questions',
-    prompts: [
-      { id: 'implement-map-from-scratch', title: 'Implement Array.prototype.map from scratch' },
-      { id: 'clear-all-timeout', title: 'Implement your own clearAllTimeout' },
-      { id: 'memoize-with-cache-keys', title: 'Write a memoize helper and defend its cache key' },
-      { id: 'twin-dom-tree-node', title: 'Find the corresponding node in a twin DOM tree' },
-      { id: 'traverse-dom-collect-nodes', title: 'Traverse the DOM and collect the nodes that match' },
-      { id: 'stack-and-queue-in-javascript', title: 'Implement a stack and a queue in JavaScript, then clear a short algorithm screen' },
-      { id: 'autocomplete-component-design', title: 'Design an autocomplete component, not the front end of a product' },
-    ],
+    trustFragment: 'posted by a Meta front end candidate',
     resources: [
-      '/javascript/coding/js-flatten-once',
       '/javascript/coding/js-array-foreach',
       '/javascript/coding/js-debounce',
-      '/javascript/coding/js-create-lru-cache',
-      '/javascript/coding/js-create-counter',
-      '/javascript/trivia/js-queue-vs-stack',
-      '/html/trivia/html-dom-tree-structure',
-      '/system-design/infinite-scroll-list',
     ],
     reportUrl:
       'https://www.jointaro.com/interviews/companies/meta/experiences/front-end-developer-intern-london-england-december-1-2021-no-offer-positive-4f6ff45b/',
@@ -1189,37 +1056,26 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/revolut/preview',
     title: 'Revolut Frontend Interview Questions and Bar Raiser Guide',
     description:
-      'Revolut frontend interview: the Bar Raiser round explained, the HackerRank test, an hour of React and TypeScript live coding, system design and 5 prompts.',
+      'Revolut frontend interview: the HackerRank test, an hour of TypeScript and React live coding, design, team fit, the Bar Raiser and 22 reported questions.',
     h1: 'Revolut Frontend Interview Questions',
     kicker: 'Public Revolut prep guide',
     headings: [
-      'Prepare for product judgment, not Revolut trivia',
-      'What the public accounts establish, and what you still need to confirm',
+      'What Revolut frontend loops test: request state in TypeScript, then algorithms against a clock',
+      'Short anonymous reviews: what they show about Revolut, and what to confirm',
       'Revolut Bar Raiser interview for frontend engineers: what it is and how to prepare',
-      'Five Revolut frontend interview practice questions',
+      'questions candidates reported',
       'Scope the one-hour fetch-and-render task before the first line',
       'A 7-day Revolut frontend interview preparation plan',
       'Common Revolut frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the Revolut rounds',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Revolut questions',
-    prompts: [
-      { id: 'fetch-and-render-in-one-hour', title: 'Fetch data and render it in one hour, in TypeScript, with every request state' },
-      { id: 'authenticated-api-pairing', title: 'Display data from an authenticated API in a React component, pairing with the interviewer' },
-      { id: 'hackerrank-screen-three-tasks', title: 'Clear the HackerRank screen: three tasks in 85 minutes' },
-      { id: 'recruiter-theory-check', title: 'Answer the recruiter-run theory check: reconciliation, microtasks versus macrotasks, the DOM tree' },
-      { id: 'frontend-system-design-api-contracts', title: 'Design a product feature end to end: the frontend, its API contracts and the services behind them' },
-    ],
+    trustFragment: 'anonymous interview review re-posted on Taro',
     resources: [
       '/react/coding/react-fetch-list-states',
-      '/javascript/coding/js-fetch-json-timeout',
-      '/javascript/coding/js-debounce',
-      '/javascript/trivia/js-microtasks-vs-macrotasks',
-      '/react/trivia/react-diffing-algorithm',
-      '/html/trivia/html-dom-tree-structure',
-      '/system-design/resilient-checkout-payment-flow',
+      '/javascript/coding/js-valid-parentheses',
       '/guides/interview-blueprint/dsa-for-fe',
+      '/system-design/resilient-checkout-payment-flow',
       '/guides/behavioral/stories',
     ],
     reportUrl:
@@ -1228,42 +1084,24 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Spotify',
     path: '/companies/spotify/preview',
-    title: 'Spotify Frontend Interview Questions: 7 Prompts + Prep Guide',
+    title: 'Spotify Frontend Interview Questions: 29 Reported + Prep Guide',
     description:
-      'Prepare for a Spotify web engineer interview with 7 frontend practice prompts: a fetch-to-DOM form, carousel, traffic light, event loop, system design.',
+      'Spotify web engineer interview: the recruiter call, the JavaScript and CSS screen, a framework-free web hour in the final and 29 reported questions.',
     h1: 'Spotify Frontend Interview Questions',
     kicker: 'Public Spotify prep guide',
     headings: [
-      'Prepare for product judgment, not Spotify trivia',
-      'What the public accounts and the official pages establish, and what you still need to confirm',
-      'Seven Spotify frontend interview practice questions',
-      'Scope the fetch-to-DOM search form before writing the first line',
+      'What Spotify web loops test: JavaScript, the DOM and CSS by hand, without a framework',
+      'questions candidates reported',
+      'Scope the fetch-and-render form before writing any code',
       'A 7-day Spotify frontend interview preparation plan',
       'Common Spotify frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the Spotify web rounds',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Spotify questions',
-    prompts: [
-      { id: 'search-form-fetch-render-dom', title: 'Build a search form that fetches from an API and renders the results into the DOM, without a framework' },
-      { id: 'image-carousel-html-css-js', title: 'Build an image carousel with HTML, CSS and JavaScript' },
-      { id: 'traffic-light-html-css-js', title: 'Build a traffic light with plain HTML, CSS and JavaScript' },
-      { id: 'event-loop-output-order', title: 'Predict the output order of code that mixes setTimeout and promise chains' },
-      { id: 'closure-call-limit', title: 'Write a closure that limits how many times a function can run' },
-      { id: 'system-design-full-stack', title: 'Design a product end to end in the system-design round, backend included' },
-      { id: 'algorithms-round', title: 'Clear the data structures and algorithms round' },
-    ],
+    trustFragment: 'something a Spotify candidate wrote about their own loop',
     resources: [
       '/javascript/coding/js-take-latest',
-      '/react/coding/react-fetch-list-states',
-      '/javascript/trivia/js-event-loop-nested-microtask-output',
-      '/javascript/coding/js-once',
-      '/javascript/trivia/js-closures',
-      '/javascript/trivia/js-event-delegation',
-      '/javascript/trivia/js-memoization',
-      '/css/trivia/css-box-model',
-      '/guides/system-design-blueprint/architecture',
-      '/guides/behavioral/stories',
+      '/javascript/coding/js-fetch-json-timeout',
     ],
     reportUrl:
       'https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg',
@@ -1271,34 +1109,26 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'xAI',
     path: '/companies/xai/preview',
-    title: 'xAI (now SpaceXSI) Frontend Interview Questions: 4 Prompts + Guide',
+    title: 'xAI (now SpaceXSI) Frontend Interview Questions and Process Guide',
     description:
-      'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.',
+      'Prepare for an xAI (SpaceXSI) frontend interview with 7 reported questions and the rounds from public postings and reports: chat UI, TS app, CSS screenshot.',
     h1: 'xAI (now SpaceXSI) Frontend Interview Questions',
     kicker: 'Public xAI prep guide',
     headings: [
       'Prepare for product judgment, not xAI trivia',
-      'What the public pages establish, and what you still need to confirm',
-      'Four xAI frontend interview practice questions',
+      'What closed postings and a few accounts can show, and what to ask your interviewers',
+      'questions candidates reported',
       'Scope the chat interface before the first line of the pairing session',
       'A 7-day xAI frontend interview preparation plan',
       'Common xAI frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official xAI questions',
-    prompts: [
-      { id: 'react-chat-interface-pairing', title: 'Build a chat interface in React during a one-hour pairing session' },
-      { id: 'small-react-app-typescript', title: 'Write a small app in React with TypeScript in 45 minutes' },
-      { id: 'html-css-from-screenshot', title: 'Implement a UI from a screenshot in HTML and CSS' },
-      { id: 'ai-chat-composer-streaming-design', title: 'Design the AI chat composer and streaming turn for a grok.com-style product' },
-    ],
     resources: [
       '/react/coding/react-fetch-list-states',
       '/css/coding/css-grid-card-gallery',
       '/css/coding/css-flexbox-navbar',
-      '/react/trivia/react-usememo-vs-usecallback',
-      '/react/trivia/react-useref-vs-usestate',
       '/javascript/trivia/ai-streaming-data-handling',
       '/javascript/trivia/chat-conversation-state-management',
       '/system-design/ai-chat-textarea-design',
@@ -1312,37 +1142,25 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/jpmorgan/preview',
     title: 'JPMorgan Chase Frontend Interview Questions and React Round Guide',
     description:
-      'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 5 practice prompts.',
+      'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 28 reported questions.',
     h1: 'JPMorgan Chase Frontend Interview Questions',
     kicker: 'Public JPMorgan Chase prep guide',
     headings: [
-      'Prepare for product judgment, not JPMorgan Chase trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'JPMorgan Chase React interview for frontend engineers: what the team-run rounds ask',
-      'Five JPMorgan Chase frontend interview practice questions',
-      'Scope the generic async promise hook before the first line',
+      'Learn the recurring questions, then rehearse your team\'s shape',
+      'What these accounts can tell you, and what to ask the recruiter',
+      'JPMorgan Chase React interview for frontend engineers: the rounds each team runs',
+      'questions candidates reported',
+      'Scope the 2026 live-coding task before the first line',
       'A 7-day JPMorgan Chase frontend interview preparation plan',
       'Common JPMorgan Chase frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the JPMorgan Chase rounds',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official JPMorgan Chase questions',
-    prompts: [
-      { id: 'generic-memoize-function', title: 'Write a generic memoization function inside a security-and-React round' },
-      { id: 'reduce-polyfill-with-async-follow-ups', title: 'Write a polyfill for the reduce function, with promises, generators and currying as follow-ups' },
-      { id: 'generic-async-promise-react-hook', title: 'Live-code a generic async promise React hook with typed state and effect cleanup' },
-      { id: 'priority-todo-list', title: 'Build a to-do list where each task has a priority that can be changed, and tasks can be deleted' },
-      { id: 'react-and-javascript-conversation-round', title: 'Hold the React and JavaScript conversation round: closures, clones, hooks, storage and CORS' },
-    ],
+    trustFragment: 'none is a leaked, confirmed or official JPMorgan Chase',
     resources: [
-      '/javascript/trivia/js-closures',
-      '/javascript/trivia/js-event-loop',
-      '/react/trivia/react-usememo-vs-usecallback',
-      '/react/trivia/react-useref-vs-usestate',
-      '/react/trivia/react-higher-order-components',
-      '/javascript/trivia/js-cookie-sessionstorage-localstorage',
-      '/javascript/trivia/js-xss-dom-sinks',
-      '/javascript/coding/js-create-lru-cache',
+      '/javascript/trivia/js-memoization',
+      '/react/trivia/react-keys-in-lists',
+      '/guides/interview-blueprint/dsa-for-fe',
       '/guides/behavioral/stories',
     ],
     reportUrl:
@@ -1353,38 +1171,26 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/agoda/preview',
     title: 'Agoda Frontend Interview Questions and Platform Interview Guide',
     description:
-      'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 5 practice prompts.',
+      'Agoda frontend interview: the Platform interview (60 min on HackerRank, three reported shapes), coding hour, architecture round and 38 reported questions.',
     h1: 'Agoda Frontend Interview Questions',
     kicker: 'Public Agoda prep guide',
     headings: [
-      'Prepare for product judgment, not Agoda trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'Agoda Platform interview for frontend engineers: what it is and what was asked',
-      'Agoda Architecture interview for frontend engineers: what it is and what was asked',
-      'Five Agoda frontend interview practice questions',
+      'Practise talking: in the newest loop only the coding hour asked for code',
+      'What these Agoda accounts cover, and what only the recruiter can tell you',
+      'Agoda Platform interview for frontend engineers: one hour, three shapes',
+      'Agoda Architecture interview for frontend engineers: an hour of design without a diagram',
+      'questions candidates reported',
       'Scope the hotel search page before the first sentence',
       'A 7-day Agoda frontend interview preparation plan',
       'Common Agoda frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Agoda questions',
-    prompts: [
-      { id: 'hotel-search-page-frontend-architecture', title: 'Design a hotel search page frontend from scratch for a million users and several teams' },
-      { id: 'travel-booking-frontend-architecture', title: 'Design a scalable frontend architecture for a travel booking website' },
-      { id: 'react-typescript-stock-dashboard-take-home', title: 'Build the React and TypeScript stock dashboard take-home, then explain it in the follow-up hour' },
-      { id: 'web-fundamentals-platform-hour', title: 'Answer the one-hour web-fundamentals Platform round without writing code' },
-      { id: 'javascript-pipeline-and-hackerrank-coding-hour', title: 'Implement a pipeline function, extend it to an async limit, and clear the HackerRank coding hour' },
-    ],
+    trustFragment: 'Agoda has confirmed none of them, nothing is leaked',
     resources: [
-      '/javascript/coding/js-debounce',
+      '/guides/interview-blueprint/dsa-for-fe',
+      '/guides/system-design-blueprint',
       '/react/coding/react-fetch-list-states',
-      '/javascript/trivia/js-xss-dom-sinks',
-      '/javascript/trivia/js-cookie-sessionstorage-localstorage',
-      '/javascript/trivia/http-caching-basics',
-      '/react/trivia/react-ssr-hydration',
-      '/react/trivia/react-state-management-redux',
-      '/javascript/trivia/js-testing-edge-cases-strategy',
       '/guides/behavioral/stories',
     ],
     reportUrl:
@@ -1393,39 +1199,24 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Shopee',
     path: '/companies/shopee/preview',
-    title: 'Shopee Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Shopee Frontend Interview Questions: 133 Reported + Prep Guide',
     description:
-      'Prepare for a Shopee frontend interview with 5 practice prompts modelled on public reports: Promise from scratch, React hover menu, function cache, HTTP, CSS.',
+      'Shopee frontend interview rounds in Vietnam, Singapore, China and Taiwan, from a two-hour frontend round to a written test, with 133 reported questions.',
     h1: 'Shopee Frontend Interview Questions',
     kicker: 'Public Shopee prep guide',
     headings: [
-      'Prepare for product judgment, not Shopee trivia',
-      'What the public accounts establish, and what you still need to confirm',
-      'Five Shopee frontend interview practice questions',
+      'What Shopee frontend rounds reward: JavaScript written from memory, and the web platform explained exactly',
+      'questions candidates reported',
       'Scope the Promise implementation before the first line',
       'A 7-day Shopee frontend interview preparation plan',
       'Common Shopee frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for each part of a Shopee round',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Shopee questions',
-    prompts: [
-      { id: 'promise-without-promise', title: 'Write a Promise without using Promise, after the event-loop and async questions' },
-      { id: 'recursive-hover-menu-react', title: 'Build a recursive multi-level hover menu in React' },
-      { id: 'function-cache-flatten-deep-clone-new', title: 'Implement a function cache keyed by its arguments, then flatten an array, deep-clone an object and implement new' },
-      { id: 'http-caching-cookie-security-hour', title: 'Answer the HTTP, caching, cookie and security round' },
-      { id: 'written-test-and-css-questions', title: 'Clear the 90-minute written test and the CSS questions' },
-    ],
+    trustFragment: 'a Viblo interview in which a preparation course quotes a hire',
     resources: [
       '/javascript/coding/js-create-deferred-promise',
-      '/javascript/coding/js-implement-new',
-      '/javascript/coding/js-flatten-once',
-      '/javascript/trivia/js-event-loop',
-      '/javascript/trivia/http-caching-basics',
-      '/javascript/trivia/js-cookie-options',
-      '/javascript/trivia/js-xss-dom-sinks',
-      '/css/trivia/css-cascade-order',
-      '/guides/behavioral/stories',
+      '/guides/interview-blueprint/javascript-interviews',
     ],
     reportUrl:
       'https://viblo.asia/p/luyen-tap-that-bai-va-thanh-cong-hanh-trinh-cua-anh-dat-hoc-vien-engineer-pro-vao-shopee-EbNVQnP04vR',
@@ -1433,34 +1224,24 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'Anduril',
     path: '/companies/anduril/preview',
-    title: 'Anduril Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'Anduril Frontend Interview Questions: 11 Reported + Prep Guide',
     description:
-      'Prepare for an Anduril frontend interview with 5 practice prompts modelled on public reports: file explorer, timer class, plain JS to React, autocomplete.',
+      'Prepare for an Anduril frontend interview with 11 reported questions from public reports: the file explorer screen, two coding rounds, design, behavioral.',
     h1: 'Anduril Frontend Interview Questions',
     kicker: 'Public Anduril prep guide',
     headings: [
-      'What Anduril frontend loops reward: a working React build in time and a class moved into a framework',
-      'What the nine public accounts establish',
-      'Map-based command interfaces and live sensor data as practice contexts',
-      'Five Anduril frontend interview practice questions',
+      'What Anduril frontend loops reward: working UI inside the hour, in React or plain JavaScript',
+      'What Blind and Taro accounts show about the Anduril loop, and where they stop',
+      'questions candidates reported',
       'Scope the file explorer before the first line',
       'A 7-day Anduril frontend interview preparation plan',
       'Common Anduril frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official Anduril questions',
-    prompts: [
-      { id: 'file-explorer-from-nested-data', title: 'Build a file explorer from nested data in React' },
-      { id: 'timer-class-then-react-app', title: 'Write a timer class, then build a React app around it' },
-      { id: 'vanilla-component-then-framework', title: 'Build a component in plain JavaScript, then port it to a framework' },
-      { id: 'lodash-style-helpers', title: 'Implement lodash-style flatten, map and reduce' },
-      { id: 'autocomplete-search-react', title: 'Build an autocomplete search in React' },
-    ],
+    trustFragment: 'read the list as what came up',
     resources: [
       '/javascript/coding/js-filter-tree-render-indented',
-      '/react/coding/react-autocomplete-search-starter',
-      '/javascript/coding/js-flatten-once',
       '/javascript/trivia/js-classes',
       '/javascript/trivia/js-event-delegation',
       '/javascript/trivia/debounce-vs-throttle-search-input',
@@ -1473,38 +1254,28 @@ const AUTHORED_GUIDE_CASES = [
   {
     label: 'GitLab',
     path: '/companies/gitlab/preview',
-    title: 'GitLab Frontend Interview Questions: 5 Prompts + Prep Guide',
+    title: 'GitLab Frontend Interview Questions: 27 Reported + Prep Guide',
     description:
-      'Prepare for a GitLab frontend interview with 5 practice prompts built on the handbook and public reports: Vue merge request review, refetching, CSS, tests.',
+      'GitLab frontend interview: the merge request you review at home and improve in a 90-minute call, the written assessment and 27 reported questions.',
     h1: 'GitLab Frontend Interview Questions',
     kicker: 'Public GitLab prep guide',
     headings: [
       'What the GitLab frontend loop rewards: a written merge request review you can defend and improve live',
       'What GitLab publishes and what the accounts add',
-      'Repository interfaces and a large Vue frontend as practice contexts',
-      'Five GitLab frontend interview practice questions',
+      'The GitLab merge request review: the take-home half and the 90-minute call',
+      'questions candidates reported',
       'Plan the merge request review before the call',
       'A 7-day GitLab frontend interview preparation plan',
       'Common GitLab frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official GitLab questions',
-    prompts: [
-      { id: 'review-vue-merge-request-live', title: 'Review a small Vue merge request, then improve it live' },
-      { id: 'stop-refetching-on-click', title: 'Stop a component from refetching on every click' },
-      { id: 'fix-markup-match-mobile-mock', title: 'Fix broken markup and match the mobile mock' },
-      { id: 'make-unit-tests-catch-bug', title: 'Make the unit tests catch the bug' },
-      { id: 'written-page-load-answer', title: 'Answer the written question on how a browser loads a page' },
-    ],
+    trustFragment: 'Taro re-posts with rewritten text and placeholder dates',
     resources: [
-      '/javascript/debug/js-debug-async-race',
-      '/css/coding/css-flexbox-navbar',
-      '/javascript/coding/js-create-spy-function',
-      '/html/coding/html-head-seo-basics',
-      '/html/trivia/html-parsing-rendering',
-      '/vue/trivia/vue-lifecycle-hooks',
-      '/system-design/infinite-scroll-list',
+      '/javascript/debug/js-debug-mutating-input',
+      '/javascript/debug/js-debug-off-by-one',
+      '/vue/coding/vue-todo-list',
+      '/vue/trivia/vue-conditional-list-rendering',
       '/guides/behavioral/stories',
     ],
     reportUrl:
@@ -1515,35 +1286,24 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/capital-one/preview',
     title: 'Capital One Frontend Interview Questions and Power Day Guide',
     description:
-      'Capital One frontend interview: Power Day explained (frontend design, React or Angular technical, case and behavioral hours), CodeSignal and 5 prompts.',
+      'Capital One frontend interview: Power Day explained (frontend design, React or Angular technical, case and behavioral hours), CodeSignal and 29 reported questions.',
     h1: 'Capital One Frontend Interview Questions',
     kicker: 'Public Capital One prep guide',
     headings: [
       'What Capital One frontend loops reward: designing a card application out loud and reading code critically',
-      'What the public accounts establish',
-      'Capital One Power Day for frontend engineers: what the four interviews are and what was asked',
-      'Micro frontends and AI-assisted engineering as practice contexts',
-      'Five Capital One frontend interview practice questions',
+      'What the accounts cover, and the gap after 2024',
+      'Capital One Power Day for frontend engineers: the four interviews, hour by hour',
+      'questions candidates reported',
       'Scope the card application design before you draw',
       'A 7-day Capital One frontend interview preparation plan',
       'Common Capital One frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official Capital One questions',
-    prompts: [
-      { id: 'credit-card-application-page-design', title: 'Design a credit card application page and its confirmation page' },
-      { id: 'single-page-app-from-requirements', title: 'Structure a single-page application from requirements, then build it with the interviewer' },
-      { id: 'angular-form-validation', title: 'Add validation to an existing Angular form' },
-      { id: 'power-day-case-budgeting-bug', title: 'Power Day case: find the bug in budgeting code written by an intern' },
-      { id: 'read-explain-refactor-code', title: 'Read, explain and refactor badly written code' },
-    ],
     resources: [
-      '/html/coding/html-forms-validation-required',
       '/javascript/debug/js-debug-nullish-defaults',
-      '/javascript/debug/js-debug-mutating-input',
       '/react/trivia/react-state-management-redux',
-      '/angular/trivia/angular-template-driven-vs-reactive-forms-which-scales',
       '/angular/trivia/angular-routing',
       '/react/coding/react-fetch-list-states',
       '/guides/behavioral/stories',
@@ -1556,40 +1316,23 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/crowdstrike/preview',
     title: 'CrowdStrike Frontend Interview Questions and Take-Home Review Guide',
     description:
-      'CrowdStrike frontend interview: the take-home file table and its review round (what engineers ask), spoken web fundamentals, the AI rule and 5 practice prompts.',
+      'CrowdStrike frontend interview: the take-home file table and its review round, spoken web fundamentals, the AI rule and 38 reported questions.',
     h1: 'CrowdStrike Frontend Interview Questions',
     kicker: 'Public CrowdStrike prep guide',
     headings: [
       'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
-      'What the public accounts establish',
-      'CrowdStrike take-home build and review round for frontend engineers: what was asked',
-      'Ember, React and very large data as practice contexts',
-      'Five CrowdStrike frontend interview practice questions',
-      'Scope select all across pages before you code',
+      'The CrowdStrike frontend take-home and the review round after it',
+      'questions candidates reported',
+      'Plan the take-home table before you write code',
       'A 7-day CrowdStrike frontend interview preparation plan',
       'Common CrowdStrike frontend interview preparation questions',
-      'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Free practice for the CrowdStrike round formats',
+      'Sources (',
     ],
-    trustFragment: 'not leaked, confirmed or official CrowdStrike questions',
-    prompts: [
-      { id: 'downloadable-files-table-select-all', title: 'Build a downloadable-files table with select all' },
-      { id: 'take-home-review-defend-extend', title: 'Defend and extend your take-home in review' },
-      { id: 'web-fundamentals-rapid-round', title: 'Web fundamentals rapid round' },
-      { id: 'explain-xss-and-cors', title: 'Explain XSS and CORS for a security product' },
-      { id: 'real-time-dashboard-stays-fast', title: 'Design a real-time dashboard that stays fast' },
-    ],
+    trustFragment: 'These questions come from CrowdStrike candidates',
     resources: [
       '/html/coding/html-tables-accessibility',
-      '/system-design/infinite-scroll-list',
-      '/javascript/coding/js-poll-until',
-      '/javascript/trivia/js-event-delegation',
-      '/javascript/trivia/js-block-scoped-or-function-scoped',
-      '/css/trivia/css-box-model',
-      '/javascript/trivia/js-promises-async-await',
-      '/javascript/trivia/js-xss-dom-sinks',
-      '/javascript/trivia/js-secure-cors-handling',
-      '/javascript/trivia/sse-vs-websocket-real-time',
+      '/react/coding/react-fetch-list-states',
     ],
     reportUrl:
       'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
@@ -1820,12 +1563,16 @@ function extractRawJsonLdNodes(html: string): Array<Record<string, any>> {
 
 function extractRawMeta(html: string, name: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*name=["']${name}["'][^>]*>`, 'i'))?.[0] || '';
-  return decodeBasicHtmlEntities(tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '');
+  // Match the opening quote: an apostrophe inside a double-quoted value is text, not the end of the attribute.
+  const value = tag.match(/\scontent=(?:"([^"]*)"|'([^']*)')/i);
+  return decodeBasicHtmlEntities(value?.[1] ?? value?.[2] ?? '');
 }
 
 function extractRawPropertyMeta(html: string, property: string): string {
   const tag = html.match(new RegExp(`<meta\\s+[^>]*property=["']${property}["'][^>]*>`, 'i'))?.[0] || '';
-  return decodeBasicHtmlEntities(tag.match(/\scontent=["']([^"']*)["']/i)?.[1] || '');
+  // Match the opening quote: an apostrophe inside a double-quoted value is text, not the end of the attribute.
+  const value = tag.match(/\scontent=(?:"([^"]*)"|'([^']*)')/i);
+  return decodeBasicHtmlEntities(value?.[1] ?? value?.[2] ?? '');
 }
 
 function extractRawCanonical(html: string): string {
@@ -3721,36 +3468,35 @@ test.describe('seo-ssr', () => {
     const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
     const schemaTypes = extractRawJsonLdTypes(html);
 
-    expect(extractRawTitle(html)).toBe('OpenAI Frontend Interview: 5 Practice Questions + Prep Guide');
+    expect(extractRawTitle(html)).toBe('OpenAI Frontend Interview: 8 Reported Questions + Prep Guide');
     expect(extractRawMeta(html, 'description')).toBe(
-      'Practice for OpenAI frontend interviews: streaming chat UI, stale stream handling, optimistic React state, accessibility and conversation history design.',
+      'OpenAI frontend interview: the recruiter call, a two-part screen with a ChatGPT-in-a-text-area design, the agentic option and 8 reported questions.',
     );
     expect(extractRawH1(html)).toBe('OpenAI Frontend Interview Questions');
     expect(extractRawCanonical(html)).toBe(expectedCanonical('/companies/openai/preview'));
     expect(robots).toBe('index,follow');
     expect(schemaTypes).toContain('CollectionPage');
     expect(schemaTypes).toContain('BreadcrumbList');
+    // The reported-question list replaced the prompt cards: the questions after the first stay in the page, locked.
+    expect(schemaTypes).not.toContain('ItemList');
+    expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
 
     [
-      'streaming chat composer',
-      'stop/regenerate and stale stream handling',
-      'react state + optimistic messages',
-      'accessibility/keyboard interaction',
-      'frontend system design/conversation history',
-      'strong answer should cover',
-      'walk through stale stream handling before you code',
+      'Public OpenAI prep guide',
+      'questions candidates reported',
+      'Scope ChatGPT in a text area before you draw components',
+      'A 7-day OpenAI frontend interview preparation plan',
+      'Free practice for the open question',
       'unlock the full openai practice set',
+      'Sources (',
     ].forEach((expectedText) => {
       expect(text, `OpenAI preview includes ${expectedText}`).toContain(normalizeText(expectedText));
     });
 
-    expect(caseText).toContain(
-      'These are not leaked or confirmed OpenAI interview questions; they are representative, role-relevant practice prompts.',
-    );
+    expect(caseText).toContain('OpenAI has confirmed none of them.');
     expect(caseText).toContain('OpenAI');
     expect(caseText).not.toContain('Openai');
     expect(caseText).not.toContain('Chat UI with Streaming Response');
-    expect(caseText).not.toContain('AI Chat Text Area (ChatGPT-Style)');
     expect(caseText).not.toContain('AI UX Resilience and Control Patterns');
 
     const companiesHtml = await readRawHtml(request, '/companies');
@@ -3780,52 +3526,35 @@ test.describe('seo-ssr', () => {
 
     [
       'Public Google prep guide',
-      '7 representative prompts',
-      'DSA, JavaScript, browser, UI, system design',
-      'Full practice set requires Premium',
+      '24 reported questions',
       'What to study first for a Google frontend interview',
-      'Current process note — reviewed October 2026',
-      'Seven Google frontend interview practice questions',
-      'Walk through autocomplete request ordering before you code',
+      'questions candidates reported',
+      'Google Googleyness interview for front-end engineers: what it is and what was asked',
+      'Walk through the open question: a depth-first walk over HTML nodes',
       'A 7-day Google frontend interview preparation plan',
       'Common Google frontend interview preparation questions',
       'Free public practice',
+      // The press report behind the 2026 pilot is listed with the sources; its link opens with a free account.
+      'Business Insider report, May 2026',
     ].forEach((expectedText) => {
       expect(text, `Google preview includes ${expectedText}`).toContain(normalizeText(expectedText));
     });
 
-    expect(caseText).toContain(
-      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.',
-    );
-    expect(caseText).toContain('Google-tagged FrontendAtlas practice set');
+    expect(caseText).toContain('We reworded each one, and Google has confirmed none.');
     expect(caseText).not.toContain('47 known questions');
     expect(caseText).not.toContain('Curry Function');
     expect(caseText).not.toContain('Image Slider (Dots + Previous/Next)');
-
-    for (const prompt of GOOGLE_PREVIEW_PROMPTS) {
-      expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
-      expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
-        new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
-      );
-    }
+    // The reported-question list replaced the prompt cards: the questions after the first stay in the page, locked.
+    expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
 
     for (const resourcePath of GOOGLE_PREVIEW_RESOURCES) {
       expectCleanRawLink(html, resourcePath, GOOGLE_PREVIEW_PATH);
     }
-    expectCleanRawLink(
-      html,
-      'https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5',
-      GOOGLE_PREVIEW_PATH,
-    );
-    expectCleanRawLink(
-      html,
-      'https://www.google.com/about/careers/applications/interview-tips/',
-      GOOGLE_PREVIEW_PATH,
-    );
 
-    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList', 'ItemList'].forEach((type) => {
+    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList'].forEach((type) => {
       expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
     });
+    expect(schemaTypes).not.toContain('ItemList');
 
     const collectionPage = schemaNodes.find((node) => node['@type'] === 'CollectionPage');
     expect(collectionPage).toMatchObject({
@@ -3837,8 +3566,8 @@ test.describe('seo-ssr', () => {
       inLanguage: 'en',
       isAccessibleForFree: false,
       hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
-      mainEntity: { '@id': `${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts` },
     });
+    expect(collectionPage?.mainEntity).toBeUndefined();
     await expectSitemapModificationDate(request, GOOGLE_PREVIEW_PATH, collectionPage);
 
     const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');
@@ -3848,27 +3577,6 @@ test.describe('seo-ssr', () => {
       'Company Frontend Interview Questions',
       GOOGLE_PREVIEW_H1,
     ]);
-
-    const itemList = schemaNodes.find((node) => node['@type'] === 'ItemList');
-    expect(itemList?.['@id']).toBe(`${expectedCanonical(GOOGLE_PREVIEW_PATH)}#practice-prompts`);
-    const itemListElements = itemList?.['itemListElement'];
-    expect(Array.isArray(itemListElements)).toBe(true);
-    expect(itemListElements).toHaveLength(7);
-
-    itemListElements.forEach((entry: any, index: number) => {
-      const expectedPrompt = GOOGLE_PREVIEW_PROMPTS[index];
-      const itemName = entry?.name ?? entry?.item?.name;
-      const itemUrl = entry?.url ?? entry?.item?.url;
-      expect(entry?.position).toBe(index + 1);
-      expect(itemName).toBe(expectedPrompt.title);
-      expect(itemUrl).toBe(`${expectedCanonical(GOOGLE_PREVIEW_PATH)}#${expectedPrompt.id}`);
-
-      const fragment = new URL(String(itemUrl)).hash.slice(1);
-      expect(fragment).toBe(expectedPrompt.id);
-      expect(html, `ItemList fragment #${fragment} maps to visible markup`).toMatch(
-        new RegExp(`\\bid=["']${escapeRegExp(fragment)}["']`, 'i'),
-      );
-    });
 
     for (const resourcePath of GOOGLE_PREVIEW_RESOURCES) {
       const resourceHtml = await readRawHtml(request, resourcePath);
@@ -3913,49 +3621,37 @@ test.describe('seo-ssr', () => {
 
     [
       'Public Netflix prep guide',
-      'Prepare for product judgment, not Netflix trivia',
-      'What Netflix publishes—and what you still need to confirm',
-      'Three product contexts for practicing transferable frontend judgment',
-      'Six Netflix frontend interview practice questions',
+      'questions candidates reported',
       // The culture decoder and its drill render on the server, with the questions a visitor cannot pick yet.
       'Netflix culture interview for frontend engineers: what the memo asks for and what was asked',
       'Practise one question',
       'Tell me about a tough decision you had to make quickly when circumstances changed.',
-      'Scope Continue Watching before drawing architecture boxes',
+      'Three Netflix engineering groups to practise against',
+      'Walk through filtering API results as the user types',
       'A 7-day Netflix frontend interview preparation plan',
       'Common Netflix frontend interview preparation questions',
       'Build the underlying skills with free practice',
-      'Sources and evidence limits',
+      'Sources (',
     ].forEach((expectedText) => {
       expect(text, `Netflix preview includes ${expectedText}`).toContain(normalizeText(expectedText));
     });
 
-    expect(caseText).toContain(
-      'These are representative FrontendAtlas practice prompts, not leaked or confirmed Netflix interview questions. Interview formats vary by role and team, so use recruiter-provided material as the source of truth.',
-    );
-    expect(caseText).toContain('An older engineering case study');
+    expect(caseText).toContain('Netflix has confirmed none of them.');
     expect(caseText).not.toContain('47 known questions');
     expect(caseText).not.toContain('Curry Function');
     expect(caseText).not.toContain('Toast Notification System');
     expect(caseText).not.toContain('Try free challenge');
-
-    for (const prompt of NETFLIX_PREVIEW_PROMPTS) {
-      expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
-      expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
-        new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
-      );
-    }
+    // The reported-question list replaced the prompt cards: the questions after the first stay in the page, locked.
+    expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
 
     for (const resourcePath of NETFLIX_PREVIEW_RESOURCES) {
       expectCleanRawLink(html, resourcePath, NETFLIX_PREVIEW_PATH);
     }
-    for (const sourceUrl of NETFLIX_OFFICIAL_SOURCES) {
-      expectCleanRawLink(html, sourceUrl, NETFLIX_PREVIEW_PATH);
-    }
 
-    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList', 'ItemList'].forEach((type) => {
+    ['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList'].forEach((type) => {
       expect(schemaTypes, `JSON-LD includes ${type}`).toContain(type);
     });
+    expect(schemaTypes).not.toContain('ItemList');
     ['FAQPage', 'QAPage', 'JobPosting', 'PracticeProblem'].forEach((type) => {
       expect(schemaTypes, `JSON-LD excludes unsupported ${type}`).not.toContain(type);
     });
@@ -3970,10 +3666,10 @@ test.describe('seo-ssr', () => {
       inLanguage: 'en',
       isAccessibleForFree: false,
       hasPart: [{ '@type': 'WebPageElement', isAccessibleForFree: false, cssSelector: '.premium-locked' }],
-      mainEntity: { '@id': `${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts` },
     });
+    expect(collectionPage?.mainEntity).toBeUndefined();
     await expectSitemapModificationDate(request, NETFLIX_PREVIEW_PATH, collectionPage);
-    expect(collectionPage?.mentions).toHaveLength(8);
+    expect(collectionPage?.mentions).toHaveLength(NETFLIX_PREVIEW_RESOURCES.length);
 
     const breadcrumb = schemaNodes.find((node) => node['@type'] === 'BreadcrumbList');
     expect((breadcrumb?.['itemListElement'] || []).map((item: any) => item.name)).toEqual([
@@ -3981,27 +3677,6 @@ test.describe('seo-ssr', () => {
       'Company Frontend Interview Questions',
       NETFLIX_PREVIEW_H1,
     ]);
-
-    const itemList = schemaNodes.find((node) => node['@type'] === 'ItemList');
-    expect(itemList?.['@id']).toBe(`${expectedCanonical(NETFLIX_PREVIEW_PATH)}#practice-prompts`);
-    const itemListElements = itemList?.['itemListElement'];
-    expect(Array.isArray(itemListElements)).toBe(true);
-    expect(itemListElements).toHaveLength(6);
-
-    itemListElements.forEach((entry: any, index: number) => {
-      const expectedPrompt = NETFLIX_PREVIEW_PROMPTS[index];
-      const itemName = entry?.name ?? entry?.item?.name;
-      const itemUrl = entry?.url ?? entry?.item?.url;
-      expect(entry?.position).toBe(index + 1);
-      expect(itemName).toBe(expectedPrompt.title);
-      expect(itemUrl).toBe(`${expectedCanonical(NETFLIX_PREVIEW_PATH)}#${expectedPrompt.id}`);
-
-      const fragment = new URL(String(itemUrl)).hash.slice(1);
-      expect(fragment).toBe(expectedPrompt.id);
-      expect(html, `ItemList fragment #${fragment} maps to visible markup`).toMatch(
-        new RegExp(`\\bid=["']${escapeRegExp(fragment)}["']`, 'i'),
-      );
-    });
 
     for (const resourcePath of NETFLIX_PREVIEW_RESOURCES) {
       const resourceHtml = await readRawHtml(request, resourcePath);
@@ -4058,28 +3733,23 @@ test.describe('seo-ssr', () => {
     expectNoHydrationOrChunkIssues(runtimeIssues, NETFLIX_PREVIEW_PATH);
   });
 
-  test('raw company guides carry the plan card above the H1, the same link under a week plan and on the locked prompts and samples cards', async ({ request }) => {
+  test('raw company guides carry the plan card above the H1, the same link under a week plan and in the question list offer', async ({ request }) => {
     test.setTimeout(120_000);
-    // Guides with prompts past the open ones name them in a card, and catalog guides with Premium samples close the
-    // sample list with a card; both lead into the plan. Behind the account gate the prompts card leads to a free
-    // account instead, so it adds no plan link.
-    for (const [slug, weekPlan, lockedPrompts, lockedSamples] of [
-      ['elevenlabs', true, true, false],
-      ['netflix', true, true, false],
-      ['apple', false, false, true],
+    // A guide with a question list leads into the plan from its offer card as well.
+    for (const [slug, weekPlan] of [
+      ['elevenlabs', true],
+      ['netflix', true],
+      ['servicenow', true],
+      ['apple', false],
     ] as const) {
       const html = await readRawHtml(request, `/companies/${slug}/preview`);
-      const gated = GATED_COMPANY_GUIDES.has(slug);
       const cardAt = html.indexOf('data-testid="company-plan-entry"');
       expect(cardAt, `${slug} plan card`).toBeGreaterThan(-1);
       expect(cardAt, `${slug} plan card before the H1`).toBeLessThan(html.indexOf('<h1'));
-      expect(html.includes('data-testid="company-prompt-gate"'), `${slug} locked prompts card`).toBe(lockedPrompts);
-      expect(html.includes('data-testid="company-sample-gate"'), `${slug} locked samples card`).toBe(lockedSamples);
-      if (gated) {
-        expect(html, `${slug} account gate`).toContain(`href="/auth/signup?redirectTo=%2Fcompanies%2F${slug}%2Fpreview"`);
-      }
+      const listOffer = QUESTION_LIST_GUIDES.has(slug);
+      expect(html.includes('data-testid="company-question-offer"'), `${slug} question list offer`).toBe(listOffer);
       expect(html.split(`href="/companies?company=${slug}"`).length - 1, `${slug} plan links`)
-        .toBe(1 + Number(weekPlan) + Number(lockedPrompts && !gated) + Number(lockedSamples));
+        .toBe(1 + Number(weekPlan) + Number(listOffer));
     }
   });
 
@@ -4103,28 +3773,25 @@ test.describe('seo-ssr', () => {
     expect(rawVisibleTextPreserveCase(tesla)).not.toContain('Official preparation pages from');
   });
 
-  test('raw ByteDance company preview lists sourced items with nofollow report links, and Microsoft shows no block', async ({ request }) => {
+  test('raw ByteDance company preview folds its reported items into the question list and links no report for a visitor', async ({ request }) => {
     test.setTimeout(120_000);
+    // With the reported-question list the public reports block is gone: its items are rows, their sources the list at the end.
     const html = await readRawHtml(request, '/companies/bytedance/preview');
-    const caseText = rawVisibleTextPreserveCase(html);
-    expect(caseText).toContain('Practice items with public ByteDance interview accounts');
-    expect(html).toMatch(/href="\/javascript\/coding\/js-build-tree-from-flat-list"/);
-    const reportAnchor = html.match(/<a[^>]*href="https:\/\/www\.teamblind\.com\/post\/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l"[^>]*>/)?.[0] ?? '';
-    expect(reportAnchor, 'public report anchor').not.toBe('');
-    expect(reportAnchor).toContain('rel="noopener noreferrer nofollow"');
-    // Compare the section markers, not bare names: the inlined component stylesheet mentions the
-    // official-guides file name in its sourceMappingURL comment before any section renders.
-    const reportsAt = html.indexOf('data-testid="company-public-reports"');
+    expect(rawVisibleTextPreserveCase(html)).not.toContain('Practice items with public ByteDance interview accounts');
+    expect(html).not.toContain('data-testid="company-public-reports"');
+    expect(html).not.toContain('href="https://www.teamblind.com/post/bytedance-new-grad-frontend-engineer-interview-breakdown-vqyvjs1l"');
+    // Compare the section markers, not bare names: the inlined component stylesheet mentions file names first.
+    const listAt = html.indexOf('data-testid="company-question-list"');
     const guidesAt = html.indexOf('data-testid="company-official-guides"');
-    expect(reportsAt, 'public reports section').toBeGreaterThan(-1);
+    expect(listAt, 'question list').toBeGreaterThan(-1);
     expect(guidesAt, 'official guides section').toBeGreaterThan(-1);
-    expect(reportsAt).toBeLessThan(guidesAt);
+    expect(listAt).toBeLessThan(guidesAt);
 
     const microsoft = await readRawHtml(request, '/companies/microsoft/preview');
     expect(rawVisibleTextPreserveCase(microsoft)).not.toContain('Practice items with public');
   });
 
-  test('ByteDance company preview reflows without horizontal overflow and keeps the public reports block readable', async ({ page }) => {
+  test('ByteDance company preview reflows without horizontal overflow and keeps the question list readable', async ({ page }) => {
     const runtimeIssues = collectClientRuntimeIssues(page);
     const previewPath = '/companies/bytedance/preview';
     const viewports = [
@@ -4136,28 +3803,26 @@ test.describe('seo-ssr', () => {
 
     await page.setViewportSize(viewports[0]);
     await page.goto(previewPath, { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('[data-testid="company-public-reports"] h2')).toHaveText(
-      'Practice items with public ByteDance interview accounts',
-    );
+    await expect(page.locator('[data-testid="company-question-list"] h2')).toContainText('questions candidates reported');
 
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       const layout = await page.evaluate(() => {
         const preview = document.querySelector<HTMLElement>('[data-testid="company-preview-page"]');
-        const reports = document.querySelector<HTMLElement>('[data-testid="company-public-reports"]');
+        const list = document.querySelector<HTMLElement>('[data-testid="company-question-list"]');
         return {
           documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           previewOverflow: preview ? preview.scrollWidth - preview.clientWidth : Number.POSITIVE_INFINITY,
-          reportsOverflow: reports ? reports.scrollWidth - reports.clientWidth : Number.POSITIVE_INFINITY,
-          reportItems: reports ? reports.querySelectorAll('[data-testid^="company-report-"]').length : 0,
+          listOverflow: list ? list.scrollWidth - list.clientWidth : Number.POSITIVE_INFINITY,
+          rows: list ? list.querySelectorAll('.cq-row').length : 0,
           h1Count: document.querySelectorAll('h1').length,
         };
       });
 
       expect(layout.documentOverflow, `document overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
       expect(layout.previewOverflow, `ByteDance preview overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
-      expect(layout.reportsOverflow, `public reports overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
-      expect(layout.reportItems, `public report items at ${viewport.width}px`).toBeGreaterThan(0);
+      expect(layout.listOverflow, `question list overflow at ${viewport.width}px`).toBeLessThanOrEqual(1);
+      expect(layout.rows, `question rows at ${viewport.width}px`).toBeGreaterThan(0);
       expect(layout.h1Count, `single H1 at ${viewport.width}px`).toBe(1);
     }
 
@@ -4170,88 +3835,83 @@ test.describe('seo-ssr', () => {
       path: '/companies/amazon/preview',
       heading: 'Amazon Front End Engineer interview process',
       tables: 2,
-      // The authored guide opens with the table, right under its hero, and the practice prompts follow it.
+      // The authored guide opens with the table, right under its hero, and the reported questions follow it.
       after: '<h1',
-      before: 'id="amazon-practice-prompts"',
+      before: 'data-testid="company-question-list"',
       officialUrl: 'https://amazon.jobs/content/en/how-we-hire/fee-interview-prep',
       reportUrl: 'https://leetcode.com/discuss/post/1984996/',
-      practicePath: '/system-design/resilient-checkout-payment-flow',
+      practicePath: '/javascript/coding/js-build-tree-from-flat-list',
     },
     {
       path: '/companies/walmart/preview',
       heading: 'Walmart frontend interview process',
       tables: 3,
       after: '<h1',
-      before: '>Sample FrontendAtlas practice prompts</h2>',
+      before: 'data-testid="company-question-list"',
       reportUrl: 'https://leetcode.com/discuss/post/8288813/walmart-interview-for-frontend-role-by-a-s7fk/',
-      practicePath: '/react/trivia/react-ssr-hydration',
+      practicePath: '/javascript/coding/js-valid-parentheses',
     },
     {
       path: '/companies/tesla/preview',
-      gated: true,
       heading: 'Tesla frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>Sample FrontendAtlas practice prompts</h2>',
+      before: 'data-testid="company-question-list"',
       reportUrl: 'https://www.teamblind.com/post/onsite-experience-8-companies-in-the-past-6-months-0-offers-1niasf5x',
-      practicePath: '/javascript/coding/js-color-contrast-ratio',
+      practicePath: '/react/trivia/react-phone-screen-search-bar-rehearsal',
     },
     {
-      // Google keeps its own template branch; its table also opens the page, before the time-sensitive process note.
+      // Google keeps its own template branch; its table also opens the page, before the reported questions.
       path: '/companies/google/preview',
-      gated: true,
       heading: 'Google frontend interview process',
       tables: 1,
       after: '<h1',
-      before: 'id="google-practice-prompts"',
+      before: 'data-testid="company-question-list"',
       officialUrl: 'https://www.google.com/about/careers/applications/how-we-hire/',
       reportUrl: 'https://www.teamblind.com/post/Google-L5-interview-experience-uyV7evLt',
-      practicePath: '/javascript/coding/js-debounce',
+      practicePath: '/javascript/coding/js-get-by-path-1',
     },
     {
       path: '/companies/meta/preview',
-      gated: true,
       heading: 'Meta Front End Engineer interview process',
       tables: 2,
       after: '<h1',
-      before: 'id="meta-practice-prompts"',
+      before: 'data-testid="company-question-list"',
       officialUrl: 'https://www.metacareers.com/FEE-prep-onsite/',
       reportUrl: 'https://www.teamblind.com/post/meta-frontend-system-design-yexyrusi',
-      practicePath: '/javascript/coding/js-flatten-once',
+      practicePath: '/javascript/coding/js-array-foreach',
     },
     {
       path: '/companies/microsoft/preview',
-      gated: true,
       heading: 'Microsoft frontend interview process',
       tables: 2,
       after: '<h1',
-      before: '>Sample FrontendAtlas practice prompts</h2>',
+      before: 'data-testid="company-question-list"',
       officialUrl: 'https://careers.microsoft.com/v2/global/en/hiring-tips',
       reportUrl: 'https://leetcode.com/discuss/interview-experience/5456468/',
       practicePath: '/javascript/trivia/js-event-loop',
     },
     {
-      // OpenAI keeps its own template branch: the table follows the new source-boundary note.
+      // OpenAI keeps its own template branch; its table opens the page, before the reported questions.
       path: '/companies/openai/preview',
       heading: 'OpenAI frontend interview process',
       tables: 1,
       after: '<h1',
-      before: 'id="openai-prompts"',
+      before: 'data-testid="company-question-list"',
       officialUrl: 'https://openai.com/interview-guide/',
       reportUrl: 'https://www.teamblind.com/post/openai-agentic-code-interview-up8jhuiq',
       practicePath: '/system-design/ai-chat-textarea-design',
     },
     {
-      // Netflix keeps its own template branch: the table follows the source-boundary note.
+      // Netflix keeps its own template branch; its table opens the page, and the role lenses come later.
       path: '/companies/netflix/preview',
-      gated: true,
       heading: 'Netflix frontend interview process',
       tables: 2,
       after: '<h1',
       before: 'id="netflix-role-lenses"',
       officialUrl: 'https://jobs.netflix.com/careers/new-grads',
       reportUrl: 'https://leetcode.com/discuss/post/7421643/',
-      practicePath: '/javascript/trivia/js-promise-combinators-all-allsettled-race-any',
+      practicePath: '/javascript/coding/js-debounce',
     },
     {
       path: '/companies/elevenlabs/preview',
@@ -4271,7 +3931,7 @@ test.describe('seo-ssr', () => {
       before: 'id="waymo-role-lenses"',
       officialUrl: 'https://careers.withwaymo.com/how-we-hire',
       reportUrl: 'https://leetcode.com/discuss/post/7949696/',
-      practicePath: '/javascript/coding/js-debounce',
+      practicePath: '/javascript/coding/js-filter-tree-render-indented',
     },
     {
       path: '/companies/crowdstrike/preview',
@@ -4282,7 +3942,7 @@ test.describe('seo-ssr', () => {
       officialUrl: 'https://www.crowdstrike.com/en-us/careers/interviewing/',
       reportUrl:
         'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
-      practicePath: '/javascript/trivia/js-event-delegation',
+      practicePath: '/html/coding/html-tables-accessibility',
     },
     {
       path: '/companies/airbnb/preview',
@@ -4291,7 +3951,7 @@ test.describe('seo-ssr', () => {
       after: 'data-testid="company-editorial-intro"',
       before: 'data-testid="company-prep-steps"',
       reportUrl: 'https://www.teamblind.com/post/just-bombed-my-airbnb-coding-interviews-a3idwxsm',
-      practicePath: '/javascript/trivia/js-closures',
+      practicePath: '/react/coding/react-autocomplete-search-starter',
     },
   ];
 
@@ -4311,12 +3971,10 @@ test.describe('seo-ssr', () => {
       const section = html.slice(sectionAt, html.indexOf('</section>', sectionAt));
       expect(section.match(/<table\b/g)?.length ?? 0, `${slug} tables`).toBeGreaterThan(0);
       const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
-      if (GATED_COMPANY_GUIDES.has(slug)) {
-        // Behind the account gate the raw table reads in full and carries the evidence counts with a tag, not the links.
-        expect(reportAnchors.length, `${slug} report links behind the gate`).toBe(0);
-        expect(section, `${slug} evidence counts`).toContain('interview-process__strength');
-        expect(section, `${slug} free-account tag`).toContain('>Free account<');
-        expect(section, `${slug} blurred rounds`).not.toContain('interview-process__detail');
+      if (QUESTION_LIST_GUIDES.has(slug)) {
+        // With the question list the table says who reported each round, and the links wait at the end of the page.
+        expect(reportAnchors.length, `${slug} report links in the table`).toBe(0);
+        expect(section, `${slug} reporters`).toContain('interview-process__reporter');
       } else {
         expect(reportAnchors.length, `${slug} nofollow report links`).toBeGreaterThan(0);
       }
@@ -4339,11 +3997,9 @@ test.describe('seo-ssr', () => {
       expect(html.indexOf(item.after)).toBeLessThan(sectionAt);
       expect(html.indexOf(item.before), `${item.path} content after the table`).toBeGreaterThan(sectionAt);
 
-      if ('gated' in item && item.gated) {
-        // Behind the account gate the raw table keeps its text, counts and practice links and carries no evidence links.
-        expect(section, `${item.path} gated evidence`).not.toContain(`href="${item.reportUrl}"`);
-        expect(section).toContain('>Free account<');
-        expect(section).not.toContain('interview-process__detail');
+      if (QUESTION_LIST_GUIDES.has(item.path.split('/')[2])) {
+        expect(section, `${item.path} report link in the table`).not.toContain(`href="${item.reportUrl}"`);
+        expect(section).toContain('interview-process__reporter');
       } else {
         const reportAnchor = section.match(new RegExp(`<a[^>]*href="${escapeRegExp(item.reportUrl)}"[^>]*>`))?.[0] ?? '';
         expect(reportAnchor, `${item.path} report anchor`).not.toBe('');
@@ -4400,14 +4056,13 @@ test.describe('seo-ssr', () => {
   });
 
   for (const guide of AUTHORED_GUIDE_CASES) {
-    test(`raw ${guide.label} company preview exposes the authored guide, sourced prompts, schema and crawlable links`, async ({ request }) => {
+    test(`raw ${guide.label} company preview exposes the authored guide, its question list, schema and crawlable links`, async ({ request }) => {
       test.setTimeout(120_000);
 
       const html = await readRawHtml(request, guide.path);
       const text = rawVisibleText(html);
       const caseText = rawVisibleTextPreserveCase(html);
       const robots = normalizeText(extractRawMeta(html, 'robots')).replace(/\s+/g, '');
-      const schemaNodes = extractRawJsonLdNodes(html);
       const schemaTypes = extractRawJsonLdTypes(html);
 
       expect(extractRawTitle(html)).toBe(guide.title);
@@ -4422,31 +4077,19 @@ test.describe('seo-ssr', () => {
       });
 
       expect(caseText).toContain(guide.trustFragment);
-      expect(caseText).toContain('Practice version modelled on a reported round');
       expect(caseText).not.toContain('known questions');
-      expect(caseText).not.toContain('Sample FrontendAtlas practice prompts');
       expect(caseText).not.toContain('Try free challenge');
 
-      for (const prompt of guide.prompts) {
-        expect(text, `visible prompt ${prompt.title}`).toContain(normalizeText(prompt.title));
-        expect(html, `visible prompt anchor ${prompt.id}`).toMatch(
-          new RegExp(`\\bid=["']${escapeRegExp(prompt.id)}["']`, 'i'),
-        );
-      }
       for (const resource of guide.resources) {
         expect(html, `crawlable resource link ${resource}`).toContain(`href="${resource}"`);
       }
       for (const sibling of ['/companies/stripe/preview', '/companies/walmart/preview']) {
         expect(html, `crawlable sibling company guide link ${sibling}`).toContain(`href="${sibling}"`);
       }
-      expect(html).toMatch(new RegExp(`href="${escapeRegExp(guide.reportUrl)}"[^>]*rel="noopener noreferrer nofollow"`));
-
-      for (const schemaType of ['BreadcrumbList', 'CollectionPage', 'ItemList']) {
-        expect(schemaTypes, `schema type ${schemaType}`).toContain(schemaType);
-      }
-      const itemList = schemaNodes.find((node: any) => node?.['@type'] === 'ItemList') as any;
-      expect(itemList?.numberOfItems).toBe(guide.prompts.length);
-      expect(itemList?.itemListElement?.[0]?.url).toBe(`${expectedCanonical(guide.path)}#${guide.prompts[0].id}`);
+      // A visitor reads who reported each source, with no link, and the locked questions stay in the page.
+      expect(html).not.toContain(`href="${guide.reportUrl}"`);
+      expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
+      expect(schemaTypes).not.toContain('ItemList');
     });
 
     test(`${guide.label} company preview reflows without horizontal overflow at target widths`, async ({ page }) => {
@@ -4503,16 +4146,17 @@ test.describe('seo-ssr', () => {
 
   test('same-page hash links stay on the page and scroll their target clear of the fixed header', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
-    // Agoda's architecture decoder rehearses on prompt 1, an open prompt on the same page.
-    await page.goto('/companies/agoda/preview', { waitUntil: 'domcontentloaded' });
+    // The process table's drill link jumps to the round decoder on the same page.
+    await page.goto('/companies/netflix/preview', { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('header-pricing-link')).toBeVisible();
 
-    await page.getByRole('link', { name: 'Rehearse the hotel search page architecture prompt' }).click();
+    await page.getByRole('link', { name: 'Netflix culture questions and story drill' }).first().click();
 
-    await expect(page).toHaveURL(/\/companies\/agoda\/preview#hotel-search-page-frontend-architecture$/);
-    await expect(page.locator('h1')).toHaveText('Agoda Frontend Interview Questions');
-    await expect(page.locator('#hotel-search-page-frontend-architecture h3')).toBeInViewport();
-    const targetTop = await page.locator('#hotel-search-page-frontend-architecture').evaluate((node) => node.getBoundingClientRect().top);
+    await expect(page).toHaveURL(/\/companies\/netflix\/preview#netflix-round-culture$/);
+    await expect(page.locator('h1')).toHaveText('Netflix Frontend Interview Questions');
+    const target = page.locator('#netflix-round-culture');
+    await expect(target).toBeInViewport();
+    const targetTop = await target.evaluate((node) => node.getBoundingClientRect().top);
     expect(targetTop, 'the target clears the fixed header').toBeGreaterThanOrEqual(56);
     expect(targetTop, 'the target is at the top of the viewport, not just somewhere inside it').toBeLessThan(200);
 
@@ -4654,10 +4298,11 @@ test.describe('seo-ssr', () => {
         expect(text, `${note.label} preview includes ${heading}`).toContain(normalizeText(heading));
       }
 
-      const positions = note.markers.map((marker) => html.indexOf(marker));
+      const { markers } = note;
+      const positions = markers.map((marker) => html.indexOf(marker));
       for (let index = 0; index < positions.length; index += 1) {
-        expect(positions[index], `${note.markers[index]} present`).toBeGreaterThan(-1);
-        if (index > 0) expect(positions[index], `${note.markers[index]} after ${note.markers[index - 1]}`).toBeGreaterThan(positions[index - 1]);
+        expect(positions[index], `${markers[index]} present`).toBeGreaterThan(-1);
+        if (index > 0) expect(positions[index], `${markers[index]} after ${markers[index - 1]}`).toBeGreaterThan(positions[index - 1]);
       }
 
       expect(html).toContain(`href="${note.practicePath}"`);

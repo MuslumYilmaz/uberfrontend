@@ -117,7 +117,7 @@ describe('CompanyIndexComponent', () => {
     const host: HTMLElement = fixture.nativeElement;
     const google = host.querySelector<HTMLAnchorElement>('a.company-card[href="/companies/google/preview"]');
     expect(google?.querySelector('.company-card__signature')?.textContent?.trim()).toBe('Hiring committee');
-    expect(google?.querySelector('.company-card__meta')?.textContent?.trim()).toBe('3 editorial practice prompts');
+    expect(google?.querySelector('.company-card__meta')?.textContent?.trim()).toBe('3 FrontendAtlas practice questions');
     expect(host.querySelector('.company-directory__head')?.textContent).toContain('4 company guides');
   });
 
@@ -175,7 +175,7 @@ describe('CompanyIndexComponent', () => {
     expect(host.querySelector('[data-testid="company-practice-disclaimer"]')?.textContent?.trim()).toBe(
       'Editorial practice groupings, not verified official interview questions or endorsements.',
     );
-    expect(host.textContent || '').toContain('editorial practice prompts');
+    expect(host.textContent || '').toContain('FrontendAtlas practice questions');
     expect(host.textContent || '').not.toContain('known questions');
 
     const payload = seo.updateTags.calls.mostRecent().args[0] as any;

@@ -29,38 +29,45 @@ export type GoogleResourceLink = {
   readonly path: string;
 };
 
-export const GOOGLE_PREVIEW_TITLE =
-  'Google Frontend Interview Questions: 7 Prompts + Prep Guide';
+export const GOOGLE_PREVIEW_TITLE = 'Google Frontend Interview Questions: {#questions} Reported + Prep Guide';
 export const GOOGLE_PREVIEW_H1 = 'Google Frontend Interview Questions';
 export const GOOGLE_PREVIEW_DESCRIPTION =
-  'Prepare for a Google frontend interview with 7 representative questions covering DSA, JavaScript, browser APIs, UI coding, accessibility, and system design.';
+  'Google frontend interview: the screens, the loop and the Googleyness round explained, with {#questions} reported questions and the behavioural questions asked.';
 export const GOOGLE_PREVIEW_CANONICAL_PATH = '/companies/google/preview';
 export const GOOGLE_PREVIEW_TRUST_NOTE =
-  'These are representative FrontendAtlas practice prompts, not leaked or confirmed Google interview questions. Interview formats vary by role, level, team, location, and time.';
+  'The technical questions come from candidates\' public posts on LeetCode Discuss, Blind and Medium from 2019 to 2022, most of them front end loops, and from a 2020 Blind thread whose poster mixed questions from their own interviews with ones found online; the behavioural questions add software engineer loops from 2024 to 2026. We reworded each one, and Google has confirmed none. FrontendAtlas wrote the answer outlines. Google\'s pages describe one process for every role, so ask your recruiter how many of your rounds are frontend.';
 
 export const GOOGLE_PROCESS_NOTE = {
-  title: 'Current process note — reviewed October 2026',
+  title: 'A 2026 interview pilot for some US teams',
   reportUrl:
     'https://www.businessinsider.com/google-job-interview-software-engineers-ai-assistant-coding-2026-5',
   guidanceUrl: 'https://www.google.com/about/careers/applications/interview-tips/',
 } as const;
 
+/**
+ * The answer guides of the reported questions in company-interview-processes.ts: the first is the open question's
+ * (a depth-first walk over HTML nodes), the others answer the delayed-run API, the autocomplete round and the critical
+ * rendering path follow-up. Three earlier prompts that matched no reported question (take-latest requests, delegated
+ * events, search suggestions for a large list) were removed on 2026-11-13.
+ */
 export const GOOGLE_PRACTICE_PROMPTS: readonly GooglePracticePrompt[] = [
   {
     id: 'nested-navigation-tree',
     title: 'Traverse and transform a nested navigation tree',
     statement:
-      'Given nested navigation data, find or transform matching nodes while preserving the required order and returning a predictable result for missing paths.',
+      'Given nested navigation data or a tree of DOM nodes, walk it depth first to find or transform the matching nodes, keeping document order and returning a predictable result for a missing path.',
     whatThisMeasures:
       'Tree traversal, complexity analysis, JavaScript data modeling, and care around mutation and unusually deep input.',
     clarifyFirst: [
       'Ask whether the tree can be empty, malformed, extremely deep, or cyclic, and whether order must be preserved.',
+      'For DOM input, ask which nodes count: elements only, or text and comment nodes too.',
       'Confirm whether the transformation should mutate the input or return new objects along changed paths.',
     ],
     strongAnswer: [
       'Choose depth-first or breadth-first traversal deliberately and explain the trade-off.',
+      'Write the recursive walk, then an iterative one with an explicit stack that pushes children in reverse so the visit order stays the same.',
       'State O(n) time and account for recursion depth or an explicit stack.',
-      'Preserve stable ordering and define the missing-node result.',
+      'For DOM nodes, say whether you follow children or childNodes, and name TreeWalker as the browser\'s own walk.',
       'Test empty, single-node, deeply nested, duplicate-id, and malformed inputs.',
     ],
     commonMiss:
@@ -114,51 +121,6 @@ export const GOOGLE_PRACTICE_PROMPTS: readonly GooglePracticePrompt[] = [
     resourcePath: '/react/coding/react-autocomplete-search-starter',
   },
   {
-    id: 'take-latest-async-results',
-    title: 'Keep only the latest async result',
-    statement:
-      'Coordinate overlapping requests so only the newest result can update the view, even when older work resolves or rejects later.',
-    whatThisMeasures:
-      'Race-condition reasoning, cancellation, ownership of UI state, and tests that control promise ordering.',
-    clarifyFirst: [
-      'Ask whether the underlying work can be aborted or only ignored after it settles.',
-      'Define which request owns loading, error, and cleanup state when calls overlap.',
-    ],
-    strongAnswer: [
-      'Cancel active work with AbortController where the API supports it.',
-      'Pair cancellation with a monotonically increasing request token or takeLatest guard.',
-      'Guard success, error, and finally writes so stale work cannot clear current state.',
-      'Keep cancellation, stale results, and genuine failures distinguishable.',
-      'Force out-of-order resolution and rejection in tests.',
-    ],
-    commonMiss:
-      'Guarding the success path while a late catch or finally block still overwrites the newest request state.',
-    resourceLabel: 'Practice takeLatest request handling',
-    resourcePath: '/javascript/coding/js-take-latest',
-  },
-  {
-    id: 'dom-event-delegation',
-    title: 'Handle delegated events in a dynamic list',
-    statement:
-      'Handle interactions for a changing list through a stable ancestor, while identifying the intended item safely and updating only what changed.',
-    whatThisMeasures:
-      'DOM event propagation, delegation, target boundaries, dynamic content, efficient updates, and listener cleanup.',
-    clarifyFirst: [
-      'Confirm which child interactions count, whether controls can be nested, and where the delegation boundary ends.',
-      'Ask how items are inserted or removed and whether keyboard activation must share the same action path.',
-    ],
-    strongAnswer: [
-      'Explain capture and bubble phases plus the difference between target and currentTarget.',
-      'Use closest with a containment check so nested elements and outside matches are safe.',
-      'Key updates by stable item identity and avoid rebuilding the whole list.',
-      'Cover keyboard behavior, removed nodes, and listener cleanup.',
-    ],
-    commonMiss:
-      'Reading target.dataset directly, which breaks when the click lands on a nested icon or label.',
-    resourceLabel: 'Review DOM event delegation',
-    resourcePath: '/javascript/trivia/js-event-delegation',
-  },
-  {
     id: 'frontend-performance-network-security',
     title: 'Reason about frontend performance, networking, and security',
     statement:
@@ -181,89 +143,72 @@ export const GOOGLE_PRACTICE_PROMPTS: readonly GooglePracticePrompt[] = [
     resourceLabel: 'Review web load-time optimization trade-offs',
     resourcePath: '/javascript/trivia/web-performance-optimize-load-time',
   },
-  {
-    id: 'search-suggestions-large-list-design',
-    title: 'Design search suggestions for a large interactive list',
-    statement:
-      'Design the frontend for ranked search suggestions and a large result list that stays responsive, accessible, and correct as data changes.',
-    whatThisMeasures:
-      'Frontend system design, API and state boundaries, caching, rendering scale, accessibility, resilience, and observability.',
-    clarifyFirst: [
-      'Confirm data size, server versus client search, ranking and freshness needs, target latency, and offline expectations.',
-      'Ask which devices, assistive technologies, and failure modes the design must support.',
-    ],
-    strongAnswer: [
-      'Define component, state, and API boundaries, including cursor or pagination contracts.',
-      'Combine debounce, cancellation, takeLatest guards, caching, and explicit error states.',
-      'Use windowing or incremental rendering without breaking focus or result semantics.',
-      'Plan keyboard interaction, announcements, observability, and recovery from partial failures.',
-      'Explain how trade-offs change for junior, mid-level, and senior design scope.',
-    ],
-    commonMiss:
-      'Drawing component boxes without defining state ownership, stale-data behavior, accessibility, or failure recovery.',
-    resourceLabel: 'Practice designing an infinite-scrolling list',
-    resourcePath: '/system-design/infinite-scroll-list',
-  },
 ];
 
+/** Day titles (the text before the first colon) are open to everyone; the rest opens with a free account. */
 export const GOOGLE_PREP_SEQUENCE: readonly GooglePrepDay[] = [
   {
     day: 'Day 1',
-    focus: 'Solve two tree or array problems in JavaScript and explain time and space complexity before coding.',
-    artifact: 'Two reviewed solutions with edge-case tests and written complexity notes.',
+    focus: 'Technical screen: an hour of coding in a plain shared document with no syntax highlighting and no way to run the code, so write and trace JavaScript by hand.',
+    artifact: 'Two solutions written without running them, each traced aloud on one input.',
   },
   {
     day: 'Day 2',
-    focus: 'Implement debounce, throttle, cancellation, and takeLatest behavior with explicit contracts.',
-    artifact: 'Small utilities plus fake-timer and out-of-order promise tests.',
+    focus: 'JavaScript round: small utilities written from scratch in plain JavaScript, with a follow-up that changes the requirements once the first version works, as a 2021 account describes every round.',
+    artifact: 'Three utilities with tests for the changed requirements.',
   },
   {
     day: 'Day 3',
-    focus: 'Review DOM APIs, propagation, browser fundamentals, networking boundaries, and common web-security risks.',
-    artifact: 'A delegated dynamic-list exercise with tests and a one-page browser/security note.',
+    focus: 'Algorithms: medium problems written in your interview language, each inside a 45-minute slot, since most interviews in these loops are algorithm coding.',
+    artifact: 'Four problems solved with their complexity stated before the code.',
   },
   {
     day: 'Day 4',
-    focus: 'Build the accessible shell of a typeahead, including focus, keyboard, loading, empty, and error behavior.',
-    artifact: 'A working UI slice with keyboard and accessibility assertions.',
+    focus: 'The open question: a depth-first walk over HTML nodes, written recursively and again with an explicit stack.',
+    artifact: 'Both versions tested on an empty container, a deep chain and siblings in order.',
   },
   {
     day: 'Day 5',
-    focus: 'Trace frontend latency from request to paint, then evaluate rendering, caching, payload, and loading trade-offs.',
-    artifact: 'A measured performance audit with a prioritized budget and verification notes.',
+    focus: 'Googleyness: a story for each behavioural question in the list, each a specific time rather than a habit, with an answer ready for how the team responded.',
+    artifact: 'Six stories, and the hypotheticals answered with the approach first.',
   },
   {
     day: 'Day 6',
-    focus: 'Design search suggestions and a large interactive list at the depth appropriate for your target level.',
-    artifact: 'A diagram covering API contracts, state ownership, caching, accessibility, failures, and observability.',
+    focus: 'Design round: for L5 and above, one frontend system with its API contract, the focus most design accounts describe.',
+    artifact: 'One design with its components, state, API calls and failure states on a page.',
   },
   {
     day: 'Day 7',
-    focus: 'Run a timed mock, revisit missed edge cases, practice explaining decisions before implementation details, and answer two Googleyness questions in the drill above.',
-    artifact: 'A mock-interview scorecard, recording or notes, and a final edge-case checklist.',
+    focus: 'Mock loop: four or five 45-minute interviews in one day, one of them Googleyness, all in a plain document.',
+    artifact: 'Questions for your recruiter: how many of your rounds are frontend, whether a design round applies at your level, and whether the AI pilot covers your team.',
   },
 ];
 
 export const GOOGLE_PREVIEW_FAQS: readonly GooglePreviewFaq[] = [
   {
-    question: 'Is Google frontend preparation React-only?',
+    question: 'Are these the real Google questions?',
     answer:
-      'No. Prepare framework-neutral JavaScript, browser, accessibility, problem-solving, and design skills. A particular role may still name a framework, so use the job description and recruiter material for that loop.',
+      'The technical ones come from public posts on LeetCode Discuss, Blind and Medium from 2019 to 2022, most of them by front end candidates, and from a 2020 Blind thread whose poster mixed their own interview questions with ones found online. The behavioural ones add software engineer loops from 2024 to 2026. We reworded them all, and Google has confirmed none.',
   },
   {
-    question: 'Should frontend candidates prepare DSA?',
+    question: 'How many of the rounds are frontend?',
     answer:
-      'Yes. Data structures, algorithms, clean problem solving, and complexity analysis remain useful preparation, although their weight can vary by role and interview plan.',
+      'Usually one. A 2021 L3/L4 candidate in India had one domain round among five interviews and a 2022 L5 candidate one JavaScript round, while a 2023 offer had three frontend rounds out of four and a 2026 account had none. Ask your recruiter what your loop holds.',
+  },
+  {
+    question: 'Should frontend candidates prepare algorithms?',
+    answer:
+      'Yes. Every loop in these accounts has algorithm coding, and most of its interviews are algorithm rounds. The 2021 candidate in India still advises putting more time into the frontend side: in that loop the algorithm questions felt simpler and the frontend round went deeper.',
   },
   {
     question: 'Is system design included in every frontend loop?',
     answer:
-      'Do not assume it is. Expectations often depend on seniority, role, team, and the current process. Ask the recruiter what design depth is expected.',
+      'Not below L5 in these accounts. Blind posts from 2021 and 2022 describe a design round from L5, with a frontend and API focus in most cases; one L5 candidate\'s design round was not frontend at all. A 2019 front end onsite at an unstated level included an app design round.',
   },
   {
     question: 'Can candidates use JavaScript?',
     answer:
-      'Language rules can vary, so confirm them with the recruiter. For frontend preparation, practice writing and explaining idiomatic JavaScript without relying on framework shortcuts.',
+      'Yes in these accounts: front end candidates coded in JavaScript, and a 2021 L5 candidate used Python for the general coding rounds and JavaScript for the frontend one. The 2021 candidate in India learned after the loop that the team used Angular and Dart rather than React.',
   },
   {
     question: 'Does the reported 2026 AI-assisted pilot apply to every frontend candidate?',
@@ -272,45 +217,31 @@ export const GOOGLE_PREVIEW_FAQS: readonly GooglePreviewFaq[] = [
   },
 ];
 
+/** Free pages only; none of them is a locked reported question's practice task. */
 export const GOOGLE_RESOURCE_LINKS: readonly GoogleResourceLink[] = [
   {
     label: 'Traverse nested paths in JavaScript',
-    description: 'Practice safe lookup and edge-case handling in nested data.',
+    description: 'Safe lookup and edge cases in nested data, the skill behind the open question.',
     path: '/javascript/coding/js-get-by-path-1',
   },
   {
-    label: 'Implement a debounce utility',
-    description: 'Exercise timer ownership, argument handling, and predictable invocation.',
-    path: '/javascript/coding/js-debounce',
+    label: 'Build a tree from a flat list',
+    description: 'Nested data from flat records, then a walk over it.',
+    path: '/javascript/coding/js-build-tree-from-flat-list',
   },
   {
-    label: 'Build autocomplete in React (optional framework drill)',
-    description: 'Apply the accessible typeahead requirements in one framework-specific exercise.',
-    path: '/react/coding/react-autocomplete-search-starter',
-  },
-  {
-    label: 'Keep only the latest async result',
-    description: 'Practice cancellation and stale-response guards directly.',
-    path: '/javascript/coding/js-take-latest',
+    label: 'DOM tree structure and depth',
+    description: 'How the DOM nests, the shape the open question walks.',
+    path: '/html/trivia/html-dom-tree-structure',
   },
   {
     label: 'Review event delegation',
-    description: 'Rehearse propagation, target boundaries, and dynamic DOM behavior.',
+    description: 'Propagation, target boundaries and dynamic DOM behavior.',
     path: '/javascript/trivia/js-event-delegation',
   },
   {
-    label: 'Optimize frontend load time',
-    description: 'Connect measurement to networking, delivery, and rendering trade-offs.',
-    path: '/javascript/trivia/web-performance-optimize-load-time',
-  },
-  {
-    label: 'Design an infinite-scrolling list',
-    description: 'Explore large-list state, pagination, rendering, and recovery choices.',
-    path: '/system-design/infinite-scroll-list',
-  },
-  {
     label: 'Compare JavaScript objects safely',
-    description: 'Review shallow and deep equality assumptions for nested state.',
+    description: 'Shallow and deep equality assumptions for nested state.',
     path: '/javascript/trivia/js-compare-two-objects',
   },
 ];
@@ -356,7 +287,7 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
     },
     {
       label: 'A 2026 pilot',
-      value: 'The May 2026 pilot for junior to mid-level roles on some US teams, the one the time-sensitive note describes, adds a technical design discussion about a past project to this round, beside an AI-assisted code comprehension round; ask your recruiter whether it applies to you.',
+      value: 'A pilot that a May 2026 Business Insider report describes, for junior to mid-level roles on some US teams, adds a technical design discussion about a past project to this round, beside an AI-assisted code comprehension round; ask your recruiter whether it applies to you.',
     },
     {
       label: 'Sources',
@@ -386,3 +317,26 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
     ],
   },
 };
+
+/** The page's prose outside the lists, in the order it renders. Count tokens are filled from the page's evidence. */
+export const GOOGLE_COPY = {
+  subtitle:
+    'Google\'s hiring pages describe one process for every role. Front end candidates\' accounts from 2019 to 2026 add the detail: one or two screens in a plain shared document, then four or five interviews that are mostly algorithm coding with usually one JavaScript or frontend round, a Googleyness interview and, from L5, a design round. Their {questions} reported questions follow the table, with the first one open; none comes from an account newer than July 2022.',
+  caveat:
+    'How many rounds are frontend varies: one in most accounts, three of the four onsite rounds in a 2023 loop that ended in an offer, none in a 2026 account. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 press report describes a pilot for some US teams.',
+  chips: ['{#questions} reported questions', '{#reports} public reports, 2019–2026'],
+  studyParagraphs: [
+    'Google\'s front end loops are mostly algorithm coding with one JavaScript round, so the JavaScript round is where frontend preparation pays off. The accounts show what it asks: in 2019, combining the results of callback functions into one array, a delayed-run API and a sequential queue; in 2021, a retry function followed by then, catch and finally, a task-sequencing problem finished with promises, and string manipulation that led to an autocomplete; in a 2020 phone screen, a throttle. In the 2021 loop every question started small and grew once the first version worked.',
+    'The algorithm rounds fill the rest of the loop: minimum window substring, a hash map and set problem, paths in a 2D array, a graph problem and one the interviewer expected to be solved with a quad tree. Write them in a plain document without running the code, as the screens are run, and state the complexity before you start. From L5 there is a design round, frontend and API in most accounts; the 2019 onsite asked for an app in which drones shop for you.',
+  ],
+  walkthroughTitle: 'Walk through the open question: a depth-first walk over HTML nodes',
+  walkthroughParagraphs: [
+    'The open question asks for a depth-first search over the nodes of an HTML document. Settle the contract before writing anything: which nodes count (elements only, or text and comment nodes too), what the walk returns (an ordered list, the first match or a count), and whether a callback decides what matches.',
+    'Write the recursive version first, then the iterative one with an explicit stack, pushing children in reverse so the visit order stays document order. Recursion depth follows the tree\'s depth, which is why a deep generated page is the reason to know both; the browser\'s TreeWalker does the same walk natively and is worth naming.',
+    'Test an empty container, a single node, a deep chain, siblings in order and a text node beside elements, then state the cost: every node once, O(n) time, and memory that grows with the depth of the tree.',
+  ],
+  planIntro:
+    'A week that takes the parts of the loop one at a time: the screen in a plain document, the JavaScript round, algorithms, the open question, Googleyness and, from L5, design. The accounts do not agree on the order of the rounds.',
+  freeIntro:
+    'Free pages for the JavaScript and browser skills behind the screen and the loop. The reported questions and their practice tasks are in the list above.',
+} as const;

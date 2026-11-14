@@ -1,5 +1,6 @@
 import { Tech } from './user.model';
 import { EntitledUser, isProActive } from '../utils/entitlements.util';
+import type { FreeUnlock } from './free-unlock.model';
 
 export type QuestionType = 'trivia' | 'coding' | 'system-design';
 export type Technology = Tech;
@@ -259,7 +260,11 @@ export interface Question {
   incidentCard?: TriviaIncidentCard;
 }
 
+/**
+ * Whether a Premium question is closed to this reader. A free account's one free unlock opens the practice task behind
+ * the question it opened on a company guide, so a caller that knows the question's id passes it.
+ */
 export const isQuestionLockedForTier = (
-  q: Pick<Question, 'access'>,
-  user?: EntitledUser | null
-): boolean => q.access === 'premium' && !isProActive(user);
+  q: Pick<Question, 'access'> & { readonly id?: string },
+  user?: (EntitledUser & { freeUnlock?: Pick<FreeUnlock, 'practiceId'> | null }) | null
+): boolean => q.access === 'premium' && !isProActive(user) && !(q.id && user?.freeUnlock?.practiceId === q.id);

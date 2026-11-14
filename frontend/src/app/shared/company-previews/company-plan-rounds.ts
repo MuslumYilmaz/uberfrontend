@@ -78,6 +78,13 @@ export function companyPlanRoundNote(round: CompanyPlanRound, format: string): s
   return round.note ?? format.match(/^.+?[.!?]["”]?(?=\s+[A-Z"“]|$)/)?.[0] ?? format;
 }
 
+/** Capital One's CodeSignal test is the same in both of its lists, and so is the practice the plan picks for it. */
+const CAPITAL_ONE_ASSESSMENT_PICKS: readonly string[] = [
+  '/javascript/coding/js-valid-parentheses',
+  '/javascript/coding/js-maze-path',
+  '/javascript/coding/js-longest-substring-without-repeating',
+];
+
 export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> = {
   agoda: {
     variants: [
@@ -100,13 +107,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'coding-interview',
             stage: 'Coding interview',
             kinds: ['coding'],
-            note: '60 minutes on HackerRank: two easy-to-medium DSA problems in JavaScript, then questions on test cases.',
+            note: '60 minutes on HackerRank: two easy-to-medium DSA problems in JavaScript, then a few spoken follow-up questions.',
           },
           {
             id: 'frontend-platform-interview',
             stage: 'Frontend Platform interview',
             kinds: ['coding'],
-            note: '60 minutes on HackerRank: web fundamentals, a JavaScript implementation or a component and state discussion.',
+            note: '60 minutes on HackerRank: spoken questions, a JavaScript implementation or a front-end architecture discussion.',
             // Prompt 5 practises the utility a Staff account's JavaScript implementation round asked for; its report is
             // also cited on the coding hour, which would otherwise take the task as a DSA problem.
             picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking', '/javascript/coding/js-debounce'],
@@ -148,7 +155,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'online-assessment-or-take-home',
             stage: 'Online assessment or take-home',
             kinds: ['coding'],
-            note: 'HTML, CSS and JavaScript questions online, or a take-home such as a React and TypeScript stock dashboard.',
+            note: 'An online assessment of HTML/CSS and JavaScript questions, or a React and TypeScript take-home.',
           },
           { id: 'hr-screen', stage: 'HR screen', kinds: ['recruiter'] },
           {
@@ -161,7 +168,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'platform-or-architecture-round',
             stage: 'Platform or architecture round',
             kinds: ['coding', 'design'],
-            note: 'JavaScript depth such as hoisting and SSR versus CSR, or an hour of frontend architecture for a booking site.',
+            note: 'Spoken JavaScript and front-end questions, or a 60-minute front-end architecture design.',
             picks: ['/javascript/trivia/js-web-fundamentals-hour-hotel-booking', '/system-design/hotel-search-page-frontend'],
           },
           { id: 'hr-salary-and-relocation-call', stage: 'HR salary and relocation call', kinds: ['recruiter'] },
@@ -188,19 +195,19 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding'],
-            note: 'Varies by account: a UI component, a store-style design question, a booking widget or a LeetCode-hard problem.',
+            note: 'Content varies by account, from building UI to a LeetCode-hard algorithm problem.',
           },
           {
             id: 'coding-ui-or-react',
             stage: 'Coding: UI or React',
             kinds: ['coding'],
-            note: 'Build UI: a styled card game, a photo gallery, a star rating or another React or DOM task.',
+            note: 'UI built live in React or plain DOM code; a card game in a 2025 and a 2022 account.',
           },
           {
             id: 'coding-javascript',
             stage: 'Coding: JavaScript',
             kinds: ['coding'],
-            note: 'Currying, callbacks, async, closures and prototypes in one account, vanilla JavaScript in another.',
+            note: 'JavaScript coding without a framework, a round of its own in a 2024 frontend loop.',
           },
           { id: 'frontend-system-design', stage: 'Frontend system design', kinds: ['design'] },
           { id: 'experience-deep-dive', stage: 'Experience deep dive', kinds: ['people'] },
@@ -266,9 +273,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   anduril: {
-    reportVariants: {
-      'js-flatten-once': ['us'],
-    },
     variants: [
       {
         id: 'us',
@@ -282,7 +286,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding'],
-            note: 'About an hour with an applied frontend problem, such as a file explorer in React in two accounts.',
+            note: 'About an hour on one applied frontend problem rather than a LeetCode puzzle, built live and usually in React.',
           },
           {
             id: 'onsite',
@@ -308,6 +312,11 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   apple: {
+    // The 2025 IC3 account is cited on the assessment, the recruiter call and the screen; its nested-tabs task was the
+    // screen's main coding task, not an assessment question.
+    reportRounds: {
+      'js-build-tree-from-flat-list': ['technical-screen'],
+    },
     variants: [
       {
         id: 'main',
@@ -320,13 +329,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding'],
-            note: '45–60 minutes of React, JavaScript or TypeScript coding, sometimes with an algorithm problem.',
+            note: 'Usually 45–60 minutes of React, JavaScript or TypeScript coding, sometimes with an algorithm problem.',
           },
           {
             id: 'team-loop',
             stage: 'Team loop',
             kinds: ['coding', 'people'],
-            note: 'Four to seven interviews of 30–45 minutes, mostly JavaScript, React and CSS coding and concepts.',
+            note: 'Usually four to seven interviews of 30–60 minutes, mostly JavaScript, React and CSS coding and concepts.',
           },
         ],
       },
@@ -349,7 +358,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'frontend-coding',
             stage: 'Frontend coding',
             kinds: ['coding'],
-            note: 'One or two rounds of about 60 minutes: build a component such as an autocomplete, or extend a prepared app.',
+            note: 'One or two live rounds of about 60 minutes, building a UI component in plain JavaScript, HTML and CSS or React.',
             picks: ['/javascript/coding/js-autocomplete-engine', '/react/coding/react-autocomplete-search-starter'],
           },
           { id: 'fit-interview', stage: 'Fit interview', kinds: ['people'] },
@@ -366,25 +375,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing in the United States?',
         default: true,
         rounds: [
-          {
-            id: 'online-assessment',
-            stage: 'Online assessment',
-            kinds: ['coding'],
-            note: 'CodeSignal or an unnamed platform, with multiple-choice and LeetCode-style questions and a frontend task.',
-          },
+          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
-          {
-            id: 'technical-rounds',
-            stage: 'Technical rounds',
-            kinds: ['coding'],
-            note: 'Usually two rounds of about an hour: one algorithm round and one frontend round.',
-          },
-          {
-            id: 'hiring-manager-round',
-            stage: 'Hiring manager round',
-            kinds: ['design', 'people'],
-            note: 'Experience questions plus frontend system design or React and JavaScript questions.',
-          },
+          { id: 'technical-rounds', stage: 'Technical rounds', kinds: ['coding'] },
+          { id: 'hiring-manager-round', stage: 'Hiring manager round', kinds: ['design', 'people'] },
+          { id: 'product-manager-round', stage: 'Product manager round', kinds: ['people'] },
+          { id: 'department-leader-round', stage: 'Department leader round', kinds: ['people', 'design'] },
           { id: 'hr-or-behavioural-round', stage: 'HR or behavioural round', kinds: ['people'] },
         ],
       },
@@ -394,10 +390,10 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         from: 'candidates in Singapore and Australia',
         ask: 'Interviewing in Singapore or Australia?',
         rounds: [
-          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
-          { id: 'technical-rounds', stage: 'Technical rounds', kinds: ['coding'] },
-          { id: 'hiring-manager-round', stage: 'Hiring manager round', kinds: ['people', 'coding'] },
-          { id: 'hr-round', stage: 'HR round', kinds: ['recruiter'] },
+          { id: 'online-assessment', stage: 'CodeSignal assessment', kinds: ['coding'] },
+          { id: 'technical-rounds', stage: 'Technical rounds (Singapore and Australia)', kinds: ['coding', 'design'] },
+          { id: 'hiring-manager-round', stage: 'Hiring manager or director round', kinds: ['people', 'coding'] },
+          { id: 'hr-round', stage: 'HR round', kinds: ['people'] },
         ],
       },
       {
@@ -407,14 +403,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing as a new graduate or intern?',
         students: true,
         rounds: [
-          {
-            id: 'online-assessment',
-            stage: 'Online assessment',
-            kinds: ['coding'],
-            note: 'Multiple-choice, algorithm and debugging questions, up to about 110 minutes.',
-          },
+          { id: 'online-assessment', stage: 'Early-careers online assessment', kinds: ['coding'] },
           { id: 'technical-interviews', stage: 'Technical interviews', kinds: ['coding', 'design'] },
-          { id: 'manager-or-behavioural-round', stage: 'Manager or behavioural round', kinds: ['people'] },
+          { id: 'manager-or-behavioural-round', stage: 'Manager or behavioural round', kinds: ['people', 'coding'] },
         ],
       },
     ],
@@ -439,24 +430,26 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Online assessment',
             kinds: ['coding'],
             note: 'CodeSignal, about 70 minutes, four LeetCode-style questions in most accounts and three in one.',
+            // Problems for the CodeSignal test, which no reported task practises: a stack, a grid walk and a hash-map
+            // window, the skills the reported matrix, array navigation and pair-counting problems call for.
+            picks: CAPITAL_ONE_ASSESSMENT_PICKS,
           },
           {
             id: 'power-day-frontend-design',
             stage: 'Power Day: frontend design',
             kinds: ['design'],
-            note: 'A conversational design of a credit card application page, or the structure of a web app from requirements.',
           },
           {
             id: 'power-day-frontend-technical',
             stage: 'Power Day: frontend technical',
             kinds: ['coding'],
-            note: 'A small framework task judged on structure, syntax and coding style, such as an Angular form with validations.',
+            note: 'About an hour of hands-on work in a frontend framework, graded on component structure, syntax and coding style.',
           },
           {
             id: 'power-day-case',
             stage: 'Power Day: case',
             kinds: ['coding'],
-            note: 'A business scenario read through code: find a bug, fix a faulty algorithm or refactor badly written code.',
+            note: 'A business scenario worked through existing code: reading it, tracing example numbers and explaining what to fix.',
           },
           { id: 'power-day-behavioral', stage: 'Power Day: behavioral', kinds: ['people'] },
           {
@@ -474,12 +467,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing as a lead engineer?',
         reported: { levels: ['staff'], who: 'lead candidates' },
         rounds: [
-          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'] },
+          { id: 'online-assessment', stage: 'Online assessment', kinds: ['coding'], picks: CAPITAL_ONE_ASSESSMENT_PICKS },
           {
             id: 'power-day',
             stage: 'Power Day',
             kinds: ['coding', 'design', 'people'],
-            note: 'Four interviews: in 2024 front-end design, behavioral, a case study and a technical build of a single-page app.',
+            note: 'Four interviews in one day: in 2024 frontend design, a behavioral round, a case study and a frontend technical round.',
           },
           { id: 'result', stage: 'Result', kinds: ['outcome'] },
         ],
@@ -513,19 +506,11 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['people'],
             note: 'An early conversation with the hiring manager or an engineering manager about your experience.',
           },
-          {
-            id: 'web-fundamentals-with-engineers',
-            stage: 'Web fundamentals with engineers',
-            kinds: ['coding'],
-            note: 'Spoken questions from engineers on JavaScript, the CSS box model, accessibility, XSS and other security topics.',
-          },
+          // The format's first sentence is the note: the old note named the subjects of locked questions.
+          { id: 'web-fundamentals-with-engineers', stage: 'Web fundamentals with engineers', kinds: ['coding'] },
           { id: 'take-home-build', stage: 'Take-home build', kinds: ['coding'], picks: ['/react/coding/react-files-table-select-all'] },
-          {
-            id: 'take-home-review',
-            stage: 'Take-home review',
-            kinds: ['coding', 'design'],
-            note: 'Engineers go through the submission: what you would change and how you would add filtering and sorting.',
-          },
+          // The format's first sentence is the note: the old note named the review's locked follow-up questions.
+          { id: 'take-home-review', stage: 'Take-home review', kinds: ['coding', 'design'] },
           {
             id: 'closing-round',
             stage: 'Closing round',
@@ -547,7 +532,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing in the United Kingdom or Denmark?',
         reported: { levels: ['senior'], who: 'senior candidates' },
         rounds: [
-          { id: 'technical-questions-two-stages', stage: 'Technical questions, two stages', kinds: ['coding'] },
+          // The table links the fundamentals quiz here, a guide; the plan also needs a free task, and every free
+          // CrowdStrike-tagged task but the take-home's table practises a locked row.
+          { id: 'technical-questions-two-stages', stage: 'Technical questions, two stages', kinds: ['coding'], picks: ['/javascript/trivia/js-event-loop'] },
           {
             id: 'home-task',
             stage: 'Home task',
@@ -588,6 +575,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           { id: 'recruiter-screen', stage: 'Recruiter screen', kinds: ['recruiter'] },
           { id: 'technical-screen', stage: 'Technical screen', kinds: ['coding'] },
           { id: 'react-live-coding', stage: 'React live coding', kinds: ['coding'] },
+          {
+            id: 'take-home-project',
+            stage: 'Take-home project',
+            kinds: ['coding'],
+            note: 'A small frontend app built at home, with 4–6 suggested hours; one 2024 candidate chose it over React live coding.',
+          },
           { id: 'second-coding-round', stage: 'Second coding round', kinds: ['coding'] },
           { id: 'frontend-system-design', stage: 'Frontend system design', kinds: ['design'] },
           { id: 'experience-and-values', stage: 'Experience and values', kinds: ['people'] },
@@ -597,6 +590,11 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   elevenlabs: {
+    // The 2026 Aced account behind the async-race task is cited on the assessment too, but the task practises its live
+    // round, where the candidate fixed a practical problem with the interviewer; the guide links it there as well.
+    reportRounds: {
+      'js-debug-async-race': ['live-technical-round'],
+    },
     variants: [
       {
         id: 'main',
@@ -608,28 +606,26 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'coding-assessment',
             stage: 'Coding assessment',
             kinds: ['coding'],
-            note: 'The format varies; a 90-minute assessment in the 2026 account, React and algorithm problems in others.',
+            note: 'A timed test of about 90 minutes, often on CoderPad, with React or JavaScript tasks beside LeetCode-style problems.',
             picks: ['/javascript/coding/js-stream-to-text'],
           },
           {
             id: 'live-technical-round',
             stage: 'Live technical round',
             kinds: ['coding'],
-            note: 'Pair work with an engineer: fixing a practical problem, debugging a small React app or building a component.',
             picks: ['/react/coding/react-debug-transcript-sync', '/javascript/debug/js-debug-stale-closure-autosave'],
           },
           {
             id: 'product-or-design-round',
             stage: 'Product or design round',
             kinds: ['design'],
-            note: 'A product or decomposition interview in the 2025 accounts, a system design interview in a 2024 account.',
             picks: ['/system-design/live-chart-high-frequency-updates'],
           },
           {
             id: 'final-conversation',
             stage: 'Final conversation',
             kinds: ['people'],
-            note: 'A call with the CTO in 2025; the careers FAQ names a founder or Bar Raiser.',
+            note: 'A call with the CTO, a co-founder or the head of the organisation; the careers FAQ names a founder or Bar Raiser.',
           },
         ],
       },
@@ -733,13 +729,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-phone-interview',
             stage: 'Technical phone interview',
             kinds: ['coding'],
-            note: '45–75 minutes on JavaScript, promises, performance, security, React and an algorithm problem.',
+            note: '45–75 minutes with an engineer: spoken JavaScript and React questions and an algorithm problem.',
           },
           {
             id: 'craft-demonstration',
             stage: 'Craft demonstration',
             kinds: ['coding'],
-            note: 'Build a task from user stories, present it, walk through the code and add features live.',
+            note: 'Build a small app against a brief, then demo it to a panel, walk through the code and change it on request.',
           },
           {
             id: 'assessor-or-technical-rounds',
@@ -758,7 +754,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     variants: [
       {
         id: 'main',
-        title: 'Front-end and React engineers, team-run loops, 2021 to 2026',
+        title: 'Front-end and React engineers, team-run loops, 2017 to 2026',
         rounds: [
           { id: 'recruiter-contact', stage: 'Recruiter contact', kinds: ['recruiter'] },
           {
@@ -771,13 +767,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'frontend-technical-conversation',
             stage: 'Frontend technical conversation',
             kinds: ['coding'],
-            note: 'About an hour on JavaScript fundamentals, React hooks and lifecycle, framework choice and your resume.',
+            note: 'About an hour of spoken questions on JavaScript, React and browser fundamentals and on your CV.',
           },
           {
             id: 'live-coding',
             stage: 'Live coding',
             kinds: ['coding'],
-            note: '30 to 90 minutes: a small React build such as a to-do list with priorities, or paper coding.',
+            note: '30 to 90 minutes with an interviewer: a small React build, or simple paper coding with a tech lead.',
           },
           {
             id: 'security-and-framework-rounds',
@@ -833,7 +829,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         ask: 'Interviewing for an internship?',
         students: true,
         rounds: [
-          { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
+          { id: 'recruiter-call', stage: 'Internship recruiter call', kinds: ['recruiter'] },
           { id: 'technical-interviews', stage: 'Technical interviews', kinds: ['coding'] },
         ],
       },
@@ -847,18 +843,28 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         from: 'frontend roles, and the loop varies by team',
         ask: 'Interviewing for a full-time role?',
         default: true,
+        // The accounts run their rounds in different orders (machine coding first in 2020 and 2021, system design or
+        // algorithms first in 2024, and one senior loop calls its order random), so the table groups the rows by type.
+        unordered: true,
         rounds: [
           { id: 'recruiter-or-hr-call', stage: 'Recruiter or HR call', kinds: ['recruiter'] },
           {
             id: 'machine-coding',
             stage: 'Machine coding',
             kinds: ['coding'],
-            note: 'A UI build: plain JavaScript in 2020–2021 accounts, React components in 2024–2025 accounts.',
+            note: 'A UI build: plain JavaScript in the 2020–2021 prompts that name a stack, mostly React in 2024–2025 accounts.',
           },
           { id: 'javascript-and-react-concepts', stage: 'JavaScript and React concepts', kinds: ['coding'] },
           { id: 'algorithms-and-problem-solving', stage: 'Algorithms and problem solving', kinds: ['coding'] },
           { id: 'design', stage: 'Design', kinds: ['design'] },
-          { id: 'behavioural-and-hiring-manager', stage: 'Behavioural and hiring manager', kinds: ['people'] },
+          {
+            id: 'behavioural-and-hiring-manager',
+            stage: 'Behavioural and hiring manager',
+            // Technical in the 2020 and 2021 loops: output, performance and browser questions and coding problems.
+            kinds: ['people', 'coding'],
+          },
+          // A senior leader's round that can be a conversation or a data-structure problem.
+          { id: 'as-appropriate', stage: 'As Appropriate round', kinds: ['people', 'coding'] },
         ],
       },
       {
@@ -904,7 +910,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'take-home',
             stage: 'Take-home',
             kinds: ['coding'],
-            note: 'A build exercise reviewed later in the loop, in the 2020 account and in a loop from before 2022.',
           },
           {
             id: 'onsite',
@@ -949,7 +954,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding', 'design'],
-            note: 'Refactoring then systems design in one 2024 account; a JavaScript fix or a React exercise in others.',
           },
           {
             id: 'agentic-coding-option',
@@ -980,7 +984,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'live-coding',
             stage: 'Live coding',
             kinds: ['coding'],
-            note: 'About an hour of React and TypeScript: render API data with loading and error states, or extend a small app.',
           },
           { id: 'system-design', stage: 'System design', kinds: ['design'] },
           { id: 'team-fit', stage: 'Team fit', kinds: ['people'] },
@@ -995,14 +998,10 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         id: 'main',
         title: 'UI and frontend engineers, 2022 to 2025',
         reported: { levels: ['junior', 'mid', 'senior'], who: 'IC2 to senior candidates' },
+        // No notes: the first sentence of each format is short and names no reported question.
         rounds: [
           { id: 'screening-call', stage: 'Screening call', kinds: ['recruiter'] },
-          {
-            id: 'javascript-fundamentals',
-            stage: 'JavaScript fundamentals',
-            kinds: ['coding'],
-            note: 'About an hour in one account: closures, promises, polyfills and output prediction.',
-          },
+          { id: 'javascript-fundamentals', stage: 'JavaScript fundamentals', kinds: ['coding'] },
           { id: 'second-technical-round', stage: 'Second technical round', kinds: ['coding', 'design'] },
           { id: 'design-or-machine-coding', stage: 'Design or machine coding', kinds: ['coding'] },
           {
@@ -1010,26 +1009,30 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             stage: 'Hiring manager',
             // Spoken JavaScript questions and a design task, so a polyfill drill does not land here.
             kinds: ['people', 'design'],
-            note: 'A hiring-manager round mixing JavaScript questions, a design task and behavioural questions.',
           },
         ],
       },
     ],
   },
   shopee: {
-    reportVariants: {
-      'css-inline-centering': ['ho-chi-minh'],
-      'js-shallow-clone': ['ho-chi-minh'],
-    },
+    // No reportVariants: SH5 (GoodJob, Taipei 2021), the only report behind css-inline-centering and js-shallow-clone,
+    // is now cited on the Taipei stages, so those tasks land on the Taipei list by their source.
     variants: [
       {
         id: 'ho-chi-minh',
         title: 'Front-end engineers, Ho Chi Minh City, 2025',
-        from: 'candidates in Ho Chi Minh City',
+        // The table rests on one account, so the plan says so beside the company's whole source count.
+        from: 'one account of a Ho Chi Minh City loop',
         ask: 'Interviewing in Ho Chi Minh City?',
         default: true,
         rounds: [
-          { id: 'hr-call', stage: 'HR call', kinds: ['recruiter'] },
+          {
+            id: 'hr-call',
+            stage: 'HR call',
+            kinds: ['recruiter'],
+            // The first round the form offers names the loop, since the form shows no list title.
+            note: 'Ho Chi Minh City loop, from one account: personal details, expected salary and whether you would move to Saigon.',
+          },
           {
             id: 'frontend-technical-round',
             stage: 'Frontend technical round',
@@ -1040,7 +1043,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'cs-fundamentals-round',
             stage: 'CS-fundamentals round',
             kinds: ['coding', 'design'],
-            note: 'Design a system based on your current work, then HTTP, TCP/UDP, WebSocket and encryption questions.',
+            note: 'A design discussion that starts from your current work, then networking and security fundamentals.',
           },
           { id: 'behavioural-interview', stage: 'Behavioural interview', kinds: ['people'] },
           { id: 'final-conversation-and-offer', stage: 'Final conversation and offer', kinds: ['people'] },
@@ -1057,11 +1060,11 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'online-assessment',
             stage: 'Online assessment',
             kinds: ['coding'],
-            note: 'A 70-minute test in the 2022 account: multiple-choice on systems and networking plus two array problems.',
+            note: 'A 70-minute test in the 2022 account: multiple-choice on systems and networking plus two coding problems.',
           },
           {
             id: 'technical-video-rounds',
-            stage: 'Technical video rounds',
+            stage: 'Technical rounds on a shared editor',
             kinds: ['coding'],
             note: 'One to three rounds of 60 to 90 minutes on a shared editor: coding problems, CS fundamentals and a design concept.',
           },
@@ -1075,7 +1078,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       },
       {
         id: 'mainland-china',
-        title: 'Campus and social hires, mainland China, in Chinese, 2019 to 2025',
+        title: 'Campus and social hires, mainland China, in Chinese, 2019 to 2022',
         from: 'candidates in mainland China',
         ask: 'Interviewing in mainland China?',
         rounds: [
@@ -1089,13 +1092,13 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'first-technical-interview',
             stage: 'First technical interview',
             kinds: ['coding'],
-            note: 'JavaScript, CSS, HTTP and framework basics plus one or two small algorithms.',
+            note: 'JavaScript, CSS, HTTP and framework basics plus one to three short coding tasks.',
           },
           {
             id: 'second-technical-interview',
             stage: 'Second technical interview',
             kinds: ['coding'],
-            note: 'React internals, HTTP/2, webpack performance, CDN and scenario questions, project depth and a second coding task.',
+            note: 'Deeper framework, tooling and performance questions, scenarios, project depth and often a second coding task.',
           },
           {
             id: 'hr-interview-and-offer',
@@ -1105,26 +1108,44 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           },
         ],
       },
+      {
+        id: 'taipei',
+        title: 'Front-end and software engineers, Taipei, 2021 to 2023',
+        from: 'candidates in Taipei',
+        ask: 'Interviewing in Taipei?',
+        rounds: [
+          { id: 'hr-phone-screen', stage: 'HR phone screen', kinds: ['recruiter'] },
+          { id: 'onsite-written-test', stage: 'Onsite written test', kinds: ['coding'] },
+          {
+            id: 'team-interviews',
+            stage: 'Team interviews',
+            kinds: ['coding', 'people'],
+            note: 'Panels with a product manager and a tech lead on practical work, or a manager round and a peer round.',
+          },
+          { id: 'senior-manager-conversation', stage: 'Senior-manager conversation', kinds: ['people'] },
+        ],
+      },
     ],
   },
   spotify: {
     variants: [
       {
         id: 'main',
-        title: 'Web engineers, United States and Canada',
+        title: 'Web and full-stack engineers',
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
             id: 'technical-screen',
             stage: 'Technical screen',
             kinds: ['coding'],
-            note: '60–75 minutes with one or two engineers: JavaScript and CSS questions, an easy algorithm or an HTML and CSS mockup.',
+            note: '60 to 90 minutes with one or two engineers: JavaScript and CSS questions and a coding task.',
           },
           {
             id: 'final-web-practical',
             stage: 'Final: web practical',
             kinds: ['coding'],
-            note: 'A plain HTML, CSS and JavaScript build, such as a form that fetches from an API, or web domain questions.',
+            // The accounts' web hour has no framework, so the extra build renders into the DOM by hand.
+            picks: ['/javascript/coding/js-dom-renderer'],
           },
           { id: 'final-algorithms', stage: 'Final: algorithms', kinds: ['coding'] },
           { id: 'final-system-design', stage: 'Final: system design', kinds: ['design'] },
@@ -1211,7 +1232,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'final-loop-frontend-system-design',
             stage: 'Final loop: frontend system design',
             kinds: ['design'],
-            note: 'A design round on a shared component and its API in one account, on a car rental company in another.',
           },
           {
             id: 'final-loop-hiring-manager-and-behavioural',
@@ -1234,7 +1254,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'technical-rounds',
             stage: 'Technical rounds',
             kinds: ['coding'],
-            note: 'One or two rounds, such as a React autocomplete backed by an API, then a medium binary search problem.',
           },
           { id: 'system-design-final', stage: 'System design final', kinds: ['design'] },
         ],
@@ -1246,7 +1265,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       {
         id: 'main',
         title: 'Frontend engineers, L3 to L5A',
-        reported: { levels: ['junior', 'mid', 'senior'], who: 'L3 to L5A candidates' },
+        reported: { levels: ['mid', 'senior'], who: 'L4 to L5A candidates' },
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
@@ -1258,12 +1277,8 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           { id: 'phone-screen', stage: 'Phone screen', kinds: ['coding'] },
           { id: 'algorithms-and-data-structures', stage: 'Algorithms and data structures', kinds: ['coding'] },
           { id: 'frontend-specialization', stage: 'Frontend specialization', kinds: ['coding'] },
-          {
-            id: 'system-design',
-            stage: 'System design',
-            kinds: ['design'],
-            note: 'Frontend architecture; three accounts were asked to design a calendar.',
-          },
+          // The table's first sentence says the format; the old note named the design task of a locked question.
+          { id: 'system-design', stage: 'System design', kinds: ['design'] },
           { id: 'collaboration-and-leadership', stage: 'Collaboration and leadership', kinds: ['people'] },
         ],
       },
@@ -1273,7 +1288,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     reportVariants: {
       'js-add-two-promises': ['swe3'],
       'js-curry-function': ['sde3-ui'],
-      'js-stack-queue-implementation': ['sde2'],
       'js-valid-anagram': ['swe3'],
       'messaging-inbox-frontend': ['swe3'],
       'react-accordion-faq': ['swe3'],
@@ -1293,7 +1307,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         reported: { levels: ['senior'], who: 'SDE 3 candidates' },
         rounds: [
           { id: 'dsa-round', stage: 'DSA round', kinds: ['coding'] },
-          { id: 'javascript-react-and-web-fundamentals', stage: 'JavaScript, React and web fundamentals', kinds: ['coding'] },
+          {
+            id: 'javascript-react-and-web-fundamentals',
+            stage: 'JavaScript, React and web fundamentals',
+            kinds: ['coding'],
+            note: '60 minutes of JavaScript problem solving plus questions on React, CSS, HTML and how the web works.',
+          },
           { id: 'hiring-manager', stage: 'Hiring manager', kinds: ['people'] },
           { id: 'hr-call', stage: 'HR call', kinds: ['recruiter'] },
         ],
@@ -1311,7 +1330,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             kinds: ['coding'],
             note: 'One 2024 assessment: multiple-choice on HTML, CSS, JavaScript and React or Angular, plus two easy coding questions.',
           },
-          { id: 'technical-rounds', stage: 'Technical rounds', kinds: ['coding'] },
+          {
+            id: 'technical-rounds',
+            stage: 'Technical rounds',
+            kinds: ['coding'],
+            note: 'Two technical rounds of about an hour: data structures or a medium LeetCode problem, then React questions.',
+          },
           { id: 'final-round', stage: 'Final round', kinds: ['people'] },
         ],
       },
@@ -1389,7 +1413,6 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'javascript-and-ui-round',
             stage: 'JavaScript and UI round',
             kinds: ['coding'],
-            note: 'Build a generic tree viewer component for hierarchical data, like a file explorer.',
           },
           {
             id: 'hiring-manager-round',
@@ -1410,7 +1433,12 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
         rounds: [
           { id: 'application-review', stage: 'Application review', kinds: ['recruiter'] },
           { id: 'screening', stage: 'Screening', kinds: ['recruiter'] },
-          { id: 'react-coding-interview', stage: 'React coding interview', kinds: ['coding'] },
+          {
+            id: 'react-coding-interview',
+            stage: 'React coding interview',
+            kinds: ['coding'],
+            note: 'A small React app in TypeScript on Google Meet: 45 minutes in London, one or two interviews on Bay Area teams.',
+          },
           {
             id: 'html-css-interview',
             stage: 'HTML/CSS interview',
@@ -1445,7 +1473,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'take-home-and-code-reading-final',
             stage: 'Take-home and code-reading final',
             kinds: ['coding'],
-            note: 'A four-hour AI-assisted product build, then a one-hour in-person session on an existing class.',
+            note: 'A four-hour take-home with AI coding assistants allowed, then a one-hour in-person coding round on existing code.',
           },
         ],
       },
@@ -1468,7 +1496,7 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
             id: 'hiring-manager',
             stage: 'Hiring manager',
             kinds: ['people'],
-            note: '30–60 minutes on the official pages; a Blind commenter describes it as non-technical.',
+            note: '45 to 60 minutes on the official pages; a Blind commenter describes it as non-technical.',
           },
           // The review discusses the take-home's design and further optimisation, so a design case modelled on it fits here.
           { id: 'final-take-home-review', stage: 'Final: take-home review', kinds: ['coding', 'design'] },

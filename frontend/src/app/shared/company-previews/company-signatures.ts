@@ -13,7 +13,7 @@ export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
   'capital-one': 'Power Day',
   crowdstrike: 'Take-home review',
   datadog: 'React live coding',
-  elevenlabs: '90-minute assessment',
+  elevenlabs: 'Timed coding assessment',
   gitlab: 'Merge request review',
   google: 'Hiring committee',
   intuit: 'Craft demonstration',

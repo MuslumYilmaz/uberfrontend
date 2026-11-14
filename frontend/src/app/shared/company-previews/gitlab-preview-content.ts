@@ -1,10 +1,12 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * GitLab frontend interview guide. The stages, durations and interviewers come from GitLab handbook pages read
- * in October 2026; the exercises come from public, self-reported accounts (Taro re-hosts of Glassdoor reviews from
- * 2018 to 2025 and a 2025 Medium account). Every prompt is a FrontendAtlas practice version, not a leaked,
- * confirmed or official GitLab exercise: GitLab draws its merge requests from a curated bank.
+ * GitLab frontend interview guide. The reported questions live with the process table
+ * (company-interview-processes.ts); the five prompts here are the answer guides of the merge request, layout, testing
+ * and written page-load rows. Stages, durations and interviewers come from GitLab handbook pages read in October 2026;
+ * the questions come from public accounts (Taro re-posts of Glassdoor reviews from 2018 to 2025, re-read in November
+ * 2026, and a 2025 Medium account). Nothing here is a leaked, confirmed or official GitLab question: GitLab draws its
+ * merge requests from a curated bank.
  */
 const GITLAB_TARO_LIVE_SESSION_2024_URL =
   'https://www.jointaro.com/interviews/companies/gitlab/experiences/front-end-engineer-united-states-february-1-2024-no-offer-neutral-031df9b0/';
@@ -29,13 +31,13 @@ const GITLAB_CANDIDATE_FAQ_URL = 'https://handbook.gitlab.com/handbook/hiring/ca
 const GITLAB_AI_GUIDELINES_URL = 'https://about.gitlab.com/jobs/ai-interview-process/';
 const GITLAB_SENIOR_FRONTEND_POSTING_URL = 'https://job-boards.greenhouse.io/gitlab/jobs/8826920002';
 
-export const GITLAB_PREVIEW_TITLE = 'GitLab Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const GITLAB_PREVIEW_TITLE = 'GitLab Frontend Interview Questions: {#questions} Reported + Prep Guide';
 export const GITLAB_PREVIEW_H1 = 'GitLab Frontend Interview Questions';
 export const GITLAB_PREVIEW_DESCRIPTION =
-  'Prepare for a GitLab frontend interview with 5 practice prompts built on the handbook and public reports: Vue merge request review, refetching, CSS, tests.';
+  'GitLab frontend interview: the merge request you review at home and improve in a 90-minute call, the written assessment and {#questions} reported questions.';
 export const GITLAB_PREVIEW_CANONICAL_PATH = '/companies/gitlab/preview';
 export const GITLAB_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on the published GitLab loop and on public interview reports, not leaked, confirmed or official GitLab questions.';
+  'The questions are what GitLab candidates described, most of them in Glassdoor reviews that Taro re-posts with rewritten text and placeholder dates, retold here in our words: they are not leaked, confirmed or official GitLab questions, and FrontendAtlas wrote the answer guides. GitLab draws each merge request from a curated bank, so expect yours to differ from the ones described here.';
 
 export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'gitlab',
@@ -48,10 +50,10 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public GitLab prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by GitLab handbook pages and by public frontend accounts from 2018 to 2025: a short written assessment, a recruiter screen, a merge request you review on your own time and improve live in a 90-minute session, then behavioral and director interviews.',
+      'GitLab publishes its frontend loop in the handbook: a short written assessment, a recruiter call, a merge request you review on your own time and then improve in a 90-minute video call, a behavioral interview and a talk with a Director of Engineering. The table shows how candidates from 2018 to 2025 met each step; under it are the {questions} questions they reported, with the merge request review open.',
     caveat:
       'The format is official, but the exercise details come from accounts, most of them reviews re-hosted on Taro, and GitLab now draws merge requests from a curated bank. Some candidates met a manager or director before the technical round and some roles closed mid-loop, so confirm the order and the exercise with your recruiter.',
-    chips: ['5 practice prompts', 'Vue, CSS, Jest, code review', 'Full practice set requires Premium'],
+    chips: ['{#questions} reported questions', '{#reports} public reports, 2018–2025', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
@@ -62,18 +64,40 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   sourceBoundary: {
-    kicker: 'Source boundary · checked October 2026',
+    kicker: 'Source boundary · checked November 2026',
     title: 'What GitLab publishes and what the accounts add',
     paragraphs: [
-      'The stages, durations and interviewers come from GitLab handbook pages read in October 2026: the frontend job family page, the technical interview page, the candidate handbook page and the guidelines on using AI in the interview process. The exercises come from public, self-reported accounts: two 2024 merge request rounds and earlier ones on Taro, which re-hosts Glassdoor reviews, and a 2025 Medium account of a full-stack loop with separate 90-minute frontend and backend technical interviews.',
-      'Together they establish the format and the kind of merge request to expect. The verbatim written questions date from 2018 and 2019, and one 2024 account names Vue 2. The two frontend roles open in October 2026 are listed in Bangalore, India; GitLab says its roles are remote, with location-based eligibility for some.',
+      'The stages, durations and interviewers come from GitLab handbook pages read in October 2026: the frontend job family page, the technical interview page, the candidate handbook page and the guidelines on using AI in the interview process. The questions come from candidates: Glassdoor reviews from 2018 to 2025 that Taro re-posts, re-read in November 2026, and a 2025 Medium account of a full-stack loop with separate 90-minute frontend and backend technical interviews.',
+      'Only two accounts since 2023 describe the merge request in any detail, both from early 2024. The written and theory questions date from 2018 and 2019, some from loops with a JavaScript question hour that the handbook does not describe, and some were put to engineering manager candidates. The two frontend roles open in October 2026 are listed in Bangalore, India; GitLab says its roles are remote, with location-based eligibility for some.',
     ],
   },
+  roundSpotlights: [
+    {
+      id: 'merge-request-review',
+      kicker: 'Round decoder',
+      title: 'The GitLab merge request review: the take-home half and the 90-minute call',
+      lede: [
+        'GitLab\'s technical round has two halves. A self-contained merge request on a small application made for the interview arrives at least 72 hours before the call; you review it alone for up to an hour and finish at least 24 hours ahead, leaving a note when you are done. In the 90-minute video call you walk the interviewer through your review and write code to improve the merge request.',
+        'Candidates from 2019 to 2024 describe the same two halves in Vue, HTML, CSS and Haml, and in 2020 the exercise was still a pull request in GitLab\'s own codebase. In a 2024 account and in the frontend round of a 2022 full-stack loop, the interviewer stayed silent while the candidate coded, and both candidates explained their decisions aloud anyway.',
+      ],
+      facts: [
+        { label: 'Position in the loop', value: 'After the written assessment and the recruiter call, before the behavioral and director interviews. In accounts from 2022, 2023 and 2025 a hiring manager or director came before any technical round.' },
+        { label: 'Before the call', value: 'The merge request arrives at least 72 hours ahead, two or three days in the accounts. The handbook suggests up to an hour of review, finished at least 24 hours before the call, with a note on the platform when you are done.' },
+        { label: 'The call', value: '90 minutes on video with screen sharing, with a frontend engineer or a frontend engineering manager: walk through your review, then write code to improve the merge request.' },
+        { label: 'Stack', value: 'Vue, HTML, CSS and Haml across accounts from 2019 to 2024, with Jest in one 2024 account; another 2024 account calls the app Vue 2. GitLab\'s frontend guide names GraphQL, Apollo and Pinia, which no account mentions.' },
+        { label: 'Interviewers', value: 'Silent while the candidate coded in a 2024 account and in the frontend round of a 2022 full-stack loop; closer to a discussion in 2019 and 2025 accounts.' },
+        { label: 'AI use', value: 'GitLab\'s guidelines welcome transparent AI use in technical assessments if you can explain your prompts and decisions, and ask you to say which tools you used.' },
+        { label: 'Behind these facts', value: 'GitLab\'s technical interview and job family pages, and candidates\' accounts from 2019 to 2025, listed at the end of the page.' },
+      ],
+      practiceLink: { label: 'Rehearse reading a teammate\'s code with a free debugging task', path: '/javascript/debug/js-debug-mutating-input' },
+      processLink: { label: 'See the merge request row in the reported process', fragment: 'gitlab-interview-process-1-stage-merge-request-review' },
+    },
+  ],
   roleLenses: {
     kicker: 'Role lenses',
     title: 'Repository interfaces and a large Vue frontend as practice contexts',
     intro:
-      'These lenses come from GitLab job postings and its frontend development guide. Choose the one closest to the role and keep the reasoning framework-neutral.',
+      'Both lenses come from GitLab\'s October 2026 postings and its frontend development guide, not from an interview: no account mentions repository screens or GraphQL in the merge request.',
     items: [
       {
         title: 'Repository and code review interfaces',
@@ -216,7 +240,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
+    kicker: 'Mini walkthrough',
     title: 'Plan the merge request review before the call',
     intro:
       'The handbook suggests up to an hour of review, finished at least a day before the call.',
@@ -232,15 +256,16 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   prepPlan: {
     kicker: 'Actionable preparation',
     title: 'A 7-day GitLab frontend interview preparation plan',
-    intro: 'Every day ends with code, a test, a written artifact, or a question you can use in the real process.',
+    intro:
+      'The week follows the order GitLab publishes: the written answers, the recruiter call, the merge request you review alone, the 90-minute session, then the two conversations with managers.',
     days: [
-      { day: 'Day 1', focus: 'Read the GitLab code review guidelines and the technical interview page, then write a review checklist ordered by impact.', artifact: 'A one-page checklist you will use on the real merge request.' },
-      { day: 'Day 2', focus: 'Vue fundamentals for the exercise: lifecycle hooks, computed values versus watchers, props and events, and where data loading belongs.', artifact: 'A small Vue component that loads data once and renders loading, error and empty states.' },
-      { day: 'Day 3', focus: 'Review a deliberately flawed change, from an open-source project or your own old code, with prioritized written comments.', artifact: 'Ten review comments, each with a reason and a suggested change.' },
-      { day: 'Day 4', focus: 'Implement your top review suggestions against a timer while narrating, then run the tests.', artifact: 'Notes from a 45-minute self-run session: what you finished and what you would leave for a follow-up.' },
-      { day: 'Day 5', focus: 'HTML and CSS repair: fix invalid markup, then match a mobile mock with Flexbox and media queries.', artifact: 'A before-and-after page that holds at 360 pixels.' },
-      { day: 'Day 6', focus: 'Unit tests: mock an API module, assert call counts and rendered output, and make a test fail before the fix.', artifact: 'Three tests that would catch the refetch bug.' },
-      { day: 'Day 7', focus: 'Behavioral and director preparation: stories on iteration, a production bug, a disagreement and asynchronous collaboration; then write the browser page-load answer.', artifact: 'Five STAR stories and a one-page written answer.' },
+      { day: 'Day 1', focus: 'Written assessment: answer three open frontend questions in writing, each in short paragraphs a reviewer can scan, since the assessment arrives before any call.', artifact: 'Three written answers, each opening with a one-sentence summary.' },
+      { day: 'Day 2', focus: 'Recruiter call: short answers on your background, why GitLab, your experience with each skill in the posting, your location, notice period and salary range, the topics GitLab\'s candidate page lists.', artifact: 'A one-page answer sheet and three questions for the recruiter.' },
+      { day: 'Day 3', focus: 'Review habits: read the GitLab code review guidelines that the technical interview page points to, then write your own checklist ordered by impact.', artifact: 'A checklist you will use on the real merge request.' },
+      { day: 'Day 4', focus: 'Practice review: review a change you did not write, an open-source merge request or old code of your own, with comments that each give a reason and a suggested change.', artifact: 'Ten comments, the most important first.' },
+      { day: 'Day 5', focus: 'Live session: implement your top suggestions against a 90-minute timer, explaining each decision aloud and running the app after every change.', artifact: 'Notes on what you finished, what you left and why.' },
+      { day: 'Day 6', focus: 'Vue: build a small component with props, events, computed values and conditional rendering, since the merge requests in accounts from 2019 to 2024 are Vue.', artifact: 'A component you can explain line by line.' },
+      { day: 'Day 7', focus: 'Behavioral and director interviews: STAR stories on iterating on a problem, a mistake, a disagreement, a creative solution and why GitLab, all questions candidates report.', artifact: 'Five stories and your questions for the director.' },
     ],
   },
   faqs: {
@@ -250,12 +275,12 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Are these the real GitLab questions?',
         answer:
-          'No. They are FrontendAtlas practice versions. GitLab says the merge request is self-contained and drawn from a curated bank of technical exercises, so yours will differ; the practice here follows the published format and what public accounts describe.',
+          'They are what candidates said they were asked, mostly in Glassdoor reviews re-posted on Taro, written here in our words; GitLab has confirmed none of them. GitLab draws each merge request from a curated bank of exercises, so the one you get will be new to you.',
       },
       {
         question: 'Is the exercise in Vue?',
         answer:
-          'Public accounts from 2019 to 2024 describe Vue, HTML and CSS, with Haml in older ones and Jest unit tests in a 2024 account; one 2024 account says Vue 2. The job family page asks for experience with Vue or another modern JavaScript framework. Ask your recruiter which stack the exercise uses.',
+          'Accounts from 2019 to 2024 describe Vue, HTML and CSS, with Haml in older ones, and one 2024 account says Vue 2. The job family page asks for experience with Vue or another modern JavaScript framework. Ask your recruiter which stack the exercise uses.',
       },
       {
         question: 'Can I use AI tools?',
@@ -265,7 +290,7 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Is there a frontend system design or algorithm round?',
         answer:
-          'Not in the published frontend loop or in the recent accounts. Two older senior accounts, from 2019 and 2021, describe an extra round of frontend theory questions such as CORS and optimizing a slow-loading list, and a 2019 account had a 10-minute linked-list exercise.',
+          'Not in the published frontend loop. Some 2018 and 2019 loops had other rounds, such as an hour of JavaScript questions or a senior call on frontend theory, and a 2021 Senior Software Engineer loop added a quiz on frontend trivia. Ask your recruiter whether your loop has anything besides the merge request round.',
       },
       {
         question: 'Where are the open frontend roles?',
@@ -278,15 +303,12 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Free public practice',
     title: 'Build the underlying skills with free practice',
     intro:
-      'These public pages cover the request handling, layout, testing, document head, browser rendering and Vue lifecycle skills used by the practice prompts.',
+      'Free tasks for what the GitLab rounds draw on: reading code someone else wrote, changing a small Vue component step by step, and STAR stories. None of them is a reported GitLab question.',
     items: [
-      { label: 'Fix an async race in a fetch helper', description: 'Stop duplicate requests and reuse a cached response, the move behind the refetch prompt.', path: '/javascript/debug/js-debug-async-race' },
-      { label: 'Responsive Flexbox navbar', description: 'A Flexbox layout that survives narrow widths, for the mobile mock prompt.', path: '/css/coding/css-flexbox-navbar' },
-      { label: 'Build a spy function', description: 'The test double behind Jest mock functions, for the unit test prompt.', path: '/javascript/coding/js-create-spy-function' },
-      { label: 'Essential tags in the HTML head', description: 'The viewport meta tag and the rest of a correct document head.', path: '/html/coding/html-head-seo-basics' },
-      { label: 'How browsers parse and render HTML', description: 'The order of events behind the written page-load question.', path: '/html/trivia/html-parsing-rendering' },
-      { label: 'Vue lifecycle hooks', description: 'Where a fetch belongs in a Vue component and when it runs.', path: '/vue/trivia/vue-lifecycle-hooks' },
-      { label: 'Infinite scroll list design', description: 'Rendering a long list without loading everything, for the slow-list theory question.', path: '/system-design/infinite-scroll-list' },
+      { label: 'Stop a helper mutating its input', description: 'Read a teammate\'s helper, say what is wrong with it and fix it without changing what it should return.', path: '/javascript/debug/js-debug-mutating-input' },
+      { label: 'Fix an off-by-one in a chunk helper', description: 'Find a boundary bug in code you did not write and show the case that proves the fix.', path: '/javascript/debug/js-debug-off-by-one' },
+      { label: 'Vue todo list', description: 'A small Vue 3 component to change in steps while you explain each step aloud.', path: '/vue/coding/vue-todo-list' },
+      { label: 'Conditional and list rendering in Vue', description: 'How Vue renders lists and conditional blocks, as the 2024 merge request app did.', path: '/vue/trivia/vue-conditional-list-rendering' },
       { label: 'Behavioral stories', description: 'A structure for the behavioral and director interviews.', path: '/guides/behavioral/stories' },
     ],
   },
@@ -299,12 +321,12 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       { label: 'GitLab handbook: Technical interviews', url: GITLAB_TECHNICAL_INTERVIEW_URL, note: 'Official page, last modified August 2026. It describes the merge request sent at least 72 hours ahead, the 90-minute call to walk through the review and improve the code, the curated bank of exercises and the encouragement to use AI.', kind: 'official' },
       { label: 'GitLab handbook: Candidate handbook page', url: GITLAB_CANDIDATE_FAQ_URL, note: 'Official page, last modified August 2026. It describes screening calls of 30 to 40 minutes, team interviews, three references with at least one past manager, the visa rule and the six-month wait before reapplying.', kind: 'official' },
       { label: 'GitLab: Using AI in the interview process', url: GITLAB_AI_GUIDELINES_URL, note: 'Official guidelines by stage: transparent AI use is welcome in technical assessments, interviews should not be read from AI-produced answers, and candidates should disclose the tools they used.', kind: 'official' },
-      { label: GITLAB_TARO_LIVE_SESSION_2024_LABEL, url: GITLAB_TARO_LIVE_SESSION_2024_URL, note: 'A re-hosted Glassdoor review with a placeholder date and no offer. It establishes a 30-minute recruiter call, a merge request done in Vue.js with unit tests in Jest, a 90-minute live session and feedback on JavaScript, CSS and Vue performance.', kind: 'report' },
-      { label: GITLAB_TARO_VUE_APP_2024_LABEL, url: GITLAB_TARO_VUE_APP_2024_URL, note: 'A re-hosted Glassdoor review with a placeholder date and no offer. It establishes the merge request sent two days ahead as a simple Vue 2 app with an API call, and the candidate caching data, cutting API calls and adding media queries.', kind: 'report' },
-      { label: GITLAB_TARO_HTML_2020_LABEL, url: GITLAB_TARO_HTML_2020_URL, note: 'A re-hosted Glassdoor review from 2020, when the exercise was a pull request in the GitLab codebase. It establishes broken HTML, plain JavaScript to convert to Vue, and unit tests and a CI pipeline that failed; the current exercise is self-contained.', kind: 'report' },
-      { label: GITLAB_TARO_WRITTEN_2019_LABEL, url: GITLAB_TARO_WRITTEN_2019_URL, note: 'A re-hosted Glassdoor review that ended after the written answers. It establishes one written question, what happens in the browser as it loads a page; the current written questions are not public.', kind: 'report' },
+      { label: GITLAB_TARO_LIVE_SESSION_2024_LABEL, url: GITLAB_TARO_LIVE_SESSION_2024_URL, note: 'A re-hosted Glassdoor review with a placeholder date and no offer: a 30-minute recruiter call on Zoom, a merge request in Vue.js reviewed on GitLab, then a 90-minute live coding session and written feedback after the rejection.', kind: 'report' },
+      { label: GITLAB_TARO_VUE_APP_2024_LABEL, url: GITLAB_TARO_VUE_APP_2024_URL, note: 'A re-hosted Glassdoor review with a placeholder date and no offer: the merge request arrived two days before the call, a simple Vue 2 app, and the interviewer asked nothing while the candidate coded.', kind: 'report' },
+      { label: GITLAB_TARO_HTML_2020_LABEL, url: GITLAB_TARO_HTML_2020_URL, note: 'A re-hosted Glassdoor review from 2020, when the exercise was a pull request in GitLab\'s own codebase, sent three days ahead with about an hour of review expected; the current exercise is self-contained.', kind: 'report' },
+      { label: GITLAB_TARO_WRITTEN_2019_LABEL, url: GITLAB_TARO_WRITTEN_2019_URL, note: 'A re-hosted Glassdoor review: technical questions to answer in writing arrived within minutes of applying, and the process ended after the answers. The current written questions are not public.', kind: 'report' },
       { label: GITLAB_MEDIUM_FULLSTACK_2025_LABEL, url: GITLAB_MEDIUM_FULLSTACK_2025_URL, note: 'A first-person full-stack account that ended in an offer, with interviews in early 2025. It establishes a 90-minute frontend technical interview on JavaScript, Vue.js, testing and frontend practice next to a separate backend one, and a 60-minute hiring manager round.', kind: 'report' },
-      { label: GITLAB_TARO_HEAD_2022_LABEL, url: GITLAB_TARO_HEAD_2022_URL, note: 'One self-reported account without an offer. It lists the question of which meta tag makes a web page responsive; the plan\'s document-head task is a practice version of that question, not the reported wording.', kind: 'report' },
+      { label: GITLAB_TARO_HEAD_2022_LABEL, url: GITLAB_TARO_HEAD_2022_URL, note: 'One self-reported account: a first call on past work and general JavaScript questions, after which the candidate withdrew to take another job.', kind: 'report' },
       { label: 'GitLab: Senior Frontend Engineer posting, Bangalore', url: GITLAB_SENIOR_FRONTEND_POSTING_URL, note: 'Official posting first published in September 2026. It places the role on a team that owns core repository capabilities and lists Vue, React, Angular, TypeScript or JavaScript as helpful; it says nothing about the interview.', kind: 'official' },
     ],
   },
@@ -312,15 +334,15 @@ export const GITLAB_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full GitLab practice set',
     copy:
-      'Premium unlocks the Vue debounced search component and the wider premium library for the Vue, testing and code review skills the loop relies on.',
+      'Premium unlocks the Vue merge request review, the answer guides behind the question list and the wider premium library for the Vue, testing and code review skills the loop relies on.',
     buttonLabel: 'Unlock the full GitLab practice set',
     src: 'company_preview_gitlab',
   },
   about: [
     'GitLab frontend interview preparation',
     'Merge request review and live implementation',
-    'Vue, HTML and CSS fixes in code review',
-    'Frontend unit testing with mocks and spies',
+    'GitLab written assessment',
+    'GitLab behavioral and director interviews',
   ],
   indexAnchorLabel: 'GitLab frontend interview questions',
 };

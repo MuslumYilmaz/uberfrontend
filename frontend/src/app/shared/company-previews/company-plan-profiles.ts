@@ -119,7 +119,7 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
   spotify: {
     framework: 'javascript',
     mixed: true,
-    evidence: 'The web practical is framework-free. Two older reports name a carousel and a search that the catalog only has as framework tasks.',
+    evidence: 'The final web rounds in the accounts are plain HTML, CSS and JavaScript; React came up only as a few questions in two 2020 screens.',
   },
   stripe: {
     framework: 'javascript',

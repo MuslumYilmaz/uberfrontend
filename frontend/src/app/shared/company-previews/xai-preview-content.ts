@@ -1,10 +1,12 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * xAI (now SpaceXSI) frontend interview guide. Every prompt is a FrontendAtlas practice version modelled
- * on one public interview account (Taro, August 2025) and on the stage lists in closed official
- * frontend postings (March 2025 to February 2026). Nothing here is a leaked, confirmed or official xAI
- * question, and one account plus closed postings cannot establish the current loop.
+ * xAI (now SpaceXSI) frontend interview guide. The reported questions live with the process table
+ * (company-interview-processes.ts); the one prompt here is the answer guide of the open question, the chat
+ * interface from the London account on Taro (August 2025). The frontend rounds come from closed official
+ * postings (March 2025 to February 2026); the other questions come from a Specialist account on Taro and
+ * general software-engineer accounts on Aced and Taro. Nothing here is a leaked, confirmed or official xAI
+ * question, and closed postings plus a few accounts cannot establish the current loop.
  */
 const XAI_LONDON_REPORT_URL =
   'https://www.jointaro.com/interviews/companies/xai/experiences/frontend-engineer-london-england-august-13-2025-no-offer-positive-45b410e6/';
@@ -26,13 +28,13 @@ const XAI_CAREERS_URL = 'https://x.ai/careers';
 const XAI_MERGER_NEWS_URL = 'https://driveteslacanada.ca/news/spacex-completes-merger-with-xai/';
 const XAI_REBRAND_NEWS_URL = 'https://www.freepressjournal.in/tech/elon-musks-xai-rebrands-to-spacexai-unveils-new-logo';
 
-export const XAI_PREVIEW_TITLE = 'xAI (now SpaceXSI) Frontend Interview Questions: 4 Prompts + Guide';
+export const XAI_PREVIEW_TITLE = 'xAI (now SpaceXSI) Frontend Interview Questions and Process Guide';
 export const XAI_PREVIEW_H1 = 'xAI (now SpaceXSI) Frontend Interview Questions';
 export const XAI_PREVIEW_DESCRIPTION =
-  'Prepare for an xAI (SpaceXSI) frontend interview with 4 practice prompts modelled on public postings and reports: chat UI, TS app, CSS screenshot, AI composer.';
+  'Prepare for an xAI (SpaceXSI) frontend interview with {#questions} reported questions and the rounds from public postings and reports: chat UI, TS app, CSS screenshot.';
 export const XAI_PREVIEW_CANONICAL_PATH = '/companies/xai/preview';
 export const XAI_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports and official postings, not leaked, confirmed or official xAI questions. One Taro account and closed postings cannot establish the current loop; use the material your interviewers provide as the source of truth.';
+  'The questions come from candidates\' public pages on Taro and Aced and are given in our words, not leaked, confirmed or official xAI questions; the answer guide is our own. The frontend rounds rest on closed postings and one London account, and what the engineers running your process tell you outranks both.';
 
 export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'xai',
@@ -45,39 +47,39 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public xAI prep guide',
     subtitle:
-      'Prepare with four practice prompts shaped by a single Taro account and the stage lists in closed official postings: a chat interface built in React during a one-hour pairing session, a small React app written in TypeScript, a UI implemented from a screenshot in HTML and CSS, and the composer and streaming turn of a grok.com-style chat product.',
+      'Closed xAI postings from 2025 to early 2026 describe a 15-minute screen, a small React app written in TypeScript, a UI rebuilt from a screenshot in HTML and CSS and a last stage with the team or a founding engineer; the London postings say every interview runs on Google Meet. Under the table are the {questions} questions candidates reported; the first, a chat interface built in React while an engineer reviews the code, is open.',
     caveat:
-      'xAI merged into SpaceX (the merger closed on 2 February 2026), rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026, with SpaceXAI LLC as the legal entity; on 22 October 2026 the job board still lived at the xai slug. The frontend postings that described a loop were removed between June 2025 and February 2026, so the loop below describes 2025 to early 2026. This guide does not claim access to private interview material, a fixed format, or the stack of every team.',
-    chips: ['4 practice prompts', 'React, TypeScript, HTML/CSS, AI chat design', 'Full practice set requires Premium'],
+      'xAI merged into SpaceX (the merger closed on 2 February 2026), rebranded as SpaceXAI in July 2026 and as SpaceXSI in October 2026, with SpaceXAI LLC as the legal entity; on 21 October 2026 the job board still lived at the xai slug. Every frontend posting that described a loop had been removed by 25 February 2026, most of them in January and February 2026, and only one candidate account comes from a frontend role.',
+    chips: ['{#questions} reported questions', 'React, TypeScript, HTML/CSS, Tailwind', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
     title: 'Prepare for product judgment, not xAI trivia',
     paragraphs: [
-      'The public pages reward engineers who ship a working slice under a clock while explaining it: a small React app in TypeScript that handles its loading and failure states, a layout rebuilt from a screenshot that still reflows, a chat interface that can send, show a reply arriving and stop it. The one Taro account adds React questions asked in passing, such as what useCallback does, so each hook you use should come with a one-sentence reason. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
-      'Treat the postings as a shape, not a script. The closed London posting gave 45 minutes each to a React round and an HTML/CSS/Tailwind round; the Bay Area postings described a coding assessment in a language of your choice, one or two React/TypeScript interviews and a "Meet the Team" session where you present past exceptional work. Practise the timed builds first, then rehearse the ten-minute story of work you are proud of, because the application itself asks for a "statement of exceptional work".',
+      'The closed postings and the London account reward a frontend engineer who gets a small React app working in 45 minutes to an hour while someone reads the code. In the account that meant a chat interface built in pair coding, with an engineer from the team reviewing live and asking React questions as it grew, so have a one-sentence reason ready for every hook you write and a working send before any styling.',
+      'The rest depends on the team. The London, grok.com & API and Enterprise postings added an HTML/CSS round built from a screenshot, with Tailwind in London, and London ended with 30 minutes with founding engineer Toby Pohlen; Grok Studio and Autonomous Agents added a coding assessment in a language of your choice and a "Meet the Team" presentation of past exceptional work. General software-engineer loops in late 2025 used a four-hour take-home and practical coding on classes. Rehearse the screenshot build in Tailwind and in plain CSS, and the story behind the "statement of exceptional work" the application asks for.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
-    title: 'What the public pages establish, and what you still need to confirm',
+    title: 'What closed postings and a few accounts can show, and what to ask your interviewers',
     paragraphs: [
-      '{reports} public interview reports inform this guide, each listed under Sources, three of them in detail here: one Frontend Engineer account on Taro (August 2025) describing a 15-minute phone interview and a one-hour pair-coding session building a chat interface in React; one "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, a title that looks like a separate track from the product frontend teams; and one general Member of Technical Staff account on Aced (2025, now behind a member wall) with a four-hour take-home. Two Bay Area frontend onsite accounts sit behind a login wall and only confirm that more accounts exist. The stage lists come from closed official postings for London and Bay Area frontend roles between March 2025 and February 2026, and the careers page, checked on 21 October 2026, keeps four generic steps.',
-      'These pages establish that those rounds and stages were described; they do not establish exact wording, the current format after the merger, or how each team interviews now. On 21 October 2026 the job board at the xai slug listed one frontend-titled opening and no engineering posting with an interview section. Confirm the exercise types, the allowed tools, the expected stack and the timing with whoever runs your process; the careers page says engineers, not recruiters, evaluate applications.',
+      '{sources} public pages stand behind this guide, all listed under Sources. The frontend rounds come from closed official postings for London and Bay Area roles between March 2025 and February 2026, and from one Frontend Engineer account on Taro (August 2025) with a 15-minute phone interview and an hour of pair coding on a chat interface in React. The other questions come from a "Software Engineer Specialist" account with JavaScript and React interviews after a CodeSignal assessment, and from general software-engineer accounts on Aced and Taro from 2025; none of those is a frontend loop.',
+      'Every posting with a loop is closed, so the table is a record of 2025 and early 2026, not of the merged company: on 21 October 2026 the job board at the xai slug listed one frontend-titled opening and no engineering posting with an interview section. The careers page says engineers rather than recruiters evaluate applications; ask whoever contacts you which of these rounds your team still runs, whether the CSS round expects Tailwind and whether AI tools are allowed.',
     ],
   },
   prompts: {
-    kicker: 'Representative practice prompts',
-    title: 'Four xAI frontend interview practice questions',
+    kicker: 'Answer guide',
+    title: 'Answer guide for the reported xAI chat interface question',
     intro:
-      'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Each prompt links to the public report or official posting it is modelled on and to a runnable practice page; the fourth prompt is modelled on the reported chat-interface round plus the product domain and carries no account of a design round.',
-    itemListName: 'Four xAI frontend interview practice prompts',
+      'Clarify the contract, explain ownership and trade-offs, build the smallest working slice and test the failure cases.',
+    itemListName: 'xAI answer guide',
     items: [
       {
         id: 'react-chat-interface-pairing',
         title: 'Build a chat interface in React during a one-hour pairing session',
         statement:
-          'One Taro account describes a one-hour pair-coding session: build a chat interface in React while an engineer from the team reviews the code live, with React questions along the way such as what useCallback does. Practise the same shape: a message list, a composer, a status per message, and an assistant reply that renders as it arrives.',
+          'One Taro account from London describes a one-hour pair-coding session: build a chat interface in React while an engineer from the team reviews the code live and asks React questions along the way. Practise the same shape: a message list, a composer, a status per message, and an assistant reply that renders as it arrives.',
         whatThisMeasures:
           'Scoping under a clock, component and state boundaries, controlled inputs and list rendering, explaining hooks while typing, and taking live review without losing the thread.',
         clarifyFirst: [
@@ -87,91 +89,22 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         strongAnswer: [
           'Say the plan before coding: one messages array as the source of truth, a composer with a controlled value, and a status per message (sending, sent, failed).',
           'Render the list from state, key each item by a stable id, and keep the scroll pinned to the latest message until the reader scrolls up.',
-          'Explain each hook as you use it: useCallback keeps a stable handler reference for a memoised child and changes nothing where no child memoises.',
+          'Explain each hook as you write it, in one sentence: what it changes and what would break without it, so the reviewer\'s questions land on code you can defend.',
           'Keep Send disabled on a blank draft and while a reply is in flight, and give a failed send a visible retry that does not duplicate the user turn.',
         ],
         commonMiss:
-          'Building a polished layout first and reaching the end of the hour with a composer that cannot send, or wrapping every handler in useCallback without being able to say what it changes.',
+          'Building a polished layout first and reaching the end of the hour with a composer that cannot send, or reaching for hooks you cannot explain when the reviewer asks.',
         resourceLabel: 'Practice the chat UI with a streaming response (Premium)',
         resourcePath: '/react/coding/react-chat-streaming-ui',
-        reportedRound: { label: XAI_LONDON_REPORT_LABEL, url: XAI_LONDON_REPORT_URL },
-      },
-      {
-        id: 'small-react-app-typescript',
-        title: 'Write a small app in React with TypeScript in 45 minutes',
-        statement:
-          'The closed grok.com & API and Enterprise postings describe a "Coding interview in TypeScript: Write a small app in React"; the closed London posting gave its React coding interview 45 minutes. Practise a complete small app: fetch a list, render loading, error and empty states, and add a filter, with types on the data and the props.',
-        whatThisMeasures:
-          'Typed React under time, request handling with cancellation, truthful loading, empty and error states, and whether the app works end to end before any polish.',
-        clarifyFirst: [
-          'Confirm the data source (a real endpoint, a mock or a fixture) and which feature the interviewer wants first.',
-          'Confirm the TypeScript strictness and whether any library beyond React is allowed.',
-        ],
-        strongAnswer: [
-          'Type the response and the component props before fetching, and keep the raw list separate from the filtered view.',
-          'Start the request in an effect with an AbortController and ignore a response that belongs to a superseded render or an unmounted component.',
-          'Render four explicit states, loading, error with retry, empty and populated, instead of inferring them from the length of an array.',
-          'Finish a working vertical slice early, then add the filter and say what you would do with another hour.',
-        ],
-        commonMiss:
-          'Spending the first fifteen minutes on folder structure and styling, so the fetch and its failure states are untested when time runs out.',
-        resourceLabel: 'Practice fetching and rendering a list with every state',
-        resourcePath: '/react/coding/react-fetch-list-states',
-        reportedRound: { label: XAI_GROK_API_POSTING_LABEL, url: XAI_GROK_API_POSTING_URL },
-      },
-      {
-        id: 'html-css-from-screenshot',
-        title: 'Implement a UI from a screenshot in HTML and CSS',
-        statement:
-          'Three closed postings describe an "HTML/CSS interview: Given a screenshot of a UI, implement it"; the closed London posting gave the round 45 minutes and named Tailwind. Practise rebuilding a card gallery, then a navigation bar, from a picture alone: match spacing, alignment and responsive reflow without a design file.',
-        whatThisMeasures:
-          'Reading layout from a picture, choosing grid or flexbox per region, spacing and typography discipline, responsive behaviour and semantic markup under time.',
-        clarifyFirst: [
-          'Confirm which breakpoints matter, whether pixel accuracy or structure is being judged, and whether Tailwind or plain CSS is expected.',
-          'Confirm the content: real text and images or placeholders, and whether hover and focus states are in scope.',
-        ],
-        strongAnswer: [
-          'Name the regions first (header, grid, card, footer) and decide grid versus flexbox for each before writing markup.',
-          'Write semantic HTML (nav, ul, article, button) so the structure reads correctly without styles.',
-          'Use a spacing scale and a handful of tokens instead of per-element magic numbers, so the result stays consistent when a breakpoint changes.',
-          'Check reflow at a narrow width, keep focus styles visible, and move to the second drill, the responsive flexbox navbar, once the gallery holds.',
-        ],
-        commonMiss:
-          'Positioning everything absolutely to match the screenshot at one width, so the layout breaks as soon as the viewport or the text changes.',
-        resourceLabel: 'Practice the grid card gallery from a layout brief',
-        resourcePath: '/css/coding/css-grid-card-gallery',
-        reportedRound: { label: XAI_LONDON_POSTING_LABEL, url: XAI_LONDON_POSTING_URL },
-      },
-      {
-        id: 'ai-chat-composer-streaming-design',
-        title: 'Design the AI chat composer and streaming turn for a grok.com-style product',
-        statement:
-          'Design the composer and the streaming turn for a grok.com-style chat product: Send that becomes Stop while a reply streams, regenerate that does not duplicate a turn, stale stream events that cannot touch the new turn, and token-by-token rendering that stays readable. This practice version is modelled on the reported chat-interface round plus the product domain of the Grok postings; no public account describes a design round for an xAI frontend role.',
-        whatThisMeasures:
-          'State ownership across draft, active turn and history; stream and command identity; cancellation and recovery; rendering performance under a token stream; and accessibility of streamed text.',
-        clarifyFirst: [
-          'Confirm the transport (SSE, WebSocket or a fetch stream) and whether the server can resume a stream by sequence number.',
-          'Confirm what Stop must guarantee: a server-side stop or only a local abort with partial text kept.',
-        ],
-        strongAnswer: [
-          'Give each send and each stream a stable identity and drop events whose id does not match the active turn.',
-          'Model the turn as a small state machine (idle, sending, streaming, stopped, failed) and derive the Send or Stop button from it instead of from scattered booleans.',
-          'Batch rendered tokens per animation frame and keep the scroll pinned to the bottom until the reader scrolls up.',
-          'Define regenerate as a new turn that reuses the prompt and retires the old stream, and announce status changes to assistive technology.',
-        ],
-        commonMiss:
-          'Showing Stop as done while the old stream keeps appending, because the abort was local and the stream id was not checked.',
-        resourceLabel: 'Work through the AI chat composer case',
-        resourcePath: '/system-design/ai-chat-textarea-design',
         reportedRound: { label: XAI_LONDON_REPORT_LABEL, url: XAI_LONDON_REPORT_URL },
       },
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
+    kicker: 'Mini walkthrough',
     title: 'Scope the chat interface before the first line of the pairing session',
     intro:
-      'Treat this as a representative exercise, not a description of the reported session. Work from the contract toward the components, and say each decision out loud so the engineer reviewing your code can follow it.',
+      'In the London account an engineer read the code as it was written, so these five steps are the order to build things in during the hour and to say them out loud.',
     steps: [
       {
         title: 'Pin the message model',
@@ -203,15 +136,15 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   prepPlan: {
     kicker: 'Actionable preparation',
     title: 'A 7-day xAI frontend interview preparation plan',
-    intro: 'Every day ends with code, a test, a design artifact, or a question you can use in the real process.',
+    intro: 'Seven days in the order of the closed London loop, React first and the screenshot build second, then the coding and presentation stages other xAI teams added.',
     days: [
-      { day: 'Day 1', focus: 'React fundamentals you may be asked to explain while coding: useCallback and useMemo, useRef versus useState, effects and cleanup.', artifact: 'Thirty-second spoken answers for useCallback, useMemo and useRef, written down.' },
+      { day: 'Day 1', focus: 'React under review: a one-sentence reason for every hook you write, and effects with their cleanup.', artifact: 'Thirty-second spoken answers for the hooks a chat interface needs, written down.' },
       { day: 'Day 2', focus: 'A small typed React app: fetch, abort, loading, error, empty, filter.', artifact: 'The fetch-and-render drill passing with all four states, timed at 45 minutes.' },
       { day: 'Day 3', focus: 'HTML/CSS from a screenshot: the grid gallery, then the flexbox navbar, with Tailwind if the role names it.', artifact: 'Two layouts rebuilt from a picture, checked at a narrow and a wide width.' },
-      { day: 'Day 4', focus: 'The chat interface in one hour: message list, composer, status per message, streamed reply.', artifact: 'A chat interface built in one timed hour with a written list of what you cut.' },
-      { day: 'Day 5', focus: 'AI chat design: stream identity, Stop versus abort, regenerate, token batching.', artifact: 'A one-page state and recovery diagram for the composer and the active turn.' },
+      { day: 'Day 4', focus: 'The chat interface in one hour: message list, composer, status per message, the assistant reply.', artifact: 'A chat interface built in one timed hour with a written list of what you cut.' },
+      { day: 'Day 5', focus: 'Coding outside React: a stateful class written live in the language you know best, extended when the interviewer adds a requirement.', artifact: 'Two solutions with the added requirements in place and a note of the inputs you tested.' },
       { day: 'Day 6', focus: 'Exceptional work: the statement the application asks for and the "Meet the Team" presentation the Bay Area postings described.', artifact: 'A ten-minute walkthrough of one piece of work you are proud of, with the decisions and the result.' },
-      { day: 'Day 7', focus: 'Mock loop: a 15-minute screen, a 45-minute React build and a 45-minute CSS build, each narrated.', artifact: 'A list of the questions you will ask about format, tools, stack and the current name of the team.' },
+      { day: 'Day 7', focus: 'Mock loop: a 15-minute screen, a 45-minute React build and a 45-minute CSS build, each narrated.', artifact: 'Questions for the engineer running your process: which of these rounds your team still uses after the merger, whether Tailwind is expected and whether AI tools are allowed.' },
     ],
   },
   faqs: {
@@ -221,7 +154,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'Are these the real xAI questions?',
         answer:
-          'No. They are FrontendAtlas practice versions modelled on one public Taro account and on the stage descriptions in closed official postings. The wording, the data and the test cases are ours.',
+          'They are questions candidates reported on Taro and Aced, given here in our words, not leaked or confirmed xAI questions. The React ones come from a London frontend loop and a Specialist loop, the rest from general software-engineer loops; the closed postings describe rounds, not questions. The answer guide and the practice tasks are FrontendAtlas\'s own.',
       },
       {
         question: 'Is xAI still called xAI?',
@@ -231,17 +164,17 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       {
         question: 'What does the xAI frontend interview loop look like?',
         answer:
-          'The closed postings from March 2025 to February 2026 shared one pattern: engineers review the CV and a "statement of exceptional work", then a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing "within one week". For frontend roles that meant a React coding interview in TypeScript (45 minutes in London), an HTML/CSS interview from a screenshot (with Tailwind in London), and either a 30-minute final stage with a founding engineer in London or a "Meet the Team" presentation of exceptional work in the Bay Area; some Bay Area postings added a coding assessment in a language of your choice. Those postings are closed and the loop varies by team, so confirm the current stages before relying on this.',
+          'The closed postings from March 2025 to February 2026 shared one pattern: engineers review the CV and a "statement of exceptional work", then a 15-minute phone interview with basic technical questions, then the team\'s main process on Google Meet with the goal of finishing "within one week". For frontend roles that meant a React coding interview in TypeScript (45 minutes in London), an HTML/CSS interview from a screenshot (with Tailwind in London), and either a 30-minute final stage with a founding engineer in London or a "Meet the Team" presentation of exceptional work in the Bay Area; some Bay Area postings added a coding assessment in a language of your choice. Those postings are closed and the loop varies by team.',
       },
       {
         question: 'Is there a take-home?',
         answer:
-          'No frontend posting mentions one. Two general software-engineer accounts do: a 2025 Member of Technical Staff loop had a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person session reading an unfamiliar class, per its public summary; the full account, now behind a member wall, adds a choice of six prompts, provided API keys, a GitHub repository and a Loom walkthrough due within 24 hours. A personal blog post from October 2025 about a recruiter-sourced Grok role mentions a "4-hour intensive programming challenge". Ask whether your loop includes one.',
+          'No frontend posting mentions one. A Member of Technical Staff loop from December 2025, on Aced, had a 15-minute recruiter chat, a four-hour take-home with AI coding assistants allowed, handed in as a repository and a Loom video within 24 hours, and a one-hour in-person coding round. A developer\'s blog post from October 2025 about a recruiter approach for a Grok role mentions a "4-hour intensive programming challenge". Ask whether your loop includes one.',
       },
       {
         question: 'Do I need Next.js or Tailwind?',
         answer:
-          'The grok.com & API posting named React with Next.js and Tailwind, and the London posting called its CSS round "HTML/CSS/Tailwind". Prepare the same layouts in plain CSS first, then once with Tailwind utilities, and confirm the stack with whoever runs your process; the careers page says technical team members, not recruiters, evaluate applications.',
+          'The grok.com & API posting named React with Next.js and Tailwind, and the London posting called its CSS round "HTML/CSS/Tailwind". Prepare the same layouts in plain CSS first, then once with Tailwind utilities.',
       },
     ],
   },
@@ -249,16 +182,14 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Free public practice',
     title: 'Build the underlying skills with free practice',
     intro:
-      'These public pages cover the React, CSS, streaming, design and communication skills used by the practice prompts. They are supporting drills, not claimed xAI questions.',
+      'Free tasks for the rounds the postings and the London account describe: a typed React app, a layout rebuilt from a picture, a chat reply that arrives in parts, and the exceptional-work story. None of them is a reported xAI question.',
     items: [
       { label: 'React fetch and render a list', description: 'Loading, error and empty states around a typed response.', path: '/react/coding/react-fetch-list-states' },
       { label: 'Grid card gallery', description: 'A two-to-four column gallery built from a layout brief.', path: '/css/coding/css-grid-card-gallery' },
       { label: 'Flexbox responsive navbar', description: 'The second screenshot drill: a navigation bar that reflows.', path: '/css/coding/css-flexbox-navbar' },
-      { label: 'useMemo vs useCallback', description: 'When memoising makes a component slower.', path: '/react/trivia/react-usememo-vs-usecallback' },
-      { label: 'useRef vs useState', description: 'Why changing a ref does not re-render.', path: '/react/trivia/react-useref-vs-usestate' },
       { label: 'Streaming data from an AI model', description: 'Concept answer on handling streamed responses.', path: '/javascript/trivia/ai-streaming-data-handling' },
       { label: 'Conversation state in a chat app', description: 'How to keep chat state truthful across turns.', path: '/javascript/trivia/chat-conversation-state-management' },
-      { label: 'AI chat composer and streaming turn', description: 'System design case for Send, Stop and stale stream events.', path: '/system-design/ai-chat-textarea-design' },
+      { label: 'AI chat composer and streaming turn', description: 'Send that turns into Stop, and what to do with stream events that arrive after it.', path: '/system-design/ai-chat-textarea-design' },
       { label: 'Behavioural stories', description: 'Prepare the exceptional-work story the application and the team stage ask for.', path: '/guides/behavioral/stories' },
     ],
   },
@@ -271,21 +202,21 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: XAI_LONDON_REPORT_LABEL,
         url: XAI_LONDON_REPORT_URL,
         note:
-          'One self-reported loop on Taro: a 15-minute phone interview, then a one-hour pair-coding session building a chat interface in React with live code review and React questions such as what useCallback does. It establishes the round this guide is modelled on; it cannot establish wording, the current format or the loops of other teams.',
+          'One self-reported Frontend Engineer loop from London, no offer: a 15-minute phone interview, then a one-hour pair-coding session building a chat interface in React, with an engineer from the team reviewing the code live and asking React questions. No HTML/CSS round is mentioned, so the loop may have ended after the React round.',
         kind: 'report',
       },
       {
         label: XAI_SPECIALIST_REPORT_LABEL,
         url: XAI_SPECIALIST_REPORT_URL,
         note:
-          'One self-reported loop: a CodeSignal assessment, then two interviews on JavaScript and React including "What is useRef and how is it used?", and an offer followed by silence from HR. The title looks like a separate track from the product frontend teams, and the city Taro shows for it is not trusted, so none is given here.',
+          'One self-reported loop on a "Software Engineer Specialist" title: a CodeSignal assessment, then two interviews on JavaScript and React, then an offer followed by silence from HR. The title looks like a separate track from the product frontend teams, so its loop stays out of the table, and the city Taro shows for it is not trusted.',
         kind: 'report',
       },
       {
         label: XAI_MTS_REPORT_LABEL,
         url: XAI_MTS_REPORT_URL,
         note:
-          'One general software-engineer loop, not a frontend posting, rejected after four weeks. Its public summary: a short recruiter screen, a four-hour AI-assisted take-home and a one-hour in-person final reading an unfamiliar class. The full account, now behind a member wall, adds a choice of six prompts, provided API keys, a GitHub repository and a Loom video within 24 hours. Used only for the take-home question.',
+          'One Member of Technical Staff (L3) loop in the United States, rejected after four weeks: a 15-minute recruiter chat, a four-hour take-home with AI coding assistants allowed and a one-hour in-person coding round. A general software-engineer loop, not a frontend posting.',
         kind: 'report',
       },
       {
@@ -327,7 +258,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         label: 'xAI careers (SpaceXSI)',
         url: XAI_CAREERS_URL,
         note:
-          'Checked on 21 October 2026. Four generic steps (application review of the CV and a statement of exceptional work, a screening interview with short technical questions, technical interviews, offer) and "We generally do not use recruiters for assessments." Product context and the generic shape only; the job board that day listed no frontend posting with interview text.',
+          'Checked on 21 October 2026: four generic steps (application review of the CV and a statement of exceptional work, a screening interview with short technical questions, technical interviews, offer) and "We generally do not use recruiters for assessments." That day the job board listed no frontend posting with interview text.',
         kind: 'official',
       },
       {
@@ -348,7 +279,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     kicker: 'Full company practice',
     title: 'Continue with the full xAI practice set',
     copy:
-      'Premium unlocks the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
+      'Premium opens the other reported xAI questions with their practice tasks, the chat UI with a streaming response and the rest of the Premium React and system design catalogue.',
     buttonLabel: 'Unlock the full xAI practice set',
     src: 'company_preview_xai',
   },
@@ -356,7 +287,7 @@ export const XAI_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     'xAI frontend interview preparation',
     'React chat interface pair coding',
     'HTML and CSS implementation from a screenshot',
-    'AI chat composer and streaming turn design',
+    'xAI take-home and coding rounds',
   ],
   indexAnchorLabel: 'xAI frontend interview questions',
 };
