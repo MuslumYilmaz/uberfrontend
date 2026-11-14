@@ -368,6 +368,9 @@ describe('CompanyInterviewProcessComponent', () => {
       expect(['/guides/interview-blueprint/quiz', '/guides/framework-prep/react-prep-path', '/javascript/trivia/js-event-loop',
         '/system-design/ai-chat-textarea-design', '/javascript/coding/js-debounce'].map((path) => component.tryNowKind(path)))
         .toEqual(['a free quiz', 'a free guide to read', 'a free concept question', 'a free system design walkthrough', 'a free task']);
+      expect(['/guides/interview-blueprint/quiz', '/guides/framework-prep/react-prep-path', '/javascript/trivia/js-event-loop',
+        '/system-design/ai-chat-textarea-design', '/javascript/coding/js-debounce'].map((path) => component.tryNowAction(path)))
+        .toEqual(['Take the free quiz', 'Read the free guide', 'Open the free question', 'Open the free walkthrough', 'Start the free task']);
     });
   });
 });

@@ -16,195 +16,212 @@
     }
     @if (progressLine(); as line) {
       <p class="cq__progress" data-testid="company-question-progress">{{ line }}</p>
+      <span class="cq__progress-bar" aria-hidden="true"><span [style.width.%]="progressPercent()"></span></span>
     }
   </div>
 
-  <ol class="cq__rows">
+  <!-- Locked rows sit together in one frame, a line each; an open row is a card of its own. -->
+  <ol class="cq__rows" [class.cq__rows--footed]="hiddenCount() > 0">
     @for (row of rows(); track row.question.id) {
       <li class="cq-row" [attr.id]="rowId(row)" [class.cq-row--open]="row.summary.open" [class.cq-row--locked]="rowLocked(row)"
           [class.cq-row--extra]="extra(row)" [class.cq-row--hidden]="extra(row) && !expanded() && !rowUnlocked(row)" data-testid="company-question-row">
-        <div class="cq-row__meta">
-          <span class="cq-row__number">{{ row.number }}</span>
-          <span class="cq-row__round">{{ roundLabel(row) }}</span>
-          <span class="cq-row__dot" aria-hidden="true">·</span>
-          <span class="cq-row__kind">{{ row.question.kind }}</span>
-          @if (isNew(row)) {
-            <span class="cq__new" data-testid="company-question-new">New</span>
-          }
-          @if (row.summary.open && locking()) {
-            <span class="cq-row__open-tag">Open</span>
-          } @else if (rowUnlocked(row)) {
-            <span class="cq-row__open-tag" data-testid="company-question-unlocked">Opened with your free unlock</span>
-          } @else if (rowLocked(row)) {
-            <span class="cq-row__premium-tag">Premium</span>
-          }
-          @if (rowSolved(row)) {
-            <span class="cq-row__solved-tag" data-testid="company-question-solved" aria-label="Practice task solved">✓ Solved</span>
-          }
-        </div>
-
-        @if (rowLocked(row)) {
-          <!-- The topic is open; the question stays in the page for search under the lock, and the button names the row. -->
-          <h3 class="cq-row__title cq-row__topic" data-testid="company-question-topic">{{ row.question.topic }}</h3>
-          <button type="button" class="cq-row__locked" [attr.aria-expanded]="choosing() === row.question.id"
-                  [attr.aria-label]="'Question ' + row.number + ', ' + row.question.topic + ', ' + roundLabel(row) + ': Premium. Show how to open it.'"
-                  (click)="toggleChoice(row)">
-            <span class="cq-row__question company-locked premium-locked" data-nosnippet aria-hidden="true">{{ row.question.question }}</span>
-          </button>
-        } @else {
-          <!-- An open row reads as what the candidates reported; a practice version follows it as its answer guide. -->
-          <h3 class="cq-row__title">{{ row.question.topic }}</h3>
-          <p class="cq-row__statement" data-testid="company-question-reported">{{ row.question.question }}</p>
-          @if (row.question.promptNotShared) {
-            <p class="cq-row__note">The accounts describe the task but do not share its prompt.</p>
-          }
-        }
-
-        <p class="cq-row__who">{{ row.who }} · {{ row.frequency }}</p>
-        @if (rowLocked(row)) {
-          <p class="cq-row__contents" data-testid="company-question-contents">{{ lockedContents(row) }}</p>
-        }
-
-        @if (rowLocked(row) && choosing() === row.question.id) {
-          <div class="cq-choice" data-testid="company-question-choice">
-            @if (viewer() === 'guest') {
-              <p class="cq-choice__line">
-                This question is Premium.
-                @if (offersFreeUnlock(row)) {
-                  You can still open this one free with an account: one per account, across all company guides, and it
-                  cannot be moved later.
-                }
-              </p>
-              <span class="cq-choice__actions">
-                @if (offersFreeUnlock(row)) {
-                  <a faButton variant="primary" size="sm" routerLink="/auth/signup" [queryParams]="signupParams()" (click)="choose(row, 'free_unlock')">Open this one free with an account</a>
-                }
-                <a faButton variant="neutral" size="sm" routerLink="/pricing" [queryParams]="pricingParams()" (click)="choose(row, 'premium')">Unlock all {{ lockedCount() }} with Premium</a>
-              </span>
+        <span class="cq-row__number">{{ row.number }}</span>
+        <div class="cq-row__body">
+          <div class="cq-row__head">
+            @if (rowLocked(row)) {
+              <h3 class="cq-row__title cq-row__topic" data-testid="company-question-topic">{{ row.question.topic }}</h3>
             } @else {
-              <p class="cq-choice__line">
-                This question is Premium.
-                @if (offersFreeUnlock(row)) {
-                  Use your one free unlock here? It cannot be moved later.
-                } @else if (freeUnlock()) {
-                  Your free unlock is already used{{ usedElsewhere() ? ' in the ' + usedElsewhere() + ' guide' : ' on this guide' }}.
-                }
-              </p>
-              <span class="cq-choice__actions">
-                @if (offersFreeUnlock(row)) {
-                  <button type="button" faButton variant="primary" size="sm" [disabled]="stateOf(row) === 'pending'" (click)="choose(row, 'free_unlock')">
-                    {{ stateOf(row) === 'pending' ? 'Opening…' : 'Use my free unlock here' }}
-                  </button>
-                }
-                <a faButton variant="neutral" size="sm" routerLink="/pricing" [queryParams]="pricingParams()" (click)="choose(row, 'premium')">Unlock all {{ lockedCount() }} with Premium</a>
-              </span>
-              @if (stateOf(row) === 'error') {
-                <p class="cq-choice__note" role="alert" data-testid="company-question-unlock-error">The question could not be opened. Try again in a moment.</p>
+              <h3 class="cq-row__title">{{ row.question.topic }}</h3>
+            }
+            <span class="cq-row__tags">
+              @if (row.summary.open && locking()) {
+                <span class="cq-row__open-tag">Open</span>
+              } @else if (rowUnlocked(row)) {
+                <span class="cq-row__open-tag" data-testid="company-question-unlocked">Opened with your free unlock</span>
+              } @else if (rowLocked(row)) {
+                <span class="cq-row__premium-tag">Premium</span>
               }
-            }
-            @if (features().premiumPull && !row.summary.unlockable) {
-              <p class="cq-choice__note">It has no practice task or answer guide yet, so the free unlock does not apply to it.</p>
-            }
+              @if (rowSolved(row)) {
+                <span class="cq-row__solved-tag" data-testid="company-question-solved" aria-label="Practice task solved">✓ Solved</span>
+              }
+            </span>
           </div>
-        }
 
-        @if (row.guide; as guide) {
-          @if (row.summary.open) {
-            <div class="cq-guide">
-              <div class="cq-guide__part">
-                <h4 data-testid="company-question-guide-title">Answer guide: {{ guide.title }}</h4>
-                <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
-              </div>
-              <!-- A guide may give only a statement and a rubric (OpenAI's); the parts it lacks are left out. -->
-              @if (guide.whatThisMeasures) {
-                <div class="cq-guide__part">
-                  <h4>What this measures</h4>
-                  <p><fa-inline-code [text]="guide.whatThisMeasures"></fa-inline-code></p>
-                </div>
+          @if (rowLocked(row)) {
+            <!-- The topic is open; the question stays in the page for search as one blurred line, and the button names the row. -->
+            <button type="button" class="cq-row__locked" [attr.aria-expanded]="choosing() === row.question.id"
+                    [attr.aria-label]="'Question ' + row.number + ', ' + row.question.topic + ', ' + roundLabel(row) + ': Premium. Show how to open it.'"
+                    (click)="toggleChoice(row)">
+              <span class="cq-row__question company-locked premium-locked" data-nosnippet aria-hidden="true">{{ row.question.question }}</span>
+            </button>
+          } @else {
+            <!-- An open row reads as what the candidates reported; a practice version follows it as its answer guide. -->
+            <p class="cq-row__statement" data-testid="company-question-reported">{{ row.question.question }}</p>
+            @if (row.question.promptNotShared) {
+              <p class="cq-row__note">The accounts describe the task but do not share its prompt.</p>
+            }
+          }
+
+          <p class="cq-row__meta">
+            <span class="cq-row__chip cq-row__round">{{ roundLabel(row) }}</span>
+            <span class="cq-row__chip cq-row__kind">{{ row.question.kind }}</span>
+            @if (isNew(row)) {
+              <span class="cq__new" data-testid="company-question-new">New</span>
+            }
+            <span class="cq-row__who">{{ row.who }} · {{ row.frequency }}</span>
+          </p>
+          @if (rowLocked(row)) {
+            <p class="cq-row__contents" data-testid="company-question-contents">{{ lockedContents(row) }}</p>
+          }
+
+          @if (rowLocked(row) && choosing() === row.question.id) {
+            <div class="cq-choice" data-testid="company-question-choice">
+              @if (viewer() === 'guest') {
+                <p class="cq-choice__line">
+                  This question is Premium.
+                  @if (offersFreeUnlock(row)) {
+                    You can still open this one free with an account: one per account, across all company guides, and it
+                    cannot be moved later.
+                  }
+                </p>
+                <span class="cq-choice__actions">
+                  @if (offersFreeUnlock(row)) {
+                    <a faButton variant="primary" size="sm" routerLink="/auth/signup" [queryParams]="signupParams()" (click)="choose(row, 'free_unlock')">Open this one free with an account</a>
+                  }
+                  <a faButton variant="neutral" size="sm" routerLink="/pricing" [queryParams]="pricingParams()" (click)="choose(row, 'premium')">Unlock all {{ lockedCount() }} with Premium</a>
+                </span>
+              } @else {
+                <p class="cq-choice__line">
+                  This question is Premium.
+                  @if (offersFreeUnlock(row)) {
+                    Use your one free unlock here? It cannot be moved later.
+                  } @else if (freeUnlock()) {
+                    Your free unlock is already used{{ usedElsewhere() ? ' in the ' + usedElsewhere() + ' guide' : ' on this guide' }}.
+                  }
+                </p>
+                <span class="cq-choice__actions">
+                  @if (offersFreeUnlock(row)) {
+                    <button type="button" faButton variant="primary" size="sm" [disabled]="stateOf(row) === 'pending'" (click)="choose(row, 'free_unlock')">
+                      {{ stateOf(row) === 'pending' ? 'Opening…' : 'Use my free unlock here' }}
+                    </button>
+                  }
+                  <a faButton variant="neutral" size="sm" routerLink="/pricing" [queryParams]="pricingParams()" (click)="choose(row, 'premium')">Unlock all {{ lockedCount() }} with Premium</a>
+                </span>
+                @if (stateOf(row) === 'error') {
+                  <p class="cq-choice__note" role="alert" data-testid="company-question-unlock-error">The question could not be opened. Try again in a moment.</p>
+                }
               }
-              @if (guide.clarifyFirst.length) {
+              @if (features().premiumPull && !row.summary.unlockable) {
+                <p class="cq-choice__note">It has no practice task or answer guide yet, so the free unlock does not apply to it.</p>
+              }
+            </div>
+          }
+
+          @if (row.guide; as guide) {
+            @if (row.summary.open) {
+              <div class="cq-guide">
                 <div class="cq-guide__part">
+                  <h4 data-testid="company-question-guide-title">Answer guide: {{ guide.title }}</h4>
+                  <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
+                </div>
+                <!-- A guide may give only a statement and a rubric (OpenAI's); the parts it lacks are left out. -->
+                @if (guide.whatThisMeasures || guide.clarifyFirst.length) {
+                  <div class="cq-guide__boxes">
+                    @if (guide.whatThisMeasures) {
+                      <div class="cq-guide__box">
+                        <h4>What this measures</h4>
+                        <p><fa-inline-code [text]="guide.whatThisMeasures"></fa-inline-code></p>
+                      </div>
+                    }
+                    @if (guide.clarifyFirst.length) {
+                      <div class="cq-guide__box">
+                        <h4>Clarify first</h4>
+                        <ul>
+                          @for (item of guide.clarifyFirst; track $index) {
+                            <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                  </div>
+                }
+                <div class="cq-guide__outline" [class.cq-guide__box]="!outlineLocked()" [class.cq-guide__outline--locked]="outlineLocked()">
+                  @if (outlineLocked()) {
+                    <div class="cq-guide__gate" data-testid="company-question-outline-gate">
+                      <p><strong>Strong answer outline</strong> · opens with a free account</p>
+                      <span class="cq-guide__gate-actions">
+                        <a faButton variant="neutral" size="sm" routerLink="/auth/signup" [queryParams]="signupParams()">Create a free account</a>
+                        <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
+                      </span>
+                    </div>
+                  } @else {
+                    <h4>Strong answer should cover</h4>
+                  }
+                  <!-- Locked, the outline stays in the page for search as one blurred line. -->
+                  <div class="cq-guide__outline-text" [class.company-locked]="outlineLocked()" [class.premium-locked]="outlineLocked()" [attr.data-nosnippet]="outlineLocked() ? '' : null"
+                       [attr.aria-hidden]="outlineLocked() || null" [attr.inert]="outlineLocked() ? '' : null">
+                    <ul>
+                      @for (item of guide.strongAnswer; track $index) {
+                        <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                      }
+                    </ul>
+                    @if (guide.commonMiss) {
+                      <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
+                    }
+                  </div>
+                </div>
+              </div>
+            } @else if (rowLocked(row)) {
+              <!-- A locked row's answer guide stays in the page for search, out of view: the row shows one blurred line already. -->
+              <div class="cq-guide cq-guide--locked company-locked premium-locked" data-nosnippet aria-hidden="true" inert>
+                <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
+                <ul>
+                  @for (item of guide.strongAnswer; track $index) {
+                    <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                  }
+                </ul>
+              </div>
+            } @else {
+              <details class="cq-guide cq-guide--details">
+                <summary>Answer guide: {{ guide.title }}</summary>
+                <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
+                @if (guide.clarifyFirst.length) {
                   <h4>Clarify first</h4>
                   <ul>
                     @for (item of guide.clarifyFirst; track $index) {
                       <li><fa-inline-code [text]="item"></fa-inline-code></li>
                     }
                   </ul>
-                </div>
-              }
-              <div class="cq-guide__part cq-guide__outline" [class.cq-guide__outline--locked]="outlineLocked()">
+                }
                 <h4>Strong answer should cover</h4>
-                <div [class.company-locked]="outlineLocked()" [class.premium-locked]="outlineLocked()" [attr.data-nosnippet]="outlineLocked() ? '' : null"
-                     [attr.aria-hidden]="outlineLocked() || null" [attr.inert]="outlineLocked() ? '' : null">
-                  <ul>
-                    @for (item of guide.strongAnswer; track $index) {
-                      <li><fa-inline-code [text]="item"></fa-inline-code></li>
-                    }
-                  </ul>
-                  @if (guide.commonMiss) {
-                    <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
-                  }
-                </div>
-                @if (outlineLocked()) {
-                  <p class="cq-guide__gate" data-testid="company-question-outline-gate">
-                    The answer outline opens with a free account.
-                    <a routerLink="/auth/signup" [queryParams]="signupParams()">Create a free account</a>
-                    <span class="cq__sep" aria-hidden="true"> · </span>
-                    <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
-                  </p>
-                }
-              </div>
-            </div>
-          } @else if (rowLocked(row)) {
-            <!-- A locked row's answer guide stays in the page for search, cut short under the blur. -->
-            <div class="cq-guide cq-guide--locked company-locked premium-locked" data-nosnippet aria-hidden="true" inert>
-              <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
-              <ul>
-                @for (item of guide.strongAnswer; track $index) {
-                  <li><fa-inline-code [text]="item"></fa-inline-code></li>
-                }
-              </ul>
-            </div>
-          } @else {
-            <details class="cq-guide cq-guide--details">
-              <summary>Answer guide: {{ guide.title }}</summary>
-              <p><fa-inline-code [text]="guide.statement"></fa-inline-code></p>
-              @if (guide.clarifyFirst.length) {
-                <h4>Clarify first</h4>
                 <ul>
-                  @for (item of guide.clarifyFirst; track $index) {
+                  @for (item of guide.strongAnswer; track $index) {
                     <li><fa-inline-code [text]="item"></fa-inline-code></li>
                   }
                 </ul>
-              }
-              <h4>Strong answer should cover</h4>
-              <ul>
-                @for (item of guide.strongAnswer; track $index) {
-                  <li><fa-inline-code [text]="item"></fa-inline-code></li>
+                @if (guide.commonMiss) {
+                  <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
                 }
-              </ul>
-              @if (guide.commonMiss) {
-                <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
-              }
-            </details>
+              </details>
+            }
           }
-        }
 
-        @if (row.question.practice; as practice) {
-          @if (!rowLocked(row)) {
-            <p class="cq-row__practice">
-              Practice:
-              @if (practiceLocked(practice.path)) {
-                <a [routerLink]="practice.path" [state]="returnState()"><span class="company-locked premium-locked" data-nosnippet>{{ practice.label }}</span></a>
-              } @else {
-                <a [routerLink]="practice.path" [state]="returnState()">{{ practice.label }}</a>
-              }
-              @if (practicePremium(practice.path) && !rowUnlocked(row)) {
-                <span class="cq-row__premium-tag">Premium task</span>
-              }
-            </p>
+          @if (row.question.practice; as practice) {
+            @if (!rowLocked(row)) {
+              <p class="cq-row__practice">
+                Practice:
+                @if (practiceLocked(practice.path)) {
+                  <a [routerLink]="practice.path" [state]="returnState()"><span class="company-locked premium-locked" data-nosnippet>{{ practice.label }}</span></a>
+                } @else {
+                  <a [routerLink]="practice.path" [state]="returnState()">{{ practice.label }}</a>
+                }
+                @if (practicePremium(practice.path) && !rowUnlocked(row)) {
+                  <span class="cq-row__premium-tag">Premium task</span>
+                }
+              </p>
+            }
           }
-        }
+        </div>
       </li>
     }
   </ol>
@@ -217,18 +234,35 @@
 
   @if (showOffer() && offer(); as deal) {
     <aside class="cq-offer" data-testid="company-question-offer">
-      <div class="cq-offer__text">
-        <p class="cq-offer__title">Unlock all {{ lockedCount() }} {{ companyLabel() }} questions</p>
-        <p>Premium opens each question with its practice task and answer guide where it has one, and every Premium task on FrontendAtlas.</p>
-        <p class="cq-offer__price"><strong>{{ deal.price }} covers the month of your {{ companyLabel() }} interview.</strong></p>
-        <p class="cq-offer__terms">
-          <a routerLink="/legal/refund">First purchase: full refund within 14 days</a> · cancel anytime · {{ deal.priceNote }}
-        </p>
+      <!-- Real screens of a Premium task. Silent, it plays only while in view; with reduced motion or Save-Data it waits for play. -->
+      <figure class="cq-offer__trailer" data-testid="company-question-trailer">
+        <video #trailer class="cq-offer__video" muted loop playsinline preload="none" [attr.poster]="trailerNear() ? trailerPoster : null"
+               [attr.controls]="trailerManual() ? '' : null" aria-label="A 20-second preview of Premium: a task in the editor, its checks, and Pressure Mode">
+          <source [attr.src]="trailerSource" type="video/mp4">
+        </video>
+        <figcaption class="cq-offer__steps">
+          <p class="cq-offer__trailer-title">20-second preview of Premium</p>
+          <ol>
+            @for (step of trailerSteps; track $index) {
+              <li [class.cq-offer__step--active]="trailerStep() === $index">{{ step.text }}</li>
+            }
+          </ol>
+        </figcaption>
+      </figure>
+      <div class="cq-offer__body">
+        <div class="cq-offer__text">
+          <p class="cq-offer__title">Unlock all {{ lockedCount() }} {{ companyLabel() }} questions</p>
+          <p>Premium opens each question with its practice task and answer guide where it has one, and every Premium task on FrontendAtlas.</p>
+          <p class="cq-offer__price"><strong>{{ deal.price }} covers the month of your {{ companyLabel() }} interview.</strong></p>
+          <p class="cq-offer__terms">
+            <a routerLink="/legal/refund">First purchase: full refund within 14 days</a> · cancel anytime · {{ deal.priceNote }}
+          </p>
+        </div>
+        <span class="cq-offer__actions">
+          <a faButton variant="primary" routerLink="/pricing" [queryParams]="pricingParams()">See Premium <span aria-hidden="true">→</span></a>
+          <a faButton variant="neutral" class="cq-offer__secondary" routerLink="/companies" [queryParams]="{ company: slug() }">Build my {{ companyLabel() }} plan first</a>
+        </span>
       </div>
-      <span class="cq-offer__actions">
-        <a faButton variant="primary" routerLink="/pricing" [queryParams]="pricingParams()">See Premium <span aria-hidden="true">→</span></a>
-        <a class="cq-offer__secondary" routerLink="/companies" [queryParams]="{ company: slug() }">Build my {{ companyLabel() }} plan first</a>
-      </span>
     </aside>
   }
 
