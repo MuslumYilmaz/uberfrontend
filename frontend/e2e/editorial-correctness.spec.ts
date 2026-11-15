@@ -99,6 +99,14 @@ const publicCopyCases = [
     expected: 'What CrowdStrike frontend loops reward: a take-home you can defend and precise web fundamentals',
   },
   {
+    path: '/companies/disney/preview',
+    expected: 'Prepare to defend code you wrote and to review code you did not',
+  },
+  {
+    path: '/companies/cloudflare/preview',
+    expected: 'What the Cloudflare loops reward: speed in React and TypeScript, and the web explained in order',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

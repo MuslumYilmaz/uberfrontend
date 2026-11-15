@@ -17,6 +17,8 @@ const CHECKED_OCT_21 = '2026-10-21';
 const CHECKED_OCT_22 = '2026-10-22';
 const CHECKED_OCT_23 = '2026-10-23';
 const CHECKED_OCT_26 = '2026-10-26';
+const CHECKED_NOV_11 = '2026-11-11';
+const CHECKED_NOV_14 = '2026-11-14';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -456,6 +458,45 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'Internships and new graduate roles: up to three rounds of interviews, plus a technical assessment for technical positions, with a recruiter reaching out about the position and process when an application fits.',
       checkedAt: CHECKED_OCT_26,
+    },
+  ],
+  disney: [
+    {
+      label: 'Candidate Resources',
+      url: 'https://join.disneycareers.com/global/en/candidate-resources',
+      covers:
+        'Four steps: apply, a screen in which a recruiter may reach out, interviews with the hiring team, and selection. It links an interview checklist and says hiring teams use behavioral interviews and suggests answering them with the STAR method; nothing on engineering or coding rounds.',
+      checkedAt: CHECKED_NOV_11,
+    },
+    {
+      label: 'AI Usage Guidelines',
+      url: 'https://join.disneycareers.com/global/en/ai-usage',
+      covers:
+        'AI is welcome for research, résumé help and interview practice, but not for completing assessments such as coding exercises unless you are told otherwise, for answers generated in real time, for note-taking or recording tools, or for deepfake and voice-cloning tools.',
+      checkedAt: CHECKED_NOV_11,
+    },
+    {
+      label: 'Top 5 Tips for Your Interview with Disney',
+      url: 'https://sites.disney.com/lifeatdisney/career-opportunities/2026/07/16/top-5-tips-for-your-interview-with-disney/',
+      covers:
+        "General advice from Disney recruiters: know why you want the role, confirm with your recruiter what the interview will cover, structure answers with STAR, be yourself, and follow up afterwards; no stages and no engineering content.",
+      checkedAt: CHECKED_NOV_14,
+    },
+  ],
+  cloudflare: [
+    {
+      label: 'Careers: Our Hiring Process',
+      url: 'https://www.cloudflare.com/careers/',
+      covers:
+        'Five steps: a conversation with a recruiter, team panel interviews with your prospective manager and peers, executive calls with senior leadership that include the Orange Cloud Interview on the behaviors Cloudflare values, an offer and orientation. The page lists those behaviors; nothing on coding rounds.',
+      checkedAt: CHECKED_NOV_14,
+    },
+    {
+      label: 'Announcing the 1,111 intern hiring goal',
+      url: 'https://blog.cloudflare.com/cloudflare-1111-intern-program/',
+      covers:
+        'The 2026 internship push: applications reviewed in batches, an interview process of three to four weeks, and a fast-track review for Software Engineering applicants who build an AI-powered application on Cloudflare and submit it with their application.',
+      checkedAt: CHECKED_NOV_14,
     },
   ],
 };

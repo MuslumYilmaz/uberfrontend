@@ -213,7 +213,8 @@
         "companies": [
             "elevenlabs",
             "stripe",
-          "gitlab"
+          "gitlab",
+          "cloudflare"
         ],
         "sources": [
             {
@@ -239,6 +240,14 @@
             "publisher": "Taro",
             "date": "2024-03",
             "note": "The merge request in this account was a small Vue app with an API call; the candidate cached the data in the component and cut unnecessary API calls. This debug drill practises stopping duplicate requests, not the reported app."
+          },
+          {
+            "label": "Taro: Cloudflare frontend engineer interview, Portugal, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/cloudflare/experiences/frontend-engineer-lisbon-lisbon-district-may-1-2025-no-offer-positive-fffe2762/",
+            "company": "cloudflare",
+            "publisher": "Taro",
+            "date": "2025-05",
+            "note": "Besides a TypeScript task, the technical stages included tasks on debugging and solving small problems, which the account does not name. This exercise practises debugging; it is not one of the reported tasks."
           }
         ]
     },

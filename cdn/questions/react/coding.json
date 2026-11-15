@@ -11983,7 +11983,9 @@
     "solutionAsset": "assets/sb/react/solution/react-debug-api-misuse-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-debug-api-misuse.v1.json",
     "companies": [
-      "walmart"
+      "walmart",
+      "disney",
+      "cloudflare"
     ],
     "sources": [
       {
@@ -12001,6 +12003,22 @@
         "publisher": "Blind",
         "date": "2023-10",
         "note": "A Walmart-badged reply describes the loop it went through: code with React, a debug session, system design and a hiring manager talk. The debug session is the round this item practises."
+      },
+      {
+        "label": "Blind: Disney Streaming front end interview, 2022",
+        "url": "https://www.teamblind.com/post/disney-front-end-interview-xps3iweg",
+        "company": "disney",
+        "publisher": "Blind",
+        "date": "2022-02",
+        "note": "The first round of a Disney Streaming front end loop had no coding: the candidate read code, answered scope questions and did a mock pull request review. This exercise practises reading broken React code; it is not the reviewed code."
+      },
+      {
+        "label": "Taro: Cloudflare frontend engineer interview, Portugal, 2025",
+        "url": "https://www.jointaro.com/interviews/companies/cloudflare/experiences/frontend-engineer-lisbon-lisbon-district-may-1-2025-no-offer-positive-fffe2762/",
+        "company": "cloudflare",
+        "publisher": "Taro",
+        "date": "2025-05",
+        "note": "After an HR interview, the technical stages included typing a JSON object in TypeScript and debugging an issue in a React app. This exercise practises React debugging; it is not the reported bug."
       }
     ],
     "premiumPreview": {

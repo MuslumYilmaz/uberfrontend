@@ -2545,6 +2545,387 @@ const AIRBNB_AB19_SCREEN_2019: InterviewProcessSource = {
 // An Airbnb-badged commenter describing the technical experience interview, hedged in the comment itself; no role.
 const AIRBNB_AB20_COMMENT_2024 = report('Blind comment', 'https://www.teamblind.com/post/airbnb-coding-interviews-yf2ppofe', '2024-03');
 
+// Disney: research and sources in docs/references/disney-questions-and-process-2026-11.md. The accounts come from many
+// teams and years, and each keeps the unit it names. Taro pages are reviews re-hosted on Taro, re-read on 2026-11-12; a
+// date on the first of a month is a Taro placeholder, so its label says approx. The Blind and PracHub pages were re-read on
+// 2026-11-14 (research_notes/disney-2026-11/raw/community/), the careers pages on 2026-11-11 and the Life at Disney pages on
+// 2026-11-14. Disney+ Hotstar accounts are out of scope.
+const DISNEY_CANDIDATE_RESOURCES = official('Disney Careers candidate resources', 'https://join.disneycareers.com/global/en/candidate-resources');
+const DISNEY_AI_USAGE = official('Disney Careers AI usage guidelines', 'https://join.disneycareers.com/global/en/ai-usage');
+const DISNEY_INTERVIEW_TIPS = official(
+  'Life at Disney interview tips',
+  'https://sites.disney.com/lifeatdisney/career-opportunities/2026/07/16/top-5-tips-for-your-interview-with-disney/',
+);
+const DISNEY_RECRUITER_PODCAST = official(
+  'Life at Disney podcast: recruiter tips',
+  'https://sites.disney.com/lifeatdisney/podcast/how-to-get-a-job-at-disney-recruiter-tips-resumes-interviews-applications-1-s3e11/',
+);
+const DISNEY_TARO = 'https://www.jointaro.com/interviews/companies/disney/experiences';
+// The research record judges Taro's place for this account wrong, so the entry gives the role and no country.
+const DISNEY_D1_FE_2025: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/software-engineer-ii-frontend-bergen-op-zoom-may-1-2025-no-offer-positive-1707e185/`, '2025-05'),
+  role: 'Software engineer II (frontend)',
+};
+const DISNEY_D2_WEB_2024 = report('Taro', `${DISNEY_TARO}/web-developer-united-states-july-3-2024-no-offer-neutral-a832781e/`, '2024-07');
+const DISNEY_D3_WEB_2023 = report('Taro', `${DISNEY_TARO}/web-developer-united-states-november-29-2023-no-offer-neutral-a807064c/`, '2023-11');
+const DISNEY_D4_WEB_2023: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/web-developer-orlando-fl-march-1-2023-no-offer-negative-97a08d01/`, '2023-03'),
+  role: 'Web developer',
+  location: 'United States',
+};
+const DISNEY_D6_JUNIOR_FE_2022: InterviewProcessSource = {
+  ...report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/junior-front-end-developer-manchester-england-august-1-2022-no-offer-positive-f7f14c02/`,
+  '2022-08',
+),
+  role: 'Junior front-end developer',
+  location: 'United Kingdom',
+};
+const DISNEY_D7_FULLSTACK_2021 = report('Taro', `${DISNEY_TARO}/full-stack-web-developer-united-states-june-16-2021-no-offer-negative-5fbbceee/`, '2021-06');
+const DISNEY_D8_WEB_2021 = report('Taro (approx.)', `${DISNEY_TARO}/web-developer-united-states-may-1-2021-accepted-offer-positive-b23fee74/`, '2021-05');
+const DISNEY_D9_INTERN_2020 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/web-developer-intern-united-states-november-1-2020-no-offer-positive-5973c513/`,
+  '2020-11',
+);
+const DISNEY_D10_FE_2020 = report(
+  'Taro',
+  `${DISNEY_TARO}/front-end-developer-united-states-september-23-2020-declined-offer-positive-69229f70/`,
+  '2020-09',
+);
+// Taro's title for this account, Front End Development, ends in no job word, so the entry gives the role.
+const DISNEY_D11_FE_2019: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/front-end-development-united-states-june-1-2019-no-offer-positive-e744090e/`, '2019-06'),
+  role: 'Front-end development role',
+};
+const DISNEY_D12_WEB_2017: InterviewProcessSource = {
+  ...report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/web-developer-lake-buena-vista-fl-october-1-2017-no-offer-negative-442e2a59/`,
+  '2017-10',
+),
+  role: 'Web developer',
+  location: 'United States',
+};
+const DISNEY_D13_SENIOR_WEB_2017 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/senior-web-developer-los-angeles-ca-january-1-2017-declined-offer-neutral-1e878fa9/`,
+  '2017-01',
+);
+const DISNEY_D15_WEB_2016: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/web-developer-glendale-ca-february-1-2016-accepted-offer-positive-a847dd65/`, '2016-02'),
+  role: 'Web developer',
+  location: 'United States',
+};
+// Roles the accounts state beyond Taro's titles: an internship applied for through ESPN's intern site, a contract role
+// working on a frontend-focused role, a job that was front-end based and a full-stack SDE position.
+const DISNEY_D16_ESPN_INTERN_2015: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/web-developer-atlanta-ga-march-1-2015-no-offer-neutral-02c66945/`, '2015-03'),
+  role: 'Web developer intern (ESPN)',
+  location: 'United States',
+};
+const DISNEY_D20_CONTRACT_2024: InterviewProcessSource = {
+  ...report('Taro', `${DISNEY_TARO}/software-engineer-glendale-ca-september-27-2024-no-offer-positive-a4213d93/`, '2024-09'),
+  role: 'Software engineer (frontend-focused contract role)',
+  location: 'United States',
+};
+const DISNEY_D26_ASSOCIATE_2021: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/associate-software-engineer-united-states-may-1-2021-no-offer-positive-9249e5cd/`, '2021-05'),
+  role: 'Associate software engineer (front-end)',
+};
+const DISNEY_D29_FULLSTACK_2019: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/software-engineer-canada-september-1-2019-no-offer-negative-3505625b/`, '2019-09'),
+  role: 'Software engineer (full-stack)',
+};
+const DISNEY_D21_SWE_2023 = report('Taro', `${DISNEY_TARO}/software-engineer-new-york-ny-august-18-2023-accepted-offer-neutral-1e34dfa8/`, '2023-08');
+const DISNEY_D22_SWE_2024 = report('Taro (approx.)', `${DISNEY_TARO}/software-engineer-san-jose-ca-june-1-2024-no-offer-neutral-46dc4646/`, '2024-06');
+const DISNEY_D23_DEV_2024: InterviewProcessSource = {
+  ...report('Taro', `${DISNEY_TARO}/software-developer-glendale-ca-july-4-2024-declined-offer-neutral-be5fa80f/`, '2024-07'),
+  role: 'Software developer',
+  location: 'United States',
+};
+const DISNEY_D25_DEV_2022 = report('Taro', `${DISNEY_TARO}/software-developer-united-states-august-6-2022-no-offer-positive-d12b6833/`, '2022-08');
+const DISNEY_D27_SENIOR_2021 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/senior-software-engineer-united-states-march-1-2021-no-offer-negative-b8051efd/`,
+  '2021-03',
+);
+// Taro holds this account twice (also at the slug ending fc4fd6e4); it is cited once.
+const DISNEY_D28_FULLSTACK_2020 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/full-stack-software-engineer-new-york-ny-january-1-2020-accepted-offer-positive-fa484c44/`,
+  '2020-01',
+);
+const DISNEY_D30_SWE_2019 = report('Taro', `${DISNEY_TARO}/software-engineer-united-states-may-9-2019-declined-offer-negative-7790ffe3/`, '2019-05');
+const DISNEY_D31_INTERN_2019 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/software-development-intern-new-york-ny-march-1-2019-accepted-offer-positive-2fe9a0ec/`,
+  '2019-03',
+);
+const DISNEY_D32_SWE_2021 = report(
+  'Taro (approx.)',
+  `${DISNEY_TARO}/software-engineer-united-states-january-1-2021-accepted-offer-positive-530366fd/`,
+  '2021-01',
+);
+const DISNEY_D33_SWE_2020: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${DISNEY_TARO}/software-engineer-zurich-december-1-2020-no-offer-negative-f6cf2bea/`, '2020-12'),
+  role: 'Software engineer',
+  location: 'Switzerland',
+};
+const DISNEY_D34_INTERN_2020 = report(
+  'Taro',
+  `${DISNEY_TARO}/software-engineering-intern-united-states-july-15-2020-accepted-offer-positive-cb05d517/`,
+  '2020-07',
+);
+const DISNEY_D35_SENIOR_2025: InterviewProcessSource = {
+  ...report(
+  'Taro',
+  `${DISNEY_TARO}/senior-software-engineer-beijing-beijing-september-22-2025-accepted-offer-positive-1c2a0a75/`,
+  '2025-09',
+),
+  role: 'Senior software engineer',
+  location: 'China',
+};
+// Blind and PracHub accounts. Roles, places and outcomes are what each post or comment gives; a commenter's account is
+// cited by its thread's URL.
+const DISNEY_DC1_STREAMING_2022: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/disney-front-end-interview-xps3iweg', '2022-02'),
+  role: 'Front-end engineer (Disney Streaming Services)',
+};
+// The JPMorgan Chase-badged comment of 2022-02-12 in the same thread, on the commenter's own loop; it states no role.
+const DISNEY_DC1_COMMENT_2022 = report('Blind comment', 'https://www.teamblind.com/post/disney-front-end-interview-xps3iweg', '2022-02');
+// Two comments in one thread: an Oracle-badged commenter who interviewed for a front-end role (2022-01-31), and a
+// Disney Streaming Services intern (2022-01-20) whose declined offer came after the internship, not from the intern loop.
+const DISNEY_DC4_FE_COMMENT_2022: InterviewProcessSource = {
+  ...report('Blind comment', 'https://www.teamblind.com/post/disney-streaming-services-fe-interview-what-to-expect-aycfis6w', '2022-01'),
+  role: 'Front-end engineer',
+};
+const DISNEY_DC4_INTERN_COMMENT_2022: InterviewProcessSource = {
+  ...report('Blind comment', 'https://www.teamblind.com/post/disney-streaming-services-fe-interview-what-to-expect-aycfis6w', '2022-01'),
+  role: 'Intern (Disney Streaming Services)',
+};
+// The Visa-badged comment of 2025-04-02 on a SWE II candidate's thread, on the commenter's own loop; it states no role.
+const DISNEY_DC6_COMMENT_2025: InterviewProcessSource = {
+  ...report('Blind comment', 'https://www.teamblind.com/post/disney-streaming-front-end-interview-advice-ivnyirmr', '2025-04'),
+  outcome: 'no offer',
+};
+// A backend loop, kept for one React question. The poster only guesses that no offer will come, so no outcome is given.
+const DISNEY_DC5_BACKEND_2022: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/disney-streaming-interview-rant-3f6kmz3l', '2022-03'),
+  role: 'Backend engineer (Disney Streaming)',
+};
+// PracHub marks this story as curated and edited, and its outcome as in progress.
+const DISNEY_DC8_LEAD_2025: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/disney-seniorplus-lead-software-engineer-interview-experience-four-part-onsite-with-a-code-review-and-whiteboard-system-design',
+    '2025-11',
+  ),
+  role: 'Lead software engineer (frontend)',
+  location: 'United States',
+  outcome: 'in progress',
+};
+// Read 2026-11-11; the poster states no role. A commenter wrote on 2025-02-06 that they had recently been given the same question.
+const DISNEY_DC21_PHONE_2021 = report('LeetCode', 'https://leetcode.com/discuss/post/1340579/', '2021-07');
+
+// Cloudflare: research and sources in docs/references/cloudflare-questions-and-process-2026-11.md. Taro pages and the
+// LeetCode posts were saved in full on 2026-11-11 (neither is re-read now). The four PracHub accounts and three Blind
+// threads were re-read on 2026-11-14, the careers page and the 2026 internship post were read again the same day, and
+// the other Blind threads and the Cloudflare TV episode were saved on 2026-11-11. Roles, places and outcomes are what
+// each account gives.
+const CLOUDFLARE_CAREERS = official('Cloudflare careers page', 'https://www.cloudflare.com/careers/');
+const CLOUDFLARE_INTERNS_2026 = official('Cloudflare blog: a goal of 1,111 interns in 2026', 'https://blog.cloudflare.com/cloudflare-1111-intern-program/');
+// A Cloudflare recruiting leader in 2025 on the C-level interview that each hire has.
+const CLOUDFLARE_TV_RECRUITING = official(
+  'Cloudflare TV: Growth, culture & AI in recruitment',
+  'https://cloudflare.tv/this-week-in-net/cloudflare-growth-culture-ai-in-recruitment-and-11-years-of-project-galileo/YgQYE4gd',
+);
+// Dated by the post, December 2025; its frontend-heavy loop began with the hiring manager round in October.
+const CLOUDFLARE_C1_FE_HEAVY_2025: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/7396827/', '2025-12'),
+  role: 'Software engineer (full-stack, frontend-heavy)',
+  location: 'India',
+  outcome: 'no offer',
+};
+const CLOUDFLARE_C11_MID_2025: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/6796944/', '2025-05'),
+  role: 'Software engineer (mid-level)',
+  outcome: 'no offer',
+};
+const CLOUDFLARE_C12_2024: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/6396271/', '2024-07'),
+  role: 'Software engineer',
+  location: 'United States',
+};
+// "SSE" in the post's title; the poster declined the offer before the last, C-suite round.
+const CLOUDFLARE_C49_SENIOR_2026: InterviewProcessSource = {
+  ...report('LeetCode', 'https://leetcode.com/discuss/post/7901539/', '2026-03'),
+  role: 'Senior software engineer',
+  location: 'India',
+  outcome: 'declined offer',
+};
+// A commenter's own hiring manager round in August 2025, under a backend candidate's question; no role.
+const CLOUDFLARE_CC4_2025 = report('LeetCode comment', 'https://leetcode.com/discuss/post/5225585/', '2025-08');
+// A commenter's own loop "last month" in a July 2020 comment; it went well, and no offer is named.
+const CLOUDFLARE_CC5_SENIOR_2020: InterviewProcessSource = {
+  ...report('LeetCode comment', 'https://leetcode.com/discuss/post/530068/', '2020-06'),
+  role: 'Senior software engineer',
+  location: 'United Kingdom',
+};
+// The PracHub pages say "Curated and edited by PracHub", so their labels say so. Their dates are the months the pages
+// give as the interview or report month, not the later publication dates.
+const CLOUDFLARE_C2_2025: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/cloudflare-software-engineer-interview-experience-two-month-wait-then-advanced-to-technical-the-same-night',
+    '2025-12',
+  ),
+  role: 'Software engineer',
+  outcome: 'in progress',
+};
+const CLOUDFLARE_C3_FE_2026: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/cloudflare-frontend-engineer-interview-with-a-repeated-system-design-round-31294ef427',
+    '2026-02',
+  ),
+  role: 'Frontend engineer',
+  location: 'United States',
+  outcome: 'no offer',
+};
+const CLOUDFLARE_C4_2026: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/cloudflare-software-engineer-interview-with-battleship-coding-and-austin-office-tour-3f1fddb771',
+    '2026-04',
+  ),
+  role: 'Software engineer',
+  location: 'United States',
+  outcome: 'no offer',
+};
+// The page lists no response and the poster only guesses at a rejection, so no outcome is given.
+const CLOUDFLARE_C5_2025: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/cloudflare-software-engineer-interview-experience-hm-chat-hr-screen-then-a-key-value-store-round-where-ai-wrote-my-crypto',
+    '2025-10',
+  ),
+  role: 'Software engineer',
+};
+// Blind: the poster's own loop, or a commenter's where the label says so. C6 and C48 are one poster's two loops in
+// 2024; C6 gives no role.
+const CLOUDFLARE_C6_2024 = report('Blind', 'https://www.teamblind.com/post/cloudflare-interview-process-length-2ottvzxe', '2024-07');
+const CLOUDFLARE_C48_2024: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/cloudflare-interview-process-xnnc7duk', '2024-02'),
+  role: 'Software engineer',
+  location: 'United States',
+};
+const CLOUDFLARE_C8_2024: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/cloudflare-software-engineer-interview-hmydfd4e', '2024-08'),
+  role: 'Software engineer, CDE (remote)',
+};
+// A JPMorgan Chase-badged commenter in the C8 thread on their own assessment; the poster asked whether it was a front-end
+// position and got no answer, so no role. The commenter was later rejected.
+const CLOUDFLARE_CC3_2024: InterviewProcessSource = {
+  ...report('Blind comment', 'https://www.teamblind.com/post/cloudflare-software-engineer-interview-hmydfd4e', '2024-08'),
+  outcome: 'no offer',
+};
+// The poster's own coding round; the post gives no role or outcome.
+const CLOUDFLARE_C36_2026 = report('Blind', 'https://www.teamblind.com/post/avoid-cloudflare-interview-e1j46oqt', '2026-01');
+// A tech screen; commenters place the question with the R2 team, and a Cloudflare-badged reply calls it Super Stack.
+const CLOUDFLARE_C37_2025 = report('Blind', 'https://www.teamblind.com/post/cloudflare-interview-7gj1iyd5', '2025-01');
+const CLOUDFLARE_C39_2024 = report('Blind', 'https://www.teamblind.com/post/cloudflare-orange-cloud-interview-gjwkkfzo', '2024-02');
+const CLOUDFLARE_C40_2025 = report('Blind', 'https://www.teamblind.com/post/cloudflare-phone-interview-gatdfnwe', '2025-06');
+const CLOUDFLARE_C47_2024: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/cloudflare-interview-bsl8qu7o', '2024-04'),
+  role: 'Software engineer',
+};
+// An Amazon-badged commenter in the C47 thread on their own technical screen "a month ago"; no role.
+const CLOUDFLARE_CC31_2024 = report('Blind comment', 'https://www.teamblind.com/post/cloudflare-interview-bsl8qu7o', '2024-03');
+// A Trend Micro-badged commenter under a senior engineer's question, asked the problem "a couple weeks ago"; no role.
+const CLOUDFLARE_CC24_2025 = report('Blind comment', 'https://www.teamblind.com/post/cloudflare-interview-q4u8znyc', '2025-04');
+// Taro pages; "Taro (approx.)" marks a placeholder date on the first of the month. CF22 and CF23 give their role because
+// their titles do not end in a job word, and CF35 because its title would read "Soc engineer".
+const CLOUDFLARE_TARO = 'https://www.jointaro.com/interviews/companies/cloudflare/experiences';
+const CLOUDFLARE_CF1_FE_2025 = report(
+  'Taro (approx.)',
+  `${CLOUDFLARE_TARO}/frontend-engineer-lisbon-lisbon-district-may-1-2025-no-offer-positive-fffe2762/`,
+  '2025-05',
+);
+const CLOUDFLARE_CF2_FE_2025 = report('Taro', `${CLOUDFLARE_TARO}/frontend-developer-united-kingdom-march-12-2025-no-offer-negative-9c2d2a74/`, '2025-03');
+const CLOUDFLARE_CF3_FE_2024 = report('Taro', `${CLOUDFLARE_TARO}/frontend-engineer-united-states-april-9-2024-no-offer-negative-6b44551c/`, '2024-04');
+const CLOUDFLARE_CF6_FE_2022 = report('Taro', `${CLOUDFLARE_TARO}/front-end-developer-united-states-august-3-2022-no-offer-positive-12fe2643/`, '2022-08');
+const CLOUDFLARE_CF7_FE_2021: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${CLOUDFLARE_TARO}/front-end-engineer-austin-tx-august-1-2021-no-offer-negative-324a30f0/`, '2021-08'),
+  role: 'Front-end engineer',
+  location: 'United States',
+};
+const CLOUDFLARE_CF12_2025 = report('Taro', `${CLOUDFLARE_TARO}/software-engineer-united-states-july-12-2025-no-offer-negative-e1643845/`, '2025-07');
+const CLOUDFLARE_CF13_2024 = report('Taro (approx.)', `${CLOUDFLARE_TARO}/software-engineer-germany-december-1-2024-no-offer-positive-968f1ec1/`, '2024-12');
+const CLOUDFLARE_CF14_2024 = report('Taro', `${CLOUDFLARE_TARO}/software-engineer-portugal-september-18-2024-no-offer-positive-3c9cb577/`, '2024-09');
+const CLOUDFLARE_CF16_2023 = report(
+  'Taro (approx.)',
+  `${CLOUDFLARE_TARO}/software-engineer-san-francisco-ca-october-1-2023-no-offer-negative-7047176e/`,
+  '2023-10',
+);
+const CLOUDFLARE_CF17_INTERN_2023 = report(
+  'Taro',
+  `${CLOUDFLARE_TARO}/software-engineer-intern-united-states-june-17-2023-no-offer-positive-9cc48b20/`,
+  '2023-06',
+);
+const CLOUDFLARE_CF18_2022 = report('Taro', `${CLOUDFLARE_TARO}/software-engineer-united-states-june-16-2022-no-offer-negative-c12d5ae5/`, '2022-06');
+const CLOUDFLARE_CF19_2021 = report(
+  'Taro',
+  `${CLOUDFLARE_TARO}/software-engineer-united-states-november-11-2021-accepted-offer-positive-323fdcc4/`,
+  '2021-11',
+);
+const CLOUDFLARE_CF21_INTERN_2021 = report(
+  'Taro (approx.)',
+  `${CLOUDFLARE_TARO}/software-engineer-intern-united-states-september-1-2021-no-offer-negative-f630480e/`,
+  '2021-09',
+);
+const CLOUDFLARE_CF22_INTERN_2020: InterviewProcessSource = {
+  ...report('Taro', `${CLOUDFLARE_TARO}/software-engineering-united-states-october-29-2020-no-offer-neutral-ac54f85f/`, '2020-10'),
+  role: 'Software engineering intern',
+};
+const CLOUDFLARE_CF23_NEW_GRAD_2020: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${CLOUDFLARE_TARO}/software-engineer-new-grad-united-states-september-1-2020-no-offer-negative-2c2a1ca1/`, '2020-09'),
+  role: 'Software engineer (new grad)',
+};
+const CLOUDFLARE_CF24_2024 = report('Taro (approx.)', `${CLOUDFLARE_TARO}/software-engineer-united-states-august-1-2024-no-offer-positive-d606677a/`, '2024-08');
+const CLOUDFLARE_CF25_2024 = report(
+  'Taro (approx.)',
+  `${CLOUDFLARE_TARO}/software-development-engineer-united-states-november-1-2024-no-offer-negative-bddb091b/`,
+  '2024-11',
+);
+const CLOUDFLARE_CF26_2024: InterviewProcessSource = {
+  ...report(
+  'Taro (approx.)',
+  `${CLOUDFLARE_TARO}/software-engineer-colorado-springs-co-august-1-2024-no-offer-negative-a6b85523/`,
+  '2024-08',
+),
+  role: 'Software engineer',
+  location: 'United States',
+};
+const CLOUDFLARE_CF27_2025 = report('Taro (approx.)', `${CLOUDFLARE_TARO}/software-engineer-bengaluru-september-1-2025-no-offer-negative-48b89a11/`, '2025-09');
+const CLOUDFLARE_CF28_2025: InterviewProcessSource = {
+  ...report('Taro (approx.)', `${CLOUDFLARE_TARO}/software-engineer-kansas-city-mo-january-1-2025-no-offer-positive-6937e242/`, '2025-01'),
+  role: 'Software engineer',
+  location: 'United States',
+};
+const CLOUDFLARE_CF30_GRAD_2025 = report(
+  'Taro',
+  `${CLOUDFLARE_TARO}/graduate-software-engineer-united-kingdom-may-29-2025-no-offer-neutral-7e169c8f/`,
+  '2025-05',
+);
+const CLOUDFLARE_CF31_INTERN_2023 = report('Taro', `${CLOUDFLARE_TARO}/sde-intern-united-states-october-17-2023-no-offer-positive-692a535e/`, '2023-10');
+const CLOUDFLARE_CF35_SOC_2024: InterviewProcessSource = {
+  ...report('Taro', `${CLOUDFLARE_TARO}/soc-engineer-united-states-february-7-2024-no-offer-neutral-26abb23e/`, '2024-02'),
+  role: 'SOC engineer',
+};
+const CLOUDFLARE_CF39_2025 = report('Taro', `${CLOUDFLARE_TARO}/software-engineer-new-york-new-york-october-27-2025-no-offer-positive-cb009227/`, '2025-10');
+
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
     title: 'Amazon Front End Engineer interview process',
@@ -15000,6 +15381,1028 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'past-project-in-depth',
         question: 'Talk through a past project in depth; in a 2024 frontend loop, a project you led.',
         sources: [AIRBNB_AB12_FE_2024, AIRBNB_AB10_STAFF_FE_2025],
+      },
+    ],
+  },
+  disney: {
+    summary:
+      'Disney\'s careers pages describe a recruiter screen, interviews with the hiring team and a selection step, and suggest STAR answers to behavioral questions. Frontend and web accounts from 2020 to 2025 combine a recruiter call, a manager or tech lead, a live coding round or a take-home that engineers then review with the candidate, frontend system design, and a talk with a product manager or director. A 2025 lead loop had a frontend code review with a principal engineer and two whiteboard design sessions.',
+    caveat:
+      'The accounts do not describe one Disney loop: a Disney Streaming Services employee wrote on Blind in 2022 that there is no standard interview process and each team decides how it interviews. Most accounts are from 2022 or earlier, only one account describes the lead loop, and none of the algorithm questions comes from a frontend-titled account.',
+    checkedAt: '2026-11-14',
+    variants: [
+      {
+        title: 'Frontend and web engineers, 2020 to 2025',
+        note: 'Frontend, web and full-stack titles, plus general software titles whose loops held frontend work. Teams mixed these stages in their own ways, and most accounts that give a place are in the United States.',
+        stages: [
+          {
+            stage: 'Recruiter screen',
+            format:
+              'A phone or video call in which a recruiter asks about your background, skills and recent projects. The Life at Disney podcast page on recruiter tips describes the recruiter screen as typically a virtual conversation; in a 2024 web developer loop it was a basic behavioral screen on culture fit.',
+            appliesTo: 'Most candidates',
+            sources: [
+              DISNEY_CANDIDATE_RESOURCES,
+              DISNEY_RECRUITER_PODCAST,
+              DISNEY_D2_WEB_2024,
+              DISNEY_D8_WEB_2021,
+              DISNEY_D20_CONTRACT_2024,
+              DISNEY_D25_DEV_2022,
+              DISNEY_D26_ASSOCIATE_2021,
+              DISNEY_D27_SENIOR_2021,
+              DISNEY_D28_FULLSTACK_2020,
+            ],
+          },
+          {
+            stage: 'Hiring manager or tech lead',
+            format:
+              'The step after the recruiter in several loops: the hiring manager, a tech lead or a director. One 45-minute first round in 2024 was mostly the hiring manager introducing the business and the team, with some technical questions; in a 2021 loop the hiring manager explained the role and the steps ahead. A 2024 web developer\'s call asked about the technologies they would use in the position, with no coding.',
+            appliesTo: 'Several loops',
+            sources: [DISNEY_D7_FULLSTACK_2021, DISNEY_D20_CONTRACT_2024, DISNEY_D22_SWE_2024, DISNEY_D27_SENIOR_2021, DISNEY_D2_WEB_2024],
+          },
+          {
+            stage: 'Technical interview or take-home',
+            format:
+              'Reports describe a live technical interview, a coding challenge on a website or a take-home build. Live rounds reported: about an hour of coding, once with a senior engineer building a React feature in five steps; an on-screen JavaScript test in a 45-minute call with three people; two easy coding questions in a mostly behavioral 2022 interview; a 45-minute phone screen ending in 15 minutes of coding; an hour of frontend building in a 2020 onsite; and, for a 2023 web developer, a shared-screen test that asked for a new plugin after questions on the tech stack. In the 2025 React round Google was allowed and AI tools were not; Disney\'s AI guidelines rule out AI in coding exercises unless candidates are told otherwise.',
+            appliesTo: 'Most candidates',
+            sources: [
+              DISNEY_D1_FE_2025,
+              DISNEY_D10_FE_2020,
+              DISNEY_D23_DEV_2024,
+              DISNEY_DC4_FE_COMMENT_2022,
+              DISNEY_D28_FULLSTACK_2020,
+              DISNEY_D25_DEV_2022,
+              DISNEY_D26_ASSOCIATE_2021,
+              DISNEY_D7_FULLSTACK_2021,
+              DISNEY_D20_CONTRACT_2024,
+              DISNEY_D21_SWE_2023,
+              DISNEY_DC6_COMMENT_2025,
+              DISNEY_AI_USAGE, DISNEY_D4_WEB_2023],
+            practice: { label: "Fetch and render a list with loading, error and empty states", path: '/react/coding/react-fetch-list-states' },
+          },
+          {
+            stage: 'Code review',
+            format:
+              'In these reports engineers go over the candidate\'s take-home with them, by video or in person. Two senior engineers reviewed one in 2021; in 2024 two engineers went over it on Zoom, then set a LeetCode medium problem; a 2021 associate loop ended with three interviews, each with two interviewers, that covered the candidate\'s technical choices. In a 2022 Disney Streaming Services loop the first round was a code-reading session with no coding at all, and a 2021 panel followed its code review with algorithm and data structure questions, without coding.',
+            appliesTo: 'Take-home candidates; one 2022 first round',
+            sources: [
+              DISNEY_D7_FULLSTACK_2021,
+              DISNEY_D20_CONTRACT_2024,
+              DISNEY_D21_SWE_2023,
+              DISNEY_D26_ASSOCIATE_2021,
+              DISNEY_D32_SWE_2021,
+              DISNEY_DC1_STREAMING_2022,
+            ],
+            practice: { label: "Fix the async race in a teammate's fetch helper", path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Frontend system design',
+            format:
+              'A design discussion with engineers, at a whiteboard or by video. The first hour of a 2020 onsite was system design on a whiteboard, a 2023 in-person interview included system design exercises, and in 2024 a principal engineer ran it over Zoom. A 2025 candidate had one system design question in an interview that also covered React and behavioral questions. In a 2019 onsite each of five rounds mixed coding, system design, behavioral questions and diagnosing a production problem.',
+            appliesTo: 'Many loops',
+            sources: [DISNEY_D28_FULLSTACK_2020, DISNEY_D21_SWE_2023, DISNEY_D20_CONTRACT_2024, DISNEY_DC6_COMMENT_2025, DISNEY_D30_SWE_2019],
+            practice: { label: "Frontend system design blueprint", path: '/guides/system-design-blueprint' },
+          },
+          {
+            stage: 'PM, director and behavioral',
+            format:
+              'Conversations with a product manager, a director or another manager, largely behavioral. Reported: a 2024 Zoom meeting with a PM on behavioral questions, lunch with the prospective team director and PM in a 2020 onsite, a long 2021 day with the product manager, two senior engineers and the hiring manager, and final talks with a director or a manager from another team in 2021. Disney\'s candidate pages say hiring teams use behavioral interviews and suggest answers in the STAR format.',
+            appliesTo: 'Candidates in the final rounds',
+            sources: [
+              DISNEY_CANDIDATE_RESOURCES,
+              DISNEY_INTERVIEW_TIPS,
+              DISNEY_D20_CONTRACT_2024,
+              DISNEY_D28_FULLSTACK_2020,
+              DISNEY_D27_SENIOR_2021,
+              DISNEY_D8_WEB_2021,
+              DISNEY_D7_FULLSTACK_2021,
+            ],
+            practice: { label: "Behavioural questions and story drill", path: '/companies/disney/preview', fragment: 'disney-round-behavioural', drill: true },
+          },
+          {
+            stage: 'Result',
+            format:
+              'Disney\'s candidate page lists selection as the last step, after the interviews. One 2021 candidate heard within two weeks; a 2022 candidate learned two weeks after a coding challenge that the position had been cancelled; a 2025 candidate found communication vague and slow. A 2021 associate who was turned down was encouraged to reapply, and Disney\'s recruiters advise treating a no as a "not yet".',
+            appliesTo: 'All candidates',
+            sources: [
+              DISNEY_CANDIDATE_RESOURCES,
+              DISNEY_RECRUITER_PODCAST,
+              DISNEY_D8_WEB_2021,
+              DISNEY_D25_DEV_2022,
+              DISNEY_DC6_COMMENT_2025,
+              DISNEY_D26_ASSOCIATE_2021,
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Lead frontend engineer, Seattle, 2025',
+        note: 'One account of a lead software engineer (frontend) loop from November 2025. It does not describe the first round.',
+        stages: [
+          {
+            stage: 'Senior TPM conversation',
+            format: 'A half-hour chat with a Senior TPM, the first of the second round\'s four parts.',
+            appliesTo: 'Lead candidates, one account',
+            sources: [DISNEY_DC8_LEAD_2025],
+            practice: { label: "Behavioural questions and story drill", path: '/companies/disney/preview', fragment: 'disney-round-behavioural', drill: true },
+          },
+          {
+            stage: 'Code review with a principal engineer',
+            format: 'The second part: a code review with a Principal Engineer, on frontend code.',
+            appliesTo: 'Lead candidates, one account',
+            sources: [DISNEY_DC8_LEAD_2025],
+            practice: { label: "Fix the async race in a teammate's fetch helper", path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Frontend design at the whiteboard',
+            format:
+              'The third and fourth parts: two frontend-focused system design sessions, drawn on a whiteboard. The account says the last two interviews were in person at the Seattle office.',
+            appliesTo: 'Lead candidates, one account',
+            sources: [DISNEY_DC8_LEAD_2025],
+            practice: { label: "Frontend system design blueprint", path: '/guides/system-design-blueprint' },
+          },
+          {
+            stage: 'Hiring manager follow-up',
+            format: 'A further conversation that the hiring manager asked for by email a few days after the round.',
+            appliesTo: 'Lead candidates, one account',
+            sources: [DISNEY_DC8_LEAD_2025],
+          },
+        ],
+      },
+      {
+        title: 'Interns, 2019 to 2022',
+        note: 'Four intern accounts, one of them from a Disney Streaming Services intern.',
+        stages: [
+          {
+            stage: 'Recruiter and technical interviews',
+            format:
+              'A recruiter call of about 30 minutes on behavioral questions and your résumé, then interviews with developers. A Disney Streaming Services intern described technical questions alongside many behavioral and culture-fit questions; another intern interview, held virtually, had no coding.',
+            appliesTo: 'Interns',
+            sources: [DISNEY_D9_INTERN_2020, DISNEY_D34_INTERN_2020, DISNEY_D31_INTERN_2019, DISNEY_DC4_INTERN_COMMENT_2022],
+            practice: { label: "Frontend fundamentals quiz", path: '/guides/interview-blueprint/quiz' },
+          },
+          {
+            stage: 'Take-home challenge',
+            format: 'A coding challenge to complete at home, sent after the first video call. One intern said it took less than ten hours.',
+            appliesTo: 'One intern account',
+            sources: [DISNEY_D34_INTERN_2020],
+          },
+        ],
+      },
+    ],
+    // Left out for their sources: the remote-control details of a living-room take-home, known only from candidates'
+    // public code repositories (the streaming-app row keeps one account's own words), and a 2016 two-hour build known only
+    // from such a repository; a 2025 movie list with sort and search, a 2025 review of a simple React app and a 2025 LRU
+    // cache question, known only from a forum this registry does not cite and from prep-site pages; a principal
+    // full-stack account's React internals and partly built coding task, read only on a prep site's own page; and the
+    // STAR advice on Disney's own pages, which no account backs. The same forum was also dropped from two behavioural
+    // rows. Left out by content: redirecting bad traffic, the backend hour of a 2020 onsite, a concurrency deadlock, an
+    // intern interview's SQL questions and a 2021 panel's C/C++ questions. Left out for want of a subject: two easy coding
+    // questions, a one-hour coding interview, a LeetCode medium after a take-home review, a system design question and the
+    // take-homes no account describes. Rows from other roles' loops count under the stage whose format matches their
+    // account. Behavioural questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'scoreboard-banner-react',
+        round: 'Technical interview or take-home',
+        kind: 'React build',
+        topic: 'Scoreboard banner from an API',
+        question:
+          'Build a scoreboard banner for the top of the website in React, working from the company\'s API, in five steps within an hour. Google searches were allowed and AI tools were not; the candidate finished two of the five steps.',
+        sources: [DISNEY_D1_FE_2025],
+        practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+        answerGuide: 'scoreboard-banner-from-api',
+      },
+      {
+        id: 'streaming-app-from-mockup',
+        round: 'Technical interview or take-home',
+        kind: 'UI build',
+        topic: 'Streaming app from a visual mockup',
+        question: 'The coding challenge for a front-end job: create a streaming app based on a provided visual mockup.',
+        sources: [DISNEY_D26_ASSOCIATE_2021],
+        practice: { label: 'Design components and state from a mock', path: '/system-design/ui-component-state-from-mock' },
+      },
+      {
+        id: 'react-app-changes-take-home',
+        round: 'Technical interview or take-home',
+        kind: 'React build',
+        topic: 'Changes to an existing React app',
+        question: 'A take-home assignment to implement changes to a React app, then an in-person interview that talks through the changes.',
+        promptNotShared: true,
+        sources: [DISNEY_D21_SWE_2023],
+        answerGuide: 'change-existing-react-app',
+      },
+      {
+        id: 'shown-ui-with-api',
+        round: 'Technical interview or take-home',
+        kind: 'UI build',
+        topic: 'Shown UI wired to an API',
+        question: 'In the frontend-focused hour of a four-hour onsite, build the UI you are shown, then add event listeners that integrate the provided API.',
+        sources: [DISNEY_D28_FULLSTACK_2020],
+        practice: { label: 'Design components and state from a mock', path: '/system-design/ui-component-state-from-mock' },
+      },
+      {
+        id: 'take-home-tests-by-level',
+        round: 'Technical interview or take-home',
+        kind: 'Practical coding',
+        topic: 'Take-home with tests for every level',
+        question:
+          'A take-home coding project with test cases for all levels, where senior candidates had certain specs to meet. The review that followed asked mostly about those specs, though the candidate was not applying for a senior role.',
+        promptNotShared: true,
+        sources: [DISNEY_D7_FULLSTACK_2021],
+        answerGuide: 'take-home-every-level',
+      },
+      {
+        id: 'arrays-rest-api-json',
+        round: 'Technical interview or take-home',
+        kind: 'Practical coding',
+        topic: 'Arrays, a REST API and JSON',
+        question: 'Two problems on arrays, a REST API and JSON, set as an online coding challenge.',
+        promptNotShared: true,
+        sources: [DISNEY_D25_DEV_2022],
+      },
+      {
+        id: 'promise-bfs-linked-list-rounds',
+        round: 'Technical interview or take-home',
+        kind: 'Algorithm',
+        topic: 'Hand-written Promise, BFS and linked lists',
+        question:
+          'A virtual onsite of four rounds with an algorithm in each: breadth-first search of a binary tree, hand-writing a Promise and flipping a linked list every two nodes, beside algorithm and practical questions the account does not detail and an unclear item about regrets from production.',
+        sources: [DISNEY_D35_SENIOR_2025],
+        practice: { label: 'Create a deferred promise', path: '/javascript/coding/js-create-deferred-promise' },
+      },
+      {
+        id: 'longest-running-jobs-logs',
+        round: 'Technical interview or take-home',
+        kind: 'Algorithm',
+        topic: 'Longest-running jobs from log lines',
+        question:
+          'A HackerRank question in a phone interview: from log lines that record jobs starting and ending, print the name and time of the K distinct jobs with the longest-running instances. A commenter who had recently been given it wrote in February 2025 that "the job name has to be unique" in the answer and that starts and ends come in mixed order, not all paired.',
+        sources: [DISNEY_DC21_PHONE_2021],
+      },
+      {
+        id: 'code-reading-mock-pr-review',
+        round: 'Code review',
+        kind: 'Practical coding',
+        topic: 'Code reading and mock PR review',
+        question: 'With no coding at all, go over given code and say what is going on, answering trick questions about scope, then do a mock pull request review.',
+        sources: [DISNEY_DC1_STREAMING_2022],
+        practice: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
+      },
+      {
+        id: 'take-home-review-trade-offs',
+        round: 'Code review',
+        kind: 'Practical coding',
+        topic: 'Defending your take-home choices',
+        question:
+          'Go over your own take-home with the reviewers: why you made each decision and what it traded off. In a 2024 loop the candidate also made one revision live on the call.',
+        sources: [DISNEY_D20_CONTRACT_2024, DISNEY_D32_SWE_2021, DISNEY_D26_ASSOCIATE_2021, DISNEY_D21_SWE_2023],
+        answerGuide: 'defend-take-home-choices',
+      },
+      {
+        id: 'react-component-state',
+        round: 'Hiring manager or tech lead',
+        kind: 'React concepts',
+        topic: 'Managing React component state',
+        question: 'How do you manage React component state?',
+        sources: [DISNEY_D22_SWE_2024],
+        practice: { label: 'When a React app needs Redux', path: '/react/trivia/react-state-management-redux' },
+      },
+      {
+        id: 'ui-components-web-api',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'UI components and their web API',
+        question:
+          'At a whiteboard, identify the UI components and the web API they need, with endpoints, sample requests and responses and HTTP methods, then say how you would integrate them.',
+        sources: [DISNEY_D28_FULLSTACK_2020],
+        practice: { label: 'Design components and state from a mock', path: '/system-design/ui-component-state-from-mock' },
+      },
+      {
+        id: 'pet-adoption-app-design',
+        round: 'Frontend system design',
+        kind: 'Frontend system design',
+        topic: 'Pet adoption app, front to back',
+        question: 'Walk through the design of a pet adoption mobile app from the front end to the back end, in the engineering team manager\'s session.',
+        sources: [DISNEY_D29_FULLSTACK_2019],
+      },
+      {
+        id: 'react-dom-internals',
+        round: 'PM, director and behavioral',
+        kind: 'React concepts',
+        topic: 'How React DOM works underneath',
+        question:
+          'How does React DOM actually work at a lower level, and how is it designed? A backend candidate got this in an onsite round that was supposed to be behavioral.',
+        sources: [DISNEY_DC5_BACKEND_2022],
+      },
+      {
+        id: 'junior-code-review-mentoring',
+        round: 'Code review with a principal engineer',
+        kind: 'Practical coding',
+        topic: 'Mentoring through a frontend code review',
+        question:
+          'Read some badly written frontend code and suggest changes, then say what you would do to help the junior who might have written it, and answer questions about your mentoring experience.',
+        sources: [DISNEY_DC8_LEAD_2025],
+        practice: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
+      },
+      {
+        id: 'shopping-cart-design',
+        round: 'Frontend design at the whiteboard',
+        kind: 'Frontend system design',
+        topic: 'Shopping cart design',
+        question: 'Design a shopping cart, with the focus on the front end.',
+        sources: [DISNEY_DC8_LEAD_2025],
+        practice: { label: 'Design a resilient checkout and payment flow', path: '/system-design/resilient-checkout-payment-flow' },
+      },
+      {
+        id: 'feature-flag-design',
+        round: 'Frontend design at the whiteboard',
+        kind: 'Frontend system design',
+        topic: 'Feature flag design',
+        question: 'Design feature flags, again with the focus on the front end.',
+        sources: [DISNEY_DC8_LEAD_2025],
+        answerGuide: 'frontend-feature-flags',
+      },
+      {
+        id: 'intern-web-protocols-react',
+        round: 'Recruiter and technical interviews',
+        kind: 'Web fundamentals',
+        topic: 'Web protocols and React',
+        question: 'A few questions on your familiarity with web protocols and React, with no coding, in a virtual intern interview.',
+        promptNotShared: true,
+        sources: [DISNEY_D31_INTERN_2019],
+      },
+      {
+        id: 'intern-hashmaps-tech-stack',
+        round: 'Recruiter and technical interviews',
+        kind: 'Algorithm',
+        topic: 'Hashmaps and your tech stack',
+        question: 'Hashmap questions and questions on the tech stack, in an intern interview the commenter found straightforward.',
+        promptNotShared: true,
+        sources: [DISNEY_DC4_INTERN_COMMENT_2022],
+      },
+      {
+        id: 'intern-javascript-dom',
+        kind: 'Web fundamentals',
+        topic: 'The JavaScript DOM',
+        question:
+          'A question on the JavaScript DOM, which the internship would use, asked after the conversation turned to the résumé and programming languages.',
+        promptNotShared: true,
+        sources: [DISNEY_D16_ESPN_INTERN_2015],
+      },
+      {
+        id: 'video-upload-feature',
+        kind: 'Frontend system design',
+        topic: 'Video upload feature like YouTube',
+        question: 'How would you create an upload-video feature like YouTube\'s? Draw it and explain your process.',
+        sources: [DISNEY_D20_CONTRACT_2024],
+        practice: { label: 'Image upload and preview component', path: '/system-design/image-upload-preview' },
+      },
+      {
+        id: 'api-service-for-front-end',
+        kind: 'Frontend system design',
+        topic: 'API service for a front-end app',
+        question: 'How would you design an API service for a front-end application?',
+        sources: [DISNEY_D21_SWE_2023],
+        answerGuide: 'front-end-api-service-design',
+      },
+      {
+        id: 'parks-fast-pass-design',
+        kind: 'Product design',
+        topic: 'Parks fast pass system',
+        question: 'Design the fast pass system for Disney\'s parks.',
+        sources: [DISNEY_D7_FULLSTACK_2021],
+      },
+      {
+        id: 'react-hooks-lifecycle',
+        kind: 'React concepts',
+        topic: 'React hooks and lifecycle events',
+        question: 'Which React hooks handle which React lifecycle events?',
+        sources: [DISNEY_D7_FULLSTACK_2021],
+        practice: { label: 'useEffect and syncing with the outside world', path: '/react/trivia/react-useeffect-purpose' },
+      },
+      {
+        id: 'window-history',
+        kind: 'Web fundamentals',
+        topic: 'The window.history object',
+        question: 'What does window.history do?',
+        sources: [DISNEY_D7_FULLSTACK_2021],
+      },
+      {
+        id: 'why-not-mutate-state',
+        kind: 'React concepts',
+        topic: 'Why state should not be mutated',
+        question: 'Why shouldn\'t state be mutated? Asked in an interview whose questions were about React and Redux.',
+        sources: [DISNEY_D13_SENIOR_WEB_2017],
+      },
+      {
+        id: 'javascript-closures',
+        kind: 'JavaScript',
+        topic: 'Closures',
+        question: 'A question about closures, the only JavaScript question in a loop for a full-stack position.',
+        promptNotShared: true,
+        sources: [DISNEY_D29_FULLSTACK_2019],
+        practice: { label: 'Explain closures in JavaScript', path: '/javascript/trivia/js-closures' },
+      },
+      {
+        id: 'reverse-words-in-sentence',
+        kind: 'Algorithm',
+        topic: 'Reversing words in a sentence',
+        question: 'Reverse the words in a sentence.',
+        sources: [DISNEY_D29_FULLSTACK_2019],
+      },
+      {
+        id: 'fizzbuzz-or-dfs-graph',
+        kind: 'Algorithm',
+        topic: 'FizzBuzz or a DFS graph problem',
+        question:
+          'A simple FizzBuzz question, while a friend interviewing for the same position with a different interviewer got a depth-first search graph problem. The commenter said LeetCode questions tend to be easy or medium and that a streaming team would most likely ask for the code in JavaScript.',
+        sources: [DISNEY_DC1_COMMENT_2022],
+      },
+      {
+        id: 'binary-trees-and-heaps',
+        kind: 'Algorithm',
+        topic: 'Binary trees and heaps',
+        question: 'General questions about algorithms, on binary trees and heaps.',
+        promptNotShared: true,
+        sources: [DISNEY_D33_SWE_2020],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'why-disney',
+        question: 'Why do you want to work for Disney, or why are you applying to this job?',
+        sources: [DISNEY_D11_FE_2019, DISNEY_D10_FE_2020, DISNEY_D15_WEB_2016],
+      },
+      {
+        id: 'favorite-disney-character',
+        question: 'What is your favorite Disney character?',
+        sources: [DISNEY_D8_WEB_2021],
+      },
+      {
+        id: 'past-work-and-projects',
+        question: 'Walk us through your previous work, your current skills and recent projects, and what motivates you.',
+        sources: [DISNEY_D23_DEV_2024, DISNEY_D25_DEV_2022, DISNEY_D30_SWE_2019],
+      },
+      {
+        id: 'approach-to-other-projects',
+        question: 'Talk about your approach to other projects, with a focus on state management, and about the company culture.',
+        sources: [DISNEY_D26_ASSOCIATE_2021],
+      },
+      {
+        id: 'built-something-with-a-team',
+        question: 'Tell us about a time you developed something with a team.',
+        sources: [DISNEY_D26_ASSOCIATE_2021],
+      },
+      {
+        id: 'about-yourself-and-hobbies',
+        question: 'Tell me a bit about yourself and your hobbies.',
+        sources: [DISNEY_D9_INTERN_2020, DISNEY_D10_FE_2020],
+      },
+      {
+        id: 'greatest-strengths',
+        question: 'What are your greatest strengths?',
+        sources: [DISNEY_D2_WEB_2024],
+      },
+      {
+        id: 'environment-you-thrive-in',
+        question: 'What kind of environment do you thrive in?',
+        sources: [DISNEY_D3_WEB_2023],
+      },
+      {
+        id: 'handling-a-roadblock',
+        question: 'What would you do when you hit a roadblock?',
+        sources: [DISNEY_D4_WEB_2023],
+      },
+      {
+        id: 'motivation-to-code',
+        question: 'What is your motivation for learning to code?',
+        sources: [DISNEY_D6_JUNIOR_FE_2022],
+      },
+      {
+        id: 'working-and-collaboration-style',
+        question: 'What is your working style, and how do you collaborate?',
+        sources: [DISNEY_DC8_LEAD_2025],
+      },
+      {
+        id: 'stakeholder-management',
+        question: 'Tell me about your stakeholder management experience.',
+        sources: [DISNEY_DC8_LEAD_2025],
+      },
+      {
+        id: 'process-and-leadership',
+        question: 'Process questions and questions on leadership fundamentals, over a long day with a product manager, two senior engineers and the hiring manager.',
+        sources: [DISNEY_D27_SENIOR_2021],
+      },
+      {
+        id: 'roller-coaster-trains',
+        question: 'You are designing a roller coaster: would you make four trains of five carts each, or five trains of four carts each, and why?',
+        sources: [DISNEY_D12_WEB_2017],
+      },
+    ],
+  },
+  cloudflare: {
+    summary:
+      "Cloudflare's careers page lists its hiring process as conversations with a recruiter, team panel interviews with your prospective manager and peers, and executive calls that include the Orange Cloud Interview, before an offer. Frontend accounts from 2024 to 2026 mostly open with the hiring manager; one 2025 account then had a JavaScript phone screen, a one-hour React and TypeScript app round, system design and a 30-minute Orange Cloud round, and a 2026 account had PM and C-level conversations. Loops on other engineering teams add HackerRank tests, debugging and code review rounds and, in 2026, AI-assisted coding.",
+    caveat:
+      "The frontend table rests on five accounts from 2024 to 2026, and one 2024 candidate had to sign an NDA, so most question rows come from other engineering teams' loops, where Cloudflare-badged commenters on Blind say the questions vary by team. Accounts differ on AI: a 2025 frontend app round did not allow AI tools, while a 2026 software engineer loop included an AI-assisted coding challenge.",
+    checkedAt: '2026-11-14',
+    variants: [
+      {
+        title: 'Frontend engineers, 2024 to 2026',
+        note: 'Round lengths come from one 2025 account for a frontend-heavy full-stack role.',
+        stages: [
+          {
+            stage: 'Recruiter conversation',
+            format:
+              "Cloudflare's careers page lists a first conversation with a recruiter about your background, your interests and the role. One 2025 frontend account began with an HR interview before its technical stages.",
+            appliesTo: 'Per the careers page',
+            sources: [CLOUDFLARE_CAREERS, CLOUDFLARE_CF1_FE_2025],
+          },
+          {
+            stage: 'Hiring manager',
+            format:
+              'The first round in four of the five frontend accounts, with the hiring manager and, in one 2026 loop, an engineering manager too: a conversation about your background, 30 minutes long in a 2025 account.',
+            appliesTo: 'Most frontend accounts',
+            sources: [CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C3_FE_2026, CLOUDFLARE_CF2_FE_2025, CLOUDFLARE_CF3_FE_2024],
+          },
+          {
+            stage: 'JavaScript phone screen',
+            format:
+              'A 45-minute technical phone screen in JavaScript with one interviewer, after the hiring manager round, in a 2025 account; a 2024 account had a technical interview between the hiring manager call and the onsite.',
+            appliesTo: 'Candidates who pass the hiring manager round',
+            sources: [CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_CF3_FE_2024],
+            practice: { label: "Get a value by path in JavaScript", path: '/javascript/coding/js-get-by-path-1' },
+          },
+          {
+            stage: 'App coding and debugging',
+            format:
+              'One hour of coding in React and TypeScript in a 2025 account, with search and documentation allowed and AI tools not. Other accounts describe several live coding exercises (2026), a few technical stages after an HR interview (2025), and, announced to a 2025 candidate who withdrew first, an at-home assessment and a pair programming exercise.',
+            appliesTo: 'Most frontend accounts',
+            sources: [CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C3_FE_2026, CLOUDFLARE_CF1_FE_2025, CLOUDFLARE_CF2_FE_2025],
+            practice: { label: "React autocomplete in under an hour", path: '/react/coding/react-autocomplete-search-starter' },
+          },
+          {
+            stage: 'Architecture or system design',
+            format:
+              'A one-hour design discussion with an interviewer in a 2025 account. A 2026 account describes several architecture or system design exercises; the candidate writes they were accused of cheating after they "did too well" on the system design interview, and had to redo it online.',
+            appliesTo: 'Candidates who reach the panel',
+            sources: [CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C3_FE_2026],
+            practice: { label: "Frontend system design blueprint", path: '/guides/system-design-blueprint' },
+          },
+          {
+            stage: 'Orange Cloud Interview',
+            format:
+              "A 30-minute behavioural round based on Cloudflare's values, one of three panel rounds in a 2025 account; a 2026 account names an orange cloud behavioural interview among its later stages. Cloudflare's careers page places the Orange Cloud Interview, focused on the behaviours Cloudflare values, within its executive calls; the same page lists those behaviours as six Cloudflare Capabilities.",
+            appliesTo: 'Candidates who reach the panel',
+            sources: [CLOUDFLARE_CAREERS, CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C3_FE_2026],
+            practice: { label: "Orange Cloud questions and story drill", path: '/companies/cloudflare/preview', fragment: 'cloudflare-round-orange-cloud-interview', drill: true },
+          },
+          {
+            stage: 'PM and executive conversations',
+            format:
+              'A 2026 account had PM and cross-collaboration rounds and a final C-level executive conversation; a 2024 onsite of five calls had two technical and three behavioural ones. The careers page names its last interview step executive calls, a conversation with senior leadership.',
+            appliesTo: 'Candidates who reach the end of the loop',
+            sources: [CLOUDFLARE_CAREERS, CLOUDFLARE_C3_FE_2026, CLOUDFLARE_CF3_FE_2024],
+          },
+          {
+            stage: 'Offer or result',
+            format:
+              'The careers page says Cloudflare moves quickly once it has found the right person. In the frontend accounts, a 2025 candidate was rejected after an unfinished app round, a 2026 candidate was cut off after redoing the system design interview, a 2024 candidate got a generic rejection after three weeks of unanswered follow-ups, and a 2025 candidate, told of at least six more rounds, withdrew after offers elsewhere.',
+            appliesTo: 'All candidates',
+            sources: [CLOUDFLARE_CAREERS, CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C3_FE_2026, CLOUDFLARE_CF3_FE_2024, CLOUDFLARE_CF2_FE_2025],
+          },
+        ],
+      },
+      {
+        title: 'Engineers on other teams, 2024 to 2026',
+        note: 'Software engineer loops on teams other than frontend, and accounts that name no role or team, kept apart from the frontend accounts.',
+        stages: [
+          {
+            stage: 'Hiring manager screen',
+            format:
+              'The first round in most accounts: a conversation with the hiring manager, an engineering manager or, in one 2024 account, an engineer about your background and experience, with some behavioural questions and, in several accounts, technical ones. Two accounts give about 20 minutes; a 2026 senior loop in India gave it 30 minutes as an elimination round.',
+            appliesTo: 'Most candidates',
+            sources: [
+              CLOUDFLARE_C2_2025,
+              CLOUDFLARE_C4_2026,
+              CLOUDFLARE_C5_2025,
+              CLOUDFLARE_C6_2024,
+              CLOUDFLARE_C48_2024,
+              CLOUDFLARE_C49_SENIOR_2026,
+              CLOUDFLARE_CF13_2024,
+              CLOUDFLARE_CF14_2024,
+              CLOUDFLARE_CF25_2024,
+              CLOUDFLARE_CF26_2024,
+            ],
+            practice: { label: "How the browser parses and renders a page", path: '/html/trivia/html-parsing-rendering' },
+          },
+          {
+            stage: 'HR screen',
+            format: 'One 2025 account had an HR screen about two weeks after the hiring manager round.',
+            appliesTo: 'One account',
+            sources: [CLOUDFLARE_C5_2025],
+          },
+          {
+            stage: 'Online test',
+            format:
+              'A coding test on HackerRank: announced after the hiring manager round in one 2024 account and taken as a second-round interview in another; a 2025 phone interview on HackerRank was scored on test cases, and one 2024 team set LeetCode-style medium problems.',
+            appliesTo: 'Some teams',
+            sources: [CLOUDFLARE_C6_2024, CLOUDFLARE_C8_2024, CLOUDFLARE_C40_2025],
+            practice: { label: "Data structures and algorithms for frontend loops", path: '/guides/interview-blueprint/dsa-for-fe' },
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              "A coding round after the hiring manager round, live with an interviewer in most accounts; one 2025 tech screen was marked on test cases. A 2025 candidate was told to expect an hour of pair coding focused on debugging and problem solving, and a 2024 technical screen went deep into the candidate's résumé. A 2026 account describes a spoken 'Implement X' prompt in an empty IDE, with no inputs, outputs, spec or API given.",
+            appliesTo: 'Candidates who pass the hiring manager round',
+            sources: [CLOUDFLARE_C2_2025, CLOUDFLARE_C4_2026, CLOUDFLARE_C11_MID_2025, CLOUDFLARE_C37_2025, CLOUDFLARE_CC31_2024, CLOUDFLARE_C36_2026],
+            practice: { label: "Fix the async race in a fetch helper", path: '/javascript/debug/js-debug-async-race' },
+          },
+          {
+            stage: 'Interview loop',
+            format:
+              'Four or five interviews, three in one day and two the next in a 2024 loop. A 2026 loop had an orange cloud behavioural interview, a debugging discussion, a system design conversation and a PM-focused interview; a 2025 onsite had coding, system design, a project retrospective and a 30-minute orange cloud interview, and a 2024 orange cloud interview was three scenario questions. A 2026 senior loop in India had design rounds of 90 and 60 minutes and a 90-minute debugging and code review round with a senior engineer.',
+            appliesTo: 'Candidates who pass the screens',
+            sources: [CLOUDFLARE_C4_2026, CLOUDFLARE_C11_MID_2025, CLOUDFLARE_C39_2024, CLOUDFLARE_C48_2024, CLOUDFLARE_C49_SENIOR_2026],
+            practice: { label: "Orange Cloud questions and story drill", path: '/companies/cloudflare/preview', fragment: 'cloudflare-round-orange-cloud-interview', drill: true },
+          },
+          {
+            stage: 'Senior leadership round',
+            format:
+              'One 2026 senior loop in India: a 45-minute virtual round with senior leadership after the debugging round, announced by the recruiter as mostly behavioural and a chance to ask about Cloudflare.',
+            appliesTo: 'One senior account, 2026',
+            sources: [CLOUDFLARE_C49_SENIOR_2026],
+            practice: { label: "Behavioral interview guide", path: '/guides/behavioral' },
+          },
+          {
+            stage: 'AI-assisted coding',
+            format: 'One 2026 account: a second hiring manager conversation that included an AI-assisted coding challenge.',
+            appliesTo: 'One account, 2026',
+            sources: [CLOUDFLARE_C4_2026],
+          },
+          {
+            stage: 'Executive call and office visit',
+            format:
+              "A 2026 account toured an office and was invited to a final call with a senior executive or co-founder; a 2026 senior account in India says the C-suite round takes about two weeks to schedule and, by its author's own estimate, carries a 10 to 15 per cent chance of no offer. The careers page lists executive calls with senior leadership, and a Cloudflare recruiting leader said on Cloudflare TV in 2025 that each person who joins has a 20-minute C-level interview.",
+            appliesTo: 'Candidates who reach the end',
+            sources: [CLOUDFLARE_CAREERS, CLOUDFLARE_TV_RECRUITING, CLOUDFLARE_C4_2026, CLOUDFLARE_C49_SENIOR_2026],
+          },
+          {
+            stage: 'Team fit and offer',
+            format:
+              'Announced to a 2025 candidate: a hiring manager call on which team fits you, decided by how the technical round went, then an offer round with the recruiter.',
+            appliesTo: 'Candidates who pass',
+            sources: [CLOUDFLARE_C2_2025],
+          },
+        ],
+      },
+      {
+        title: 'Interns and new graduates',
+        note: "Accounts from 2020 to 2025 and Cloudflare's post on its 2026 internships.",
+        stages: [
+          {
+            stage: 'Application and assignment',
+            format:
+              "Several intern and new-graduate accounts from 2020 to 2023 begin with a coding assignment sent with or after the application, two of them deployed with Cloudflare's own tools. Cloudflare's post on its 2026 internships says it plans to fast-track the review of Software Engineering applicants who complete an assignment to build an AI-powered application on Cloudflare.",
+            appliesTo: 'Interns and new graduates',
+            sources: [
+              CLOUDFLARE_INTERNS_2026,
+              CLOUDFLARE_CF17_INTERN_2023,
+              CLOUDFLARE_CF21_INTERN_2021,
+              CLOUDFLARE_CF22_INTERN_2020,
+              CLOUDFLARE_CF23_NEW_GRAD_2020,
+            ],
+          },
+          {
+            stage: 'Intern and graduate interviews',
+            format:
+              "A screening interview with the hiring manager, a pair programming interview and an HR interview for a 2023 intern; another 2023 intern's coding interview was close to daily work, and a 2025 graduate had HR rounds and pair programming questions over video. Cloudflare's 2026 internship post says the interview process takes three to four weeks.",
+            appliesTo: 'Interns and new graduates',
+            sources: [CLOUDFLARE_INTERNS_2026, CLOUDFLARE_CF17_INTERN_2023, CLOUDFLARE_CF31_INTERN_2023, CLOUDFLARE_CF30_GRAD_2025],
+            practice: { label: "Fetch JSON with a timeout and abort", path: '/javascript/coding/js-fetch-json-timeout' },
+          },
+        ],
+      },
+    ],
+    // Rows from other teams' loops sit under the stage whose format matches their account, and a row whose account names
+    // no round shows none. Left out by content (backend, network, infrastructure and security): TCP/IP, TCP versus UDP
+    // and sockets, communication mechanisms for a CDN, a TLS handshake take-home, a fan-out over sockets, the rate
+    // limiter, a key-value store encrypted at rest, one team's serverless take-home and seven backend designs (an LLM
+    // ticket summariser, a scheduled HTTP pinger, logs moved between data centres, data streaming at Cloudflare scale,
+    // tail latency, a message authentication code system and a system on Cloudflare services); trimmed: encryption keys
+    // from the DNS row, performance debugging in a distributed system from the code review row and deadlocks from the
+    // bug row. Left out for their sources: an interval problem and two problems explained without code (a forum this
+    // guide does not cite), an Instagram for cats design and a broken HTTP router (a prep site's own page). Left out for want of a subject: live
+    // coding and architecture exercises (2026), an at-home assessment and a pair programming exercise (2025) and one
+    // React question in a data team's screen (2024). Behavioural questions are in behaviouralQuestions, open.
+    questions: [
+      {
+        id: 'link-request-end-to-end',
+        round: 'Hiring manager screen',
+        kind: 'Web fundamentals',
+        topic: 'Entering a link, end to end',
+        question:
+          'What happens when you enter a link in your browser and press enter? Describe how the request works end to end, from the browser to the server and back.',
+        sources: [CLOUDFLARE_CF13_2024, CLOUDFLARE_CF14_2024, CLOUDFLARE_CF28_2025, CLOUDFLARE_CC4_2025],
+        practice: { label: 'HTML parsing and rendering order', path: '/html/trivia/html-parsing-rendering' },
+        answerGuide: 'enter-a-link-end-to-end',
+      },
+      {
+        id: 'dns-resolution',
+        round: 'Hiring manager screen',
+        kind: 'Web fundamentals',
+        topic: 'DNS resolution',
+        question: 'Explain DNS and describe the process of DNS resolution; a 2025 account calls its DNS questions deep.',
+        sources: [CLOUDFLARE_CF25_2024, CLOUDFLARE_CF26_2024, CLOUDFLARE_CF27_2025, CLOUDFLARE_CF24_2024, CLOUDFLARE_CC4_2025],
+        answerGuide: 'dns-resolution-explained',
+      },
+      {
+        id: 'http-vs-https',
+        round: 'Hiring manager screen',
+        kind: 'Web fundamentals',
+        topic: 'HTTP versus HTTPS',
+        question: 'What are the differences between HTTP and HTTPS?',
+        sources: [CLOUDFLARE_CF25_2024, CLOUDFLARE_CF24_2024, CLOUDFLARE_CC4_2025],
+        practice: { label: 'HTTP caching basics', path: '/javascript/trivia/http-caching-basics' },
+      },
+      {
+        id: 'debugging-methodology',
+        round: 'Hiring manager screen',
+        kind: 'Practical coding',
+        topic: 'Debugging methodology',
+        question: 'What is your method when debugging, or when something goes wrong?',
+        sources: [CLOUDFLARE_C2_2025],
+        answerGuide: 'debugging-method-out-loud',
+      },
+      {
+        id: 'javascript-screen-task',
+        round: 'JavaScript phone screen',
+        kind: 'JavaScript',
+        topic: 'JavaScript recursion and functional basics',
+        question: 'A basic JavaScript coding question to be solved without using loops, then a small extension of it.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+        practice: { label: 'Flatten one level of an array', path: '/javascript/coding/js-flatten-once' },
+      },
+      {
+        id: 'react-typescript-app-tasks',
+        round: 'App coding and debugging',
+        kind: 'React build',
+        topic: 'React and TypeScript app tasks',
+        question: 'In a React and TypeScript repository whose mock UI and API are already in place, implement four frontend tasks in one hour.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+        practice: { label: 'Fetch and render a list with every request state', path: '/react/coding/react-fetch-list-states' },
+      },
+      {
+        id: 'typescript-json-type',
+        round: 'App coding and debugging',
+        kind: 'JavaScript',
+        topic: 'TypeScript types for JSON',
+        question: 'Write a TypeScript type for a JSON object.',
+        sources: [CLOUDFLARE_CF1_FE_2025],
+        answerGuide: 'typescript-type-for-json',
+      },
+      {
+        id: 'react-app-debugging',
+        round: 'App coding and debugging',
+        kind: 'React debugging',
+        topic: 'Debugging a React app',
+        question: 'Debug an issue in a React app.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CF1_FE_2025],
+        practice: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
+      },
+      {
+        id: 'own-project-architecture',
+        round: 'Architecture or system design',
+        kind: 'Frontend system design',
+        topic: 'Architecture of your own projects',
+        question:
+          'Go deep into projects the interviewer picks from your résumé: their architecture, your decisions and trade-offs, and how they could be improved.',
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+        answerGuide: 'own-project-architecture-deep-dive',
+      },
+      {
+        id: 'code-output-and-react-project',
+        round: 'Online test',
+        kind: 'React build',
+        topic: 'Code-output questions and a React project',
+        question: 'Multiple-choice questions, such as what a function outputs, and a React project to complete in two hours.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CC3_2024],
+        practice: { label: 'Fetch and render a list with every request state', path: '/react/coding/react-fetch-list-states' },
+      },
+      {
+        id: 'vanilla-js-promises',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Promises in vanilla JavaScript',
+        question: 'Questions on promises in vanilla JavaScript.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CF12_2025],
+        practice: { label: 'Promise chains and async/await', path: '/javascript/trivia/js-promises-async-await' },
+      },
+      {
+        id: 'bug-walkthrough',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Talking through a bug',
+        question: 'Given a bug, explain how you would debug it.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CC31_2024],
+        answerGuide: 'debugging-method-out-loud',
+      },
+      {
+        id: 'battleship-game',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Battleship-style game',
+        question: 'Build a Battleship-style game in a live coding round.',
+        sources: [CLOUDFLARE_C4_2026],
+      },
+      {
+        id: 'minimum-partitions',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Minimum partitions for stored data',
+        question:
+          'Given partition sizes and the data used in each, find the minimum number of partitions that can hold all the data when data can be moved in chunks.',
+        sources: [CLOUDFLARE_C11_MID_2025],
+      },
+      {
+        id: 'three-sum-four-sum',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: '3Sum and 4Sum',
+        question: 'Solve 3Sum, then extend it to 4Sum; one account was asked how to improve the time complexity.',
+        sources: [CLOUDFLARE_C12_2024, CLOUDFLARE_CF24_2024, CLOUDFLARE_CF26_2024],
+        practice: { label: '3Sum', path: '/javascript/coding/js-three-sum' },
+      },
+      {
+        id: 'stack-with-increment',
+        round: 'Technical screen',
+        kind: 'Algorithm',
+        topic: 'Stack with an increment operation',
+        question:
+          'Implement a stack with push, pop and an increment command (a Cloudflare-badged commenter calls the question Super Stack); the candidate passed 10 of 14 test cases and needed lazy propagation for the increment.',
+        sources: [CLOUDFLARE_C37_2025],
+        practice: { label: 'Implement a stack and a queue', path: '/javascript/coding/js-stack-queue-implementation' },
+      },
+      {
+        id: 'code-snippet-review',
+        round: 'Interview loop',
+        kind: 'Practical coding',
+        topic: 'Reviewing a code snippet',
+        question: 'Review a code snippet the interviewer gives you and point out its gaps.',
+        sources: [CLOUDFLARE_C49_SENIOR_2026],
+        practice: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
+      },
+      {
+        id: 'design-hit-counter',
+        round: 'Interview loop',
+        kind: 'Algorithm',
+        topic: 'Hit counter design',
+        question: "Design a hit counter (LeetCode's Design Hit Counter) and answer follow-up questions on it.",
+        sources: [CLOUDFLARE_C11_MID_2025, CLOUDFLARE_CC24_2025],
+      },
+      {
+        id: 'design-twitter',
+        round: 'Interview loop',
+        kind: 'Product design',
+        topic: 'Design Twitter',
+        question: 'Design Twitter.',
+        sources: [CLOUDFLARE_C12_2024],
+      },
+      {
+        id: 'ai-assisted-bug-fixing',
+        round: 'AI-assisted coding',
+        kind: 'Practical coding',
+        topic: 'AI-assisted bug fixing',
+        question: 'Fix bugs by prompting an AI tool in a project and environment you are not fully familiar with.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_C4_2026],
+        answerGuide: 'ai-assisted-bug-fixing',
+      },
+      {
+        id: 'application-coding-assignments',
+        round: 'Application and assignment',
+        kind: 'Practical coding',
+        topic: 'Application coding assignments',
+        question:
+          "Application assignments: front-end, back-end and auth services running on Cloudflare infrastructure (2023); a front end and back end on the Cloudflare platform (2021); a website made with Cloudflare's serverless tools plus a tool that sends HTTP requests to it (2020); a React website copying Facebook's core features, with its backend API (2021); a JSON API and a static HTML page in a JavaScript assignment (2020).",
+        sources: [
+          CLOUDFLARE_CF17_INTERN_2023,
+          CLOUDFLARE_CF19_2021,
+          CLOUDFLARE_CF23_NEW_GRAD_2020,
+          CLOUDFLARE_CF21_INTERN_2021,
+          CLOUDFLARE_CF22_INTERN_2020,
+        ],
+      },
+      {
+        id: 'http-status-codes-requests',
+        round: 'Intern and graduate interviews',
+        kind: 'Web fundamentals',
+        topic: 'HTTP status codes and requests',
+        question: "An intern's coding interview on HTTP requests: HTTP status codes, sending requests and schedulers.",
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CF31_INTERN_2023],
+      },
+      {
+        id: 'circular-buffer-json-parsing',
+        round: 'Intern and graduate interviews',
+        kind: 'Practical coding',
+        topic: 'Circular buffer and JSON parsing',
+        question: 'Build a circular buffer on a video call, and parse JSON in Python.',
+        sources: [CLOUDFLARE_CF30_GRAD_2025],
+      },
+      {
+        id: 'browsers-dns-routing',
+        kind: 'Web fundamentals',
+        topic: 'Browsers, DNS and routing',
+        question: 'Basic questions about browsers, DNS and routing.',
+        promptNotShared: true,
+        sources: [CLOUDFLARE_CF16_2023],
+      },
+      {
+        id: 'in-memory-cache',
+        kind: 'Practical coding',
+        topic: 'In-memory cache',
+        question: 'Implement an in-memory cache.',
+        sources: [CLOUDFLARE_CF18_2022],
+        practice: { label: 'LRU cache with a size limit', path: '/javascript/coding/js-create-lru-cache' },
+      },
+      {
+        id: 'missing-data-in-dashboards',
+        kind: 'Product design',
+        topic: 'Missing data in performance dashboards',
+        question: 'How would you handle missing or inconsistent data when creating performance dashboards?',
+        sources: [CLOUDFLARE_CF39_2025],
+      },
+    ],
+    // The hiring manager, recruiter, Orange Cloud, PM, senior leadership and C-level questions.
+    behaviouralQuestions: [
+      {
+        id: 'why-cloudflare',
+        question: 'Why Cloudflare? What do you know about the company, and do you have experience with its products?',
+        sources: [CLOUDFLARE_C2_2025, CLOUDFLARE_CF7_FE_2021, CLOUDFLARE_CF39_2025],
+      },
+      {
+        id: 'resume-walkthrough',
+        question:
+          'Walk through your résumé: your current role, your projects and responsibilities, your goals, and whether your experience matches what the team is looking for.',
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025, CLOUDFLARE_C47_2024, CLOUDFLARE_C48_2024, CLOUDFLARE_C49_SENIOR_2026],
+      },
+      {
+        id: 'recent-project-code-reviews',
+        question:
+          'Introduce a recent project and its technical details. Have you contributed to production code and done code reviews, and how do you resolve conflicts in a code review?',
+        sources: [CLOUDFLARE_C2_2025],
+      },
+      {
+        id: 'mistake-and-lesson',
+        question: 'Tell me about a mistake you made and what you learned from it.',
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+      },
+      {
+        id: 'learning-outside-work',
+        question: 'What is something you learned outside your work?',
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+      },
+      {
+        id: 'challenging-career-situations',
+        question: 'Describe fun or challenging situations in your career.',
+        sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
+      },
+      {
+        id: 'step-outside-the-norm',
+        question: 'Tell me about a time you took a step outside the norm of your workplace.',
+        sources: [CLOUDFLARE_CF13_2024],
+      },
+      {
+        id: 'projects-and-hard-problems',
+        question: 'What types of projects have you worked on, and how do you solve a difficult problem?',
+        sources: [CLOUDFLARE_CF2_FE_2025, CLOUDFLARE_CF6_FE_2022],
+      },
+      {
+        id: 'working-with-product',
+        question: 'How do you deal with product in a team?',
+        sources: [CLOUDFLARE_CC5_SENIOR_2020],
+      },
+      {
+        id: 'ai-coding-tools',
+        question: 'How do you use GenAI and coding agents in your day-to-day work, which tools do you use, and what are their shortcomings?',
+        sources: [CLOUDFLARE_C49_SENIOR_2026],
+      },
+      {
+        id: 'why-this-job',
+        question: 'Why do you want this job, and why would you be a good fit?',
+        sources: [CLOUDFLARE_C3_FE_2026],
+      },
+      {
+        id: 'tell-me-about-yourself',
+        question: 'Tell me about yourself.',
+        sources: [CLOUDFLARE_CF35_SOC_2024],
       },
     ],
   },
