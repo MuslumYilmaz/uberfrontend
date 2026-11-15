@@ -622,7 +622,8 @@
       "booking-com",
       "walmart",
       "jpmorgan",
-      "agoda"
+      "agoda",
+      "disney"
     ],
     "answer": {
       "blocks": [
@@ -1055,7 +1056,8 @@
       "uber",
       "walmart",
       "shopee",
-      "crowdstrike"
+      "crowdstrike",
+      "cloudflare"
     ],
     "answer": {
       "blocks": [
@@ -8257,7 +8259,8 @@
     "companies": [
       "bytedance",
       "agoda",
-      "shopee"
+      "shopee",
+      "cloudflare"
     ],
     "answer": {
       "blocks": [

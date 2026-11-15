@@ -167,6 +167,26 @@
       "access": "free",
       "minutes": 15
     },
+    "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview": {
+      "id": "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview",
+      "title": "Orange Cloud questions and story drill",
+      "route": "/companies/cloudflare/preview",
+      "fragment": "cloudflare-round-orange-cloud-interview",
+      "drill": true,
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/companies/disney/preview#disney-round-behavioural": {
+      "id": "/companies/disney/preview#disney-round-behavioural",
+      "title": "Behavioural questions and story drill",
+      "route": "/companies/disney/preview",
+      "fragment": "disney-round-behavioural",
+      "drill": true,
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/companies/google/preview#google-round-googleyness": {
       "id": "/companies/google/preview#google-round-googleyness",
       "title": "Googleyness questions and story drill",
@@ -633,6 +653,14 @@
       "id": "credit-card-application-page",
       "title": "Design a Credit Card Application Page and Its Confirmation Page",
       "route": "/system-design/credit-card-application-page",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
+    },
+    "cross-device-preferences-sync": {
+      "id": "cross-device-preferences-sync",
+      "title": "Cross-device Preferences Sync",
+      "route": "/system-design/cross-device-preferences-sync",
       "kind": "system-design",
       "access": "premium",
       "minutes": 45
@@ -1969,6 +1997,19 @@
         "algo"
       ]
     },
+    "js-safe-json-parse": {
+      "id": "js-safe-json-parse",
+      "title": "Safe JSON Parse (Fallback on Error)",
+      "route": "/javascript/coding/js-safe-json-parse",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 15,
+      "focus": [
+        "js",
+        "algo"
+      ]
+    },
     "js-secure-cors-handling": {
       "id": "js-secure-cors-handling",
       "title": "How would you securely handle CORS issues in a frontend application?",
@@ -2086,6 +2127,19 @@
         "js"
       ]
     },
+    "js-storage-ttl-cache": {
+      "id": "js-storage-ttl-cache",
+      "title": "Storage TTL Cache (localStorage/sessionStorage)",
+      "route": "/javascript/coding/js-storage-ttl-cache",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 30,
+      "focus": [
+        "js",
+        "algo"
+      ]
+    },
     "js-stream-to-text": {
       "id": "js-stream-to-text",
       "title": "Stream to Text (ReadableStream -> string)",
@@ -2110,6 +2164,19 @@
       "focus": [
         "js",
         "algo"
+      ]
+    },
+    "js-testing-edge-cases-strategy": {
+      "id": "js-testing-edge-cases-strategy",
+      "title": "Testing Strategy: Edge Cases and Boundaries",
+      "route": "/javascript/trivia/js-testing-edge-cases-strategy",
+      "kind": "trivia",
+      "tech": "javascript",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
       ]
     },
     "js-three-sum": {
@@ -2863,6 +2930,19 @@
       "pressure": true,
       "focus": [
         "ui"
+      ]
+    },
+    "react-useeffect-purpose": {
+      "id": "react-useeffect-purpose",
+      "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
+      "route": "/react/trivia/react-useeffect-purpose",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
       ]
     },
     "react-usememo-vs-usecallback": {
@@ -6402,6 +6482,634 @@
         }
       ]
     },
+    "cloudflare": {
+      "name": "Cloudflare",
+      "signature": "Orange Cloud Interview",
+      "framework": "react",
+      "checkedAt": "2026-11-14",
+      "sourceCount": 46,
+      "promptCount": 6,
+      "questionCount": 26,
+      "variants": [
+        {
+          "id": "frontend",
+          "title": "Frontend engineers, 2024 to 2026",
+          "from": "frontend engineers",
+          "ask": "Interviewing for a frontend role?",
+          "default": true,
+          "sourceCount": 6,
+          "newestReport": "2026-02",
+          "rounds": [
+            {
+              "id": "recruiter-conversation",
+              "name": "Recruiter conversation",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A first conversation with a recruiter about your background, your interests and the role.",
+              "sources": [
+                {
+                  "label": "Cloudflare careers page",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-05"
+                }
+              ]
+            },
+            {
+              "id": "hiring-manager",
+              "name": "Hiring manager",
+              "kinds": [
+                "people"
+              ],
+              "note": "The first round in four of the five frontend accounts: a conversation about your background.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2025-03"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "javascript-phone-screen",
+              "name": "JavaScript phone screen",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A 45-minute technical phone screen in JavaScript with one interviewer, in a 2025 account.",
+              "focus": [
+                "js"
+              ],
+              "sources": [
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-04"
+                }
+              ]
+            },
+            {
+              "id": "app-coding-and-debugging",
+              "name": "App coding and debugging",
+              "kinds": [
+                "coding"
+              ],
+              "note": "One hour of coding in React and TypeScript in a 2025 account, with AI tools not allowed.",
+              "focus": [
+                "debug",
+                "ui",
+                "js"
+              ],
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-05"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "architecture-or-system-design",
+              "name": "Architecture or system design",
+              "kinds": [
+                "design"
+              ],
+              "note": "A one-hour design discussion with an interviewer in a 2025 account.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                }
+              ]
+            },
+            {
+              "id": "orange-cloud-interview",
+              "name": "Orange Cloud Interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "A 30-minute behavioural round based on Cloudflare's values, in a 2025 account.",
+              "sources": [
+                {
+                  "label": "Cloudflare careers page",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                }
+              ]
+            },
+            {
+              "id": "pm-and-executive-conversations",
+              "name": "PM and executive conversations",
+              "kinds": [
+                "people"
+              ],
+              "note": "PM and cross-collaboration rounds and a final C-level executive conversation, in a 2026 account.",
+              "sources": [
+                {
+                  "label": "Cloudflare careers page",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-04"
+                }
+              ]
+            },
+            {
+              "id": "offer-or-result",
+              "name": "Offer or result",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "The careers page says Cloudflare moves quickly once it has found the right person.",
+              "sources": [
+                {
+                  "label": "Cloudflare careers page",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-02"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-12"
+                }
+              ],
+              "moreSources": 2
+            }
+          ],
+          "tasks": [
+            {
+              "id": "js-get-by-path-1",
+              "lead": true,
+              "rounds": [
+                "javascript-phone-screen"
+              ]
+            },
+            {
+              "id": "react-autocomplete-search-starter",
+              "lead": true,
+              "rounds": [
+                "app-coding-and-debugging"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "lead": true,
+              "rounds": [
+                "architecture-or-system-design"
+              ]
+            },
+            {
+              "id": "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview",
+              "lead": true,
+              "rounds": [
+                "orange-cloud-interview"
+              ]
+            },
+            {
+              "id": "js-debug-async-race",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-05",
+                "approx": true
+              },
+              "rounds": [
+                "app-coding-and-debugging"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "report": {
+                "publisher": "Taro",
+                "date": "2025-05",
+                "approx": true
+              },
+              "rounds": [
+                "app-coding-and-debugging"
+              ]
+            },
+            {
+              "id": "js-safe-json-parse",
+              "prompt": true,
+              "rounds": [
+                "app-coding-and-debugging"
+              ]
+            },
+            {
+              "id": "offline-email-client",
+              "prompt": true,
+              "rounds": [
+                "architecture-or-system-design"
+              ]
+            },
+            {
+              "id": "js-promises-async-await"
+            },
+            {
+              "id": "html-parsing-rendering"
+            },
+            {
+              "id": "http-caching-basics"
+            }
+          ]
+        },
+        {
+          "id": "engineers",
+          "title": "Engineers on other teams, 2024 to 2026",
+          "from": "engineers on other teams",
+          "ask": "Interviewing for another engineering team?",
+          "sourceCount": 19,
+          "newestReport": "2026-04",
+          "rounds": [
+            {
+              "id": "hiring-manager-screen",
+              "name": "Hiring manager screen",
+              "kinds": [
+                "people"
+              ],
+              "note": "The first round in most accounts: a conversation about your background and experience.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-04"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2026-03"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-12"
+                }
+              ],
+              "moreSources": 7
+            },
+            {
+              "id": "hr-screen",
+              "name": "HR screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "One 2025 account had an HR screen about two weeks after the hiring manager round.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-10"
+                }
+              ]
+            },
+            {
+              "id": "online-test",
+              "name": "Online test",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A coding test on HackerRank, announced after the hiring manager round in one 2024 account.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [
+                {
+                  "label": "Blind",
+                  "date": "2025-06"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2024-08"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2024-07"
+                }
+              ]
+            },
+            {
+              "id": "technical-screen",
+              "name": "Technical screen",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A coding round after the hiring manager round, live with an interviewer in most accounts.",
+              "focus": [
+                "debug",
+                "algo",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-04"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2026-01"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-12"
+                }
+              ],
+              "moreSources": 3
+            },
+            {
+              "id": "interview-loop",
+              "name": "Interview loop",
+              "kinds": [
+                "people",
+                "coding",
+                "design"
+              ],
+              "note": "Four or five interviews, three in one day and two the next in a 2024 loop.",
+              "focus": [
+                "debug",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-04"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2026-03"
+                },
+                {
+                  "label": "LeetCode",
+                  "date": "2025-05"
+                }
+              ],
+              "moreSources": 2
+            },
+            {
+              "id": "senior-leadership-round",
+              "name": "Senior leadership round",
+              "kinds": [
+                "people"
+              ],
+              "note": "One 2026 senior loop: a 45-minute virtual round with senior leadership, announced as mostly behavioural.",
+              "focus": [
+                "debug"
+              ],
+              "sources": [
+                {
+                  "label": "LeetCode",
+                  "date": "2026-03"
+                }
+              ]
+            },
+            {
+              "id": "ai-assisted-coding",
+              "name": "AI-assisted coding",
+              "kinds": [
+                "coding"
+              ],
+              "note": "One 2026 account: a second hiring manager conversation that included an AI-assisted coding challenge.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-04"
+                }
+              ]
+            },
+            {
+              "id": "executive-call-and-office-visit",
+              "name": "Executive call and office visit",
+              "kinds": [
+                "people"
+              ],
+              "note": "A 2026 account was invited to a final call with a senior executive or co-founder; the careers page lists such calls.",
+              "sources": [
+                {
+                  "label": "Cloudflare careers page",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Cloudflare TV: Growth, culture & AI in recruitment",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-04"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "team-fit-and-offer",
+              "name": "Team fit and offer",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "Announced to a 2025 candidate: a hiring manager call on which team fits you, then an offer round.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-12"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "html-parsing-rendering",
+              "lead": true,
+              "rounds": [
+                "hiring-manager-screen"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "/guides/interview-blueprint/dsa-for-fe",
+              "lead": true,
+              "rounds": [
+                "online-test"
+              ]
+            },
+            {
+              "id": "js-debug-async-race",
+              "lead": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview",
+              "lead": true,
+              "rounds": [
+                "interview-loop"
+              ]
+            },
+            {
+              "id": "/guides/behavioral",
+              "lead": true,
+              "rounds": [
+                "senior-leadership-round"
+              ]
+            },
+            {
+              "id": "js-debug-stale-closure-autosave",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-storage-ttl-cache",
+              "prompt": true,
+              "rounds": [
+                "online-test"
+              ]
+            },
+            {
+              "id": "js-debug-bug-squash-invoices",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "js-promises-async-await"
+            },
+            {
+              "id": "http-caching-basics"
+            }
+          ]
+        },
+        {
+          "id": "early-career",
+          "title": "Interns and new graduates",
+          "from": "interns and new graduates",
+          "ask": "Interviewing for an internship or a graduate role?",
+          "students": true,
+          "sourceCount": 7,
+          "newestReport": "2025-05",
+          "rounds": [
+            {
+              "id": "application-and-assignment",
+              "name": "Application and assignment",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Several intern and new-graduate accounts from 2020 to 2023 begin with a coding assignment.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [
+                {
+                  "label": "Cloudflare blog: a goal of 1,111 interns in 2026",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2023-06"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2021-09"
+                }
+              ],
+              "moreSources": 2
+            },
+            {
+              "id": "intern-and-graduate-interviews",
+              "name": "Intern and graduate interviews",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "A screening interview with the hiring manager, a pair programming interview and an HR interview, in a 2023 account.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Cloudflare blog: a goal of 1,111 interns in 2026",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2025-05"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2023-10"
+                }
+              ],
+              "moreSources": 1
+            }
+          ],
+          "tasks": [
+            {
+              "id": "js-fetch-json-timeout",
+              "lead": true,
+              "rounds": [
+                "intern-and-graduate-interviews"
+              ]
+            },
+            {
+              "id": "js-debug-async-race"
+            },
+            {
+              "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "js-promises-async-await"
+            },
+            {
+              "id": "html-parsing-rendering"
+            },
+            {
+              "id": "http-caching-basics"
+            }
+          ]
+        }
+      ]
+    },
     "crowdstrike": {
       "name": "CrowdStrike",
       "signature": "Take-home review",
@@ -7303,6 +8011,495 @@
                 "second-coding-round"
               ],
               "prompt": true
+            }
+          ]
+        }
+      ]
+    },
+    "disney": {
+      "name": "Disney",
+      "signature": "Code review",
+      "framework": "react",
+      "mixed": true,
+      "aliases": [
+        "Walt Disney",
+        "Disney+",
+        "Disney Streaming",
+        "Hulu",
+        "ESPN"
+      ],
+      "checkedAt": "2026-11-14",
+      "sourceCount": 39,
+      "promptCount": 6,
+      "questionCount": 30,
+      "variants": [
+        {
+          "id": "frontend",
+          "title": "Frontend and web engineers, 2020 to 2025",
+          "from": "frontend and web engineers",
+          "ask": "Interviewing for a frontend or web role?",
+          "default": true,
+          "sourceCount": 23,
+          "newestReport": "2025-05",
+          "rounds": [
+            {
+              "id": "recruiter-screen",
+              "name": "Recruiter screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A phone or video call in which a recruiter asks about your background, skills and recent projects.",
+              "sources": [
+                {
+                  "label": "Disney Careers candidate resources",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Life at Disney podcast: recruiter tips",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-09"
+                }
+              ],
+              "moreSources": 6
+            },
+            {
+              "id": "hiring-manager-or-tech-lead",
+              "name": "Hiring manager or tech lead",
+              "kinds": [
+                "people"
+              ],
+              "note": "The step after the recruiter in several loops: the hiring manager, a tech lead or a director.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2024-09"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-07"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2024-06"
+                }
+              ],
+              "moreSources": 2
+            },
+            {
+              "id": "technical-interview-or-take-home",
+              "name": "Technical interview or take-home",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Reports describe a live technical interview, a coding challenge on a website or a take-home build.",
+              "focus": [
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Disney Careers AI usage guidelines",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2025-05"
+                },
+                {
+                  "label": "Blind comment",
+                  "date": "2025-04"
+                }
+              ],
+              "moreSources": 10
+            },
+            {
+              "id": "code-review",
+              "name": "Code review",
+              "kinds": [
+                "coding"
+              ],
+              "note": "In these reports engineers go over the candidate's take-home with them, by video or in person.",
+              "focus": [
+                "algo",
+                "ui",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2024-09"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2023-08"
+                },
+                {
+                  "label": "Blind",
+                  "date": "2022-02"
+                }
+              ],
+              "moreSources": 3
+            },
+            {
+              "id": "frontend-system-design",
+              "name": "Frontend system design",
+              "kinds": [
+                "design"
+              ],
+              "note": "A design discussion with engineers, at a whiteboard or by video.",
+              "focus": [
+                "algo",
+                "ui",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Blind comment",
+                  "date": "2025-04"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-09"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2023-08"
+                }
+              ],
+              "moreSources": 2
+            },
+            {
+              "id": "pm-director-and-behavioral",
+              "name": "PM, director and behavioral",
+              "kinds": [
+                "people"
+              ],
+              "note": "Conversations with a product manager, a director or another manager, largely behavioral.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Disney Careers candidate resources",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Life at Disney interview tips",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2024-09"
+                }
+              ],
+              "moreSources": 4
+            },
+            {
+              "id": "result",
+              "name": "Result",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "Disney's candidate page lists selection as the last step, after the interviews.",
+              "sources": [
+                {
+                  "label": "Disney Careers candidate resources",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Life at Disney podcast: recruiter tips",
+                  "date": "2026-10"
+                },
+                {
+                  "label": "Blind comment",
+                  "date": "2025-04"
+                }
+              ],
+              "moreSources": 3
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-fetch-list-states",
+              "lead": true,
+              "rounds": [
+                "technical-interview-or-take-home"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-debug-async-race",
+              "lead": true,
+              "rounds": [
+                "code-review"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "lead": true,
+              "rounds": [
+                "frontend-system-design"
+              ]
+            },
+            {
+              "id": "/companies/disney/preview#disney-round-behavioural",
+              "lead": true,
+              "rounds": [
+                "pm-director-and-behavioral"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "report": {
+                "publisher": "Blind",
+                "date": "2022-02"
+              },
+              "rounds": [
+                "code-review"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "ui-component-state-from-mock",
+              "report": {
+                "publisher": "Taro",
+                "date": "2021-05",
+                "approx": true
+              }
+            },
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "technical-interview-or-take-home"
+              ]
+            },
+            {
+              "id": "js-testing-edge-cases-strategy",
+              "prompt": true,
+              "rounds": [
+                "technical-interview-or-take-home"
+              ]
+            },
+            {
+              "id": "offline-email-client",
+              "prompt": true,
+              "rounds": [
+                "frontend-system-design"
+              ]
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            },
+            {
+              "id": "react-state-management-redux"
+            }
+          ]
+        },
+        {
+          "id": "lead",
+          "title": "Lead frontend engineer, Seattle, 2025",
+          "from": "a lead frontend loop in Seattle",
+          "ask": "Interviewing for a lead frontend role?",
+          "reported": {
+            "levels": [
+              "senior",
+              "staff"
+            ],
+            "who": "lead candidates"
+          },
+          "sourceCount": 1,
+          "newestReport": "2025-11",
+          "rounds": [
+            {
+              "id": "senior-tpm-conversation",
+              "name": "Senior TPM conversation",
+              "kinds": [
+                "people"
+              ],
+              "note": "A half-hour chat with a Senior TPM, the first of the second round's four parts.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-11"
+                }
+              ]
+            },
+            {
+              "id": "code-review-with-a-principal-engineer",
+              "name": "Code review with a principal engineer",
+              "kinds": [
+                "coding"
+              ],
+              "note": "The second part: a code review with a Principal Engineer, on frontend code.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-11"
+                }
+              ]
+            },
+            {
+              "id": "frontend-design-at-the-whiteboard",
+              "name": "Frontend design at the whiteboard",
+              "kinds": [
+                "design"
+              ],
+              "note": "The third and fourth parts: two frontend-focused system design sessions, drawn on a whiteboard.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-11"
+                }
+              ]
+            },
+            {
+              "id": "hiring-manager-follow-up",
+              "name": "Hiring manager follow-up",
+              "kinds": [
+                "people"
+              ],
+              "note": "A further conversation that the hiring manager asked for by email a few days after the round.",
+              "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2025-11"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "/companies/disney/preview#disney-round-behavioural",
+              "lead": true,
+              "rounds": [
+                "senior-tpm-conversation"
+              ]
+            },
+            {
+              "id": "js-debug-async-race",
+              "lead": true,
+              "rounds": [
+                "code-review-with-a-principal-engineer"
+              ]
+            },
+            {
+              "id": "/guides/system-design-blueprint",
+              "lead": true,
+              "rounds": [
+                "frontend-design-at-the-whiteboard"
+              ]
+            },
+            {
+              "id": "cross-device-preferences-sync",
+              "prompt": true,
+              "rounds": [
+                "frontend-design-at-the-whiteboard"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "ui-component-state-from-mock"
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            },
+            {
+              "id": "react-state-management-redux"
+            }
+          ]
+        },
+        {
+          "id": "early-career",
+          "title": "Interns, 2019 to 2022",
+          "from": "interns",
+          "ask": "Interviewing for an internship?",
+          "students": true,
+          "sourceCount": 4,
+          "newestReport": "2022-01",
+          "rounds": [
+            {
+              "id": "recruiter-and-technical-interviews",
+              "name": "Recruiter and technical interviews",
+              "kinds": [
+                "recruiter",
+                "coding"
+              ],
+              "note": "A recruiter call of about 30 minutes on behavioral questions and your résumé, then interviews with developers.",
+              "focus": [
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Blind comment",
+                  "date": "2022-01"
+                },
+                {
+                  "label": "Taro (approx.)",
+                  "date": "2020-11"
+                },
+                {
+                  "label": "Taro",
+                  "date": "2020-07"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "take-home-challenge",
+              "name": "Take-home challenge",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A coding challenge to complete at home, sent after the first video call.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [
+                {
+                  "label": "Taro",
+                  "date": "2020-07"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "/guides/interview-blueprint/quiz",
+              "lead": true,
+              "rounds": [
+                "recruiter-and-technical-interviews"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "ui-component-state-from-mock"
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            },
+            {
+              "id": "react-state-management-redux"
             }
           ]
         }

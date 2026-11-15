@@ -2847,7 +2847,8 @@
     "importance": 4,
     "companies": [
       "zalando",
-      "gitlab"
+      "gitlab",
+      "cloudflare"
     ],
     "description": "Browsers parse HTML progressively, build the DOM and CSSOM, then layout and paint what users see. Under the hood, synchronous scripts and render-blocking CSS can pause this pipeline and create hard-to-debug performance issues.",
     "seo": {

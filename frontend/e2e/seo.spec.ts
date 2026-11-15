@@ -366,6 +366,12 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[CrowdStrike frontend interview questions](https://frontendatlas.com/companies/crowdstrike/preview)',
   );
+  expect(text).toContain(
+    '[Disney frontend interview questions](https://frontendatlas.com/companies/disney/preview)',
+  );
+  expect(text).toContain(
+    '[Cloudflare frontend interview questions](https://frontendatlas.com/companies/cloudflare/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

@@ -3987,6 +3987,426 @@
         }
       ]
     },
+    "cloudflare": {
+      "total": 26,
+      "rounds": [
+        {
+          "stage": "JavaScript phone screen",
+          "count": 1
+        },
+        {
+          "stage": "App coding and debugging",
+          "count": 3
+        },
+        {
+          "stage": "Architecture or system design",
+          "count": 1
+        },
+        {
+          "stage": "Hiring manager screen",
+          "count": 4
+        },
+        {
+          "stage": "Online test",
+          "count": 1
+        },
+        {
+          "stage": "Technical screen",
+          "count": 6
+        },
+        {
+          "stage": "Interview loop",
+          "count": 3
+        },
+        {
+          "stage": "AI-assisted coding",
+          "count": 1
+        },
+        {
+          "stage": "Application and assignment",
+          "count": 1
+        },
+        {
+          "stage": "Intern and graduate interviews",
+          "count": 2
+        }
+      ],
+      "roundNotStated": 3,
+      "newestAccount": "2026-04",
+      "questions": [
+        {
+          "id": "link-request-end-to-end",
+          "round": "Hiring manager screen",
+          "kind": "Web fundamentals",
+          "accounts": 4,
+          "banks": 0,
+          "latest": "2025-08",
+          "newUntil": "2025-10-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/html/trivia/html-parsing-rendering",
+            "access": "free"
+          },
+          "answerGuide": "enter-a-link-end-to-end"
+        },
+        {
+          "id": "dns-resolution",
+          "round": "Hiring manager screen",
+          "kind": "Web fundamentals",
+          "accounts": 5,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "dns-resolution-explained"
+        },
+        {
+          "id": "http-vs-https",
+          "round": "Hiring manager screen",
+          "kind": "Web fundamentals",
+          "accounts": 3,
+          "banks": 0,
+          "latest": "2025-08",
+          "newUntil": "2025-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/http-caching-basics",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "debugging-methodology",
+          "round": "Hiring manager screen",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "debugging-method-out-loud"
+        },
+        {
+          "id": "javascript-screen-task",
+          "round": "JavaScript phone screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-flatten-once",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "react-typescript-app-tasks",
+          "round": "App coding and debugging",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "typescript-json-type",
+          "round": "App coding and debugging",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "typescript-type-for-json"
+        },
+        {
+          "id": "react-app-debugging",
+          "round": "App coding and debugging",
+          "kind": "React debugging",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "own-project-architecture",
+          "round": "Architecture or system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-12",
+          "newUntil": "2026-03-01",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "own-project-architecture-deep-dive"
+        },
+        {
+          "id": "code-output-and-react-project",
+          "round": "Online test",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-08",
+          "newUntil": "2024-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "vanilla-js-promises",
+          "round": "Technical screen",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-07",
+          "newUntil": "2025-09-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-promises-async-await",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "bug-walkthrough",
+          "round": "Technical screen",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-03",
+          "newUntil": "2024-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "debugging-method-out-loud"
+        },
+        {
+          "id": "battleship-game",
+          "round": "Technical screen",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-04",
+          "newUntil": "2026-06-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "minimum-partitions",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "three-sum-four-sum",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 3,
+          "banks": 0,
+          "latest": "2024-08",
+          "newUntil": "2024-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-three-sum",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "stack-with-increment",
+          "round": "Technical screen",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-01",
+          "newUntil": "2025-04-01",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-stack-queue-implementation",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "code-snippet-review",
+          "round": "Interview loop",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-03",
+          "newUntil": "2026-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "design-hit-counter",
+          "round": "Interview loop",
+          "kind": "Algorithm",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "design-twitter",
+          "round": "Interview loop",
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-07",
+          "newUntil": "2024-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "ai-assisted-bug-fixing",
+          "round": "AI-assisted coding",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-04",
+          "newUntil": "2026-06-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "ai-assisted-bug-fixing"
+        },
+        {
+          "id": "application-coding-assignments",
+          "round": "Application and assignment",
+          "kind": "Practical coding",
+          "accounts": 5,
+          "banks": 0,
+          "latest": "2023-06",
+          "newUntil": "2023-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "http-status-codes-requests",
+          "round": "Intern and graduate interviews",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-10",
+          "newUntil": "2023-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "circular-buffer-json-parsing",
+          "round": "Intern and graduate interviews",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "browsers-dns-routing",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-10",
+          "newUntil": "2023-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "in-memory-cache",
+          "round": null,
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-06",
+          "newUntil": "2022-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-create-lru-cache",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "missing-data-in-dashboards",
+          "round": null,
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-10",
+          "newUntil": "2025-12-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
     "crowdstrike": {
       "total": 38,
       "rounds": [
@@ -4894,6 +5314,473 @@
           "unlockable": true,
           "practice": null,
           "answerGuide": "feature-or-major-bug-walkthrough"
+        }
+      ]
+    },
+    "disney": {
+      "total": 30,
+      "rounds": [
+        {
+          "stage": "Hiring manager or tech lead",
+          "count": 1
+        },
+        {
+          "stage": "Technical interview or take-home",
+          "count": 8
+        },
+        {
+          "stage": "Code review",
+          "count": 2
+        },
+        {
+          "stage": "Frontend system design",
+          "count": 2
+        },
+        {
+          "stage": "PM, director and behavioral",
+          "count": 1
+        },
+        {
+          "stage": "Code review with a principal engineer",
+          "count": 1
+        },
+        {
+          "stage": "Frontend design at the whiteboard",
+          "count": 2
+        },
+        {
+          "stage": "Recruiter and technical interviews",
+          "count": 2
+        }
+      ],
+      "roundNotStated": 11,
+      "newestAccount": "2025-11",
+      "questions": [
+        {
+          "id": "scoreboard-banner-react",
+          "round": "Technical interview or take-home",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-05",
+          "newUntil": "2025-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": "scoreboard-banner-from-api"
+        },
+        {
+          "id": "streaming-app-from-mockup",
+          "round": "Technical interview or take-home",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-05",
+          "newUntil": "2021-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ui-component-state-from-mock",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "react-app-changes-take-home",
+          "round": "Technical interview or take-home",
+          "kind": "React build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-08",
+          "newUntil": "2023-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "change-existing-react-app"
+        },
+        {
+          "id": "shown-ui-with-api",
+          "round": "Technical interview or take-home",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-01",
+          "newUntil": "2020-03-31",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ui-component-state-from-mock",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "take-home-tests-by-level",
+          "round": "Technical interview or take-home",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "take-home-every-level"
+        },
+        {
+          "id": "arrays-rest-api-json",
+          "round": "Technical interview or take-home",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-08",
+          "newUntil": "2022-10-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "promise-bfs-linked-list-rounds",
+          "round": "Technical interview or take-home",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-09",
+          "newUntil": "2025-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-create-deferred-promise",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "longest-running-jobs-logs",
+          "round": "Technical interview or take-home",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-07",
+          "newUntil": "2021-09-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "code-reading-mock-pr-review",
+          "round": "Code review",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-02",
+          "newUntil": "2022-04-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "take-home-review-trade-offs",
+          "round": "Code review",
+          "kind": "Practical coding",
+          "accounts": 4,
+          "banks": 0,
+          "latest": "2024-09",
+          "newUntil": "2024-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "defend-take-home-choices"
+        },
+        {
+          "id": "react-component-state",
+          "round": "Hiring manager or tech lead",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-06",
+          "newUntil": "2024-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-state-management-redux",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "ui-components-web-api",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-01",
+          "newUntil": "2020-03-31",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ui-component-state-from-mock",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "pet-adoption-app-design",
+          "round": "Frontend system design",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-09",
+          "newUntil": "2019-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-dom-internals",
+          "round": "PM, director and behavioral",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "junior-code-review-mentoring",
+          "round": "Code review with a principal engineer",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "shopping-cart-design",
+          "round": "Frontend design at the whiteboard",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/resilient-checkout-payment-flow",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "feature-flag-design",
+          "round": "Frontend design at the whiteboard",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2025-11",
+          "newUntil": "2026-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "frontend-feature-flags"
+        },
+        {
+          "id": "intern-web-protocols-react",
+          "round": "Recruiter and technical interviews",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-03",
+          "newUntil": "2019-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "intern-hashmaps-tech-stack",
+          "round": "Recruiter and technical interviews",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-01",
+          "newUntil": "2022-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "intern-javascript-dom",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2015-03",
+          "newUntil": "2015-05-30",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "video-upload-feature",
+          "round": null,
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2024-09",
+          "newUntil": "2024-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/image-upload-preview",
+            "access": "premium"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "api-service-for-front-end",
+          "round": null,
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2023-08",
+          "newUntil": "2023-10-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "front-end-api-service-design"
+        },
+        {
+          "id": "parks-fast-pass-design",
+          "round": null,
+          "kind": "Product design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-hooks-lifecycle",
+          "round": null,
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-useeffect-purpose",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "window-history",
+          "round": null,
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-06",
+          "newUntil": "2021-08-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "why-not-mutate-state",
+          "round": null,
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2017-01",
+          "newUntil": "2017-04-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "javascript-closures",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-09",
+          "newUntil": "2019-11-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-closures",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "reverse-words-in-sentence",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2019-09",
+          "newUntil": "2019-11-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "fizzbuzz-or-dfs-graph",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-02",
+          "newUntil": "2022-04-29",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "binary-trees-and-heaps",
+          "round": null,
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-12",
+          "newUntil": "2021-03-01",
+          "open": false,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
         }
       ]
     },

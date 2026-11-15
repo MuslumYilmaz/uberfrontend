@@ -54,6 +54,10 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
     mixed: true,
     evidence: "The technical hour was a React project, an Angular form or the candidate's framework, and one posting names Angular.",
   },
+  cloudflare: {
+    framework: 'react',
+    evidence: 'The open frontend posting says the team primarily uses TypeScript and React, one 2025 account debugged a React app and typed JSON in TypeScript, and a 2025 app round used a React and TypeScript repository.',
+  },
   crowdstrike: {
     framework: 'javascript',
     mixed: true,
@@ -62,6 +66,12 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
   datadog: {
     framework: 'react',
     evidence: 'One full round is React live coding.',
+  },
+  disney: {
+    framework: 'react',
+    mixed: true,
+    aliases: ['Walt Disney', 'Disney+', 'Disney Streaming', 'Hulu', 'ESPN'],
+    evidence: 'Frontend accounts and the current frontend postings name React, while some teams post Angular or Vue roles and each team runs its own loop.',
   },
   elevenlabs: {
     framework: 'react',

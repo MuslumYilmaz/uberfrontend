@@ -93,8 +93,10 @@
 /companies/booking-com/preview
 /companies/bytedance/preview
 /companies/capital-one/preview
+/companies/cloudflare/preview
 /companies/crowdstrike/preview
 /companies/datadog/preview
+/companies/disney/preview
 /companies/elevenlabs/preview
 /companies/gitlab/preview
 /companies/google/preview

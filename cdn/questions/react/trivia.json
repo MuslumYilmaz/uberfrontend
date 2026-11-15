@@ -2485,7 +2485,8 @@
     "technology": "react",
     "companies": [
       "bytedance",
-      "walmart"
+      "walmart",
+      "disney"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -5712,7 +5713,8 @@
     "companies": [
       "walmart",
       "agoda",
-      "capital-one"
+      "capital-one",
+      "disney"
     ],
     "difficulty": "intermediate",
     "importance": 4,
