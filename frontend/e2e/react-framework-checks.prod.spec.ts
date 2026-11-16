@@ -1146,6 +1146,8 @@ test.describe('Framework checks against the production SSR build', () => {
   test.beforeEach(async ({ page }) => {
     await installLocalFrameworkAssetMirror(page);
     await installFrameworkRuntimeResponseCache(page);
+    // A static same-origin document, so the session seeding in the tests can write localStorage before the first page load.
+    await page.goto('/robots.txt');
   });
 
   test.describe('preview console', () => {
