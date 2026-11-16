@@ -6,7 +6,7 @@ import { parse } from 'parse5';
 export const PREMIUM_LOCK_SELECTOR = '.premium-locked';
 const LOCK_CLASS = PREMIUM_LOCK_SELECTOR.slice(1);
 /** The only words a visitor may read on a link to a Premium page: a generic label, never the page's name. */
-export const PREMIUM_LINK_LABELS = new Set(['Premium task for this prompt', 'Premium task for this round', 'Premium task']);
+export const PREMIUM_LINK_LABELS = new Set(['Premium task for this round', 'Premium task']);
 // Google reads data-nosnippet only on these elements.
 const NOSNIPPET_TAGS = new Set(['span', 'div', 'section']);
 

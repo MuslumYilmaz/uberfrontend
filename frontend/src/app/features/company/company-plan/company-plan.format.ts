@@ -148,9 +148,9 @@ export function planEvidenceLine(plan: CompanyPlan, names: string): string {
   return `Rounds and tasks from ${sources} public ${sources === 1 ? 'source' : 'sources'}${where}. These are practice versions, not leaked questions.`;
 }
 
-/** How many of a plan's tasks open without Premium. */
-export function openTaskCount(plan: Pick<CompanyPlan, 'tasks'>): number {
-  return plan.tasks.filter((task) => task.access === 'free').length;
+/** How many of a plan's tasks open without Premium: the free ones, and the task an account opened with its free unlock. */
+export function openTaskCount(plan: Pick<CompanyPlan, 'tasks'>, unlockedTaskId: string | null = null): number {
+  return plan.tasks.filter((task) => task.access === 'free' || task.id === unlockedTaskId).length;
 }
 
 /** "Angular, your choice" for a chosen framework, "React, from reports" for one the reports name, plain "JavaScript" otherwise. */
@@ -246,8 +246,9 @@ export type CompanySetCounts = {
 };
 
 /**
- * "The full Amazon set: 42 questions (18 coding, 23 concept, 1 system design)", or the sets side by side for several
- * companies. Empty when no company has a set, so a plan never promises one.
+ * "The FrontendAtlas Amazon practice set: 42 questions (18 coding, 23 concept, 1 system design)", or the sets side by
+ * side for several companies. It names whose set it is, so it does not read as the count of reported questions. Empty
+ * when no company has a set, so a plan never promises one.
  */
 export function companySetLine(sets: readonly { readonly name: string; readonly counts: CompanySetCounts | undefined }[]): string {
   const known = sets.flatMap((set) => (set.counts && set.counts.all > 0 ? [{ name: set.name, counts: set.counts }] : []));
@@ -255,9 +256,9 @@ export function companySetLine(sets: readonly { readonly name: string; readonly 
     const { name, counts } = known[0];
     const parts: [number, string][] = [[counts.coding, 'coding'], [counts.debug ?? 0, 'debugging'], [counts.trivia, 'concept'], [counts.system, 'system design']];
     const split = parts.filter(([count]) => count > 0).map(([count, kind]) => `${count} ${kind}`).join(', ');
-    return `The full ${name} set: ${counts.all} questions (${split})`;
+    return `The FrontendAtlas ${name} practice set: ${counts.all} questions (${split})`;
   }
-  return known.length ? `The full sets: ${joinNames(known.map((set) => `${set.counts.all} ${set.name}`))} questions` : '';
+  return known.length ? `The FrontendAtlas practice sets: ${joinNames(known.map((set) => `${set.counts.all} ${set.name}`))} questions` : '';
 }
 
 /** The `src` pricing is opened with, written like the guides' own: `company_plan_capital_one`, never a hyphen. */
@@ -302,9 +303,14 @@ export function planUnlockNote(open: number, total: number): string {
  * What the pricing page says while a plan waits behind Premium. Every framework task has a live preview, but only
  * some run checks, so the card says only the first. The counts are left out when the data predates them.
  */
-export function companyPlanPricingCopy(data: CompanyPlanData, answers: CompanyPlanAnswers, plan: CompanyPlan): CompanyPlanPricingCopy {
+export function companyPlanPricingCopy(
+  data: CompanyPlanData,
+  answers: CompanyPlanAnswers,
+  plan: CompanyPlan,
+  unlockedTaskId: string | null = null,
+): CompanyPlanPricingCopy {
   const names = planCompanyNames(data, answers);
-  const open = openTaskCount(plan);
+  const open = openTaskCount(plan, unlockedTaskId);
   const locked = plan.tasks.length - open;
   const opens = open
     ? ` ${open} ${open === 1 ? 'is' : 'are'} open now, ${locked} ${locked === 1 ? 'opens' : 'open'} with Premium.`

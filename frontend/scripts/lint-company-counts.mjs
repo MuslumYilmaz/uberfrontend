@@ -22,7 +22,7 @@ export const EVIDENCE_MODULE = path.resolve(here, '../src/app/features/company/c
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 const TENS = { twenty: 20, thirty: 30, forty: 40, fifty: 50 };
 const NUMBER = `(?:(?:twenty|thirty|forty|fifty)(?:-(?:one|two|three|four|five|six|seven|eight|nine))?|${WORDS.join('|')}|[0-9]{1,3})`;
-const NOUN = '(?:accounts?|reports?|sources?|loops?|candidates?|prompts|pages)';
+const NOUN = '(?:accounts?|reports?|sources?|loops?|candidates?|prompts|pages|questions)';
 const CLAIM = new RegExp(`\\b(${NUMBER})\\s+((?:[A-Za-z][a-z-]*\\s+){0,3}?)(${NOUN})\\b`, 'gi');
 /** A number followed by one of these is a statement about the whole evidence base, so it must be a token. */
 const TOTAL_QUALIFIERS = new Set(['public', 'self-reported', 'frontend-titled', 'frontend-focused']);
@@ -70,11 +70,16 @@ export function checkGuide(preview, process, evidenceModule) {
 
   for (const { field, text } of authoredCountFields(preview)) {
     const filled = fillCompanyCounts(text, counts);
-    for (const token of filled.match(TOKEN) ?? []) errors.push(`[${field}] unknown count token ${token}; use {reports}, {official}, {sources} or {prompts}, with # for digits`);
+    for (const token of filled.match(TOKEN) ?? []) errors.push(`[${field}] unknown count token ${token}; use {reports}, {official}, {sources}, {prompts} or {questions}, with # for digits`);
     for (const claim of countClaims(text)) {
       const { phrase, value, noun, adjectives } = claim;
       if (noun === 'prompts') {
         if (value !== counts.prompts) errors.push(`[${field}] says "${phrase}" but the page has ${counts.prompts} prompts`);
+        continue;
+      }
+      // "19 reported questions" is the list's total, so it is a token; "two algorithm questions" describes one loop.
+      if (noun === 'questions') {
+        if (adjectives[0] === 'reported') errors.push(`[${field}] write {questions} instead of "${phrase}": the list has ${counts.questions}`);
         continue;
       }
       if (noun === 'pages') {
@@ -138,7 +143,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
   const { guides, failures } = lintCompanyCounts();
   for (const failure of failures) console.error(`[lint-company-counts] ${failure}`);
   if (failures.length) {
-    console.error(`[lint-company-counts] ${failures.length} problem(s) in ${guides} guides. Totals are tokens ({reports}, {official}, {sources}, {prompts}); prompt counts must match the page.`);
+    console.error(`[lint-company-counts] ${failures.length} problem(s) in ${guides} guides. Totals are tokens ({reports}, {official}, {sources}, {prompts}, {questions}); prompt counts must match the page.`);
     process.exit(1);
   }
   console.log(`[lint-company-counts] ${guides} guides state their counts from the page's evidence.`);

@@ -12,7 +12,7 @@ const lockedLink =
 
 test('accepts Premium links that show no name, locks kept out of snippets and schema that marks them', () => {
   const html = `<p>Practice: ${lockedLink}<span class="company-sr">A Premium task.</span></p>
-    <div class="company-prompt__details premium-locked" data-nosnippet inert>
+    <div class="cq-guide cq-guide--locked premium-locked" data-nosnippet inert>
       <a href="/react/coding/react-chips-input-autocomplete">Practice the chips input</a>
     </div>
     <a href="/javascript/trivia/js-closures">Closures</a>`;
@@ -24,8 +24,13 @@ test('accepts Premium links that show no name, locks kept out of snippets and sc
 });
 
 test('accepts a Premium link whose readable words are a generic label, with the name under the lock', () => {
-  const labelled = '<a href="/react/coding/react-chips-input-autocomplete" class="company-link--premium"><span class="company-link__label">Premium task for this prompt</span><span class="premium-locked company-link__name" data-nosnippet>Chips input in React</span></a>';
+  const labelled = '<a href="/react/coding/react-chips-input-autocomplete" class="company-link--premium"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>Chips input in React</span></a>';
   assert.deepEqual(premiumLockViolations(labelled, { premiumRoutes, collectionPage: marked }), []);
+  // The label of the prompt cards the question list replaced is no longer a generic label.
+  const promptLabel = labelled.replace('Premium task for this round', 'Premium task for this prompt');
+  assert.deepEqual(premiumLockViolations(promptLabel, { premiumRoutes, collectionPage: marked }), [
+    'readable link to /react/coding/react-chips-input-autocomplete: "Premium task for this prompt"',
+  ]);
   const named = '<a href="/react/coding/react-chips-input-autocomplete"><span class="company-link__label">Premium: Chips input in React</span></a>';
   assert.deepEqual(premiumLockViolations(named, { premiumRoutes, collectionPage: { isAccessibleForFree: true } }), [
     'readable link to /react/coding/react-chips-input-autocomplete: "Premium: Chips input in React"',
@@ -54,7 +59,7 @@ test('flags a readable Premium name, a lock a snippet could quote and schema out
     'no locked parts, but the CollectionPage is not marked free',
   ]);
   assert.equal(
-    marksPremiumParts({ isAccessibleForFree: false, hasPart: [{ isAccessibleForFree: false, cssSelector: '.company-prompt__locked' }] }),
+    marksPremiumParts({ isAccessibleForFree: false, hasPart: [{ isAccessibleForFree: false, cssSelector: '.company-locked' }] }),
     false,
   );
 });

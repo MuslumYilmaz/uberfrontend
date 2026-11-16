@@ -505,7 +505,7 @@ describe('company plan engine', () => {
     const reported = { reported: { levels: ['senior', 'staff'], who: 'Senior and Staff candidates' } };
     const data = fixture([{ id: 'tagged-a' }], [round('coding', ['coding'])], reported);
     expect(buildCompanyPlan(data, input({ level: 'mid' })).warnings).toEqual([
-      'No report from a mid-level candidate at Acme. These accounts come from Senior and Staff candidates. Confirm the loop with your recruiter.',
+      'None of the accounts behind these rounds comes from a mid-level candidate: they come from Senior and Staff candidates. Confirm the loop with your recruiter.',
     ]);
     expect(buildCompanyPlan(data, input({ level: 'senior' })).warnings).toEqual([]);
     expect(buildCompanyPlan(data, input({ level: 'mid', lists: { acme: 'main' } })).warnings).toEqual([]);

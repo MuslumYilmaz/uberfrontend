@@ -79,26 +79,6 @@
   white-space: nowrap;
 }
 
-/* A question behind the account gate: its words stay in the page for search engines, blurred for the visitor. */
-.drill__locked {
-  filter: blur(8px);
-  user-select: none;
-}
-
-/* One column at the right edge, whatever the length of the blurred question before it. */
-.drill__tag {
-  flex: none;
-  align-self: center;
-  margin-left: auto;
-  padding: 1px 8px;
-  border: 1px solid color-mix(in srgb, var(--uf-accent) 45%, transparent);
-  border-radius: var(--uf-radius-pill);
-  font-size: 11.5px;
-  font-weight: 600;
-  line-height: 1.6;
-  color: var(--uf-accent);
-}
-
 .drill__shapes {
   display: flex;
   flex-wrap: wrap;

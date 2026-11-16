@@ -29,11 +29,10 @@ describe('BehavioralDrillComponent', () => {
   const host = () => fixture.nativeElement as HTMLElement;
   const el = <T extends HTMLElement>(testId: string) => host().querySelector(`[data-testid="${testId}"]`) as T | null;
 
-  const render = async (open = DRILL.questions.length) => {
+  const render = async () => {
     fixture = TestBed.createComponent(BehavioralDrillComponent);
     fixture.componentRef.setInput('drill', DRILL);
     fixture.componentRef.setInput('company', COMPANY);
-    fixture.componentRef.setInput('openQuestions', open);
     fixture.detectChanges();
     // The draft is read once the view is in the browser.
     await fixture.whenStable();
@@ -139,17 +138,9 @@ describe('BehavioralDrillComponent', () => {
       .toContain('The example says “we” 3 times and “I” not at all: say what you did.');
   });
 
-  it('keeps the questions after the open ones under the blur and out of reach, and falls back to the first', async () => {
-    localStorage.setItem(behavioralDrillKey(COMPANY), JSON.stringify({ question: 'customer', shape: 'star', stories: {} }));
-    await render(1);
-    expect(el<HTMLInputElement>('behavioral-drill-question-disagreement')?.disabled).toBeFalse();
-    expect(el<HTMLInputElement>('behavioral-drill-question-deadline')?.disabled).toBeTrue();
-    expect(el<HTMLInputElement>('behavioral-drill-question-customer')?.disabled).toBeTrue();
-    const locked = Array.from(host().querySelectorAll('.drill__questions .premium-locked'));
-    expect(locked.length).toBe(2);
-    expect(locked.every((item) => item.hasAttribute('data-nosnippet') && item.hasAttribute('inert'))).toBeTrue();
-    expect(host().querySelectorAll('.drill__tag').length).toBe(2);
-    // A story saved for a question this reader cannot pick now opens on the first one.
+  it('falls back to the first question when the saved story is for one the drill no longer holds', async () => {
+    localStorage.setItem(behavioralDrillKey(COMPANY), JSON.stringify({ question: 'retired', shape: 'star', stories: {} }));
+    await render();
     expect(el<HTMLInputElement>('behavioral-drill-question-disagreement')?.checked).toBeTrue();
     expect(el('behavioral-drill-asked')?.textContent).toContain('a disagreement with a coworker');
   });

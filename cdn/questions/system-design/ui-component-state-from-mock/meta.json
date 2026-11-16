@@ -12,7 +12,8 @@
   "companies": [
     "intuit",
     "capital-one",
-    "crowdstrike"
+    "crowdstrike",
+    "disney"
   ],
   "sections": [
     {
@@ -86,6 +87,13 @@
         "sourceUrl": "https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/",
         "sourceTitle": "CrowdStrike frontend engineering manager interview, United States, 2025 (Taro)",
         "checkedAt": "2026-10-26"
+      },
+      {
+        "company": "disney",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://www.jointaro.com/interviews/companies/disney/experiences/associate-software-engineer-united-states-may-1-2021-no-offer-positive-9249e5cd/",
+        "sourceTitle": "Disney associate software engineer interview, United States, 2021 (Taro)",
+        "checkedAt": "2026-11-12"
       }
     ]
   },
@@ -121,6 +129,14 @@
       "publisher": "Taro",
       "date": "2025-09",
       "note": "The take-home asked for a table of downloadable files coded from a screenshot; the follow-up covered design changes, filtering, sorting and thousands of entries. This case practises deriving components and state from a mock; it is not the reported task."
+    },
+    {
+      "label": "Taro: Disney associate software engineer interview, United States, 2021",
+      "url": "https://www.jointaro.com/interviews/companies/disney/experiences/associate-software-engineer-united-states-may-1-2021-no-offer-positive-9249e5cd/",
+      "company": "disney",
+      "publisher": "Taro",
+      "date": "2021-05",
+      "note": "A front-end role whose coding challenge was a streaming app built from a provided visual mockup, then interviews on technical choices and state management. This design exercise practises the component and state step, not the app."
     }
   ]
 }

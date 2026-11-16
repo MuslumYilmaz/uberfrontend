@@ -187,12 +187,12 @@ describe('planUnlockNote', () => {
 describe('companySetLine', () => {
   it('splits one company set by kind and leaves out a kind it lacks', () => {
     expect(companySetLine([{ name: 'Amazon', counts: { all: 42, coding: 18, trivia: 23, system: 1 } }]))
-      .toBe('The full Amazon set: 42 questions (18 coding, 23 concept, 1 system design)');
+      .toBe('The FrontendAtlas Amazon practice set: 42 questions (18 coding, 23 concept, 1 system design)');
     expect(companySetLine([{ name: 'Google', counts: { all: 45, coding: 14, trivia: 31, system: 0 } }]))
-      .toBe('The full Google set: 45 questions (14 coding, 31 concept)');
+      .toBe('The FrontendAtlas Google practice set: 45 questions (14 coding, 31 concept)');
     // A bug squash round's tasks count too, as their own kind.
     expect(companySetLine([{ name: 'Stripe', counts: { all: 6, coding: 2, trivia: 1, system: 0, debug: 3 } }]))
-      .toBe('The full Stripe set: 6 questions (2 coding, 3 debugging, 1 concept)');
+      .toBe('The FrontendAtlas Stripe practice set: 6 questions (2 coding, 3 debugging, 1 concept)');
   });
 
   it('lists several sets side by side and skips a company without one', () => {
@@ -200,7 +200,7 @@ describe('companySetLine', () => {
       { name: 'Netflix', counts: { all: 13, coding: 7, trivia: 6, system: 0 } },
       { name: 'Acme', counts: undefined },
       { name: 'Spotify', counts: { all: 13, coding: 4, trivia: 9, system: 0 } },
-    ])).toBe('The full sets: 13 Netflix and 13 Spotify questions');
+    ])).toBe('The FrontendAtlas practice sets: 13 Netflix and 13 Spotify questions');
     expect(companySetLine([{ name: 'Acme', counts: { all: 0, coding: 0, trivia: 0, system: 0 } }])).toBe('');
   });
 });

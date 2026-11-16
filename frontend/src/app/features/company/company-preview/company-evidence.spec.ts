@@ -22,25 +22,43 @@ describe('companyEvidence', () => {
 
   it('counts the guide sources and the table sources once by URL, and lists the table-only ones after the guide ones', () => {
     const { counts, sources } = companyEvidence(acme, TABLE);
-    expect(counts).toEqual({ reports: 2, official: 2, sources: 4, prompts: 2 });
+    expect(counts).toEqual({ reports: 2, official: 2, sources: 4, prompts: 2, questions: 0 });
     expect(sources.slice(0, 2)).toEqual(acme.sources.items);
     expect(sources[2]).toEqual({
       label: 'LeetCode account, March 2025',
       url: 'https://reports.example.com/acme-phone',
       kind: 'report',
-      note: "A public account read for the process table, where it describes the Phone screen and Onsite. One candidate's loop, not a fixed format.",
+      note: 'A public account read for the process table, where it describes the Phone screen and Onsite.',
     });
     expect(sources[3].label).toBe('Acme hiring page');
     expect(sources[3].note).toBe('An official page read for the process table, where it describes the Onsite. Process context, not interview content.');
   });
 
   it('counts only the guide sources when there is no table', () => {
-    expect(companyEvidence(acme, null).counts).toEqual({ reports: 1, official: 1, sources: 2, prompts: 2 });
+    expect(companyEvidence(acme, null).counts).toEqual({ reports: 1, official: 1, sources: 2, prompts: 2, questions: 0 });
+  });
+
+  it('says a question bank lists no rounds and a press report is no candidate account', () => {
+    const bank = { label: 'Blind question thread', url: 'https://reports.example.com/acme-bank', kind: 'report' as const, date: '2026-11', reportForm: 'question-bank' as const };
+    const press = { label: 'Business Insider', url: 'https://news.example.com/acme-pilot', kind: 'report' as const, date: '2026-05', reportForm: 'press' as const };
+    const table: CompanyInterviewProcess = {
+      ...TABLE,
+      variants: [{ title: 'Engineers', stages: [{ stage: 'Onsite', format: '', appliesTo: '', sources: [press] }] }],
+      questions: [
+        { id: 'debounce', round: 'Phone screen', kind: 'JavaScript', topic: 'Debounce', question: 'Write a debounce.', sources: [bank] },
+        { id: 'tabs', kind: 'UI build', topic: 'Tabs', question: 'Build tabs.', sources: [bank] },
+      ],
+    };
+    const { sources } = companyEvidence({ ...acme, sources: { ...acme.sources, items: [] } }, table);
+    expect(sources).toEqual([
+      { label: 'Business Insider report, May 2026', url: press.url, kind: 'report', note: "A press report read for the process table, where it describes the Onsite, not a candidate's account." },
+      { label: 'Blind question thread', url: bank.url, kind: 'report', note: 'A question bank candidates add to, read for two reported questions. It lists questions without the loop around them.' },
+    ]);
   });
 });
 
 describe('fillCompanyCounts', () => {
-  const counts = { reports: 7, official: 2, sources: 9, prompts: 5 };
+  const counts = { reports: 7, official: 2, sources: 9, prompts: 5, questions: 0 };
 
   it('writes words, capitalised at a sentence start, and digits on request', () => {
     expect(fillCompanyCounts('{reports} public accounts inform this guide. It cites {official} official pages and {sources} sources in all: {#prompts} prompts.', counts))

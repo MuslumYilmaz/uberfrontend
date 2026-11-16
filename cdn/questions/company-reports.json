@@ -890,6 +890,40 @@
         ]
       }
     ],
+    "cloudflare": [
+      {
+        "id": "react-debug-api-misuse",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Product Search That Misuses Its API",
+        "access": "premium",
+        "route": "/react/coding/react-debug-api-misuse",
+        "sources": [
+          {
+            "label": "Taro: Cloudflare frontend engineer interview, Portugal, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/cloudflare/experiences/frontend-engineer-lisbon-lisbon-district-may-1-2025-no-offer-positive-fffe2762/",
+            "publisher": "Taro",
+            "date": "2025-05"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-async-race",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Fix async race in `fetchWithCache`",
+        "access": "free",
+        "route": "/javascript/debug/js-debug-async-race",
+        "sources": [
+          {
+            "label": "Taro: Cloudflare frontend engineer interview, Portugal, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/cloudflare/experiences/frontend-engineer-lisbon-lisbon-district-may-1-2025-no-offer-positive-fffe2762/",
+            "publisher": "Taro",
+            "date": "2025-05"
+          }
+        ]
+      }
+    ],
     "crowdstrike": [
       {
         "id": "react-files-table-select-all",
@@ -1078,6 +1112,39 @@
             "url": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
             "publisher": "Taro",
             "date": "2024-10"
+          }
+        ]
+      }
+    ],
+    "disney": [
+      {
+        "id": "react-debug-api-misuse",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Product Search That Misuses Its API",
+        "access": "premium",
+        "route": "/react/coding/react-debug-api-misuse",
+        "sources": [
+          {
+            "label": "Blind: Disney Streaming front end interview, 2022",
+            "url": "https://www.teamblind.com/post/disney-front-end-interview-xps3iweg",
+            "publisher": "Blind",
+            "date": "2022-02"
+          }
+        ]
+      },
+      {
+        "id": "ui-component-state-from-mock",
+        "kind": "system-design",
+        "title": "UI Component and State Design From a Mock",
+        "access": "premium",
+        "route": "/system-design/ui-component-state-from-mock",
+        "sources": [
+          {
+            "label": "Taro: Disney associate software engineer interview, United States, 2021",
+            "url": "https://www.jointaro.com/interviews/companies/disney/experiences/associate-software-engineer-united-states-may-1-2021-no-offer-positive-9249e5cd/",
+            "publisher": "Taro",
+            "date": "2021-05"
           }
         ]
       }
@@ -2152,24 +2219,6 @@
             "label": "Nowcoder: Shopee frontend social-hire interview, April 2022",
             "url": "https://www.nowcoder.com/discuss/353159545788768256",
             "publisher": "Nowcoder",
-            "date": "2022-04"
-          }
-        ]
-      }
-    ],
-    "spotify": [
-      {
-        "id": "react-debounced-search",
-        "kind": "coding",
-        "tech": "react",
-        "title": "React Debounced Search with Fake API",
-        "access": "premium",
-        "route": "/react/coding/react-debounced-search",
-        "sources": [
-          {
-            "label": "Blind: Spotify web engineer final round, April 2022",
-            "url": "https://www.teamblind.com/post/weak-system-design-interview-for-spotify-chances-of-no-hire-00wjs6rg",
-            "publisher": "Blind",
             "date": "2022-04"
           }
         ]

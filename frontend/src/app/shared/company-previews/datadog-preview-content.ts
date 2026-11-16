@@ -1,30 +1,43 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * Datadog frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported frontend accounts (four on Taro from 2024 and 2025). Nothing here is a leaked, confirmed or official Datadog question, and a handful of
- * accounts cannot establish a fixed loop.
+ * Datadog frontend interview guide. The reported questions live with the process table
+ * (company-interview-processes.ts); the five prompts here are the answer guides of several of them. The questions come
+ * from anonymous interview reviews re-posted on Taro (2021 to 2025), most of them senior loops in France, Spain and
+ * Portugal; a 2025 LeetCode post adds to the process table only. Datadog's candidate experience and AI guideline pages
+ * give the official steps. Nothing here is a leaked, confirmed or official Datadog question.
  */
-const DATADOG_VALBONNE_URL =
-  'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/';
-const DATADOG_VALBONNE_LABEL = 'Public report: Datadog senior frontend developer loop, October 2024 (Taro, approximate date)';
-const DATADOG_PARIS_URL =
-  'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/';
-const DATADOG_PARIS_LABEL = 'Public report: Datadog senior frontend engineer loop, September 2025 (Taro, approximate date)';
-const DATADOG_LISBON_URL =
-  'https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/';
-const DATADOG_LISBON_LABEL = 'Public report: Datadog senior frontend developer loop, November 2025';
-const DATADOG_LISBON_2024_URL =
-  'https://www.jointaro.com/interviews/companies/datadog/experiences/software-engineer-front-end-lisbon-lisbon-district-june-1-2024-no-offer-negative-945bab75/';
-const DATADOG_LISBON_2024_LABEL = 'Public report: Datadog software engineer (front end) interview, 2024 (Taro, approximate date)';
+const DATADOG_TARO = 'https://www.jointaro.com/interviews/companies/datadog/experiences';
+const DATADOG_VALBONNE_URL = `${DATADOG_TARO}/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/`;
+const DATADOG_VALBONNE_LABEL = 'Public report: Taro senior frontend developer offer, October 2024 (approximate date)';
+const DATADOG_PARIS_URL = `${DATADOG_TARO}/senior-frontend-engineer-paris-september-1-2025-accepted-offer-positive-2a1ddfe8/`;
+const DATADOG_PARIS_LABEL = 'Public report: Taro senior frontend engineer offer, September 2025 (approximate date)';
+const DATADOG_LISBON_URL = `${DATADOG_TARO}/senior-frontend-developer-lisbon-lisbon-district-november-23-2025-no-offer-positive-1a88bdda/`;
+const DATADOG_LISBON_LABEL = 'Public report: Taro senior frontend developer loop, November 2025';
+const DATADOG_LISBON_2024_URL = `${DATADOG_TARO}/software-engineer-front-end-lisbon-lisbon-district-june-1-2024-no-offer-negative-945bab75/`;
+const DATADOG_LISBON_2024_LABEL = 'Public report: Taro software engineer (front end) loop, June 2024 (approximate date)';
+const DATADOG_FRANCE_2024_URL = `${DATADOG_TARO}/senior-software-engineer-frontend-france-october-1-2024-accepted-offer-positive-3bd8f875/`;
+const DATADOG_FRANCE_2024_LABEL = 'Public report: Taro senior software engineer (frontend) offer, October 2024 (approximate date)';
+const DATADOG_FRANCE_2023_URL = `${DATADOG_TARO}/senior-software-engineer-frontend-france-july-1-2023-accepted-offer-positive-b4edf2ad/`;
+const DATADOG_FRANCE_2023_LABEL = 'Public report: Taro senior software engineer (frontend) offer, July 2023 (approximate date)';
+const DATADOG_MADRID_2025_URL = `${DATADOG_TARO}/senior-frontend-engineer-madrid-community-of-madrid-july-1-2025-no-offer-positive-f1c8b321/`;
+const DATADOG_MADRID_2025_LABEL = 'Public report: Taro senior frontend engineer loop, July 2025 (approximate date)';
+const DATADOG_MADRID_2024_URL = `${DATADOG_TARO}/frontend-engineer-madrid-february-1-2024-accepted-offer-positive-a8de35e5/`;
+const DATADOG_MADRID_2024_LABEL = 'Public report: Taro frontend engineer offer, February 2024 (approximate date)';
+const DATADOG_PARIS_2021_URL = `${DATADOG_TARO}/senior-frontend-engineer-paris-april-1-2021-accepted-offer-positive-f33dca98/`;
+const DATADOG_PARIS_2021_LABEL = 'Public report: Taro senior frontend engineer offer, April 2021 (approximate date)';
+const DATADOG_NEW_YORK_2021_URL = `${DATADOG_TARO}/software-engineer-front-end-new-york-ny-july-1-2021-no-offer-positive-2833c42b/`;
+const DATADOG_NEW_YORK_2021_LABEL = 'Public report: Taro software engineer (front end) loop, July 2021 (approximate date)';
+const DATADOG_CANDIDATE_EXPERIENCE_URL = 'https://careers.datadoghq.com/candidate-experience/';
+const DATADOG_AI_GUIDELINES_URL = 'https://careers.datadoghq.com/candidate-experience/interviewing-at-datadog-ai-guidelines/';
 
-export const DATADOG_PREVIEW_TITLE = 'Datadog Frontend Interview Questions: 5 Prompts + Prep Guide';
+export const DATADOG_PREVIEW_TITLE = 'Datadog Frontend Interview Questions: {#questions} Reported + Prep Guide';
 export const DATADOG_PREVIEW_H1 = 'Datadog Frontend Interview Questions';
 export const DATADOG_PREVIEW_DESCRIPTION =
-  'Prepare for a Datadog frontend interview with 5 practice prompts: sortable real-time tables, Live Tail log architecture, timed sorting and filtering.';
+  'Datadog frontend interview: the CoderPad algorithm screen, React live coding, the take-home, frontend system design on Excalidraw and {#questions} reported questions.';
 export const DATADOG_PREVIEW_CANONICAL_PATH = '/companies/datadog/preview';
 export const DATADOG_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official Datadog questions. A few self-reported loops cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'The questions come from candidates\' anonymous reviews re-posted on Taro, most from senior frontend loops in France, Spain and Portugal, and are retold in our words. Datadog has confirmed none of them, and the answer guides are FrontendAtlas\'s. Datadog\'s own pages describe its steps only in general terms, so ask your recruiter which rounds your role runs and in what order.';
 
 export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'datadog',
@@ -37,37 +50,37 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Datadog prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public senior frontend accounts from 2024 and 2025: a sortable table of real-time data, the frontend architecture of a Live Tail log view, a timed ordering-and-filtering exercise, incremental live coding on data and tables, and a walkthrough of how you would build a feature or fix a major bug.',
+      'Datadog frontend accounts from 2021 to 2025, most of them senior loops in France, Spain and Portugal, describe a recruiter call, an algorithm screen on CoderPad, an hour of React live coding, a harder coding round, frontend system design on Excalidraw, an experience and values interview and team matching. Under the rounds are {questions} questions from those accounts; the first, a React table of real-time data, is open.',
     caveat:
-      'This guide uses public, self-reported interview accounts to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every Datadog team.',
-    chips: ['5 practice prompts', 'React, data tables, real-time logs', 'Full practice set requires Premium'],
+      'The order and number of rounds change from loop to loop: one 2024 candidate traded the React hour for a take-home, and some loops held a round in person at an office while others stayed virtual. Outside Europe there are only a 2021 New York account and a 2024 account from Brazil.',
+    chips: ['{#questions} reported questions', '{#reports} public reports, 2021–2025', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
-    title: 'Prepare for product judgment, not Datadog trivia',
+    title: 'What Datadog frontend loops reward: tables of moving data, and algorithms done cleanly',
     paragraphs: [
-      'Every public account converges on the same material: data that keeps changing, tables that must stay sortable and filterable while it changes, and logs that arrive faster than a screen can show them. The accounts also describe loops that test algorithms and frontend work equally, with LeetCode-style screens before the React and design rounds. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
-      'The September 2025 account gives the most useful tactical advice: the live coding exercise starts simple and adds parts step by step, so complete each task step by step and do not worry about optimisations such as context providers or virtualisation.',
+      'The Datadog frontend rounds keep returning to data that changes while you look at it. The open question asks for a React table of real-time data that sorts by any column; other loops built a table up step by step with filters and sorting, parsed data into an existing app, or set a take-home that charts load over time and raises alerts. The hired September 2025 Paris candidate gives the tactic for the step-by-step hour: finish each step, and leave optimisations such as a context provider or virtualisation alone.',
+      'The design round keeps to the same ground: a Live Tail view of real-time logs, a real-time event viewer, a component for log data of any size, a dashboard of widgets, an app for monitors. The algorithm rounds are the other half, on CoderPad in JavaScript or TypeScript: string problems such as counting repeated words or matching a pattern without regular expressions, and tree problems solved with depth-first search. Either half can end a loop; a 2025 candidate in Spain lost a coding round by over-engineering a tag-matching problem that plain loops would have solved.',
     ],
   },
   sourceBoundary: {
-    kicker: 'Source boundary · checked October 2026',
-    title: 'What the public accounts establish, and what you still need to confirm',
+    kicker: 'Source boundary · checked November 2026',
+    title: 'Who wrote these Datadog accounts, and what they leave out',
     paragraphs: [
-      'Three senior frontend loops on Taro shape the practice prompts in this guide. October 2024: two algorithm exercises, a practical React session, a harder algorithm round, frontend architecture on a whiteboard tool, an experience and values interview, and team matching; its listed prompts include counting repeated words, matching a pattern without regular expressions, a sortable real-time table and a Live Tail log view. September 2025: a medium algorithm screen, incremental live coding on data and tables, frontend and API design, behavioural questions. November 2025: an ordering-and-filtering exercise and an onsite discussion of how to build a feature or fix a major bug. A shorter 2024 account adds a prompt to sketch the architecture of a real-time event viewer.',
-      'Together they establish that these round types occurred between 2024 and 2025; they do not establish exact wording, the current format, or how every office interviews. Confirm the exercise types, the allowed tools and the timing with the recruiter. Datadog publishes its roles on its careers site; use that for product context, not as evidence of interview content. The process table above draws on more reports from 2023 to 2025, these three loops among them: {reports} public accounts inform the guide in all, each listed under Sources.',
+      '{reports} public accounts sit behind this guide. All but one are anonymous reviews re-posted on Taro from frontend loops between 2021 and 2025; the other is a 2025 LeetCode post on a Paris role, whose offer was withdrawn after team matching had been scheduled. Most come from senior candidates in France, Spain and Portugal, many of them hired, and Taro dates many reviews to the first of a month, a placeholder rather than the interview date.',
+      'They show which rounds came up and what some candidates were asked; they cannot fix an order, and only a 2021 New York account describes a US loop. Datadog\'s candidate experience page lists an initial screen, face-to-face interviews in rounds or panels with one step expected in person, a take-home project and an executive interview for some roles; no frontend account reports the executive interview. Its AI guidelines rule out AI tools in live coding unless you are told in advance. Ask the recruiter for the order of your rounds, whether a take-home replaces the React hour, and which step is in person.',
     ],
   },
   roleLenses: {
     kicker: 'Role lenses',
-    title: 'Two product contexts for practising transferable frontend judgment',
+    title: 'Live data views or tables and dashboards: where the Datadog rounds point',
     intro:
-      'These are preparation lenses derived from the public prompts and the kinds of screens an observability product runs, not claimed team assignments. Choose the lens closest to the role and keep the reasoning framework-neutral.',
+      'Neither lens is a team. Both come from what Datadog candidates were asked to build and design: data that streams in, and screens that must stay usable while the data under them changes.',
     items: [
       {
         title: 'Live data views',
         description:
-          'Logs, traces and events that stream in continuously and must stay readable, filterable and selectable while they move.',
+          'Logs and events that stream in continuously and must stay readable, filterable and selectable while they move.',
         practiceFocus:
           'Bounded rendering of growing lists, stable row identity, pause-on-interaction, filters applied to a moving window, and truthful counts.',
       },
@@ -82,10 +95,10 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   prompts: {
     kicker: 'Representative practice prompts',
-    title: 'Five Datadog frontend interview practice questions',
+    title: 'Answer guides for the reported Datadog questions',
     intro:
-      'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Each prompt links to the public report it is modelled on and to a practice page.',
-    itemListName: 'Five Datadog frontend interview practice prompts',
+      'Each guide covers what to settle before you start, what a strong answer includes and the slip that most often ends the round.',
+    itemListName: 'Datadog answer guides',
     items: [
       {
         id: 'sortable-real-time-table',
@@ -135,9 +148,9 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
       },
       {
         id: 'ordering-and-filtering-under-time',
-        title: 'Solve an ordering-and-filtering exercise under time',
+        title: 'Solve an ordering, filtering or counting exercise under time',
         statement:
-          'A standard coding exercise on ordering and filtering a dataset, in the style of a medium algorithm problem; the October 2024 account adds counting repeated words in a paragraph and matching a pattern without regular expressions.',
+          'A standard coding exercise on ordering and filtering a dataset, in the style of a medium algorithm problem; other screens asked for counting the repeated words in a paragraph.',
         whatThisMeasures:
           'Clean algorithmic fundamentals, correct comparators and predicates, edge cases around empty input and ties, and the ability to state complexity while coding.',
         clarifyFirst: [
@@ -146,21 +159,21 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         strongAnswer: [
           'Write the comparator or predicate as a named function with the tie rule spelled out.',
-          'Use a frequency map for counting problems and say why it is linear.',
+          'Use a frequency map for counting problems, normalise case and punctuation before counting words, and say why it is linear.',
           'Handle empty input, a single element and duplicates before polishing.',
           'State the time and space complexity and the one optimisation you would add with more time.',
         ],
         commonMiss:
-          'Using the default sort on numbers or forgetting that the default comparator sorts by string value.',
+          'Using the default sort on numbers, forgetting that the default comparator sorts by string value, or splitting words on spaces alone so punctuation creates false duplicates.',
         resourceLabel: 'Implement Array.prototype.filter (Premium)',
         resourcePath: '/javascript/coding/js-array-prototype-filter',
         reportedRound: { label: DATADOG_LISBON_LABEL, url: DATADOG_LISBON_URL },
       },
       {
         id: 'incremental-live-coding-on-tables',
-        title: 'Survive incremental live coding on data and tables',
+        title: 'Build a table step by step in an hour of incremental React live coding',
         statement:
-          'The exercise starts small, then adds requirements step by step for an hour: show rows, then filter them, then group or update them, then handle a new data shape. Keep working code at every step.',
+          'The exercise starts with a simple table, then adds requirements one at a time: filter the rows, sort them, then whatever the interviewer asks next. Keep working code at every step.',
         whatThisMeasures:
           'Pace under a clock, keeping state derivable from one source as requirements grow, immutable updates, and knowing which optimisations to mention rather than build.',
         clarifyFirst: [
@@ -169,7 +182,7 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
         ],
         strongAnswer: [
           'Finish each step with working code before refactoring, and keep the earlier steps green.',
-          'Keep rows in one array and derive filtered, grouped and sorted views from it, so each new step is a function of the same source.',
+          'Keep rows in one array and derive filtered and sorted views from it, so each new step is a function of the same source.',
           'Update rows immutably by index or identity so later steps that compare or memoise still work.',
           'Name virtualisation and context providers as later optimisations only if asked, and keep the hour for behaviour.',
         ],
@@ -205,13 +218,13 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
+    kicker: 'Mini walkthrough',
     title: 'Scope the sortable real-time table before writing the first line',
     intro:
-      'Treat this as a representative exercise, not a description of the reported one. Work from the contract toward the data flow, and say each decision out loud.',
+      'Four decisions to say out loud before typing, for the open question: a React table of real-time data that the user can sort by any column.',
     steps: [
       { title: 'Pin the update contract', description: 'Replace, append or both; how fast; and whether an update may arrive for a row the user has selected.' },
-      { title: 'Separate source from view', description: 'Raw rows in one place, sorted and filtered views derived from them with memoised comparators.' },
+      { title: 'Separate source from view', description: 'Raw rows in one place, sorted views derived from them with memoised comparators.' },
       { title: 'Give rows an identity', description: 'Key rows by a stable id so selection, focus and animations survive an update.' },
       { title: 'Decide what happens during interaction', description: 'Pause reordering while the user sorts or selects, and show a count of pending updates instead of moving the row under the pointer.' },
     ],
@@ -219,67 +232,76 @@ export const DATADOG_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   prepPlan: {
     kicker: 'Actionable preparation',
     title: 'A 7-day Datadog frontend interview preparation plan',
-    intro: 'Every day ends with code, a test, a design artifact, or a question you can use in the real process.',
+    intro:
+      'Seven days in the order Datadog loops tend to run: the CoderPad screen, the React hour, the harder coding round, the design round and the experience interview, then a mock of the whole day.',
     days: [
-      { day: 'Day 1', focus: 'Algorithm screens: two medium problems a day on ordering, filtering and frequency counts, with the comparator rules written down.', artifact: 'Four solved problems with stated complexity.' },
-      { day: 'Day 2', focus: 'Sorting and filtering fundamentals: stable sorts, numeric versus string comparators, frequency maps.', artifact: 'The filter and sort drills passing with edge cases.' },
-      { day: 'Day 3', focus: 'Tables under change: derived views, stable identity, immutable updates, batched rendering.', artifact: 'A sortable table that keeps selection while rows update.' },
-      { day: 'Day 4', focus: 'Live data architecture: transport, bounded buffers, pause and resume, filters on a moving window.', artifact: 'A one-page Live Tail design with its failure states.' },
-      { day: 'Day 5', focus: 'Incremental live coding: a one-hour drill where a partner adds a requirement every ten minutes.', artifact: 'A time log showing working code at every step.' },
-      { day: 'Day 6', focus: 'Feature and bug walkthroughs: reproduction, evidence, safe rollout, success signal.', artifact: 'Two written walkthroughs, one feature and one major bug.' },
-      { day: 'Day 7', focus: 'Mock loop: one algorithm round, one table build, one design walkthrough, one experience interview, each narrated.', artifact: 'A list of the questions you will ask the recruiter about format, tools and timing.' },
+      { day: 'Day 1', focus: 'Algorithm screen: two easy-to-medium problems in 40 to 60 minutes on CoderPad, in JavaScript or TypeScript, talking through each step.', artifact: 'Four solved problems with the complexity stated and the edge cases you tested.' },
+      { day: 'Day 2', focus: 'The open question: a React table of real-time data that sorts by any column, built inside an hour with stable row identity.', artifact: 'A working table that keeps its sort and selection while rows update.' },
+      { day: 'Day 3', focus: 'Growing tasks: an hour in which a partner adds one requirement at a time, the shape the hired 2025 Paris candidate describes for the React round.', artifact: 'A time log with working code at every step.' },
+      { day: 'Day 4', focus: 'Harder coding round: one medium-to-hard problem whose criteria change halfway, solved first and tidied after.', artifact: 'Two problems where you changed the solution after a new criterion.' },
+      { day: 'Day 5', focus: 'Frontend system design: a data-heavy screen on Excalidraw, covering the UI, the API endpoints and rendering performance.', artifact: 'One diagram with the endpoints, the state and the rendering limits.' },
+      { day: 'Day 6', focus: 'Experience and values: a past project presented in about 15 minutes, then behavioural stories, why Datadog among them.', artifact: 'A project walkthrough and five stories, one about a conflict and one about tough feedback.' },
+      { day: 'Day 7', focus: 'Mock loop: an algorithm round, a React hour, a design round and an experience interview on one day.', artifact: 'Your questions for the recruiter: the order of the rounds, whether a take-home replaces the React hour, and which step is in person.' },
     ],
   },
   faqs: {
     kicker: 'Preparation FAQ',
     title: 'Common Datadog frontend interview preparation questions',
     items: [
-      { question: 'Are these the real Datadog questions?', answer: 'No. They are FrontendAtlas practice versions modelled on round types described in public, self-reported accounts. The wording, the data and the test cases are ours.' },
-      { question: 'How much algorithm practice does a frontend loop need?', answer: 'The public accounts describe LeetCode-style screens and at least one algorithm round in the onsite, alongside React and design rounds. Plan for medium problems with clean fundamentals rather than hard puzzles.' },
-      { question: 'Should I build virtualisation in the live coding round?', answer: 'The September 2025 account advises against it: complete each task step by step and do not worry about optimisations such as virtualisation or context providers. Keep the hour for behaviour.' },
-      { question: 'Does every office interview the same way?', answer: 'The accounts differ in round count and order and do not reliably show which office ran them. Treat them as shapes to practise and confirm the loop with the recruiter.' },
+      { question: 'Are these the real Datadog questions?', answer: 'They are questions candidates reported in anonymous reviews re-posted on Taro, retold in our words. Datadog has not confirmed any of them. A few problems recur in two to four reviews; most rows rest on one account. The outlines that answer them, and the tasks to practise on, come from FrontendAtlas.' },
+      { question: 'How much algorithm practice does a Datadog frontend loop need?', answer: 'Most loops have two algorithm rounds: a screen of 40 to 60 minutes with two easy-to-medium problems on CoderPad, and later a single harder problem. A 2023 candidate could search MDN during the screen, and a 2024 Madrid candidate solved the screen problems together with the interviewer.' },
+      { question: 'Should I build virtualisation in the React round?', answer: 'The hired September 2025 Paris candidate advises against it: the exercise grows one part at a time, so finish each step and skip optimisations such as a context provider or virtualisation.' },
+      { question: 'Is there a take-home project?', answer: 'For some roles. Datadog\'s candidate experience page lists one, and its AI guidelines expect the work to be your own and to be discussed live afterwards. A 2024 France candidate chose a take-home over the live React round, with 4 to 6 suggested hours, and two 2021 accounts had one as a separate step.' },
+      { question: 'Can I use AI tools in a Datadog interview?', answer: 'Not in live coding or technical assessments unless you are told otherwise in advance, according to Datadog\'s AI guidelines for interviews. Some roles run AI-assisted coding interviews in which AI tools are allowed and expected, and candidates are told beforehand. No frontend account here describes one.' },
+      { question: 'Is any step in person?', answer: 'Datadog\'s page says one step is expected in person. In the accounts, the 2025 Paris candidate had the design round at the Paris office and a 2024 Madrid offer followed a visit to the Madrid office, while the 2024 candidate whose React round gave the open question interviewed entirely online.' },
     ],
   },
   resourceLinks: {
     kicker: 'Free public practice',
-    title: 'Build the underlying skills with free practice',
+    title: 'Free practice for the Datadog rounds',
     intro:
-      'These public pages cover the sorting, counting, immutable update, streaming and incident skills used by the practice prompts. They are supporting drills, not claimed Datadog questions.',
+      'Free drills for what the Datadog rounds share: an hour-sized React build, rows that keep their identity, one source for derived views, an algorithm plan, rendering cost in design and a story structure.',
     items: [
-      { label: 'Update an array at an index immutably', description: 'Row updates that keep earlier state intact.', path: '/javascript/coding/js-update-at-index' },
-      { label: 'Count vowels', description: 'A frequency-count warm-up for the counting prompts.', path: '/javascript/coding/js-count-vowels' },
-      { label: 'Fix numeric sort in sortScores', description: 'The default comparator sorts by string value.', path: '/javascript/debug/js-debug-numeric-sort' },
-      { label: 'Infinite scroll list system design', description: 'Bounded rendering of a growing list.', path: '/system-design/infinite-scroll-list' },
-      { label: 'Search typing lag incident', description: 'A production bug walked through from report to fix.', path: '/incidents/search-typing-lag' },
-      { label: 'SSE vs WebSocket for a live dashboard', description: 'Transport trade-offs for streaming views.', path: '/tradeoffs/sse-vs-websocket-live-dashboard' },
-      { label: 'Frontend system design blueprint: performance', description: 'How to talk about rendering cost in a design round.', path: '/guides/system-design-blueprint/performance' },
+      { label: 'Fetch and render a list with loading, error and empty states', description: 'An hour-sized React build, the format of the live round.', path: '/react/coding/react-fetch-list-states' },
+      { label: 'Keys in React lists', description: 'Why rows that update need a stable key, as in the open question.', path: '/react/trivia/react-keys-in-lists' },
+      { label: 'Why derived state is an anti-pattern', description: 'Keep one source of rows and compute the sorted view from it.', path: '/react/trivia/react-derived-state-anti-pattern' },
+      { label: 'Data structures and algorithms for frontend loops', description: 'A plan for the CoderPad screen and the harder coding round.', path: '/guides/interview-blueprint/dsa-for-fe' },
+      { label: 'Frontend system design blueprint: performance', description: 'How to talk about rendering cost in the design round.', path: '/guides/system-design-blueprint/performance' },
+      { label: 'Behavioural stories', description: 'A structure for the experience and values interview.', path: '/guides/behavioral/stories' },
     ],
   },
   sources: {
     kicker: 'Public interview reports and official context',
     title: 'Sources and evidence limits',
-    intro: 'These links support the public context used by the guide. Their notes state what each source can and cannot establish about preparation.',
+    intro: 'Each note says what that account or page covers and where it stops.',
     items: [
-      { label: DATADOG_VALBONNE_LABEL, url: DATADOG_VALBONNE_URL, note: 'One self-reported senior loop with an offer. It lists the sortable real-time table, the Live Tail log view, two algorithm prompts and the behavioural themes; it cannot establish exact wording or the current format.', kind: 'report' },
-      { label: DATADOG_PARIS_LABEL, url: DATADOG_PARIS_URL, note: 'One self-reported senior loop with an offer. It establishes the incremental live coding shape and the data-and-tables focus; it names no exact prompt.', kind: 'report' },
-      { label: DATADOG_LISBON_LABEL, url: DATADOG_LISBON_URL, note: 'One self-reported senior loop without an offer. It establishes the ordering-and-filtering exercise and the feature-or-bug walkthrough; it names no exact prompt.', kind: 'report' },
-      { label: DATADOG_LISBON_2024_LABEL, url: DATADOG_LISBON_2024_URL, note: 'One self-reported account without an offer. It lists the prompt to sketch the architecture of a real-time event viewer; nothing else from it is used.', kind: 'report' },
-      { label: 'Datadog: Candidate experience', url: 'https://careers.datadoghq.com/candidate-experience/', note: 'Official description of the hiring steps: an initial screen, interviews in rounds or panels with one step expected in person, a take-home project and an executive interview for some roles. It does not describe frontend questions.', kind: 'official' },
+      { label: DATADOG_VALBONNE_LABEL, url: DATADOG_VALBONNE_URL, note: 'A hired senior engineer: a recruiter call, two algorithm exercises and later a single harder problem on CoderPad, a React session, frontend architecture on Excalidraw, an hour split between a past project and behavioural questions, then two team-match interviews. The open question comes from its React session.', kind: 'report' },
+      { label: DATADOG_PARIS_LABEL, url: DATADOG_PARIS_URL, note: 'A hired senior engineer: a recruiter call with questions on past projects, a medium LeetCode-style screen, an incremental React exercise, a design round held at the Paris office, a behavioural round and short calls to choose a team. Its advice: finish each step before optimising.', kind: 'report' },
+      { label: DATADOG_FRANCE_2024_LABEL, url: DATADOG_FRANCE_2024_URL, note: 'A hired senior engineer with a New York-based recruiter: a screen of a short project talk and two CoderPad problems, a take-home chosen over a live React session, a design interview on Excalidraw, a one-hour product-focused coding round, an experience and values interview with an engineering manager and a 30-minute team match.', kind: 'report' },
+      { label: DATADOG_FRANCE_2023_LABEL, url: DATADOG_FRANCE_2023_URL, note: 'A hired senior engineer: a 30-minute recruiter call, then five one-hour rounds on Zoom, a CoderPad screen with MDN allowed, frontend system design on Excalidraw, React live coding with docs allowed, a harder live-coding round and a hiring-manager interview with a project presentation, then two placement interviews.', kind: 'report' },
+      { label: DATADOG_MADRID_2024_LABEL, url: DATADOG_MADRID_2024_URL, note: 'A hired engineer: a 40-minute screen of two easy problems solved with the interviewer, then four one-hour interviews (coding, HTML and CSS with React, frontend system design, and a project presentation with values questions), two manager conversations and a visit to the Madrid office before the offer.', kind: 'report' },
+      { label: DATADOG_MADRID_2025_LABEL, url: DATADOG_MADRID_2025_URL, note: 'A senior loop without an offer: two coding interviews, a cultural interview, one with a project manager and a design interview. The feedback was that the candidate did not discuss complex past projects enough.', kind: 'report' },
+      { label: DATADOG_LISBON_LABEL, url: DATADOG_LISBON_URL, note: 'A senior loop without an offer, rated positive: an HR screen, LeetCode-style exercises on a call with an interviewer who explained well, then an on-site interview.', kind: 'report' },
+      { label: DATADOG_LISBON_2024_LABEL, url: DATADOG_LISBON_2024_URL, note: 'A short review rated negative: a coding interview, then a design interview the candidate later learned they had failed; a promised feedback session never took place.', kind: 'report' },
+      { label: DATADOG_PARIS_2021_LABEL, url: DATADOG_PARIS_2021_URL, note: 'A hired senior engineer in 2021: live coding of two simple functions, a take-home, live coding of one function of average difficulty, frontend system design and a hiring-manager interview mixing behavioural and technical talk.', kind: 'report' },
+      { label: DATADOG_NEW_YORK_2021_LABEL, url: DATADOG_NEW_YORK_2021_URL, note: 'The only US account: a recruiter call the day after a referral, a tech screen on Zoom, a take-home given as 4 to 6 hours in one place and 6 to 8 in another, then an on-site with a front-end coding round, a design round and several conversations. No offer.', kind: 'report' },
+      { label: 'Datadog: Candidate experience', url: DATADOG_CANDIDATE_EXPERIENCE_URL, note: 'Official description of the hiring steps: an initial screen with a recruiter or hiring manager, face-to-face interviews in rounds or panels with one step expected in person, a take-home project, an executive interview for some roles, then selection. It does not describe frontend questions.', kind: 'official' },
+      { label: 'Datadog: AI guidelines for interviews', url: DATADOG_AI_GUIDELINES_URL, note: 'Official rules on AI tools: none in live coding or technical assessments unless you are told otherwise, AI-assisted coding interviews for some roles announced in advance, and take-home work that must be your own and is discussed live.', kind: 'official' },
     ],
   },
   cta: {
     kicker: 'Full company practice',
     title: 'Continue with the full Datadog practice set',
     copy:
-      'Premium unlocks the dynamic table, the sort and filter implementations, the live comments stream case and the broader company-tagged editorial set.',
+      'Premium opens the locked Datadog questions with their answer guides and practice tasks, and the wider premium library of coding, concept and system-design practice.',
     buttonLabel: 'Unlock the full Datadog practice set',
     src: 'company_preview_datadog',
   },
   about: [
     'Datadog frontend interview preparation',
-    'Sortable real-time data tables',
-    'Live log view frontend architecture',
-    'Ordering and filtering coding exercises',
+    'Sortable real-time data tables in React',
+    'Datadog CoderPad algorithm screen',
+    'Datadog frontend system design round',
   ],
   indexAnchorLabel: 'Datadog frontend interview questions',
 };

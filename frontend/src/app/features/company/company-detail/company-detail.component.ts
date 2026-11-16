@@ -48,7 +48,7 @@ export class CompanyDetailComponent {
 
   promptCountLabel(count: number | null | undefined): string {
     const value = Number.isFinite(count) ? Number(count) : 0;
-    return `${value} editorial practice ${value === 1 ? 'prompt' : 'prompts'}`;
+    return `${value} FrontendAtlas practice ${value === 1 ? 'question' : 'questions'}`;
   }
 
   pretty(slug: string) {

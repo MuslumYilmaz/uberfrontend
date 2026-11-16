@@ -49,7 +49,7 @@ export function parsePage(html, route, canonicalBase) {
     if (attrs['data-testid']) testIds.add(attrs['data-testid']);
     if (attrs['data-testid'] === 'company-preview-counts') companyCounts = textContent(node).replace(/\s+/g, ' ').trim();
     if (tokens(attrs.class).includes('preview-chip')) {
-      const total = textContent(node).match(/^(\d+) editorial practice prompts?$/);
+      const total = textContent(node).match(/^(\d+) FrontendAtlas practice questions?$/);
       if (total) companyTotal = Number(total[1]);
     }
     if (node.tagName === 'base' && attrs.href && !hasBase) {
@@ -71,7 +71,7 @@ export function parsePage(html, route, canonicalBase) {
         pathWithQuery: `${url.pathname}${url.search}`, query: url.search, fragment: url.hash,
         follow: !tokens(attrs.rel).some((rel) => ['nofollow', 'sponsored', 'ugc'].includes(rel)),
         zone: navigation ? 'navigation' : 'content', directory: Boolean(directory), companyIndex: Boolean(companyIndex),
-        companyCount: companyIndex ? Number(textContent(node).match(/(\d+)\s+editorial practice prompts?/)?.[1] ?? NaN) : null });
+        companyCount: companyIndex ? Number(textContent(node).match(/(\d+)\s+FrontendAtlas practice questions?/)?.[1] ?? NaN) : null });
     }
     for (const child of node.childNodes || []) visit(child, { navigation, directory, companyIndex });
   };
@@ -133,7 +133,10 @@ function companyExpectations(questionsDir, slugs) {
     const keys = new Set(matches.flatMap(({ kind, items }) => items.map((q) => `${kind}:${q.tech || 'none'}:${q.id}`)));
     return [slug, { count: Math.min(8, keys.size), requiredIds: new Set(matches.flatMap(({ limit, items }) => items.slice(0, limit).map((q) => q.id))) }];
   }));
-  return { counts, samples };
+  // A guide with a reported-question list shows the list in place of the sample cards (company-preview.component.html).
+  const listsFile = path.join(questionsDir, 'company-question-lists.json');
+  const listed = new Set(fs.existsSync(listsFile) ? Object.keys(readJson(listsFile).companies ?? {}) : []);
+  return { counts, samples, listed };
 }
 /** Keeps the first of each framework family in list order; a task with no counterparts always stays. */
 function oneCardPerExercise(items, families) {
@@ -165,7 +168,7 @@ function shortestDistances(graph) {
 
 /** Static discovery audit; this does not reproduce Google's rendered graph. */
 export function auditBuild({ buildDir, canonicalBase = 'https://frontendatlas.com', registry = readJson(cdnPracticeRegistryPath),
-  questionsDir = cdnQuestionsDir, criticalHubs = CRITICAL_HUBS, companySamples, companyCounts } = {}) {
+  questionsDir = cdnQuestionsDir, criticalHubs = CRITICAL_HUBS, companySamples, companyCounts, listedCompanies } = {}) {
   canonicalBase = canonicalBase.replace(/\/+$/, '');
   const sitemap = readSitemap(buildDir, canonicalBase);
   const robotsAllows = createRobotsPolicy(fs.readFileSync(path.join(buildDir, 'robots.txt'), 'utf8'));
@@ -245,9 +248,10 @@ export function auditBuild({ buildDir, canonicalBase = 'https://frontendatlas.co
   const companyRoutes = sorted([...sitemap].filter((route) => /^\/companies\/[^/]+\/preview$/.test(route)));
   const companyIndexLinks = new Map((pages.get('/companies')?.anchors || []).filter((a) => a.companyIndex && a.follow && !a.query).map((a) => [a.route, a]));
   const genericSlugs = companyRoutes.map((route) => route.split('/')[2]).filter((slug) => !AUTHORED_COMPANIES.has(slug));
-  const expectedCompanies = companyRoutes.length ? companyExpectations(questionsDir, genericSlugs) : { counts: {}, samples: new Map() };
+  const expectedCompanies = companyRoutes.length ? companyExpectations(questionsDir, genericSlugs) : { counts: {}, samples: new Map(), listed: new Set() };
   const expectedSamples = companySamples ?? expectedCompanies.samples;
   const expectedCounts = companyCounts ?? expectedCompanies.counts;
+  const listedSlugs = listedCompanies ?? expectedCompanies.listed;
   const companyCoverage = [], companyIndexCoverage = [];
   for (const route of companyRoutes) {
     if (!companyIndexLinks.has(route)) failures.add(`Company directory missing initial-HTML link: /companies -> ${route}`);
@@ -259,14 +263,17 @@ export function auditBuild({ buildDir, canonicalBase = 'https://frontendatlas.co
     if (AUTHORED_COMPANIES.has(slug)) continue;
     const ids = pages.get(route)?.testIds || new Set();
     const sampleIds = new Set([...ids].filter((id) => id.startsWith('company-preview-question-')).map((id) => id.slice('company-preview-question-'.length)));
-    const expected = expectedSamples.get(slug) ?? { count: 0, requiredIds: new Set() };
+    const listed = listedSlugs.has(slug);
+    if (listed && !ids.has('company-question-list')) failures.add(`Company preview missing its reported-question list: ${route}`);
+    const expected = listed ? { count: 0, requiredIds: new Set() } : expectedSamples.get(slug) ?? { count: 0, requiredIds: new Set() };
     const missing = sorted([...expected.requiredIds].filter((id) => !sampleIds.has(id)));
     // A kind the set does not hold is left off the chip, so each count is read on its own.
     const chip = pages.get(route)?.companyCounts ?? '';
     const readCount = (label) => Number(chip.match(new RegExp(`\\b${label} (\\d+)`))?.[1] ?? 0);
-    const actualCounts = /\b(?:Coding|Debugging|Concepts|System) \d+/.test(chip)
-      ? { coding: readCount('Coding'), debug: readCount('Debugging'), trivia: readCount('Concepts'), system: readCount('System'), all: pages.get(route).companyTotal }
-      : null;
+    const kinds = { coding: readCount('Coding'), debug: readCount('Debugging'), trivia: readCount('Concepts'), system: readCount('System') };
+    // A listed guide's first chip counts its reported questions, so its practice set is the sum of the kinds.
+    const total = pages.get(route)?.companyTotal ?? (listed ? kinds.coding + kinds.debug + kinds.trivia + kinds.system : null);
+    const actualCounts = /\b(?:Coding|Debugging|Concepts|System) \d+/.test(chip) ? { ...kinds, all: total } : null;
     companyCoverage.push({ route, expectedSamples: expected.count, actualSamples: sampleIds.size, missing, expectedCounts: counts, actualCounts });
     if (sampleIds.size !== expected.count || missing.length) failures.add(`Company preview missing or unexpected initial-HTML samples: ${route} (expected=${expected.count}, actual=${sampleIds.size}, missing=${missing.join(', ')})`);
     if (!actualCounts) failures.add(`Company preview missing initial-HTML counts: ${route}`);

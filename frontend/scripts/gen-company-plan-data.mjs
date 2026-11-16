@@ -20,6 +20,7 @@ const TECHS = ['javascript', 'react', 'angular', 'vue', 'css', 'html'];
 const FRAMEWORK_TECHS = new Set(['react', 'angular', 'vue']);
 // A task's minutes come from the module the task page and timed practice read, so all three say the same number.
 const { practiceMinutes } = loadTsModule(path.join(sharedRoot, 'practice-minutes.ts'));
+const { UNCITED_SOURCE } = loadTsModule(path.resolve(sharedRoot, '..', 'features', 'company', 'company-preview', 'company-evidence.ts'));
 const MINUTES_BY_KIND = { 'system-design': 45, trivia: 10, guide: 15 };
 // A guide page's reading time, as the page shows it. A series' index page and a company guide's section show none,
 // so they keep the guide default.
@@ -419,7 +420,8 @@ function buildCompany(slug, context) {
     }
 
     const reportDates = [
-      ...variant.stages.flatMap((stage) => stage.sources.filter((source) => source.kind === 'report').map((source) => source.date)),
+      // A press report dates no candidate's loop.
+      ...variant.stages.flatMap((stage) => stage.sources.filter((source) => source.kind === 'report' && source.reportForm !== 'press').map((source) => source.date)),
       ...inList.filter(({ hidden }) => !hidden).map(({ newest }) => newest.date),
     ];
 
@@ -451,8 +453,15 @@ function buildCompany(slug, context) {
   });
 
   // The company's whole evidence, counted the way the guide page counts it: every table citation and the guide's
-  // own sources list, once by URL. The plan's "from N public sources" then matches the guide's numbers.
-  const evidence = new Set([...allCited, ...(context.sources?.[slug] ?? [])]);
+  // own sources list, once by URL. The plan's "from N public sources" then matches the guide's numbers. A guide with
+  // a question list also counts what its questions cite, and a catalog guide then lists every reported item's sources.
+  const listed = [...(table.questions ?? []), ...(table.behaviouralQuestions ?? [])];
+  const evidence = new Set([
+    ...allCited,
+    ...(context.sources?.[slug] ?? []),
+    ...listed.flatMap((question) => question.sources.map((source) => source.url)),
+    ...(listed.length && showsEveryReport ? (context.reports[slug] ?? []).flatMap((row) => row.sources.map((source) => source.url)).filter((url) => !UNCITED_SOURCE.test(url)) : []),
+  ]);
   return {
     name: brands[slug].label,
     signature: signatures[slug],
@@ -463,6 +472,8 @@ function buildCompany(slug, context) {
     sourceCount: evidence.size,
     // The guide's practice prompts; the plan tells a phone reader which answer guides Premium opens there.
     promptCount: (context.prompts?.[slug] ?? []).length,
+    // A guide with a question list shows its reported questions instead, the first one open.
+    ...(table.questions?.length ? { questionCount: table.questions.length } : {}),
     variants,
   };
 }

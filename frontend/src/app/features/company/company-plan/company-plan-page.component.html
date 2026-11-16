@@ -139,12 +139,12 @@
       @for (entry of companies(); track entry.company.slug) {
         <a class="plan-guides__link" [routerLink]="entry.guide">Read the {{ entry.company.name }} guide</a>
       }
-      <p class="plan-guides__body">The full process, practice prompts and every source.</p>
+      <p class="plan-guides__body">The full process, the reported questions and every source.</p>
       @if (beyond(); as more) {
         <div class="plan-guides__beyond" data-testid="company-plan-beyond">
           <p class="plan-guides__title">Beyond your plan</p>
           @for (set of more.sets; track set.link) {
-            <a class="plan-guides__link" [routerLink]="set.link">The full {{ set.name }} set: {{ set.count }} questions</a>
+            <a class="plan-guides__link" [routerLink]="set.link">The FrontendAtlas {{ set.name }} practice set: {{ set.count }} questions</a>
           }
           <a class="plan-guides__link" routerLink="/coding">All {{ more.premiumTotal }} Premium questions</a>
         </div>

@@ -131,6 +131,26 @@ test('company facts and rounds carry what the form and the plan show', () => {
   assert.equal(engineers.rounds[2].note, 'A short design line.');
 });
 
+test('a guide with a question list counts the sources its page counts and says how many questions it reports', () => {
+  const withQuestions = () => ({
+    ...baseProcess(),
+    questions: [
+      { id: 'open', kind: 'JavaScript', question: 'Open.', sources: [tableSource('new', '2026-04')] },
+      { id: 'locked', kind: 'JavaScript', question: 'Locked.', sources: [tableSource('question-only', '2026-03')] },
+    ],
+    behaviouralQuestions: [{ id: 'why', question: 'Why Acme?', sources: [tableSource('behavioural-only', '2026-02')] }],
+  });
+  // An authored guide: its own list, the table and the sources only the questions cite.
+  const authored = (process) => build({ processes: { acme: process }, sources: { acme: ['https://acme.example/jobs', reportUrl('stars-newer')] } }).companies.acme;
+  assert.equal(authored(withQuestions()).sourceCount, authored(baseProcess()).sourceCount + 2);
+  assert.equal(authored(withQuestions()).questionCount, 2);
+  assert.equal(authored(baseProcess()).questionCount, undefined);
+  // A catalog guide with a question list also lists its reported items, so their sources count; stars-newer is one
+  // only a reported item cites.
+  const catalog = (process) => build({ processes: { acme: process } }).companies.acme;
+  assert.equal(catalog(withQuestions()).sourceCount, catalog(baseProcess()).sourceCount + 3);
+});
+
 test('a round shows official pages first, then the three newest, and counts the rest', () => {
   const coding = build().companies.acme.variants[0].rounds[1];
   assert.deepEqual(coding.sources.map((source) => source.date), ['2026-04', '2025-01', '2024-01']);

@@ -1,10 +1,11 @@
 import type { AuthoredCompanyPreview } from '../../shared/company-previews/authored-company-preview.model';
 
 /**
- * JPMorgan Chase frontend interview guide. Every prompt is a FrontendAtlas practice version modelled on public,
- * self-reported frontend accounts from 2021 to 2026 (Aced, Taro, Blind, LeetCode Discuss and frontendgeek) and on
- * the official hiring pages. Nothing here is a leaked, confirmed or official JPMorgan Chase question; the loop is run
- * by each team, and a handful of accounts cannot establish a fixed format.
+ * JPMorgan Chase frontend interview guide. The reported questions live with the process table
+ * (company-interview-processes.ts); the prompts here are the answer guides of several of them. The sources are public,
+ * self-reported accounts from 2017 to 2026 on Taro, Aced, Blind, LeetCode Discuss, frontendgeek and Medium, plus the
+ * official hiring pages. Nothing here is a leaked, confirmed or official JPMorgan Chase question; each team runs its
+ * own loop, and the accounts cannot establish a fixed format.
  */
 const JPMORGAN_ACED_2026_URL = 'https://www.aced.io/experiences/jp-morgan-chase-senior-frontend-engineer-interview-6faa4e';
 const JPMORGAN_ACED_2026_LABEL = 'Public report: Aced senior frontend engineer loop, 2026';
@@ -32,14 +33,15 @@ const JPMORGAN_BLIND_2023_URL = 'https://www.teamblind.com/post/jp-morgan-interv
 const JPMORGAN_BLIND_2023_LABEL = 'Public report: Blind React software engineer interview, London, May 2023';
 const JPMORGAN_HOW_WE_HIRE_URL = 'https://www.jpmorganchase.com/careers/how-we-hire';
 const JPMORGAN_HIRING_FAQS_URL = 'https://www.jpmorganchase.com/careers/how-we-hire/faqs';
+const JPMORGAN_PROGRAM_URL = 'https://www.jpmorganchase.com/careers/explore-opportunities/programs/software-engineer-fulltime';
 
 export const JPMORGAN_PREVIEW_TITLE = 'JPMorgan Chase Frontend Interview Questions and React Round Guide';
 export const JPMORGAN_PREVIEW_H1 = 'JPMorgan Chase Frontend Interview Questions';
 export const JPMORGAN_PREVIEW_DESCRIPTION =
-  'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with 5 practice prompts.';
+  'JPMorgan Chase frontend interview: the React and JavaScript conversation, live coding, the Bengaluru security round and the super day, with {#questions} reported questions.';
 export const JPMORGAN_PREVIEW_CANONICAL_PATH = '/companies/jpmorgan/preview';
 export const JPMORGAN_PREVIEW_TRUST_NOTE =
-  'These are FrontendAtlas practice versions modelled on rounds described in public interview reports, not leaked, confirmed or official JPMorgan Chase questions. Each team runs its own loop and a handful of self-reported accounts cannot establish a fixed format; use recruiter-provided material as the source of truth.';
+  'The questions come from candidates\' own accounts on Taro, Aced, Blind, LeetCode Discuss, frontendgeek and Medium, written here in our words; none is a leaked, confirmed or official JPMorgan Chase question, and the answer guides are ours. Each team runs its own loop: {reports} public reports show what some JPMorgan Chase teams asked, not what yours will, so the recruiter\'s account of your rounds comes first.';
 
 export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   slug: 'jpmorgan',
@@ -52,54 +54,53 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public JPMorgan Chase prep guide',
     subtitle:
-      'Prepare with five practice prompts shaped by public frontend accounts from 2021 to 2026 and official hiring pages: a memoization function, a reduce polyfill, a typed async React hook, a priority to-do list and the React and JavaScript conversation round.',
+      'Frontend accounts from 2017 to 2026 in the UK, the US and India describe a recruiter call, an hour of JavaScript and React questions often split between two interviewers, a live-coding round of 30 to 90 minutes and a hiring-manager conversation, with each team setting its own loop. Below: how each round ran, then {questions} questions candidates reported; the first, a generic memoization function from a 2024 Bengaluru loop, is open.',
     caveat:
-      'This guide uses public, self-reported interview accounts and the official JPMorgan Chase hiring pages to create realistic constraints. It does not claim access to private interview material, a fixed interview format, or the stack of every JPMorgan Chase team; each team runs its own loop.',
-    chips: ['5 practice prompts', 'JavaScript, React, web security', 'Full practice set requires Premium'],
+      'No two accounts describe the same loop, and JPMorgan Chase\'s own hiring page says the process differs for each position. Most accounts are a few lines long, several Taro dates are approximate, and the super-day shape comes from generic software-engineer loops rather than frontend-titled ones.',
+    chips: ['{#questions} reported questions', '{#reports} public reports, 2017–2026', 'Full practice set requires Premium'],
   },
   studyPriorities: {
     kicker: 'Study priorities',
-    title: 'Prepare for product judgment, not JPMorgan Chase trivia',
+    title: 'Learn the recurring questions, then rehearse your team\'s shape',
     paragraphs: [
-      'The public accounts agree on the questions more than on the format. Across the UK, the US and India, frontend candidates describe the same conversation: explain a closure, the difference between a shallow and a deep clone and an Object.assign use case, useCallback versus useMemo, useState versus useRef, context and when a higher-order component fits, the difference between a cookie, sessionStorage and localStorage, what CORS is. The coding they describe is small and exact: a generic memoization function, a polyfill for reduce, a generic async promise React hook with a useEffect cleanup function, a to-do list with priorities. Each prompt above starts with the clarifying questions a strong candidate asks, then the behaviours a strong answer covers, then the miss that usually ends the round.',
-      'The loop itself is team-run. The official How we hire page says the interview process will differ for each position, and employees say the same in public threads. One Bengaluru SDE2 loop in 2024 ran three 60-minute rounds in one sitting, opening with security and React; a 2026 senior loop had live coding on generic types and a useEffect cleanup; a React developer in 2022 had three video interviews, one of them run by an interviewer assigned to a back-end role; a 2025 lead-level panel put three lead engineers in one hour. Prepare the recurring questions first, then rehearse the shape the recruiter describes.',
+      'The JPMorgan Chase accounts agree on the questions more than on the format. A closure question appears in three accounts, from the UK in 2021 and 2023 and from India in 2024; the other conversation questions, from clones and Object.assign to useCallback against useMemo, useState against useRef, context and higher-order components, cookies against web storage, CORS and the event loop, each come from one account, so learn them as one set of two-sentence answers. The coding is small and exact: a generic memoization function and a reduce polyfill in Bengaluru, a generic async promise hook with a useEffect cleanup in a 2026 UK senior loop, a to-do list with priorities in a 2022 React developer loop.',
+      'The loop itself is team-run. The official How we hire page says the interview process will differ for each position, and JPMorgan Chase-badged commenters on Blind say it depends on the line of business. One Bengaluru SDE2 loop in 2024 ran three 60-minute rounds in one sitting, opening with security and React; a 2026 senior loop was a recruiter screen and one live-coding round over two weeks; a React developer in 2022 had three video interviews, one of them run by an interviewer assigned to a back-end role; a 2025 lead-level panel put three lead engineers in one hour. Prepare the recurring questions first, then rehearse the shape the recruiter describes.',
     ],
   },
   sourceBoundary: {
     kicker: 'Source boundary · checked October 2026',
-    title: 'What the public accounts establish, and what you still need to confirm',
+    title: 'What these accounts can tell you, and what to ask the recruiter',
     paragraphs: [
-      '{reports} public frontend accounts from 2017 to 2026 inform this guide, each listed under Sources, nine of them in detail here: one senior account on Aced, paywalled beyond its summary, with a two-week loop ending in a rejection and live coding that needed generic types and a useEffect cleanup without references; five accounts on Taro, from a React developer in 2022 with three video interviews and a priority to-do list, a frontend developer in 2022 asked about context, higher-order components and reduce, a frontend engineer in 2024 asked about closures, the event loop and React optimisation, an associate in 2025 asked about useState versus useRef, and a lead-level panel in 2025 with LeetCode-style questions, React depth and back-end basics; one frontendgeek account from Bengaluru in 2024 with three 60-minute rounds on security and React, JavaScript and the framework, and the hiring manager; one LeetCode Discuss post from a New York onsite in 2021 across several teams; and one Blind thread from a London React software engineer in 2023. Together they establish that those questions and shapes occurred; they do not establish exact wording, the current format, or how each team interviews. Several accounts are a few lines long, and the dates on some of them are approximate.',
-      'Confirm with the recruiter how many rounds there are, how long each lasts, whether a HackerRank assessment or a recorded interview comes first, and whether the team runs a pull-request review. The official How we hire page and hiring FAQs describe assessment types, structured live interviews, on-demand recorded interviews and virtual skills assessments, with technical assessments as online tests or live technical interviews, but no frontend format. The official Software Engineer Program page describes a Front-end Developer track that builds AI-powered interfaces with streaming responses and citations, design systems and accessibility standards, and secure authentication with React. Use those pages for context, not as evidence of specific questions. The process table above draws on more reports: twenty-two from 2017 to 2026.',
+      'The accounts behind this guide are candidates\' own posts on Taro, Aced, Blind, LeetCode Discuss, frontendgeek and Medium from 2017 to 2026, from the UK, the US and India, read beside JPMorgan Chase\'s own hiring pages. Most frontend accounts run to one to three lines; the fullest is a 2024 Bengaluru SDE2 loop with three rounds in one sitting. Taro dates on the first of a month are approximate, and two Taro entries re-host reviews first posted elsewhere. The accounts show which rounds and questions came up in some teams\' loops; they cannot give the exact wording, this year\'s format or how your team interviews.',
+      'Ask the recruiter how many rounds your team runs, how long each lasts, whether a HackerRank assessment or a recorded video interview comes first, and whether the coding round opens with a pull-request review. The hiring FAQs list structured live interviews, on-demand recorded interviews and virtual skills assessments, and describe technical assessments as online tests or live interviews; the Software Engineer Program page describes a Front-end Developer track that builds AI-powered interfaces with streaming responses and citations, design systems and accessibility standards, and secure authentication with React. Neither page describes a frontend interview.',
     ],
   },
   roundSpotlights: [
     {
       id: 'react-interview',
       kicker: 'Round decoder',
-      title: 'JPMorgan Chase React interview for frontend engineers: what the team-run rounds ask',
+      title: 'JPMorgan Chase React interview for frontend engineers: the rounds each team runs',
       lede: [
-        'JPMorgan Chase, which candidates also write as JP Morgan or JPMC, runs no standard loop: its How we hire page says the process differs by position, and employees describe team-run interviews that depend on the line of business. The frontend and React accounts from 2021 to 2026, from the UK, the US and India, agree on the questions more than on the format: a one-hour React and JavaScript conversation, often split between two interviewers or a panel of three, and a live-coding round of 30 to 90 minutes with a small React build.',
-        'The conversation covers closures, shallow versus deep clones and Object.assign, useCallback versus useMemo, useState versus useRef, context and higher-order components, cookie versus sessionStorage versus localStorage, and CORS. The coding is small and exact: a generic memoization function, a reduce polyfill with promises, generators and currying as follow-ups, a generic async promise hook with a useEffect cleanup, and a to-do list with priorities.',
+        'JPMorgan Chase, which candidates also write as JP Morgan or JPMC, has no standard loop: its How we hire page says the process differs by position, and JPMorgan Chase-badged commenters on Blind say it depends on the line of business and the team. The frontend and React accounts from 2017 to 2026, from the UK, the US and India, mostly describe two technical formats: an hour of spoken JavaScript and React questions, often split between two interviewers or put to a panel of three, and a live-coding round of 30 to 90 minutes with a small React build.',
+        'Around them sit a recruiter call, a hiring-manager or leadership conversation and, in some loops, extra rounds: three 60-minute rounds in one sitting in a 2024 Bengaluru loop, opening with security and React, and the generic super day that Software Engineer II and III accounts describe. The open question in the list above comes from that Bengaluru security and React round.',
       ],
       facts: [
         { label: 'Position in the loop', value: 'After a recruiter phone screen. A HackerRank assessment with two easy-to-medium problems opens Software Engineer II and III requisitions; the frontend-titled loops do not report one.' },
-        { label: 'Conversation round', value: 'About an hour, often split between two interviewers or a panel of three: JavaScript fundamentals, React hooks and lifecycle, framework choice and resume-driven questions.' },
-        { label: 'Live coding', value: '30 to 90 minutes: a to-do list with priorities, functional components, generic types with a useEffect cleanup, or paper coding. One London briefing planned 90 minutes of live coding plus a 30-minute behavioural stage; other accounts give 30 to 45 minutes.' },
-        { label: 'Security and framework rounds', value: 'One Bengaluru SDE2 loop in 2024: three 60-minute rounds in one sitting, security and React (XSS, lifecycle, a memoization function), JavaScript and framework (promises, generators, a reduce polyfill, currying), then the hiring manager.' },
-        { label: 'Super day', value: 'The generic Software Engineer II and III shape from 2024 to 2026: three rounds of 45 to 60 minutes in one day, a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair (a rate limiter recurs), and a behavioural round with a Director; probably shared by React-titled requisitions, unconfirmed.' },
-        { label: 'Sources', value: 'Aced 2026; Taro accounts from 2022 to 2025; frontendgeek 2024; LeetCode 2021; Blind 2023; the JPMorgan Chase How we hire page and hiring FAQs. All are listed under Sources and in the reported process below with what each can establish.' },
+        { label: 'Conversation round', value: 'About an hour, often split between two interviewers or put to a panel of three: spoken JavaScript, React and browser questions and questions on your CV. A 2021 New York onsite and a 2025 lead panel added algorithm questions.' },
+        { label: 'Live coding', value: '30 to 90 minutes with an interviewer, over video in some loops: a small React build, or simple paper coding with a tech lead. A London candidate in 2023 was briefed on 90 minutes of live coding plus a 30-minute behavioural stage; other accounts give 30 to 45 minutes.' },
+        { label: 'Security and framework rounds', value: 'One Bengaluru SDE2 loop in 2024: three 60-minute rounds in one sitting, security and React, then JavaScript and framework, then the hiring manager, with a coding question in each of the first two and an offer on day 10.' },
+        { label: 'Super day', value: 'The generic Software Engineer II and III shape from 2024 to 2026: three rounds of 45 to 60 minutes in one day, a pull-request review plus a medium problem, high-level design on a HackerRank whiteboard or CodePair, and a behavioural round with a Director; probably shared by React-titled requisitions, unconfirmed.' },
       ],
-      // Prompt 5 sits past the open prompts, so the rehearsal leads to its free drill rather than a locked card.
-      practiceLink: { label: 'Rehearse the conversation round with the free closures drill', path: '/javascript/trivia/js-closures' },
+      // The open question is the memoization function, so the rehearsal leads to its free explainer.
+      practiceLink: { label: 'Start with the open question\'s subject: the free memoization explainer', path: '/javascript/trivia/js-memoization' },
       processLink: { label: 'See the frontend technical conversation row in the reported process', fragment: 'jpmorgan-interview-process-1-stage-frontend-technical-conversation' },
     },
   ],
   roleLenses: {
     kicker: 'Role lenses',
-    title: 'Two product contexts for practising transferable frontend judgment',
+    title: 'AI-assisted interfaces or secure data screens: where a JPMorgan Chase frontend role may sit',
     intro:
-      'These are preparation lenses derived from the official Software Engineer Program page, the frontend requisition titles and the security-and-React round in one public account, not claimed team assignments. Choose the lens closest to the role and keep the reasoning framework-neutral.',
+      'JPMorgan Chase\'s Software Engineer Program page describes a Front-end Developer track that builds AI-powered chat interfaces, and the 2024 Bengaluru loop opened with a security and React round. Practise in the context nearer the requisition you applied for; neither tells you which team you will join.',
     items: [
       {
         title: 'AI-assisted interfaces and design systems',
@@ -119,16 +120,16 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   },
   prompts: {
     kicker: 'Representative practice prompts',
-    title: 'Five JPMorgan Chase frontend interview practice questions',
+    title: 'Answer guides for the reported JPMorgan Chase questions',
     intro:
-      'For each prompt, clarify the contract, explain ownership and trade-offs, implement or diagram the smallest credible slice, and test the failure cases. Each prompt links to the public report it is modelled on and to a practice page.',
-    itemListName: 'Five JPMorgan Chase frontend interview practice prompts',
+      'Each guide sets out what to ask first, what a strong answer covers and the miss that most often costs the round.',
+    itemListName: 'JPMorgan Chase answer guides',
     items: [
       {
         id: 'generic-memoize-function',
         title: 'Write a generic memoization function inside a security-and-React round',
         statement:
-          'In a 60-minute round that also covers XSS, security principles at work, React lifecycle methods and component design for data privacy, write memoize(fn): a wrapper that caches results by argument so a repeated call with the same input returns the cached value without calling fn again, then explain when it is safe to use.',
+          'In a 60-minute security and React round, write memoize(fn): a wrapper that caches results by argument so a repeated call with the same input returns the cached value without calling fn again, then explain when it is safe to use.',
         whatThisMeasures:
           'Cache-key design, reference versus value equality, memory growth and eviction, the pure-function precondition, and whether you can move from security concepts to code without losing the thread.',
         clarifyFirst: [
@@ -242,10 +243,10 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     ],
   },
   walkthrough: {
-    kicker: 'Public mini walkthrough',
-    title: 'Scope the generic async promise hook before the first line',
+    kicker: 'Mini walkthrough',
+    title: 'Scope the 2026 live-coding task before the first line',
     intro:
-      'Treat this as a representative exercise, not a description of the reported one. Work from the signature toward the cleanup, and say each decision out loud.',
+      'The newest frontend account, a senior UK loop from 2026, names one live-coding task and the interviewer\'s expectations for it. Five decisions to make before you type, in the order you would say them out loud.',
     steps: [
       { title: 'Pin the signature', description: 'useAsync<T>(fn: () => Promise<T>, deps): the generic parameter is the resolved value. Say whether the hook runs on mount only or on each dependency change.' },
       { title: 'Choose one state', description: 'A discriminated union: idle, loading, success with data of type T, error with an Error. Callers narrow on status, and no two fields can disagree.' },
@@ -257,44 +258,40 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   prepPlan: {
     kicker: 'Actionable preparation',
     title: 'A 7-day JPMorgan Chase frontend interview preparation plan',
-    intro: 'Every day ends with code, a test, a design artifact, or a question you can use in the real process.',
+    intro: 'Seven days shaped by the JPMorgan Chase accounts: short spoken answers for the conversation round, small exact code for the live round, and the super-day shape in case your team runs it.',
     days: [
-      { day: 'Day 1', focus: 'JavaScript fundamentals: closures, the event loop, shallow versus deep clone, Object.assign, prototypes, var, let and const, arrow versus normal functions.', artifact: 'A one-page answer sheet with one example per topic.' },
-      { day: 'Day 2', focus: 'Utility functions from memory: memoize, a reduce polyfill, an LRU cache and balanced brackets, each with edge-case tests.', artifact: 'Four functions with tests for sparse arrays, undefined arguments and empty input.' },
-      { day: 'Day 3', focus: 'Asynchrony: promises and microtask order, generators, currying, then the generic async promise hook with useEffect cleanup in TypeScript.', artifact: 'A useAsync<T> hook with a test that a late response does not overwrite a newer one.' },
-      { day: 'Day 4', focus: 'React builds against a clock: the priority to-do list, then fetch and render a list with loading, error and empty states.', artifact: 'Two timed builds with stable ids, immutable updates and a keyboard-operable priority control.' },
-      { day: 'Day 5', focus: 'React concepts and web security: useCallback versus useMemo, useState versus useRef, context versus higher-order components, the lifecycle, XSS and DOM sinks, cookies versus storage, CORS.', artifact: 'A second answer sheet, two sentences and one example per topic.' },
-      { day: 'Day 6', focus: 'The super-day shape that generic Software Engineer II and III accounts describe: review a pull request for hardcoded credentials and poor variable names, solve one medium problem, sketch a rate limiter; then behavioural stories about a feature you were proud of, a conflict in a team and why a bank.', artifact: 'Six stories in a structured format, each with a decision, a trade-off and a measured result.' },
-      { day: 'Day 7', focus: 'Mock loop: one conversation round, one live-coding round and one hiring-manager conversation, each narrated.', artifact: 'A list of the questions you will ask the recruiter about rounds, length, assessments and the team.' },
+      { day: 'Day 1', focus: 'JavaScript conversation answers: about thirty short questions, the number a 2017 UK phone round asked, on scope, functions, objects and asynchrony, each answered in two sentences with one example.', artifact: 'A one-page answer sheet with one example per question.' },
+      { day: 'Day 2', focus: 'Small functions from memory: the open memoization question first, then other utility functions and polyfills of built-in methods, each tested on undefined arguments, empty input and repeated calls.', artifact: 'Three functions with their tests, written without looking anything up.' },
+      { day: 'Day 3', focus: 'Asynchrony in React: promise ordering, cancellation and effect cleanup, typed in TypeScript, then a component that loads data without letting a late response win.', artifact: 'A data-loading component with tests for unmount, a changed input and a rejected request.' },
+      { day: 'Day 4', focus: 'React builds against a clock: two small components with local state, stable keys, immutable updates and keyboard-operable controls, in the 30 to 45 minutes two accounts give for live coding.', artifact: 'Two timed builds with a note of where the time went.' },
+      { day: 'Day 5', focus: 'React and browser concepts: the React and browser topics you could not explain without notes, each answered in two sentences with one example.', artifact: 'A second answer sheet, for React and the browser.' },
+      { day: 'Day 6', focus: 'The super-day shape: a pull-request review, one medium problem, a high-level design sketch and behavioural stories, as the generic Software Engineer II and III accounts describe it.', artifact: 'Six stories, among them why JPMorgan Chase and a time your design was rejected, each told as the situation, your choice, what it cost and how it ended.' },
+      { day: 'Day 7', focus: 'Mock loop: one conversation round, one live-coding round and one hiring-manager conversation, each narrated.', artifact: 'What to ask the recruiter: how many rounds the team runs, whether a HackerRank test or a recorded interview comes first, and whether the coding round opens with a pull-request review.' },
     ],
   },
   faqs: {
     kicker: 'Preparation FAQ',
     title: 'Common JPMorgan Chase frontend interview preparation questions',
     items: [
-      { question: 'What does the JPMorgan Chase React interview ask?', answer: 'The frontend and React accounts from 2021 to 2026 agree on the questions more than on the format: an hour-long React and JavaScript conversation (closures, shallow versus deep clones, Object.assign, useCallback versus useMemo, useState versus useRef, context, storage, CORS), often split between two interviewers or a panel of three, and a live-coding round of 30 to 90 minutes with a small React build such as a to-do list with priorities or a generic async hook with a useEffect cleanup. One Bengaluru loop added a security-and-React round; the generic super day is unconfirmed for React-titled requisitions.' },
-      { question: 'Are these the real JPMorgan Chase questions?', answer: 'No. They are FrontendAtlas practice versions modelled on rounds described in public, self-reported accounts on Aced, Taro, Blind, LeetCode Discuss and frontendgeek. The wording, the data and the test cases are ours.' },
-      { question: 'Is there a standard JPMorgan loop?', answer: 'No. The official How we hire page says the interview process will differ for each position and that you can expect to meet several people in multiple rounds, and employees in public threads describe decentralised, team-run interviews that depend on the line of business. The public frontend accounts match that: a two-week senior loop with live coding on generic types and a useEffect cleanup in 2026, three 60-minute rounds in one sitting in Bengaluru in 2024, three video interviews in 2022, a panel of three lead engineers in 2025. Confirm the number of rounds, their length and whether an online assessment comes first.' },
-      { question: 'Will I get LeetCode-style problems?', answer: 'Some loops include them. A New York candidate in 2021 was asked to delete a node in a linked list, check for balanced brackets and implement an LRU cache alongside JavaScript questions; in a 2025 lead-level panel one of three engineers asked three easy-to-medium LeetCode-style questions; and the generic Software Engineer II and III accounts describe a HackerRank screen with two easy problems, then a coding round that opens with a pull-request review and moves to a medium problem, with one interviewer in those threads saying the expected difficulty is medium. The frontend-titled Taro accounts used here describe concept questions and small builds instead. Ask the recruiter whether the team runs the super day.' },
+      { question: 'What does the JPMorgan Chase React interview ask?', answer: 'In the frontend and React accounts from 2017 to 2026, two technical formats recur: about an hour of spoken JavaScript, React and browser questions, often split between two interviewers or put to a panel of three, and a live-coding round of 30 to 90 minutes with a small React build or paper coding. One 2024 Bengaluru loop added a security and React round, and the generic super day is unconfirmed for React-titled requisitions. The reported questions are listed above; the first, a generic memoization function, is open.' },
+      { question: 'Are these the real JPMorgan Chase questions?', answer: 'They come from candidates\' own accounts on Taro, Aced, Blind, LeetCode Discuss, frontendgeek and Medium and are written in our words, so no row is a leaked or confirmed JPMorgan Chase question. Most accounts name a question in a line or two; the answer guides and practice tasks are FrontendAtlas\'s.' },
+      { question: 'Is there a standard JPMorgan loop?', answer: 'No. The official How we hire page says the interview process will differ for each position and that you can expect to meet several people in multiple rounds, and JPMorgan Chase-badged commenters on Blind say the format depends on the line of business and the team. The frontend accounts match that: a two-week senior loop with one live-coding round in 2026, three 60-minute rounds in one sitting in Bengaluru in 2024, three video interviews in 2022, a panel of three lead engineers in 2025. Ask how many rounds there are, how long each lasts and whether an online assessment comes first.' },
+      { question: 'Will I get LeetCode-style problems?', answer: 'Some loops include them. A 2021 New York onsite mixed algorithm questions with JavaScript ones; in a 2025 lead-level panel one of three engineers asked three easy-to-medium LeetCode-style questions; in a 2022 React developer loop an interviewer assigned to a back-end Python role set a coding question; and the generic Software Engineer II and III accounts describe a HackerRank screen with two easy problems, then a coding round that opens with a pull-request review and moves to a medium problem, with a JPMorgan Chase-badged interviewer on Blind expecting medium difficulty. The frontend-titled accounts mostly describe concept questions and small builds. Ask the recruiter whether the team runs the super day.' },
       { question: 'Which spelling: JPMorgan Chase, JP Morgan or JPMC?', answer: 'The careers pages write the firm as JPMorganChase, one word, while the legal names stay JPMorgan Chase & Co. and JPMorgan Chase Bank, N.A. This guide uses JPMorgan Chase, the spelling candidates search for. Public interview reports write JP Morgan, JPMorgan, JPMC and Chase, and employees on Blind carry a JPMorgan Chase badge, so search for all of them when you look for more accounts.' },
       { question: 'What do Software Engineer II, III and Lead mean on a requisition?', answer: 'On 21 October 2026 the requisitions with frontend titles ran from Software Engineer II (React/Java, New York) and Software Engineer III (React, Glasgow) to Lead Software Engineer (React, Chicago) and Senior Lead Software Engineer (Jersey City), plus a Web Front End Developer in London. Candidates and employees describe Software Engineer II as Associate and Lead Software Engineer as VP, with Software Engineer III between them; that mapping is not official, so ask the recruiter which level and which team you are interviewing for.' },
     ],
   },
   resourceLinks: {
     kicker: 'Free public practice',
-    title: 'Build the underlying skills with free practice',
+    title: 'Free practice for the JPMorgan Chase rounds',
     intro:
-      'These public pages cover the JavaScript, React, storage and security fundamentals used by the practice prompts. They are supporting drills, not claimed JPMorgan Chase questions.',
+      'Free drills for the skills behind the JPMorgan Chase rounds: the subject of the open memoization question, data loading that survives a late response, stable list rendering, algorithm practice for the HackerRank step, and stories for the hiring-manager round.',
     items: [
-      { label: 'Explain closures in JavaScript', description: 'The opening question in several of the public accounts.', path: '/javascript/trivia/js-closures' },
-      { label: 'JavaScript event loop visualiser', description: 'Predict the order of microtasks and macrotasks before you explain it.', path: '/javascript/trivia/js-event-loop' },
-      { label: 'useMemo versus useCallback', description: 'Referential stability, and when memoizing makes a render slower.', path: '/react/trivia/react-usememo-vs-usecallback' },
-      { label: 'useRef versus useState', description: 'Why changing a ref does not re-render.', path: '/react/trivia/react-useref-vs-usestate' },
-      { label: 'Higher-order components', description: 'What they are and when to reach for one over context.', path: '/react/trivia/react-higher-order-components' },
-      { label: 'Cookie versus sessionStorage versus localStorage', description: 'The storage question from the New York onsite.', path: '/javascript/trivia/js-cookie-sessionstorage-localstorage' },
-      { label: 'DOM XSS prevention', description: 'Dangerous sinks, safe APIs and Trusted Types for the security-and-React round.', path: '/javascript/trivia/js-xss-dom-sinks' },
-      { label: 'Create an LRU cache', description: 'The bounded cache asked in New York and the eviction follow-up to memoize.', path: '/javascript/coding/js-create-lru-cache' },
-      { label: 'Behavioural stories', description: 'A structure for the hiring-manager and culture-fit conversations.', path: '/guides/behavioral/stories' },
+      { label: 'What is memoization?', description: 'The subject of the open question: caching by argument, and when it is safe.', path: '/javascript/trivia/js-memoization' },
+      { label: 'Fetch and render with loading, error and empty states', description: 'A timed React build that ignores a response arriving after its source changed.', path: '/react/coding/react-fetch-list-states' },
+      { label: 'Keys in React lists', description: 'Why a key must be stable, and what breaks when the index is the key.', path: '/react/trivia/react-keys-in-lists' },
+      { label: 'DSA for frontend loops', description: 'For the HackerRank step and the medium problem in the generic super day.', path: '/guides/interview-blueprint/dsa-for-fe' },
+      { label: 'Behavioural stories', description: 'A structure for the hiring-manager, Director and culture-fit conversations.', path: '/guides/behavioral/stories' },
     ],
   },
   sources: {
@@ -302,17 +299,18 @@ export const JPMORGAN_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Sources and evidence limits',
     intro: 'These links support the public context used by the guide. Their notes state what each source can and cannot establish about preparation.',
     items: [
-      { label: JPMORGAN_ACED_2026_LABEL, url: JPMORGAN_ACED_2026_URL, note: 'One self-reported senior (L5) loop, rejected after two weeks; the full account is now behind a member wall. Its public summary names live coding that needed generic types and a useEffect cleanup without references; the full account adds a recruiter screen before it. It establishes that exercise in one 2026 loop; it cannot establish the current format or the loops of other teams.', kind: 'report' },
-      { label: JPMORGAN_HOUSTON_2022_LABEL, url: JPMORGAN_HOUSTON_2022_URL, note: 'One self-reported React developer loop without an offer: three video technical interviews, one of them run by an interviewer assigned to a back-end Python role, and a React question to build a to-do list where each task has a high, medium or low priority that can be updated and whole tasks can be deleted. It establishes that build in 2022; it cannot establish exact wording or the current loop.', kind: 'report' },
-      { label: JPMORGAN_US_2022_LABEL, url: JPMORGAN_US_2022_URL, note: 'One self-reported frontend developer loop without an offer: a question about context that led to a follow-up on when a higher-order component would be used, and the benefits of the reduce method. It establishes those concept questions; it names no coding task.', kind: 'report' },
-      { label: JPMORGAN_BENGALURU_2024_LABEL, url: JPMORGAN_BENGALURU_2024_URL, note: 'One self-reported first round on closures, the event loop and React optimisation techniques, after which no second round was scheduled. It establishes those topics in one 2024 screen; it cannot establish the rest of the loop.', kind: 'report' },
-      { label: JPMORGAN_LEAD_2025_LABEL, url: JPMORGAN_LEAD_2025_URL, note: 'One self-reported lead-level panel of about an hour with three lead engineers: three easy-to-medium LeetCode-style questions from one, how React works and why React over Angular from another, back-end basics, REST, optimisation and security from the third. It establishes the panel shape and topic mix in one 2025 loop; it cannot establish the current format.', kind: 'report' },
-      { label: JPMORGAN_UK_2025_LABEL, url: JPMORGAN_UK_2025_URL, note: 'One self-reported interview with two people, described as more a test of knowledge and React concepts than of aptitude, including the difference between useState and useRef. It establishes the concept-check shape in one 2025 interview; it cannot establish the rest of the loop.', kind: 'report' },
-      { label: JPMORGAN_FRONTENDGEEK_2024_LABEL, url: JPMORGAN_FRONTENDGEEK_2024_URL, note: 'One self-reported SDE2 loop with three 60-minute rounds in one sitting: security and React (XSS, security principles at work, React lifecycle methods, component design for data privacy, a generic memoization function), JavaScript and framework (promises, asynchronous behaviour, generator functions, a reduce polyfill, object manipulation, pure functions and currying) and a hiring-manager round, with an offer on day 10 that the candidate declined. It establishes those rounds in 2024; it cannot establish how other Bengaluru teams interview.', kind: 'report' },
-      { label: JPMORGAN_LEETCODE_2021_LABEL, url: JPMORGAN_LEETCODE_2021_URL, note: 'One self-reported onsite in which each interview was distinct depending on the team and hiring manager: prototypes, arrow versus normal functions, CORS, cookie versus session versus local storage, deleting a node in a linked list, balanced brackets and an LRU cache. It establishes the question mix in 2021; it cannot establish the current format.', kind: 'report' },
-      { label: JPMORGAN_BLIND_2023_LABEL, url: JPMORGAN_BLIND_2023_URL, note: 'One poster\'s own first technical interview over Zoom with no briefing: explain a closure, shallow versus deep clone, an Object.assign use case, useCallback versus useMemo; a commenter in the thread describes JPMorgan interviews as decentralised with no consistency between teams. It establishes those questions in 2023; the poster did not report back on the later stage.', kind: 'report' },
+      { label: JPMORGAN_ACED_2026_LABEL, url: JPMORGAN_ACED_2026_URL, note: 'One self-reported senior (L5) loop in the UK, rejected after two weeks: a recruiter screen, then one live-coding round whose expectations the account states. The full account now sits behind a member wall. One loop; it cannot establish the current format or the loops of other teams.', kind: 'report' },
+      { label: JPMORGAN_HOUSTON_2022_LABEL, url: JPMORGAN_HOUSTON_2022_URL, note: 'One self-reported React developer loop without an offer: three video technical interviews, one of them run by an interviewer assigned to a back-end Python role, with a React build in another. The date is approximate.', kind: 'report' },
+      { label: JPMORGAN_US_2022_LABEL, url: JPMORGAN_US_2022_URL, note: 'One self-reported frontend developer interview without an offer, told in a few lines: React and JavaScript concept questions, one with a follow-up, and no coding task named.', kind: 'report' },
+      { label: JPMORGAN_BENGALURU_2024_LABEL, url: JPMORGAN_BENGALURU_2024_URL, note: 'One self-reported first round of JavaScript and React questions, after which no second round was scheduled and the recruiter stopped answering. One screen; it cannot establish the rest of the loop.', kind: 'report' },
+      { label: JPMORGAN_LEAD_2025_LABEL, url: JPMORGAN_LEAD_2025_URL, note: 'One self-reported lead-level panel of about an hour with three lead engineers: one set LeetCode-style questions, one asked about React, and one asked back-end questions. The panel shape in one 2025 loop; it cannot establish the current format.', kind: 'report' },
+      { label: JPMORGAN_UK_2025_LABEL, url: JPMORGAN_UK_2025_URL, note: 'One self-reported interview with two people, described as more a test of knowledge and React concepts than of aptitude. One interview; it cannot establish the rest of the loop.', kind: 'report' },
+      { label: JPMORGAN_FRONTENDGEEK_2024_LABEL, url: JPMORGAN_FRONTENDGEEK_2024_URL, note: 'One self-reported SDE2 loop with three 60-minute rounds in one sitting: security and React, JavaScript and framework, and the hiring manager, with a coding question in each of the first two and an offer on day 10 that the candidate declined. The open memoization question comes from its first round; it cannot establish how other Bengaluru teams interview.', kind: 'report' },
+      { label: JPMORGAN_LEETCODE_2021_LABEL, url: JPMORGAN_LEETCODE_2021_URL, note: 'One self-reported onsite in which each interview differed with the team and the hiring manager: JavaScript and browser questions beside algorithm questions, with advice for frontend candidates. The question mix in 2021; it cannot establish the current format.', kind: 'report' },
+      { label: JPMORGAN_BLIND_2023_LABEL, url: JPMORGAN_BLIND_2023_URL, note: 'One poster\'s own first technical interview over Zoom, with no briefing beforehand: a run of JavaScript and React concept questions. A commenter in the thread says JPMorgan interviews have no consistency between teams; the poster did not report back on the later stage.', kind: 'report' },
       { label: 'JPMorgan Chase: How we hire', url: JPMORGAN_HOW_WE_HIRE_URL, note: 'Official hiring page with four steps, Explore, Apply, Interview and Decision. It states that the interview process will differ for each position and that candidates meet several people in multiple rounds; it names no interview questions.', kind: 'official' },
       { label: 'JPMorgan Chase: hiring FAQs', url: JPMORGAN_HIRING_FAQS_URL, note: 'Official FAQs listing the assessment types, structured live interviews, on-demand recorded interviews and virtual skills assessments, and describing technical assessments as online tests or live technical interviews with an interviewer. Context for the format, not evidence of content.', kind: 'official' },
+      { label: 'JPMorgan Chase: Software Engineer Program', url: JPMORGAN_PROGRAM_URL, note: 'Official page for the Software Engineer Program, read in October 2026. Its Front-end Developer track builds AI-powered interfaces such as chat assistants with streaming responses and citations, works on design systems and accessibility standards, and implements secure authentication with React, Swift and Kotlin. It says nothing about the interview.', kind: 'official' },
     ],
   },
   cta: {

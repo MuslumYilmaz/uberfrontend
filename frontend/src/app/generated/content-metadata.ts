@@ -1592,6 +1592,13 @@ export const SHOWCASE_STATS = {
       "system": 3,
       "debug": 3
     },
+    "cloudflare": {
+      "all": 5,
+      "coding": 1,
+      "trivia": 3,
+      "system": 0,
+      "debug": 1
+    },
     "crowdstrike": {
       "all": 11,
       "coding": 2,
@@ -1604,6 +1611,13 @@ export const SHOWCASE_STATS = {
       "coding": 6,
       "trivia": 0,
       "system": 2,
+      "debug": 0
+    },
+    "disney": {
+      "all": 5,
+      "coding": 1,
+      "trivia": 3,
+      "system": 1,
       "debug": 0
     },
     "elevenlabs": {
@@ -1691,8 +1705,8 @@ export const SHOWCASE_STATS = {
       "debug": 0
     },
     "spotify": {
-      "all": 13,
-      "coding": 4,
+      "all": 12,
+      "coding": 3,
       "trivia": 9,
       "system": 0,
       "debug": 0
