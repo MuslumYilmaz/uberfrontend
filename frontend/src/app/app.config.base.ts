@@ -1,18 +1,13 @@
 import { HttpRequest, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideRouter, TitleStrategy, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { apiCredentialsInterceptor } from './core/interceptors/api-credentials.interceptor';
 import { authRefreshInterceptor } from './core/interceptors/auth-refresh.interceptor';
 import { SeoTitleStrategy } from './core/services/seo-title.strategy';
-import { StorageVersionService } from './core/services/storage-version.service';
 import { providePrimeNG } from 'primeng/config';
 import { frontendAtlasPrimeTheme } from './core/config/primeng-theme';
-
-function initStorage(versioner: StorageVersionService) {
-  return () => versioner.ensureFreshStorage().catch(() => void 0);
-}
 
 function shouldTransferCacheRequest(req: HttpRequest<unknown>): boolean {
   if (req.method !== 'GET' && req.method !== 'HEAD') return false;
@@ -49,11 +44,5 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     { provide: TitleStrategy, useClass: SeoTitleStrategy },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initStorage,
-      deps: [StorageVersionService],
-      multi: true,
-    },
   ],
 };

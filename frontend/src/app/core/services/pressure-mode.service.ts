@@ -70,10 +70,7 @@ export class PressureModeService {
 
     const request$ = this.assets.getVersion().pipe(
       switchMap((version) => {
-        const { primary, fallback } = this.assets.getAssetUrls(assetPath, version);
-        return primary !== fallback
-          ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-          : this.http.get<unknown>(fallback);
+        return this.http.get<unknown>(this.assets.getAssetUrl(assetPath, version));
       }),
       map((payload) => this.normalize(payload)),
       catchError(() => of(null)),

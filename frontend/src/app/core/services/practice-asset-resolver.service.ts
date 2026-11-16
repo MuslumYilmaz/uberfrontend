@@ -1,73 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TransferState, makeStateKey } from '@angular/core';
-import { environment } from '../../../environments/environment';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { QuestionPersistenceService } from './question-persistence.service';
-import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
+import { normalizeAssetPath } from '../utils/asset-url.util';
 
 type DataVersion = { dataVersion?: string; version?: string };
 
+/**
+ * Content assets ship with the build and are read from the page origin's
+ * /assets. data-version.json names the build: `?v=` busts the browser cache
+ * after a deploy, and ensureCacheVersionAsync drops the IndexedDB copies.
+ */
 @Injectable({ providedIn: 'root' })
 export class PracticeAssetResolverService {
-  private readonly cdnFlagKey = 'fa:cdn:enabled';
-  private readonly defaultCdnEnabled =
-    typeof (environment as any).cdnEnabled === 'boolean'
-      ? (environment as any).cdnEnabled
-      : !!(environment as any).cdnBaseUrl;
   private version$?: Observable<string>;
-  private versionModeKey: string | null = null;
   private readonly cacheVersionInflight = new Map<string, Promise<void>>();
 
   constructor(
     private readonly http: HttpClient,
     private readonly persistence: QuestionPersistenceService,
-    private readonly transferState: TransferState,
   ) {}
 
-  setCdnEnabled(enabled: boolean): void {
-    this.safeSet(this.cdnFlagKey, enabled ? '1' : '0');
-    this.resetVersionState();
-  }
-
-  isCdnEnabled(): boolean {
-    const raw = this.safeGet(this.cdnFlagKey);
-    if (raw === '0' || raw === 'false') return false;
-    if (raw === '1' || raw === 'true') return true;
-    return this.defaultCdnEnabled;
-  }
-
-  resetVersionState(): void {
-    this.version$ = undefined;
-    this.versionModeKey = null;
-  }
-
+  /** The build's data version, fetched once per session and shared by every reader. '0' when unknown. */
   getVersion(): Observable<string> {
-    const base = this.getAssetBase();
-    const modeKey = base ? `base:${base}` : 'assets';
-    if (!this.version$ || this.versionModeKey !== modeKey) {
-      this.versionModeKey = modeKey;
-
-      const tsKey = makeStateKey<string>('practice:data-version');
-      if (this.transferState.hasKey(tsKey)) {
-        const cached = this.transferState.get(tsKey, '0');
-        this.transferState.remove(tsKey);
-        this.version$ = of(cached).pipe(shareReplay(1));
-        return this.version$;
-      }
-
-      const bust = `t=${Date.now()}`;
-      const { primary, fallback } = this.getAssetUrls('data-version.json');
-      const primaryUrl = this.appendQuery(primary, bust);
-      const fallbackUrl = this.appendQuery(fallback, bust);
-      const source$ = primaryUrl !== fallbackUrl
-        ? this.http.get<DataVersion>(primaryUrl).pipe(
-            catchError(() => this.http.get<DataVersion>(fallbackUrl)),
-          )
-        : this.http.get<DataVersion>(fallbackUrl);
-
-      this.version$ = source$.pipe(
+    if (!this.version$) {
+      const url = this.appendQuery(normalizeAssetPath('data-version.json'), `t=${Date.now()}`);
+      this.version$ = this.http.get<DataVersion>(url).pipe(
         map((payload) => String(payload?.dataVersion ?? payload?.version ?? '0')),
         catchError(() => of('0')),
         shareReplay(1),
@@ -77,16 +36,9 @@ export class PracticeAssetResolverService {
     return this.version$;
   }
 
-  getAssetUrls(path: string, bankVersion?: string): { primary: string; fallback: string } {
-    const normalized = normalizeAssetPath(path);
-    const base = this.getAssetBase();
-    const primary = base ? buildAssetUrl(normalized, { preferBase: base }) : normalized;
-    const fallback = normalized;
-
-    return {
-      primary: this.appendVersion(primary, bankVersion),
-      fallback: this.appendVersion(fallback, bankVersion),
-    };
+  /** Same-origin URL of a content asset, versioned so a deploy busts the browser cache. */
+  getAssetUrl(path: string, bankVersion?: string): string {
+    return this.appendVersion(normalizeAssetPath(path), bankVersion);
   }
 
   async ensureCacheVersionAsync(prefixRaw: string, versionRaw: string): Promise<void> {
@@ -107,9 +59,7 @@ export class PracticeAssetResolverService {
       if (previous === version) return;
 
       await this.persistence.clearByPrefix(prefix);
-      this.clearLocalStorageByPrefix(prefix);
       await this.persistence.set(versionKey, version);
-      this.safeSet(versionKey, version);
     })().finally(() => {
       this.cacheVersionInflight.delete(inflightKey);
     });
@@ -121,33 +71,19 @@ export class PracticeAssetResolverService {
   async getCachedJson<T>(keyRaw: string): Promise<T | null> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return null;
-
-    const persisted = await this.persistence.get(key);
-    if (persisted) return this.safeParse<T>(persisted);
-
-    return this.safeParse<T>(this.safeGet(key));
+    return this.safeParse<T>(await this.persistence.get(key));
   }
 
   async setCachedJson(keyRaw: string, value: unknown): Promise<void> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return;
-
-    const serialized = JSON.stringify(value);
-    await this.persistence.set(key, serialized);
-    this.safeSet(key, serialized);
+    await this.persistence.set(key, JSON.stringify(value));
   }
 
   async removeCachedValue(keyRaw: string): Promise<void> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return;
-
     await this.persistence.remove(key);
-    this.safeRemove(key);
-  }
-
-  private getAssetBase(): string {
-    if (!this.isCdnEnabled()) return '';
-    return getSafeAssetBase((environment as any).cdnBaseUrl || '');
   }
 
   private appendVersion(url: string, bankVersion?: string): string {
@@ -168,58 +104,6 @@ export class PracticeAssetResolverService {
       return JSON.parse(raw) as T;
     } catch {
       return null;
-    }
-  }
-
-  private clearLocalStorageByPrefix(prefixRaw: string): void {
-    const prefix = String(prefixRaw ?? '').trim();
-    if (!prefix || !this.hasLocalStorage()) return;
-    try {
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(prefix)) localStorage.removeItem(key);
-      });
-    } catch {
-      // ignore
-    }
-  }
-
-  private safeGet(key: string): string | null {
-    if (!this.hasLocalStorage()) return null;
-    try {
-      const value = localStorage.getItem(key);
-      return value && value.trim().length ? value : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private safeSet(key: string, value: string): void {
-    if (!this.hasLocalStorage()) return;
-    try {
-      localStorage.setItem(key, value);
-    } catch {
-      // ignore quota issues
-    }
-  }
-
-  private safeRemove(key: string): void {
-    if (!this.hasLocalStorage()) return;
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      // ignore
-    }
-  }
-
-  private hasLocalStorage(): boolean {
-    if (typeof localStorage === 'undefined') return false;
-    try {
-      const key = '__practice_asset_probe__';
-      localStorage.setItem(key, '1');
-      localStorage.removeItem(key);
-      return true;
-    } catch {
-      return false;
     }
   }
 }

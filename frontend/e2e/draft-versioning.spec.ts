@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures';
-import { getMonacoModelValue } from './helpers';
+import { getMonacoModelValue, seedIndexedDbRecord } from './helpers';
 
 test('CDN update: creates new draft; old draft preserved; copy is explicit', async ({ page }) => {
   const qid = 'e2e-draft-versioning-q1';
@@ -9,27 +9,14 @@ test('CDN update: creates new draft; old draft preserved; copy is explicit', asy
 
   const phase: 'v2' = 'v2';
 
-  await page.addInitScript(({ qid, v1Starter, marker }) => {
-    localStorage.setItem('fa:cdn:enabled', '1');
-
-    // Pretend the user previously saved a draft for v1.
-    const now = new Date().toISOString();
+  // Pretend the user previously saved a draft for v1. The draft index lives in localStorage.
+  const now = new Date().toISOString();
+  await page.addInitScript(({ qid, now }) => {
     localStorage.setItem(`fa:draftIndex:${qid}`, JSON.stringify({
       latestVersion: 'v1',
       versions: [{ version: 'v1', updatedAt: now, lang: 'js' }],
     }));
-
-    localStorage.setItem(`v2:code:js2:${qid}@v1`, JSON.stringify({
-      version: 'v2',
-      updatedAt: now,
-      lastLang: 'js',
-      js: { code: `${v1Starter}\n${marker}\n`, baseline: v1Starter, updatedAt: now },
-      ts: { code: v1Starter, baseline: v1Starter, updatedAt: now },
-    }));
-
-    // Ensure the LS -> IDB mirror runs on app bootstrap.
-    localStorage.removeItem('fa:js:idb:migrated:v1');
-  }, { qid, v1Starter, marker });
+  }, { qid, now });
 
   await page.route('**/data-version.json**', async (route) => {
     await route.fulfill({
@@ -60,6 +47,21 @@ test('CDN update: creates new draft; old draft preserved; copy is explicit', asy
       contentType: 'application/json',
       body: JSON.stringify([question]),
     });
+  });
+
+  // The draft itself lives in IndexedDB: seed it from a static same-origin page before the app opens the store.
+  await page.goto('/robots.txt');
+  await seedIndexedDbRecord(page, {
+    dbName: 'frontendatlas',
+    storeName: 'fa_js',
+    key: `v2:code:js2:${qid}@v1`,
+    value: JSON.stringify({
+      version: 'v2',
+      updatedAt: now,
+      lastLang: 'js',
+      js: { code: `${v1Starter}\n${marker}\n`, baseline: v1Starter, updatedAt: now },
+      ts: { code: v1Starter, baseline: v1Starter, updatedAt: now },
+    }),
   });
 
   // ---- V2: load latest, should start fresh ----

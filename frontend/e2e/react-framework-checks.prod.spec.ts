@@ -1089,14 +1089,6 @@ async function dismissPostPassPrompt(page: Page): Promise<void> {
   }
 }
 
-async function pinFrameworkAssetsToSameOrigin(page: Page): Promise<void> {
-  // Load a static same-origin document first so localStorage is set before
-  // Angular evaluates the production CDN preference.
-  await page.goto('/robots.txt');
-  await page.evaluate(() => localStorage.setItem('fa:cdn:enabled', '0'));
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:cdn:enabled'))).toBe('0');
-}
-
 async function installLocalFrameworkAssetMirror(page: Page): Promise<void> {
   await page.route(
     /^https:\/\/frontendatlas\.vercel\.app\/assets\/sb\/.+\.json(?:\?.*)?$/,
@@ -1154,7 +1146,6 @@ test.describe('Framework checks against the production SSR build', () => {
   test.beforeEach(async ({ page }) => {
     await installLocalFrameworkAssetMirror(page);
     await installFrameworkRuntimeResponseCache(page);
-    await pinFrameworkAssetsToSameOrigin(page);
   });
 
   test.describe('preview console', () => {

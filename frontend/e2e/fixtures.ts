@@ -74,11 +74,6 @@ export const test = baseTest.extend<{
     const issues: CollectedIssue[] = [];
     const extraAllowlist = compileAllowlist(consoleErrorAllowlist);
 
-    // Default to local assets in E2E for determinism (tests can opt-in per spec).
-    await page.addInitScript(() => {
-      try { localStorage.setItem('fa:cdn:enabled', '0'); } catch { /* ignore */ }
-    });
-
     // Stub external fonts to avoid flaky network timeouts/console errors.
     await page.route('https://fonts.googleapis.com/**', async (route) => {
       await route.fulfill({

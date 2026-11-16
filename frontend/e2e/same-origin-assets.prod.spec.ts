@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-// Deliberately not `./fixtures`: that fixture forces `fa:cdn:enabled=0` on
-// every page, which would hide a misconfigured CDN base. This spec runs against
-// the production build (PLAYWRIGHT_SSR=1) and proves that content assets are
-// requested from the page origin only.
+// Runs against the production build (PLAYWRIGHT_SSR=1) and proves that content
+// assets are requested from the page origin only. There is no CDN base any
+// more; this guard keeps one from coming back.
 
 const ROUTES: Array<{ path: string; marker: RegExp }> = [
   { path: '/coding', marker: /\/assets\/practice\/registry\.json/ },

@@ -2189,7 +2189,6 @@ test.describe('seo-ssr', () => {
 
       await page.addInitScript(() => {
         (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
-        localStorage.setItem('fa:cdn:enabled', '0');
       });
       // Exercise anonymous frontend navigation without production API requests or CV submissions.
       await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
@@ -2254,7 +2253,6 @@ test.describe('seo-ssr', () => {
   test('coding technology hub links follow the filter through reload and back, and stay out of formats view', async ({ page }) => {
     await page.addInitScript(() => {
       (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
-      localStorage.setItem('fa:cdn:enabled', '0');
     });
     await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
       status: route.request().url().includes('/auth/me') ? 401 : 200,
@@ -2352,7 +2350,6 @@ test.describe('seo-ssr', () => {
 
     await page.addInitScript(() => {
       (window as Window & { __FA_SEO_HOST__?: string }).__FA_SEO_HOST__ = 'frontendatlas.com';
-      localStorage.setItem('fa:cdn:enabled', '0');
     });
     // Keep this frontend-only check independent of production API availability.
     await page.route('https://api.frontendatlas.com/**', (route) => route.fulfill({
