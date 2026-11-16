@@ -22,10 +22,7 @@ describe('EssentialQuestionsService', () => {
             provide: PracticeAssetResolverService,
             useValue: {
                 getVersion: () => of('bank-v1'),
-                getAssetUrls: () => ({
-                    primary: 'assets/questions/collections/frontend-essential-60.json',
-                    fallback: 'assets/questions/collections/frontend-essential-60.json',
-                }),
+                getAssetUrl: () => 'assets/questions/collections/frontend-essential-60.json',
             },
         },
         {

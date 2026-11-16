@@ -61,19 +61,6 @@ export class QuestionService {
 
   constructor(private http: HttpClient) { }
 
-  // ------- PUBLIC FLAG API -------------------------------------
-
-  /** Runtime'da CDN'i aç/kapatmak için. Örn: settings ekranından çağır. */
-  setCdnEnabled(enabled: boolean): void {
-    this.assetResolver.setCdnEnabled(enabled);
-    this.clearCache();
-  }
-
-  /** Şu an CDN modunun açık mı, local-only mod mu olduğunu döner. */
-  isCdnEnabled(): boolean {
-    return this.assetResolver.isCdnEnabled();
-  }
-
   // ---------- public API ----------------------------------------------------
 
   /**
@@ -102,7 +89,7 @@ export class QuestionService {
       return of(list);
     }
 
-    const inflightKey = `${technology}:${kind}:${this.assetResolver.isCdnEnabled() ? 'cdn' : 'assets'}`;
+    const inflightKey = `${technology}:${kind}`;
     const existing = this.inflightLoads.get(inflightKey);
     if (existing) return existing;
 
@@ -188,12 +175,7 @@ export class QuestionService {
       return of(this.normalizeShowcaseStats(stats));
     }
 
-    const { primary, fallback } = this.getAssetUrls('questions/showcase-stats.json');
-    const source$ = primary !== fallback
-      ? this.http
-        .get<ShowcaseStatsPayload>(primary)
-        .pipe(catchError(() => this.http.get<ShowcaseStatsPayload>(fallback)))
-      : this.http.get<ShowcaseStatsPayload>(fallback);
+    const source$ = this.http.get<ShowcaseStatsPayload>(this.getAssetUrl('questions/showcase-stats.json'));
 
     return source$.pipe(
       map((raw) => this.normalizeShowcaseStats(raw)),
@@ -218,10 +200,7 @@ export class QuestionService {
       return of(normalizeCompanyReports(payload));
     }
 
-    const { primary, fallback } = this.getAssetUrls('questions/company-reports.json');
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.getAssetUrl('questions/company-reports.json'));
 
     return source$.pipe(
       map((raw) => normalizeCompanyReports(raw)),
@@ -275,12 +254,7 @@ export class QuestionService {
       return of(cached);
     }
 
-    const { primary: metaPrimary, fallback: metaFallback } = this.getAssetUrls(
-      `questions/system-design/${id}/meta.json`
-    );
-    const meta$ = metaPrimary !== metaFallback
-      ? this.http.get<unknown>(metaPrimary).pipe(catchError(() => this.http.get<unknown>(metaFallback)))
-      : this.http.get<unknown>(metaFallback);
+    const meta$ = this.http.get<unknown>(this.getAssetUrl(`questions/system-design/${id}/meta.json`));
 
     return meta$.pipe(
       switchMap((rawMeta) => {
@@ -298,10 +272,7 @@ export class QuestionService {
 
         const sectionRequests = sections.map((s) => {
           const file = s.file;
-          const { primary, fallback } = this.getAssetUrls(`questions/system-design/${id}/${file}`);
-          const src$ = primary !== fallback
-            ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-            : this.http.get<unknown>(fallback);
+          const src$ = this.http.get<unknown>(this.getAssetUrl(`questions/system-design/${id}/${file}`));
 
           return src$.pipe(
             map((section) => this.normalizeSystemDesignSection(section, s)),
@@ -398,13 +369,8 @@ export class QuestionService {
       return this.normalizeQuestions(parsed, technology, kind);
     }
 
-    // 3) Remote source:
-    //    - cdnEnabled === true  → CDN + fallback assets
-    //    - cdnEnabled === false → direkt assets (CDN yok)
-    const { primary, fallback } = this.getAssetUrls(`questions/${technology}/${kind}.json`, bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
-      : this.http.get<any>(fallback);
+    // 3) Remote source: the versioned same-origin asset.
+    const source$ = this.http.get<any>(this.getAssetUrl(`questions/${technology}/${kind}.json`, bankVersion));
 
     let requestFailed = false;
     const list = await firstValueFrom(source$.pipe(
@@ -437,10 +403,7 @@ export class QuestionService {
       await this.persistence.remove(key);
     }
 
-    const { primary, fallback } = this.getAssetUrls('questions/system-design/index.json', bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.getAssetUrl('questions/system-design/index.json', bankVersion));
 
     const list = await firstValueFrom(source$.pipe(
       map((raw) => this.normalizeSystemDesignIndex(raw)),
@@ -664,8 +627,8 @@ export class QuestionService {
     return this.assetResolver.getVersion();
   }
 
-  private getAssetUrls(path: string, bankVersion?: string): { primary: string; fallback: string } {
-    return this.assetResolver.getAssetUrls(path, bankVersion);
+  private getAssetUrl(path: string, bankVersion?: string): string {
+    return this.assetResolver.getAssetUrl(path, bankVersion);
   }
 
   // ---------- small helpers -------------------------------------------------

@@ -92,14 +92,9 @@ export class EssentialQuestionsService {
         } else {
           this.collection$ = this.assetResolver.getVersion().pipe(
             switchMap((version) => {
-              const { primary, fallback } = this.assetResolver.getAssetUrls(
-                'questions/collections/frontend-essential-60.json',
-                version,
+              return this.http.get(
+                this.assetResolver.getAssetUrl('questions/collections/frontend-essential-60.json', version),
               );
-              const source$ = primary !== fallback
-                ? this.http.get(primary).pipe(catchError(() => this.http.get(fallback)))
-                : this.http.get(fallback);
-              return source$;
             }),
             map((raw) => this.normalizeCollection(raw)),
             catchError(() => of(EMPTY_COLLECTION)),

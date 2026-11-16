@@ -118,10 +118,7 @@ export class TradeoffBattleService {
       return this.normalizeIndex(cached);
     }
 
-    const { primary, fallback } = this.assetResolver.getAssetUrls('tradeoff-battles/index.json', bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.assetResolver.getAssetUrl('tradeoff-battles/index.json', bankVersion));
     const list = await firstValueFrom(source$.pipe(
       map((payload) => this.normalizeIndex(payload)),
       catchError(() => of([])),
@@ -139,10 +136,7 @@ export class TradeoffBattleService {
       return this.normalizeScenario(cached);
     }
 
-    const { primary, fallback } = this.assetResolver.getAssetUrls(`tradeoff-battles/${id}/scenario.json`, bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.assetResolver.getAssetUrl(`tradeoff-battles/${id}/scenario.json`, bankVersion));
     const scenario = await firstValueFrom(source$.pipe(
       map((payload) => this.normalizeScenario(payload)),
       catchError(() => of(null)),

@@ -157,12 +157,6 @@ async function installFrameworkRuntimeResponseCache(page: Page): Promise<void> {
   });
 }
 
-async function pinFrameworkAssetsToSameOrigin(page: Page): Promise<void> {
-  await page.goto('/robots.txt');
-  await page.evaluate(() => localStorage.setItem('fa:cdn:enabled', '0'));
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('fa:cdn:enabled'))).toBe('0');
-}
-
 async function seedPremiumSession(page: Page, baseURL: string): Promise<void> {
   const token = `e2e-catalog-premium-${Date.now()}-${Math.random()}`;
   const user = buildMockUser({
@@ -279,7 +273,8 @@ test.describe('Every checked framework question passes its canonical solution', 
     if (!baseURL) throw new Error('Playwright baseURL is required for the framework catalog regression');
     await installLocalFrameworkAssetMirror(page);
     await installFrameworkRuntimeResponseCache(page);
-    await pinFrameworkAssetsToSameOrigin(page);
+    // A static same-origin document, so the premium session below is seeded on the app origin.
+    await page.goto('/robots.txt');
     await seedPremiumSession(page, baseURL);
   });
 

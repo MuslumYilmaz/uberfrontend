@@ -6,11 +6,6 @@ export const environment = {
     gaMeasurementId: 'G-XJ9FBR8HBL',
     apiBase: "https://api.frontendatlas.com",
     frontendBase: "https://frontendatlas.com",
-    // Content assets ship with the build; the legacy cdn/ project only mirrored
-    // part of /assets and 404ed on every page before the same-origin fallback.
-    cdnBaseUrl: '',
-    cdnEnabled: false,
-    trustedAssetOrigins: ['https://frontendatlas.vercel.app'],
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,

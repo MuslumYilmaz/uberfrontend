@@ -6,9 +6,6 @@ export const environment = {
     gaMeasurementId: '',
     apiBase: "/api", // 👈 proxy to http://localhost:3001/api
     frontendBase: "",
-    cdnBaseUrl: '',
-    cdnEnabled: false,
-    trustedAssetOrigins: ['https://frontendatlas.vercel.app'],
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,

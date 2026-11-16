@@ -3,13 +3,14 @@ import {
   JS_QUESTION,
   WEB_QUESTION,
   getMonacoModelValue,
+  seedIndexedDbRecord,
   setMonacoModelValue,
   waitForIframeReady,
   waitForIndexedDbKeyPrefixContains,
   waitForMonacoModel,
 } from './helpers';
 
-test('storage migration: legacy (unversioned) bundle is preserved and mirrored to IndexedDB', async ({ page }) => {
+test('storage migration: legacy (unversioned) bundle is preserved and archived as @legacy', async ({ page }) => {
   const marker = `// e2e-migrate-${Date.now()}`;
   const code = [
     marker,
@@ -29,10 +30,9 @@ test('storage migration: legacy (unversioned) bundle is preserved and mirrored t
     ts: { code: '', baseline: '', updatedAt: now },
   };
 
-  await page.addInitScript(({ key, value }) => {
-    localStorage.setItem(key, value);
-    localStorage.removeItem('fa:js:idb:migrated:v1');
-  }, { key, value: JSON.stringify(bundle) });
+  // The unversioned draft lives in IndexedDB: seed it from a static same-origin page before the app opens the store.
+  await page.goto('/robots.txt');
+  await seedIndexedDbRecord(page, { dbName: 'frontendatlas', storeName: 'fa_js', key, value: JSON.stringify(bundle) });
 
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();

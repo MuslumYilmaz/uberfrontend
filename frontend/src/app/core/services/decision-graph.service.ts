@@ -2,48 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
 import {
   DecisionGraphDocument,
   DecisionGraphLanguage,
   DecisionGraphNode,
 } from '../models/decision-graph.model';
-import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
-
-const CDN_FLAG_KEY = 'fa:cdn:enabled';
+import { normalizeAssetPath } from '../utils/asset-url.util';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
-}
-
-function hasLocalStorage(): boolean {
-  if (typeof localStorage === 'undefined') return false;
-  try {
-    const probe = '__decision_graph_probe__';
-    localStorage.setItem(probe, '1');
-    localStorage.removeItem(probe);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function isCdnEnabled(): boolean {
-  if (!hasLocalStorage()) {
-    if (typeof (environment as any).cdnEnabled === 'boolean') {
-      return (environment as any).cdnEnabled;
-    }
-    return !!(environment as any).cdnBaseUrl;
-  }
-
-  const raw = localStorage.getItem(CDN_FLAG_KEY);
-  if (raw === '0' || raw === 'false') return false;
-  if (raw === '1' || raw === 'true') return true;
-
-  if (typeof (environment as any).cdnEnabled === 'boolean') {
-    return (environment as any).cdnEnabled;
-  }
-  return !!(environment as any).cdnBaseUrl;
 }
 
 function toPositiveInt(value: unknown): number | null {
@@ -239,43 +206,12 @@ export class DecisionGraphService {
     const cached = this.rawCache.get(cacheKey);
     if (cached) return cached;
 
-    const urls = this.buildFetchUrls(assetPath);
-    const request$ = this.fetchWithFallback(urls).pipe(
+    const request$ = this.http.get<unknown>(cacheKey).pipe(
       catchError(() => of(null)),
       shareReplay(1),
     );
 
     this.rawCache.set(cacheKey, request$);
     return request$;
-  }
-
-  private buildFetchUrls(assetPath: string): string[] {
-    const normalized = normalizeAssetPath(assetPath);
-    if (/^https?:\/\//i.test(normalized)) {
-      return [normalized];
-    }
-
-    // The fallback must stay same-origin even when a CDN base is configured.
-    const fallbackUrl = normalized;
-    if (!isCdnEnabled()) return [fallbackUrl];
-
-    const base = getSafeAssetBase((environment as any).cdnBaseUrl || '');
-    if (!base) return [fallbackUrl];
-
-    const primaryUrl = buildAssetUrl(normalized, { preferBase: base });
-    if (primaryUrl === fallbackUrl) return [fallbackUrl];
-    return [primaryUrl, fallbackUrl];
-  }
-
-  private fetchWithFallback(urls: string[]): Observable<unknown> {
-    if (!urls.length) return of(null);
-
-    const [first, ...rest] = urls;
-    return this.http.get<unknown>(first).pipe(
-      catchError(() => {
-        if (!rest.length) return of(null);
-        return this.fetchWithFallback(rest);
-      }),
-    );
   }
 }

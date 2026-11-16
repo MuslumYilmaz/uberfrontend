@@ -295,9 +295,6 @@ test.describe('coding mobile reading against production prerender', () => {
       if (!path.startsWith(root + sep)) throw new Error(`Unexpected CDN asset path: ${asset}`);
       await route.fulfill({ status: 200, contentType: 'application/json', body: readFileSync(path, 'utf8') });
     });
-    // Production chooses its CDN preference before Angular's app initializer.
-    await page.goto('/robots.txt');
-    await page.evaluate(() => localStorage.setItem('fa:cdn:enabled', '0'));
   });
 
   for (const item of cases) {

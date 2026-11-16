@@ -106,10 +106,7 @@ export class IncidentService {
       return this.normalizeIncidentIndex(cached);
     }
 
-    const { primary, fallback } = this.assetResolver.getAssetUrls('incidents/index.json', bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.assetResolver.getAssetUrl('incidents/index.json', bankVersion));
 
     const list = await firstValueFrom(source$.pipe(
       map((payload) => this.normalizeIncidentIndex(payload)),
@@ -129,10 +126,7 @@ export class IncidentService {
       return this.normalizeIncidentScenario(cached);
     }
 
-    const { primary, fallback } = this.assetResolver.getAssetUrls(`incidents/${id}/scenario.json`, bankVersion);
-    const source$ = primary !== fallback
-      ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-      : this.http.get<unknown>(fallback);
+    const source$ = this.http.get<unknown>(this.assetResolver.getAssetUrl(`incidents/${id}/scenario.json`, bankVersion));
 
     const scenario = await firstValueFrom(source$.pipe(
       map((payload) => this.normalizeIncidentScenario(payload)),

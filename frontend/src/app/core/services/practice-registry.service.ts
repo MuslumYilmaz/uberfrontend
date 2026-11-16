@@ -86,10 +86,7 @@ export class PracticeRegistryService {
     if (!this.registry$) {
       this.registry$ = this.assetResolver.getVersion().pipe(
         switchMap((bankVersion) => {
-          const { primary, fallback } = this.assetResolver.getAssetUrls('practice/registry.json', bankVersion);
-          return primary !== fallback
-            ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-            : this.http.get<unknown>(fallback);
+          return this.http.get<unknown>(this.assetResolver.getAssetUrl('practice/registry.json', bankVersion));
         }),
         map((payload) => this.normalizeRegistry(payload)),
         tap((items) => {
