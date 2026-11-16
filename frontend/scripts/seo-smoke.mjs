@@ -553,6 +553,62 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://www.jointaro.com/interviews/companies/crowdstrike/experiences/engineering-manager-frontend-united-states-september-3-2025-accepted-offer-neutral-6cbb594c/',
   },
+  {
+    label: 'Disney',
+    route: '/companies/disney/preview',
+    title: 'Disney Frontend Interview Questions: 30 Reported + Prep Guide',
+    description:
+      'Disney frontend interview: a live React round or a take-home and the code review after it, STAR behavioural rounds, AI limits and 30 reported questions.',
+    h1: 'Disney Frontend Interview Questions',
+    kicker: 'Public Disney prep guide',
+    headings: [
+      'Prepare to defend code you wrote and to review code you did not',
+      'What the Disney accounts cover, and what to settle with your recruiter',
+      'questions candidates reported',
+      'Plan the scoreboard banner before the first step',
+      'A 7-day Disney frontend interview preparation plan',
+      'Common Disney frontend interview preparation questions',
+      'Free tasks for a live React build, a code review and a design round',
+      'Sources (',
+    ],
+    trustFragment: 'not leaked material, and Disney has neither confirmed nor published any of them',
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/javascript/coding/js-poll-until',
+      '/react/coding/react-autocomplete-search-starter',
+      '/javascript/debug/js-debug-async-race',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/disney/experiences/software-engineer-ii-frontend-bergen-op-zoom-may-1-2025-no-offer-positive-1707e185/',
+  },
+  {
+    label: 'Cloudflare',
+    route: '/companies/cloudflare/preview',
+    title: 'Cloudflare Frontend Interview Questions: 26 Reported + Prep Guide',
+    description:
+      'Cloudflare frontend interview: the Orange Cloud Interview, the JavaScript screen, an hour of React and TypeScript coding, and 26 reported questions.',
+    h1: 'Cloudflare Frontend Interview Questions',
+    kicker: 'Public Cloudflare prep guide',
+    headings: [
+      'What the Cloudflare loops reward: speed in React and TypeScript, and the web explained in order',
+      'Frontend accounts are few; most rows come from other Cloudflare teams',
+      'questions candidates reported',
+      'Rehearse the link question as a two-minute answer with a deeper layer ready',
+      'A 7-day Cloudflare frontend interview preparation plan',
+      'Common Cloudflare frontend interview preparation questions',
+      'Free practice for the Cloudflare rounds',
+      'Sources (',
+    ],
+    trustFragment: 'None is confirmed by Cloudflare, and every answer guide is ours',
+    resources: [
+      '/html/trivia/html-parsing-rendering',
+      '/react/coding/react-autocomplete-search-starter',
+      '/javascript/coding/js-get-by-path-1',
+      '/javascript/debug/js-debug-async-race',
+    ],
+    reportUrl:
+      'https://leetcode.com/discuss/post/7396827/',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [

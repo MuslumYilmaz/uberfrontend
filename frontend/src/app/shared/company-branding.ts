@@ -193,6 +193,18 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     label: 'CrowdStrike',
     monogram: 'C',
   },
+  // Tagged on 2026-11-14. Simple Icons has a Cloudflare mark but none for Disney, so Disney keeps a monogram.
+  cloudflare: {
+    slug: 'cloudflare',
+    label: 'Cloudflare',
+    logoUrl: `${COMPANY_LOGO_BASE}/cloudflare.svg`,
+    monogram: 'C',
+  },
+  disney: {
+    slug: 'disney',
+    label: 'Disney',
+    monogram: 'D',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {
