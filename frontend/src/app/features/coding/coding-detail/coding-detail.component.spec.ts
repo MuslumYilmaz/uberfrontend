@@ -164,7 +164,6 @@ describe('CodingDetailComponent', () => {
         {
             provide: CodeStorageService,
             useValue: {
-                migrateAllJsToIndexedDbOnce: () => Promise.resolve(),
                 getJsAsync: () => Promise.resolve(null),
                 clearJsAsync: () => Promise.resolve(),
                 clearFrameworkAsync: () => Promise.resolve(),

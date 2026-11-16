@@ -144,9 +144,7 @@ export class CompanyPlanService {
     if (!this.data$) {
       this.data$ = this.assets.getVersion().pipe(
         switchMap((version) => {
-          const { primary, fallback } = this.assets.getAssetUrls(DATA_PATH, version);
-          const request = this.http.get<CompanyPlanData>(primary);
-          return primary === fallback ? request : request.pipe(catchError(() => this.http.get<CompanyPlanData>(fallback)));
+          return this.http.get<CompanyPlanData>(this.assets.getAssetUrl(DATA_PATH, version));
         }),
         map((data) => {
           if (data?.schemaVersion !== 1) throw new Error('Unknown company plan data');

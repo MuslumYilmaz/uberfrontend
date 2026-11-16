@@ -54,7 +54,6 @@ describe('QuestionService', () => {
   const overrideKey = 'qoverride:javascript:coding';
   const systemKey = 'qcache:system-design';
   const dvKey = 'qcache:dv';
-  const cdnFlagKey = 'fa:cdn:enabled';
   const codingTransferStateKey = makeStateKey<Question[]>('questions:javascript:coding');
   const systemDesignTransferStateKey = makeStateKey<any[]>('system-design:index');
   const dataVersionTransferStateKey = makeStateKey<string>('practice:data-version');
@@ -103,7 +102,6 @@ describe('QuestionService', () => {
       .filter((key) =>
         key.startsWith('qcache:')
         || key.startsWith('qoverride:')
-        || key === cdnFlagKey
       )
       .forEach((key) => localStorage.removeItem(key));
   };
@@ -115,7 +113,6 @@ describe('QuestionService', () => {
   };
 
   beforeEach(async () => {
-    localStorage.setItem(cdnFlagKey, '0');
 
     TestBed.configureTestingModule({
     imports: [],
@@ -137,7 +134,6 @@ describe('QuestionService', () => {
 
     clearTransferState();
     await clearQuestionStorage();
-    localStorage.setItem(cdnFlagKey, '0');
   });
 
   afterEach(async () => {

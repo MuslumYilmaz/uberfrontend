@@ -84,10 +84,7 @@ export class RehearsalService implements OnDestroy {
     if (this.list$) return this.list$;
     this.list$ = this.assets.getVersion().pipe(
       switchMap((version) => {
-        const { primary, fallback } = this.assets.getAssetUrls(REHEARSAL_LIST_ASSET, version);
-        return primary !== fallback
-          ? this.http.get<unknown>(primary).pipe(catchError(() => this.http.get<unknown>(fallback)))
-          : this.http.get<unknown>(fallback);
+        return this.http.get<unknown>(this.assets.getAssetUrl(REHEARSAL_LIST_ASSET, version));
       }),
       map((payload) => this.normalizeList(payload)),
       catchError(() => of([])),

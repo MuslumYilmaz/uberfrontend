@@ -41,6 +41,46 @@ export async function getMonacoModelValue(page: Page, modelKeyPart: string): Pro
   }, modelKeyPart);
 }
 
+/**
+ * Writes one record into a localForage-shaped IndexedDB store before the app
+ * opens it. Call it from a static page on the app origin (for example
+ * /robots.txt): drafts live in IndexedDB only, so a test that needs a
+ * pre-existing draft seeds it here rather than through localStorage.
+ */
+export async function seedIndexedDbRecord(
+  page: Page,
+  opts: { dbName: string; storeName: string; key: string; value: string }
+) {
+  await page.evaluate(async ({ dbName, storeName, key, value }) => {
+    const open = (version?: number) => new Promise<IDBDatabase>((resolve, reject) => {
+      const req = version ? indexedDB.open(dbName, version) : indexedDB.open(dbName);
+      req.onupgradeneeded = () => {
+        if (!req.result.objectStoreNames.contains(storeName)) req.result.createObjectStore(storeName);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+      req.onblocked = () => reject(new Error(`IndexedDB open blocked: ${dbName}`));
+    });
+
+    let db = await open();
+    if (!db.objectStoreNames.contains(storeName)) {
+      const nextVersion = db.version + 1;
+      db.close();
+      db = await open(nextVersion);
+    }
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        tx.objectStore(storeName).put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } finally {
+      db.close();
+    }
+  }, opts);
+}
+
 export async function waitForIndexedDbContains(
   page: Page,
   opts: { dbName: string; storeName: string; key: string; substring: string }

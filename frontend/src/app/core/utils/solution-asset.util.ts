@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from './asset-url.util';
+import { normalizeAssetPath } from './asset-url.util';
 import { normalizeSdkFiles } from './snapshot.utils';
 
 export type SdkAsset = {
@@ -10,69 +9,13 @@ export type SdkAsset = {
     openFile?: string;
 };
 
-const CDN_FLAG_KEY = 'fa:cdn:enabled';
-
-function hasLocalStorage(): boolean {
-    if (typeof localStorage === 'undefined') return false;
-    try {
-        const k = '__sdk_probe__';
-        localStorage.setItem(k, '1');
-        localStorage.removeItem(k);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-function isCdnEnabledByFlag(): boolean {
-    if (!hasLocalStorage()) {
-        if (typeof (environment as any).cdnEnabled === 'boolean') {
-            return (environment as any).cdnEnabled;
-        }
-        return !!(environment as any).cdnBaseUrl;
-    }
-
-    const raw = localStorage.getItem(CDN_FLAG_KEY);
-    if (raw === '0' || raw === 'false') return false;
-    if (raw === '1' || raw === 'true') return true;
-
-    if (typeof (environment as any).cdnEnabled === 'boolean') {
-        return (environment as any).cdnEnabled;
-    }
-    return !!(environment as any).cdnBaseUrl;
-}
-
-function isAbsoluteUrl(url: string): boolean {
-    return /^https?:\/\//i.test(url);
-}
-
-/**
- * Fetch a solution/sdk asset JSON, resolving against CDN if enabled,
- * otherwise falling back to <base href>/assets.
- */
+/** Fetch a solution/sdk asset JSON from the page origin's /assets (absolute URLs pass through). */
 export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkAsset> {
     if (!url) {
         throw new Error('[fetchSdkAsset] url is required');
     }
 
-    // 1) Absolute URL ise direkt kullan
-    if (isAbsoluteUrl(url)) {
-        return await firstValueFrom(http.get<SdkAsset>(url));
-    }
-
-    const base = isCdnEnabledByFlag() ? getSafeAssetBase((environment as any).cdnBaseUrl || '') : '';
-    // Same-origin fallback regardless of the configured CDN base.
-    const localUrl = normalizeAssetPath(url);
-    const preferredUrl = base ? buildAssetUrl(url, { preferBase: base }) : localUrl;
-
-    if (preferredUrl !== localUrl) {
-        try {
-            return await firstValueFrom(http.get<SdkAsset>(preferredUrl));
-        } catch {
-        }
-    }
-
-    return await firstValueFrom(http.get<SdkAsset>(localUrl));
+    return await firstValueFrom(http.get<SdkAsset>(normalizeAssetPath(url)));
 }
 
 /**

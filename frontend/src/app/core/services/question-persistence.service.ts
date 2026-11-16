@@ -10,6 +10,11 @@ type PersistenceStore = {
 
 const IS_BROWSER_ENV = typeof window !== 'undefined' && typeof document !== 'undefined';
 
+/**
+ * Content caches (question banks, incidents, tradeoff battles) in IndexedDB.
+ * When the store is unavailable or fails, reads answer null and writes are
+ * dropped: the caller fetches the versioned asset again, which is cheap.
+ */
 @Injectable({ providedIn: 'root' })
 export class QuestionPersistenceService {
   private storePromise: Promise<PersistenceStore | null> | null = null;
@@ -18,28 +23,19 @@ export class QuestionPersistenceService {
   async get(keyRaw: string): Promise<string | null> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return null;
-
-    const idbValue = await this.getFromIdb(key);
-    if (idbValue !== null) return idbValue;
-
-    return this.getFromLocalStorage(key);
+    return this.getFromIdb(key);
   }
 
   async set(keyRaw: string, valueRaw: string): Promise<void> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return;
-    const value = String(valueRaw ?? '');
-
-    await this.setInIdb(key, value);
-    this.setInLocalStorage(key, value);
+    await this.setInIdb(key, String(valueRaw ?? ''));
   }
 
   async remove(keyRaw: string): Promise<void> {
     const key = String(keyRaw ?? '').trim();
     if (!key) return;
-
     await this.removeFromIdb(key);
-    this.removeFromLocalStorage(key);
   }
 
   async clearByPrefix(prefixRaw: string): Promise<void> {
@@ -54,12 +50,6 @@ export class QuestionPersistenceService {
     const prefix = String(prefixRaw ?? '').trim();
     if (!prefix) return [];
 
-    const idbKeys = await this.keysByPrefixFromIdb(prefix);
-    const lsKeys = this.keysByPrefixFromLocalStorage(prefix);
-    return Array.from(new Set([...idbKeys, ...lsKeys]));
-  }
-
-  private async keysByPrefixFromIdb(prefix: string): Promise<string[]> {
     const store = await this.getStore();
     if (!store) return [];
     try {
@@ -69,15 +59,6 @@ export class QuestionPersistenceService {
         .filter((key) => key.startsWith(prefix));
     } catch {
       this.disableIdb();
-      return [];
-    }
-  }
-
-  private keysByPrefixFromLocalStorage(prefix: string): string[] {
-    if (!this.hasLocalStorage()) return [];
-    try {
-      return Object.keys(localStorage).filter((key) => key.startsWith(prefix));
-    } catch {
       return [];
     }
   }
@@ -102,7 +83,6 @@ export class QuestionPersistenceService {
       await store.setItem(key, value);
     } catch {
       this.disableIdb();
-      // localStorage fallback handles failures
     }
   }
 
@@ -113,7 +93,6 @@ export class QuestionPersistenceService {
       await store.removeItem(key);
     } catch {
       this.disableIdb();
-      // localStorage cleanup still runs
     }
   }
 
@@ -138,45 +117,5 @@ export class QuestionPersistenceService {
   private disableIdb(): void {
     this.idbDisabled = true;
     this.storePromise = Promise.resolve(null);
-  }
-
-  private getFromLocalStorage(key: string): string | null {
-    if (!this.hasLocalStorage()) return null;
-    try {
-      const value = localStorage.getItem(key);
-      return value && value.trim().length ? value : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private setInLocalStorage(key: string, value: string): void {
-    if (!this.hasLocalStorage()) return;
-    try {
-      localStorage.setItem(key, value);
-    } catch {
-      // ignore quota issues
-    }
-  }
-
-  private removeFromLocalStorage(key: string): void {
-    if (!this.hasLocalStorage()) return;
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      // ignore
-    }
-  }
-
-  private hasLocalStorage(): boolean {
-    if (typeof localStorage === 'undefined') return false;
-    try {
-      const key = '__q_persist_probe__';
-      localStorage.setItem(key, '1');
-      localStorage.removeItem(key);
-      return true;
-    } catch {
-      return false;
-    }
   }
 }

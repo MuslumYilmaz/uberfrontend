@@ -75,7 +75,7 @@ describe('CompanyPlanService', () => {
         { provide: AnalyticsService, useValue: analytics },
         {
           provide: PracticeAssetResolverService,
-          useValue: { getVersion: () => of('v1'), getAssetUrls: () => ({ primary: DATA_URL, fallback: DATA_URL }) },
+          useValue: { getVersion: () => of('v1'), getAssetUrl: () => DATA_URL },
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),

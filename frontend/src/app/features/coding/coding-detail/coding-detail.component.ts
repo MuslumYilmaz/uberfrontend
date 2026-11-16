@@ -1136,8 +1136,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     private pressureModes: PressureModeService,
     private pressureProgress: PressureModeProgressService,
   ) {
-    this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
-
     afterNextRender(() => {
       // Match the prerendered reading tree before applying browser-only layout and preferences.
       this.syncViewportState();

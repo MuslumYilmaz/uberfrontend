@@ -1,45 +1,8 @@
-import { environment } from '../../../environments/environment';
-
-const warned = {
-    invalidBase: false,
-};
-
 function isAbsoluteUrl(value: string): boolean {
     return /^https?:\/\//i.test(value);
 }
 
-function getCurrentOrigin(): string {
-    if (typeof window === 'undefined') return '';
-    try {
-        return window.location.origin || '';
-    } catch {
-        return '';
-    }
-}
-
-function warnInvalidBaseOnce(baseUrl: string): void {
-    if (warned.invalidBase) return;
-    warned.invalidBase = true;
-    console.warn('[assets] Ignoring invalid asset base; using same-origin assets instead.', {
-        baseUrl,
-    });
-}
-
-function getTrustedAssetOrigins(): string[] {
-    const raw = (environment as any).trustedAssetOrigins;
-    if (!Array.isArray(raw)) return [];
-
-    return raw
-        .map((entry) => {
-            try {
-                return new URL(String(entry)).origin;
-            } catch {
-                return '';
-            }
-        })
-        .filter(Boolean);
-}
-
+/** Content assets live under the page origin's /assets; absolute URLs pass through. */
 export function normalizeAssetPath(path: string): string {
     const raw = String(path || '').replace(/^\/+/, '');
     if (!raw) return 'assets/';
@@ -47,38 +10,4 @@ export function normalizeAssetPath(path: string): string {
     if (raw.startsWith('assets/')) return raw;
     if (raw.startsWith('questions/')) return `assets/${raw}`;
     return `assets/${raw}`;
-}
-
-export function getSafeAssetBase(preferBase?: string): string {
-    const candidate = String(preferBase || (environment as any).cdnBaseUrl || '').trim();
-    if (!candidate) return '';
-    if (!isAbsoluteUrl(candidate)) return '';
-
-    try {
-        const candidateUrl = new URL(candidate);
-        const origin = getCurrentOrigin();
-        const isPreview = candidateUrl.hostname.endsWith('.vercel.app');
-        const isSameOrigin = !!origin && candidateUrl.origin === origin;
-        const isTrustedAssetOrigin = getTrustedAssetOrigins().includes(candidateUrl.origin);
-
-        if (isPreview && !isSameOrigin && !isTrustedAssetOrigin) {
-            warnInvalidBaseOnce(candidateUrl.origin);
-            return '';
-        }
-
-        return candidateUrl.origin;
-    } catch {
-        warnInvalidBaseOnce(candidate);
-        return '';
-    }
-}
-
-export function buildAssetUrl(path: string, opts?: { preferBase?: string }): string {
-    const normalized = normalizeAssetPath(path);
-    if (isAbsoluteUrl(normalized)) return normalized;
-
-    const base = getSafeAssetBase(opts?.preferBase);
-    if (!base) return normalized;
-
-    return new URL(normalized, base).toString();
 }

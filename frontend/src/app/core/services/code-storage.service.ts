@@ -4,20 +4,13 @@ import localForage from 'localforage';
 type JsLang = 'js' | 'ts';
 type CodeFormat = 'javascript' | 'typescript';
 
-/** Old shape (kept for compatibility with getJs()/saveJs() call sites) */
+/** A JS draft as getJsAsync() returns it. */
 export interface JsSave {
   code: string;
   language: JsLang;
   format: CodeFormat;
   version: 'v1' | 'v2';
   updatedAt: string; // ISO
-}
-
-export interface NgSave {
-  files: Record<string, { code: string }>;
-  projectId?: string;
-  version: 'v1';
-  updatedAt: string;
 }
 
 /** New consolidated per-question blob */
@@ -87,39 +80,13 @@ function getWebStore(): LocalForageInstance | null {
 const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
 
-/** v1 key helpers (legacy) */
-const V1_PREFIX = 'v1:code:';
-const V1_JS_RECORD = (qid: string) => `${V1_PREFIX}js:${qid}`;
-const V1_JS_BASELINE = (qid: string, lang: JsLang) => `${V1_PREFIX}js:baseline:${qid}:${lang}`;
-
-/** Old external pref key */
-const FA_LANG_PREF = (qid: string) => `fa:lang:${qid}`;
-
 /** v2 consolidated key (one per question) */
 const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
 const V2_WEB_BUNDLE = (qid: string) => `${PREFIX}web2:${qid}`;
 const V2_FW_BUNDLE = (tech: FrameworkTech, qid: string) => `${PREFIX}fw2:${tech}:${qid}`;
 
-/** one-time flag so we don't re-copy on every load */
-const MIGRATION_FLAG_JS_IDB = 'fa:js:idb:migrated:v1';
-
-/** Guard: is localStorage usable? (some browsers/iframes can throw) */
-function hasLocalStorage(): boolean {
-  if (typeof localStorage === 'undefined') return false;
-  try {
-    const k = '__ls_probe__';
-    localStorage.setItem(k, '1');
-    localStorage.removeItem(k);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 @Injectable({ providedIn: 'root' })
 export class CodeStorageService {
-  private migrated = false;
-
   private readonly MAX_BUNDLE_CACHE = 50;
   private readonly bundleOpQueue = new Map<string, Promise<void>>();
   private readonly jsBundleCache = new Map<string, JsBundleV2>();
@@ -150,229 +117,8 @@ export class CodeStorageService {
     }
   }
 
-  // ---------- PUBLIC: JS (consolidated) ----------
+  // ---------- PUBLIC: JS (IndexedDB) ----------
 
-  getJs(qidRaw: string | number): JsSave | null {
-    this.ensureMigrated();
-    const qid = String(qidRaw);
-    const b = this.getBundle(qid);
-    if (!b) return null;
-    const lang: JsLang = (b.lastLang === 'ts' || b.lastLang === 'js') ? b.lastLang : 'js';
-    const code = (b[lang]?.code ?? '') as string;
-    return {
-      code,
-      language: lang,
-      format: lang === 'ts' ? 'typescript' : 'javascript',
-      version: 'v2',
-      updatedAt: b.updatedAt,
-    };
-  }
-
-  saveJs(
-    qidRaw: string | number,
-    code: string,
-    lang: JsLang = 'js',
-    opts?: { force?: boolean; allowEmpty?: boolean }
-  ): void {
-    // Legacy wrapper: use async path (IDB-first).
-    void this.saveJsAsync(qidRaw, code, lang, opts);
-  }
-
-  setJsBaseline(qidRaw: string | number, lang: JsLang, baseline: string): void {
-    void this.setJsBaselineAsync(qidRaw, lang, baseline);
-  }
-
-  getJsBaseline(qidRaw: string | number, lang: JsLang): string | null {
-    this.ensureMigrated();
-    const qid = String(qidRaw);
-    const b = this.getBundle(qid);
-    return b?.[lang]?.baseline ?? null;
-  }
-
-  /** Strict per-language getter (does not mutate lastLang) */
-  getJsForLang(qidRaw: string | number, lang: JsLang): string | null {
-    this.ensureMigrated();
-    const qid = String(qidRaw);
-    const b = this.getBundle(qid);
-    return (b && b[lang]?.code != null) ? (b[lang]!.code as string) : null;
-  }
-
-  /** Switch lastLang without touching code buffers. */
-  // LEGACY sync helper: delegate to async, avoid direct LS writes.
-  setLastLang(qidRaw: string | number, lang: JsLang): void {
-    void this.setLastLangAsync(qidRaw, lang);
-  }
-
-  /** Clear everything for this question (both languages). */
-  clearJs(qidRaw: string | number): void {
-    const qid = String(qidRaw);
-    if (hasLocalStorage()) {
-      try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { }
-    }
-    void this.clearJsAsync(qid).catch(() => { /* ignore */ });
-  }
-
-  // ---------- PUBLIC: Angular (StackBlitz snapshot) ----------
-
-  private keyNg(qid: string) { return `${PREFIX}ng:${qid}`; }
-
-  getNg(qidRaw: string | number): NgSave | null {
-    if (!hasLocalStorage()) return null;
-    const qid = String(qidRaw);
-    const raw = localStorage.getItem(this.keyNg(qid));
-    if (!raw) return null;
-    try { return JSON.parse(raw) as NgSave; } catch { return null; }
-  }
-
-  saveNg(qidRaw: string | number, filesSnapshot: Record<string, string>, projectId?: string): void {
-    if (!hasLocalStorage()) return;
-    const qid = String(qidRaw);
-    const files: Record<string, { code: string }> = {};
-    for (const [path, code] of Object.entries(filesSnapshot)) files[path] = { code };
-    const payload: NgSave = { files, projectId, version: 'v1', updatedAt: new Date().toISOString() };
-    try {
-      localStorage.setItem(this.keyNg(qid), JSON.stringify(payload));
-    } catch { }
-  }
-
-  clearNg(qidRaw: string | number): void {
-    if (!hasLocalStorage()) return;
-    const qid = String(qidRaw);
-    try { localStorage.removeItem(this.keyNg(qid)); } catch { }
-  }
-
-  // ---------- purge / utils ----------
-
-  static isOurKey(k: string): boolean {
-    return /^v\d+:code:(ng|js2|js):/.test(k);
-  }
-
-  static purgeAll(): void {
-    if (!hasLocalStorage()) return;
-    try {
-      const keys = Object.keys(localStorage);
-      for (const k of keys) if (CodeStorageService.isOurKey(k)) localStorage.removeItem(k);
-    } catch { }
-  }
-
-  // ---------- internals ----------
-
-  private getBundle(qid: string): JsBundleV2 | null {
-    if (!hasLocalStorage()) return null;
-    const raw = localStorage.getItem(V2_JS_BUNDLE(qid));
-    if (!raw) return null;
-    try { return JSON.parse(raw) as JsBundleV2; } catch { return null; }
-  }
-
-  /** One-time migration from v1 keys to v2 (no overwrite if v2 exists) */
-  private ensureMigrated(): void {
-    if (this.migrated) return;
-    this.migrated = true;
-    if (!hasLocalStorage()) return;
-
-    try {
-      const keys = Object.keys(localStorage);
-      const qids = new Set<string>();
-
-      // capture both v1 record and baseline forms
-      for (const k of keys) {
-        // v1:code:js:<qid> or v1:code:js:baseline:<qid>:<lang>
-        const rec = k.match(/^v1:code:js:([^:]+)$/);
-        if (rec) { qids.add(rec[1]); continue; }
-        const base = k.match(/^v1:code:js:baseline:([^:]+):(js|ts)$/);
-        if (base) { qids.add(base[1]); continue; }
-        const pref = k.match(/^fa:lang:([^:]+)$/);
-        if (pref) { qids.add(pref[1]); continue; }
-      }
-
-      qids.forEach((qid) => this.migrateQuestionFromV1(qid));
-    } catch { /* ignore */ }
-  }
-
-  private migrateQuestionFromV1(qid: string): void {
-    if (this.getBundle(qid)) return; // already migrated — never clobber
-
-    const now = new Date().toISOString();
-
-    // 1) main v1 record
-    let v1: Partial<JsSave> | null = null;
-    try {
-      const raw = localStorage.getItem(V1_JS_RECORD(qid));
-      v1 = raw ? JSON.parse(raw) : null;
-    } catch { v1 = null; }
-
-    // 2) baselines
-    const baseJs = this.readBaseline(V1_JS_BASELINE(qid, 'js'));
-    const baseTs = this.readBaseline(V1_JS_BASELINE(qid, 'ts'));
-
-    // 3) lang preference
-    const prefRaw = localStorage.getItem(FA_LANG_PREF(qid));
-    const pref = (prefRaw === 'ts' || prefRaw === 'js') ? (prefRaw as JsLang) : undefined;
-
-    if (!v1 && !baseJs && !baseTs && !pref) return; // nothing to migrate
-
-    const bundle: JsBundleV2 = { version: 'v2', updatedAt: now, lastLang: (pref || v1?.language || 'js') as JsLang };
-
-    if (v1?.language === 'js') {
-      bundle.js = { code: v1.code ?? '', baseline: baseJs ?? undefined };
-      if (baseTs != null) bundle.ts = { code: bundle.ts?.code, baseline: baseTs };
-    } else if (v1?.language === 'ts') {
-      bundle.ts = { code: v1.code ?? '', baseline: baseTs ?? undefined };
-      if (baseJs != null) bundle.js = { code: bundle.js?.code, baseline: baseJs };
-    } else {
-      if (baseJs != null) bundle.js = { code: baseJs, baseline: baseJs };
-      if (baseTs != null) bundle.ts = { code: baseTs, baseline: baseTs };
-    }
-
-    try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(bundle)); } catch { }
-
-    // optional cleanup
-    try { localStorage.removeItem(V1_JS_RECORD(qid)); } catch { }
-    try { localStorage.removeItem(V1_JS_BASELINE(qid, 'js')); } catch { }
-    try { localStorage.removeItem(V1_JS_BASELINE(qid, 'ts')); } catch { }
-    try { localStorage.removeItem(FA_LANG_PREF(qid)); } catch { }
-  }
-
-  private readBaseline(key: string): string | null {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return null;
-      const obj = JSON.parse(raw);
-      return typeof obj?.code === 'string' ? obj.code : null;
-    } catch { return null; }
-  }
-
-  initJs(qidRaw: string | number, lang: 'js' | 'ts', starter: string) {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) {
-      return { initial: starter, restored: false };
-    }
-    const qid = String(qidRaw);
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    // Seed baseline once (no code write)
-    const baseline = cur[lang]?.baseline ?? null;
-    if (baseline == null) {
-      cur[lang] = { ...(cur[lang] || {}), baseline: starter, code: cur[lang]?.code ?? '' };
-    }
-
-    // Decide what to show
-    const saved = cur[lang]?.code ?? '';
-    const hasUser = hasSavedCode(cur[lang]);
-    const initial = hasUser ? saved : starter;
-    const restored = hasUser && saved.trim() !== (cur[lang]?.baseline ?? starter).trim();
-
-    // write back only if we changed baseline or lastLang; never write starter as code
-    const next: JsBundleV2 = { ...cur, lastLang: lang, version: 'v2', updatedAt: now };
-    try {
-      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-    } catch { }
-
-    return { initial, restored };
-  }
-
-  // in CodeStorageService
   resetJsToBaseline(qidRaw: string | number, lang: JsLang): void {
     // Minimal implementation: load current bundle and push baseline into code via async helpers.
     void (async () => {
@@ -395,7 +141,6 @@ export class CodeStorageService {
     qidRaw: string | number,
     starters?: { js?: string; ts?: string }
   ): Promise<void> {
-    this.ensureMigrated();
     const qid = String(qidRaw);
     const key = V2_JS_BUNDLE(qid);
     await this.enqueueBundleOp(key, async () => {
@@ -422,7 +167,7 @@ export class CodeStorageService {
 
   // ---------- ASYNC (IndexedDB) JS API: non-breaking side-by-side ----------
 
-  /** Read the v2 JS bundle from IndexedDB (falls back to localStorage if not found) */
+  /** Read the v2 JS bundle from IndexedDB. */
   async getJsAsync(qidRaw: string | number): Promise<JsSave | null> {
     const qid = String(qidRaw);
 
@@ -439,18 +184,16 @@ export class CodeStorageService {
       };
     }
 
-    // Fallback to your existing localStorage bundle (so current users still work)
-    return this.getJs(qid);
+    return null;
   }
 
-  /** Write v2 JS bundle to IndexedDB (primary) with localStorage as fallback */
+  /** Write the v2 JS bundle to IndexedDB. */
   async saveJsAsync(
     qidRaw: string | number,
     code: string,
     lang: JsLang = 'js',
     opts?: { force?: boolean; allowEmpty?: boolean }
   ): Promise<void> {
-    this.ensureMigrated();
     const qid = String(qidRaw);
     const key = V2_JS_BUNDLE(qid);
     await this.enqueueBundleOp(key, async () => {
@@ -490,7 +233,6 @@ export class CodeStorageService {
 
   /** Set baseline; write to IDB primarily, LS as fallback */
   async setJsBaselineAsync(qidRaw: string | number, lang: JsLang, baseline: string): Promise<void> {
-    this.ensureMigrated();
     const qid = String(qidRaw);
     const key = V2_JS_BUNDLE(qid);
     await this.enqueueBundleOp(key, async () => {
@@ -524,15 +266,14 @@ export class CodeStorageService {
 
   }
 
-  /** Strict per-language getter (IDB first, then LS) */
+  /** Strict per-language getter (does not mutate lastLang). */
   async getJsForLangAsync(qidRaw: string | number, lang: JsLang): Promise<string | null> {
     const qid = String(qidRaw);
     const b = await this.getBundleAsync(qid);
-    if (b) return (b[lang]?.code ?? null) as string | null;
-    return this.getJsForLang(qid, lang);
+    return b ? ((b[lang]?.code ?? null) as string | null) : null;
   }
 
-  /** Async clear: remove from IDB first, then LS */
+  /** Async clear: remove the bundle from IndexedDB. */
   async clearJsAsync(qidRaw: string | number): Promise<void> {
     const qid = String(qidRaw);
     const key = V2_JS_BUNDLE(qid);
@@ -541,9 +282,6 @@ export class CodeStorageService {
       const store = getJsStore();
       if (store) {
         try { await store.removeItem(key); } catch { /* ignore */ }
-      }
-      if (hasLocalStorage()) {
-        try { localStorage.removeItem(key); } catch { /* ignore */ }
       }
     });
   }
@@ -564,16 +302,6 @@ export class CodeStorageService {
         return parsed;
       } catch { /* ignore */ }
     }
-    // fallback to LS if IDB missing/invalid
-    if (hasLocalStorage()) {
-      try {
-        const ls = localStorage.getItem(key);
-        if (!ls) return null;
-        const parsed = JSON.parse(ls) as JsBundleV2;
-        this.cacheSet(this.jsBundleCache, key, parsed);
-        return parsed;
-      } catch { return null; }
-    }
     return null;
   }
 
@@ -593,21 +321,8 @@ export class CodeStorageService {
         this.cacheSet(this.jsBundleCache, key, bundle);
         return;
       } catch {
-        // fall through to LS
+        // Out of quota or a blocked store: nothing else to do.
       }
-    }
-    // Fallback: localStorage (only if available)
-    if (!hasLocalStorage()) {
-      if (!opts?.silent) {
-        // optionally log in dev
-      }
-      return;
-    }
-    try {
-      localStorage.setItem(key, payload);
-      this.cacheSet(this.jsBundleCache, key, bundle);
-    } catch {
-      // Out of quota both in IDB/LS → nothing else to do.
     }
   }
 
@@ -732,17 +447,6 @@ export class CodeStorageService {
       } catch { /* ignore */ }
     }
 
-    // Fallback: localStorage (legacy / migration)
-    if (hasLocalStorage()) {
-      try {
-        const ls = localStorage.getItem(key);
-        if (!ls) return null;
-        const parsed = JSON.parse(ls) as WebBundleV2;
-        this.cacheSet(this.webBundleCache, key, parsed);
-        return parsed;
-      } catch { /* ignore */ }
-    }
-
     return null;
   }
 
@@ -761,61 +465,8 @@ export class CodeStorageService {
         this.cacheSet(this.webBundleCache, key, bundle);
         return;
       } catch {
-        // fall through to LS
+        // Out of quota or a blocked store: nothing else to do.
       }
-    }
-    if (!hasLocalStorage()) {
-      if (!opts?.silent) {
-        // optionally log in dev
-      }
-      return;
-    }
-    try {
-      localStorage.setItem(key, payload);
-      this.cacheSet(this.webBundleCache, key, bundle);
-    } catch {
-      // both stores failed; nothing else to do
-    }
-  }
-
-  /**
- * One-time migration: copy all v2 JS bundles from localStorage into IndexedDB.
- * Safe to call on startup; it no-ops after the first successful run.
- */
-  async migrateAllJsToIndexedDbOnce(): Promise<void> {
-    if (!hasLocalStorage()) return;
-    const store = getJsStore();
-    if (!store) return;
-
-    // Already migrated? bail.
-    if (localStorage.getItem(MIGRATION_FLAG_JS_IDB) === '1') {
-      return;
-    }
-
-    try {
-      const keys = Object.keys(localStorage);
-
-      for (const k of keys) {
-        // only care about our consolidated v2 JS bundles
-        if (!k.startsWith('v2:code:js2:')) continue;
-
-        const raw = localStorage.getItem(k);
-        if (!raw) continue;
-
-        try {
-          const existing = await store.getItem<string>(k);
-          if (existing != null) continue;
-
-          await store.setItem(k, raw);   // mirror LS -> IDB only when IDB is missing
-        } catch {
-          // ignore per-key failure; continue others
-        }
-      }
-
-      // mark as done (even if a few keys failed; worst case they'll sync on next save)
-      localStorage.setItem(MIGRATION_FLAG_JS_IDB, '1');
-    } catch {
-      // swallow: if this explodes, normal lazy-writes will still populate IDB over time
     }
   }
 
@@ -950,9 +601,6 @@ export class CodeStorageService {
       if (store) {
         try { await store.removeItem(key); } catch { /* ignore */ }
       }
-      if (hasLocalStorage()) {
-        try { localStorage.removeItem(key); } catch { /* ignore */ }
-      }
     });
   }
 
@@ -972,18 +620,6 @@ export class CodeStorageService {
         const raw = await store.getItem<string>(key);
         if (raw) {
           const parsed = JSON.parse(raw) as FrameworkBundleV2;
-          this.cacheSet(this.fwBundleCache, key, parsed);
-          return parsed;
-        }
-      } catch { /* ignore */ }
-    }
-
-    // Fallback: localStorage (for migration / legacy)
-    if (hasLocalStorage()) {
-      try {
-        const ls = localStorage.getItem(key);
-        if (ls) {
-          const parsed = JSON.parse(ls) as FrameworkBundleV2;
           this.cacheSet(this.fwBundleCache, key, parsed);
           return parsed;
         }
@@ -1010,20 +646,8 @@ export class CodeStorageService {
         this.cacheSet(this.fwBundleCache, key, bundle);
         return;
       } catch {
-        // fall through to LS
+        // Out of quota or a blocked store: nothing else to do.
       }
-    }
-    if (!hasLocalStorage()) {
-      if (!opts?.silent) {
-        // optional log
-      }
-      return;
-    }
-    try {
-      localStorage.setItem(key, payload);
-      this.cacheSet(this.fwBundleCache, key, bundle);
-    } catch {
-      // out of quota both places; nothing else to do
     }
   }
 
@@ -1218,9 +842,6 @@ export class CodeStorageService {
       if (store) {
         try { await store.removeItem(key); } catch { /* ignore */ }
       }
-      if (hasLocalStorage()) {
-        try { localStorage.removeItem(key); } catch { /* ignore */ }
-      }
     });
   }
 
@@ -1271,7 +892,6 @@ export class CodeStorageService {
     toQidRaw: string | number,
     opts?: { overwrite?: boolean }
   ): Promise<boolean> {
-    this.ensureMigrated();
     const fromQid = String(fromQidRaw);
     const toQid = String(toQidRaw);
     if (!fromQid || !toQid || fromQid === toQid) return false;
