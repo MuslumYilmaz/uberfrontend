@@ -9,6 +9,10 @@
         <p class="fa-page-subtitle" data-testid="company-practice-disclaimer">
             {{ companyPracticeDisclaimer }}
         </p>
+        <p class="fa-page-subtitle" data-testid="company-trademark-note">
+            Company names and logos identify the employer and belong to their owners. FrontendAtlas is not
+            affiliated with or endorsed by any company listed here.
+        </p>
     </div>
     <ng-container *ngIf="companies.length; else emptyDirectory">
         <div class="company-list" data-testid="company-index-list">

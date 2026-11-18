@@ -23,6 +23,10 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
         platform, and related services (“Service”). By using our Service, you agree to comply with these
         Terms and our <a [routerLink]="['/legal/privacy']">Privacy Notice</a>.
       </p>
+      <p>
+        FrontendAtlas is operated by Müslim Yılmaz, an individual based in Istanbul, Türkiye
+        (“FrontendAtlas”, “we”, “us”).
+      </p>
 
       <!-- Table of contents -->
       <nav class="toc" aria-label="Table of contents">
@@ -38,6 +42,7 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
           <li><a [routerLink]="[]" fragment="limitation-of-liability">Limitation of Liability</a></li>
           <li><a [routerLink]="[]" fragment="termination">Termination</a></li>
           <li><a [routerLink]="[]" fragment="changes">Changes to These Terms</a></li>
+          <li><a [routerLink]="[]" fragment="payments">Payments, Subscriptions and Refunds</a></li>
           <li><a [routerLink]="[]" fragment="contact">Contact Us</a></li>
         </ol>
       </nav>
@@ -137,12 +142,28 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
         </p>
       </section>
 
+      <section id="payments">
+        <h2>11. Payments, Subscriptions and Refunds</h2>
+        <p>
+          Paid plans and prices are listed on our <a [routerLink]="['/pricing']">pricing page</a>. Orders are
+          processed by our online reseller, which acts as the Merchant of Record for all orders and handles
+          payment, invoicing and applicable taxes; currently this is {{ merchantOfRecord }}.
+        </p>
+        <p>
+          Subscriptions renew automatically for the same period until you cancel. You can cancel at any time
+          from your account or the billing portal, and access continues until the end of the paid period. The
+          one-time plan does not renew. Refunds follow our
+          <a [routerLink]="['/legal/refund']">Refund Policy</a> and your mandatory consumer rights.
+        </p>
+      </section>
+
       <section id="contact">
-        <h2>11. Contact Us</h2>
+        <h2>12. Contact Us</h2>
         <p>
           If you have any questions regarding these Terms, please contact us at:
         </p>
         <p>
+          Operator: Müslim Yılmaz, Istanbul, Türkiye<br>
           Email:
           <a href="mailto:support&#64;frontendatlas.com">support&#64;frontendatlas.com</a><br>
           Subject line: “Terms of Service Inquiry”
@@ -263,4 +284,5 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
 })
 export class TermsComponent {
   readonly lastUpdated = LEGAL_POLICY_LAST_UPDATED.terms;
+  readonly merchantOfRecord = 'Lemon Squeezy';
 }
