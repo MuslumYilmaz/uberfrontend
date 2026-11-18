@@ -831,6 +831,16 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     const nth = Number.isFinite(rawIndex) && rawIndex > 0 ? ` #${rawIndex + 1}` : '';
     return `${describeLocator(by)}${nth}`;
   };
+  // Chromium defers the first layout of this off-screen sandbox frame now and then, and until it runs every
+  // rect reads as zeros, so two elements look level even when one is indented. Geometry checks read their
+  // rects only once at least one element has a box, within a short bound so a hidden element still fails fast.
+  const laidOutRects = (elements: Element[], attempt = 0): Promise<DOMRect[]> => {
+    const rects = elements.map((node) => node.getBoundingClientRect());
+    const laidOut = rects.some((rect) => rect.width > 0 || rect.height > 0);
+    if (laidOut || attempt >= 20) return Promise.resolve(rects);
+    return delay(25).then(() => laidOutRects(elements, attempt + 1));
+  };
+
   const queryElement = (step: FrameworkTestStep) => {
     const rawIndex = Number(step?.index);
     const index = Math.max(0, Number.isFinite(rawIndex) ? rawIndex : 0);
@@ -1165,9 +1175,10 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
       const other = queryElement(reference);
       if (!other) throw new Error(`${describeTarget(reference)} was not found`);
-      const shift = Math.round(element.getBoundingClientRect().left - other.getBoundingClientRect().left);
-      if (shift < 8) throw new Error(`${target} starts ${shift}px right of ${describeTarget(reference)}; expected it indented further`);
-      return Promise.resolve();
+      return laidOutRects([element, other]).then(([own, theirs]) => {
+        const shift = Math.round(own.left - theirs.left);
+        if (shift < 8) throw new Error(`${target} starts ${shift}px right of ${describeTarget(reference)}; expected it indented further`);
+      });
     }
     if (type === 'expectReferenced') {
       // Another element names the target in an id-reference attribute (aria-activedescendant on the active option),
