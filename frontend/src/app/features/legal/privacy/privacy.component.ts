@@ -51,8 +51,10 @@ import { RouterModule } from '@angular/router';
         <h2>1) Scope & Controller</h2>
         <p>
           This Notice applies to the Service that links to it. The data controller is
-          <strong>{{ companyName }}</strong>. If you access third-party sites or integrations via our Service,
-          their privacy policies govern those properties.
+          <strong>{{ operatorName }}</strong>, an individual operating {{ companyName }} from
+          {{ operatorLocation }}. Privacy contact:
+          <a href="mailto:{{ contactEmail }}">{{ contactEmail }}</a>. If you access third-party sites or
+          integrations via our Service, their privacy policies govern those properties.
         </p>
       </section>
 
@@ -104,7 +106,8 @@ import { RouterModule } from '@angular/router';
         <h2>4) How We Share Information</h2>
         <p>We do <strong>not</strong> sell your personal information. We share limited data only as described below:</p>
         <ul>
-          <li><strong>Service providers</strong> — vendors that host infrastructure, provide analytics, email delivery, customer support, and payment processing (bound by confidentiality and data-protection terms).</li>
+          <li><strong>Service providers</strong> — vendors that host infrastructure, provide analytics, email delivery, and customer support (bound by confidentiality and data-protection terms).</li>
+          <li><strong>Merchant of Record</strong> — our online reseller, currently {{ merchantOfRecord }}, which processes orders, payments, invoicing, and taxes for every purchase and receives the billing details needed to do so.</li>
           <li><strong>Legal & safety</strong> — when required by law or to protect our rights, users, or the public.</li>
           <li><strong>Business transfers</strong> — in mergers, acquisitions, or reorganizations, data may be transferred as part of the transaction.</li>
           <li><strong>With your direction</strong> — when you explicitly request or consent to sharing.</li>
@@ -378,7 +381,10 @@ import { RouterModule } from '@angular/router';
 })
 export class PrivacyComponent {
   readonly companyName = 'FrontendAtlas';
+  readonly operatorName = 'Müslim Yılmaz';
+  readonly operatorLocation = 'Istanbul, Türkiye';
+  readonly merchantOfRecord = 'Lemon Squeezy';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'November 9, 2026';
+  readonly effectiveDate = 'November 18, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }
