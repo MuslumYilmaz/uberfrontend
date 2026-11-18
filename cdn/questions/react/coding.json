@@ -15932,32 +15932,32 @@
       "specs": {
         "requirements": [
           "Work in `src/App.tsx`; treat `LIVE`, `LEGACY_RAW`, `fetchDeliveries`, `retryDelivery` and `armFailure` as given. The four tasks are marked in the file and build on each other, so do them in order.",
-          "Task 1: load the deliveries when the page opens and whenever the Data source select (`.source`) changes, and show one request state at a time: `Loading deliveries…` in `.status--loading`, the table, `No deliveries` in `.empty`, or `Could not load the deliveries:` plus the reason in `.status--error` with a `.retry` button that runs the request again. Only the newest request may change the screen.",
-          "Task 2: the payload arrives as `unknown`. Narrow it instead of casting: keep every well-formed record, count the rest, and show `N records skipped` in `.skipped`. The legacy export holds two malformed records.",
-          "Task 3: wire the Status select (`.status-filter`) so the rows narrow to one status, and show `N of M deliveries` in `.count`, or `M deliveries` when the filter is All. A `.retry-delivery` button on a failed row calls `retryDelivery`: the row reads `pending` at once and `delivered` with one more attempt when the call answers.",
-          "Task 4: Refresh (`.refresh`) reloads the live export after a source change and empties the table while it loads. Find the cause and fix it: a refresh reloads the current source, keeps the rows and the filter, shows `Refreshing deliveries…`, disables the button while it runs, and keeps the rows when it fails (`Could not refresh the deliveries:` plus Retry).",
-          "The table keeps the class names `.row`, `.endpoint`, `.status`, `.status--delivered`, `.status--failed`, `.status--pending`, `.attempts` and `.retry-delivery`; the live export reads `6 deliveries`.",
+          "Task 1: load the deliveries when the page opens and whenever the Data source select (`.source`) changes, and show one request state at a time: `Loading deliveries…` in `.status--loading`, the table, `No deliveries` in `.empty`, or `Could not load the deliveries:` plus the reason in `.status--error` with a `.retry` button that reloads the source selected now. Only the newest request may change the screen.",
+          "Task 2: the payload arrives as `unknown`. Narrow it instead of casting: keep every well-formed record, count the rest, and show `N records skipped` in `.skipped` only when at least one record was dropped. The legacy export holds five malformed records, each with one bad field.",
+          "Task 3: wire the Status select (`.status-filter`) so the rows narrow to one status, and show `N of M deliveries` in `.count`, or `M deliveries` when the filter is All. Only failed rows show a `.retry-delivery` button, which calls `retryDelivery`: the row reads `pending` at once, with no button, and `delivered` with one more attempt when the call answers. Two retries started one after the other must both land.",
+          "Task 4: Refresh (`.refresh`) reloads the live export after a source change and empties the table while it loads. Find the cause and fix it. A refresh reloads the source selected now and is disabled while it runs; with rows on screen it keeps them and the filter and shows `Refreshing deliveries…` in `.status--loading`. If it fails, keep the rows and show `Could not refresh the deliveries:` plus the reason in `.status--error`, with the `.retry` button refreshing again. A source change during a refresh wins.",
+          "Rows keep the export's order. The table keeps the class names `.row`, `.endpoint`, `.status`, `.status--delivered`, `.status--failed`, `.status--pending`, `.attempts` and `.retry-delivery`, and `.status` is used only on the status cell; the live export reads `6 deliveries`.",
           "Keep the mock API as it is. The `Fail next request` button (`.fail-next`) makes the next request fail once so the error paths can be exercised."
         ],
         "expectedBehavior": [
           "The live export shows six rows and `6 deliveries`; switching to the empty export clears the rows, shows `Loading deliveries…`, then `No deliveries`.",
-          "A request that fails shows `Could not load the deliveries: Gateway timeout` with Retry, and Retry loads the six rows again.",
-          "Switching sources while a request is running leaves only the newest request in charge: an older failure never shows.",
-          "The legacy export shows six rows and `2 records skipped`; no row shows a status outside delivered, failed and pending.",
-          "Filter Failed shows two rows and `2 of 6 deliveries`; Retry delivery on the first turns it `pending`, then `delivered` with attempts `4`.",
-          "Refresh on the legacy export with Filter Failed keeps the two rows and shows `Refreshing deliveries…`, then still reads `2 records skipped`; a failed refresh keeps the rows and shows `Could not refresh the deliveries:`."
+          "A request that fails shows `Could not load the deliveries: Gateway timeout` with Retry and nothing else; Retry reloads the selected source.",
+          "Switching sources while a request is running leaves only the newest request in charge: an older answer or failure never shows.",
+          "The legacy export shows six rows and `5 records skipped`; no row shows a status outside delivered, failed and pending.",
+          "Filter Failed shows two rows and `2 of 6 deliveries`. With the filter on All, Retry delivery on `crm.example` turns it `pending`, then `delivered` with attempts `4`; under Failed the row leaves the list as soon as it is pending.",
+          "Refresh on the legacy export with Filter Failed keeps the two rows and shows `Refreshing deliveries…`, then still reads `5 records skipped`; a failed refresh keeps the rows and shows `Could not refresh the deliveries: Gateway timeout`."
         ],
         "implementationNotes": [
           "Hold one request state object (loading, ready, empty or error) next to the rows and derive what to show from it, instead of separate booleans.",
           "Give every request a number in a ref and compare it when the promise settles; the effect cleanup bumps the counter so a response from a stale source is ignored.",
           "Narrow with a type guard per field (`typeof` checks and a status allow-list) and return `{ deliveries, skipped }`; never cast the payload.",
-          "The refresh bug is a stale closure: `useCallback` with an empty dependency list captures the first `source`. Read the current source in the handler and keep the rows when the request is a refresh."
+          "Task 4 is a debugging task: reproduce the report before you change anything, then fix the cause rather than the symptom."
         ],
         "techFocus": [
           "Request states and request identity",
           "Narrowing unknown API payloads in TypeScript",
           "Derived filtering and optimistic row updates",
-          "Stale closures in event handlers",
+          "Tracing a reported bug to its cause",
           "Working through four tasks under a one-hour clock"
         ]
       }
@@ -15965,7 +15965,7 @@
     "frameworkTests": [
       {
         "id": "webhook-request-states",
-        "name": "Each request state shows alone and Retry recovers a failed load",
+        "name": "Each request state shows alone and Retry reloads the selected source",
         "steps": [
           {
             "type": "waitForCount",
@@ -16009,8 +16009,19 @@
           },
           {
             "type": "expectCount",
-            "selector": ".count",
+            "selector": ".status--loading",
             "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".source",
+            "value": "live"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2500
           },
           {
             "type": "click",
@@ -16019,11 +16030,11 @@
           {
             "type": "setValue",
             "selector": ".source",
-            "value": "live"
+            "value": "empty"
           },
           {
             "type": "expectCount",
-            "selector": ".empty",
+            "selector": ".row",
             "count": 0
           },
           {
@@ -16038,6 +16049,16 @@
             "selector": ".status--error",
             "text": "Gateway timeout",
             "match": "contains"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".empty",
+            "count": 0
           },
           {
             "type": "expectCount",
@@ -16060,16 +16081,16 @@
             "match": "contains"
           },
           {
-            "type": "waitForCount",
-            "selector": ".row",
-            "count": 6,
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No deliveries",
+            "match": "contains",
             "timeoutMs": 2500
           },
           {
-            "type": "expectText",
-            "selector": ".count",
-            "text": "6 deliveries",
-            "match": "equals"
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
           },
           {
             "type": "expectCount",
@@ -16139,6 +16160,46 @@
             "count": 0
           },
           {
+            "type": "setValue",
+            "selector": ".source",
+            "value": "legacy"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "setValue",
+            "selector": ".source",
+            "value": "empty"
+          },
+          {
+            "type": "wait",
+            "durationMs": 250
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".skipped",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No deliveries",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
             "type": "expectCount",
             "selector": ".status--loading",
             "count": 0
@@ -16147,7 +16208,7 @@
       },
       {
         "id": "webhook-legacy-export-narrowing",
-        "name": "The legacy export keeps six well-formed records and counts two skipped",
+        "name": "The legacy export keeps six well-formed records and counts five skipped",
         "steps": [
           {
             "type": "waitForCount",
@@ -16168,7 +16229,7 @@
           {
             "type": "waitForText",
             "selector": ".skipped",
-            "text": "2 records skipped",
+            "text": "5 records skipped",
             "match": "equals",
             "timeoutMs": 2500
           },
@@ -16194,6 +16255,28 @@
             "index": 5,
             "text": "https://legacy.example/hooks/receipts",
             "match": "equals"
+          },
+          {
+            "type": "setValue",
+            "selector": ".source",
+            "value": "error"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".skipped",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status--error",
+            "text": "Could not load the deliveries",
+            "match": "contains",
+            "timeoutMs": 2500
           },
           {
             "type": "setValue",
@@ -16292,7 +16375,7 @@
       },
       {
         "id": "webhook-retry-delivery",
-        "name": "Retry delivery marks the row pending, then delivered with one more attempt",
+        "name": "Two retries in a row both go pending, then delivered with one more attempt",
         "steps": [
           {
             "type": "waitForCount",
@@ -16332,12 +16415,44 @@
             "count": 1
           },
           {
+            "type": "click",
+            "selector": ".retry-delivery",
+            "index": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "index": 4,
+            "text": "pending",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".retry-delivery",
+            "count": 0
+          },
+          {
             "type": "waitForText",
             "selector": ".status",
             "index": 1,
             "text": "delivered",
             "match": "equals",
             "timeoutMs": 2500
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "index": 4,
+            "text": "delivered",
+            "match": "equals",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "index": 1,
+            "text": "delivered",
+            "match": "equals"
           },
           {
             "type": "expectText",
@@ -16347,9 +16462,16 @@
             "match": "equals"
           },
           {
+            "type": "expectText",
+            "selector": ".attempts",
+            "index": 4,
+            "text": "3",
+            "match": "equals"
+          },
+          {
             "type": "expectCount",
             "selector": ".retry-delivery",
-            "count": 1
+            "count": 0
           },
           {
             "type": "setValue",
@@ -16359,13 +16481,12 @@
           {
             "type": "expectCount",
             "selector": ".row",
-            "count": 1
+            "count": 0
           },
           {
             "type": "expectText",
-            "selector": ".endpoint",
-            "index": 0,
-            "text": "https://shop.example/hooks/refunds",
+            "selector": ".count",
+            "text": "0 of 6 deliveries",
             "match": "equals"
           }
         ]
@@ -16388,7 +16509,7 @@
           {
             "type": "waitForText",
             "selector": ".skipped",
-            "text": "2 records skipped",
+            "text": "5 records skipped",
             "match": "equals",
             "timeoutMs": 2500
           },
@@ -16431,7 +16552,7 @@
           {
             "type": "expectText",
             "selector": ".skipped",
-            "text": "2 records skipped",
+            "text": "5 records skipped",
             "match": "equals"
           },
           {
@@ -16471,7 +16592,7 @@
       },
       {
         "id": "webhook-refresh-failure-keeps-rows",
-        "name": "A failed refresh keeps the rows and Retry brings the list back",
+        "name": "A failed refresh keeps the rows, and a source change wins over a running refresh",
         "steps": [
           {
             "type": "waitForCount",
@@ -16498,6 +16619,12 @@
             "text": "Could not refresh the deliveries",
             "match": "contains",
             "timeoutMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--error",
+            "text": "Gateway timeout",
+            "match": "contains"
           },
           {
             "type": "expectCount",
@@ -16545,6 +16672,56 @@
             "type": "expectCount",
             "selector": ".row",
             "count": 6
+          },
+          {
+            "type": "click",
+            "selector": ".refresh"
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "setValue",
+            "selector": ".source",
+            "value": "empty"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status--loading",
+            "text": "Loading deliveries",
+            "match": "contains"
+          },
+          {
+            "type": "wait",
+            "durationMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".status--error",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".empty",
+            "text": "No deliveries",
+            "match": "contains",
+            "timeoutMs": 2500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 0
           }
         ]
       }
@@ -16601,17 +16778,17 @@
         "Show one request state at a time and let only the newest request change the screen.",
         "Narrow an unknown payload with type guards instead of a cast, and count what you skip.",
         "Derive a filtered table and update a row optimistically while a retry runs.",
-        "Spot a stale closure in a refresh handler and fix it without losing the rows."
+        "Trace a reported refresh bug to its cause and fix it without losing the rows."
       ],
       "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
     },
     "solutionBlock": {
-      "overview": "The hour rewards order. Task 1 sets up the shape everything else reads: one request state object, a request counter in a ref, and a `runRequest` helper that knows whether it is a first load or a refresh. Task 2 is a pure function, `parseDeliveries`, that narrows the unknown payload field by field and counts what it drops. Task 3 derives the visible rows from the filter with `useMemo` and updates a retried row with functional `setDeliveries`, so a refresh in flight cannot overwrite it.\n\nTask 4 is the bug the brief describes without naming: `useCallback(() => fetchDeliveries(source), [])` captured the first render's `source`, so every refresh reloaded the live export, and its `.then` replaced the rows with a cleared table in between. Reading `source` in a plain handler fixes the source; the `keepRows` flag on the loading and error states keeps the table.\n\n**Test cases**\n- The live export shows six rows and `6 deliveries`; empty and failing exports show their own line.\n- A late answer from an older source never changes the screen.\n- The legacy export shows six rows and `2 records skipped`.\n- Filter Failed reads `2 of 6 deliveries`; Retry delivery goes `pending`, then `delivered` with four attempts.\n- Refresh keeps the rows and the filter, reloads the current source, and survives a failure.",
+      "overview": "The hour rewards order. Task 1 sets up the shape everything else reads: one request state object, a request counter in a ref, and a `runRequest` helper that knows whether it is a first load or a refresh. Task 2 is a pure function, `parseDeliveries`, that narrows the unknown payload field by field and counts what it drops. Task 3 derives the visible rows from the filter with `useMemo` and updates a retried row with functional `setDeliveries`, so a refresh in flight cannot overwrite it.\n\nTask 4 is the bug the brief describes without naming: `useCallback(() => fetchDeliveries(source), [])` captured the first render's `source`, so every refresh reloaded the live export, and its `.then` replaced the rows with a cleared table in between. Reading `source` in a plain handler fixes the source; the `keepRows` flag on the loading and error states keeps the table.\n\n**Test cases**\n- The live export shows six rows and `6 deliveries`; empty and failing exports show their own line, and Retry reloads the selected source.\n- A late answer or failure from an older source never changes the screen.\n- The legacy export shows six rows and `5 records skipped`; a source change clears the line.\n- Filter Failed reads `2 of 6 deliveries`; two quick retries both go `pending`, then `delivered` with one more attempt.\n- Refresh keeps the rows and the filter, reloads the current source, survives a failure, and loses to a source change.",
       "approaches": [
         {
           "title": "One request helper, one parser, one derived view",
-          "prose": "Build it in the order the tasks are numbered; each one is a few lines once the previous one is in place.\n\n1. Replace the bare effect with `runRequest(nextSource, kind)`: bump `latestRequest`, set `{ kind: 'loading', keepRows }`, clear the rows for a first load, and in `.then` and `.catch` return early when the request number is no longer the newest. The effect calls it with `'initial'` and its cleanup bumps the counter.\n2. Write `parseDeliveries` with `Array.isArray`, an `isRecord` guard, `typeof` checks per field and a status allow-list; push the well-formed records and count the rest. The component shows `.skipped` when the count is above zero.\n3. Hold `filter` in state, derive `visible` with `useMemo`, read `countLine` from both lengths, and give `.retry-delivery` a handler that maps the row to `pending`, calls `retryDelivery`, and maps the answer in when it arrives.\n4. Delete the `useCallback`, read `source` in `handleRefresh`, and pass `'refresh'` so the rows stay while `Refreshing deliveries…` shows; a failure keeps the rows with `Could not refresh the deliveries:` and the same Retry button, which re-runs with the same kind.\n\nIn the review, say what you would do with more time: a real `AbortSignal` in `fetchDeliveries`, and a test for the stale closure you fixed.",
-          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport type DeliveryStatus = 'delivered' | 'failed' | 'pending';\n\nexport interface Delivery {\n  id: string;\n  endpoint: string;\n  status: DeliveryStatus;\n  attempts: number;\n  lastAttempt: string;\n}\n\nexport type Source = 'live' | 'legacy' | 'empty' | 'error';\nexport type StatusFilter = 'all' | DeliveryStatus;\n\n/** Six deliveries from the live export. */\nexport const LIVE: Delivery[] = [\n  { id: 'd1', endpoint: 'https://shop.example/hooks/orders', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:12:00Z' },\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-18T09:10:30Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-18T09:14:05Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:01:44Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-18T08:58:12Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T08:40:00Z' }\n];\n\n/** The legacy export: the same shape in most records, two of them malformed. */\nexport const LEGACY_RAW: unknown[] = [\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-17T18:10:30Z' },\n  { id: 'd7', endpoint: 'https://legacy.example/hooks/orders', status: 'ok', attempts: 1, lastAttempt: '2026-11-17T18:09:00Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-17T18:04:05Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:51:44Z' },\n  { id: 'd8', endpoint: 'https://legacy.example/hooks/invoices', status: 'failed', attempts: '2', lastAttempt: '2026-11-17T17:49:00Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-17T17:38:12Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:20:00Z' },\n  { id: 'd9', endpoint: 'https://legacy.example/hooks/receipts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:02:00Z' }\n];\n\nlet failNextRequest = false;\n\n/** Mock API, treat it as given: it answers after 400 ms. \"Fail next request\" makes the next request reject once. */\nexport function armFailure(): void {\n  failNextRequest = true;\n}\n\nexport function fetchDeliveries(source: Source): Promise<unknown> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (failNextRequest) {\n        failNextRequest = false;\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'error') {\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'empty') {\n        resolve([]);\n        return;\n      }\n      if (source === 'legacy') {\n        resolve(LEGACY_RAW.map((record) => (typeof record === 'object' && record !== null ? { ...record } : record)));\n        return;\n      }\n      resolve(LIVE.map((delivery) => ({ ...delivery })));\n    }, 400);\n  });\n}\n\n/** Mock API: a retry answers after 200 ms and the endpoint accepts the delivery. */\nexport function retryDelivery(delivery: Delivery): Promise<Delivery> {\n  return new Promise((resolve) => {\n    window.setTimeout(() => {\n      resolve({ ...delivery, status: 'delivered', attempts: delivery.attempts + 1, lastAttempt: new Date().toISOString() });\n    }, 200);\n  });\n}\n\nconst STATUSES: readonly DeliveryStatus[] = ['delivered', 'failed', 'pending'];\n\nfunction isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}\n\nfunction isDeliveryStatus(value: unknown): value is DeliveryStatus {\n  return typeof value === 'string' && (STATUSES as readonly string[]).includes(value);\n}\n\n/** Narrow the raw payload: keep every well-formed record, count the rest. */\nexport function parseDeliveries(raw: unknown): { deliveries: Delivery[]; skipped: number } {\n  if (!Array.isArray(raw)) {\n    return { deliveries: [], skipped: 0 };\n  }\n  const deliveries: Delivery[] = [];\n  let skipped = 0;\n  for (const record of raw) {\n    if (\n      isRecord(record) &&\n      typeof record.id === 'string' &&\n      typeof record.endpoint === 'string' &&\n      isDeliveryStatus(record.status) &&\n      typeof record.attempts === 'number' &&\n      typeof record.lastAttempt === 'string'\n    ) {\n      deliveries.push({\n        id: record.id,\n        endpoint: record.endpoint,\n        status: record.status,\n        attempts: record.attempts,\n        lastAttempt: record.lastAttempt\n      });\n    } else {\n      skipped += 1;\n    }\n  }\n  return { deliveries, skipped };\n}\n\ntype RequestState =\n  | { kind: 'loading'; keepRows: boolean }\n  | { kind: 'ready' }\n  | { kind: 'empty' }\n  | { kind: 'error'; message: string; keepRows: boolean };\n\nexport default function App() {\n  const [source, setSource] = useState<Source>('live');\n  const [filter, setFilter] = useState<StatusFilter>('all');\n  const [deliveries, setDeliveries] = useState<Delivery[]>([]);\n  const [skipped, setSkipped] = useState(0);\n  const [request, setRequest] = useState<RequestState>({ kind: 'loading', keepRows: false });\n  const latestRequest = useRef(0);\n  const rowCount = useRef(0);\n  rowCount.current = deliveries.length;\n\n  // One request at a time counts: the newest. A refresh keeps the rows on screen; a source change does not.\n  function runRequest(nextSource: Source, kind: 'initial' | 'refresh') {\n    const requestId = latestRequest.current + 1;\n    latestRequest.current = requestId;\n    const keepRows = kind === 'refresh' && rowCount.current > 0;\n    setRequest({ kind: 'loading', keepRows });\n    if (!keepRows) {\n      setDeliveries([]);\n      setSkipped(0);\n    }\n    fetchDeliveries(nextSource)\n      .then((raw) => {\n        if (requestId !== latestRequest.current) return;\n        const parsed = parseDeliveries(raw);\n        setDeliveries(parsed.deliveries);\n        setSkipped(parsed.skipped);\n        setRequest(parsed.deliveries.length > 0 ? { kind: 'ready' } : { kind: 'empty' });\n      })\n      .catch((error: unknown) => {\n        if (requestId !== latestRequest.current) return;\n        const message = error instanceof Error ? error.message : 'Unknown error';\n        setRequest({ kind: 'error', message, keepRows });\n      });\n  }\n\n  useEffect(() => {\n    runRequest(source, 'initial');\n    return () => {\n      latestRequest.current += 1;\n    };\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [source]);\n\n  // The refresh handler reads source from the current render, so it never reloads a stale source.\n  function handleRefresh() {\n    runRequest(source, 'refresh');\n  }\n\n  function handleRetryRequest() {\n    runRequest(source, request.kind === 'error' && request.keepRows ? 'refresh' : 'initial');\n  }\n\n  function handleRetryDelivery(delivery: Delivery) {\n    setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'pending' } : item)));\n    retryDelivery(delivery).then((updated) => {\n      setDeliveries((current) => current.map((item) => (item.id === updated.id ? updated : item)));\n    });\n  }\n\n  const visible = useMemo(\n    () => (filter === 'all' ? deliveries : deliveries.filter((delivery) => delivery.status === filter)),\n    [deliveries, filter]\n  );\n\n  const loading = request.kind === 'loading';\n  const countLine = filter === 'all' ? `${deliveries.length} deliveries` : `${visible.length} of ${deliveries.length} deliveries`;\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Webhook Deliveries (Solution)</h1>\n          <p className=\"subtitle\">Load the deliveries, type the payload, filter and retry, then fix the refresh.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"source\">Data source</label>\n          <select id=\"source\" className=\"source\" value={source} onChange={(event) => setSource(event.target.value as Source)}>\n            <option value=\"live\">Live export</option>\n            <option value=\"legacy\">Legacy export</option>\n            <option value=\"empty\">Empty export</option>\n            <option value=\"error\">Failing export</option>\n          </select>\n          <label className=\"label\" htmlFor=\"status-filter\">Status</label>\n          <select\n            id=\"status-filter\"\n            className=\"status-filter\"\n            value={filter}\n            onChange={(event) => setFilter(event.target.value as StatusFilter)}\n          >\n            <option value=\"all\">All</option>\n            <option value=\"delivered\">Delivered</option>\n            <option value=\"failed\">Failed</option>\n            <option value=\"pending\">Pending</option>\n          </select>\n          <button type=\"button\" className=\"refresh\" onClick={handleRefresh} disabled={loading}>\n            Refresh\n          </button>\n          <button type=\"button\" className=\"fail-next\" onClick={armFailure}>\n            Fail next request\n          </button>\n        </div>\n\n        <div className=\"status-line\" aria-live=\"polite\">\n          {request.kind === 'loading' && (\n            <span className=\"status--loading\">{request.keepRows ? 'Refreshing deliveries…' : 'Loading deliveries…'}</span>\n          )}\n          {request.kind === 'error' && (\n            <span className=\"status--error\" role=\"alert\">\n              {request.keepRows ? 'Could not refresh the deliveries:' : 'Could not load the deliveries:'} {request.message}{' '}\n              <button type=\"button\" className=\"retry\" onClick={handleRetryRequest}>\n                Retry\n              </button>\n            </span>\n          )}\n          {request.kind === 'empty' && <span className=\"empty\">No deliveries</span>}\n          {deliveries.length > 0 && <span className=\"count\">{countLine}</span>}\n          {skipped > 0 && <span className=\"skipped\">{skipped} records skipped</span>}\n        </div>\n\n        {visible.length > 0 && (\n          <div className=\"table-scroll\">\n            <table className=\"deliveries\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Endpoint</th>\n                  <th scope=\"col\">Status</th>\n                  <th scope=\"col\">Attempts</th>\n                  <th scope=\"col\">\n                    <span className=\"visually-hidden\">Actions</span>\n                  </th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((delivery) => (\n                  <tr key={delivery.id} className={`row row--${delivery.status}`}>\n                    <td className=\"endpoint\">{delivery.endpoint}</td>\n                    <td className={`status status--${delivery.status}`}>{delivery.status}</td>\n                    <td className=\"attempts\">{delivery.attempts}</td>\n                    <td className=\"actions\">\n                      {delivery.status === 'failed' && (\n                        <button type=\"button\" className=\"retry-delivery\" onClick={() => handleRetryDelivery(delivery)}>\n                          Retry delivery\n                        </button>\n                      )}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+          "prose": "Build it in the order the tasks are numbered; each one is a few lines once the previous one is in place.\n\n1. Replace the bare effect with `runRequest(nextSource, kind)`: bump `latestRequest`, set `{ kind: 'loading', keepRows }`, clear the rows for a first load, and in `.then` and `.catch` return early when the request number is no longer the newest. The effect calls it with `'initial'` and its cleanup bumps the counter.\n2. Write `parseDeliveries` with `Array.isArray` (anything else is an error), an `isRecord` guard, `typeof` checks per field, a whole-number check on `attempts` and a status allow-list; push the well-formed records and count the rest. The component shows `.skipped` when the count is above zero.\n3. Hold `filter` in state, derive `visible` with `useMemo`, read `countLine` from both lengths, and give `.retry-delivery` a handler that maps the row to `pending`, calls `retryDelivery`, and merges the changed fields into the current rows when it answers; a `.catch` puts the row back to failed, and the buttons are disabled while a request runs.\n4. Delete the `useCallback`, read `source` in `handleRefresh`, and pass `'refresh'` so the rows stay while `Refreshing deliveries…` shows; a failure keeps the rows with `Could not refresh the deliveries:` and the same Retry button, which re-runs with the same kind.\n\nIn the review, say what you would do with more time: a real `AbortSignal` in `fetchDeliveries`, and a test for the stale closure you fixed.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport type DeliveryStatus = 'delivered' | 'failed' | 'pending';\n\nexport interface Delivery {\n  id: string;\n  endpoint: string;\n  status: DeliveryStatus;\n  attempts: number;\n  lastAttempt: string;\n}\n\nexport type Source = 'live' | 'legacy' | 'empty' | 'error';\nexport type StatusFilter = 'all' | DeliveryStatus;\n\n/** Six deliveries from the live export. */\nexport const LIVE: Delivery[] = [\n  { id: 'd1', endpoint: 'https://shop.example/hooks/orders', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:12:00Z' },\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-18T09:10:30Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-18T09:14:05Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:01:44Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-18T08:58:12Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T08:40:00Z' }\n];\n\n/** The legacy export: six well-formed records and five that each break one field. */\nexport const LEGACY_RAW: unknown[] = [\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-17T18:10:30Z' },\n  { id: 'd7', endpoint: 'https://legacy.example/hooks/orders', status: 'ok', attempts: 1, lastAttempt: '2026-11-17T18:09:00Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-17T18:04:05Z' },\n  { id: 10, endpoint: 'https://legacy.example/hooks/shipments', status: 'failed', attempts: 1, lastAttempt: '2026-11-17T18:01:00Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:51:44Z' },\n  { id: 'd8', endpoint: 'https://legacy.example/hooks/invoices', status: 'failed', attempts: '2', lastAttempt: '2026-11-17T17:49:00Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-17T17:38:12Z' },\n  { id: 'd11', endpoint: null, status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:30:00Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:20:00Z' },\n  { id: 'd9', endpoint: 'https://legacy.example/hooks/receipts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:02:00Z' },\n  { id: 'd12', endpoint: 'https://legacy.example/hooks/payouts', status: 'pending', attempts: 1 }\n];\n\nlet failNextRequest = false;\n\n/** Mock API, treat it as given: it answers after 400 ms. \"Fail next request\" makes the next request reject once. */\nexport function armFailure(): void {\n  failNextRequest = true;\n}\n\nexport function fetchDeliveries(source: Source): Promise<unknown> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (failNextRequest) {\n        failNextRequest = false;\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'error') {\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'empty') {\n        resolve([]);\n        return;\n      }\n      if (source === 'legacy') {\n        resolve(LEGACY_RAW.map((record) => (typeof record === 'object' && record !== null ? { ...record } : record)));\n        return;\n      }\n      resolve(LIVE.map((delivery) => ({ ...delivery })));\n    }, 400);\n  });\n}\n\n/** Mock API: a retry answers after 200 ms and the endpoint accepts the delivery. */\nexport function retryDelivery(delivery: Delivery): Promise<Delivery> {\n  return new Promise((resolve) => {\n    window.setTimeout(() => {\n      resolve({ ...delivery, status: 'delivered', attempts: delivery.attempts + 1, lastAttempt: new Date().toISOString() });\n    }, 200);\n  });\n}\n\nconst STATUSES: readonly DeliveryStatus[] = ['delivered', 'failed', 'pending'];\n\nfunction isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}\n\nfunction isDeliveryStatus(value: unknown): value is DeliveryStatus {\n  return typeof value === 'string' && (STATUSES as readonly string[]).includes(value);\n}\n\n/** Narrow the raw payload: keep every well-formed record, count the rest. A payload that is not a list is an error. */\nexport function parseDeliveries(raw: unknown): { deliveries: Delivery[]; skipped: number } {\n  if (!Array.isArray(raw)) {\n    throw new Error('Unexpected payload');\n  }\n  const deliveries: Delivery[] = [];\n  let skipped = 0;\n  for (const record of raw) {\n    if (\n      isRecord(record) &&\n      typeof record.id === 'string' &&\n      typeof record.endpoint === 'string' &&\n      isDeliveryStatus(record.status) &&\n      typeof record.attempts === 'number' &&\n      Number.isInteger(record.attempts) &&\n      record.attempts >= 0 &&\n      typeof record.lastAttempt === 'string'\n    ) {\n      deliveries.push({\n        id: record.id,\n        endpoint: record.endpoint,\n        status: record.status,\n        attempts: record.attempts,\n        lastAttempt: record.lastAttempt\n      });\n    } else {\n      skipped += 1;\n    }\n  }\n  return { deliveries, skipped };\n}\n\ntype RequestState =\n  | { kind: 'loading'; keepRows: boolean }\n  | { kind: 'ready' }\n  | { kind: 'empty' }\n  | { kind: 'error'; message: string; keepRows: boolean };\n\nexport default function App() {\n  const [source, setSource] = useState<Source>('live');\n  const [filter, setFilter] = useState<StatusFilter>('all');\n  const [deliveries, setDeliveries] = useState<Delivery[]>([]);\n  const [skipped, setSkipped] = useState(0);\n  const [request, setRequest] = useState<RequestState>({ kind: 'loading', keepRows: false });\n  const latestRequest = useRef(0);\n\n  // One request at a time counts: the newest. A refresh keeps the rows on screen; a source change does not.\n  function runRequest(nextSource: Source, kind: 'initial' | 'refresh') {\n    const requestId = latestRequest.current + 1;\n    latestRequest.current = requestId;\n    const keepRows = kind === 'refresh' && deliveries.length > 0;\n    setRequest({ kind: 'loading', keepRows });\n    if (!keepRows) {\n      setDeliveries([]);\n      setSkipped(0);\n    }\n    fetchDeliveries(nextSource)\n      .then((raw) => {\n        if (requestId !== latestRequest.current) return;\n        const parsed = parseDeliveries(raw);\n        setDeliveries(parsed.deliveries);\n        setSkipped(parsed.skipped);\n        setRequest(parsed.deliveries.length > 0 ? { kind: 'ready' } : { kind: 'empty' });\n      })\n      .catch((error: unknown) => {\n        if (requestId !== latestRequest.current) return;\n        const message = error instanceof Error ? error.message : 'Unknown error';\n        setRequest({ kind: 'error', message, keepRows });\n      });\n  }\n\n  useEffect(() => {\n    runRequest(source, 'initial');\n    return () => {\n      latestRequest.current += 1;\n    };\n  }, [source]);\n\n  // The refresh handler reads source from the current render, so it never reloads a stale source.\n  function handleRefresh() {\n    runRequest(source, 'refresh');\n  }\n\n  function handleRetryRequest() {\n    runRequest(source, request.kind === 'error' && request.keepRows ? 'refresh' : 'initial');\n  }\n\n  // Both updates map over the current rows, so a second retry or a refresh in between is never overwritten.\n  function handleRetryDelivery(delivery: Delivery) {\n    setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'pending' } : item)));\n    retryDelivery(delivery)\n      .then((updated) => {\n        setDeliveries((current) =>\n          current.map((item) =>\n            item.id === updated.id\n              ? { ...item, status: updated.status, attempts: updated.attempts, lastAttempt: updated.lastAttempt }\n              : item\n          )\n        );\n      })\n      .catch(() => {\n        setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'failed' } : item)));\n      });\n  }\n\n  const visible = useMemo(\n    () => (filter === 'all' ? deliveries : deliveries.filter((delivery) => delivery.status === filter)),\n    [deliveries, filter]\n  );\n\n  const loading = request.kind === 'loading';\n  const countLine = filter === 'all' ? `${deliveries.length} deliveries` : `${visible.length} of ${deliveries.length} deliveries`;\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Webhook Deliveries (Solution)</h1>\n          <p className=\"subtitle\">Load the deliveries, type the payload, filter and retry, then fix the refresh.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"source\">Data source</label>\n          <select id=\"source\" className=\"source\" value={source} onChange={(event) => setSource(event.target.value as Source)}>\n            <option value=\"live\">Live export</option>\n            <option value=\"legacy\">Legacy export</option>\n            <option value=\"empty\">Empty export</option>\n            <option value=\"error\">Failing export</option>\n          </select>\n          <label className=\"label\" htmlFor=\"status-filter\">Status</label>\n          <select\n            id=\"status-filter\"\n            className=\"status-filter\"\n            value={filter}\n            onChange={(event) => setFilter(event.target.value as StatusFilter)}\n          >\n            <option value=\"all\">All</option>\n            <option value=\"delivered\">Delivered</option>\n            <option value=\"failed\">Failed</option>\n            <option value=\"pending\">Pending</option>\n          </select>\n          <button type=\"button\" className=\"refresh\" onClick={handleRefresh} disabled={loading}>\n            Refresh\n          </button>\n          <button type=\"button\" className=\"fail-next\" onClick={armFailure}>\n            Fail next request\n          </button>\n        </div>\n\n        <div className=\"status-line\" aria-live=\"polite\">\n          {request.kind === 'loading' && (\n            <span className=\"status--loading\">{request.keepRows ? 'Refreshing deliveries…' : 'Loading deliveries…'}</span>\n          )}\n          {request.kind === 'error' && (\n            <span className=\"status--error\">\n              {request.keepRows ? 'Could not refresh the deliveries:' : 'Could not load the deliveries:'} {request.message}{' '}\n              <button type=\"button\" className=\"retry\" onClick={handleRetryRequest}>\n                Retry\n              </button>\n            </span>\n          )}\n          {request.kind === 'empty' && <span className=\"empty\">No deliveries</span>}\n          {deliveries.length > 0 && <span className=\"count\">{countLine}</span>}\n          {skipped > 0 && <span className=\"skipped\">{skipped} records skipped</span>}\n        </div>\n\n        {visible.length > 0 && (\n          <div className=\"table-scroll\">\n            <table className=\"deliveries\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Endpoint</th>\n                  <th scope=\"col\">Status</th>\n                  <th scope=\"col\">Attempts</th>\n                  <th scope=\"col\">\n                    <span className=\"visually-hidden\">Actions</span>\n                  </th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((delivery) => (\n                  <tr key={delivery.id} className={`row row--${delivery.status}`}>\n                    <td className=\"endpoint\">{delivery.endpoint}</td>\n                    <td className={`status status--${delivery.status}`}>{delivery.status}</td>\n                    <td className=\"attempts\">{delivery.attempts}</td>\n                    <td className=\"actions\">\n                      {delivery.status === 'failed' && (\n                        <button\n                          type=\"button\"\n                          className=\"retry-delivery\"\n                          onClick={() => handleRetryDelivery(delivery)}\n                          disabled={loading}\n                        >\n                          Retry delivery\n                        </button>\n                      )}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n"
         }
       ]
     },
@@ -16619,7 +16796,7 @@
     "updatedAt": "2026-11-18",
     "seo": {
       "title": "React + TypeScript App Round: Four Tasks in One Hour",
-      "description": "Practice a one-hour React and TypeScript app round: request states, a typed payload, a status filter with retries, and a stale-closure refresh bug."
+      "description": "Practice a one-hour React and TypeScript app round: request states, a typed payload, a status filter with retries, and a reported refresh bug to fix."
     }
   }
 ]

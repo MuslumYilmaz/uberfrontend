@@ -1,5 +1,5 @@
-// Wrong (task 1 without request identity): every response paints the screen, so a late failure from the
-// source selected before overwrites the newer source's loading state.
+// Wrong (task 1 without request identity): every response paints the screen, so a late answer or failure from
+// the source selected before overwrites the newer source's state.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 
@@ -26,16 +26,19 @@ export const LIVE: Delivery[] = [
   { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T08:40:00Z' }
 ];
 
-/** The legacy export: the same shape in most records, two of them malformed. */
+/** The legacy export: six well-formed records and five that each break one field. */
 export const LEGACY_RAW: unknown[] = [
   { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-17T18:10:30Z' },
   { id: 'd7', endpoint: 'https://legacy.example/hooks/orders', status: 'ok', attempts: 1, lastAttempt: '2026-11-17T18:09:00Z' },
   { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-17T18:04:05Z' },
+  { id: 10, endpoint: 'https://legacy.example/hooks/shipments', status: 'failed', attempts: 1, lastAttempt: '2026-11-17T18:01:00Z' },
   { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:51:44Z' },
   { id: 'd8', endpoint: 'https://legacy.example/hooks/invoices', status: 'failed', attempts: '2', lastAttempt: '2026-11-17T17:49:00Z' },
   { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-17T17:38:12Z' },
+  { id: 'd11', endpoint: null, status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:30:00Z' },
   { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:20:00Z' },
-  { id: 'd9', endpoint: 'https://legacy.example/hooks/receipts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:02:00Z' }
+  { id: 'd9', endpoint: 'https://legacy.example/hooks/receipts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:02:00Z' },
+  { id: 'd12', endpoint: 'https://legacy.example/hooks/payouts', status: 'pending', attempts: 1 }
 ];
 
 let failNextRequest = false;
@@ -89,10 +92,10 @@ function isDeliveryStatus(value: unknown): value is DeliveryStatus {
   return typeof value === 'string' && (STATUSES as readonly string[]).includes(value);
 }
 
-/** Narrow the raw payload: keep every well-formed record, count the rest. */
+/** Narrow the raw payload: keep every well-formed record, count the rest. A payload that is not a list is an error. */
 export function parseDeliveries(raw: unknown): { deliveries: Delivery[]; skipped: number } {
   if (!Array.isArray(raw)) {
-    return { deliveries: [], skipped: 0 };
+    throw new Error('Unexpected payload');
   }
   const deliveries: Delivery[] = [];
   let skipped = 0;
@@ -103,6 +106,8 @@ export function parseDeliveries(raw: unknown): { deliveries: Delivery[]; skipped
       typeof record.endpoint === 'string' &&
       isDeliveryStatus(record.status) &&
       typeof record.attempts === 'number' &&
+      Number.isInteger(record.attempts) &&
+      record.attempts >= 0 &&
       typeof record.lastAttempt === 'string'
     ) {
       deliveries.push({
@@ -132,14 +137,12 @@ export default function App() {
   const [skipped, setSkipped] = useState(0);
   const [request, setRequest] = useState<RequestState>({ kind: 'loading', keepRows: false });
   const latestRequest = useRef(0);
-  const rowCount = useRef(0);
-  rowCount.current = deliveries.length;
 
   // One request at a time counts: the newest. A refresh keeps the rows on screen; a source change does not.
   function runRequest(nextSource: Source, kind: 'initial' | 'refresh') {
     const requestId = latestRequest.current + 1;
     latestRequest.current = requestId;
-    const keepRows = kind === 'refresh' && rowCount.current > 0;
+    const keepRows = kind === 'refresh' && deliveries.length > 0;
     setRequest({ kind: 'loading', keepRows });
     if (!keepRows) {
       setDeliveries([]);
@@ -163,7 +166,6 @@ export default function App() {
     return () => {
       latestRequest.current += 1;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source]);
 
   // The refresh handler reads source from the current render, so it never reloads a stale source.
@@ -175,11 +177,22 @@ export default function App() {
     runRequest(source, request.kind === 'error' && request.keepRows ? 'refresh' : 'initial');
   }
 
+  // Both updates map over the current rows, so a second retry or a refresh in between is never overwritten.
   function handleRetryDelivery(delivery: Delivery) {
     setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'pending' } : item)));
-    retryDelivery(delivery).then((updated) => {
-      setDeliveries((current) => current.map((item) => (item.id === updated.id ? updated : item)));
-    });
+    retryDelivery(delivery)
+      .then((updated) => {
+        setDeliveries((current) =>
+          current.map((item) =>
+            item.id === updated.id
+              ? { ...item, status: updated.status, attempts: updated.attempts, lastAttempt: updated.lastAttempt }
+              : item
+          )
+        );
+      })
+      .catch(() => {
+        setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'failed' } : item)));
+      });
   }
 
   const visible = useMemo(
@@ -231,7 +244,7 @@ export default function App() {
             <span className="status--loading">{request.keepRows ? 'Refreshing deliveries…' : 'Loading deliveries…'}</span>
           )}
           {request.kind === 'error' && (
-            <span className="status--error" role="alert">
+            <span className="status--error">
               {request.keepRows ? 'Could not refresh the deliveries:' : 'Could not load the deliveries:'} {request.message}{' '}
               <button type="button" className="retry" onClick={handleRetryRequest}>
                 Retry
@@ -264,7 +277,12 @@ export default function App() {
                     <td className="attempts">{delivery.attempts}</td>
                     <td className="actions">
                       {delivery.status === 'failed' && (
-                        <button type="button" className="retry-delivery" onClick={() => handleRetryDelivery(delivery)}>
+                        <button
+                          type="button"
+                          className="retry-delivery"
+                          onClick={() => handleRetryDelivery(delivery)}
+                          disabled={loading}
+                        >
                           Retry delivery
                         </button>
                       )}

@@ -121,7 +121,28 @@ const WRONG_SOLUTIONS: WrongCase[] = [
     id: 'react-webhook-deliveries-four-tasks',
     premium: true,
     fixture: 'react-webhook-deliveries-no-request-guard.tsx',
-    fails: ['webhook-newest-request-wins'],
+    fails: ['webhook-newest-request-wins', 'webhook-refresh-failure-keeps-rows'],
+  },
+  {
+    framework: 'react',
+    id: 'react-webhook-deliveries-four-tasks',
+    premium: true,
+    fixture: 'react-webhook-deliveries-closure-retry.tsx',
+    fails: ['webhook-retry-delivery'],
+  },
+  {
+    framework: 'react',
+    id: 'react-webhook-deliveries-four-tasks',
+    premium: true,
+    fixture: 'react-webhook-deliveries-partial-narrowing.tsx',
+    fails: ['webhook-legacy-export-narrowing'],
+  },
+  {
+    framework: 'react',
+    id: 'react-webhook-deliveries-four-tasks',
+    premium: true,
+    fixture: 'react-webhook-deliveries-retry-live.tsx',
+    fails: ['webhook-request-states'],
   },
 ];
 

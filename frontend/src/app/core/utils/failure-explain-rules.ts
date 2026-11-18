@@ -772,15 +772,15 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'react-webhook-deliveries-four-tasks-requests',
-      title: 'Number every request, narrow the payload, and read the current source',
+      title: 'Number every request, narrow the payload, and reproduce the refresh report',
       why: buildProgressAwareWhy(
         snapshot,
-        'Three of the four tasks share one cause each: an answer from an older request that still paints the screen, a cast where the legacy export needs narrowing, and a refresh handler whose `useCallback([])` captured the first `source` and clears the rows while it loads.',
+        'Three of the four tasks fail for one reason each: an answer from an older request still paints the screen, the legacy export is cast instead of narrowed, and Refresh does not reload the source the select shows.',
       ),
       actions: [
         'Keep a request counter in a ref, bump it per request and in the effect cleanup, and return early in `.then` and `.catch` when the number is no longer the newest.',
         'Replace the cast in `parseDeliveries` with `Array.isArray`, a record guard, `typeof` checks per field and a status allow-list, and count the records you drop.',
-        'Drop the `useCallback`, read `source` inside `handleRefresh`, and carry a `keepRows` flag on the loading and error states so a refresh keeps the table and the filter.',
+        'Switch to the legacy export, press Refresh and log the source the request uses; once it matches the select, keep the rows on screen while a refresh runs and when it fails.',
       ],
       confidence: 0.86,
     }),
