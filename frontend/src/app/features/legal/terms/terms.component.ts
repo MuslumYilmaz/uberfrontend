@@ -23,6 +23,10 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
         platform, and related services (“Service”). By using our Service, you agree to comply with these
         Terms and our <a [routerLink]="['/legal/privacy']">Privacy Notice</a>.
       </p>
+      <p>
+        FrontendAtlas is operated by Müslim Yılmaz, an individual based in Istanbul, Türkiye
+        (“FrontendAtlas”, “we”, “us”).
+      </p>
 
       <!-- Table of contents -->
       <nav class="toc" aria-label="Table of contents">
@@ -143,6 +147,7 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
           If you have any questions regarding these Terms, please contact us at:
         </p>
         <p>
+          Operator: Müslim Yılmaz, Istanbul, Türkiye<br>
           Email:
           <a href="mailto:support&#64;frontendatlas.com">support&#64;frontendatlas.com</a><br>
           Subject line: “Terms of Service Inquiry”
