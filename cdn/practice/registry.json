@@ -8229,6 +8229,29 @@
     "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
   },
   {
+    "id": "react-webhook-deliveries-four-tasks",
+    "family": "question",
+    "title": "Webhook Deliveries Console: Four Tasks in One Hour",
+    "route": "/react/coding/react-webhook-deliveries-four-tasks",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Extend a webhook-deliveries console in four timed tasks: request states, a typed payload, a filter with retries and a planted refresh bug. The tasks build on each other the way a one-hour app round does.",
+    "tags": [
+      "react",
+      "typescript",
+      "async",
+      "api-calls",
+      "loading-states",
+      "error-handling",
+      "debugging"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 60,
+    "updatedAt": "2026-11-18",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-webhook-deliveries-four-tasks"
+  },
+  {
     "id": "react-render-props-vs-hocs",
     "family": "question",
     "title": "What are render props and how do they differ from HOCs?",

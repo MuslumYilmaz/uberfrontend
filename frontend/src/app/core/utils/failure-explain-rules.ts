@@ -764,6 +764,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-webhook-deliveries-four-tasks-requests',
+    questionId: 'react-webhook-deliveries-four-tasks',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['older source', 'legacy export', 'reloads the current source', 'failed refresh']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-webhook-deliveries-four-tasks-requests',
+      title: 'Number every request, narrow the payload, and read the current source',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Three of the four tasks share one cause each: an answer from an older request that still paints the screen, a cast where the legacy export needs narrowing, and a refresh handler whose `useCallback([])` captured the first `source` and clears the rows while it loads.',
+      ),
+      actions: [
+        'Keep a request counter in a ref, bump it per request and in the effect cleanup, and return early in `.then` and `.catch` when the number is no longer the newest.',
+        'Replace the cast in `parseDeliveries` with `Array.isArray`, a record guard, `typeof` checks per field and a status allow-list, and count the records you drop.',
+        'Drop the `useCallback`, read `source` inside `handleRefresh`, and carry a `keepRows` flag on the loading and error states so a refresh keeps the table and the filter.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-webhook-deliveries-four-tasks-default',
+    questionId: 'react-webhook-deliveries-four-tasks',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-webhook-deliveries-four-tasks-default',
+      title: 'Show one request state at a time and derive the table from it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The request-state, filter and retry checks all read one state object and one derived list: loading, ready, empty or error decides the status line, and the filter decides which rows and which count show.',
+      ),
+      actions: [
+        'Hold `{ kind: \'loading\' | \'ready\' | \'empty\' | \'error\' }` next to the rows and render `.status--loading`, `.empty`, `.status--error` with `.retry`, or `.count` from it.',
+        'Derive `visible` with `useMemo` over the rows and the filter, and read `N of M deliveries` from both lengths.',
+        'On `.retry-delivery`, map the row to `pending` with functional `setDeliveries`, call `retryDelivery`, and map the answer in when it arrives.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-listing-booking-widget-quote',
     questionId: 'react-listing-booking-widget',
     priority: 100,

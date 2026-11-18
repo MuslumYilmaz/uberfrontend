@@ -42,7 +42,7 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 33,
+      "react": 34,
       "angular": 23,
       "vue": 22,
       "javascript": 52,
@@ -2979,6 +2979,19 @@
       "tech": "react",
       "access": "free",
       "minutes": 30,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-webhook-deliveries-four-tasks": {
+      "id": "react-webhook-deliveries-four-tasks",
+      "title": "Webhook Deliveries Console: Four Tasks in One Hour",
+      "route": "/react/coding/react-webhook-deliveries-four-tasks",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 60,
+      "pressure": true,
       "focus": [
         "ui"
       ]
@@ -6706,6 +6719,16 @@
               ]
             },
             {
+              "id": "react-webhook-deliveries-four-tasks",
+              "report": {
+                "publisher": "PracHub (curated)",
+                "date": "2026-02"
+              },
+              "rounds": [
+                "app-coding-and-debugging"
+              ]
+            },
+            {
               "id": "js-debug-async-race",
               "report": {
                 "publisher": "Taro",
@@ -7013,6 +7036,9 @@
               "id": "react-debug-api-misuse"
             },
             {
+              "id": "react-webhook-deliveries-four-tasks"
+            },
+            {
               "id": "js-promises-async-await"
             },
             {
@@ -7096,6 +7122,9 @@
             },
             {
               "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "react-webhook-deliveries-four-tasks"
             },
             {
               "id": "js-promises-async-await"
@@ -8256,6 +8285,17 @@
               ]
             },
             {
+              "id": "react-webhook-deliveries-four-tasks",
+              "report": {
+                "publisher": "Taro",
+                "date": "2023-08"
+              },
+              "rounds": [
+                "technical-interview-or-take-home",
+                "code-review"
+              ]
+            },
+            {
               "id": "react-debug-api-misuse",
               "report": {
                 "publisher": "Blind",
@@ -8300,9 +8340,6 @@
             },
             {
               "id": "react-useeffect-purpose"
-            },
-            {
-              "id": "react-state-management-redux"
             }
           ]
         },
@@ -8411,6 +8448,9 @@
               "id": "react-debug-api-misuse"
             },
             {
+              "id": "react-webhook-deliveries-four-tasks"
+            },
+            {
               "id": "ui-component-state-from-mock"
             },
             {
@@ -8488,6 +8528,9 @@
             },
             {
               "id": "react-debug-api-misuse"
+            },
+            {
+              "id": "react-webhook-deliveries-four-tasks"
             },
             {
               "id": "ui-component-state-from-mock"

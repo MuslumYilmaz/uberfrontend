@@ -480,6 +480,9 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
     ],
   },
   cloudflare: {
+    // The four-task app item belongs to the app round; its newest source (PracHub, 2026-02) is also cited on the
+    // JavaScript phone screen, which would otherwise bind the task there too.
+    reportRounds: { 'react-webhook-deliveries-four-tasks': ['app-coding-and-debugging'] },
     variants: [
       {
         id: 'frontend',

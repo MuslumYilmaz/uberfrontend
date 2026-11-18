@@ -23,6 +23,7 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['react', 'react-snake-game'],
   ['react', 'react-fetch-list-states'],
   ['react', 'react-vanilla-dropdown-port'],
+  ['react', 'react-webhook-deliveries-four-tasks', 'premium'],
   ['angular', 'angular-counter-starter'],
   ['angular', 'angular-todo-list-starter'],
   ['angular', 'angular-autocomplete-search-starter'],
@@ -108,6 +109,20 @@ const WRONG_SOLUTIONS: WrongCase[] = [
     fails: ['autocomplete-selects-option', 'autocomplete-arrows-wrap', 'autocomplete-enter-selects', 'autocomplete-stale-ignored'],
   },
   { framework: 'vue', id: 'vue-debounced-search', premium: true, fixture: 'vue-debounced-search-no-stale-guard.vue', fails: ['debounced-search-stale'] },
+  {
+    framework: 'react',
+    id: 'react-webhook-deliveries-four-tasks',
+    premium: true,
+    fixture: 'react-webhook-deliveries-stale-refresh.tsx',
+    fails: ['webhook-refresh-current-source'],
+  },
+  {
+    framework: 'react',
+    id: 'react-webhook-deliveries-four-tasks',
+    premium: true,
+    fixture: 'react-webhook-deliveries-no-request-guard.tsx',
+    fails: ['webhook-newest-request-wins'],
+  },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();
