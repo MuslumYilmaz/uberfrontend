@@ -8358,6 +8358,27 @@
     "assetRef": "questions/react/trivia.json#react-core-problem-and-non-goals"
   },
   {
+    "id": "react-fiber-scheduling",
+    "family": "question",
+    "title": "What is React Fiber, and how does it decide which work to do first?",
+    "route": "/react/trivia/react-fiber-scheduling",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Explain what a fiber is (one object per component with parent, child and sibling pointers, state, flags and lanes), why React replaced its recursive reconciler, how the work loop renders and yields, how lanes rank updates, and why the commit runs in one synchronous pass.",
+    "tags": [
+      "react",
+      "rendering",
+      "concurrent",
+      "performance",
+      "architecture"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-fiber-scheduling"
+  },
+  {
     "id": "react-keys-in-lists",
     "family": "question",
     "title": "What is the significance of keys in lists in React?",
@@ -8398,6 +8419,27 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-function-treated-as-component-rules"
+  },
+  {
+    "id": "react-render-vs-commit-phase",
+    "family": "question",
+    "title": "What runs in React's render phase, and what runs in the commit phase?",
+    "route": "/react/trivia/react-render-vs-commit-phase",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain what React does in the render phase (call components, compute and diff the next tree, possibly more than once or for nothing) and in the commit phase (apply DOM changes, attach refs, run layout effects synchronously, then passive effects), and where each piece of component code runs.",
+    "tags": [
+      "react",
+      "rendering",
+      "effects",
+      "lifecycle",
+      "performance"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-render-vs-commit-phase"
   },
   {
     "id": "react-18-whats-new",

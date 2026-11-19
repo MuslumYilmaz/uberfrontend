@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-19T09:08:51.258Z",
+  "generatedAt": "2026-11-19T11:54:14.930Z",
   "entries": [
     {
       "tech": "angular",
@@ -2261,6 +2261,12 @@
     {
       "tech": "react",
       "kind": "trivia",
+      "id": "react-fiber-scheduling",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
       "id": "react-fragments-dom-and-reconciliation",
       "file": "react/trivia.json"
     },
@@ -2346,6 +2352,12 @@
       "tech": "react",
       "kind": "trivia",
       "id": "react-render-props-vs-hocs",
+      "file": "react/trivia.json"
+    },
+    {
+      "tech": "react",
+      "kind": "trivia",
+      "id": "react-render-vs-commit-phase",
       "file": "react/trivia.json"
     },
     {

@@ -74,8 +74,8 @@ export const PRICING_COUNTS: PricingCounts = {
       "premiumHard": 11
     },
     "trivia": {
-      "total": 242,
-      "free": 239,
+      "total": 244,
+      "free": 241,
       "premium": 3,
       "premiumHard": 1
     },

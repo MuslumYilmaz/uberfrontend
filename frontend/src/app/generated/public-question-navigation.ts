@@ -1606,6 +1606,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "What is React Fiber, and how does it decide which work to do first?",
+    "route": "/react/trivia/react-fiber-scheduling"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "What is the significance of keys in lists in React?",
     "route": "/react/trivia/react-keys-in-lists"
   },
@@ -1614,6 +1620,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What rules must a function follow to be treated as a React component?",
     "route": "/react/trivia/react-function-treated-as-component-rules"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "What runs in React's render phase, and what runs in the commit phase?",
+    "route": "/react/trivia/react-render-vs-commit-phase"
   },
   {
     "tech": "react",

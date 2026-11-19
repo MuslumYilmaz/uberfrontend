@@ -490,6 +490,7 @@
 /react/trivia/react-derived-state-anti-pattern
 /react/trivia/react-diffing-algorithm
 /react/trivia/react-error-boundaries-what-they-solve
+/react/trivia/react-fiber-scheduling
 /react/trivia/react-fragments-dom-and-reconciliation
 /react/trivia/react-function-treated-as-component-rules
 /react/trivia/react-functional-vs-class-components
@@ -505,6 +506,7 @@
 /react/trivia/react-pure-function-of-props-and-state
 /react/trivia/react-render-nothing-return-value
 /react/trivia/react-render-props-vs-hocs
+/react/trivia/react-render-vs-commit-phase
 /react/trivia/react-rerender-decision-and-render
 /react/trivia/react-ssr-hydration
 /react/trivia/react-stale-state-closures
