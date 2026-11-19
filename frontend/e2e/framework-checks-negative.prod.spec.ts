@@ -163,6 +163,8 @@ const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-jump-state-only.tsx', fails: ['vlist-jump'] },
   { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-pool-offsets.tsx', fails: ['vlist-scroll-middle'] },
   { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-lenient-input.tsx', fails: ['vlist-jump-ignores-bad-input'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-stale-amount.tsx', fails: ['vlist-scroll-middle'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-near-end-ignored.tsx', fails: ['vlist-jump'] },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();

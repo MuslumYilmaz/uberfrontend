@@ -17453,17 +17453,17 @@
       "specs": {
         "requirements": [
           "Work in `src/App.tsx`; treat `PAYMENTS`, the constants and `useRowNodeMeter` as given. The starter renders all 10,000 rows and scrolls, while `.range` and Go are stubs; the four tasks make it fast without changing how the list looks.",
-          "Task 1: render a window. Keep `POOL_SIZE` (20) `.row` elements inside `.spacer`: `VISIBLE_ROWS` (10) plus `OVERSCAN` (5) on each side, starting five rows above the first visible row and clamped so the pool stays inside the list (payments 1–20 at the top, 9,981–10,000 at the bottom). Keep the spacer's height and each row's `translateY` offset as the starter writes them, and give each row `data-id`, `aria-posinset` (its payment number), `aria-setsize` (10000), a `.payment` text such as `Payment 1,001` and an `.amount`.",
-          "Task 2: follow the viewport's scroll event. The first visible row is the one at the top edge, even when it is partly scrolled out; `.range` counts ten rows from it, `Showing 1,001–1,010 of 10,000`, with en-US digit grouping and an en dash.",
-          "Task 3: `.go`, the form's submit button, scrolls the list so the payment typed in `.jump` is the first visible row; any number above 9,991 shows the last page. Set the window in the same handler instead of waiting for the scroll event that follows a frame later, and leave the list where it is for an empty, decimal, zero or negative number.",
+          "Task 1: render a window. Keep `POOL_SIZE` (20) `.row` elements inside `.spacer`: `VISIBLE_ROWS` (10) plus `OVERSCAN` (5) on each side, starting five rows above the first visible row and clamped so the pool stays inside the list (payments 1–20 at the top, 9,981–10,000 at the bottom). Keep the spacer's height and each row's `translateY` offset as the starter writes them. Each row keeps `role=\"listitem\"`, `data-id`, `aria-posinset` (its payment number), `aria-setsize` (10000), a `.payment` text such as `Payment 1,001` and its `.amount`.",
+          "Task 2: set state in the viewport's scroll handler itself and render the rows in that same update. Do not batch it into `requestAnimationFrame` or defer the rows: the checks run in a frame that runs no animation frames, and they read the rows as soon as `.range` changes. The first visible row is the one at the top edge, unless less than half a pixel of it is left; `.range` counts ten rows from it, `Showing 1,001–1,010 of 10,000`, with en-US digit grouping and an en dash.",
+          "Task 3: `.go`, the form's submit button, scrolls the list so the payment typed in `.jump` is the first visible row (9,991 and up show the last page), sets the window in the same handler, and says `Jumped to payment 4,821.` in `.jump-status`. For anything but digits from 1 up (an empty field, `0`, `-3`, `2.5`, `4821.0`, `1e3`), leave the list where it is and say `Enter a whole payment number from 1 to 10,000.`",
           "Task 4: recycle the row nodes. Scrolling must reuse the same twenty elements, so `.row-meter` keeps reading `20 row nodes created`.",
-          "Keep `ref={listRef}` on `.viewport` and `ref={meterRef}` on `.row-meter`, the viewport at `VIEWPORT_HEIGHT`, and the viewport's `min-width` in the workspace's `App.css`, which lets it scroll in the 1px-wide frame the checks run in."
+          "Keep the viewport's `role=\"list\"`, `aria-label=\"Payments\"` and `tabIndex={0}`, `ref={listRef}` on `.viewport` and `ref={meterRef}` on `.row-meter`, the viewport at `VIEWPORT_HEIGHT`, and the viewport's `min-width` in the workspace's `App.css`, which lets it scroll in the 1px-wide frame the checks run in."
         ],
         "expectedBehavior": [
           "At the top, payments 1–20 render, `.range` reads `Showing 1–10 of 10,000`, and payment 1 shows `$357.61`.",
-          "Scrolled to 36,000px, `.range` reads `Showing 1,001–1,010 of 10,000`, payments 996 to 1,015 render, and payment 1,001 sits at `translateY(36000px)`.",
+          "Scrolled to 36,000px, `.range` reads `Showing 1,001–1,010 of 10,000`; payments 996 to 1,015 render at `translateY(35820px)` to `translateY(36504px)`, and payment 1,001 shows `$967.61`.",
           "Scrolled 70px it reads `Showing 2–11`, and 216px `Showing 7–16` with payments 2 to 21. At the bottom (359,640px) it reads `Showing 9,991–10,000` with payments 9,981 to 10,000.",
-          "Jumping to 4821 reads `Showing 4,821–4,830 of 10,000` and leaves the list scrolled there; 9995 or 12000 show the last page; 2.5, 0, -3 or an empty field change nothing.",
+          "Jumping to 4821 shows `Showing 4,821–4,830 of 10,000`, payment 4,821 at `$37.81` and `Jumped to payment 4,821.`; 9995 or 12000 show the last page and `Jumped to payment 9,991.`; bad input leaves the list where it is and shows the message.",
           "Scrolling to the end and back leaves `.row-meter` at `20 row nodes created`."
         ],
         "implementationNotes": [
@@ -17544,6 +17544,36 @@
             "attribute": "style",
             "expected": "height: 360000px",
             "match": "contains"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".viewport",
+            "attribute": "role",
+            "expected": "list"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".viewport",
+            "attribute": "aria-label",
+            "expected": "Payments"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".viewport",
+            "attribute": "tabindex",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".row[data-id=\"7\"]",
+            "attribute": "role",
+            "expected": "listitem"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".row[data-id=\"7\"]",
+            "attribute": "aria-posinset",
+            "expected": "7"
           }
         ]
       },
@@ -17619,6 +17649,32 @@
             "attribute": "style",
             "expected": "translateY(36000px)",
             "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row[data-id=\"1001\"] .amount",
+            "text": "$967.61",
+            "match": "equals"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".row[data-id=\"996\"]",
+            "attribute": "style",
+            "expected": "translateY(35820px)",
+            "match": "contains"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".row[data-id=\"1015\"]",
+            "attribute": "style",
+            "expected": "translateY(36504px)",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row[data-id=\"1015\"] .amount",
+            "text": "$974.15",
+            "match": "equals"
           }
         ]
       },
@@ -17714,7 +17770,7 @@
       },
       {
         "id": "vlist-jump",
-        "name": "Go moves the list to a payment, and a number near or past the end shows the last page",
+        "name": "Go moves the list to a payment and says so, and 9,991 and up show the last page",
         "steps": [
           {
             "type": "waitForCount",
@@ -17752,6 +17808,23 @@
             "match": "equals"
           },
           {
+            "type": "expectText",
+            "selector": ".row[data-id=\"4821\"] .amount",
+            "text": "$37.81",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Jumped to payment 4,821.",
+            "match": "equals"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row",
+            "count": 20
+          },
+          {
             "type": "scroll",
             "selector": ".viewport"
           },
@@ -17760,11 +17833,6 @@
             "selector": ".range",
             "text": "Showing 4,821–4,830 of 10,000",
             "match": "equals"
-          },
-          {
-            "type": "expectCount",
-            "selector": ".row",
-            "count": 20
           },
           {
             "type": "scroll",
@@ -17795,9 +17863,32 @@
             "timeoutMs": 1500
           },
           {
-            "type": "expectCount",
-            "selector": ".row[data-id=\"10000\"]",
-            "count": 1
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Jumped to payment 9,991.",
+            "match": "equals"
+          },
+          {
+            "type": "scroll",
+            "selector": ".viewport"
+          },
+          {
+            "type": "expectText",
+            "selector": ".range",
+            "text": "Showing 9,991–10,000 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "scroll",
+            "selector": ".viewport",
+            "top": 36000
+          },
+          {
+            "type": "waitForText",
+            "selector": ".range",
+            "text": "Showing 1,001–1,010 of 10,000",
+            "match": "equals",
+            "timeoutMs": 1500
           },
           {
             "type": "setValue",
@@ -17809,9 +17900,21 @@
             "selector": ".go"
           },
           {
-            "type": "expectText",
+            "type": "waitForText",
             "selector": ".range",
             "text": "Showing 9,991–10,000 of 10,000",
+            "match": "equals",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".row[data-id=\"10000\"]",
+            "count": 1
+          },
+          {
+            "type": "expectText",
+            "selector": ".row[data-id=\"10000\"] .amount",
+            "text": "$100.00",
             "match": "equals"
           }
         ]
@@ -17887,7 +17990,7 @@
       },
       {
         "id": "vlist-jump-ignores-bad-input",
-        "name": "Go leaves the list where it is for an empty, decimal, zero or negative number",
+        "name": "Go leaves the list where it is and says why for anything but a whole payment number",
         "steps": [
           {
             "type": "waitForCount",
@@ -17934,6 +18037,54 @@
             "match": "equals"
           },
           {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
+            "match": "equals"
+          },
+          {
+            "type": "setValue",
+            "selector": ".jump",
+            "value": "4821.0"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectText",
+            "selector": ".range",
+            "text": "Showing 4,821–4,830 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
+            "match": "equals"
+          },
+          {
+            "type": "setValue",
+            "selector": ".jump",
+            "value": "1e3"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectText",
+            "selector": ".range",
+            "text": "Showing 4,821–4,830 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
+            "match": "equals"
+          },
+          {
             "type": "setValue",
             "selector": ".jump",
             "value": "0"
@@ -17946,6 +18097,12 @@
             "type": "expectText",
             "selector": ".range",
             "text": "Showing 4,821–4,830 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
             "match": "equals"
           },
           {
@@ -17964,6 +18121,12 @@
             "match": "equals"
           },
           {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
+            "match": "equals"
+          },
+          {
             "type": "setValue",
             "selector": ".jump",
             "value": ""
@@ -17976,6 +18139,33 @@
             "type": "expectText",
             "selector": ".range",
             "text": "Showing 4,821–4,830 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
+            "match": "equals"
+          },
+          {
+            "type": "setValue",
+            "selector": ".jump",
+            "value": "abc"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectText",
+            "selector": ".range",
+            "text": "Showing 4,821–4,830 of 10,000",
+            "match": "equals"
+          },
+          {
+            "type": "expectText",
+            "selector": ".jump-status",
+            "text": "Enter a whole payment number from 1 to 10,000.",
             "match": "equals"
           },
           {
@@ -17999,12 +18189,12 @@
     "solutionAsset": "assets/sb/react/solution/react-virtualized-list-recycling-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-virtualized-list-recycling.v1.json",
     "solutionBlock": {
-      "overview": "A virtual list is a function of one number. The scroll handler turns scrollTop into the first visible row, and from that row come a twenty-row pool (five rows of overscan above, ten visible, five below, clamped to the list), the range line and every offset. A spacer as tall as all 10,000 rows gives the browser its scroll range.\n\nA jump writes scrollTop and sets the row in the same handler, because the scroll event it causes comes a frame later. Rows are keyed by slot, `index % POOL_SIZE`, so twenty elements serve the whole list, and `aria-setsize` with `aria-posinset` keep its real size available to assistive technology.\n\n**Test cases**\n- The first window holds payments 1 to 20 with their offsets and a full-height spacer.\n- Scrolling to payment 1,001 renders 996 to 1,015 at their own offsets.\n- A partly hidden top row still counts as first; the top overscan and the last page keep twenty rows.\n- Go moves the list to a payment, and near or past the end it shows the last page.\n- Scrolling to the end and back reuses the same twenty row nodes.\n- Go ignores an empty, decimal, zero or negative number.",
+      "overview": "A virtual list is a function of one number. The scroll handler turns scrollTop into the first visible row, and from that row come a twenty-row pool (five rows of overscan above, ten visible, five below, clamped to the list), the range line and every offset. A spacer as tall as all 10,000 rows gives the browser its scroll range.\n\nA jump writes scrollTop and sets the row in the same handler, because the scroll event it causes comes a frame later, and a status line says where it landed or why it did not move. Rows are keyed by their position in the pool, so twenty elements serve the whole list without being created, removed or reordered, and `aria-setsize` with `aria-posinset` keep the real size available to assistive technology.\n\n**Test cases**\n- The first window holds payments 1 to 20 inside a labelled, focusable list, with their offsets and a full-height spacer.\n- Scrolling to payment 1,001 renders 996 to 1,015 at their own offsets with their own amounts.\n- A partly hidden top row still counts as first; the top overscan and the last page keep twenty rows.\n- Go moves the list to a payment and says so; 9,991 and up show the last page.\n- Scrolling to the end and back reuses the same twenty row nodes.\n- Go leaves the list where it is and says why for anything but a whole payment number.",
       "approaches": [
         {
           "title": "One scroll position, a clamped pool, rows keyed by slot",
-          "prose": "Build it in the order of the tasks.\n\n1. Replace the full map with a pool: `start = clamp(firstVisible - OVERSCAN, 0, ITEM_COUNT - POOL_SIZE)`, then map the twenty indexes from `start`, keeping the spacer height and each row's `translateY(index × ROW_HEIGHT)`.\n2. Hold `firstVisible` in state and set it from `onScroll` with `floor((scrollTop + 0.5) / ROW_HEIGHT)`, clamped to 9,990. The range line is `firstVisible + 1` to `firstVisible + 10`, formatted with `Intl.NumberFormat('en-US')`.\n3. On submit, reject an empty, decimal or non-positive value, write `(n - 1) × ROW_HEIGHT` (capped at the last page) to `listRef.current.scrollTop`, and set the row from the position the browser applied.\n4. Change the key from the payment id to `index % POOL_SIZE`. As the pool moves, each slot keeps its element; React rewrites the rows that changed and moves them in the DOM to match the new order.\n\n**Follow-ups an interviewer asks**\n- What breaks with slot keys? State inside a row (a text input, focus, an open menu) stays with the element and shows up on another payment after a scroll, and a moved node loses focus. Key by id when rows own state, or lift that state out by payment id.\n- What if rows have different heights? Keep a prefix sum of measured heights and binary-search it for the first visible row; estimate unmeasured rows and correct the offsets as they are measured.\n- Why no throttle on scroll? The browser fires scroll at most once per frame, and storing the first visible row means most events set the same value, which React skips.\n- How does a screen reader experience it? The viewport is a labelled, focusable list, and screen readers that support `aria-posinset` announce a row's position out of 10,000; a virtual cursor still reaches only the rendered rows.",
-          "codeJs": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface Payment {\n  id: number;\n  amountCents: number;\n}\n\nexport const ITEM_COUNT = 10000;\nexport const ROW_HEIGHT = 36;\nexport const VIEWPORT_HEIGHT = 360;\nexport const VISIBLE_ROWS = VIEWPORT_HEIGHT / ROW_HEIGHT;\nexport const OVERSCAN = 5;\nexport const POOL_SIZE = VISIBLE_ROWS + 2 * OVERSCAN;\n\n/** Ten thousand payments, the same on every run. */\nexport const PAYMENTS: Payment[] = Array.from({ length: ITEM_COUNT }, (_, index) => ({\n  id: index + 1,\n  amountCents: ((index + 1) * 2654435761) % 100000,\n}));\n\nconst numberFormat = new Intl.NumberFormat('en-US');\nconst moneyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });\nexport const formatNumber = (value: number) => numberFormat.format(value);\nexport const formatMoney = (cents: number) => moneyFormat.format(cents / 100);\n\n/**\n * Given: counts the row nodes ever created inside the list, so the recycling check can read it. Keep\n * `ref={listRef}` on `.viewport` and `ref={meterRef}` on `.row-meter`.\n */\nfunction useRowNodeMeter() {\n  const listRef = useRef<HTMLDivElement>(null);\n  const meterRef = useRef<HTMLSpanElement>(null);\n  useEffect(() => {\n    const list = listRef.current;\n    const meter = meterRef.current;\n    if (!list || !meter) return;\n    const seen = new WeakSet<Element>();\n    let created = 0;\n    const note = (node: Node) => {\n      if (!(node instanceof Element)) return;\n      const rows = node.matches('.row') ? [node] : Array.from(node.querySelectorAll('.row'));\n      for (const row of rows) {\n        if (seen.has(row)) continue;\n        seen.add(row);\n        created += 1;\n      }\n    };\n    const show = () => {\n      meter.textContent = `${formatNumber(created)} row nodes created`;\n    };\n    note(list);\n    show();\n    const observer = new MutationObserver((records) => {\n      for (const record of records) record.addedNodes.forEach(note);\n      show();\n    });\n    observer.observe(list, { childList: true, subtree: true });\n    return () => observer.disconnect();\n  }, []);\n  return { listRef, meterRef };\n}\n\nconst LAST_FIRST_ROW = ITEM_COUNT - VISIBLE_ROWS;\n\n/**\n * The row at the top edge of the viewport, partly scrolled out or not. Half a pixel of slack keeps a scroll that a\n * zoomed browser stores as 35.6px on row 1 instead of row 0.\n */\nfunction rowAt(scrollTop: number) {\n  return Math.min(Math.max(Math.floor((scrollTop + 0.5) / ROW_HEIGHT), 0), LAST_FIRST_ROW);\n}\n\nexport default function App() {\n  const { listRef, meterRef } = useRowNodeMeter();\n  // Only the first visible row is state: a scroll that stays inside one row sets the same number, and React skips\n  // the render.\n  const [firstVisible, setFirstVisible] = useState(0);\n  const [jumpText, setJumpText] = useState('');\n\n  const start = Math.min(Math.max(firstVisible - OVERSCAN, 0), ITEM_COUNT - POOL_SIZE);\n  const indexes = Array.from({ length: POOL_SIZE }, (_, offset) => start + offset);\n\n  // A jump moves the list and sets the state together: the browser's own scroll event comes a frame later.\n  const handleJump = (event: React.FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const target = Number(jumpText);\n    if (jumpText.trim() === '' || !Number.isInteger(target) || target < 1) return;\n    const row = Math.min(target - 1, LAST_FIRST_ROW);\n    const list = listRef.current;\n    if (!list) return;\n    list.scrollTop = row * ROW_HEIGHT;\n    setFirstVisible(rowAt(list.scrollTop));\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Payments (Solution)</h1>\n          <p className=\"subtitle\">Ten thousand rows. Draw the twenty that matter.</p>\n        </header>\n\n        <form className=\"jump-form\" onSubmit={handleJump}>\n          <label className=\"label\" htmlFor=\"jump\">Jump to payment</label>\n          <input\n            id=\"jump\"\n            className=\"jump\"\n            type=\"number\"\n            inputMode=\"numeric\"\n            value={jumpText}\n            onChange={(event) => setJumpText(event.target.value)}\n          />\n          <button type=\"submit\" className=\"go\">Go</button>\n        </form>\n\n        <div className=\"list-status\">\n          <p className=\"range\">\n            Showing {formatNumber(firstVisible + 1)}–{formatNumber(firstVisible + VISIBLE_ROWS)} of {formatNumber(ITEM_COUNT)}\n          </p>\n          <span className=\"row-meter\" ref={meterRef} />\n        </div>\n\n        <div\n          className=\"viewport\"\n          ref={listRef}\n          role=\"list\"\n          aria-label=\"Payments\"\n          tabIndex={0}\n          style={{ height: VIEWPORT_HEIGHT }}\n          onScroll={(event) => setFirstVisible(rowAt(event.currentTarget.scrollTop))}\n        >\n          <div className=\"spacer\" style={{ height: ITEM_COUNT * ROW_HEIGHT }}>\n            {indexes.map((index) => {\n              const payment = PAYMENTS[index];\n              // Keyed by slot, not by payment: a row that scrolls out is the element the next row scrolls in with.\n              return (\n                <div\n                  key={index % POOL_SIZE}\n                  className=\"row\"\n                  role=\"listitem\"\n                  aria-posinset={payment.id}\n                  aria-setsize={ITEM_COUNT}\n                  data-id={payment.id}\n                  style={{ transform: `translateY(${index * ROW_HEIGHT}px)` }}\n                >\n                  <span className=\"payment\">Payment {formatNumber(payment.id)}</span>\n                  <span className=\"amount\">{formatMoney(payment.amountCents)}</span>\n                </div>\n              );\n            })}\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+          "prose": "Build it in the order of the tasks.\n\n1. Replace the full map with a pool: `start = clamp(firstVisible - OVERSCAN, 0, ITEM_COUNT - POOL_SIZE)`, then map the twenty indexes from `start`, keeping the spacer height and each row's `translateY(index × ROW_HEIGHT)`.\n2. Hold `firstVisible` (a zero-based row index) in state and set it in `onScroll` with `floor((scrollTop + 0.5) / ROW_HEIGHT)`, capped at index 9,990 so the last page stays full. The range line is `firstVisible + 1` to `firstVisible + 10`, formatted with `Intl.NumberFormat('en-US')`.\n3. On submit, accept only digits from 1 up, write `(n - 1) × ROW_HEIGHT` (capped at the last page) to `listRef.current.scrollTop`, set the row from the position the browser applied, and put the result in the `role=\"status\"` line; for anything else, leave the list and put the message there.\n4. Change the key from the payment id to the row's position in the pool. Each of the twenty elements then always shows the same position, and React rewrites their text and offsets in place.\n\n**Follow-ups an interviewer asks**\n- Position keys or slot keys? Position keys rewrite all twenty rows on every step but never move an element; slot keys (`index % POOL_SIZE`) rewrite only the rows that changed but make React reorder elements, one per row scrolling down and nineteen scrolling up. Either recycles; with twenty light rows the moves cost more than the text.\n- What breaks when rows are recycled? State inside a row (a text input, focus, an open menu) stays with the element and shows up on another payment after a scroll. Key by id when rows own state, or lift that state out by payment id.\n- What if rows have different heights? Keep a prefix sum of measured heights and binary-search it for the first visible row; estimate unmeasured rows and correct the offsets as they are measured.\n- How does a screen reader experience it? The viewport is a labelled, focusable list; screen readers that support `aria-posinset` announce a row's position out of 10,000, and the status line announces where a jump landed.",
+          "codeJs": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface Payment {\n  id: number;\n  amountCents: number;\n}\n\nexport const ITEM_COUNT = 10000;\nexport const ROW_HEIGHT = 36;\nexport const VIEWPORT_HEIGHT = 360;\nexport const VISIBLE_ROWS = VIEWPORT_HEIGHT / ROW_HEIGHT;\nexport const OVERSCAN = 5;\nexport const POOL_SIZE = VISIBLE_ROWS + 2 * OVERSCAN;\n\n/** Ten thousand payments, the same on every run. */\nexport const PAYMENTS: Payment[] = Array.from({ length: ITEM_COUNT }, (_, index) => ({\n  id: index + 1,\n  amountCents: ((index + 1) * 2654435761) % 100000,\n}));\n\nconst numberFormat = new Intl.NumberFormat('en-US');\nconst moneyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });\nexport const formatNumber = (value: number) => numberFormat.format(value);\nexport const formatMoney = (cents: number) => moneyFormat.format(cents / 100);\n\n/**\n * Given: counts the row nodes ever created inside the list, so the recycling check can read it. Keep\n * `ref={listRef}` on `.viewport` and `ref={meterRef}` on `.row-meter`.\n */\nfunction useRowNodeMeter() {\n  const listRef = useRef<HTMLDivElement>(null);\n  const meterRef = useRef<HTMLSpanElement>(null);\n  useEffect(() => {\n    const list = listRef.current;\n    const meter = meterRef.current;\n    if (!list || !meter) return;\n    const seen = new WeakSet<Element>();\n    let created = 0;\n    const note = (node: Node) => {\n      if (!(node instanceof Element)) return;\n      const rows = node.matches('.row') ? [node] : Array.from(node.querySelectorAll('.row'));\n      for (const row of rows) {\n        if (seen.has(row)) continue;\n        seen.add(row);\n        created += 1;\n      }\n    };\n    const show = () => {\n      meter.textContent = `${formatNumber(created)} row nodes created`;\n    };\n    note(list);\n    show();\n    const observer = new MutationObserver((records) => {\n      for (const record of records) record.addedNodes.forEach(note);\n      show();\n    });\n    observer.observe(list, { childList: true, subtree: true });\n    return () => observer.disconnect();\n  }, []);\n  return { listRef, meterRef };\n}\n\nconst LAST_FIRST_ROW = ITEM_COUNT - VISIBLE_ROWS;\n\n/**\n * The row at the top edge of the viewport, partly scrolled out or not. A row with less than half a pixel left on\n * screen counts as scrolled out: a zoomed browser can report 173519.4px for a jump to 173520px.\n */\nfunction rowAt(scrollTop: number) {\n  return Math.min(Math.max(Math.floor((scrollTop + 0.5) / ROW_HEIGHT), 0), LAST_FIRST_ROW);\n}\n\nexport default function App() {\n  const { listRef, meterRef } = useRowNodeMeter();\n  // Only the first visible row is state: a scroll that stays inside one row sets the same number, and React bails\n  // out without committing anything.\n  const [firstVisible, setFirstVisible] = useState(0);\n  const [jumpText, setJumpText] = useState('');\n  const [jumpStatus, setJumpStatus] = useState('');\n\n  const start = Math.min(Math.max(firstVisible - OVERSCAN, 0), ITEM_COUNT - POOL_SIZE);\n  const indexes = Array.from({ length: POOL_SIZE }, (_, offset) => start + offset);\n\n  // A jump moves the list and sets the window in the same handler, from the position the browser applied.\n  const handleJump = (event: React.FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const list = listRef.current;\n    const target = Number(jumpText.trim());\n    if (!/^\\d+$/.test(jumpText.trim()) || target < 1 || !list) {\n      setJumpStatus(`Enter a whole payment number from 1 to ${formatNumber(ITEM_COUNT)}.`);\n      return;\n    }\n    list.scrollTop = Math.min(target - 1, LAST_FIRST_ROW) * ROW_HEIGHT;\n    const row = rowAt(list.scrollTop);\n    setFirstVisible(row);\n    setJumpStatus(`Jumped to payment ${formatNumber(row + 1)}.`);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Payments (Solution)</h1>\n          <p className=\"subtitle\">Ten thousand rows. Draw the twenty that matter.</p>\n        </header>\n\n        <form className=\"jump-form\" onSubmit={handleJump}>\n          <label className=\"label\" htmlFor=\"jump\">Jump to payment</label>\n          <input\n            id=\"jump\"\n            className=\"jump\"\n            type=\"text\"\n            inputMode=\"numeric\"\n            autoComplete=\"off\"\n            value={jumpText}\n            onChange={(event) => setJumpText(event.target.value)}\n          />\n          <button type=\"submit\" className=\"go\">Go</button>\n          <p className=\"jump-status\" role=\"status\">{jumpStatus}</p>\n        </form>\n\n        <div className=\"list-status\">\n          <p className=\"range\">\n            Showing {formatNumber(firstVisible + 1)}–{formatNumber(firstVisible + VISIBLE_ROWS)} of {formatNumber(ITEM_COUNT)}\n          </p>\n          <span className=\"row-meter\" ref={meterRef} />\n        </div>\n\n        <div\n          className=\"viewport\"\n          ref={listRef}\n          role=\"list\"\n          aria-label=\"Payments\"\n          tabIndex={0}\n          style={{ height: VIEWPORT_HEIGHT }}\n          onScroll={(event) => setFirstVisible(rowAt(event.currentTarget.scrollTop))}\n        >\n          <div className=\"spacer\" style={{ height: ITEM_COUNT * ROW_HEIGHT }}>\n            {indexes.map((index, offset) => {\n              const payment = PAYMENTS[index];\n              // Keyed by position in the pool: element 0 always shows the pool's first payment, so scrolling\n              // rewrites the twenty elements in place and never creates, removes or reorders one.\n              return (\n                <div\n                  key={offset}\n                  className=\"row\"\n                  role=\"listitem\"\n                  aria-posinset={payment.id}\n                  aria-setsize={ITEM_COUNT}\n                  data-id={payment.id}\n                  style={{ transform: `translateY(${index * ROW_HEIGHT}px)` }}\n                >\n                  <span className=\"payment\">Payment {formatNumber(payment.id)}</span>\n                  <span className=\"amount\">{formatMoney(payment.amountCents)}</span>\n                </div>\n              );\n            })}\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
         }
       ]
     },

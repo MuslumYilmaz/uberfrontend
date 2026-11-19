@@ -66,8 +66,8 @@ function useRowNodeMeter() {
 const LAST_FIRST_ROW = ITEM_COUNT - VISIBLE_ROWS;
 
 /**
- * The row at the top edge of the viewport, partly scrolled out or not. Half a pixel of slack keeps a scroll that a
- * zoomed browser stores as 35.6px on row 1 instead of row 0.
+ * The row at the top edge of the viewport, partly scrolled out or not. A row with less than half a pixel left on
+ * screen counts as scrolled out: a zoomed browser can report 173519.4px for a jump to 173520px.
  */
 function rowAt(scrollTop: number) {
   return Math.min(Math.max(Math.floor((scrollTop + 0.5) / ROW_HEIGHT), 0), LAST_FIRST_ROW);
@@ -75,24 +75,28 @@ function rowAt(scrollTop: number) {
 
 export default function App() {
   const { listRef, meterRef } = useRowNodeMeter();
-  // Only the first visible row is state: a scroll that stays inside one row sets the same number, and React skips
-  // the render.
+  // Only the first visible row is state: a scroll that stays inside one row sets the same number, and React bails
+  // out without committing anything.
   const [firstVisible, setFirstVisible] = useState(0);
   const [jumpText, setJumpText] = useState('');
+  const [jumpStatus, setJumpStatus] = useState('');
 
   const start = Math.min(Math.max(firstVisible - OVERSCAN, 0), ITEM_COUNT - POOL_SIZE);
   const indexes = Array.from({ length: POOL_SIZE }, (_, offset) => start + offset);
 
-  // A jump moves the list and sets the state together: the browser's own scroll event comes a frame later.
+  // A jump moves the list and sets the window in the same handler, from the position the browser applied.
   const handleJump = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const target = Number(jumpText);
-    if (jumpText.trim() === '' || !Number.isInteger(target) || target < 1) return;
-    const row = Math.min(target - 1, LAST_FIRST_ROW);
     const list = listRef.current;
-    if (!list) return;
-    list.scrollTop = row * ROW_HEIGHT;
-    setFirstVisible(rowAt(list.scrollTop));
+    const target = Number(jumpText.trim());
+    if (!/^\d+$/.test(jumpText.trim()) || target < 1 || !list) {
+      setJumpStatus(`Enter a whole payment number from 1 to ${formatNumber(ITEM_COUNT)}.`);
+      return;
+    }
+    list.scrollTop = Math.min(target - 1, LAST_FIRST_ROW) * ROW_HEIGHT;
+    const row = rowAt(list.scrollTop);
+    setFirstVisible(row);
+    setJumpStatus(`Jumped to payment ${formatNumber(row + 1)}.`);
   };
 
   return (
@@ -108,12 +112,14 @@ export default function App() {
           <input
             id="jump"
             className="jump"
-            type="number"
+            type="text"
             inputMode="numeric"
+            autoComplete="off"
             value={jumpText}
             onChange={(event) => setJumpText(event.target.value)}
           />
           <button type="submit" className="go">Go</button>
+          <p className="jump-status" role="status">{jumpStatus}</p>
         </form>
 
         <div className="list-status">
@@ -133,12 +139,13 @@ export default function App() {
           onScroll={(event) => setFirstVisible(rowAt(event.currentTarget.scrollTop))}
         >
           <div className="spacer" style={{ height: ITEM_COUNT * ROW_HEIGHT }}>
-            {indexes.map((index) => {
+            {indexes.map((index, offset) => {
               const payment = PAYMENTS[index];
-              // Keyed by slot, not by payment: a row that scrolls out is the element the next row scrolls in with.
+              // Keyed by position in the pool: element 0 always shows the pool's first payment, so scrolling
+              // rewrites the twenty elements in place and never creates, removes or reorders one.
               return (
                 <div
-                  key={index % POOL_SIZE}
+                  key={offset}
                   className="row"
                   role="listitem"
                   aria-posinset={payment.id}
