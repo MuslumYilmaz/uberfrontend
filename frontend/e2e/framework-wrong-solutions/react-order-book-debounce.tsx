@@ -167,27 +167,30 @@ export function connectFeed(scenario: Scenario, onMessage: (delta: Delta) => voi
 }
 
 /**
- * Given: a commit meter for the burst check. It counts App's commits in a sliding one-second window and shows the
- * peak since the scenario changed. Keep the call at the top of App, the book's state in App, and `.update-meter`.
+ * Given: an update meter for the burst check. It counts the DOM updates inside the book (one per commit or direct
+ * write that changes it) in a sliding one-second window and shows the peak since the scenario changed.
+ * Keep `ref={bookRef}` on `.book`, render the rows inside it, and keep `ref={meterRef}` on `.update-meter`.
  */
-function useCommitMeter(resetKey: string) {
+function useUpdateMeter(resetKey: string) {
+  const bookRef = useRef<HTMLDivElement>(null);
   const meterRef = useRef<HTMLSpanElement>(null);
-  const stamps = useRef<number[]>([]);
-  const peak = useRef(0);
   useEffect(() => {
-    stamps.current = [];
-    peak.current = 0;
+    const book = bookRef.current;
+    const meter = meterRef.current;
+    if (!book || !meter) return;
+    let stamps: number[] = [];
+    let peak = 0;
+    const observer = new MutationObserver(() => {
+      const now = performance.now();
+      stamps = stamps.filter((stamp) => now - stamp < 1000);
+      stamps.push(now);
+      peak = Math.max(peak, stamps.length);
+      meter.textContent = `${peak > UPDATE_BUDGET ? 'Over budget' : 'Within budget'}: peak ${peak} book updates per second`;
+    });
+    observer.observe(book, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
   }, [resetKey]);
-  useEffect(() => {
-    const now = performance.now();
-    stamps.current = stamps.current.filter((stamp) => now - stamp < 1000);
-    stamps.current.push(now);
-    peak.current = Math.max(peak.current, stamps.current.length);
-    if (meterRef.current) {
-      meterRef.current.textContent = `${peak.current > UPDATE_BUDGET ? 'Over budget' : 'Within budget'}: peak ${peak.current} commits per second`;
-    }
-  });
-  return meterRef;
+  return { bookRef, meterRef };
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -224,13 +227,13 @@ export default function App() {
   const [view, setView] = useState<View>(EMPTY_VIEW);
   const [status, setStatus] = useState<Status>('loading');
   const [resyncs, setResyncs] = useState(0);
-  const meterRef = useCommitMeter(scenario);
+  const { bookRef, meterRef } = useUpdateMeter(scenario);
 
   useEffect(() => {
     // The book lives outside React state: messages change it at socket speed, and the screen follows on a timer.
     const book: Book = { bids: new Map(), asks: new Map() };
     let lastSeq: number | null = null;
-    let pending: Delta[] = [];
+    const pending: Delta[] = [];
     let syncing = true;
     let changed = false;
     let closed = false;
@@ -247,19 +250,20 @@ export default function App() {
       quiet = window.setTimeout(draw, DRAW_EVERY);
     };
 
-    // Applies pending messages in seq order: one the snapshot already includes is dropped, a hole starts a resync.
+    // Applies pending messages in arrival order: one the snapshot already includes is skipped, and a jump past
+    // the next seq is a gap that starts a resync and stays queued.
     const drain = () => {
-      while (!syncing && pending.length > 0) {
-        const next = pending[0];
-        if (lastSeq !== null && next.seq <= lastSeq) {
-          pending.shift();
-        } else if (lastSeq !== null && next.seq === lastSeq + 1) {
-          pending.shift();
-          apply(next);
-        } else {
+      let index = 0;
+      while (!syncing && lastSeq !== null && index < pending.length) {
+        const next = pending[index];
+        if (next.seq > lastSeq + 1) {
           resync();
+          break;
         }
+        if (next.seq === lastSeq + 1) apply(next);
+        index += 1;
       }
+      pending.splice(0, index);
     };
 
     const draw = () => {
@@ -268,11 +272,11 @@ export default function App() {
       setView({ bids: bestLevels(book.bids, 'bid'), asks: bestLevels(book.asks, 'ask'), lastSeq });
     };
 
-    // The first load and every resync ask the same connection for a snapshot; a failed request tries again in a second.
+    // The first load and every resync ask the same connection for a snapshot. Only a failed request retries;
+    // an error thrown while applying the snapshot is not swallowed.
     const load = () => {
-      connection
-        .fetchSnapshot()
-        .then((snapshot) => {
+      connection.fetchSnapshot().then(
+        (snapshot) => {
           if (closed) return;
           book.bids = toLevels(snapshot.bids);
           book.asks = toLevels(snapshot.asks);
@@ -284,10 +288,11 @@ export default function App() {
             setStatus('live');
             draw();
           }
-        })
-        .catch(() => {
+        },
+        () => {
           if (!closed) retry = window.setTimeout(load, 1000);
-        });
+        }
+      );
     };
 
     // The last book stays on screen while a new snapshot loads; messages keep queueing behind it.
@@ -350,17 +355,19 @@ export default function App() {
           </select>
         </div>
 
-        <div className="status-line" aria-live="polite">
-          <span className="sync-status">{STATUS_TEXT[status]}</span>
-          <span className="last-seq">Last update {view.lastSeq === null ? '—' : `#${view.lastSeq}`}</span>
-          <span className="resync-count">
-            {resyncs} {resyncs === 1 ? 'resync' : 'resyncs'}
+        <div className="status-line">
+          <span className="status-live" aria-live="polite">
+            <span className="sync-status">{STATUS_TEXT[status]}</span>
+            <span className="resync-count">
+              {resyncs} {resyncs === 1 ? 'resync' : 'resyncs'}
+            </span>
           </span>
+          <span className="last-seq">Last update {view.lastSeq === null ? '—' : `#${view.lastSeq}`}</span>
         </div>
         <span className="update-meter" ref={meterRef} />
 
         <p className="spread">{spread}</p>
-        <div className={`book${status === 'resyncing' ? ' book--stale' : ''}`}>
+        <div className={`book${status === 'resyncing' ? ' book--stale' : ''}`} ref={bookRef}>
           <section className="side" aria-label="Bids">
             <h2 className="side-title">Bids</h2>
             <ol className="bids">

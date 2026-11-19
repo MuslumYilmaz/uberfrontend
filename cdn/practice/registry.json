@@ -7652,7 +7652,7 @@
     "route": "/react/coding/react-order-book-socket-feed",
     "tech": "react",
     "difficulty": "hard",
-    "summary": "Build an order book from a snapshot and a socket of deltas, recover from a lost message, and keep the screen calm through a burst.",
+    "summary": "Build an order book from a snapshot and a socket of deltas, recover from a lost message, and keep the screen calm through a burst. 2 seconds.",
     "tags": [
       "react",
       "real-time",

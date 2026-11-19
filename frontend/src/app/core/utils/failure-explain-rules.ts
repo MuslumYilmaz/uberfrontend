@@ -822,7 +822,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Queue every message and drain only after a snapshot: drop seq at or below `lastSeq`, apply `lastSeq + 1`, and treat anything newer as a gap.',
         'On a gap, show `Resyncing…`, count it, and run the first load again while the old book stays on screen.',
-        'Change the maps per message but set state from a 100 ms `setInterval`, and clear it with the connection in the effect cleanup.',
+        'Change the maps per message but draw from a 100 ms `setInterval`, keep `ref={bookRef}` on `.book`, and clear the timer with the connection in the effect cleanup.',
       ],
       confidence: 0.85,
     }),
@@ -842,7 +842,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Load the snapshot\'s levels into two maps keyed by price, and set a level\'s size from each message, deleting it at 0.',
         'Sort bids high to low and asks low to high, slice ten, and render `.price` with two decimals and `.size`.',
-        'Show `Spread` as best ask minus best bid, `Last update #N` from the newest applied seq, and `Live` once the snapshot is in.',
+        'Show `Spread` as best ask minus best bid with two decimals, `Last update #N` for the newest seq the book includes, and `Live` once the snapshot is in.',
       ],
       confidence: 0.72,
     }),

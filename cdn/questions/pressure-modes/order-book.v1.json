@@ -16,7 +16,7 @@
       "constraints": [
         "Call `fetchSnapshot()` on the connection the starter opens, then apply every message from the socket. A message's `size` is the new total at that price; 0 removes the level.",
         "Show at most ten `.bid` and ten `.ask` rows, each with `.price` (two decimals) and `.size`. Bids go highest first, asks lowest first.",
-        "Show the spread, best ask minus best bid with two decimals, as `Spread 1.00` in `.spread`, and `Last update #N` in `.last-seq`: the snapshot's `lastSeq` at first, then the newest applied seq.",
+        "Show the spread, best ask minus best bid with two decimals, as `Spread 1.00` in `.spread`, and `Last update #N` in `.last-seq` for the newest message the book includes: a snapshot's `lastSeq` when it loads, then each applied seq.",
         "Show `Loading snapshot…` in `.sync-status` until the first snapshot arrives, then `Live`."
       ],
       "frameworkTests": [
@@ -210,6 +210,20 @@
               "selector": ".spread",
               "text": "Spread 1.00",
               "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 4,
+              "text": "98.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 4,
+              "text": "103.00",
+              "match": "equals"
             }
           ]
         }
@@ -220,10 +234,10 @@
       "title": "Trust the sequence numbers",
       "interviewerPrompt": "The snapshot can arrive after the first messages, and the socket can lose one. Use the seq numbers so the book is never wrong, and recover from a lost message without blanking the screen.",
       "constraints": [
-        "Keep messages that arrive before the snapshot. Skip the ones it already includes (seq at or below `lastSeq`) and apply the rest in seq order.",
-        "When a seq is missing, show `Resyncing…`, keep the last book on screen, and ask the same connection for a new snapshot with `fetchSnapshot()`; opening a new connection replays the scenario from the start.",
-        "Count resyncs in `.resync-count`: `0 resyncs`, `1 resync`, `2 resyncs`. A late snapshot is not a resync.",
-        "Switching the scenario clears the book at once and starts again with `Loading snapshot…` and `0 resyncs`."
+        "Keep messages that arrive before the snapshot. Skip the ones it already includes (seq at or below `lastSeq`) and apply the rest in the order they arrive; the socket sends them in seq order, so a jump past the next seq is a gap.",
+        "When a seq is missing, show `Resyncing…` at once, keep the last book on screen, and ask the same connection for a new snapshot with `fetchSnapshot()`; opening a new connection replays the scenario from the start.",
+        "Count resyncs in `.resync-count`: `0 resyncs`, `1 resync`, `N resyncs`. A late first snapshot is not a resync.",
+        "Switching the scenario clears the book at once and starts again with `Loading snapshot…`, `Last update —` and `0 resyncs`."
       ],
       "frameworkTests": [
         {
@@ -245,6 +259,13 @@
               "type": "waitForCount",
               "selector": ".bid",
               "count": 0,
+              "timeoutMs": 500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update —",
+              "match": "equals",
               "timeoutMs": 500
             },
             {
@@ -337,7 +358,13 @@
             },
             {
               "type": "wait",
-              "durationMs": 150
+              "durationMs": 100
+            },
+            {
+              "type": "expectText",
+              "selector": ".last-seq",
+              "text": "Last update #1011",
+              "match": "equals"
             },
             {
               "type": "expectText",
@@ -417,11 +444,11 @@
     {
       "id": "burst-and-cleanup",
       "title": "Survive a burst",
-      "interviewerPrompt": "The feed now sends 720 messages in about 1.2 seconds. Keep the book right, keep App near ten commits a second, and leave nothing running when the scenario changes or the page closes.",
+      "interviewerPrompt": "The feed now sends 720 messages in about 1.2 seconds. Keep the book right, keep the screen near ten book updates a second, and leave nothing running after a switch or when the page closes.",
       "constraints": [
-        "Let each message change the book as it arrives, and draw the screen on a 100 ms timer instead of on every message.",
-        "Use a timer, not `requestAnimationFrame`: animation frames stop in background tabs and in the offscreen frame the checks run in.",
-        "Keep the book's state in App so `.update-meter` counts every render; it reads `Within budget` up to 20 commits a second.",
+        "Let each message change your data as it arrives, and draw the book on a 100 ms timer instead of on every message.",
+        "Use a timer, not `requestAnimationFrame`: animation frames may not run in the offscreen frame the checks use, and they fire up to 120 times a second, which is not a cadence of ten.",
+        "Keep `ref={bookRef}` on `.book` with the rows inside it. `.update-meter` counts the book's DOM updates and reads `Within budget` up to 20 a second.",
         "Leave no timer or socket running after the page closes, and none from an old scenario after a switch."
       ],
       "frameworkTests": [
@@ -506,7 +533,7 @@
         },
         {
           "id": "pressure-book-switch-and-close",
-          "name": "Round 3 · Switching scenarios mid-stream starts clean, and closing the page stops every timer",
+          "name": "Round 3 · Switching mid-stream starts clean, and no socket or timer outlives its scenario",
           "steps": [
             {
               "type": "waitForCount",
@@ -553,6 +580,15 @@
               "durationMs": 700
             },
             {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "gap"
+            },
+            {
+              "type": "wait",
+              "durationMs": 300
+            },
+            {
               "type": "unmountPreview"
             },
             {
@@ -570,10 +606,10 @@
       "A snapshot is a sequence number as much as a book: every queued message is compared with it.",
       "A gap is not an error to show; it is a reason to load the book again while the old one stays readable.",
       "Fast data and fast rendering are different problems: change the data at socket speed and draw on a fixed cadence.",
-      "A timer keeps running in a background tab where animation frames stop, so the book is current when the tab comes back."
+      "A timer sets the cadence; an animation frame only says when the browser is about to paint. In a real app the two combine: draw on the first frame after 100 ms have passed."
     ],
     "frameworkNotes": {
-      "react": "One effect per scenario owns the connection, the queue and the draw timer, and its cleanup closes all three. The full book lives in maps inside that effect; only the best levels per side are React state."
+      "react": "One effect per scenario owns the connection, the queue and the draw timer, and its cleanup closes all of them. The full book lives in maps inside that effect; only the best levels per side are React state."
     }
   },
   "solutionAssets": {

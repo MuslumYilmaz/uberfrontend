@@ -152,6 +152,8 @@ const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-no-stale-drop.tsx', fails: ['book-late-snapshot'] },
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-debounce.tsx', fails: ['book-applies-deltas'] },
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-wipe-on-resync.tsx', fails: ['book-gap-resync'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-received-seq.tsx', fails: ['book-gap-resync'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-socket-leak.tsx', fails: ['book-switch-and-close'] },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();
