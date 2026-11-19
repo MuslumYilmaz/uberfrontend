@@ -24,6 +24,7 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['react', 'react-fetch-list-states'],
   ['react', 'react-vanilla-dropdown-port'],
   ['react', 'react-webhook-deliveries-four-tasks', 'premium'],
+  ['react', 'react-order-book-socket-feed', 'premium'],
   ['angular', 'angular-counter-starter'],
   ['angular', 'angular-todo-list-starter'],
   ['angular', 'angular-autocomplete-search-starter'],
@@ -144,6 +145,13 @@ const WRONG_SOLUTIONS: WrongCase[] = [
     fixture: 'react-webhook-deliveries-retry-live.tsx',
     fails: ['webhook-request-states'],
   },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-no-buffer.tsx', fails: ['book-late-snapshot'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-no-gap-check.tsx', fails: ['book-gap-resync'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-no-throttle.tsx', fails: ['book-burst-within-budget'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-timer-leak.tsx', fails: ['book-switch-and-close'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-no-stale-drop.tsx', fails: ['book-late-snapshot'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-debounce.tsx', fails: ['book-applies-deltas'] },
+  { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-wipe-on-resync.tsx', fails: ['book-gap-resync'] },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();

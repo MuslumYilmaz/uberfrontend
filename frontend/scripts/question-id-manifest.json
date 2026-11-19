@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-18T13:19:00.825Z",
+  "generatedAt": "2026-11-19T06:23:37.594Z",
   "entries": [
     {
       "tech": "angular",
@@ -2094,6 +2094,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-nested-comments",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-order-book-socket-feed",
       "file": "react/coding.json"
     },
     {

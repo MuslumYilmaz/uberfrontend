@@ -7646,6 +7646,28 @@
     "assetRef": "questions/react/coding.json#react-multi-step-signup"
   },
   {
+    "id": "react-order-book-socket-feed",
+    "family": "question",
+    "title": "Order Book Over a Socket: Snapshot, Sequence and Burst",
+    "route": "/react/coding/react-order-book-socket-feed",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build an order book from a snapshot and a socket of deltas, recover from a lost message, and keep the screen calm through a burst.",
+    "tags": [
+      "react",
+      "real-time",
+      "performance",
+      "async",
+      "timers",
+      "state"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 45,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-order-book-socket-feed"
+  },
+  {
     "id": "react-accordion-faq",
     "family": "question",
     "title": "React Accordion / FAQ Component",

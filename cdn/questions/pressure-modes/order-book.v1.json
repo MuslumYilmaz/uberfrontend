@@ -1,0 +1,582 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "order-book-pressure-v1",
+  "family": "order-book",
+  "title": "Order Book Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 45,
+  "supportedQuestions": {
+    "react": "react-order-book-socket-feed"
+  },
+  "rounds": [
+    {
+      "id": "snapshot-and-deltas",
+      "title": "Snapshot, then deltas",
+      "interviewerPrompt": "Load the snapshot and keep the book current as deltas arrive. Show the best ten levels per side, best first, with the spread and the seq of the newest message the book includes.",
+      "constraints": [
+        "Call `fetchSnapshot()` on the connection the starter opens, then apply every message from the socket. A message's `size` is the new total at that price; 0 removes the level.",
+        "Show at most ten `.bid` and ten `.ask` rows, each with `.price` (two decimals) and `.size`. Bids go highest first, asks lowest first.",
+        "Show the spread, best ask minus best bid with two decimals, as `Spread 1.00` in `.spread`, and `Last update #N` in `.last-seq`: the snapshot's `lastSeq` at first, then the newest applied seq.",
+        "Show `Loading snapshot…` in `.sync-status` until the first snapshot arrives, then `Live`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-book-snapshot-first-paint",
+          "name": "Round 1 · The snapshot paints the best ten levels per side, best first",
+          "steps": [
+            {
+              "type": "expectText",
+              "selector": ".sync-status",
+              "text": "Loading snapshot",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".bid",
+              "count": 0
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".ask",
+              "count": 10
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 0,
+              "text": "99.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .size",
+              "index": 0,
+              "text": "12",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "100.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .size",
+              "index": 0,
+              "text": "13",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 9,
+              "text": "94.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 9,
+              "text": "105.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".spread",
+              "text": "Spread 1.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".sync-status",
+              "text": "Live",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".last-seq",
+              "text": "Last update #1000",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-book-applies-deltas",
+          "name": "Round 1 · The book follows the deltas while they stream, not only at the end",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".spread",
+              "text": "Spread 1.50",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "#101",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update #1030",
+              "match": "equals",
+              "timeoutMs": 4000
+            },
+            {
+              "type": "expectCount",
+              "selector": ".bid",
+              "count": 10
+            },
+            {
+              "type": "expectCount",
+              "selector": ".ask",
+              "count": 10
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 0,
+              "text": "100.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .size",
+              "index": 0,
+              "text": "18",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .size",
+              "index": 1,
+              "text": "9",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .size",
+              "index": 2,
+              "text": "5",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 9,
+              "text": "94.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 9,
+              "text": "105.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".spread",
+              "text": "Spread 1.00",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sequence-and-resync",
+      "title": "Trust the sequence numbers",
+      "interviewerPrompt": "The snapshot can arrive after the first messages, and the socket can lose one. Use the seq numbers so the book is never wrong, and recover from a lost message without blanking the screen.",
+      "constraints": [
+        "Keep messages that arrive before the snapshot. Skip the ones it already includes (seq at or below `lastSeq`) and apply the rest in seq order.",
+        "When a seq is missing, show `Resyncing…`, keep the last book on screen, and ask the same connection for a new snapshot with `fetchSnapshot()`; opening a new connection replays the scenario from the start.",
+        "Count resyncs in `.resync-count`: `0 resyncs`, `1 resync`, `2 resyncs`. A late snapshot is not a resync.",
+        "Switching the scenario clears the book at once and starts again with `Loading snapshot…` and `0 resyncs`."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-book-late-snapshot",
+          "name": "Round 2 · Messages sent before a late snapshot are kept, with no resync",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "late-snapshot"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 0,
+              "timeoutMs": 500
+            },
+            {
+              "type": "expectText",
+              "selector": ".sync-status",
+              "text": "Loading snapshot",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update #1030",
+              "match": "equals",
+              "timeoutMs": 4000
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 9,
+              "text": "94.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 0,
+              "text": "100.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .size",
+              "index": 2,
+              "text": "5",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".resync-count",
+              "text": "0 resyncs",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".sync-status",
+              "text": "Live",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-book-gap-resync",
+          "name": "Round 2 · A lost message starts one resync, the book stays up meanwhile, and a switch resets the count",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "gap"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".sync-status",
+              "text": "Resyncing",
+              "match": "contains",
+              "timeoutMs": 3000
+            },
+            {
+              "type": "expectCount",
+              "selector": ".bid",
+              "count": 10
+            },
+            {
+              "type": "wait",
+              "durationMs": 150
+            },
+            {
+              "type": "expectText",
+              "selector": ".sync-status",
+              "text": "Resyncing",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".bid",
+              "count": 10
+            },
+            {
+              "type": "waitForText",
+              "selector": ".sync-status",
+              "text": "Live",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update #1030",
+              "match": "equals",
+              "timeoutMs": 3000
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 0,
+              "text": "100.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .size",
+              "index": 0,
+              "text": "18",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 9,
+              "text": "94.50",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".resync-count",
+              "text": "1 resync",
+              "match": "equals"
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "steady"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".resync-count",
+              "text": "0 resyncs",
+              "match": "equals",
+              "timeoutMs": 1000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "burst-and-cleanup",
+      "title": "Survive a burst",
+      "interviewerPrompt": "The feed now sends 720 messages in about 1.2 seconds. Keep the book right, keep App near ten commits a second, and leave nothing running when the scenario changes or the page closes.",
+      "constraints": [
+        "Let each message change the book as it arrives, and draw the screen on a 100 ms timer instead of on every message.",
+        "Use a timer, not `requestAnimationFrame`: animation frames stop in background tabs and in the offscreen frame the checks run in.",
+        "Keep the book's state in App so `.update-meter` counts every render; it reads `Within budget` up to 20 commits a second.",
+        "Leave no timer or socket running after the page closes, and none from an old scenario after a switch."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-book-burst-within-budget",
+          "name": "Round 3 · A burst of 720 messages ends right within the commit budget",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "burst"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update #1720",
+              "match": "equals",
+              "timeoutMs": 6000
+            },
+            {
+              "type": "expectText",
+              "selector": ".update-meter",
+              "text": "Within budget",
+              "match": "contains"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 0,
+              "text": "100.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 1,
+              "text": "99.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .size",
+              "index": 1,
+              "text": "6",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .size",
+              "index": 0,
+              "text": "19",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".bid .price",
+              "index": 9,
+              "text": "94.00",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 9,
+              "text": "106.50",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-book-switch-and-close",
+          "name": "Round 3 · Switching scenarios mid-stream starts clean, and closing the page stops every timer",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".bid",
+              "count": 10,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "wait",
+              "durationMs": 800
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "late-snapshot"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".last-seq",
+              "text": "Last update #1030",
+              "match": "equals",
+              "timeoutMs": 4000
+            },
+            {
+              "type": "expectText",
+              "selector": ".resync-count",
+              "text": "0 resyncs",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".ask .price",
+              "index": 0,
+              "text": "101.00",
+              "match": "equals"
+            },
+            {
+              "type": "setValue",
+              "selector": ".scenario",
+              "value": "burst"
+            },
+            {
+              "type": "wait",
+              "durationMs": 700
+            },
+            {
+              "type": "unmountPreview"
+            },
+            {
+              "type": "expectNoPreviewTimers"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You kept the book right at socket speed",
+    "summary": "You built an order book from a snapshot and a socket of deltas, made the sequence numbers decide what to keep, recovered from a lost message without blanking the screen, and kept a 720-message burst off the render path. The interview signal is separating the data, which must be exact, from the screen, which only has to be current.",
+    "takeaways": [
+      "A snapshot is a sequence number as much as a book: every queued message is compared with it.",
+      "A gap is not an error to show; it is a reason to load the book again while the old one stays readable.",
+      "Fast data and fast rendering are different problems: change the data at socket speed and draw on a fixed cadence.",
+      "A timer keeps running in a background tab where animation frames stop, so the book is current when the tab comes back."
+    ],
+    "frameworkNotes": {
+      "react": "One effect per scenario owns the connection, the queue and the draw timer, and its cleanup closes all three. The full book lives in maps inside that effect; only the best levels per side are React state."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-order-book-socket-feed-pressure-solution.v1.json"
+  }
+}

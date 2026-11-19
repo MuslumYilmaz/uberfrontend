@@ -104,6 +104,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/react/coding/react-multi-step-signup",
   "/react/coding/react-nested-checkboxes",
   "/react/coding/react-nested-comments",
+  "/react/coding/react-order-book-socket-feed",
   "/react/coding/react-pagination-table",
   "/react/coding/react-progress-bar-thresholds",
   "/react/coding/react-select-compound-api",

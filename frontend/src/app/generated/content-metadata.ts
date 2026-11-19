@@ -1533,8 +1533,8 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 521,
-  "premiumPracticeCount": 186,
+  "totalQuestions": 522,
+  "premiumPracticeCount": 187,
   "companyCounts": {
     "agoda": {
       "all": 12,

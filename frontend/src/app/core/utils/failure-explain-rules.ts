@@ -806,6 +806,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-order-book-socket-feed-sequence',
+    questionId: 'react-order-book-socket-feed',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['late snapshot', 'lost message', 'burst', 'closing the page']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-order-book-socket-feed-sequence',
+      title: 'Queue by seq, resync on a gap, and draw on a timer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The later checks fail for one reason each: messages that arrive before the snapshot are lost or applied twice, a missing seq goes unnoticed, every message renders, or a timer outlives the scenario.',
+      ),
+      actions: [
+        'Queue every message and drain only after a snapshot: drop seq at or below `lastSeq`, apply `lastSeq + 1`, and treat anything newer as a gap.',
+        'On a gap, show `Resyncing…`, count it, and run the first load again while the old book stays on screen.',
+        'Change the maps per message but set state from a 100 ms `setInterval`, and clear it with the connection in the effect cleanup.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-order-book-socket-feed-default',
+    questionId: 'react-order-book-socket-feed',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-order-book-socket-feed-default',
+      title: 'Build the book from the snapshot, then apply each delta',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The first checks read one projection of the book: the best ten levels per side, best first, the spread and the seq of the newest message the book includes.',
+      ),
+      actions: [
+        'Load the snapshot\'s levels into two maps keyed by price, and set a level\'s size from each message, deleting it at 0.',
+        'Sort bids high to low and asks low to high, slice ten, and render `.price` with two decimals and `.size`.',
+        'Show `Spread` as best ask minus best bid, `Last update #N` from the newest applied seq, and `Live` once the snapshot is in.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-listing-booking-widget-quote',
     questionId: 'react-listing-booking-widget',
     priority: 100,
