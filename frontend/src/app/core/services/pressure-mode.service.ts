@@ -49,6 +49,7 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectStorage',
   'expectName',
   'expectLiveRegion',
+  'scroll',
 ]);
 
 const FRAMEWORK_STEP_HUES = new Set(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey', 'transparent']);

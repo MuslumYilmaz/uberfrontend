@@ -1065,8 +1065,14 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const actual = element.getAttribute(attribute);
       if (step.expected === false && actual !== null) throw new Error(`${target} expected ${attribute} to be absent`);
       if ((step.expected === undefined || step.expected === true) && actual === null) throw new Error(`${target} expected ${attribute} to exist`);
-      if (step.expected !== undefined && step.expected !== true && step.expected !== false && actual !== String(step.expected)) {
-        throw new Error(`${target} expected ${attribute}="${String(step.expected)}" but found "${actual ?? ''}"`);
+      if (step.expected !== undefined && step.expected !== true && step.expected !== false) {
+        // match: 'contains' reads one part of a longer value, such as one declaration of an inline style.
+        const wanted = String(step.expected);
+        if (step.match === 'contains' ? !(actual ?? '').includes(wanted) : actual !== wanted) {
+          throw new Error(step.match === 'contains'
+            ? `${target} expected ${attribute} to contain "${wanted}" but found "${actual ?? ''}"`
+            : `${target} expected ${attribute}="${wanted}" but found "${actual ?? ''}"`);
+        }
       }
       return Promise.resolve();
     }
@@ -1089,6 +1095,19 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const SubmitEventCtor = window.SubmitEvent || Event;
       form.dispatchEvent(new SubmitEventCtor('submit', { bubbles: true, cancelable: true }));
       return delay(50);
+    }
+    if (type === 'scroll') {
+      // Moves the target's scroll position once the frame has laid it out (before that it has no height, so any
+      // position clamps to 0), then fires the scroll event itself: a browser only fires it on its next frame, which
+      // the offscreen check frame may not get. The frame is 1px wide, so a task's scroll box needs a min-width of
+      // its own; at zero width Chromium counts none of its content as overflow and nothing scrolls.
+      const scroller = element as HTMLElement;
+      return laidOutRects([scroller]).then(() => {
+        if (step.top !== undefined) scroller.scrollTop = Number(step.top);
+        if (step.left !== undefined) scroller.scrollLeft = Number(step.left);
+        scroller.dispatchEvent(new Event('scroll'));
+        return delay(50);
+      });
     }
     if (type === 'mouseDown') {
       element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));

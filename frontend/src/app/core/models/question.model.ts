@@ -126,7 +126,8 @@ export type FrameworkTestStepType =
   | 'mockStorage'
   | 'expectStorage'
   | 'expectName'
-  | 'expectLiveRegion';
+  | 'expectLiveRegion'
+  | 'scroll';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -180,6 +181,9 @@ export type FrameworkTestStep = {
   politeness?: string;
   /** expectLiveRegion: whether the live region announces itself whole. */
   atomic?: boolean;
+  /** scroll: the scroll position to set on the target, in CSS pixels from the top and from the left. */
+  top?: number;
+  left?: number;
 };
 
 export type FrameworkTest = {

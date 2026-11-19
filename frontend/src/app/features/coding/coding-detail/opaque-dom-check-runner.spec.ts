@@ -669,6 +669,63 @@ describe('OpaqueDomCheckRunner', () => {
     ]);
   });
 
+  it('scrolls a box to a position and fires its scroll event, which a page reads at once', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="box" style="min-width: 200px; height: 100px; overflow: auto"><div style="height: 2000px"></div></div>
+      <p class="seen">none</p>
+      <script>
+        const box = document.querySelector('.box');
+        box.addEventListener('scroll', () => { document.querySelector('.seen').textContent = 'at ' + box.scrollTop; });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'scroll',
+        name: 'Scroll',
+        steps: [
+          { type: 'scroll', selector: '.box', top: 360 },
+          { type: 'expectText', selector: '.seen', text: 'at 360', match: 'equals' },
+          { type: 'scroll', selector: '.box', top: 99999 },
+          { type: 'expectText', selector: '.seen', text: 'at 1900', match: 'equals' },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'scroll', selector: '.nowhere', top: 10 }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Scroll', passed: true },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('matches part of an attribute value when asked to, and the whole value otherwise', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="row" style="position: absolute; transform: translateY(36px);">Row</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const step = (expected: string, match?: string) => ({ type: 'expectAttribute', selector: '.row', attribute: 'style', expected, match });
+    const results = await runner.runFramework(page, [
+      { id: 'part', name: 'Part', steps: [step('translateY(36px)', 'contains')] },
+      { id: 'whole', name: 'Whole', steps: [step('translateY(36px)')] },
+      { id: 'absent', name: 'Absent', steps: [step('translateY(72px)', 'contains')] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Part', passed: true },
+      {
+        name: 'Whole',
+        passed: false,
+        error: '.row expected style="translateY(36px)" but found "position: absolute; transform: translateY(36px);"',
+        failureKind: 'assertion',
+      },
+      {
+        name: 'Absent',
+        passed: false,
+        error: '.row expected style to contain "translateY(72px)" but found "position: absolute; transform: translateY(36px);"',
+        failureKind: 'assertion',
+      },
+    ]);
+  });
+
   it('tells a reply indented under its comment from one left at the same level', async () => {
     const page = (indent: number) => `<!doctype html><html><body>
       <div class="node"><p>Root</p><div style="margin-left: ${indent}px"><p>Child</p></div></div>
