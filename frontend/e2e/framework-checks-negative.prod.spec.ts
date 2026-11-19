@@ -25,6 +25,7 @@ const FULLY_CHECKED: Array<[Framework, string, 'premium'?]> = [
   ['react', 'react-vanilla-dropdown-port'],
   ['react', 'react-webhook-deliveries-four-tasks', 'premium'],
   ['react', 'react-order-book-socket-feed', 'premium'],
+  ['react', 'react-virtualized-list-recycling'],
   ['angular', 'angular-counter-starter'],
   ['angular', 'angular-todo-list-starter'],
   ['angular', 'angular-autocomplete-search-starter'],
@@ -154,6 +155,14 @@ const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-wipe-on-resync.tsx', fails: ['book-gap-resync'] },
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-received-seq.tsx', fails: ['book-gap-resync'] },
   { framework: 'react', id: 'react-order-book-socket-feed', premium: true, fixture: 'react-order-book-socket-leak.tsx', fails: ['book-switch-and-close'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-id-keys.tsx', fails: ['vlist-recycles-rows'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-no-overscan-above.tsx', fails: ['vlist-scroll-middle'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-no-spacer.tsx', fails: ['vlist-scroll-middle'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-range-off-by-one.tsx', fails: ['vlist-first-window'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-rounded-first-row.tsx', fails: ['vlist-scroll-edges'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-jump-state-only.tsx', fails: ['vlist-jump'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-pool-offsets.tsx', fails: ['vlist-scroll-middle'] },
+  { framework: 'react', id: 'react-virtualized-list-recycling', fixture: 'react-virtualized-list-lenient-input.tsx', fails: ['vlist-jump-ignores-bad-input'] },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();

@@ -1503,6 +1503,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   },
   {
     "tech": "react",
+    "kind": "coding",
+    "title": "Virtualized List: 10,000 Rows, Twenty Nodes",
+    "route": "/react/coding/react-virtualized-list-recycling"
+  },
+  {
+    "tech": "react",
     "kind": "trivia",
     "title": "Can a React component return undefined?",
     "route": "/react/trivia/react-render-nothing-return-value"

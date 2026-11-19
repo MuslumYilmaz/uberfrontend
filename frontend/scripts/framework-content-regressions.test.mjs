@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 263, cssSources: 335, changedAssets: 0, changedCssSources: 0 },
+    { assets: 265, cssSources: 337, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6589,7 +6589,8 @@ const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText
   'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
   'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
-  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion']);
+  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion',
+  'scroll']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

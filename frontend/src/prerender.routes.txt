@@ -476,6 +476,7 @@
 /react/coding/react-transfer-list
 /react/coding/react-use-effect-once
 /react/coding/react-vanilla-dropdown-port
+/react/coding/react-virtualized-list-recycling
 /react/coding/react-webhook-deliveries-four-tasks
 /react/interview-questions
 /react/trivia/react-18-whats-new

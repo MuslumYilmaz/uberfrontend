@@ -8251,6 +8251,27 @@
     "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
   },
   {
+    "id": "react-virtualized-list-recycling",
+    "family": "question",
+    "title": "Virtualized List: 10,000 Rows, Twenty Nodes",
+    "route": "/react/coding/react-virtualized-list-recycling",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a list that renders all 10,000 payment rows into one that renders twenty: a window that follows the scroll position, a jump to any payment, and row nodes that are recycled instead of recreated.",
+    "tags": [
+      "react",
+      "performance",
+      "lists",
+      "dom",
+      "accessibility"
+    ],
+    "access": "free",
+    "estimatedMinutes": 30,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-virtualized-list-recycling"
+  },
+  {
     "id": "react-webhook-deliveries-four-tasks",
     "family": "question",
     "title": "Webhook Deliveries Console: Four Tasks in One Hour",

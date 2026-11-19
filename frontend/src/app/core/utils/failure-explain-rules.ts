@@ -848,6 +848,48 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-virtualized-list-recycling-scroll',
+    questionId: 'react-virtualized-list-recycling',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['Scrolling to payment', 'Partial rows', 'Go jumps', 'reuses the same']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-virtualized-list-recycling-scroll',
+      title: 'Derive the window from the scroll position, then key rows by slot',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The scrolling checks read one window: the first visible row from scrollTop, five rows of overscan above it, and a pool clamped to the list. The recycling check reads the keys: a key per payment makes a new node for every row that scrolls in.',
+      ),
+      actions: [
+        'Keep `scrollTop` in state from the viewport\'s `onScroll`, and compute `start = clamp(floor(scrollTop / ROW_HEIGHT) - OVERSCAN, 0, ITEM_COUNT - POOL_SIZE)`.',
+        'On Go, write the clamped position to `listRef.current.scrollTop` and set the same value in state; the scroll event comes a frame later.',
+        'Key each row by `index % POOL_SIZE` so the same twenty elements move instead of new ones being created.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-virtualized-list-recycling-default',
+    questionId: 'react-virtualized-list-recycling',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-virtualized-list-recycling-default',
+      title: 'Render twenty rows inside a full-height spacer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The first check counts the rows and reads the range line: twenty `.row` elements from payment 1, and `Showing 1–10 of 10,000`.',
+      ),
+      actions: [
+        'Map `POOL_SIZE` indexes from the window start instead of all of `PAYMENTS`.',
+        'Keep the spacer at `ITEM_COUNT * ROW_HEIGHT` and translate each row to `index * ROW_HEIGHT`.',
+        'Give each row `data-id`, `aria-posinset` and `aria-setsize`, and format the range with `Intl.NumberFormat(\'en-US\')`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-listing-booking-widget-quote',
     questionId: 'react-listing-booking-widget',
     priority: 100,

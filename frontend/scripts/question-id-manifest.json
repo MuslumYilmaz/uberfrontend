@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-19T06:23:37.594Z",
+  "generatedAt": "2026-11-19T09:08:51.258Z",
   "entries": [
     {
       "tech": "angular",
@@ -2178,6 +2178,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-vanilla-dropdown-port",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-virtualized-list-recycling",
       "file": "react/coding.json"
     },
     {
