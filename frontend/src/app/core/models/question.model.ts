@@ -128,6 +128,8 @@ export type FrameworkTestStepType =
   | 'expectReferenced'
   | 'expectIndented'
   | 'expectPlaced'
+  | 'fileDrag'
+  | 'chooseFiles'
   | 'mockStorage'
   | 'expectStorage'
   | 'expectName'
@@ -184,8 +186,17 @@ export type FrameworkTestStep = {
   property?: string;
   /** expectIndented: the element the target must start further right than. */
   than?: { selector?: string; by?: FrameworkTestLocator };
-  /** drag: the element the press is released over. */
+  /** drag: the element the press is released over. fileDrag: the element the pointer moves to (relatedTarget). */
   to?: { selector?: string; by?: FrameworkTestLocator };
+  /**
+   * fileDrag and chooseFiles: the files, made of zero bytes at the given sizes. fileDrag also drags `text` as
+   * text/plain, and like a browser shows the files only on drop; before it, only `types` lists them.
+   */
+  files?: { name?: string; type?: string; size?: number }[];
+  /** fileDrag: which drag event to send. */
+  event?: 'dragenter' | 'dragover' | 'dragleave' | 'drop';
+  /** fileDrag: true when the page must cancel the event, false when it must not. */
+  cancelled?: boolean;
   /** mockStorage: the check's localStorage entries, set before the preview boots. */
   entries?: Record<string, string>;
   /** expectLiveRegion: how the live region around the target announces, polite or assertive. */

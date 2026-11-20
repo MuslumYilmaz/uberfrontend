@@ -721,6 +721,71 @@ describe('OpaqueDomCheckRunner', () => {
     ]);
   });
 
+  it('drags files over a target and chooses files in a file input, with names, types and sizes', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="zone"><span class="hint">Drop here</span></div><div class="other">Other</div>
+      <input class="picker" type="file" multiple><input class="text" type="text"><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        const log = (text) => { seen.textContent += ' ' + text; };
+        const describe = (files) => Array.from(files).map((file) => file.name + ':' + file.type + ':' + file.size).join(',');
+        for (const type of ['dragenter', 'dragover', 'dragleave', 'drop']) {
+          document.querySelector('.zone').addEventListener(type, (event) => {
+            if (type === 'dragover' || type === 'drop') event.preventDefault();
+            log(type + '[' + describe(event.dataTransfer.files) + '|' + Array.from(event.dataTransfer.types).join('+') + ']'
+              + (event.relatedTarget ? '>' + event.relatedTarget.className : ''));
+          });
+        }
+        document.querySelector('.picker').addEventListener('change', (event) => log('change[' + describe(event.target.files) + ']'));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const files = [{ name: 'receipt.png', type: 'image/png', size: 300 }, { name: 'notes.pdf', type: 'application/pdf', size: 12 }];
+    const results = await runner.runFramework(page, [
+      {
+        id: 'zone',
+        name: 'Zone',
+        steps: [
+          { type: 'fileDrag', selector: '.zone', event: 'dragenter', files },
+          { type: 'fileDrag', selector: '.zone', event: 'dragleave', files, to: { selector: '.hint' } },
+          { type: 'fileDrag', selector: '.zone', event: 'dragover', files, cancelled: true },
+          { type: 'fileDrag', selector: '.zone', event: 'drop', files, cancelled: true },
+          { type: 'chooseFiles', selector: '.picker', files: [{ name: 'scan.jpg', type: 'image/jpeg', size: 5 }] },
+          { type: 'fileDrag', selector: '.zone', event: 'dragenter', text: 'Expense report' },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'dragenter[|Files] dragleave[|Files]>hint dragover[|Files] '
+              + 'drop[receipt.png:image/png:300,notes.pdf:application/pdf:12|Files] change[scan.jpg:image/jpeg:5] '
+              + 'dragenter[|text/plain]',
+            match: 'equals',
+          },
+        ],
+      },
+      { id: 'uncancelled', name: 'Uncancelled', steps: [{ type: 'fileDrag', selector: '.other', event: 'dragover', files, cancelled: true }] },
+      { id: 'left-alone', name: 'Left alone', steps: [{ type: 'fileDrag', selector: '.other', event: 'dragover', text: 'note', cancelled: false }] },
+      { id: 'cancelled', name: 'Cancelled', steps: [{ type: 'fileDrag', selector: '.zone', event: 'dragover', text: 'note', cancelled: false }] },
+      { id: 'not-file', name: 'Not file', steps: [{ type: 'chooseFiles', selector: '.text', files }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Zone', passed: true },
+      {
+        name: 'Uncancelled',
+        passed: false,
+        error: '.other did not cancel dragover, so a browser would not allow the drop',
+        failureKind: 'assertion',
+      },
+      { name: 'Left alone', passed: true },
+      {
+        name: 'Cancelled',
+        passed: false,
+        error: '.zone cancelled dragover, which only a drop target should do',
+        failureKind: 'assertion',
+      },
+      { name: 'Not file', passed: false, error: '.text is not a file input', failureKind: 'assertion' },
+    ]);
+  });
+
   it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
     const page = `<!doctype html><html><body><div class="list">
       <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>

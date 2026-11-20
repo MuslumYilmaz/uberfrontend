@@ -1197,6 +1197,47 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       moveFocus(focusable);
       return delay(50);
     }
+    if (type === 'fileDrag' || type === 'chooseFiles') {
+      // Files from the desktop, made of zero bytes at the sizes the step gives. No object spread in this code: it
+      // runs inside the check frame, where the production build's spread helper does not exist.
+      const transfer = new DataTransfer();
+      for (const file of step.files || []) {
+        const size = Math.max(0, Math.floor(Number(file.size ?? 0)) || 0);
+        transfer.items.add(new File([new Uint8Array(size)], String(file.name || 'file'), { type: String(file.type || '') }));
+      }
+      if (type === 'chooseFiles') {
+        const input = element as HTMLInputElement;
+        if (!(input instanceof HTMLInputElement) || input.type !== 'file') throw new Error(`${target} is not a file input`);
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        return delay(50);
+      }
+      // A drag of those files, and of `text` when the step gives it, over the target: dragenter, dragover, dragleave
+      // or drop. `to` is where the pointer moves next, a dragleave's relatedTarget. With `cancelled: true` the page
+      // must cancel the event, as a drop target must cancel dragover for a browser to allow the drop; with
+      // `cancelled: false` it must not.
+      const name = String(step.event || 'drop');
+      if (step.text !== undefined) transfer.setData('text/plain', String(step.text));
+      // Browsers keep the files out of reach until the drop: before it, `files` reads empty and only `types` says
+      // that files are coming.
+      if (name !== 'drop') Object.defineProperty(transfer, 'files', { get: () => new DataTransfer().files });
+      const destination = { selector: step.to?.selector, by: step.to?.by } as FrameworkTestStep;
+      const related = destination.selector || destination.by ? queryElement(destination) : null;
+      const event = new DragEvent(name, {
+        bubbles: true,
+        cancelable: name !== 'dragleave',
+        dataTransfer: transfer,
+        relatedTarget: related,
+      });
+      const allowed = element.dispatchEvent(event);
+      if (step.cancelled === true && allowed) {
+        throw new Error(`${target} did not cancel ${name}, so a browser would not allow the drop`);
+      }
+      // With `cancelled: false` the page must leave the event alone, as with text dragged to a text field.
+      if (step.cancelled === false && !allowed) throw new Error(`${target} cancelled ${name}, which only a drop target should do`);
+      return delay(50);
+    }
     if (type === 'drag') {
       // A press on the target released over another element, as when a text selection ends outside its field.
       // Pointer and mouse down go to the target and up to the other element, and the click goes to the nearest

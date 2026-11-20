@@ -60,6 +60,8 @@ describe('PressureModeService', () => {
       { type: 'drag', selector: '.field', to: { selector: '.backdrop', css: 'x' } },
       { type: 'expectPlaced', selector: '.tip', than: { selector: '.info' }, side: 'below', gap: 8, left: 8 },
       { type: 'expectPlaced', selector: '.tip', side: 'beside', gap: 'x' },
+      { type: 'fileDrag', selector: '.zone', event: 'dragover', cancelled: true, files: [{ name: 'a.png', type: 'image/png', size: 10, extra: 1 }, 'x'], to: { selector: '.hint' } },
+      { type: 'chooseFiles', selector: 'input', event: 'paste', cancelled: 'yes', files: [{ size: 'big' }] },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -86,6 +88,8 @@ describe('PressureModeService', () => {
       { type: 'drag', selector: '.field', to: { selector: '.backdrop' } },
       { type: 'expectPlaced', selector: '.tip', than: { selector: '.info' }, side: 'below', gap: 8, left: 8 },
       { type: 'expectPlaced', selector: '.tip' },
+      { type: 'fileDrag', selector: '.zone', to: { selector: '.hint' }, event: 'dragover', cancelled: true, files: [{ name: 'a.png', type: 'image/png', size: 10 }] },
+      { type: 'chooseFiles', selector: 'input', files: [{}] },
     ]);
   });
 

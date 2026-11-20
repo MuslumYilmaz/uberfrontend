@@ -50,6 +50,8 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'expectReferenced',
   'expectIndented',
   'expectPlaced',
+  'fileDrag',
+  'chooseFiles',
   'mockStorage',
   'expectStorage',
   'expectName',
@@ -216,6 +218,22 @@ export class PressureModeService {
     if (typeof source['atomic'] === 'boolean') step.atomic = source['atomic'];
     if (typeof source['shift'] === 'boolean') step.shift = source['shift'];
     if (source['side'] === 'below' || source['side'] === 'above') step.side = source['side'];
+    if (['dragenter', 'dragover', 'dragleave', 'drop'].includes(source['event'] as string)) {
+      step.event = source['event'] as FrameworkTestStep['event'];
+    }
+    if (typeof source['cancelled'] === 'boolean') step.cancelled = source['cancelled'];
+    if (Array.isArray(source['files'])) {
+      const files = source['files']
+        .filter((file): file is Record<string, unknown> => !!file && typeof file === 'object' && !Array.isArray(file))
+        .map((file) => {
+          const kept: { name?: string; type?: string; size?: number } = {};
+          if (typeof file['name'] === 'string') kept.name = file['name'];
+          if (typeof file['type'] === 'string') kept.type = file['type'];
+          if (typeof file['size'] === 'number' && Number.isFinite(file['size'])) kept.size = file['size'];
+          return kept;
+        });
+      if (files.length) step.files = files;
+    }
     if (typeof source['defaultAction'] === 'boolean') step.defaultAction = source['defaultAction'];
     if (typeof source['hue'] === 'string' && FRAMEWORK_STEP_HUES.has(source['hue'])) {
       step.hue = source['hue'] as FrameworkTestStep['hue'];
