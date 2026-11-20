@@ -890,6 +890,68 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-modal-tooltip-portal-dialog',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['modal dialog outside #root', 'return focus to Delete project', 'Tab and Shift+Tab', 'page is inert']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-dialog',
+      title: 'Portal the dialog, and tie its side effects to one effect',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The dialog checks look for `[role="dialog"]` outside `#root`, follow focus from Delete project into the field and back, press Tab through the dialog, and read `inert` and `modal-open` after every kind of close and after an unmount. A click inside the dialog bubbles to the backdrop that contains it.',
+      ),
+      actions: [
+        'Wrap `.modal-backdrop` in `createPortal(…, document.body)`, and give `.modal` `role="dialog"`, `aria-modal="true"` and `aria-labelledby` set to the title\'s `useId` id.',
+        'Close on a backdrop click only when `event.target === event.currentTarget` and both the press (`mousedown`) and the release (`mouseup`) landed on the backdrop.',
+        'In one `useLayoutEffect` keyed on `open`, set `inert` on `.page`, add `modal-open` to the body, listen for Escape on the document and focus `.confirm-input`; in its cleanup undo them, then focus `.delete` through a ref.',
+        'On Tab, query the enabled controls in the dialog and, at the last one (or the first with Shift), call `preventDefault()` and focus the other end; leave every other Tab to the browser.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-modal-tooltip-portal-tooltip',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 90,
+    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['Info tooltips', 'flips above']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-tooltip',
+      title: 'Render the tooltip into the body, then measure and place it before paint',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The tooltip checks look for `[role="tooltip"]` outside `#root` after a hover or a focus, follow the button\'s `aria-describedby` to it while it shows, and read `data-placement` once the tooltip has been measured against `.settings`, before and after the panel scrolls.',
+      ),
+      actions: [
+        'Track hover and focus separately and show the tooltip while either holds; Escape on the document dismisses it until the next hover or focus. Render it with `createPortal` only while it shows.',
+        'Give it `role="tooltip"` and an id from `useId`, and set the button\'s `aria-describedby` to that id only while it shows.',
+        'In `useLayoutEffect`, compare the button\'s bottom plus `TOOLTIP_GAP` plus the tooltip\'s measured height with the bottom of `.settings`; place it below or above and set `data-placement` to match.',
+        'While it shows, listen for `scroll` on `.settings`: place it again while the button is wholly inside the panel, and hide it once the button is partly scrolled out.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-modal-tooltip-portal-default',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-default',
+      title: 'Move both layers out of the clipping card',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The card\'s transform and `overflow: hidden` clip anything drawn inside it. Every check reads the dialog or a tooltip in `document.body`, so start by moving both there.',
+      ),
+      actions: [
+        'Render the dialog and each tooltip with `createPortal(…, document.body)` instead of inside `.card`.',
+        'Keep the class names, `.page` as App\'s root element, and the `.status` text after a confirmed delete.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-listing-booking-widget-quote',
     questionId: 'react-listing-booking-widget',
     priority: 100,
