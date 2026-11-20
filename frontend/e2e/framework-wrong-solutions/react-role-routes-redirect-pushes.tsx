@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import './App.css';
 
 export type Role = 'viewer' | 'support' | 'lead' | 'admin';
@@ -28,7 +28,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
 };
 
 export interface RouteDef {
-  /** A path pattern. A segment that starts with ":" matches any one segment, such as the 42 of /tickets/42. */
+  /** A path pattern. A segment that starts with ":" matches any non-empty segment, such as the 42 of /tickets/42. */
   path: string;
   title: string;
   /** The page's name: its key in PAGES and in the load counters. */
@@ -41,7 +41,7 @@ export interface RouteDef {
   section?: string;
 }
 
-/** Given: every page of the console. /sign-in is not in it: anyone may open it. */
+/** Given: every page of the console. /sign-in is not in it: signed-out users open it without a permission. */
 export const ROUTES: readonly RouteDef[] = [
   { path: '/', title: 'Dashboard', page: 'dashboard', permission: null, nav: true },
   { path: '/tickets', title: 'Tickets', page: 'tickets', permission: 'tickets:read', nav: true },
@@ -339,10 +339,13 @@ function matchRoute(path: string): { route: RouteDef; params: Record<string, str
   return null;
 }
 
-/** Replaces the current entry after the commit and before the browser paints, so Back skips the page it refused. */
+/**
+ * Replaces the current entry, so Back skips the page it refused. A layout effect does it after the commit and before
+ * the browser paints, so no empty frame shows on the way.
+ */
 function Redirect({ to, from, denied }: { to: string; from?: string; denied?: string }) {
   const showNotice = useContext(NoticeContext);
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     history.push(to, from === undefined ? null : { from });
     // After the replace, whose history listener has just cleared any older notice.
     if (denied !== undefined) showNotice(denied);
@@ -385,7 +388,9 @@ export default function App() {
     let active = true;
     const stop = onSessionChange((session) => setState({ status: 'ready', session }));
     fetchSession().then((session) => {
-      if (active) setState({ status: 'ready', session });
+      // A change the listener reported while the request was out is newer than this answer. The fake server cannot
+      // produce one, since nothing can change the session before the console has loaded it, but a real one can.
+      if (active) setState((current) => (current.status === 'loading' ? { status: 'ready', session } : current));
     });
     return () => {
       active = false;

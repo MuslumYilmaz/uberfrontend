@@ -991,7 +991,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Signed out, ask for /audit-log, sign in as Ana, then press Back: you should land on the Dashboard, not on Sign in.',
         'As Ana, save your own role as support on your edit page: once the session reports it, the page and the sidebar should change, and Back should reach Users.',
-        'Remove every listener you add when App unmounts.',
+        'Remove every listener and timer you add when App unmounts.',
       ],
       confidence: 0.85,
     }),
