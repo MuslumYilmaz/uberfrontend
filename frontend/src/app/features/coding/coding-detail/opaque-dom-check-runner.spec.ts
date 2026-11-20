@@ -649,6 +649,53 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results[1].passed).toBeFalse();
   });
 
+  it('presses a key without a target where focus is, and clicks a button or link for an Enter the page does not cancel', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="one">One</button><button class="two">Two</button><a class="link" href="#later">Link</a>
+      <button class="kept">Kept</button><div class="tile" tabindex="-1">Tile</div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('keydown', (event) => {
+          seen.textContent += ' key:' + event.key + '@' + event.target.className;
+          if (event.key === 'ArrowRight' && event.target.className === 'one') document.querySelector('.two').focus();
+          if (event.key === 'Enter' && event.target.className === 'kept') event.preventDefault();
+        });
+        document.addEventListener('click', (event) => {
+          event.preventDefault();
+          seen.textContent += ' click:' + event.target.className;
+        });
+        document.querySelector('.one').focus();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const press = (key: string) => ({ type: 'key', key, defaultAction: true });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'remote',
+        name: 'Remote',
+        steps: [
+          press('ArrowRight'),
+          { type: 'expectFocused', selector: '.two' },
+          press('Enter'),
+          { type: 'focus', selector: '.link' },
+          press('Enter'),
+          { type: 'focus', selector: '.kept' },
+          press('Enter'),
+          { type: 'focus', selector: '.tile' },
+          press('Enter'),
+          { type: 'key', selector: '.one', key: 'Enter' },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'key:ArrowRight@one key:Enter@two click:two key:Enter@link click:link key:Enter@kept key:Enter@tile key:Enter@one',
+            match: 'equals',
+          },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Remote', passed: true }]);
+  });
+
   it('drags from one element to another and clicks the nearest element that contains both, as a browser does', async () => {
     const page = `<!doctype html><html><body>
       <div class="outer"><input class="field"><span class="side">Side</span></div><p class="seen"></p>

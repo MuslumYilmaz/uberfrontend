@@ -164,7 +164,10 @@ export type FrameworkTestStep = {
   key?: string;
   /** key: hold Shift while pressing the key, as Shift+Tab does. */
   shift?: boolean;
-  /** key: when the page does not cancel a Tab, move focus to the next element in tab order, as a browser does. */
+  /**
+   * key: when the page does not cancel the key, do what a browser does: a Tab moves focus to the next element in tab
+   * order, and an Enter on a button or a link clicks it. A key step without a selector is pressed where focus is.
+   */
   defaultAction?: boolean;
   count?: number;
   attribute?: string;

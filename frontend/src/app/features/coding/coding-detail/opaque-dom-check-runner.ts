@@ -962,6 +962,31 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     }
     if (next) moveFocus(next); else leaveFocus();
   };
+  // What Enter activates when the page does not cancel it: a button or a link is clicked, as a browser does.
+  const activatedByEnter = (element: Element) =>
+    (element instanceof HTMLButtonElement && !element.disabled)
+    || (element instanceof HTMLAnchorElement && element.hasAttribute('href'))
+    || (element instanceof HTMLInputElement && ['button', 'submit', 'reset'].indexOf(element.type) >= 0 && !element.disabled);
+  const pressKey = (element: Element, step: FrameworkTestStep, focusFirst: boolean): Promise<void> => {
+    const key = String(step.key || step.value || 'Enter');
+    const shiftKey = step.shift === true;
+    if (focusFirst) (element as HTMLElement).focus?.();
+    const allowed = element.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
+    const typed = allowed && key.length === 1 && isTextField(element);
+    // With defaultAction, a Tab the page does not cancel moves focus as a browser's would, and an Enter on a button
+    // or a link clicks it; without it, nothing follows the keydown.
+    const tabbed = allowed && key === 'Tab' && step.defaultAction === true;
+    const clicked = allowed && key === 'Enter' && step.defaultAction === true && activatedByEnter(element);
+    // A printable key the page does not cancel types its character into a text field, as a real keypress does,
+    // once the page has handled the keydown and re-rendered.
+    return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key))
+      : tabbed ? delay(0).then(() => followTab(shiftKey))
+        : clicked ? delay(0).then(() => (element as HTMLElement).click()) : Promise.resolve())
+      .then(() => {
+        element.dispatchEvent(new KeyboardEvent('keyup', { key, shiftKey, bubbles: true, cancelable: true }));
+        return delay(50);
+      });
+  };
   const describeElement = (element: Element | null) => {
     if (!element) return 'none';
     const id = element.id ? `#${element.id}` : '';
@@ -1084,6 +1109,8 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }
       return Promise.resolve();
     }
+    // A key with no target is pressed where focus already is, as on a keyboard or a TV remote; nothing is focused first.
+    if (type === 'key' && !target) return pressKey(document.activeElement || document.body, step, false);
     if (!target) throw new Error(`${type || 'step'} is missing a selector`);
     if (type === 'waitForText') return waitForText(step);
     if (type === 'waitForCount') return waitForCount(step);
@@ -1272,23 +1299,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       element.dispatchEvent(new MouseEvent(entering ? 'mouseenter' : 'mouseleave'));
       return delay(50);
     }
-    if (type === 'key') {
-      const key = String(step.key || step.value || 'Enter');
-      const shiftKey = step.shift === true;
-      (element as HTMLElement).focus?.();
-      const allowed = element.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
-      const typed = allowed && key.length === 1 && isTextField(element);
-      // With defaultAction, a Tab the page does not cancel moves focus as a browser's would; without it, focus stays.
-      const tabbed = allowed && key === 'Tab' && step.defaultAction === true;
-      // A printable key the page does not cancel types its character into a text field, as a real keypress does,
-      // once the page has handled the keydown and re-rendered.
-      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key))
-        : tabbed ? delay(0).then(() => followTab(shiftKey)) : Promise.resolve())
-        .then(() => {
-          element.dispatchEvent(new KeyboardEvent('keyup', { key, shiftKey, bubbles: true, cancelable: true }));
-          return delay(50);
-        });
-    }
+    if (type === 'key') return pressKey(element, step, true);
     if (type === 'expectFocused') {
       if (document.activeElement !== element && lastRequestedFocus !== element) {
         throw new Error(`${target} expected focus but active element was ${describeElement(document.activeElement)}`);
