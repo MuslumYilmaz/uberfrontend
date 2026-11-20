@@ -630,10 +630,13 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   // Backgrounded and non-rendered sandbox frames may reject native focus even
   // though the application made the correct focus request. Track focus/blur
   // calls inside the opaque document so structured checks remain deterministic.
+  // A request a browser always ignores, on a disabled control or inside an
+  // inert element, does not count.
   const nativeFocus = HTMLElement.prototype.focus;
   const nativeBlur = HTMLElement.prototype.blur;
   HTMLElement.prototype.focus = function focus(options?: FocusOptions): void {
-    lastRequestedFocus = this;
+    const ignored = (this as HTMLElement & { disabled?: boolean }).disabled === true || !!this.closest('[inert]');
+    if (!ignored) lastRequestedFocus = this;
     if (options === undefined) nativeFocus.call(this);
     else nativeFocus.call(this, options);
   };
@@ -897,6 +900,68 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     try { field.setSelectionRange(start + 1, start + 1); } catch { }
     field.dispatchEvent(new InputEvent('input', { bubbles: true, data: character, inputType: 'insertText' }));
   };
+  // A frame without system focus, such as the hidden check frame, moves focus without firing focus events. When the
+  // browser fires none, these send the ones a focused window would, so React's onFocus and onBlur run.
+  const moveFocus = (target: HTMLElement) => {
+    const previous = document.activeElement;
+    if (previous === target) return;
+    let heard = false;
+    const hear = () => { heard = true; };
+    target.addEventListener('focus', hear);
+    target.focus();
+    target.removeEventListener('focus', hear);
+    if (heard) return;
+    if (previous instanceof HTMLElement && previous !== document.body) {
+      previous.dispatchEvent(new FocusEvent('blur', { relatedTarget: target }));
+      previous.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: target }));
+    }
+    target.dispatchEvent(new FocusEvent('focus', { relatedTarget: previous }));
+    target.dispatchEvent(new FocusEvent('focusin', { bubbles: true, relatedTarget: previous }));
+  };
+  const leaveFocus = () => {
+    const previous = document.activeElement;
+    if (!(previous instanceof HTMLElement) || previous === document.body) return;
+    let heard = false;
+    const hear = () => { heard = true; };
+    previous.addEventListener('blur', hear);
+    previous.blur();
+    previous.removeEventListener('blur', hear);
+    if (heard) return;
+    previous.dispatchEvent(new FocusEvent('blur'));
+    previous.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+  };
+  // The elements Tab visits, in a browser's order: positive tabindex values first, then the rest in document order.
+  // Disabled, hidden and inert elements are skipped.
+  const tabOrder = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>(
+    'a[href], area[href], button, input, select, textarea, iframe, summary, [tabindex], [contenteditable]',
+  ))
+    .filter((node) => node.tabIndex >= 0
+      && (node as HTMLElement & { disabled?: boolean }).disabled !== true
+      && !(node instanceof HTMLInputElement && node.type === 'hidden')
+      && !node.closest('[inert]')
+      && node.getClientRects().length > 0
+      && getComputedStyle(node).visibility !== 'hidden')
+    .map((node, position) => ({ node, position }))
+    .sort((a, b) => (a.node.tabIndex || Infinity) - (b.node.tabIndex || Infinity) || a.position - b.position)
+    .map(({ node }) => node);
+  // What a browser does with a Tab the page did not cancel: focus moves to the next element in tab order (the
+  // previous one with Shift), or leaves the page past either end.
+  const followTab = (backwards: boolean) => {
+    const order = tabOrder();
+    const from = document.activeElement;
+    const index = from instanceof HTMLElement ? order.indexOf(from) : -1;
+    let next: HTMLElement | undefined;
+    if (index >= 0) {
+      next = order[index + (backwards ? -1 : 1)];
+    } else if (from && from !== document.body) {
+      const side = backwards ? Node.DOCUMENT_POSITION_PRECEDING : Node.DOCUMENT_POSITION_FOLLOWING;
+      const candidates = order.filter((node) => from.compareDocumentPosition(node) & side);
+      next = backwards ? candidates[candidates.length - 1] : candidates[0];
+    } else {
+      next = backwards ? order[order.length - 1] : order[0];
+    }
+    if (next) moveFocus(next); else leaveFocus();
+  };
   const describeElement = (element: Element | null) => {
     if (!element) return 'none';
     const id = element.id ? `#${element.id}` : '';
@@ -1120,16 +1185,66 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       element.dispatchEvent(new EventCtor('pointerup', { bubbles: true, cancelable: true, button: 0 }));
       return delay(50);
     }
+    if (type === 'focus') {
+      // Moves focus to the target, as a keyboard user's Tab does, with the focus events a focused window fires. An
+      // element that cannot take focus fails the step.
+      const focusable = element as HTMLElement;
+      const unfocusable = typeof focusable.focus !== 'function'
+        || (!focusable.hasAttribute('tabindex') && focusable.tabIndex < 0)
+        || (focusable as HTMLElement & { disabled?: boolean }).disabled === true
+        || !!focusable.closest('[inert]');
+      if (unfocusable) throw new Error(`${target} cannot take focus`);
+      moveFocus(focusable);
+      return delay(50);
+    }
+    if (type === 'drag') {
+      // A press on the target released over another element, as when a text selection ends outside its field.
+      // Pointer and mouse down go to the target and up to the other element, and the click goes to the nearest
+      // element that contains both, where browsers send it.
+      const destination = { selector: step.to?.selector, by: step.to?.by } as FrameworkTestStep;
+      const other = queryElement(destination);
+      if (!other) throw new Error(`${describeTarget(destination)} was not found`);
+      const PointerCtor = window.PointerEvent || MouseEvent;
+      const init: PointerEventInit = { bubbles: true, cancelable: true, button: 0, pointerType: 'mouse', isPrimary: true };
+      element.dispatchEvent(new PointerCtor('pointerdown', init));
+      element.dispatchEvent(new MouseEvent('mousedown', init));
+      other.dispatchEvent(new PointerCtor('pointerup', init));
+      other.dispatchEvent(new MouseEvent('mouseup', init));
+      let common: Element | null = element;
+      while (common && !common.contains(other)) common = common.parentElement;
+      (common ?? document.body).dispatchEvent(new MouseEvent('click', init));
+      return delay(50);
+    }
+    if (type === 'hover' || type === 'unhover') {
+      // A pointer moving onto the target from outside the page (hover) or off it (unhover). The over and out events
+      // bubble, and React builds onMouseEnter and onMouseLeave from them; the enter and leave events go to the target
+      // alone, for listeners added with addEventListener.
+      const entering = type === 'hover';
+      const PointerCtor = window.PointerEvent || MouseEvent;
+      // No object spread here: this code runs inside the check frame, and the production build turns spread into a
+      // helper that only exists outside it.
+      const bubbling: PointerEventInit = { pointerType: 'mouse', isPrimary: true, bubbles: true, cancelable: true };
+      const direct: PointerEventInit = { pointerType: 'mouse', isPrimary: true };
+      element.dispatchEvent(new PointerCtor(entering ? 'pointerover' : 'pointerout', bubbling));
+      element.dispatchEvent(new PointerCtor(entering ? 'pointerenter' : 'pointerleave', direct));
+      element.dispatchEvent(new MouseEvent(entering ? 'mouseover' : 'mouseout', { bubbles: true, cancelable: true }));
+      element.dispatchEvent(new MouseEvent(entering ? 'mouseenter' : 'mouseleave'));
+      return delay(50);
+    }
     if (type === 'key') {
       const key = String(step.key || step.value || 'Enter');
+      const shiftKey = step.shift === true;
       (element as HTMLElement).focus?.();
-      const typed = element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
-        && key.length === 1 && isTextField(element);
+      const allowed = element.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
+      const typed = allowed && key.length === 1 && isTextField(element);
+      // With defaultAction, a Tab the page does not cancel moves focus as a browser's would; without it, focus stays.
+      const tabbed = allowed && key === 'Tab' && step.defaultAction === true;
       // A printable key the page does not cancel types its character into a text field, as a real keypress does,
       // once the page has handled the keydown and re-rendered.
-      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key)) : Promise.resolve())
+      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key))
+        : tabbed ? delay(0).then(() => followTab(shiftKey)) : Promise.resolve())
         .then(() => {
-          element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
+          element.dispatchEvent(new KeyboardEvent('keyup', { key, shiftKey, bubbles: true, cancelable: true }));
           return delay(50);
         });
     }

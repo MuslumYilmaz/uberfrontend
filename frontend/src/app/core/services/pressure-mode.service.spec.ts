@@ -54,6 +54,10 @@ describe('PressureModeService', () => {
       { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root', css: 'x' } } },
       { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk', match: 'contains' },
       { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite', atomic: 'yes' },
+      { type: 'scroll', selector: '.list', top: 360, left: 'x' },
+      { type: 'key', selector: '.first', key: 'Tab', shift: true },
+      { type: 'key', selector: '.last', key: 'Tab', shift: 'yes', defaultAction: true },
+      { type: 'drag', selector: '.field', to: { selector: '.backdrop', css: 'x' } },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -74,6 +78,10 @@ describe('PressureModeService', () => {
       { type: 'click', by: { role: 'button', name: 'Reply', near: { text: 'Root' } } },
       { type: 'expectName', by: { role: 'checkbox' }, text: 'Milk', match: 'contains' },
       { type: 'expectLiveRegion', by: { text: '1 item left' }, politeness: 'polite' },
+      { type: 'scroll', selector: '.list', top: 360 },
+      { type: 'key', selector: '.first', key: 'Tab', shift: true },
+      { type: 'key', selector: '.last', key: 'Tab', defaultAction: true },
+      { type: 'drag', selector: '.field', to: { selector: '.backdrop' } },
     ]);
   });
 

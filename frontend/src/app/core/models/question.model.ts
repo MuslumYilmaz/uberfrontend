@@ -101,6 +101,10 @@ export type FrameworkTestStepType =
   | 'submit'
   | 'mouseDown'
   | 'pointerDown'
+  | 'hover'
+  | 'unhover'
+  | 'focus'
+  | 'drag'
   | 'wait'
   | 'waitForText'
   | 'setValue'
@@ -155,6 +159,10 @@ export type FrameworkTestStep = {
   durationMs?: number;
   value?: string;
   key?: string;
+  /** key: hold Shift while pressing the key, as Shift+Tab does. */
+  shift?: boolean;
+  /** key: when the page does not cancel a Tab, move focus to the next element in tab order, as a browser does. */
+  defaultAction?: boolean;
   count?: number;
   attribute?: string;
   className?: string;
@@ -175,6 +183,8 @@ export type FrameworkTestStep = {
   property?: string;
   /** expectIndented: the element the target must start further right than. */
   than?: { selector?: string; by?: FrameworkTestLocator };
+  /** drag: the element the press is released over. */
+  to?: { selector?: string; by?: FrameworkTestLocator };
   /** mockStorage: the check's localStorage entries, set before the preview boots. */
   entries?: Record<string, string>;
   /** expectLiveRegion: how the live region around the target announces, polite or assertive. */

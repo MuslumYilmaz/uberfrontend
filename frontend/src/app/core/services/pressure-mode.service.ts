@@ -23,6 +23,10 @@ const FRAMEWORK_STEP_TYPES = new Set<FrameworkTestStepType>([
   'submit',
   'mouseDown',
   'pointerDown',
+  'hover',
+  'unhover',
+  'focus',
+  'drag',
   'wait',
   'waitForText',
   'setValue',
@@ -185,7 +189,7 @@ export class PressureModeService {
         (step as Record<string, unknown>)[key] = source[key];
       }
     }
-    for (const key of ['index', 'timeoutMs', 'durationMs', 'count', 'status'] as const) {
+    for (const key of ['index', 'timeoutMs', 'durationMs', 'count', 'status', 'top', 'left'] as const) {
       if (typeof source[key] === 'number' && Number.isFinite(source[key])) {
         (step as Record<string, unknown>)[key] = source[key];
       }
@@ -196,6 +200,8 @@ export class PressureModeService {
     if (among) step.among = among;
     const than = this.normalizeTarget(source['than']);
     if (than) step.than = than;
+    const to = this.normalizeTarget(source['to']);
+    if (to) step.to = to;
     const entries = source['entries'];
     if (entries && typeof entries === 'object' && !Array.isArray(entries)) {
       const kept = Object.entries(entries).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
@@ -207,6 +213,8 @@ export class PressureModeService {
     }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
     if (typeof source['atomic'] === 'boolean') step.atomic = source['atomic'];
+    if (typeof source['shift'] === 'boolean') step.shift = source['shift'];
+    if (typeof source['defaultAction'] === 'boolean') step.defaultAction = source['defaultAction'];
     if (typeof source['hue'] === 'string' && FRAMEWORK_STEP_HUES.has(source['hue'])) {
       step.hue = source['hue'] as FrameworkTestStep['hue'];
     }

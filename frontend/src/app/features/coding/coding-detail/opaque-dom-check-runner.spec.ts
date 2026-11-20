@@ -577,6 +577,120 @@ describe('OpaqueDomCheckRunner', () => {
     }
   });
 
+  it('holds Shift for a key only when a step asks, so a page can tell Shift+Tab from Tab', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="first">First</button><button class="last">Last</button><p class="seen">none</p>
+      <script>
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Tab') return;
+          event.preventDefault();
+          document.querySelector(event.shiftKey ? '.last' : '.first').focus();
+          document.querySelector('.seen').textContent = (event.shiftKey ? 'Shift+' : '') + event.key;
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'keys',
+        name: 'Keys',
+        steps: [
+          { type: 'key', selector: '.first', key: 'Tab', shift: true },
+          { type: 'expectText', selector: '.seen', text: 'Shift+Tab', match: 'equals' },
+          { type: 'expectFocused', selector: '.last' },
+          { type: 'key', selector: '.last', key: 'Tab' },
+          { type: 'expectText', selector: '.seen', text: 'Tab', match: 'equals' },
+          { type: 'expectFocused', selector: '.first' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Keys', passed: true }]);
+  });
+
+  it('moves focus along the tab order for a Tab the page does not cancel, only when the step asks for it', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="a">A</button><button class="off" disabled>Off</button><div class="b" tabindex="0">B</div>
+      <div inert><button class="behind">Behind</button></div><button class="gone" style="display: none">Gone</button>
+      <button class="c">C</button><button class="wrap">Wrap</button><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('focusout', (event) => { seen.textContent += ' out:' + event.target.className; });
+        document.querySelector('.wrap').addEventListener('keydown', (event) => {
+          if (event.key !== 'Tab') return;
+          event.preventDefault();
+          document.querySelector('.a').focus();
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const tab = (selector: string, extra: Record<string, unknown> = {}) => ({ type: 'key', selector, key: 'Tab', defaultAction: true, ...extra });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'order',
+        name: 'Order',
+        steps: [
+          tab('.a'),
+          { type: 'expectFocused', selector: '.b' },
+          tab('.b'),
+          { type: 'expectFocused', selector: '.c' },
+          tab('.c', { shift: true }),
+          { type: 'expectFocused', selector: '.b' },
+          tab('.wrap'),
+          { type: 'expectFocused', selector: '.a' },
+          { type: 'key', selector: '.a', key: 'Tab' },
+          { type: 'expectFocused', selector: '.a' },
+          tab('.a', { shift: true }),
+          { type: 'expectText', selector: '.seen', text: 'out:a', match: 'contains' },
+        ],
+      },
+      { id: 'left', name: 'Left', steps: [tab('.a', { shift: true }), { type: 'expectFocused', selector: '.a' }] },
+    ] as any);
+
+    expect(results[0]).toEqual({ name: 'Order', passed: true });
+    expect(results[1].passed).toBeFalse();
+  });
+
+  it('drags from one element to another and clicks the nearest element that contains both, as a browser does', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="outer"><input class="field"><span class="side">Side</span></div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+          document.addEventListener(type, (event) => { seen.textContent += ' ' + type + ':' + event.target.className; });
+        }
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'out',
+        name: 'Out',
+        steps: [
+          { type: 'drag', selector: '.field', to: { selector: '.side' } },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'pointerdown:field mousedown:field pointerup:side mouseup:side click:outer',
+            match: 'equals',
+          },
+        ],
+      },
+      {
+        id: 'same',
+        name: 'Same',
+        steps: [
+          { type: 'drag', selector: '.outer', to: { selector: '.outer' } },
+          { type: 'expectText', selector: '.seen', text: 'mouseup:outer click:outer', match: 'contains' },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'drag', selector: '.field', to: { selector: '.nowhere' } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Out', passed: true },
+      { name: 'Same', passed: true },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
   it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
     const page = `<!doctype html><html><body><div class="list">
       <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>
@@ -927,6 +1041,128 @@ describe('OpaqueDomCheckRunner', () => {
     expect(starterResults[0].error).toContain('did not reach text "1"');
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+  });
+
+  it('hovers and unhovers an element so React mouse enter and leave handlers and native listeners both run', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': `import React, { useEffect, useRef, useState } from 'react';
+export default function App() {
+  const [react, setReact] = useState('off');
+  const [native, setNative] = useState('off');
+  const nativeRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const node = nativeRef.current!;
+    const on = () => setNative('on');
+    const off = () => setNative('off');
+    node.addEventListener('mouseenter', on);
+    node.addEventListener('mouseleave', off);
+    return () => { node.removeEventListener('mouseenter', on); node.removeEventListener('mouseleave', off); };
+  }, []);
+  return (
+    <div>
+      <button className="react" onMouseEnter={() => setReact('on')} onMouseLeave={() => setReact('off')}>React</button>
+      <span className="native" ref={nativeRef}>Native</span>
+      <p className="seen">react {react}, native {native}</p>
+    </div>
+  );
+}
+`,
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'hover',
+        name: 'Hover',
+        steps: [
+          { type: 'waitForCount', selector: '.react', count: 1, timeoutMs: 3000 },
+          { type: 'hover', selector: '.react' },
+          { type: 'expectText', selector: '.seen', text: 'react on, native off', match: 'equals' },
+          { type: 'hover', selector: '.native' },
+          { type: 'expectText', selector: '.seen', text: 'react on, native on', match: 'equals' },
+          { type: 'unhover', selector: '.react' },
+          { type: 'unhover', selector: '.native' },
+          { type: 'expectText', selector: '.seen', text: 'react off, native off', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Hover', passed: true }]);
+  });
+
+  it('focuses an element so React focus and blur handlers run, and refuses an element that cannot take focus', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': `import React, { useState } from 'react';
+export default function App() {
+  const [log, setLog] = useState<string[]>([]);
+  const note = (entry: string) => setLog((entries) => [...entries, entry]);
+  return (
+    <div>
+      <button className="first" onFocus={() => note('focus first')} onBlur={() => note('blur first')}>First</button>
+      <button className="second" onFocus={() => note('focus second')}>Second</button>
+      <button className="off" disabled>Off</button>
+      <div className="plain">Plain</div>
+      <div inert=""><button className="behind">Behind</button></div>
+      <p className="seen">{log.join(', ')}</p>
+    </div>
+  );
+}
+`,
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'moves',
+        name: 'Moves',
+        steps: [
+          { type: 'waitForCount', selector: '.first', count: 1, timeoutMs: 3000 },
+          { type: 'focus', selector: '.first' },
+          { type: 'focus', selector: '.first' },
+          { type: 'expectText', selector: '.seen', text: 'focus first', match: 'equals' },
+          { type: 'expectFocused', selector: '.first' },
+          { type: 'focus', selector: '.second' },
+          { type: 'expectText', selector: '.seen', text: 'focus first, blur first, focus second', match: 'equals' },
+          { type: 'expectFocused', selector: '.second' },
+        ],
+      },
+      { id: 'disabled', name: 'Disabled', steps: [{ type: 'focus', selector: '.off' }] },
+      { id: 'plain', name: 'Plain', steps: [{ type: 'focus', selector: '.plain' }] },
+      { id: 'inert', name: 'Inert', steps: [{ type: 'focus', selector: '.behind' }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Moves', passed: true },
+      { name: 'Disabled', passed: false, error: '.off cannot take focus', failureKind: 'assertion' },
+      { name: 'Plain', passed: false, error: '.plain cannot take focus', failureKind: 'assertion' },
+      { name: 'Inert', passed: false, error: '.behind cannot take focus', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('does not count a focus request a browser ignores, on a disabled control or inside an inert element', async () => {
+    const page = `<!doctype html><html><body>
+      <main class="page" inert><button class="behind">Behind</button></main>
+      <button class="off" disabled>Off</button>
+      <button class="free">Free</button>
+      <script>
+        document.querySelector('.free').addEventListener('click', () => {
+          document.querySelector('.behind').focus();
+          document.querySelector('.off').focus();
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'ignored',
+        name: 'Ignored',
+        steps: [{ type: 'click', selector: '.free' }, { type: 'expectFocused', selector: '.behind' }],
+      },
+      {
+        id: 'disabled',
+        name: 'Disabled',
+        steps: [{ type: 'click', selector: '.free' }, { type: 'expectFocused', selector: '.off' }],
+      },
+    ] as any);
+
+    expect(results.map((result) => result.passed)).toEqual([false, false]);
+    expect(results[0].error).toContain('.behind expected focus');
+    expect(results[1].error).toContain('.off expected focus');
   });
 
   it('runs the real Vue builder with event modifiers, template refs and shadowing locals', async () => {
