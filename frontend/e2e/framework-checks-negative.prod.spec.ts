@@ -198,6 +198,7 @@ const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-key-by-name.tsx', fails: ['upload-choose-files', 'upload-cancel-retry', 'upload-preview-urls'] },
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-focus-previous-row-first.tsx', fails: ['upload-choose-files'] },
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-focus-first-match.tsx', fails: ['upload-choose-files', 'upload-cancel-retry'] },
+  { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-focus-lost-when-upload-ends.tsx', fails: ['upload-progress', 'upload-cancel-retry'] },
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-one-at-a-time.tsx', fails: ['upload-progress', 'upload-cancel-retry'] },
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-fill-without-width.tsx', fails: ['upload-progress', 'upload-cancel-retry'] },
   { framework: 'react', id: 'react-file-upload-dropzone-progress', premium: true, fixture: 'react-file-upload-cancel-without-abort.tsx', fails: ['upload-cancel-retry'] },

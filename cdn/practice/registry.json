@@ -8151,7 +8151,7 @@
     "route": "/react/coding/react-file-upload-dropzone-progress",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Turn a receipts list that takes any file into a working uploader: a drop zone that stays lit over its own text, type and size checks, per-file progress with cancel and retry, and image previews that release their memory.",
+    "summary": "Turn a receipts list that takes any file into a working uploader: a drop zone that stays lit over its own text, type and size checks, per-file progress with cancel and retry, and image previews that release their object URLs.",
     "tags": [
       "react",
       "upload",

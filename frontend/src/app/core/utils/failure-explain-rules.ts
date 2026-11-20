@@ -923,11 +923,12 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Follow one upload from drop to unmount',
       why: buildProgressAwareWhy(
         snapshot,
-        'The upload checks wait for each `.upload-status` text, read the progress bar\'s `aria-valuenow`, click Cancel, Retry and Remove while uploads run and check where focus goes, look for timers still running, and read the preview URL counts on the body.',
+        'The upload checks wait for each `.upload-status` text, read the progress bar\'s `aria-valuenow`, click Cancel, Retry and Remove while uploads run and check where focus goes, also when an upload ends while its Cancel has focus, look for timers still running, and read the preview URL counts on the body.',
       ),
       actions: [
         'Drop two files at once and watch both rows: they should move together, 25% at a time.',
         'Cancel or remove a running upload, then check that nothing keeps running for it.',
+        'Tab to a running upload\'s Cancel and let it finish or fail: focus should land on that row\'s Remove or Retry, not on the page.',
         'Watch `data-preview-urls-created` on the body while a row uploads: it should not grow when the row renders again.',
       ],
       confidence: 0.85,

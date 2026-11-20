@@ -179,15 +179,26 @@ export default function App() {
     setUploads((current) => current.map((upload) => (upload.key === key ? { ...upload, ...change } : upload)));
   };
 
+  // An upload that ends on its own takes its Cancel button away; if that button had focus, hand it on.
+  const keepFocusAfterEnd = (key: number, control: 'retry' | 'remove') => {
+    const cancelButton = listRef.current?.querySelector(`[data-key="${key}"] .cancel-upload`);
+    if (cancelButton && cancelButton === document.activeElement) pendingFocus.current = { key, control };
+  };
+
   const startUpload = (key: number, file: File) => {
     const controller = new AbortController();
     controllers.current.set(key, controller);
     update(key, { status: 'uploading', percent: 0 });
     uploadReceipt(file, { signal: controller.signal, onProgress: (percent) => update(key, { percent }) })
-      .then(() => update(key, { status: 'uploaded', percent: 100 }))
+      .then(() => {
+        keepFocusAfterEnd(key, 'remove');
+        update(key, { status: 'uploaded', percent: 100 });
+      })
       .catch(() => {
         // A cancel has already marked the row, and a remove has dropped it.
-        if (!controller.signal.aborted) update(key, { status: 'failed' });
+        if (controller.signal.aborted) return;
+        keepFocusAfterEnd(key, 'retry');
+        update(key, { status: 'failed' });
       })
       .finally(() => {
         if (controllers.current.get(key) === controller) controllers.current.delete(key);
@@ -331,7 +342,7 @@ export default function App() {
             const valueText = stopped ? `${statusText} at ${upload.percent}%` : statusText;
             return (
               <li className="upload" key={upload.key} data-key={upload.key}>
-                <img className="thumb" src={upload.previewUrl} alt="" />
+                <img className="thumb" src={upload.previewUrl} alt="" draggable={false} />
                 <div className="upload-body">
                   <span className="upload-name">{name}</span>
                   <div
