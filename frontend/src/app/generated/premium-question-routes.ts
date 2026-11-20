@@ -95,6 +95,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/react/coding/react-dynamic-counter-buttons",
   "/react/coding/react-dynamic-table",
   "/react/coding/react-file-explorer",
+  "/react/coding/react-file-upload-dropzone-progress",
   "/react/coding/react-files-table-select-all",
   "/react/coding/react-filterable-user-list",
   "/react/coding/react-image-slider",

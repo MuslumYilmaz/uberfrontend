@@ -453,6 +453,7 @@
 /react/coding/react-dynamic-table
 /react/coding/react-fetch-list-states
 /react/coding/react-file-explorer
+/react/coding/react-file-upload-dropzone-progress
 /react/coding/react-files-table-select-all
 /react/coding/react-filterable-user-list
 /react/coding/react-image-slider

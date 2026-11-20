@@ -8145,6 +8145,28 @@
     "assetRef": "questions/react/coding.json#react-transfer-list"
   },
   {
+    "id": "react-file-upload-dropzone-progress",
+    "family": "question",
+    "title": "Receipt Upload: Drop Zone, Progress and Previews",
+    "route": "/react/coding/react-file-upload-dropzone-progress",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a receipts list that takes any file into a working uploader: a drop zone that stays lit over its own text, type and size checks, per-file progress with cancel and retry, and image previews that release their memory.",
+    "tags": [
+      "react",
+      "upload",
+      "events",
+      "async",
+      "validation",
+      "images"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-file-upload-dropzone-progress"
+  },
+  {
     "id": "react-select-compound-api",
     "family": "question",
     "title": "Select With Compound Components (Single + Multi)",

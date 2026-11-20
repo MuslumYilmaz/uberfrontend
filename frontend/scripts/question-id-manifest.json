@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T07:29:34.090Z",
+  "generatedAt": "2026-11-20T09:22:45.110Z",
   "entries": [
     {
       "tech": "angular",
@@ -2040,6 +2040,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-file-explorer",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-file-upload-dropzone-progress",
       "file": "react/coding.json"
     },
     {

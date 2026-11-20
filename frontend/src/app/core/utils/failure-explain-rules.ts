@@ -810,7 +810,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     questionId: 'react-order-book-socket-feed',
     priority: 100,
     matches: (snapshot) =>
-      anyFailingTestNameIncludes(snapshot, ['late snapshot', 'lost message', 'burst', 'closing the page']) ||
+      anyFailingTestNameIncludes(snapshot, ['late snapshot', 'lost message', 'burst', 'outlives its scenario']) ||
       snapshot.failCount >= 2,
     buildHint: (snapshot) => ({
       ruleId: 'react-order-book-socket-feed-sequence',
@@ -885,6 +885,69 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Map `POOL_SIZE` indexes from the window start instead of all of `PAYMENTS`.',
         'Keep the spacer at `ITEM_COUNT * ROW_HEIGHT` and translate each row to `index * ROW_HEIGHT`.',
         'Keep the list\'s role, label and tabIndex, give each row `data-id`, `aria-posinset` and `aria-setsize`, and format the range with `Intl.NumberFormat(\'en-US\')`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-drop',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['drop zone lights', 'Only PNG and JPEG', 'file picker accepts']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-drop',
+      title: 'Try the drop zone and the picker the way the checks do',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The drop checks send dragenter, dragover, dragleave and drop on `.dropzone`, on its text and elsewhere on the page, some with text instead of files, and choose files in `.picker`. They require file drags to be cancelled and read `data-active`, the picker\'s attributes, the new `.upload` rows, the `.rejections` list and where focus goes after Remove.',
+      ),
+      actions: [
+        'Drag a file from the text inside the zone to outside it: the zone should stay active until the drag has left all of it.',
+        'Drop several files that each break a different rule, and compare the messages and their order with the page.',
+        'Choose two files with the same name: they should make two rows, and removing one should leave the other and move focus to a neighbouring Remove.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-upload',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['upload at once', 'Cancel and Remove stop', 'preview URL']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-upload',
+      title: 'Follow one upload from drop to unmount',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The upload checks wait for each `.upload-status` text, read the progress bar\'s `aria-valuenow`, click Cancel, Retry and Remove while uploads run and check where focus goes, look for timers still running, and read the preview URL counts on the body.',
+      ),
+      actions: [
+        'Drop two files at once and watch both rows: they should move together, 25% at a time.',
+        'Cancel or remove a running upload, then check that nothing keeps running for it.',
+        'Watch `data-preview-urls-created` on the body while a row uploads: it should not grow when the row renders again.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-default',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-default',
+      title: 'Start from the drop',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The starter never cancels dragover, uploads nothing and accepts any file. Most checks drop files on `.dropzone`, so start with the drop: cancel dragover and drop, check each file, and start its upload.',
+      ),
+      actions: [
+        'Cancel `dragover` and `drop` on `.dropzone`.',
+        'Send dropped and chosen files through one function that checks them and adds a row for each accepted one.',
       ],
       confidence: 0.72,
     }),
