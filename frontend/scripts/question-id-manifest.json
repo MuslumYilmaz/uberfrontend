@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T09:22:45.110Z",
+  "generatedAt": "2026-11-20T13:02:32.669Z",
   "entries": [
     {
       "tech": "angular",
@@ -2124,6 +2124,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-progress-bar-thresholds",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-role-aware-routes",
       "file": "react/coding.json"
     },
     {

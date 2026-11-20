@@ -109,6 +109,7 @@ export const PREMIUM_QUESTION_ROUTES: readonly string[] = [
   "/react/coding/react-order-book-socket-feed",
   "/react/coding/react-pagination-table",
   "/react/coding/react-progress-bar-thresholds",
+  "/react/coding/react-role-aware-routes",
   "/react/coding/react-select-compound-api",
   "/react/coding/react-shopping-cart",
   "/react/coding/react-star-rating",

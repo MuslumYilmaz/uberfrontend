@@ -21187,5 +21187,1708 @@
       "title": "React File Upload: Drag and Drop, Progress, Cancel and Previews",
       "description": "Build a React file uploader: a drop zone that stays lit over its own text, type and size checks, progress with cancel and retry, and leak-free previews."
     }
+  },
+  {
+    "id": "react-role-aware-routes",
+    "title": "Support Console: Role-Aware Routes and Sidebar",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "estimatedMinutes": 40,
+    "tags": [
+      "react",
+      "routing",
+      "guards",
+      "authentication",
+      "navigation",
+      "loading-states"
+    ],
+    "description": {
+      "summary": "Turn a support console that shows every page to everyone into one that follows roles: routes matched by whole segments, a sidebar and in-page links decided by the same permission check, and one guard that waits for the session, sends signed-out users to sign in and back, and turns refused paths into the dashboard with a notice. The checks type paths into the preview's address bar, press Back, start as or sign in as four demo accounts, and count which pages loaded. Concepts: react, routing, guards, authentication, navigation, loading-states.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`, which the preview runs with React 18 and without StrictMode. Treat the code above the first TODO and `App.css` as given: the roles and `ROLE_PERMISSIONS`, `ROUTES`, the fake server (`fetchSession`, `signIn`, `signOut`, `updateUserRole`, `getAccounts`, `onSessionChange`), the in-memory `history` with `useLocation`, `Link`, `AddressBar` and `usePageLoad`. The preview has no address bar of its own, so keep `<AddressBar />` in App: the checks type paths into its `.address` field, press `.go` and `.back`, and sign in with the `.sign-in-as` buttons. The starter shows every page and link to everyone, matches only exact paths, and treats the session as signed out until it loads.",
+          "Task 1: match `location.path` to a route in `ROUTES` by whole segments. A `:name` segment matches any one segment and reaches the page as `params.name`, so `/tickets/42` opens `/tickets/:id` with `params.id` set to `42`; `/refunds/new` is its own route, and `/users-export` or `/tickets/42/notes` match no route. Segments are compared as they are, so `/tickets/` and `/tickets//42`, which hold an empty segment, match no route either. A signed-in user on a path that matches no route sees `NotFoundPage`. Each address gets a fresh page: going from `/users/2/edit` straight to `/users/1/edit` shows user 1's role, not what was picked for user 2.",
+          "Task 1, links: a signed-in user may open a route whose `permission` is null or listed in `ROLE_PERMISSIONS` for their role. In `.sidebar`, render a `.nav-link` with `Link` for each `nav` route the user may open, in `ROUTES` order, with the route's title as its text, and no links while the session loads or nobody is signed in. The link whose path is the current route's path, or its `section`, gets `aria-current=\"page\"`, and no other link has it. Inside pages, show `.new-refund` only with `refunds:write` and `.edit-user` only with `users:write`.",
+          "Task 2: until `fetchSession` answers, show only `.page-loading` with `role=\"status\"` in `.content` on every path, `/sign-in` included, and redirect nowhere: the address keeps the typed path. After that, send every page through one wrapper component that decides before the page renders. Every path except `/sign-in`, including one that matches no route, needs a signed-in user: without one, replace the current entry with a `/sign-in` entry that remembers the path in its state; the address reads exactly `/sign-in`. When the user may not open the route, replace the entry with `/` and show `.access-notice` with `role=\"status\"` on the Dashboard, reading `You don't have access to the Settings page.` with the route's title. The notice ends at the next navigation, Back included, and does not come back. Every redirect replaces the entry instead of pushing a new one, so Back skips the page that was refused. A refused page never renders, not even for one commit before the redirect: the checks read the page load counts on the body.",
+          "Task 3: follow the session with `onSessionChange`, and remove every listener App adds, session and history alike, when it unmounts. A sign-in, a sign-out or a change to the signed-in user's own role applies to the sidebar and to the current page as soon as it is reported (a saved role reaches the session a moment after the save), so a user who loses access to the page they are on is redirected with the notice. A sign-out leaves the address to the guard, so the `/sign-in` entry it leads to remembers the page like any other. A signed-in user on a `/sign-in` entry goes to the path that entry remembers, replacing the entry. A `/sign-in` entry that remembers nothing, such as a typed one, goes to `/`. A remembered page the new user may not open redirects to `/` with the notice like any other.",
+          "Keep the class names above and the ones the starter's pages use: `.page-title`, `.not-found`, `.ticket-link`, `.role-select`, `.save-role`, `.sign-in-as` and `.sign-out`."
+        ],
+        "expectedBehavior": [
+          "When a check starts with Sam (support) already signed in, typing /tickets/42 while the session loads shows the loading line and keeps the address; once Sam is known, Ticket 42 opens with Dashboard, Tickets, Refunds and Users in the sidebar and Tickets marked.",
+          "Sam typing /settings lands on / with \"You don't have access to the Settings page.\"; Back returns to the page before, the notice is gone, and it stays gone when Back later returns to that Dashboard.",
+          "Signed out, /audit-log shows Sign in. Signing in as Ana (admin) opens Audit log, and Back then goes to the Dashboard, not to Sign in. Signing in as Vic (viewer) after asking for /refunds lands on / with the notice.",
+          "Lee (lead) sees New refund but no Edit links. Ana saving her own role as support on /users/1/edit is sent to / with the notice once the session reports the change, loses Settings and Audit log from her sidebar, and Back takes her to Users."
+        ],
+        "implementationNotes": [
+          "Try every demo account, and type paths into the address bar as well as following links.",
+          "Press Back after every redirect.",
+          "A notice that vanishes right after it appears usually means an effect in App cleared it: effects run children first, so that effect runs after a child's redirect has set the notice, yet still sees the location and the notice App rendered with."
+        ],
+        "techFocus": [
+          "Route matching with params",
+          "Permission-based navigation",
+          "Route guards and redirects",
+          "Session loading states",
+          "Subscribing to session changes"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "routes-session-loading",
+        "name": "While the session loads, a typed path waits instead of redirecting, then opens for the signed-in role with its sidebar",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "console-session": "2"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/tickets/42"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/tickets/42"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .page-loading",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".page-loading",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .page-title",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-ticket",
+            "expected": "0"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Ticket 42",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/tickets/42"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".page-loading",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 2,
+            "text": "Refunds"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 3,
+            "text": "Users"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 1,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-dashboard",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 0,
+            "attribute": "aria-current",
+            "expected": "page"
+          }
+        ]
+      },
+      {
+        "id": "routes-sidebar-by-role",
+        "name": "The sidebar and the links inside pages show only what the signed-in role may open, in route order, with the current section marked",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "console-session": "3"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 0,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 1
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/tickets"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Tickets",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 1,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "click",
+            "selector": ".ticket-link",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/tickets/41"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Ticket 41",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 1,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-out",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".nav-link",
+            "count": 6,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 6
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 2,
+            "text": "Refunds"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 3,
+            "text": "Users"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 4,
+            "text": "Settings"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 5,
+            "text": "Audit log"
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Refunds",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 2,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".new-refund",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Users",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".edit-user",
+            "count": 4
+          },
+          {
+            "type": "click",
+            "selector": ".edit-user",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Edit Sam",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 3,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".role-select",
+            "value": "support"
+          },
+          {
+            "type": "setValue",
+            "selector": ".role-select",
+            "value": "viewer"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/users/1/edit"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Edit Ana",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectValue",
+            "selector": ".role-select",
+            "value": "admin"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-out",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 3
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".nav-link",
+            "count": 4,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 2,
+            "text": "Refunds"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 3,
+            "text": "Users"
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Users",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 3,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".edit-user",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Refunds",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".new-refund",
+            "count": 1
+          },
+          {
+            "type": "click",
+            "selector": ".new-refund",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/refunds/new"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "New refund",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 2,
+            "attribute": "aria-current",
+            "expected": "page"
+          }
+        ]
+      },
+      {
+        "id": "routes-forbidden-redirect",
+        "name": "A page the role may not open never renders: its entry is replaced by the dashboard with a notice that the next navigation ends, and Back skips it",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "console-session": "2"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Tickets",
+            "timeoutMs": 300
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/settings"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Settings page."
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "wait",
+            "durationMs": 700
+          },
+          {
+            "type": "expectText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Settings page."
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .page-title",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-settings",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/tickets"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Tickets",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/audit-log"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "expectText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Audit log page."
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-audit-log",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 2
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/refunds"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Refunds",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "routes-match-segments",
+        "name": "Paths match routes by whole segments: a section's child page needs its own permission, and a path that matches no route is not found",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "console-session": "2"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/refunds/new"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "expectText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the New refund page."
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-new-refund",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-refunds",
+            "expected": "0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/users/2/edit"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "expectText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Edit user page."
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-edit-user",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-users",
+            "expected": "0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/tickets/42"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Ticket 42",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 1,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/users-export"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/users-export"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .not-found",
+            "count": 1
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Page not found",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-users",
+            "expected": "0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/tickets/42/notes"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .not-found",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/tickets//42"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .not-found",
+            "count": 1
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/tickets/"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .not-found",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-tickets",
+            "expected": "0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/users"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Users",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 3,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".edit-user",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 0,
+            "attribute": "aria-current",
+            "expected": "page"
+          }
+        ]
+      },
+      {
+        "id": "routes-sign-in-return",
+        "name": "Signed out, every path but /sign-in leads to sign-in without rendering, and signing in returns to the page asked for, or to the dashboard with a notice",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".content .page-loading",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": ".sign-in-as",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-dashboard",
+            "expected": "0"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/audit-log"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-audit-log",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Audit log",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/audit-log"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/audit-log"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Audit log",
+            "timeoutMs": 300
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "click",
+            "selector": ".sign-out",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/no-such-page"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/refunds"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Refunds page.",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 2
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-loads-refunds",
+            "expected": "0"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-out",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/audit-log"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "setValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "click",
+            "selector": ".go"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".nav-link",
+            "count": 6,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "routes-session-change",
+        "name": "A role change or a sign-out applies to the sidebar and the current page as soon as it is reported, a sign-out remembers the page, and unmounting leaves no listener or timer running",
+        "steps": [
+          {
+            "type": "mockStorage",
+            "entries": {
+              "console-session": "1"
+            }
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".address",
+            "count": 1,
+            "timeoutMs": 3000
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".nav-link",
+            "count": 6,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Users",
+            "timeoutMs": 300
+          },
+          {
+            "type": "click",
+            "selector": ".edit-user",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Edit Ana",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/users/1/edit"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 3,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "setValue",
+            "selector": ".role-select",
+            "value": "support"
+          },
+          {
+            "type": "click",
+            "selector": ".save-role",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".access-notice",
+            "text": "You don't have access to the Edit user page.",
+            "timeoutMs": 3000
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".access-notice",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Dashboard",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 4
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 0,
+            "text": "Dashboard"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 1,
+            "text": "Tickets"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 2,
+            "text": "Refunds"
+          },
+          {
+            "type": "expectText",
+            "selector": ".nav-link",
+            "index": 3,
+            "text": "Users"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link[aria-current=\"page\"]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".nav-link",
+            "index": 0,
+            "attribute": "aria-current",
+            "expected": "page"
+          },
+          {
+            "type": "click",
+            "selector": ".back",
+            "index": 0
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/users"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Users",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".access-notice",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".edit-user",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".nav-link",
+            "index": 2
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Refunds",
+            "timeoutMs": 300
+          },
+          {
+            "type": "expectCount",
+            "selector": ".new-refund",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".sign-out",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Sign in",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/sign-in"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".nav-link",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".sign-in-as",
+            "index": 3
+          },
+          {
+            "type": "waitForText",
+            "selector": ".content .page-title",
+            "text": "Refunds",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectValue",
+            "selector": ".address",
+            "value": "/refunds"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".new-refund",
+            "count": 1
+          },
+          {
+            "type": "wait",
+            "durationMs": 600
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-session-listeners",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-history-listeners",
+            "expected": "0"
+          },
+          {
+            "type": "expectNoPreviewTimers"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-role-aware-routes.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-role-aware-routes"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-role-aware-routes-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-role-aware-routes.v1.json",
+    "premiumPreview": {
+      "summary": "Turn a support console that shows every page to everyone into one that follows roles: whole-segment routes, a sidebar and links from one permission check, and a guard that waits for the session and redirects without trapping Back.",
+      "learningOutcomes": [
+        "Match paths to routes by whole segments and pass their params to the page.",
+        "Decide the sidebar, the links inside pages and the guard with one permission check.",
+        "Wait for the session, then guard every page in one wrapper that never renders a refused page.",
+        "Redirect by replacing the entry, return to the requested page after sign-in, and follow role changes."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "The session has three states: loading, signed out and signed in. Until fetchSession answers, the console shows a loading line and keeps the address, because an unknown user is not a signed-out one. After that, every page goes through one wrapper. It returns a redirect instead of the page when nobody is signed in (to /sign-in, remembering the path) or when the role may not open the route (to /, with a notice naming the page), so a refused page never mounts and never loads its data. Each redirect replaces the entry, so Back goes to the page before the refused one, and the notice ends at the next navigation.\n\nOne function decides what a user may open, and the sidebar, the links inside pages and the guard all call it. Routes are matched by whole segments, so a child page such as /refunds/new keeps its own permission, and the sidebar marks the current route's section. The session follows onSessionChange, so a sign-in, a sign-out or a role change made anywhere redraws the sidebar and re-checks the current page as soon as it is reported.",
+      "approaches": [
+        {
+          "title": "Three session states, one permission rule, one guard",
+          "prose": "1. Keep the session as `{ status: 'loading' }` or `{ status: 'ready', session }`. In one effect, subscribe with `onSessionChange` and call `fetchSession`; the cleanup stops the listener and ignores an answer that arrives after unmount. Put the session in a context so pages can ask for permissions.\n2. Write `can(session, permission)`: false with nobody signed in, true when the route needs no permission or the role lists it. Match `location.path` against `ROUTES` segment by segment, collecting `:name` segments as params and refusing empty ones. Filter the sidebar's `nav` routes with `can`, mark the link whose path equals the route's `section` or path, and show `.new-refund` and `.edit-user` only when `can` allows them.\n3. Both `/sign-in` and `RequireAccess` render only `.page-loading` while the session loads. On `/sign-in`, a signed-in user then gets a redirect to `location.state.from` or `/`. Every other path goes through `RequireAccess`: it returns `<Redirect to=\"/sign-in\" from={path} />` without a session, `<Redirect to=\"/\" denied={title} />` without permission, and the page otherwise. `Redirect` calls `history.replace` in an effect and, for a refusal, then sets the notice in App state; an effect in App clears the notice from a `history.listen` callback at every navigation. The page is keyed by path, so each address gets a fresh instance.\n\n**Follow-ups an interviewer asks**\n- Is hiding pages security? No. Anyone can call the API without the UI, so the server checks every request; the client guard keeps the interface honest and saves requests that would fail.\n- How does React Router do this? A wrapper renders `<Navigate to=\"/login\" replace state={{ from: location }} />`, or a data router's loader throws `redirect()`. A loader runs before the route renders, so the page's own requests never start.\n- Where should permissions come from? From the server with the session, so a new role needs no client release; the map in this exercise stands in for that answer.\n- What about code splitting? Load each page with `React.lazy` inside the allowed branch, so a refused page's code is never downloaded either.\n- What should Sign out remember? This console treats every end of a session alike and remembers the page for whoever signs in next, which keeps one rule. On a shared computer, forgetting it on an explicit sign-out keeps the next person from learning where the last one was.\n- Will screen readers announce the notice? A status region that appears together with its text is not announced by every screen reader; a region that is always in the page and receives the text is more reliable. This exercise mounts the notice with its text so the checks can count it.",
+          "codeJs": "import React, { createContext, useContext, useEffect, useState } from 'react';\nimport './App.css';\n\nexport type Role = 'viewer' | 'support' | 'lead' | 'admin';\nexport type Permission =\n  | 'tickets:read'\n  | 'refunds:read'\n  | 'refunds:write'\n  | 'users:read'\n  | 'users:write'\n  | 'settings:write'\n  | 'audit:read';\n\n/** Given: what each role may do. */\nexport const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {\n  viewer: ['tickets:read'],\n  support: ['tickets:read', 'refunds:read', 'users:read'],\n  lead: ['tickets:read', 'refunds:read', 'refunds:write', 'users:read'],\n  admin: [\n    'tickets:read',\n    'refunds:read',\n    'refunds:write',\n    'users:read',\n    'users:write',\n    'settings:write',\n    'audit:read',\n  ],\n};\n\nexport interface RouteDef {\n  /** A path pattern. A segment that starts with \":\" matches any one segment, such as the 42 of /tickets/42. */\n  path: string;\n  title: string;\n  /** The page's name: its key in PAGES and in the load counters. */\n  page: string;\n  /** What a user needs to open the page; null means any signed-in user. */\n  permission: Permission | null;\n  /** The page has a sidebar link. */\n  nav?: boolean;\n  /** For a page below a sidebar link, that link's path. */\n  section?: string;\n}\n\n/** Given: every page of the console. /sign-in is not in it: anyone may open it. */\nexport const ROUTES: readonly RouteDef[] = [\n  { path: '/', title: 'Dashboard', page: 'dashboard', permission: null, nav: true },\n  { path: '/tickets', title: 'Tickets', page: 'tickets', permission: 'tickets:read', nav: true },\n  { path: '/tickets/:id', title: 'Ticket', page: 'ticket', permission: 'tickets:read', section: '/tickets' },\n  { path: '/refunds', title: 'Refunds', page: 'refunds', permission: 'refunds:read', nav: true },\n  { path: '/refunds/new', title: 'New refund', page: 'new-refund', permission: 'refunds:write', section: '/refunds' },\n  { path: '/users', title: 'Users', page: 'users', permission: 'users:read', nav: true },\n  { path: '/users/:id/edit', title: 'Edit user', page: 'edit-user', permission: 'users:write', section: '/users' },\n  { path: '/settings', title: 'Settings', page: 'settings', permission: 'settings:write', nav: true },\n  { path: '/audit-log', title: 'Audit log', page: 'audit-log', permission: 'audit:read', nav: true },\n];\n\nexport interface Session {\n  userId: number;\n  name: string;\n  role: Role;\n}\n\n/** Time each call to the fake server takes, in ms. */\nexport const SERVER_DELAY_MS = 500;\n\nconst SESSION_KEY = 'console-session';\nconst accounts: Session[] = [\n  { userId: 1, name: 'Ana', role: 'admin' },\n  { userId: 2, name: 'Sam', role: 'support' },\n  { userId: 3, name: 'Vic', role: 'viewer' },\n  { userId: 4, name: 'Lee', role: 'lead' },\n];\nconst readStoredUser = () => {\n  try {\n    return Number(localStorage.getItem(SESSION_KEY)) || null;\n  } catch {\n    return null;\n  }\n};\nconst storeUser = (userId: number | null) => {\n  try {\n    if (userId === null) localStorage.removeItem(SESSION_KEY);\n    else localStorage.setItem(SESSION_KEY, String(userId));\n  } catch {\n    // The preview may have no storage; the session then lasts until it reloads.\n  }\n};\nconst roleOf = (userId: number | null) => accounts.find((candidate) => candidate.userId === userId)?.role ?? null;\nlet signedInUser = readStoredUser();\n/** The role the session carries; a saved change reaches it 2 × SERVER_DELAY_MS after the save. */\nlet sessionRole = roleOf(signedInUser);\nconst sessionListeners = new Set<(session: Session | null) => void>();\nconst currentSession = (): Session | null => {\n  const account = accounts.find((candidate) => candidate.userId === signedInUser);\n  return account && sessionRole ? { userId: account.userId, name: account.name, role: sessionRole } : null;\n};\nconst tellSessionListeners = () => {\n  const session = currentSession();\n  sessionListeners.forEach((listener) => listener(session));\n};\nconst later = <T,>(work: () => T) =>\n  new Promise<T>((resolve) => {\n    window.setTimeout(() => resolve(work()), SERVER_DELAY_MS);\n  });\n\n/** Given: the session the server remembers for this browser, or null when nobody is signed in. */\nexport function fetchSession(): Promise<Session | null> {\n  return later(currentSession);\n}\n\n/** Given: signs in as a demo account, tells every onSessionChange listener, then resolves with the session. */\nexport function signIn(userId: number): Promise<Session | null> {\n  return later(() => {\n    signedInUser = userId;\n    sessionRole = roleOf(userId);\n    storeUser(userId);\n    tellSessionListeners();\n    return currentSession();\n  });\n}\n\n/** Given: signs out, then tells every onSessionChange listener. */\nexport function signOut(): Promise<void> {\n  return later(() => {\n    signedInUser = null;\n    sessionRole = null;\n    storeUser(null);\n    tellSessionListeners();\n  });\n}\n\n/**\n * Given: saves a user's role. When that user is the one signed in, the session picks the new role up\n * 2 × SERVER_DELAY_MS after the save resolves, as when a token is refreshed, and then tells every onSessionChange\n * listener; until then fetchSession still reports the old role.\n */\nexport function updateUserRole(userId: number, role: Role): Promise<void> {\n  return later(() => {\n    const account = accounts.find((candidate) => candidate.userId === userId);\n    if (!account) return;\n    account.role = role;\n    if (userId !== signedInUser) return;\n    window.setTimeout(() => {\n      if (userId !== signedInUser) return;\n      sessionRole = role;\n      tellSessionListeners();\n    }, 2 * SERVER_DELAY_MS);\n  });\n}\n\n/** Given: the demo accounts with their current roles. */\nexport function getAccounts(): Session[] {\n  return accounts.map((account) => ({ ...account }));\n}\n\n/**\n * Given: calls the listener with the new session (null when signed out) whenever the signed-in user or their role\n * changes, and returns a function that stops it. body[data-session-listeners] shows how many listeners are active.\n */\nexport function onSessionChange(listener: (session: Session | null) => void): () => void {\n  sessionListeners.add(listener);\n  document.body.dataset.sessionListeners = String(sessionListeners.size);\n  return () => {\n    sessionListeners.delete(listener);\n    document.body.dataset.sessionListeners = String(sessionListeners.size);\n  };\n}\n\nexport type LocationState = Record<string, string> | null;\n\nexport interface Location {\n  path: string;\n  state: LocationState;\n  /** A new key for every entry, even when the path repeats. */\n  key: number;\n}\n\n/**\n * Given: an in-memory history that stands in for the browser's, because the preview has no address bar. push adds\n * an entry after the current one, replace swaps the current entry, back returns to the previous one. It starts at /.\n * body[data-history-listeners] shows how many listeners are active.\n */\nconst entries: Location[] = [{ path: '/', state: null, key: 0 }];\nlet currentEntry = 0;\nlet nextKey = 1;\nconst historyListeners = new Set<() => void>();\nconst tellHistoryListeners = () => historyListeners.forEach((listener) => listener());\nexport const history = {\n  getLocation: (): Location => entries[currentEntry],\n  canGoBack: () => currentEntry > 0,\n  push: (path: string, state: LocationState = null) => {\n    entries.splice(currentEntry + 1, entries.length, { path, state, key: nextKey++ });\n    currentEntry = entries.length - 1;\n    tellHistoryListeners();\n  },\n  replace: (path: string, state: LocationState = null) => {\n    entries[currentEntry] = { path, state, key: nextKey++ };\n    tellHistoryListeners();\n  },\n  back: () => {\n    if (currentEntry === 0) return;\n    currentEntry -= 1;\n    tellHistoryListeners();\n  },\n  listen: (listener: () => void) => {\n    historyListeners.add(listener);\n    document.body.dataset.historyListeners = String(historyListeners.size);\n    return () => {\n      historyListeners.delete(listener);\n      document.body.dataset.historyListeners = String(historyListeners.size);\n    };\n  },\n};\n\n/** Given: the current history entry; the component renders again when it changes. */\nexport function useLocation(): Location {\n  const [location, setLocation] = useState(history.getLocation);\n  useEffect(() => {\n    // Catches an entry added between the first render and this subscription.\n    setLocation(history.getLocation());\n    return history.listen(() => setLocation(history.getLocation()));\n  }, []);\n  return location;\n}\n\nexport interface LinkProps {\n  to: string;\n  className?: string;\n  children?: React.ReactNode;\n  'aria-current'?: 'page';\n  'aria-label'?: string;\n}\n\n/** Given: a link that opens its page through history.push instead of loading a new document. */\nexport function Link({ to, children, ...rest }: LinkProps) {\n  return (\n    <a\n      {...rest}\n      href={to}\n      onClick={(event) => {\n        event.preventDefault();\n        history.push(to);\n      }}\n    >\n      {children}\n    </a>\n  );\n}\n\n/** Given: the preview's address bar. Type a path and press Enter or Go to open it; ← goes back. */\nexport function AddressBar() {\n  const location = useLocation();\n  const [draft, setDraft] = useState(location.path);\n  // Shows each new entry's path; set during render, so nothing resets what was typed before the first effects run.\n  const [shownKey, setShownKey] = useState(location.key);\n  if (shownKey !== location.key) {\n    setShownKey(location.key);\n    setDraft(location.path);\n  }\n  const open = () => {\n    const path = draft.trim();\n    if (path.startsWith('/')) history.push(path);\n  };\n  return (\n    <div className=\"address-bar\">\n      <button\n        type=\"button\"\n        className=\"back\"\n        aria-label=\"Back\"\n        disabled={!history.canGoBack()}\n        onClick={history.back}\n      >\n        ←\n      </button>\n      <input\n        className=\"address\"\n        aria-label=\"Address\"\n        value={draft}\n        onChange={(event) => setDraft(event.target.value)}\n        onKeyDown={(event) => {\n          if (event.key === 'Enter') open();\n        }}\n      />\n      <button type=\"button\" className=\"go\" onClick={open}>\n        Go\n      </button>\n    </div>\n  );\n}\n\n/**\n * Given: stands in for loading a page's data. Each page calls it once, first thing; it counts the page's loads on\n * body[data-loads-<page>], such as data-loads-settings, so the checks can tell which pages rendered.\n */\nconst pageLoads = new Map<string, number>(ROUTES.map((route) => [route.page, 0]));\nconst showPageLoads = () =>\n  pageLoads.forEach((count, page) => document.body.setAttribute(`data-loads-${page}`, String(count)));\nshowPageLoads();\ndocument.body.dataset.sessionListeners = '0';\ndocument.body.dataset.historyListeners = '0';\nexport function usePageLoad(page: string) {\n  useEffect(() => {\n    pageLoads.set(page, (pageLoads.get(page) ?? 0) + 1);\n    showPageLoads();\n  }, [page]);\n}\n\ninterface PageProps {\n  params: Record<string, string>;\n}\n\ntype SessionState = { status: 'loading' } | { status: 'ready'; session: Session | null };\n\n/** One rule for the sidebar, the pages' own links and the guard; with nobody signed in, nothing is allowed. */\nconst can = (session: Session | null, permission: Permission | null) =>\n  session !== null && (permission === null || ROLE_PERMISSIONS[session.role].includes(permission));\n\nconst SessionContext = createContext<SessionState>({ status: 'loading' });\nconst NoticeContext = createContext<(title: string) => void>(() => undefined);\nconst useCan = () => {\n  const state = useContext(SessionContext);\n  return (permission: Permission) => can(state.status === 'ready' ? state.session : null, permission);\n};\n\n/** Compares whole segments as they are: /refunds/new is not /refunds, and /users-export or /tickets/ is no page. */\nfunction matchRoute(path: string): { route: RouteDef; params: Record<string, string> } | null {\n  const segments = path.split('/').slice(1);\n  for (const route of ROUTES) {\n    const pattern = route.path.split('/').slice(1);\n    if (pattern.length !== segments.length) continue;\n    const params: Record<string, string> = {};\n    const matches = pattern.every((part, index) => {\n      if (!part.startsWith(':')) return part === segments[index];\n      params[part.slice(1)] = segments[index];\n      return segments[index] !== '';\n    });\n    if (matches) return { route, params };\n  }\n  return null;\n}\n\n/** Replaces the current entry after the commit and before the browser paints, so Back skips the page it refused. */\nfunction Redirect({ to, from, denied }: { to: string; from?: string; denied?: string }) {\n  const showNotice = useContext(NoticeContext);\n  React.useLayoutEffect(() => {\n    history.replace(to, from === undefined ? null : { from });\n    // After the replace, whose history listener has just cleared any older notice.\n    if (denied !== undefined) showNotice(denied);\n  }, [to, from, denied, showNotice]);\n  return null;\n}\n\nfunction SessionLoading() {\n  return (\n    <p className=\"page-loading\" role=\"status\">\n      Loading your session…\n    </p>\n  );\n}\n\n/** Every page goes through here. It waits for the session, and a refused page never renders or loads its data. */\nfunction RequireAccess(props: { route: RouteDef | null; path: string; children: React.ReactNode }) {\n  const { route, path, children } = props;\n  const state = useContext(SessionContext);\n  if (state.status === 'loading') return <SessionLoading />;\n  if (state.session === null) return <Redirect to=\"/sign-in\" from={path} />;\n  if (route && !can(state.session, route.permission)) return <Redirect to=\"/\" denied={route.title} />;\n  return <>{children}</>;\n}\n\n/** /sign-in waits for the session too; a signed-in user goes where this entry points, or to the Dashboard. */\nfunction SignInRoute({ from }: { from?: string }) {\n  const state = useContext(SessionContext);\n  if (state.status !== 'ready') return <SessionLoading />;\n  if (state.session) return <Redirect to={from ?? '/'} />;\n  return <SignInPage />;\n}\n\nexport default function App() {\n  const location = useLocation();\n  const [state, setState] = useState<SessionState>({ status: 'loading' });\n  const [notice, setNotice] = useState<string | null>(null);\n\n  useEffect(() => {\n    let active = true;\n    const stop = onSessionChange((session) => setState({ status: 'ready', session }));\n    fetchSession().then((session) => {\n      if (active) setState({ status: 'ready', session });\n    });\n    return () => {\n      active = false;\n      stop();\n    };\n  }, []);\n\n  // Any navigation, Back included, ends the notice; a refusing redirect sets it again right after its replace.\n  useEffect(() => history.listen(() => setNotice(null)), []);\n\n  const session = state.status === 'ready' ? state.session : null;\n  const match = matchRoute(location.path);\n  const current = match ? (match.route.section ?? match.route.path) : null;\n\n  const Page = match ? PAGES[match.route.page] : NotFoundPage;\n  const content =\n    location.path === '/sign-in' ? (\n      <SignInRoute from={location.state?.from} />\n    ) : (\n      <RequireAccess route={match ? match.route : null} path={location.path}>\n        {notice && (\n          <p className=\"access-notice\" role=\"status\">\n            You don't have access to the {notice} page.\n          </p>\n        )}\n        <Page key={location.path} params={match ? match.params : {}} />\n      </RequireAccess>\n    );\n\n  return (\n    <SessionContext.Provider value={state}>\n      <NoticeContext.Provider value={setNotice}>\n        <div className=\"console\">\n          <AddressBar />\n          <header className=\"topbar\">\n            <span className=\"brand\">Support console</span>\n            {session && (\n              <>\n                <span className=\"account\">\n                  {session.name} · {session.role}\n                </span>\n                <button type=\"button\" className=\"sign-out\" onClick={() => signOut()}>\n                  Sign out\n                </button>\n              </>\n            )}\n          </header>\n          <div className=\"frame\">\n            <nav className=\"sidebar\" aria-label=\"Sections\">\n              {ROUTES.filter((route) => route.nav && can(session, route.permission)).map((route) => (\n                <Link\n                  key={route.path}\n                  className=\"nav-link\"\n                  to={route.path}\n                  aria-current={route.path === current ? 'page' : undefined}\n                >\n                  {route.title}\n                </Link>\n              ))}\n            </nav>\n            <main className=\"content\">{content}</main>\n          </div>\n        </div>\n      </NoticeContext.Provider>\n    </SessionContext.Provider>\n  );\n}\n\nconst TICKETS = [\n  { id: '41', subject: 'Card declined twice' },\n  { id: '42', subject: 'Refund not received' },\n  { id: '43', subject: 'Cannot change email' },\n];\n\nfunction DashboardPage() {\n  usePageLoad('dashboard');\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Dashboard</h1>\n      <p className=\"page-text\">12 open tickets · 3 refunds waiting</p>\n    </section>\n  );\n}\n\nfunction TicketsPage() {\n  usePageLoad('tickets');\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Tickets</h1>\n      <ul className=\"list\">\n        {TICKETS.map((ticket) => (\n          <li key={ticket.id}>\n            <Link className=\"ticket-link\" to={`/tickets/${ticket.id}`}>\n              #{ticket.id} {ticket.subject}\n            </Link>\n          </li>\n        ))}\n      </ul>\n    </section>\n  );\n}\n\nfunction TicketPage({ params }: PageProps) {\n  usePageLoad('ticket');\n  const ticket = TICKETS.find((candidate) => candidate.id === params.id);\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Ticket {params.id}</h1>\n      <p className=\"page-text\">{ticket ? ticket.subject : 'No ticket has this number.'}</p>\n    </section>\n  );\n}\n\nfunction RefundsPage() {\n  usePageLoad('refunds');\n  const allowed = useCan();\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Refunds</h1>\n      {allowed('refunds:write') && (\n        <Link className=\"new-refund\" to=\"/refunds/new\">\n          New refund\n        </Link>\n      )}\n      <ul className=\"list\">\n        <li>R-1007 · 24.00 · waiting</li>\n        <li>R-1006 · 310.50 · approved</li>\n      </ul>\n    </section>\n  );\n}\n\nfunction NewRefundPage() {\n  usePageLoad('new-refund');\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">New refund</h1>\n      <p className=\"page-text\">Pick a ticket and an amount.</p>\n    </section>\n  );\n}\n\nfunction UsersPage() {\n  usePageLoad('users');\n  const allowed = useCan();\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Users</h1>\n      <ul className=\"list\">\n        {getAccounts().map((account) => (\n          <li key={account.userId}>\n            {account.name} · {account.role}{' '}\n            {allowed('users:write') && (\n              <Link className=\"edit-user\" to={`/users/${account.userId}/edit`} aria-label={`Edit ${account.name}`}>\n                Edit\n              </Link>\n            )}\n          </li>\n        ))}\n      </ul>\n    </section>\n  );\n}\n\nfunction EditUserPage({ params }: PageProps) {\n  usePageLoad('edit-user');\n  const account = getAccounts().find((candidate) => String(candidate.userId) === params.id);\n  const [role, setRole] = useState<Role>(account ? account.role : 'viewer');\n  const [saved, setSaved] = useState(false);\n  if (!account) {\n    return (\n      <section className=\"page\">\n        <h1 className=\"page-title\">No user {params.id}</h1>\n      </section>\n    );\n  }\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Edit {account.name}</h1>\n      <label className=\"field\">\n        Role\n        <select className=\"role-select\" value={role} onChange={(event) => setRole(event.target.value as Role)}>\n          <option value=\"viewer\">viewer</option>\n          <option value=\"support\">support</option>\n          <option value=\"lead\">lead</option>\n          <option value=\"admin\">admin</option>\n        </select>\n      </label>\n      <button\n        type=\"button\"\n        className=\"save-role\"\n        onClick={() => updateUserRole(account.userId, role).then(() => setSaved(true))}\n      >\n        Save\n      </button>\n      {saved && (\n        <p className=\"page-text\" role=\"status\">\n          Saved.\n        </p>\n      )}\n    </section>\n  );\n}\n\nfunction SettingsPage() {\n  usePageLoad('settings');\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Settings</h1>\n      <p className=\"page-text\">Refund limit per agent: 500.00</p>\n    </section>\n  );\n}\n\nfunction AuditLogPage() {\n  usePageLoad('audit-log');\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Audit log</h1>\n      <ul className=\"list\">\n        <li>Ana changed the refund limit</li>\n        <li>Sam replied to ticket 42</li>\n      </ul>\n    </section>\n  );\n}\n\nfunction NotFoundPage(_props: PageProps) {\n  return (\n    <section className=\"page not-found\">\n      <h1 className=\"page-title\">Page not found</h1>\n    </section>\n  );\n}\n\nfunction SignInPage() {\n  return (\n    <section className=\"page\">\n      <h1 className=\"page-title\">Sign in</h1>\n      <p className=\"page-text\">Pick a demo account.</p>\n      <div className=\"accounts\">\n        {getAccounts().map((account) => (\n          <button\n            key={account.userId}\n            type=\"button\"\n            className=\"sign-in-as\"\n            onClick={() => signIn(account.userId)}\n          >\n            Sign in as {account.name} ({account.role})\n          </button>\n        ))}\n      </div>\n    </section>\n  );\n}\n\nconst PAGES: Record<string, React.FC<PageProps>> = {\n  dashboard: DashboardPage,\n  tickets: TicketsPage,\n  ticket: TicketPage,\n  refunds: RefundsPage,\n  'new-refund': NewRefundPage,\n  users: UsersPage,\n  'edit-user': EditUserPage,\n  settings: SettingsPage,\n  'audit-log': AuditLogPage,\n};\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-20",
+    "seo": {
+      "title": "React Role-Based Routing Without a Router: Guards and Redirects",
+      "description": "Role-based routing in React without a router library: whole-segment matching, a permission-based sidebar, a session-aware guard and Back-safe redirects."
+    }
   }
 ]

@@ -8210,6 +8210,28 @@
     "assetRef": "questions/react/coding.json#react-use-effect-once"
   },
   {
+    "id": "react-role-aware-routes",
+    "family": "question",
+    "title": "Support Console: Role-Aware Routes and Sidebar",
+    "route": "/react/coding/react-role-aware-routes",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a support console that shows every page to everyone into one that follows roles: whole-segment routes, a sidebar and links from one permission check, and a guard that waits for the session and redirects without trapping Back.",
+    "tags": [
+      "react",
+      "routing",
+      "guards",
+      "authentication",
+      "navigation",
+      "loading-states"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-role-aware-routes"
+  },
+  {
     "id": "react-tictactoe",
     "family": "question",
     "title": "Tic-Tac-Toe (Component State + Winner Detection)",

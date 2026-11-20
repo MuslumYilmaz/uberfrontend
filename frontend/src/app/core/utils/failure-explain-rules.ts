@@ -954,6 +954,89 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-role-aware-routes-guard',
+    questionId: 'react-role-aware-routes',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['session loads', 'never renders']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-guard',
+      title: 'Watch the address while the session loads and after a refusal',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks type paths before the session loads and as a role without access, then read the address, `.page-loading`, `.access-notice` and the `data-loads-*` counts on the body. They press Back from the Dashboard a refusal led to, and later from another page back onto it.',
+      ),
+      actions: [
+        'Type a path in the first half second, before `fetchSession` answers: the address should stay on it.',
+        'As Sam, open /settings and watch `data-loads-settings` on the body: it should stay 0.',
+        'After a refusal, follow a link and press Back: the Dashboard should come back without the notice.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-session',
+    questionId: 'react-role-aware-routes',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['signing in returns', 'role change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-session',
+      title: 'Follow the session through sign-in, sign-out and a role change',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks ask for a page while signed out, sign in, press Back, sign out, and save the signed-in user\'s own role. The last one unmounts App and reads `data-session-listeners` and `data-history-listeners` on the body.',
+      ),
+      actions: [
+        'Signed out, ask for /audit-log, sign in as Ana, then press Back: you should land on the Dashboard, not on Sign in.',
+        'As Ana, save your own role as support on your edit page: once the session reports it, the page and the sidebar should change, and Back should reach Users.',
+        'Remove every listener you add when App unmounts.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-links',
+    questionId: 'react-role-aware-routes',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['sidebar and the links', 'whole segments']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-links',
+      title: 'Compare the sidebar, the links and the address for each account',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read the `.nav-link` list and its `aria-current` as different accounts, count the `.new-refund` and `.edit-user` links, and type paths such as /refunds/new, /users/2/edit, /users-export, /tickets/42/notes and /tickets//42.',
+      ),
+      actions: [
+        'Sign in as each demo account and compare the sidebar and the page links with `ROLE_PERMISSIONS`.',
+        'Open /tickets/42 and check that Tickets is the only link marked current.',
+        'Type paths that only start like a route, such as /users-export: they should show Page not found.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-default',
+    questionId: 'react-role-aware-routes',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-default',
+      title: 'Start with what the console shows first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check begins before the session has loaded, then reads the address, the sidebar and the page title. Compare what the console shows with the task\'s rules, one demo account at a time.',
+      ),
+      actions: [
+        'Watch the console in the first half second, before `fetchSession` answers.',
+        'Type paths into the address bar as well as following links.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-modal-tooltip-portal-dialog',
     questionId: 'react-modal-tooltip-portal',
     priority: 100,
