@@ -31,6 +31,10 @@ const art = (from: string, to: string) =>
   );
 /** An image the TV cannot decode, as when an artwork link is broken. */
 const BROKEN = 'data:image/png;base64,broken';
+/** Artwork whose file was cut off: it looks like the others but does not decode either. */
+const cutOff = (from: string) =>
+  'data:image/svg+xml,' +
+  encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90"><rect fill="${from}"`);
 const title = (id: string, name: string, year: number, description: string, image: string): Title => ({
   id,
   name,
@@ -80,8 +84,7 @@ const SETS: Record<string, Title[]> = {
       art('#7c2d12', '#fed7aa')),
     title('dust-thunder', 'Dust and Thunder', 1966, 'Two rival stagecoach drivers share one road.',
       art('#57534e', '#d6d3d1')),
-    title('velvet-room', 'The Velvet Room', 1972, 'A jazz club keeps one table free every night.',
-      art('#581c87', '#f0abfc')),
+    title('velvet-room', 'The Velvet Room', 1972, 'A jazz club keeps one table free every night.', cutOff('#581c87')),
     title('harbor-lights', 'Harbor Lights', 1954, 'A lighthouse keeper writes to a stranger.',
       art('#1e40af', '#bfdbfe')),
   ],

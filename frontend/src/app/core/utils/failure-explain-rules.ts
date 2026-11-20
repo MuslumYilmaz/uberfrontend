@@ -1056,6 +1056,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'From the first row, press Down three times quickly: the Documentaries placeholder should take focus, then a documentary at the kept column when the row loads.',
         'Leave a loading row before it arrives: focus should stay where you moved it.',
         'When the rows appear, The Lighthouse Keeper should already have focus.',
+        'Open and close a title on a short row, then press Down: the column you chose with Left and Right should still hold.',
       ],
       confidence: 0.85,
     }),
@@ -1097,7 +1098,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       actions: [
         'Check that a loading line shows first, then six rows in order, with the first tile focused.',
         'Watch `data-set-docs` on the body: it should become 1 when focus reaches Trending now, and stay 1.',
-        'Look at Night Market in New this week: its artwork is broken, so the tile should show its name.',
+        'Look at Night Market in New this week: its artwork does not load, so the tile should show its name instead of the image.',
       ],
       confidence: 0.85,
     }),
@@ -1112,7 +1113,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Use the keyboard alone',
       why: buildProgressAwareWhy(
         snapshot,
-        'The starter is built for a mouse, and every check drives the home with the arrow keys, Enter and Back alone, pressed where focus is.',
+        'The starter is built for a mouse, and the checks drive the home with the arrow keys, Enter and Back alone, pressed where focus is.',
       ),
       actions: [
         'Click the preview once so it receives your keys (a click on a tile opens it), then use only the keyboard.',
