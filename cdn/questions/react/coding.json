@@ -22972,5 +22972,1730 @@
       "title": "React Role-Based Routing Without a Router: Guards and Redirects",
       "description": "Role-based routing in React without a router library: whole-segment matching, a permission-based sidebar, a session-aware guard and Back-safe redirects."
     }
+  },
+  {
+    "id": "react-living-room-home",
+    "title": "TV Home Screen: Remote Focus, Lazy Rows and Details",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "hard",
+    "importance": 4,
+    "estimatedMinutes": 60,
+    "tags": [
+      "react",
+      "keyboard",
+      "focus",
+      "lazy-loading",
+      "dialog",
+      "images"
+    ],
+    "description": {
+      "summary": "Turn a streaming home screen built for a mouse into one a TV remote can drive: arrow keys that keep their column across rows of different lengths, rows whose titles load as they come into view on a browser without IntersectionObserver, a placeholder that holds focus while a row loads, details that keep the remote inside them until Back, and a fallback for broken artwork. The checks press the remote's keys where focus is and count the set requests. Concepts: react, keyboard, focus, lazy-loading, dialog, images.",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`, which the preview runs with React 18 and without StrictMode. Treat the code above the first TODO and `App.css` as given: the titles, `fetchHome`, `fetchSet`, and the TV's old browser, which has no IntersectionObserver. The home is driven by a TV remote: the arrow keys, Enter and Back, which arrives as Escape or Backspace; there is no mouse and no Tab. The checks press each key where focus is, and an Enter on a button clicks it, as a browser does. They run the home in a frame without system focus, where `element.focus()` moves focus but fires no focus events, and where `requestAnimationFrame` may not run. The starter is built for a mouse: it loads every set at once, lazy-loads its images and handles no keys.",
+          "Task 1: show `.home-loading` with `role=\"status\"` until `fetchHome` answers, then a `.row` for each row of the home document, in order, with `data-row` set to the row's id and its title in `.row-title`. Each title is a `.tile` button showing `img.tile-image` with the title's name as its `alt`. Curated rows show their titles at once. Without IntersectionObserver, focus decides what counts as in view: the focused row and the two below it, so at first the first three rows. A set row asks for its titles with `fetchSet` as soon as it is in view. Ask for each set once, even when focus leaves its row and comes back, and show a focusable `.row-placeholder` (`tabIndex` -1) in the row until its titles arrive.",
+          "Task 1, images: give every tile its image as soon as the tile renders, without `loading=\"lazy\"` (the checks render the home off screen, where lazy images never load). When an image fails to load, show the title's name in `.tile-fallback` in its place.",
+          "Task 2: when the rows appear, focus the first tile of the first row, and move focus with `element.focus()`; the given CSS enlarges the focused tile. Left and Right move focus along a row; a press against either end moves nothing. Up and Down move to the row above or below, stopping at the first and last rows, and keep the column: focus lands on the tile in the column last chosen with Left or Right, or on the row's last tile when the row is shorter, and the column is kept for the rows after it. On a shorter row, Left and Right move from the tile that has focus. Only a press that moves focus along a row chooses a new column; a blocked press, Enter and Back keep it.",
+          "Task 2, loading rows: Up or Down onto a row that is still loading focuses its placeholder, where Left, Right and Enter do nothing. If its titles arrive while focus is still there, the tile at the kept column takes focus; titles that arrive after focus has left change nothing.",
+          "Task 3: Enter on a tile opens `.details` with `role=\"dialog\"`, `aria-modal=\"true\"` and `aria-labelledby=\"details-title\"`, the id of its `.details-title`. It shows the title's name in `.details-title`, its year in `.details-year`, its description in `.details-description`, two buttons, `.play` and `.watchlist`, and a `.details-status` with `role=\"status\"` that is empty each time the details open; focus moves to `.play`. While the details are open, Left and Right move between the two buttons and stop at the ends, Up and Down do nothing, and focus never reaches the rows behind. Enter on Play shows `Playing <name>` in `.details-status`. The `.watchlist` button reads `My list`; Enter on it toggles `aria-pressed` between `false` and `true`, kept per title while the page is open. Back closes the details and returns focus to the tile that opened them; with no details open, Back does nothing.",
+          "Keep the class names above."
+        ],
+        "expectedBehavior": [
+          "The home shows a loading line, then six rows with The Lighthouse Keeper focused. Trending now fills in about 600 ms later; Documentaries is requested when focus reaches Trending now, and Family nights when it reaches New this week.",
+          "From the sixth tile of Trending now, Down lands on the sixth tile of New this week, then the last tile of Documentaries, which has two, then the sixth tile of Family nights.",
+          "From the third tile of the first row, pressing Down three times fast reaches Documentaries before it has loaded: its placeholder takes focus, and the second documentary takes it when the row arrives.",
+          "The artwork of Night Market and Deep Archive is broken, so their tiles show their names.",
+          "Enter on Orbit of Ash opens its details with Play focused; Right moves to My list; Escape returns focus to Orbit of Ash."
+        ],
+        "implementationNotes": [
+          "The preview has a mouse, but the TV does not: try everything with the keyboard alone.",
+          "Press the keys fast as well as slowly: a row can still be loading when focus reaches it."
+        ],
+        "techFocus": [
+          "Arrow-key focus across rows",
+          "Lazy loading without IntersectionObserver",
+          "Focus while a row loads",
+          "A dialog that keeps focus and returns it",
+          "Image error fallback"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "home-loads",
+        "name": "The home document loads into its rows in order, curated rows show their titles at once, and the first tile takes focus",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": ".home-loading",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".home-loading",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectCount",
+            "selector": ".home-loading",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 0,
+            "text": "Continue watching"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 1,
+            "text": "Trending now"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 2,
+            "text": "New this week"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 3,
+            "text": "Documentaries"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 4,
+            "text": "Family nights"
+          },
+          {
+            "type": "expectText",
+            "selector": ".row-title",
+            "index": 5,
+            "text": "Classics"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".row",
+            "index": 3,
+            "attribute": "data-row",
+            "expected": "docs"
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"continue\"] .tile",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"continue\"] button.tile",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"new\"] .tile",
+            "count": 6
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-row=\"continue\"] .tile-image",
+            "index": 0,
+            "attribute": "alt",
+            "expected": "The Lighthouse Keeper"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-row=\"continue\"] .tile-image",
+            "index": 2,
+            "attribute": "alt",
+            "expected": "Salt and Silver"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"trending\"] .row-placeholder",
+            "count": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"trending\"] .row-placeholder",
+            "count": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-row=\"trending\"] .tile-image",
+            "index": 7,
+            "attribute": "alt",
+            "expected": "Tidal Lines"
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 0
+          }
+        ]
+      },
+      {
+        "id": "home-lazy-rows",
+        "name": "Set rows load their titles once each, as soon as they come into view (the focused row or the two below it), and show a focusable placeholder until then",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-trending",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-docs",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-family",
+            "expected": "0"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-classics",
+            "expected": "0"
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"docs\"] .row-placeholder[tabindex=\"-1\"]",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"classics\"] .row-placeholder",
+            "count": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-docs",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-family",
+            "expected": "0"
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-family",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-classics",
+            "expected": "0"
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"family\"] .tile",
+            "count": 7,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-trending",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-docs",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-family",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-classics",
+            "expected": "0"
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-classics",
+            "expected": "1"
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"classics\"] .tile",
+            "count": 5,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "[data-row=\"classics\"] .tile-image",
+            "index": 0,
+            "attribute": "src",
+            "expected": "data:image/svg+xml",
+            "match": "contains"
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-trending",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-docs",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-family",
+            "expected": "1"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "body",
+            "attribute": "data-set-classics",
+            "expected": "1"
+          }
+        ]
+      },
+      {
+        "id": "home-row-arrows",
+        "name": "Left and Right move focus along a row and stop at both ends, and Up on the top row stays put",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 7
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 5
+          }
+        ]
+      },
+      {
+        "id": "home-keep-column",
+        "name": "Up and Down keep the column across rows of different lengths, landing on a shorter row's last tile and returning to the column after it",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 5
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 5
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"family\"] .tile",
+            "count": 7,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-title",
+            "text": "Bees of the City"
+          },
+          {
+            "type": "key",
+            "key": "Escape",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "Escape",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "Backspace",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"family\"] .tile",
+            "index": 5
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 5
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 4
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 4
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"family\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"classics\"] .tile",
+            "count": 5,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"classics\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"classics\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 7
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"classics\"] .tile",
+            "index": 4
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"classics\"] .tile",
+            "index": 4
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"family\"] .tile",
+            "index": 6
+          }
+        ]
+      },
+      {
+        "id": "home-loading-row-focus",
+        "name": "On a row that is still loading, focus waits on its placeholder, where Left, Right and Enter do nothing, and the column carries through it to the titles",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .row-placeholder"
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .row-placeholder"
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 0
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"family\"] .tile",
+            "count": 7,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"family\"] .tile",
+            "index": 2
+          }
+        ]
+      },
+      {
+        "id": "home-arrival-column",
+        "name": "Titles arriving on a focused placeholder take focus at the kept column, not at the row's last tile",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .row-placeholder"
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 0
+          }
+        ]
+      },
+      {
+        "id": "home-late-row",
+        "name": "Titles that arrive after focus has left their row do not take focus",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .row-placeholder"
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 1
+          }
+        ]
+      },
+      {
+        "id": "home-details",
+        "name": "Enter opens the focused title's details with focus on Play, the arrows stay inside them, and Back closes them and returns focus to the tile",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".details",
+            "attribute": "role",
+            "expected": "dialog"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".details",
+            "attribute": "aria-modal",
+            "expected": "true"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".details",
+            "attribute": "aria-labelledby",
+            "expected": "details-title"
+          },
+          {
+            "type": "expectCount",
+            "selector": "#details-title.details-title",
+            "count": 1
+          },
+          {
+            "type": "expectName",
+            "selector": ".details",
+            "text": "Orbit of Ash"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".details-status",
+            "attribute": "role",
+            "expected": "status"
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-status",
+            "text": ""
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-title",
+            "text": "Orbit of Ash"
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-year",
+            "text": "2019"
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-description",
+            "text": "A cargo pilot finds a passenger she never loaded."
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".play"
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".play"
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".watchlist"
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".watchlist"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".watchlist",
+            "attribute": "aria-pressed",
+            "expected": "false"
+          },
+          {
+            "type": "expectText",
+            "selector": ".watchlist",
+            "text": "My list"
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".watchlist",
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".play"
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-status",
+            "text": "Playing Orbit of Ash"
+          },
+          {
+            "type": "key",
+            "key": "Escape",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-title",
+            "text": "The Quiet Engine"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".play"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".watchlist",
+            "attribute": "aria-pressed",
+            "expected": "false"
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-status",
+            "text": ""
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".watchlist"
+          },
+          {
+            "type": "key",
+            "key": "Backspace",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"trending\"] .tile",
+            "index": 2
+          },
+          {
+            "type": "key",
+            "key": "ArrowUp",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowLeft",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-title",
+            "text": "Orbit of Ash"
+          },
+          {
+            "type": "expectFocused",
+            "selector": ".play"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".watchlist",
+            "attribute": "aria-pressed",
+            "expected": "true"
+          },
+          {
+            "type": "expectText",
+            "selector": ".watchlist",
+            "text": "My list"
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-status",
+            "text": ""
+          },
+          {
+            "type": "key",
+            "key": "ArrowRight",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectAttribute",
+            "selector": ".watchlist",
+            "attribute": "aria-pressed",
+            "expected": "false"
+          },
+          {
+            "type": "key",
+            "key": "Escape",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          },
+          {
+            "type": "key",
+            "key": "Escape",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "Backspace",
+            "defaultAction": true
+          },
+          {
+            "type": "expectCount",
+            "selector": ".details",
+            "count": 0
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"continue\"] .tile",
+            "index": 1
+          }
+        ]
+      },
+      {
+        "id": "home-image-fallback",
+        "name": "A tile whose image fails shows the title's name in its place, and the other tiles keep their images",
+        "steps": [
+          {
+            "type": "waitForCount",
+            "selector": ".row",
+            "count": 6,
+            "timeoutMs": 2000
+          },
+          {
+            "type": "wait",
+            "durationMs": 100
+          },
+          {
+            "type": "expectCount",
+            "selector": "img[loading=\"lazy\"]",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".tile-fallback",
+            "text": "Night Market",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": ".tile-fallback",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"new\"] .tile",
+            "count": 6
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"new\"] .tile-image",
+            "count": 5
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"continue\"] .tile-image",
+            "count": 3
+          },
+          {
+            "type": "expectName",
+            "selector": "[data-row=\"new\"] .tile",
+            "index": 1,
+            "text": "Night Market"
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"trending\"] .tile",
+            "count": 8,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "waitForCount",
+            "selector": "[data-row=\"docs\"] .tile",
+            "count": 2,
+            "timeoutMs": 1500
+          },
+          {
+            "type": "key",
+            "key": "ArrowDown",
+            "defaultAction": true
+          },
+          {
+            "type": "expectFocused",
+            "selector": "[data-row=\"docs\"] .tile",
+            "index": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": "[data-row=\"docs\"] .tile-fallback",
+            "text": "Deep Archive",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"docs\"] .tile-image",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "[data-row=\"trending\"] .tile-image",
+            "count": 8
+          },
+          {
+            "type": "key",
+            "key": "Enter",
+            "defaultAction": true
+          },
+          {
+            "type": "expectText",
+            "selector": ".details-title",
+            "text": "Deep Archive"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-living-room-home.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-living-room-home"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-living-room-home-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-living-room-home.v1.json",
+    "premiumPreview": {
+      "summary": "Turn a streaming home screen built for a mouse into one a TV remote can drive: arrow-key focus that keeps its column, rows that load as they come into view without IntersectionObserver, and details that hold focus until Back.",
+      "learningOutcomes": [
+        "Move focus with the arrow keys across rows of different lengths without losing the column.",
+        "Load rows as they come into view on a browser without IntersectionObserver, and ask for each once.",
+        "Keep focus on a row that is still loading and hand it to the titles when they arrive.",
+        "Trap the remote in a details dialog, return focus on Back, and fall back to the name for broken artwork."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Focus is state: the focused row and the column the user chose with Left and Right. The focused row shows the tile nearest that column, so a short row clamps what is shown without changing the column. Every change to focus, from a key press, a set arriving or the details opening and closing, ends in one focus target that names the element to focus, and one effect moves DOM focus to it. Set rows load when they reach the focused row or the two below it, a prefetch window that stands in for IntersectionObserver.",
+      "approaches": [
+        {
+          "title": "Focus as state, one effect that moves it, sets loaded from focus",
+          "prose": "1. Load the home document in an effect. Keep the loaded sets in state, and the ids already asked for in a ref. In an effect that runs when the focused row changes, ask for every set row from the focused row to two rows below it that has not been asked for yet; each answer adds its titles to state. Rows without titles render a focusable `.row-placeholder`. Each tile is a `Tile` button that swaps its image for `.tile-fallback` with the name on `error`.\n2. Keep focus as `{ row, column }`. The displayed tile is the row's tile at `min(column, length - 1)`. Left and Right set the column to the displayed tile plus or minus one, clamped to the row, and only when that moves focus; Up and Down change the row and keep the column, and Enter on the focused tile leaves it alone. Derive one focus target from the state (a tile, a placeholder, or a details button) and focus that element in an effect when the target changes, through a map of stable callback refs.\n3. A `keydown` listener on `window` handles the arrows and Back, cancels the arrows so the page does not scroll by itself, and ignores a held Enter. Tiles are buttons, so Enter clicks them and opens the details; the details keep a focused-button index that Left and Right change, and Back clears the details, which moves the focus target back to the tile. Backspace is cancelled on the home screen too, because older browsers go back a page on it.\n\n**Follow-ups an interviewer asks**\n- What if fetchSet fails? The given one never does; here a failed set would leave its row on Loading… for good. With a real API, catch the failure, clear the set's requested mark and put a retry button in the row.\n- How do real TV apps handle focus? Many use a spatial navigation library that picks the nearest element in the arrow's direction from on-screen positions; a grid of rows like this one can use the simpler row and column model.\n- How would you add a video preview on a focused tile? Start it after focus has rested on the tile for a moment, and stop it on blur, so fast scrolling does not start a dozen videos.",
+          "codeJs": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\n/** Time the fake API takes to answer, in ms. */\nexport const HOME_DELAY_MS = 300;\nexport const SET_DELAY_MS = 600;\n\nexport interface Title {\n  id: string;\n  name: string;\n  year: number;\n  description: string;\n  image: string;\n}\n\n/** A curated row comes with its titles; a set row names a set of titles to load with fetchSet. */\nexport type HomeRow =\n  | { id: string; title: string; kind: 'curated'; items: Title[] }\n  | { id: string; title: string; kind: 'set'; setId: string };\n\nexport interface HomeDocument {\n  rows: HomeRow[];\n}\n\nconst art = (from: string, to: string) =>\n  'data:image/svg+xml,' +\n  encodeURIComponent(\n    '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 90\"><defs><linearGradient id=\"g\" x2=\"1\" y2=\"1\">' +\n      `<stop offset=\"0\" stop-color=\"${from}\"/><stop offset=\"1\" stop-color=\"${to}\"/></linearGradient></defs>` +\n      '<rect width=\"160\" height=\"90\" fill=\"url(#g)\"/></svg>',\n  );\n/** An image the TV cannot decode, as when an artwork link is broken. */\nconst BROKEN = 'data:image/png;base64,broken';\nconst title = (id: string, name: string, year: number, description: string, image: string): Title => ({\n  id,\n  name,\n  year,\n  description,\n  image,\n});\n\nconst SETS: Record<string, Title[]> = {\n  trending: [\n    title('northbound', 'Northbound', 2023, 'Two sisters drive a borrowed bus to the Arctic Circle.',\n      art('#0f766e', '#22d3ee')),\n    title('paper-lanterns', 'Paper Lanterns', 2022, 'A night market owner hides a talking lantern.',\n      art('#b45309', '#fde047')),\n    title('quiet-engine', 'The Quiet Engine', 2021, 'An inventor builds a train that makes no sound.',\n      art('#334155', '#94a3b8')),\n    title('glass-harbor', 'Glass Harbor', 2024, 'Divers find a city under the ice.', art('#1e3a8a', '#38bdf8')),\n    title('fieldwork', 'Fieldwork', 2020, 'A biology class gets lost on a school trip.', art('#365314', '#a3e635')),\n    title('moth-season', 'Moth Season', 2023, 'A detective who only works at night.', art('#4c1d95', '#c084fc')),\n    title('second-shift', 'Second Shift', 2022, 'Nurses on the late shift of a small hospital.',\n      art('#7f1d1d', '#f87171')),\n    title('tidal-lines', 'Tidal Lines', 2024, 'Surfers race a storm along the coast.', art('#155e75', '#67e8f9')),\n  ],\n  docs: [\n    title('deep-archive', 'Deep Archive', 2021, 'Inside the vault that keeps every seed on Earth.', BROKEN),\n    title('city-bees', 'Bees of the City', 2023, 'Beekeepers on the rooftops of a capital.',\n      art('#a16207', '#facc15')),\n  ],\n  family: [\n    title('puddle-jumpers', 'Puddle Jumpers', 2019, 'Three ducklings try to fly before winter.',\n      art('#0369a1', '#7dd3fc')),\n    title('captain-waffle', 'Captain Waffle', 2021, 'A breakfast superhero saves the school fair.',\n      art('#c2410c', '#fdba74')),\n    title('lost-kite', 'The Lost Kite', 2020, 'A kite crosses the ocean to find its owner.',\n      art('#be185d', '#f9a8d4')),\n    title('snowball-summer', 'Snowball Summer', 2022, 'A snowman wakes up in July.', art('#0e7490', '#e0f2fe')),\n    title('mapmakers', 'Mapmakers', 2023, 'Cousins draw a map of a town that keeps moving.',\n      art('#3f6212', '#d9f99d')),\n    title('robot-garden', 'Robot Garden', 2024, 'A robot learns to grow tomatoes.', art('#065f46', '#6ee7b7')),\n    title('big-sky-ranch', 'Big Sky Ranch', 2018, 'A family runs a ranch for retired racehorses.',\n      art('#78350f', '#fcd34d')),\n  ],\n  classics: [\n    title('midnight-line', 'Midnight Express Line', 1958, 'A conductor solves a theft between two stations.',\n      art('#1c1917', '#a8a29e')),\n    title('hat-in-rome', 'A Hat in Rome', 1961, 'A tourist chases her hat across the city.',\n      art('#7c2d12', '#fed7aa')),\n    title('dust-thunder', 'Dust and Thunder', 1966, 'Two rival stagecoach drivers share one road.',\n      art('#57534e', '#d6d3d1')),\n    title('velvet-room', 'The Velvet Room', 1972, 'A jazz club keeps one table free every night.',\n      art('#581c87', '#f0abfc')),\n    title('harbor-lights', 'Harbor Lights', 1954, 'A lighthouse keeper writes to a stranger.',\n      art('#1e40af', '#bfdbfe')),\n  ],\n};\n\nconst HOME: HomeDocument = {\n  rows: [\n    {\n      id: 'continue',\n      title: 'Continue watching',\n      kind: 'curated',\n      items: [\n        title('lighthouse', 'The Lighthouse Keeper', 2021, 'One winter on an island with no ferry.',\n          art('#0c4a6e', '#f8fafc')),\n        title('orbit', 'Orbit of Ash', 2019, 'A cargo pilot finds a passenger she never loaded.',\n          art('#18181b', '#f97316')),\n        title('salt-silver', 'Salt and Silver', 2022, 'Two chefs share one kitchen and one secret.',\n          art('#0f172a', '#cbd5e1')),\n      ],\n    },\n    { id: 'trending', title: 'Trending now', kind: 'set', setId: 'trending' },\n    {\n      id: 'new',\n      title: 'New this week',\n      kind: 'curated',\n      items: [\n        title('copper-sky', 'Copper Sky', 2024, 'A town wakes up under an orange sky.', art('#9a3412', '#fb923c')),\n        title('night-market', 'Night Market', 2024, 'Food stalls, one night, twelve stories.', BROKEN),\n        title('little-volcano', 'Little Volcano', 2024, 'A volcano that only erupts when it is sad.',\n          art('#991b1b', '#fca5a5')),\n        title('long-table', 'The Long Table', 2024, 'A wedding dinner where nobody agrees.',\n          art('#713f12', '#fef08a')),\n        title('static-bloom', 'Static Bloom', 2024, 'A radio host hears flowers on the air.',\n          art('#86198f', '#f5d0fe')),\n        title('hollow-pines', 'Hollow Pines', 2024, 'Campers find a cabin that was not there yesterday.',\n          art('#14532d', '#86efac')),\n      ],\n    },\n    { id: 'docs', title: 'Documentaries', kind: 'set', setId: 'docs' },\n    { id: 'family', title: 'Family nights', kind: 'set', setId: 'family' },\n    { id: 'classics', title: 'Classics', kind: 'set', setId: 'classics' },\n  ],\n};\n\n/** Given: the TV's browser is old and has no IntersectionObserver. */\nReflect.deleteProperty(window, 'IntersectionObserver');\n\nconst setRequests = new Map<string, number>(Object.keys(SETS).map((setId) => [setId, 0]));\nconst showSetRequests = () =>\n  setRequests.forEach((count, setId) => document.body.setAttribute(`data-set-${setId}`, String(count)));\nshowSetRequests();\n\n/** Given: the home document, after HOME_DELAY_MS. */\nexport function fetchHome(): Promise<HomeDocument> {\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(HOME), HOME_DELAY_MS);\n  });\n}\n\n/**\n * Given: the titles of one set, after SET_DELAY_MS. It counts the requests for each set on\n * body[data-set-<setId>], such as data-set-docs, so the checks can tell which sets were asked for.\n */\nexport function fetchSet(setId: string): Promise<Title[]> {\n  setRequests.set(setId, (setRequests.get(setId) ?? 0) + 1);\n  showSetRequests();\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(SETS[setId] ?? []), SET_DELAY_MS);\n  });\n}\n\n/** The focused row, and the column the user last chose with Left or Right. */\ninterface Focus {\n  row: number;\n  column: number;\n}\n\n/** Each arrow as [rows down, tiles across]. */\nconst ARROWS = new Map<string, [number, number]>([\n  ['ArrowUp', [-1, 0]],\n  ['ArrowDown', [1, 0]],\n  ['ArrowLeft', [0, -1]],\n  ['ArrowRight', [0, 1]],\n]);\nconst isBack = (key: string) => key === 'Escape' || key === 'Backspace';\n/** Rows from the focused one to this many below it are on screen. */\nconst ROWS_AHEAD = 2;\n\nfunction Tile(props: { item: Title; tileRef: (element: HTMLElement | null) => void; onOpen: () => void }) {\n  const { item, tileRef, onOpen } = props;\n  const [broken, setBroken] = useState(false);\n  return (\n    <button ref={tileRef} type=\"button\" className=\"tile\" onClick={onOpen}>\n      {broken ? (\n        <span className=\"tile-fallback\">{item.name}</span>\n      ) : (\n        <img className=\"tile-image\" src={item.image} alt={item.name} onError={() => setBroken(true)} />\n      )}\n    </button>\n  );\n}\n\nexport default function App() {\n  const [home, setHome] = useState<HomeDocument | null>(null);\n  const [sets, setSets] = useState<Record<string, Title[]>>({});\n  const [focus, setFocus] = useState<Focus>({ row: 0, column: 0 });\n  const [details, setDetails] = useState<Title | null>(null);\n  const [detailsButton, setDetailsButton] = useState(0);\n  const [playing, setPlaying] = useState(false);\n  const [watchlist, setWatchlist] = useState<string[]>([]);\n  const requested = useRef(new Set<string>());\n  const elements = useRef(new Map<string, HTMLElement>());\n  const refCallbacks = useRef(new Map<string, (element: HTMLElement | null) => void>());\n\n  useEffect(() => {\n    fetchHome().then(setHome);\n  }, []);\n\n  /** A row's titles, or undefined while it loads; a set that came back empty has nothing to focus either. */\n  const itemsOf = (row: HomeRow) => {\n    const items = row.kind === 'curated' ? row.items : sets[row.setId];\n    return items && items.length > 0 ? items : undefined;\n  };\n\n  // Without IntersectionObserver, focus decides what counts as in view: the focused row and the two below it, the\n  // rows the remote reaches next.\n  useEffect(() => {\n    if (!home) return;\n    home.rows.slice(focus.row, focus.row + ROWS_AHEAD + 1).forEach((row) => {\n      if (row.kind !== 'set' || requested.current.has(row.setId)) return;\n      requested.current.add(row.setId);\n      fetchSet(row.setId).then((items) => setSets((current) => ({ ...current, [row.setId]: items })));\n    });\n  }, [home, focus.row]);\n\n  const focusedRow = home ? home.rows[focus.row] : undefined;\n  const focusedItems = focusedRow ? itemsOf(focusedRow) : undefined;\n  // A shorter row clamps the column for display only; the column itself is kept for the rows after it.\n  const focusedIndex = focusedItems ? Math.min(focus.column, focusedItems.length - 1) : -1;\n  const focusKey = !home\n    ? ''\n    : details\n      ? `details:${detailsButton}`\n      : focusedItems\n        ? `${focus.row}:${focusedIndex}`\n        : `${focus.row}:placeholder`;\n\n  // Moves DOM focus whenever its target changes, including when a loading row's titles arrive.\n  useEffect(() => {\n    elements.current.get(focusKey)?.focus();\n  }, [focusKey]);\n\n  // One stable callback ref per key, so a render does not detach and reattach every tile.\n  const register = (key: string) => {\n    let callback = refCallbacks.current.get(key);\n    if (!callback) {\n      callback = (element: HTMLElement | null) => {\n        if (element) elements.current.set(key, element);\n        else elements.current.delete(key);\n      };\n      refCallbacks.current.set(key, callback);\n    }\n    return callback;\n  };\n\n  const openDetails = (row: number, column: number, item: Title) => {\n    // Enter opens the focused tile, so the kept column stays; a click elsewhere in the preview moves focus there.\n    if (row !== focus.row || column !== focusedIndex) setFocus({ row, column });\n    setDetails(item);\n    setDetailsButton(0);\n    setPlaying(false);\n  };\n\n  useEffect(() => {\n    if (!home) return;\n    const onKeyDown = (event: KeyboardEvent) => {\n      // A held key repeats; a repeated Enter would press the button that the first one just focused.\n      if (event.key === 'Enter' && event.repeat) {\n        event.preventDefault();\n        return;\n      }\n      // A click on empty space drops DOM focus; any key brings it back to the element the state names.\n      const target = elements.current.get(focusKey);\n      if (target && document.activeElement !== target) target.focus();\n      if (details) {\n        // The details trap the remote: arrows move between their buttons, and Back closes them.\n        const arrow = ARROWS.get(event.key);\n        if (isBack(event.key)) {\n          event.preventDefault();\n          setDetails(null);\n        } else if (arrow) {\n          event.preventDefault();\n          if (arrow[1] !== 0) setDetailsButton(arrow[1] < 0 ? 0 : 1);\n        }\n        return;\n      }\n      // An old TV browser goes back a page on Backspace.\n      if (event.key === 'Backspace') event.preventDefault();\n      const arrow = ARROWS.get(event.key);\n      if (!arrow) return;\n      event.preventDefault();\n      const [down, across] = arrow;\n      if (down !== 0) {\n        const row = Math.max(0, Math.min(home.rows.length - 1, focus.row + down));\n        setFocus({ row, column: focus.column });\n      } else if (focusedItems) {\n        const column = Math.max(0, Math.min(focusedItems.length - 1, focusedIndex + across));\n        // A press against the end of a row moves nothing, so it chooses no column either.\n        if (column !== focusedIndex) setFocus({ row: focus.row, column });\n      }\n    };\n    window.addEventListener('keydown', onKeyDown);\n    return () => window.removeEventListener('keydown', onKeyDown);\n  }, [home, details, focus, focusedItems, focusedIndex, focusKey]);\n\n  if (!home) {\n    return (\n      <main className=\"home\">\n        <p className=\"home-loading\" role=\"status\">\n          Loading…\n        </p>\n      </main>\n    );\n  }\n\n  const onList = details ? watchlist.includes(details.id) : false;\n  const toggleWatchlist = (id: string) =>\n    setWatchlist((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));\n\n  return (\n    <main className=\"home\">\n      <div className=\"rows\">\n        {home.rows.map((row, rowIndex) => {\n          const items = itemsOf(row);\n          return (\n            <section key={row.id} className=\"row\" data-row={row.id}>\n              <h2 className=\"row-title\">{row.title}</h2>\n              <div className=\"row-tiles\">\n                {items ? (\n                  items.map((item, column) => (\n                    <Tile\n                      key={item.id}\n                      item={item}\n                      tileRef={register(`${rowIndex}:${column}`)}\n                      onOpen={() => openDetails(rowIndex, column, item)}\n                    />\n                  ))\n                ) : (\n                  <div ref={register(`${rowIndex}:placeholder`)} className=\"row-placeholder\" tabIndex={-1}>\n                    {row.kind === 'curated' || sets[row.setId] ? 'No titles' : 'Loading…'}\n                  </div>\n                )}\n              </div>\n            </section>\n          );\n        })}\n      </div>\n\n      {details && (\n        <div className=\"details-backdrop\" onClick={() => setDetails(null)}>\n          <div\n            className=\"details\"\n            role=\"dialog\"\n            aria-modal=\"true\"\n            aria-labelledby=\"details-title\"\n            onClick={(event) => event.stopPropagation()}\n          >\n            <h2 id=\"details-title\" className=\"details-title\">\n              {details.name}\n            </h2>\n            <p className=\"details-year\">{details.year}</p>\n            <p className=\"details-description\">{details.description}</p>\n            <div className=\"details-actions\">\n              <button\n                ref={register('details:0')}\n                type=\"button\"\n                className=\"play\"\n                onClick={() => {\n                  setDetailsButton(0);\n                  setPlaying(true);\n                }}\n              >\n                Play\n              </button>\n              <button\n                ref={register('details:1')}\n                type=\"button\"\n                className=\"watchlist\"\n                aria-pressed={onList}\n                onClick={() => {\n                  setDetailsButton(1);\n                  toggleWatchlist(details.id);\n                }}\n              >\n                My list\n              </button>\n            </div>\n            <p className=\"details-status\" role=\"status\">\n              {playing ? `Playing ${details.name}` : ''}\n            </p>\n          </div>\n        </div>\n      )}\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-20",
+    "seo": {
+      "title": "React TV Remote Navigation: Focus, Lazy Rows and Details",
+      "description": "A TV home screen in React: arrow-key focus that keeps its column, rows that load as they come into view without IntersectionObserver, and a details dialog."
+    }
   }
 ]

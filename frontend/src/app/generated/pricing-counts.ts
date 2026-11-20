@@ -32,10 +32,10 @@ export const PRICING_COUNTS: PricingCounts = {
   "premiumRehearsals": 5,
   "areas": {
     "react": {
-      "total": 45,
+      "total": 46,
       "free": 7,
-      "premium": 38,
-      "premiumHard": 5
+      "premium": 39,
+      "premiumHard": 6
     },
     "angular": {
       "total": 27,

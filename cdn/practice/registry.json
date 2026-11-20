@@ -8275,6 +8275,28 @@
     "assetRef": "questions/react/coding.json#react-todo-list"
   },
   {
+    "id": "react-living-room-home",
+    "family": "question",
+    "title": "TV Home Screen: Remote Focus, Lazy Rows and Details",
+    "route": "/react/coding/react-living-room-home",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Turn a streaming home screen built for a mouse into one a TV remote can drive: arrow-key focus that keeps its column, rows that load as they come into view without IntersectionObserver, and details that hold focus until Back.",
+    "tags": [
+      "react",
+      "keyboard",
+      "focus",
+      "lazy-loading",
+      "dialog",
+      "images"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 60,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-living-room-home"
+  },
+  {
     "id": "react-useeffect-purpose",
     "family": "question",
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",

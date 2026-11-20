@@ -1037,6 +1037,91 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-living-room-home-focus',
+    questionId: 'react-living-room-home',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['Left and Right move', 'keep the column', 'still loading', 'arriving on a focused', 'arrive after focus']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-focus',
+      title: 'Drive the rows with the arrow keys alone',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks press the arrow keys where focus is and read which `.tile` or `.row-placeholder` has focus: along a row and past its ends, down through rows of different lengths, and onto a row whose titles have not arrived yet.',
+      ),
+      actions: [
+        'From the sixth tile of Trending now, press Down three times: New this week\'s sixth tile, the last documentary, then Family nights\' sixth tile.',
+        'From the first row, press Down three times quickly: the Documentaries placeholder should take focus, then a documentary at the kept column when the row loads.',
+        'Leave a loading row before it arrives: focus should stay where you moved it.',
+        'When the rows appear, The Lighthouse Keeper should already have focus.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-details',
+    questionId: 'react-living-room-home',
+    priority: 95,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['opens the focused title']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-details',
+      title: 'Open and close the details with the remote',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'This check presses Enter on a tile, moves between `.play` and `.watchlist` with every arrow, presses Enter on both, and closes the details with Escape and with Backspace, reading where focus goes each time.',
+      ),
+      actions: [
+        'Open a title from a lower row and press every arrow: focus should stay on the two buttons, and Back should return to that title.',
+        'Close the details with Escape and with Backspace: focus should be back on the tile you opened.',
+        'Press Play and My list, open another title, then the first again: My list is kept per title, and the status starts empty.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-loading',
+    questionId: 'react-living-room-home',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['first tile takes focus', 'load their titles once', 'image fails']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-loading',
+      title: 'Watch what loads, and when',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read `.home-loading`, the rows and their titles, the first focus, the `data-set-*` request counts on the body as focus moves down and back, and the `.tile-fallback` of the titles whose artwork is broken.',
+      ),
+      actions: [
+        'Check that a loading line shows first, then six rows in order, with the first tile focused.',
+        'Watch `data-set-docs` on the body: it should become 1 when focus reaches Trending now, and stay 1.',
+        'Look at Night Market in New this week: its artwork is broken, so the tile should show its name.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-default',
+    questionId: 'react-living-room-home',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-default',
+      title: 'Use the keyboard alone',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The starter is built for a mouse, and every check drives the home with the arrow keys, Enter and Back alone, pressed where focus is.',
+      ),
+      actions: [
+        'Click the preview once so it receives your keys (a click on a tile opens it), then use only the keyboard.',
+        'Watch which element has focus after each key.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-modal-tooltip-portal-dialog',
     questionId: 'react-modal-tooltip-portal',
     priority: 100,

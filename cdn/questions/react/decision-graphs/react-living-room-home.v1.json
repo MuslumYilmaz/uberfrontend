@@ -1,0 +1,121 @@
+{
+  "questionId": "react-living-room-home",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\n/** Time the fake API takes to answer, in ms. */\nexport const HOME_DELAY_MS = 300;\nexport const SET_DELAY_MS = 600;\n\nexport interface Title {\n  id: string;\n  name: string;\n  year: number;\n  description: string;\n  image: string;\n}\n\n/** A curated row comes with its titles; a set row names a set of titles to load with fetchSet. */\nexport type HomeRow =\n  | { id: string; title: string; kind: 'curated'; items: Title[] }\n  | { id: string; title: string; kind: 'set'; setId: string };\n\nexport interface HomeDocument {\n  rows: HomeRow[];\n}\n\nconst art = (from: string, to: string) =>\n  'data:image/svg+xml,' +\n  encodeURIComponent(\n    '<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 90\"><defs><linearGradient id=\"g\" x2=\"1\" y2=\"1\">' +\n      `<stop offset=\"0\" stop-color=\"${from}\"/><stop offset=\"1\" stop-color=\"${to}\"/></linearGradient></defs>` +\n      '<rect width=\"160\" height=\"90\" fill=\"url(#g)\"/></svg>',\n  );\n/** An image the TV cannot decode, as when an artwork link is broken. */\nconst BROKEN = 'data:image/png;base64,broken';\nconst title = (id: string, name: string, year: number, description: string, image: string): Title => ({\n  id,\n  name,\n  year,\n  description,\n  image,\n});\n\nconst SETS: Record<string, Title[]> = {\n  trending: [\n    title('northbound', 'Northbound', 2023, 'Two sisters drive a borrowed bus to the Arctic Circle.',\n      art('#0f766e', '#22d3ee')),\n    title('paper-lanterns', 'Paper Lanterns', 2022, 'A night market owner hides a talking lantern.',\n      art('#b45309', '#fde047')),\n    title('quiet-engine', 'The Quiet Engine', 2021, 'An inventor builds a train that makes no sound.',\n      art('#334155', '#94a3b8')),\n    title('glass-harbor', 'Glass Harbor', 2024, 'Divers find a city under the ice.', art('#1e3a8a', '#38bdf8')),\n    title('fieldwork', 'Fieldwork', 2020, 'A biology class gets lost on a school trip.', art('#365314', '#a3e635')),\n    title('moth-season', 'Moth Season', 2023, 'A detective who only works at night.', art('#4c1d95', '#c084fc')),\n    title('second-shift', 'Second Shift', 2022, 'Nurses on the late shift of a small hospital.',\n      art('#7f1d1d', '#f87171')),\n    title('tidal-lines', 'Tidal Lines', 2024, 'Surfers race a storm along the coast.', art('#155e75', '#67e8f9')),\n  ],\n  docs: [\n    title('deep-archive', 'Deep Archive', 2021, 'Inside the vault that keeps every seed on Earth.', BROKEN),\n    title('city-bees', 'Bees of the City', 2023, 'Beekeepers on the rooftops of a capital.',\n      art('#a16207', '#facc15')),\n  ],\n  family: [\n    title('puddle-jumpers', 'Puddle Jumpers', 2019, 'Three ducklings try to fly before winter.',\n      art('#0369a1', '#7dd3fc')),\n    title('captain-waffle', 'Captain Waffle', 2021, 'A breakfast superhero saves the school fair.',\n      art('#c2410c', '#fdba74')),\n    title('lost-kite', 'The Lost Kite', 2020, 'A kite crosses the ocean to find its owner.',\n      art('#be185d', '#f9a8d4')),\n    title('snowball-summer', 'Snowball Summer', 2022, 'A snowman wakes up in July.', art('#0e7490', '#e0f2fe')),\n    title('mapmakers', 'Mapmakers', 2023, 'Cousins draw a map of a town that keeps moving.',\n      art('#3f6212', '#d9f99d')),\n    title('robot-garden', 'Robot Garden', 2024, 'A robot learns to grow tomatoes.', art('#065f46', '#6ee7b7')),\n    title('big-sky-ranch', 'Big Sky Ranch', 2018, 'A family runs a ranch for retired racehorses.',\n      art('#78350f', '#fcd34d')),\n  ],\n  classics: [\n    title('midnight-line', 'Midnight Express Line', 1958, 'A conductor solves a theft between two stations.',\n      art('#1c1917', '#a8a29e')),\n    title('hat-in-rome', 'A Hat in Rome', 1961, 'A tourist chases her hat across the city.',\n      art('#7c2d12', '#fed7aa')),\n    title('dust-thunder', 'Dust and Thunder', 1966, 'Two rival stagecoach drivers share one road.',\n      art('#57534e', '#d6d3d1')),\n    title('velvet-room', 'The Velvet Room', 1972, 'A jazz club keeps one table free every night.',\n      art('#581c87', '#f0abfc')),\n    title('harbor-lights', 'Harbor Lights', 1954, 'A lighthouse keeper writes to a stranger.',\n      art('#1e40af', '#bfdbfe')),\n  ],\n};\n\nconst HOME: HomeDocument = {\n  rows: [\n    {\n      id: 'continue',\n      title: 'Continue watching',\n      kind: 'curated',\n      items: [\n        title('lighthouse', 'The Lighthouse Keeper', 2021, 'One winter on an island with no ferry.',\n          art('#0c4a6e', '#f8fafc')),\n        title('orbit', 'Orbit of Ash', 2019, 'A cargo pilot finds a passenger she never loaded.',\n          art('#18181b', '#f97316')),\n        title('salt-silver', 'Salt and Silver', 2022, 'Two chefs share one kitchen and one secret.',\n          art('#0f172a', '#cbd5e1')),\n      ],\n    },\n    { id: 'trending', title: 'Trending now', kind: 'set', setId: 'trending' },\n    {\n      id: 'new',\n      title: 'New this week',\n      kind: 'curated',\n      items: [\n        title('copper-sky', 'Copper Sky', 2024, 'A town wakes up under an orange sky.', art('#9a3412', '#fb923c')),\n        title('night-market', 'Night Market', 2024, 'Food stalls, one night, twelve stories.', BROKEN),\n        title('little-volcano', 'Little Volcano', 2024, 'A volcano that only erupts when it is sad.',\n          art('#991b1b', '#fca5a5')),\n        title('long-table', 'The Long Table', 2024, 'A wedding dinner where nobody agrees.',\n          art('#713f12', '#fef08a')),\n        title('static-bloom', 'Static Bloom', 2024, 'A radio host hears flowers on the air.',\n          art('#86198f', '#f5d0fe')),\n        title('hollow-pines', 'Hollow Pines', 2024, 'Campers find a cabin that was not there yesterday.',\n          art('#14532d', '#86efac')),\n      ],\n    },\n    { id: 'docs', title: 'Documentaries', kind: 'set', setId: 'docs' },\n    { id: 'family', title: 'Family nights', kind: 'set', setId: 'family' },\n    { id: 'classics', title: 'Classics', kind: 'set', setId: 'classics' },\n  ],\n};\n\n/** Given: the TV's browser is old and has no IntersectionObserver. */\nReflect.deleteProperty(window, 'IntersectionObserver');\n\nconst setRequests = new Map<string, number>(Object.keys(SETS).map((setId) => [setId, 0]));\nconst showSetRequests = () =>\n  setRequests.forEach((count, setId) => document.body.setAttribute(`data-set-${setId}`, String(count)));\nshowSetRequests();\n\n/** Given: the home document, after HOME_DELAY_MS. */\nexport function fetchHome(): Promise<HomeDocument> {\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(HOME), HOME_DELAY_MS);\n  });\n}\n\n/**\n * Given: the titles of one set, after SET_DELAY_MS. It counts the requests for each set on\n * body[data-set-<setId>], such as data-set-docs, so the checks can tell which sets were asked for.\n */\nexport function fetchSet(setId: string): Promise<Title[]> {\n  setRequests.set(setId, (setRequests.get(setId) ?? 0) + 1);\n  showSetRequests();\n  return new Promise((resolve) => {\n    window.setTimeout(() => resolve(SETS[setId] ?? []), SET_DELAY_MS);\n  });\n}\n\n/** The focused row, and the column the user last chose with Left or Right. */\ninterface Focus {\n  row: number;\n  column: number;\n}\n\n/** Each arrow as [rows down, tiles across]. */\nconst ARROWS = new Map<string, [number, number]>([\n  ['ArrowUp', [-1, 0]],\n  ['ArrowDown', [1, 0]],\n  ['ArrowLeft', [0, -1]],\n  ['ArrowRight', [0, 1]],\n]);\nconst isBack = (key: string) => key === 'Escape' || key === 'Backspace';\n/** Rows from the focused one to this many below it are on screen. */\nconst ROWS_AHEAD = 2;\n\nfunction Tile(props: { item: Title; tileRef: (element: HTMLElement | null) => void; onOpen: () => void }) {\n  const { item, tileRef, onOpen } = props;\n  const [broken, setBroken] = useState(false);\n  return (\n    <button ref={tileRef} type=\"button\" className=\"tile\" onClick={onOpen}>\n      {broken ? (\n        <span className=\"tile-fallback\">{item.name}</span>\n      ) : (\n        <img className=\"tile-image\" src={item.image} alt={item.name} onError={() => setBroken(true)} />\n      )}\n    </button>\n  );\n}\n\nexport default function App() {\n  const [home, setHome] = useState<HomeDocument | null>(null);\n  const [sets, setSets] = useState<Record<string, Title[]>>({});\n  const [focus, setFocus] = useState<Focus>({ row: 0, column: 0 });\n  const [details, setDetails] = useState<Title | null>(null);\n  const [detailsButton, setDetailsButton] = useState(0);\n  const [playing, setPlaying] = useState(false);\n  const [watchlist, setWatchlist] = useState<string[]>([]);\n  const requested = useRef(new Set<string>());\n  const elements = useRef(new Map<string, HTMLElement>());\n  const refCallbacks = useRef(new Map<string, (element: HTMLElement | null) => void>());\n\n  useEffect(() => {\n    fetchHome().then(setHome);\n  }, []);\n\n  /** A row's titles, or undefined while it loads; a set that came back empty has nothing to focus either. */\n  const itemsOf = (row: HomeRow) => {\n    const items = row.kind === 'curated' ? row.items : sets[row.setId];\n    return items && items.length > 0 ? items : undefined;\n  };\n\n  // Without IntersectionObserver, focus decides what counts as in view: the focused row and the two below it, the\n  // rows the remote reaches next.\n  useEffect(() => {\n    if (!home) return;\n    home.rows.slice(focus.row, focus.row + ROWS_AHEAD + 1).forEach((row) => {\n      if (row.kind !== 'set' || requested.current.has(row.setId)) return;\n      requested.current.add(row.setId);\n      fetchSet(row.setId).then((items) => setSets((current) => ({ ...current, [row.setId]: items })));\n    });\n  }, [home, focus.row]);\n\n  const focusedRow = home ? home.rows[focus.row] : undefined;\n  const focusedItems = focusedRow ? itemsOf(focusedRow) : undefined;\n  // A shorter row clamps the column for display only; the column itself is kept for the rows after it.\n  const focusedIndex = focusedItems ? Math.min(focus.column, focusedItems.length - 1) : -1;\n  const focusKey = !home\n    ? ''\n    : details\n      ? `details:${detailsButton}`\n      : focusedItems\n        ? `${focus.row}:${focusedIndex}`\n        : `${focus.row}:placeholder`;\n\n  // Moves DOM focus whenever its target changes, including when a loading row's titles arrive.\n  useEffect(() => {\n    elements.current.get(focusKey)?.focus();\n  }, [focusKey]);\n\n  // One stable callback ref per key, so a render does not detach and reattach every tile.\n  const register = (key: string) => {\n    let callback = refCallbacks.current.get(key);\n    if (!callback) {\n      callback = (element: HTMLElement | null) => {\n        if (element) elements.current.set(key, element);\n        else elements.current.delete(key);\n      };\n      refCallbacks.current.set(key, callback);\n    }\n    return callback;\n  };\n\n  const openDetails = (row: number, column: number, item: Title) => {\n    // Enter opens the focused tile, so the kept column stays; a click elsewhere in the preview moves focus there.\n    if (row !== focus.row || column !== focusedIndex) setFocus({ row, column });\n    setDetails(item);\n    setDetailsButton(0);\n    setPlaying(false);\n  };\n\n  useEffect(() => {\n    if (!home) return;\n    const onKeyDown = (event: KeyboardEvent) => {\n      // A held key repeats; a repeated Enter would press the button that the first one just focused.\n      if (event.key === 'Enter' && event.repeat) {\n        event.preventDefault();\n        return;\n      }\n      // A click on empty space drops DOM focus; any key brings it back to the element the state names.\n      const target = elements.current.get(focusKey);\n      if (target && document.activeElement !== target) target.focus();\n      if (details) {\n        // The details trap the remote: arrows move between their buttons, and Back closes them.\n        const arrow = ARROWS.get(event.key);\n        if (isBack(event.key)) {\n          event.preventDefault();\n          setDetails(null);\n        } else if (arrow) {\n          event.preventDefault();\n          if (arrow[1] !== 0) setDetailsButton(arrow[1] < 0 ? 0 : 1);\n        }\n        return;\n      }\n      // An old TV browser goes back a page on Backspace.\n      if (event.key === 'Backspace') event.preventDefault();\n      const arrow = ARROWS.get(event.key);\n      if (!arrow) return;\n      event.preventDefault();\n      const [down, across] = arrow;\n      if (down !== 0) {\n        const row = Math.max(0, Math.min(home.rows.length - 1, focus.row + down));\n        setFocus({ row, column: focus.column });\n      } else if (focusedItems) {\n        const column = Math.max(0, Math.min(focusedItems.length - 1, focusedIndex + across));\n        // A press against the end of a row moves nothing, so it chooses no column either.\n        if (column !== focusedIndex) setFocus({ row: focus.row, column });\n      }\n    };\n    window.addEventListener('keydown', onKeyDown);\n    return () => window.removeEventListener('keydown', onKeyDown);\n  }, [home, details, focus, focusedItems, focusedIndex, focusKey]);\n\n  if (!home) {\n    return (\n      <main className=\"home\">\n        <p className=\"home-loading\" role=\"status\">\n          Loading…\n        </p>\n      </main>\n    );\n  }\n\n  const onList = details ? watchlist.includes(details.id) : false;\n  const toggleWatchlist = (id: string) =>\n    setWatchlist((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));\n\n  return (\n    <main className=\"home\">\n      <div className=\"rows\">\n        {home.rows.map((row, rowIndex) => {\n          const items = itemsOf(row);\n          return (\n            <section key={row.id} className=\"row\" data-row={row.id}>\n              <h2 className=\"row-title\">{row.title}</h2>\n              <div className=\"row-tiles\">\n                {items ? (\n                  items.map((item, column) => (\n                    <Tile\n                      key={item.id}\n                      item={item}\n                      tileRef={register(`${rowIndex}:${column}`)}\n                      onOpen={() => openDetails(rowIndex, column, item)}\n                    />\n                  ))\n                ) : (\n                  <div ref={register(`${rowIndex}:placeholder`)} className=\"row-placeholder\" tabIndex={-1}>\n                    {row.kind === 'curated' || sets[row.setId] ? 'No titles' : 'Loading…'}\n                  </div>\n                )}\n              </div>\n            </section>\n          );\n        })}\n      </div>\n\n      {details && (\n        <div className=\"details-backdrop\" onClick={() => setDetails(null)}>\n          <div\n            className=\"details\"\n            role=\"dialog\"\n            aria-modal=\"true\"\n            aria-labelledby=\"details-title\"\n            onClick={(event) => event.stopPropagation()}\n          >\n            <h2 id=\"details-title\" className=\"details-title\">\n              {details.name}\n            </h2>\n            <p className=\"details-year\">{details.year}</p>\n            <p className=\"details-description\">{details.description}</p>\n            <div className=\"details-actions\">\n              <button\n                ref={register('details:0')}\n                type=\"button\"\n                className=\"play\"\n                onClick={() => {\n                  setDetailsButton(0);\n                  setPlaying(true);\n                }}\n              >\n                Play\n              </button>\n              <button\n                ref={register('details:1')}\n                type=\"button\"\n                className=\"watchlist\"\n                aria-pressed={onList}\n                onClick={() => {\n                  setDetailsButton(1);\n                  toggleWatchlist(details.id);\n                }}\n              >\n                My list\n              </button>\n            </div>\n            <p className=\"details-status\" role=\"status\">\n              {playing ? `Playing ${details.name}` : ''}\n            </p>\n          </div>\n        </div>\n      )}\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-column-apart-from-tile",
+          "title": "Keep the column apart from the tile",
+          "anchor": {
+            "lineStart": 223,
+            "lineEnd": 223,
+            "snippet": "const focusedIndex = focusedItems ? Math.min(focus.column, focusedItems.length - 1) : -1;"
+          },
+          "why": "Focus stores the column the user chose with Left and Right, and each row shows the nearest tile it has. Passing through a two-tile row clamps what is shown, not what is kept, so the next long row lands back in the chosen column.",
+          "alternative": "Store the focused tile index and clamp it on every move.",
+          "tradeoff": "One number is simpler, but a short row overwrites it: after Documentaries, every row below starts from its second tile."
+        },
+        {
+          "id": "a2-view-from-focus",
+          "title": "Work out what is in view from focus",
+          "anchor": {
+            "lineStart": 213,
+            "lineEnd": 213,
+            "snippet": "home.rows.slice(focus.row, focus.row + ROWS_AHEAD + 1).forEach((row) => {"
+          },
+          "why": "The TV's browser has no IntersectionObserver, and on a TV the screen moves only when focus does, so focus is the best guide to what the user sees next. The focused row and the two below it form a prefetch window: their sets start loading before focus gets there, and a row that is still loading when focus arrives shows its placeholder.",
+          "alternative": "Measure the rows with getBoundingClientRect when the page scrolls.",
+          "tradeoff": "It needs no IntersectionObserver either, but it reads layout on every scroll, which is slow on a TV processor, and it adds nothing focus does not already say."
+        },
+        {
+          "id": "a3-request-once",
+          "title": "Ask for each set once",
+          "anchor": {
+            "lineStart": 215,
+            "lineEnd": 215,
+            "snippet": "requested.current.add(row.setId);"
+          },
+          "why": "A set is marked as requested before its answer arrives, so moving away and back while it loads does not ask again. The mark lives in a ref because it never changes what is drawn.",
+          "alternative": "Request a set whenever its row is in view and its titles are missing.",
+          "tradeoff": "That reads naturally, but every Up or Down press that keeps the row in view during the 600 ms wait sends another request for the same set."
+        },
+        {
+          "id": "a4-one-focus-target",
+          "title": "Derive one focus target and move DOM focus to it",
+          "anchor": {
+            "lineStart": 234,
+            "lineEnd": 234,
+            "snippet": "elements.current.get(focusKey)?.focus();"
+          },
+          "why": "Every way focus can change, a key press, a set arriving or the details opening and closing, ends in one focus target that names the element to focus. One effect moves DOM focus when that target changes, so a placeholder hands focus to its tile the moment the titles render, and each key press puts DOM focus back on the target if a click took it away.",
+          "alternative": "Call focus() from each key handler.",
+          "tradeoff": "It moves focus at once, but a row that finishes loading later has no handler to move focus into it, and each handler repeats the lookup."
+        },
+        {
+          "id": "a5-focus-the-placeholder",
+          "title": "Let a loading row hold focus",
+          "anchor": {
+            "lineStart": 230,
+            "lineEnd": 230,
+            "snippet": ": `${focus.row}:placeholder`;"
+          },
+          "why": "Pressing Down onto a row that is still loading moves focus to its placeholder, so the remote always does something visible. When the titles arrive the target becomes the tile at the kept column, and only if focus is still on that row.",
+          "alternative": "Ignore Down until the row below has loaded.",
+          "tradeoff": "Focus never lands on an empty row, but a press that does nothing feels broken on a TV, where users cannot see why."
+        },
+        {
+          "id": "a6-trap-the-remote",
+          "title": "Keep the remote inside the details",
+          "anchor": {
+            "lineStart": 277,
+            "lineEnd": 277,
+            "snippet": "if (arrow[1] !== 0) setDetailsButton(arrow[1] < 0 ? 0 : 1);"
+          },
+          "why": "While the details are open, the key handler returns before the row logic, so no arrow moves the focus state of the rows behind, and the focus key names a details button. Only Left and Right move, between the two buttons.",
+          "alternative": "Mark the rows inert while the details are open.",
+          "tradeoff": "inert keeps clicks and Tab out of the rows in a modern browser, but an old TV browser may not support it, and a key listener on window receives the arrows either way, so the handler has to ignore them anyway."
+        },
+        {
+          "id": "a7-buttons-for-tiles",
+          "title": "Use buttons for tiles",
+          "anchor": {
+            "lineStart": 177,
+            "lineEnd": 177,
+            "snippet": "<button ref={tileRef} type=\"button\" className=\"tile\" onClick={onOpen}>"
+          },
+          "why": "A button takes focus and turns Enter into a click by itself, so the tile opens its details without an Enter handler, and the same button works with a mouse in the preview.",
+          "alternative": "Use a focusable div and handle Enter in the key handler.",
+          "tradeoff": "It works when the key handler opens the details on Enter, but screen readers do not announce the div as something to press."
+        },
+        {
+          "id": "a8-name-for-broken-art",
+          "title": "Show the name when the artwork fails",
+          "anchor": {
+            "lineStart": 181,
+            "lineEnd": 181,
+            "snippet": "onError={() => setBroken(true)}"
+          },
+          "why": "An image that fails fires error on its img element. The tile then swaps the image for the title's name, so the row has no blank tile and the title can still be found and opened.",
+          "alternative": "Hide the broken image and leave the tile empty.",
+          "tradeoff": "Simpler, but an empty card on a TV gives no hint what it is."
+        },
+        {
+          "id": "a9-return-focus",
+          "title": "Return focus to the tile on Back",
+          "anchor": {
+            "lineStart": 274,
+            "lineEnd": 274,
+            "snippet": "setDetails(null);"
+          },
+          "why": "Closing the details only clears them; focus still names the tile that opened them, so the focus effect moves DOM focus back to it and the next arrow continues from there.",
+          "alternative": "Remember the opening element in a ref and focus it on close.",
+          "tradeoff": "That also works, but it keeps a second record of where focus is, which can disagree with the first."
+        }
+      ]
+    }
+  }
+}

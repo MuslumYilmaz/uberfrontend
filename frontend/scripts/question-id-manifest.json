@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T13:42:18.885Z",
+  "generatedAt": "2026-11-20T15:52:01.143Z",
   "entries": [
     {
       "tech": "angular",
@@ -2082,6 +2082,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-listing-booking-widget",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-living-room-home",
       "file": "react/coding.json"
     },
     {
