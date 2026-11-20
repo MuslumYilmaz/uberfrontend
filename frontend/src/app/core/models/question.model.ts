@@ -127,6 +127,7 @@ export type FrameworkTestStepType =
   | 'expectColor'
   | 'expectReferenced'
   | 'expectIndented'
+  | 'expectPlaced'
   | 'mockStorage'
   | 'expectStorage'
   | 'expectName'
@@ -191,9 +192,15 @@ export type FrameworkTestStep = {
   politeness?: string;
   /** expectLiveRegion: whether the live region announces itself whole. */
   atomic?: boolean;
-  /** scroll: the scroll position to set on the target, in CSS pixels from the top and from the left. */
+  /**
+   * scroll: the scroll position to set on the target, in CSS pixels from the top and from the left.
+   * expectPlaced: `left` is where the target's left edge must be, in CSS pixels from the frame's left edge.
+   */
   top?: number;
   left?: number;
+  /** expectPlaced: the side of `than` the target must sit on, and the space between them in CSS pixels. */
+  side?: 'below' | 'above';
+  gap?: number;
 };
 
 export type FrameworkTest = {

@@ -58,6 +58,8 @@ describe('PressureModeService', () => {
       { type: 'key', selector: '.first', key: 'Tab', shift: true },
       { type: 'key', selector: '.last', key: 'Tab', shift: 'yes', defaultAction: true },
       { type: 'drag', selector: '.field', to: { selector: '.backdrop', css: 'x' } },
+      { type: 'expectPlaced', selector: '.tip', than: { selector: '.info' }, side: 'below', gap: 8, left: 8 },
+      { type: 'expectPlaced', selector: '.tip', side: 'beside', gap: 'x' },
     ];
 
     expect(service.normalize(payload)?.rounds[0].frameworkTests[0].steps).toEqual([
@@ -82,6 +84,8 @@ describe('PressureModeService', () => {
       { type: 'key', selector: '.first', key: 'Tab', shift: true },
       { type: 'key', selector: '.last', key: 'Tab', defaultAction: true },
       { type: 'drag', selector: '.field', to: { selector: '.backdrop' } },
+      { type: 'expectPlaced', selector: '.tip', than: { selector: '.info' }, side: 'below', gap: 8, left: 8 },
+      { type: 'expectPlaced', selector: '.tip' },
     ]);
   });
 

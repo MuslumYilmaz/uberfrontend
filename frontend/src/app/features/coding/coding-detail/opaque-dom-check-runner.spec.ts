@@ -691,6 +691,36 @@ describe('OpaqueDomCheckRunner', () => {
     ]);
   });
 
+  it('measures how far an element sits below or above another and where its left edge is, within a pixel', async () => {
+    const page = `<!doctype html><html><body style="margin: 0">
+      <button class="anchor" style="position: absolute; top: 100px; left: 40px; width: 24px; height: 24px">i</button>
+      <div class="below" style="position: absolute; top: 132px; left: 8px; width: 240px; height: 50px">Below</div>
+      <div class="above" style="position: absolute; top: 42.5px; left: 8px; width: 240px; height: 50px">Above</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const placed = (selector: string, extra: Record<string, unknown>) => ({ type: 'expectPlaced', selector, than: { selector: '.anchor' }, ...extra });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'right',
+        name: 'Right',
+        steps: [
+          placed('.below', { side: 'below', gap: 8, left: 8 }),
+          placed('.above', { side: 'above', gap: 8 }),
+          { type: 'expectPlaced', selector: '.below', left: 8 },
+        ],
+      },
+      { id: 'gap', name: 'Gap', steps: [placed('.below', { side: 'below', gap: 20 })] },
+      { id: 'edge', name: 'Edge', steps: [placed('.below', { side: 'below', gap: 8, left: 0 })] },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'expectPlaced', selector: '.below', than: { selector: '.nowhere' }, side: 'below', gap: 8 }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Right', passed: true },
+      { name: 'Gap', passed: false, error: '.below sits 8px below .anchor; expected 20px', failureKind: 'assertion' },
+      { name: 'Edge', passed: false, error: '.below starts 8px from the left edge; expected 0px', failureKind: 'assertion' },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
   it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
     const page = `<!doctype html><html><body><div class="list">
       <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>

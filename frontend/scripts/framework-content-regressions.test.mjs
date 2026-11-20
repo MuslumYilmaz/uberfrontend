@@ -6589,7 +6589,7 @@ const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText
   'mouseDown', 'pointerDown', 'hover', 'unhover', 'focus', 'drag', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
   'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
-  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion',
+  'expectColor', 'expectReferenced', 'expectIndented', 'expectPlaced', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion',
   'scroll']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();

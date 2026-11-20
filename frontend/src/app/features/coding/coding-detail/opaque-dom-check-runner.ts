@@ -1304,6 +1304,26 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }
       return Promise.resolve();
     }
+    if (type === 'expectPlaced') {
+      // Where the target sits once laid out, within a pixel: `gap` px below or above another element (a tooltip
+      // against its button), and with `left`, how far its left edge is from the frame's left edge.
+      const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
+      const side = step.side;
+      const other = side ? queryElement(reference) : null;
+      if (side && !other) throw new Error(`${describeTarget(reference)} was not found`);
+      return laidOutRects(other ? [element, other] : [element]).then(([own, theirs]) => {
+        if (side && theirs) {
+          const gap = Number(step.gap ?? 0);
+          const actual = side === 'below' ? own.top - theirs.bottom : theirs.top - own.bottom;
+          if (Math.abs(actual - gap) > 1) {
+            throw new Error(`${target} sits ${Math.round(actual)}px ${side} ${describeTarget(reference)}; expected ${gap}px`);
+          }
+        }
+        if (step.left !== undefined && Math.abs(own.left - Number(step.left)) > 1) {
+          throw new Error(`${target} starts ${Math.round(own.left)}px from the left edge; expected ${step.left}px`);
+        }
+      });
+    }
     if (type === 'expectIndented') {
       // The target starts further right than another element, as a reply sits indented under its comment.
       const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
