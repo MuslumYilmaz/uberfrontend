@@ -7258,7 +7258,7 @@
     "route": "/react/coding/react-modal-tooltip-portal",
     "tech": "react",
     "difficulty": "intermediate",
-    "summary": "Fix a settings screen whose delete dialog and help tooltips are clipped by a card: portal both into the body, keep focus inside the dialog, quiet the page behind it, and flip a tooltip that would leave its panel.",
+    "summary": "Fix a settings screen whose delete dialog and help tooltips are clipped by a card: portal both into the body, keep focus inside the dialog, make the page behind it inert and unscrollable, and flip a tooltip that would leave its panel.",
     "tags": [
       "react",
       "portals",

@@ -177,11 +177,14 @@ const WRONG_SOLUTIONS: WrongCase[] = [
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tab-without-prevent-default.tsx', fails: ['portal-dialog-focus-trap'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-cleanup-on-cancel-only.tsx', fails: ['portal-dialog-closes', 'portal-dialog-focus-trap', 'portal-dialog-background'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-class-left-on-unmount.tsx', fails: ['portal-dialog-background'] },
-  { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-inline.tsx', fails: ['portal-tooltip-hover-focus'] },
+  { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-inline.tsx', fails: ['portal-tooltip-hover-focus', 'portal-tooltip-placement'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-describedby-always.tsx', fails: ['portal-tooltip-hover-focus'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-leave-closes-focused.tsx', fails: ['portal-tooltip-hover-focus'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-placement-by-field.tsx', fails: ['portal-tooltip-placement'] },
   { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-scroll-always-hides.tsx', fails: ['portal-tooltip-placement'] },
+  { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-no-gap.tsx', fails: ['portal-tooltip-placement'] },
+  { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-no-clamp.tsx', fails: ['portal-tooltip-placement'] },
+  { framework: 'react', id: 'react-modal-tooltip-portal', premium: true, fixture: 'react-modal-portal-tooltip-keeps-inline-class.tsx', fails: ['portal-tooltip-placement'] },
 ];
 
 const catalogs = new Map<Framework, Array<{ id: string; frameworkTests?: Array<{ id: string; name: string }> }>>();

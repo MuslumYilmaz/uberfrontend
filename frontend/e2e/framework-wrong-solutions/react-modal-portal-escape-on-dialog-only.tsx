@@ -96,8 +96,8 @@ function InfoButton({ help, boundaryRef }: { help: Help; boundaryRef: { current:
   }, [shown, boundaryRef, layoutVersion]);
 
   // While the tooltip shows, Escape dismisses it wherever focus is. A scroll of the panel places it again while its
-  // button is still wholly inside the panel, as after the scroll a browser makes to reveal a button it has just
-  // focused, and hides it once the button is partly scrolled out. A resize places it again.
+  // button is inside the panel, give or take a pixel, as after the scroll a browser makes to reveal a button it has
+  // just focused, and hides it once the button is partly scrolled out. A resize places it again.
   useEffect(() => {
     const boundary = boundaryRef.current;
     if (!shown || !boundary) return;
@@ -172,6 +172,7 @@ export default function App() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const confirmRef = useRef<HTMLInputElement>(null);
   const pressOnBackdrop = useRef({ down: false, up: false });
+  const wasOpen = useRef(false);
   const titleId = useId();
 
   const closeDialog = () => {
@@ -180,13 +181,18 @@ export default function App() {
   };
 
   // While the dialog is open, the page behind it is inert and does not scroll, and Escape closes it wherever focus
-  // is: a press on the backdrop leaves focus on the body, outside the dialog. A layout effect's cleanup runs in the
-  // commit that removes the dialog, on close and on unmount alike, so the page is never left inert without it. The
-  // cleanup frees the page before moving focus back, because an inert button cannot take focus.
+  // is: focus can still end up outside the dialog, on the body after a focused control is disabled or after the
+  // user comes back from the browser's toolbar. A layout effect's cleanup runs in the commit that removes the
+  // dialog, on close and on unmount alike, so the page is never left inert without it. Focus goes back to the
+  // trigger only on a close, after the cleanup has freed the page, because an inert button cannot take focus.
   useLayoutEffect(() => {
-    if (!open) return;
+    if (!open) {
+      if (wasOpen.current) deleteRef.current?.focus();
+      wasOpen.current = false;
+      return;
+    }
+    wasOpen.current = true;
     const page = pageRef.current;
-    const trigger = deleteRef.current;
     // Escape also cancels an input method's composition; that one is not meant for the dialog.
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.isComposing) return;
@@ -200,7 +206,6 @@ export default function App() {
       document.removeEventListener('keydown', onKeyDown);
       page?.removeAttribute('inert');
       document.body.classList.remove('modal-open');
-      trigger?.focus();
     };
   }, [open]);
 

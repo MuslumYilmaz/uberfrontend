@@ -893,20 +893,22 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'react-modal-tooltip-portal-dialog',
     questionId: 'react-modal-tooltip-portal',
     priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
     matches: (snapshot) =>
+      snapshot.passCount > 0 &&
       anyFailingTestNameIncludes(snapshot, ['modal dialog outside #root', 'return focus to Delete project', 'Tab and Shift+Tab', 'page is inert']),
     buildHint: (snapshot) => ({
       ruleId: 'react-modal-tooltip-portal-dialog',
-      title: 'Portal the dialog, and tie its side effects to one effect',
+      title: 'Try the dialog by hand, the way the checks do',
       why: buildProgressAwareWhy(
         snapshot,
-        'The dialog checks look for `[role="dialog"]` outside `#root`, follow focus from Delete project into the field and back, press Tab through the dialog, and read `inert` and `modal-open` after every kind of close and after an unmount. A click inside the dialog bubbles to the backdrop that contains it.',
+        'The dialog checks look for `[role="dialog"]` inside `.modal-backdrop` and outside `#root`, follow focus from Delete project into the field and back, press Tab through the dialog, and read `inert` and `modal-open` after every kind of close and after an unmount.',
       ),
       actions: [
-        'Wrap `.modal-backdrop` in `createPortal(…, document.body)`, and give `.modal` `role="dialog"`, `aria-modal="true"` and `aria-labelledby` set to the title\'s `useId` id.',
-        'Close on a backdrop click only when `event.target === event.currentTarget` and both the press (`mousedown`) and the release (`mouseup`) landed on the backdrop.',
-        'In one `useLayoutEffect` keyed on `open`, set `inert` on `.page`, add `modal-open` to the body, listen for Escape on the document and focus `.confirm-input`; in its cleanup undo them, then focus `.delete` through a ref.',
-        'On Tab, query the enabled controls in the dialog and, at the last one (or the first with Shift), call `preventDefault()` and focus the other end; leave every other Tab to the browser.',
+        'Check that the dialog is named by `.modal-title` through `aria-labelledby`.',
+        'Click the backdrop, then select the typed name and release over the backdrop, then press on the backdrop and release over the field: only the first should close the dialog.',
+        'After each kind of close, look at what still has `inert` or `modal-open`, and where focus is.',
+        'Press Tab and Shift+Tab at both ends of the dialog, with Delete this project disabled and enabled.',
       ],
       confidence: 0.85,
     }),
@@ -915,19 +917,18 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     ruleId: 'react-modal-tooltip-portal-tooltip',
     questionId: 'react-modal-tooltip-portal',
     priority: 90,
-    matches: (snapshot) => anyFailingTestNameIncludes(snapshot, ['Info tooltips', 'flips above']),
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['Info tooltips', 'above near the bottom']),
     buildHint: (snapshot) => ({
       ruleId: 'react-modal-tooltip-portal-tooltip',
-      title: 'Render the tooltip into the body, then measure and place it before paint',
+      title: 'Watch a tooltip while you hover, focus and scroll',
       why: buildProgressAwareWhy(
         snapshot,
-        'The tooltip checks look for `[role="tooltip"]` outside `#root` after a hover or a focus, follow the button\'s `aria-describedby` to it while it shows, and read `data-placement` once the tooltip has been measured against `.settings`, before and after the panel scrolls.',
+        'The tooltip checks look for `[role="tooltip"]` outside `#root` after a hover or a focus, follow the button\'s `aria-describedby` to it while it shows, and measure where it sits against its button before and after `.settings` scrolls.',
       ),
       actions: [
-        'Track hover and focus separately and show the tooltip while either holds; Escape on the document dismisses it until the next hover or focus. Render it with `createPortal` only while it shows.',
-        'Give it `role="tooltip"` and an id from `useId`, and set the button\'s `aria-describedby` to that id only while it shows.',
-        'In `useLayoutEffect`, compare the button\'s bottom plus `TOOLTIP_GAP` plus the tooltip\'s measured height with the bottom of `.settings`; place it below or above and set `data-placement` to match.',
-        'While it shows, listen for `scroll` on `.settings`: place it again while the button is wholly inside the panel, and hide it once the button is partly scrolled out.',
+        'Check that the tooltip appears on both hover and focus, and that only its own button names it, and only while it shows.',
+        'Use only the `.tooltip` class on the portaled tooltip; the starter\'s `.tooltip-inline` transform shifts it.',
+        'Scroll `.settings` while a tooltip shows: it should follow its button while the button is in view, and stay hidden once the button is scrolled out until it is hovered or focused again.',
       ],
       confidence: 0.85,
     }),
@@ -942,7 +943,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       title: 'Move both layers out of the clipping card',
       why: buildProgressAwareWhy(
         snapshot,
-        'The card\'s transform and `overflow: hidden` clip anything drawn inside it. Every check reads the dialog or a tooltip in `document.body`, so start by moving both there.',
+        'The card\'s slide-in transform pins the dialog\'s fixed backdrop to the card, and the scrolling `.settings` panel clips the tooltips. Every check reads the dialog or a tooltip in `document.body`, so start by moving both there.',
       ),
       actions: [
         'Render the dialog and each tooltip with `createPortal(…, document.body)` instead of inside `.card`.',
