@@ -577,6 +577,287 @@ describe('OpaqueDomCheckRunner', () => {
     }
   });
 
+  it('holds Shift for a key only when a step asks, so a page can tell Shift+Tab from Tab', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="first">First</button><button class="last">Last</button><p class="seen">none</p>
+      <script>
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Tab') return;
+          event.preventDefault();
+          document.querySelector(event.shiftKey ? '.last' : '.first').focus();
+          document.querySelector('.seen').textContent = (event.shiftKey ? 'Shift+' : '') + event.key;
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'keys',
+        name: 'Keys',
+        steps: [
+          { type: 'key', selector: '.first', key: 'Tab', shift: true },
+          { type: 'expectText', selector: '.seen', text: 'Shift+Tab', match: 'equals' },
+          { type: 'expectFocused', selector: '.last' },
+          { type: 'key', selector: '.last', key: 'Tab' },
+          { type: 'expectText', selector: '.seen', text: 'Tab', match: 'equals' },
+          { type: 'expectFocused', selector: '.first' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Keys', passed: true }]);
+  });
+
+  it('moves focus along the tab order for a Tab the page does not cancel, only when the step asks for it', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="a">A</button><button class="off" disabled>Off</button><div class="b" tabindex="0">B</div>
+      <div inert><button class="behind">Behind</button></div><button class="gone" style="display: none">Gone</button>
+      <button class="c">C</button><button class="wrap">Wrap</button><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('focusout', (event) => { seen.textContent += ' out:' + event.target.className; });
+        document.querySelector('.wrap').addEventListener('keydown', (event) => {
+          if (event.key !== 'Tab') return;
+          event.preventDefault();
+          document.querySelector('.a').focus();
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const tab = (selector: string, extra: Record<string, unknown> = {}) => ({ type: 'key', selector, key: 'Tab', defaultAction: true, ...extra });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'order',
+        name: 'Order',
+        steps: [
+          tab('.a'),
+          { type: 'expectFocused', selector: '.b' },
+          tab('.b'),
+          { type: 'expectFocused', selector: '.c' },
+          tab('.c', { shift: true }),
+          { type: 'expectFocused', selector: '.b' },
+          tab('.wrap'),
+          { type: 'expectFocused', selector: '.a' },
+          { type: 'key', selector: '.a', key: 'Tab' },
+          { type: 'expectFocused', selector: '.a' },
+          tab('.a', { shift: true }),
+          { type: 'expectText', selector: '.seen', text: 'out:a', match: 'contains' },
+        ],
+      },
+      { id: 'left', name: 'Left', steps: [tab('.a', { shift: true }), { type: 'expectFocused', selector: '.a' }] },
+    ] as any);
+
+    expect(results[0]).toEqual({ name: 'Order', passed: true });
+    expect(results[1].passed).toBeFalse();
+  });
+
+  it('presses a key without a target where focus is, and clicks a button or link for an Enter the page does not cancel', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="one">One</button><button class="two">Two</button><a class="link" href="#later">Link</a>
+      <button class="kept">Kept</button><div class="tile" tabindex="-1">Tile</div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('keydown', (event) => {
+          seen.textContent += ' key:' + event.key + '@' + event.target.className;
+          if (event.key === 'ArrowRight' && event.target.className === 'one') document.querySelector('.two').focus();
+          if (event.key === 'Enter' && event.target.className === 'kept') event.preventDefault();
+        });
+        document.addEventListener('click', (event) => {
+          event.preventDefault();
+          seen.textContent += ' click:' + event.target.className;
+        });
+        document.querySelector('.one').focus();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const press = (key: string) => ({ type: 'key', key, defaultAction: true });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'remote',
+        name: 'Remote',
+        steps: [
+          press('ArrowRight'),
+          { type: 'expectFocused', selector: '.two' },
+          press('Enter'),
+          { type: 'focus', selector: '.link' },
+          press('Enter'),
+          { type: 'focus', selector: '.kept' },
+          press('Enter'),
+          { type: 'focus', selector: '.tile' },
+          press('Enter'),
+          { type: 'key', selector: '.one', key: 'Enter' },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'key:ArrowRight@one key:Enter@two click:two key:Enter@link click:link key:Enter@kept key:Enter@tile key:Enter@one',
+            match: 'equals',
+          },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Remote', passed: true }]);
+  });
+
+  it('presses a key without a target on the last focus request when the frame did not honour native focus', async () => {
+    // A div without tabindex cannot take native focus, so body stays active, as in a background frame on Linux CI.
+    const page = `<!doctype html><html><body>
+      <div class="pad">Pad</div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('keydown', (event) => { seen.textContent += ' key:' + event.key + '@' + event.target.className; });
+        document.querySelector('.pad').focus();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'unhonoured',
+        name: 'Unhonoured focus',
+        steps: [
+          { type: 'expectFocused', selector: '.pad' },
+          { type: 'key', key: 'ArrowDown' },
+          { type: 'expectText', selector: '.seen', text: 'key:ArrowDown@pad', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Unhonoured focus', passed: true }]);
+  });
+
+  it('drags from one element to another and clicks the nearest element that contains both, as a browser does', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="outer"><input class="field"><span class="side">Side</span></div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+          document.addEventListener(type, (event) => { seen.textContent += ' ' + type + ':' + event.target.className; });
+        }
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'out',
+        name: 'Out',
+        steps: [
+          { type: 'drag', selector: '.field', to: { selector: '.side' } },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'pointerdown:field mousedown:field pointerup:side mouseup:side click:outer',
+            match: 'equals',
+          },
+        ],
+      },
+      {
+        id: 'same',
+        name: 'Same',
+        steps: [
+          { type: 'drag', selector: '.outer', to: { selector: '.outer' } },
+          { type: 'expectText', selector: '.seen', text: 'mouseup:outer click:outer', match: 'contains' },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'drag', selector: '.field', to: { selector: '.nowhere' } }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Out', passed: true },
+      { name: 'Same', passed: true },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('measures how far an element sits below or above another and where its left edge is, within a pixel', async () => {
+    const page = `<!doctype html><html><body style="margin: 0">
+      <button class="anchor" style="position: absolute; top: 100px; left: 40px; width: 24px; height: 24px">i</button>
+      <div class="below" style="position: absolute; top: 132px; left: 8px; width: 240px; height: 50px">Below</div>
+      <div class="above" style="position: absolute; top: 42.5px; left: 8px; width: 240px; height: 50px">Above</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const placed = (selector: string, extra: Record<string, unknown>) => ({ type: 'expectPlaced', selector, than: { selector: '.anchor' }, ...extra });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'right',
+        name: 'Right',
+        steps: [
+          placed('.below', { side: 'below', gap: 8, left: 8 }),
+          placed('.above', { side: 'above', gap: 8 }),
+          { type: 'expectPlaced', selector: '.below', left: 8 },
+        ],
+      },
+      { id: 'gap', name: 'Gap', steps: [placed('.below', { side: 'below', gap: 20 })] },
+      { id: 'edge', name: 'Edge', steps: [placed('.below', { side: 'below', gap: 8, left: 0 })] },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'expectPlaced', selector: '.below', than: { selector: '.nowhere' }, side: 'below', gap: 8 }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Right', passed: true },
+      { name: 'Gap', passed: false, error: '.below sits 8px below .anchor; expected 20px', failureKind: 'assertion' },
+      { name: 'Edge', passed: false, error: '.below starts 8px from the left edge; expected 0px', failureKind: 'assertion' },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('drags files over a target and chooses files in a file input, with names, types and sizes', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="zone"><span class="hint">Drop here</span></div><div class="other">Other</div>
+      <input class="picker" type="file" multiple><input class="text" type="text"><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        const log = (text) => { seen.textContent += ' ' + text; };
+        const describe = (files) => Array.from(files).map((file) => file.name + ':' + file.type + ':' + file.size).join(',');
+        for (const type of ['dragenter', 'dragover', 'dragleave', 'drop']) {
+          document.querySelector('.zone').addEventListener(type, (event) => {
+            if (type === 'dragover' || type === 'drop') event.preventDefault();
+            log(type + '[' + describe(event.dataTransfer.files) + '|' + Array.from(event.dataTransfer.types).join('+') + ']'
+              + (event.relatedTarget ? '>' + event.relatedTarget.className : ''));
+          });
+        }
+        document.querySelector('.picker').addEventListener('change', (event) => log('change[' + describe(event.target.files) + ']'));
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const files = [{ name: 'receipt.png', type: 'image/png', size: 300 }, { name: 'notes.pdf', type: 'application/pdf', size: 12 }];
+    const results = await runner.runFramework(page, [
+      {
+        id: 'zone',
+        name: 'Zone',
+        steps: [
+          { type: 'fileDrag', selector: '.zone', event: 'dragenter', files },
+          { type: 'fileDrag', selector: '.zone', event: 'dragleave', files, to: { selector: '.hint' } },
+          { type: 'fileDrag', selector: '.zone', event: 'dragover', files, cancelled: true },
+          { type: 'fileDrag', selector: '.zone', event: 'drop', files, cancelled: true },
+          { type: 'chooseFiles', selector: '.picker', files: [{ name: 'scan.jpg', type: 'image/jpeg', size: 5 }] },
+          { type: 'fileDrag', selector: '.zone', event: 'dragenter', text: 'Expense report' },
+          {
+            type: 'expectText',
+            selector: '.seen',
+            text: 'dragenter[|Files] dragleave[|Files]>hint dragover[|Files] '
+              + 'drop[receipt.png:image/png:300,notes.pdf:application/pdf:12|Files] change[scan.jpg:image/jpeg:5] '
+              + 'dragenter[|text/plain]',
+            match: 'equals',
+          },
+        ],
+      },
+      { id: 'uncancelled', name: 'Uncancelled', steps: [{ type: 'fileDrag', selector: '.other', event: 'dragover', files, cancelled: true }] },
+      { id: 'left-alone', name: 'Left alone', steps: [{ type: 'fileDrag', selector: '.other', event: 'dragover', text: 'note', cancelled: false }] },
+      { id: 'cancelled', name: 'Cancelled', steps: [{ type: 'fileDrag', selector: '.zone', event: 'dragover', text: 'note', cancelled: false }] },
+      { id: 'not-file', name: 'Not file', steps: [{ type: 'chooseFiles', selector: '.text', files }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Zone', passed: true },
+      {
+        name: 'Uncancelled',
+        passed: false,
+        error: '.other did not cancel dragover, so a browser would not allow the drop',
+        failureKind: 'assertion',
+      },
+      { name: 'Left alone', passed: true },
+      {
+        name: 'Cancelled',
+        passed: false,
+        error: '.zone cancelled dragover, which only a drop target should do',
+        failureKind: 'assertion',
+      },
+      { name: 'Not file', passed: false, error: '.text is not a file input', failureKind: 'assertion' },
+    ]);
+  });
+
   it('finds the match nearest another element, such as one comment\'s own Reply button among nested ones', async () => {
     const page = `<!doctype html><html><body><div class="list">
       <div class="node"><div class="bubble"><p>Seed</p><button>Reply</button></div></div>
@@ -666,6 +947,63 @@ describe('OpaqueDomCheckRunner', () => {
       { name: 'Unnamed', passed: false, error: 'button "Remove" expected an accessible name with "Milk" but it was "Remove"', failureKind: 'assertion' },
       { name: 'Loud', passed: false, error: 'button "Retry" sits in a live region that is assertive, expected polite', failureKind: 'assertion' },
       { name: 'None', passed: false, error: 'text "Milk" is not inside a live region', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('scrolls a box to a position and fires its scroll event, which a page reads at once', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="box" style="min-width: 200px; height: 100px; overflow: auto"><div style="height: 2000px"></div></div>
+      <p class="seen">none</p>
+      <script>
+        const box = document.querySelector('.box');
+        box.addEventListener('scroll', () => { document.querySelector('.seen').textContent = 'at ' + box.scrollTop; });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'scroll',
+        name: 'Scroll',
+        steps: [
+          { type: 'scroll', selector: '.box', top: 360 },
+          { type: 'expectText', selector: '.seen', text: 'at 360', match: 'equals' },
+          { type: 'scroll', selector: '.box', top: 99999 },
+          { type: 'expectText', selector: '.seen', text: 'at 1900', match: 'equals' },
+        ],
+      },
+      { id: 'missing', name: 'Missing', steps: [{ type: 'scroll', selector: '.nowhere', top: 10 }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Scroll', passed: true },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('matches part of an attribute value when asked to, and the whole value otherwise', async () => {
+    const page = `<!doctype html><html><body>
+      <div class="row" style="position: absolute; transform: translateY(36px);">Row</div>
+      <script>setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);<\/script></body></html>`;
+    const step = (expected: string, match?: string) => ({ type: 'expectAttribute', selector: '.row', attribute: 'style', expected, match });
+    const results = await runner.runFramework(page, [
+      { id: 'part', name: 'Part', steps: [step('translateY(36px)', 'contains')] },
+      { id: 'whole', name: 'Whole', steps: [step('translateY(36px)')] },
+      { id: 'absent', name: 'Absent', steps: [step('translateY(72px)', 'contains')] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Part', passed: true },
+      {
+        name: 'Whole',
+        passed: false,
+        error: '.row expected style="translateY(36px)" but found "position: absolute; transform: translateY(36px);"',
+        failureKind: 'assertion',
+      },
+      {
+        name: 'Absent',
+        passed: false,
+        error: '.row expected style to contain "translateY(72px)" but found "position: absolute; transform: translateY(36px);"',
+        failureKind: 'assertion',
+      },
     ]);
   });
 
@@ -870,6 +1208,128 @@ describe('OpaqueDomCheckRunner', () => {
     expect(starterResults[0].error).toContain('did not reach text "1"');
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
+  });
+
+  it('hovers and unhovers an element so React mouse enter and leave handlers and native listeners both run', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': `import React, { useEffect, useRef, useState } from 'react';
+export default function App() {
+  const [react, setReact] = useState('off');
+  const [native, setNative] = useState('off');
+  const nativeRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const node = nativeRef.current!;
+    const on = () => setNative('on');
+    const off = () => setNative('off');
+    node.addEventListener('mouseenter', on);
+    node.addEventListener('mouseleave', off);
+    return () => { node.removeEventListener('mouseenter', on); node.removeEventListener('mouseleave', off); };
+  }, []);
+  return (
+    <div>
+      <button className="react" onMouseEnter={() => setReact('on')} onMouseLeave={() => setReact('off')}>React</button>
+      <span className="native" ref={nativeRef}>Native</span>
+      <p className="seen">react {react}, native {native}</p>
+    </div>
+  );
+}
+`,
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'hover',
+        name: 'Hover',
+        steps: [
+          { type: 'waitForCount', selector: '.react', count: 1, timeoutMs: 3000 },
+          { type: 'hover', selector: '.react' },
+          { type: 'expectText', selector: '.seen', text: 'react on, native off', match: 'equals' },
+          { type: 'hover', selector: '.native' },
+          { type: 'expectText', selector: '.seen', text: 'react on, native on', match: 'equals' },
+          { type: 'unhover', selector: '.react' },
+          { type: 'unhover', selector: '.native' },
+          { type: 'expectText', selector: '.seen', text: 'react off, native off', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Hover', passed: true }]);
+  });
+
+  it('focuses an element so React focus and blur handlers run, and refuses an element that cannot take focus', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': `import React, { useState } from 'react';
+export default function App() {
+  const [log, setLog] = useState<string[]>([]);
+  const note = (entry: string) => setLog((entries) => [...entries, entry]);
+  return (
+    <div>
+      <button className="first" onFocus={() => note('focus first')} onBlur={() => note('blur first')}>First</button>
+      <button className="second" onFocus={() => note('focus second')}>Second</button>
+      <button className="off" disabled>Off</button>
+      <div className="plain">Plain</div>
+      <div inert=""><button className="behind">Behind</button></div>
+      <p className="seen">{log.join(', ')}</p>
+    </div>
+  );
+}
+`,
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'moves',
+        name: 'Moves',
+        steps: [
+          { type: 'waitForCount', selector: '.first', count: 1, timeoutMs: 3000 },
+          { type: 'focus', selector: '.first' },
+          { type: 'focus', selector: '.first' },
+          { type: 'expectText', selector: '.seen', text: 'focus first', match: 'equals' },
+          { type: 'expectFocused', selector: '.first' },
+          { type: 'focus', selector: '.second' },
+          { type: 'expectText', selector: '.seen', text: 'focus first, blur first, focus second', match: 'equals' },
+          { type: 'expectFocused', selector: '.second' },
+        ],
+      },
+      { id: 'disabled', name: 'Disabled', steps: [{ type: 'focus', selector: '.off' }] },
+      { id: 'plain', name: 'Plain', steps: [{ type: 'focus', selector: '.plain' }] },
+      { id: 'inert', name: 'Inert', steps: [{ type: 'focus', selector: '.behind' }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Moves', passed: true },
+      { name: 'Disabled', passed: false, error: '.off cannot take focus', failureKind: 'assertion' },
+      { name: 'Plain', passed: false, error: '.plain cannot take focus', failureKind: 'assertion' },
+      { name: 'Inert', passed: false, error: '.behind cannot take focus', failureKind: 'assertion' },
+    ]);
+  });
+
+  it('does not count a focus request a browser ignores, on a disabled control or inside an inert element', async () => {
+    const page = `<!doctype html><html><body>
+      <main class="page" inert><button class="behind">Behind</button></main>
+      <button class="off" disabled>Off</button>
+      <button class="free">Free</button>
+      <script>
+        document.querySelector('.free').addEventListener('click', () => {
+          document.querySelector('.behind').focus();
+          document.querySelector('.off').focus();
+        });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'ignored',
+        name: 'Ignored',
+        steps: [{ type: 'click', selector: '.free' }, { type: 'expectFocused', selector: '.behind' }],
+      },
+      {
+        id: 'disabled',
+        name: 'Disabled',
+        steps: [{ type: 'click', selector: '.free' }, { type: 'expectFocused', selector: '.off' }],
+      },
+    ] as any);
+
+    expect(results.map((result) => result.passed)).toEqual([false, false]);
+    expect(results[0].error).toContain('.behind expected focus');
+    expect(results[1].error).toContain('.off expected focus');
   });
 
   it('runs the real Vue builder with event modifiers, template refs and shadowing locals', async () => {

@@ -15589,6 +15589,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'A take-home assignment to implement changes to a React app, then an in-person interview that talks through the changes.',
         promptNotShared: true,
         sources: [DISNEY_D21_SWE_2023],
+        practice: { label: 'Extend an existing React and TypeScript app in four timed tasks', path: '/react/coding/react-webhook-deliveries-four-tasks' },
         answerGuide: 'change-existing-react-app',
       },
       {
@@ -16152,7 +16153,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'In a React and TypeScript repository whose mock UI and API are already in place, implement four frontend tasks in one hour.',
         promptNotShared: true,
         sources: [CLOUDFLARE_C1_FE_HEAVY_2025],
-        practice: { label: 'Fetch and render a list with every request state', path: '/react/coding/react-fetch-list-states' },
+        practice: { label: 'Four tasks in one hour on a React and TypeScript app', path: '/react/coding/react-webhook-deliveries-four-tasks' },
       },
       {
         id: 'typescript-json-type',
@@ -16191,7 +16192,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Multiple-choice questions, such as what a function outputs, and a React project to complete in two hours.',
         promptNotShared: true,
         sources: [CLOUDFLARE_CC3_2024],
-        practice: { label: 'Fetch and render a list with every request state', path: '/react/coding/react-fetch-list-states' },
+        practice: { label: 'Four tasks in one hour on a React and TypeScript app', path: '/react/coding/react-webhook-deliveries-four-tasks' },
       },
       {
         id: 'vanilla-js-promises',

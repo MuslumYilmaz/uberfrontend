@@ -6585,5 +6585,348 @@
       "correctOptionId": "stale-response-wins",
       "rereadPrompt": "Close. Re-read the order of events: both requests were sent, and nothing stops the slower, older one from setting the results when it finally arrives."
     }
+  },
+  {
+    "id": "react-render-vs-commit-phase",
+    "title": "What runs in React's render phase, and what runs in the commit phase?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "rendering",
+      "effects",
+      "lifecycle",
+      "performance"
+    ],
+    "publishedAt": "2026-11-19",
+    "updatedAt": "2026-11-19",
+    "seo": {
+      "title": "React Render Phase vs Commit Phase: What Runs Where",
+      "description": "Render computes and diffs the next tree and can be thrown away; commit writes the DOM, attaches refs and runs layout effects. Where each hook runs and why."
+    },
+    "description": "Explain what React does in the render phase (call components, compute and diff the next tree, possibly more than once or for nothing) and in the commit phase (apply DOM changes, attach refs, run layout effects synchronously, then passive effects), and where each piece of component code runs.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The short answer</strong><br><br>In the <em>render phase</em> React calls your components to work out what the UI should look like next and compares the result with the tree on screen. Nothing on the page changes yet (React may create new DOM nodes, but none is attached to the document), and React is free to repeat this work, pause it or throw it away. In the <em>commit phase</em> React applies the differences to the DOM, attaches refs and runs layout effects, all in one synchronous pass; <code>useEffect</code> callbacks run after that, usually once the browser has painted.<br><br>The practical rule follows from the split: code in a component body must be safe to run any number of times, and anything that touches the outside world belongs in an effect or an event handler."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Code you write",
+            "Phase",
+            "When it runs",
+            "Sees the new DOM?"
+          ],
+          "rows": [
+            [
+              "Component body",
+              "Render",
+              "On every render, which can happen more than once or never reach the screen",
+              "No"
+            ],
+            [
+              "useState initializer, useMemo callback, reducer, setState updater function",
+              "Render",
+              "Inside renders: the initializer on mount, the memo callback on mount and when its dependencies change, reducers and updater functions when queued updates are processed",
+              "No"
+            ],
+            [
+              "DOM insertions, updates and removals; useLayoutEffect cleanups",
+              "Commit (mutation)",
+              "Once per committed update, only for the nodes that changed",
+              "Not applicable: this step writes it"
+            ],
+            [
+              "Ref attachment (ref.current, ref callbacks)",
+              "Commit (layout)",
+              "After the DOM changes, children first, so a parent component's layout effect can read the refs in its JSX",
+              "Yes"
+            ],
+            [
+              "useLayoutEffect, componentDidMount, componentDidUpdate",
+              "Commit (layout)",
+              "Synchronously, before the browser paints",
+              "Yes"
+            ],
+            [
+              "useEffect (cleanups first, then setups)",
+              "After commit (passive)",
+              "Usually after paint; before paint when the update came from a click, a key press or a setState in a layout effect",
+              "Yes"
+            ],
+            [
+              "Event handlers",
+              "Neither",
+              "When the event fires; a setState there schedules the next render",
+              "Only the last committed DOM"
+            ]
+          ],
+          "caption": "Where each piece of a component runs"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why a render can happen without a commit</strong><br><br>A render is React's proposal for the next UI; only a commit makes it real. The common causes of renders that never reach the screen:<br>1) <strong>Interrupted transitions.</strong> An update inside <code>startTransition</code>, or one driven by <code>useDeferredValue</code>, renders in small slices. If the user types again before it finishes, React drops the half-built tree and starts over with the newer state.<br>2) <strong>Suspense.</strong> A component that suspends abandons its render, and React tries again when the data arrives. Meanwhile it shows the nearest fallback, unless the update is a transition and the boundary already shows content: then the old UI stays on screen and nothing is committed until the new one is ready.<br>3) <strong>StrictMode in development.</strong> React calls each component function twice to surface impure renders; production calls it once.<br><br>Ordinary updates from a click, a key press or a network response are not sliced: React renders them in one go and commits. Server rendering is render without commit altogether: no effects run and no refs attach on the server."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Worked example: the analytics event that fires too often</strong><br><br>A search page updates <code>query</code> inside <code>startTransition</code> so typing stays responsive. The results panel records a view at the top of its body:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function ResultsPanel({ query }) {\n  // ❌ Runs on every render, including renders React throws away\n  analytics.track('results_viewed', { query });\n\n  const results = useMemo(() => searchProducts(query), [query]);\n  return <ResultList items={results} />;\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "Typing <code>\"shoes\"</code> quickly can start a transition render for several of the keystrokes, and React abandons the ones a newer keystroke overtakes before they commit. Each abandoned render that reached <code>ResultsPanel</code> still called <code>track</code>, and so does every other render of it, such as a parent re-rendering with the same query, so the dashboard counts views nobody saw. Moving the call into an effect ties it to what was committed:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function ResultsPanel({ query }) {\n  const results = useMemo(() => searchProducts(query), [query]);\n\n  // ✅ Runs after each commit in which the query changed\n  useEffect(() => {\n    analytics.track('results_viewed', { query });\n  }, [query]);\n\n  return <ResultList items={results} />;\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "In development StrictMode still runs that effect setup twice on mount, as a check that its cleanup is right; production records one view per committed query."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Measuring the DOM: which commit-time hook</strong><br><br>A tooltip needs its own height before it can decide whether to open above or below its anchor. Read the size in <code>useLayoutEffect</code>: it runs after React has written the DOM but before the browser paints, and a <code>setState</code> inside it renders and commits again before that paint, so the user never sees the tooltip in the wrong place. The same code in <code>useEffect</code> usually paints the first position and then jumps. The trade-off is that every layout effect delays the paint, so keep them for reads and writes the user would otherwise see flicker."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Tooltip({ anchorRect, children }) {\n  const ref = useRef(null);\n  const [placeAbove, setPlaceAbove] = useState(false);\n\n  useLayoutEffect(() => {\n    const { height } = ref.current.getBoundingClientRect();\n    setPlaceAbove(anchorRect.bottom + height > window.innerHeight);\n  }, [anchorRect]);\n\n  return (\n    <div ref={ref} className={placeAbove ? 'tooltip above' : 'tooltip below'}>\n      {children}\n    </div>\n  );\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>One committed update, step by step</strong><br><br>1) React finishes rendering the new tree off the page.<br>2) <em>Before mutation:</em> class components can read the old DOM in <code>getSnapshotBeforeUpdate</code>, for example a scroll position.<br>3) <em>Mutation:</em> React inserts, updates and removes the DOM nodes that changed, detaches refs that changed or whose nodes are removed, and runs <code>useLayoutEffect</code> cleanups and <code>componentWillUnmount</code>. <code>useInsertionEffect</code>, meant for CSS-in-JS libraries, also runs in this step, before any layout effect.<br>4) React points its root at the new fiber tree, which from now on is the \"current\" tree that matches the screen.<br>5) <em>Layout:</em> refs are attached, and <code>useLayoutEffect</code> setups, <code>componentDidMount</code> and <code>componentDidUpdate</code> run.<br>6) <em>Passive:</em> every <code>useEffect</code> cleanup runs, then every setup. Usually the browser paints first. When the update came from a discrete input such as a click, or a layout effect called <code>setState</code>, React runs them before that paint, at the end of the same task.<br><br>Steps 2 to 5 run as one synchronous block. That is what keeps the screen consistent: no paint can show half of the new DOM. In React 19 a ref callback may also return a cleanup function, which React calls when the ref detaches instead of calling the callback with <code>null</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common pitfalls</strong><br><br>• <strong>\"It re-rendered, so the DOM changed.\"</strong> If a render produces the same output, the commit has nothing to apply to the DOM.<br>• <strong>Reading a ref during render.</strong> On the first render it is still null, and on later renders it points at the DOM of the previous commit.<br>• <strong>Calling setState unconditionally in the body.</strong> React re-runs that component at once, before its children; without a guard the loop ends in a \"Too many re-renders\" error.<br>• <strong>\"useEffect always runs after paint.\"</strong> Effects caused by a click, or flushed by a layout effect's <code>setState</code>, run before it. When the order matters for what the user sees, use <code>useLayoutEffect</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up: where does Fiber come in?</strong><br><br>The two phases are how React's Fiber reconciler is organized. The render phase walks a tree of fibers, one per component or DOM element, and for transitions it can stop between any two of them; the commit phase applies the finished tree in a few synchronous passes and does not stop. <a href=\"/react/trivia/react-fiber-scheduling\">How Fiber schedules that walk</a> is the usual next question, and <a href=\"/react/trivia/react-concurrent-rendering\">concurrent rendering</a> is what an interruptible render phase makes possible. For why a component renders in the first place, see <a href=\"/react/trivia/react-rerender-decision-and-render\">why components re-render without prop changes</a>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Render is React calling my components to compute the next tree and diff it against the current one. It never changes the DOM on the page and can be repeated, paused or discarded, so it has to be pure. Commit applies the diff to the DOM in one synchronous pass, attaches refs and runs layout effects before paint; useEffect runs afterwards, usually after paint. So side effects go in effects or event handlers, DOM measurements that affect the first paint go in useLayoutEffect, and I never assume a render reached the screen.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Render decides, commit applies. Keep render free of side effects; read and write the DOM in <code>useLayoutEffect</code> (part of the commit) when it affects the first paint, and in <code>useEffect</code> (after the commit) otherwise."
+        }
+      ]
+    },
+    "incidentCard": {
+      "title": "Overcounted Analytics Root Cause",
+      "scenario": "A search page sets the query inside startTransition. ResultsPanel calls analytics.track('results_viewed') at the top of its function body. In production the dashboard shows more result views than committed searches. What is the most likely root cause?",
+      "options": [
+        {
+          "id": "side-effect-in-render",
+          "label": "The call runs during render, so it fires for transition renders React abandons and for re-renders that show the same query; record the view in an effect keyed on the query."
+        },
+        {
+          "id": "sdk-retries",
+          "label": "The analytics SDK retries slow requests, so the extra views are network duplicates."
+        },
+        {
+          "id": "memo-recomputes",
+          "label": "useMemo recomputes the results on every keystroke, and each recomputation sends its own view event."
+        }
+      ],
+      "correctOptionId": "side-effect-in-render",
+      "rereadPrompt": "Close. Re-read why a render can happen without a commit: interrupted transitions and StrictMode both run the component body without changing the screen, so only commit-time code runs once per visible change."
+    }
+  },
+  {
+    "id": "react-fiber-scheduling",
+    "title": "What is React Fiber, and how does it decide which work to do first?",
+    "technology": "react",
+    "difficulty": "hard",
+    "importance": 4,
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "rendering",
+      "concurrent",
+      "performance",
+      "architecture"
+    ],
+    "publishedAt": "2026-11-19",
+    "updatedAt": "2026-11-19",
+    "seo": {
+      "title": "React Fiber Explained: Fibers, Lanes and the Work Loop",
+      "description": "A fiber is one unit of work per component. How the work loop walks fibers, which updates may yield, how lanes rank them, and why the commit never pauses."
+    },
+    "description": "Explain what a fiber is (one object per component with parent, child and sibling pointers, state, flags and lanes), why React replaced its recursive reconciler, how the work loop renders and yields, how lanes rank updates, and why the commit runs in one synchronous pass.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The short answer</strong><br><br>Fiber is the reconciler React has used since version 16; interruptible rendering came later, with <code>createRoot</code> in React 18, and before that every render ran to completion. For every element in the tree (components, DOM elements, text, fragments, context providers, Suspense boundaries) React keeps a <em>fiber</em>: a plain object that holds its type, props, state and pending work, plus pointers to its parent, first child and next sibling. Rendering is a loop over those objects instead of a chain of nested function calls, so for low-priority updates React can stop after any fiber, let the browser handle input, and come back: it resumes where it stopped if nothing new arrived, and starts over if another update did, whether more urgent or simply newer, such as the next keystroke's transition.<br><br>Each update carries a <em>lane</em>, one bit in a priority mask; the lanes React renders together decide whether that render may be interrupted at all. When a tree is finished, React commits it in one synchronous pass."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why React needed it</strong><br><br>The reconciler before React 16 walked the tree recursively, one JavaScript call per component. Once an update started, the call stack had to unwind completely before the browser could do anything else, so a large update blocked typing and animation for its whole duration. Fiber moves that stack into objects React manages itself: each fiber works like a stack frame that React can stop between, keep, and come back to."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Field",
+            "What it is for"
+          ],
+          "rows": [
+            [
+              "type, key",
+              "Which component or DOM tag this is, and its identity among its siblings"
+            ],
+            [
+              "pendingProps, memoizedProps",
+              "The props for this render and those of the last finished render; the same props object (or props React.memo finds shallowly equal) lets React skip the component"
+            ],
+            [
+              "memoizedState",
+              "The component's state; for a function component, the linked list of its hooks"
+            ],
+            [
+              "return, child, sibling",
+              "Parent, first child and next sibling: the tree as a linked list React walks without recursion"
+            ],
+            [
+              "alternate",
+              "The same component's fiber in the other tree, current or work-in-progress"
+            ],
+            [
+              "flags, subtreeFlags",
+              "What the commit has to do here (insert, update, delete, run effects) and whether anything below needs it"
+            ],
+            [
+              "lanes, childLanes",
+              "The priorities of pending updates on this fiber and anywhere below it"
+            ],
+            [
+              "stateNode",
+              "The DOM node or class instance this fiber manages"
+            ]
+          ],
+          "caption": "What a fiber holds (React 19 source)"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// <App> renders <Header /> and <List>; <List> renders two <Item>s.\n// Their fibers point at each other like this:\n//\n// App.child       = Header\n// Header.sibling  = List\n// List.child      = Item #1\n// Item #1.sibling = Item #2\n// Every fiber's .return points at its parent.\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Two trees, and the switch at commit</strong><br><br>React keeps up to two copies of each fiber. The <em>current</em> tree matches what is on screen; the <em>work-in-progress</em> tree is built during render, and subtrees that did not change are shared rather than copied. Each fiber's <code>alternate</code> points at its twin, and React reuses that twin instead of allocating a new object on every update. When the work-in-progress tree is complete, the commit applies its DOM changes and points the root at it, so the finished tree becomes current. Because the page's DOM changes only in that synchronous commit, the user never sees a half-built update, however many times the render paused."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The work loop</strong><br><br>Rendering is a loop over units of work. For each fiber React calls <code>beginWork</code>: it calls the component function (or, for a DOM element, takes its props) and creates or reuses fibers for the children; then it moves to the first child. When a fiber has no child left, <code>completeWork</code> creates its DOM node if it is new, still detached from the page, and merges its flags into its parent's so the commit knows which branches need work; then the loop moves to the sibling, or back to the parent when there is none. A fiber that receives the same props object, has no update of its own and reads no changed context is skipped, and if its <code>childLanes</code> show no work at the priority being rendered, so is its whole subtree."
+        },
+        {
+          "type": "code",
+          "language": "js",
+          "code": "// Simplified from React's ReactFiberWorkLoop.js (v19.1;\n// React 18 calls the second loop workLoopConcurrent)\nfunction workLoopSync() {\n  while (workInProgress !== null) {\n    performUnitOfWork(workInProgress);\n  }\n}\n\nfunction workLoopConcurrentByScheduler() {\n  // shouldYield() turns true after about 5 ms of work\n  while (workInProgress !== null && !shouldYield()) {\n    performUnitOfWork(workInProgress);\n  }\n}\n"
+        },
+        {
+          "type": "text",
+          "text": "The only difference between the two loops is the <code>shouldYield()</code> check. It comes from React's own Scheduler package, which hands the main thread back about every 5 ms and asks to continue with a <code>MessageChannel</code> message in the browser (<code>setImmediate</code> in Node). React does not use <code>requestIdleCallback</code> for this."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Where the update comes from",
+            "Lane",
+            "Can its render be interrupted?"
+          ],
+          "rows": [
+            [
+              "Click, key press, input and other discrete events; setState in a layout effect",
+              "SyncLane",
+              "No: rendered and committed before the browser paints (in a microtask after an event, at the end of the commit after a layout effect)"
+            ],
+            [
+              "Scroll, mousemove and other continuous events",
+              "InputContinuousLane",
+              "No"
+            ],
+            [
+              "setState outside an event: a timer, a fetch response, a useEffect",
+              "DefaultLane",
+              "No: rendered in one go, even under createRoot"
+            ],
+            [
+              "startTransition, useDeferredValue",
+              "Transition lanes",
+              "Yes: rendered in slices, and restarted when a more urgent update arrives"
+            ],
+            [
+              "Suspense retries, offscreen and idle work",
+              "Retry, Offscreen and Idle lanes",
+              "Yes"
+            ]
+          ],
+          "caption": "How updates are ranked in React 18 and 19"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Which work goes first</strong><br><br>Lanes are bits in a 31-bit mask, and a lower bit means more urgent. When React picks its next render it takes the most urgent pending lanes, so a click is rendered ahead of a transition that started earlier. If the click arrives while the transition is half-rendered, React drops the unfinished tree, renders and commits the click, then renders the transition again on top of the new state, replaying its updates in their original order. Masks also let React merge several pending updates into one render and test a whole subtree with one bitwise AND. A transition lane that waits too long expires after about five seconds and then renders without yielding, so it cannot starve behind newer work."
+        },
+        {
+          "type": "text",
+          "text": "<strong>What yielding cannot do</strong><br><br>React can only yield <em>between</em> fibers. If one component's render takes 280 ms, because it filters 50,000 rows inline or builds a chart synchronously, a transition still blocks for those 280 ms: that render is a single unit of work, and the browser gets the thread back only when it ends. The fix is a smaller unit or less work, not another <code>startTransition</code>: precompute or index the data, virtualize the list, split the component so each part is cheap, or move the calculation to a worker."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common misconceptions</strong><br><br>• <strong>\"Fiber renders in parallel.\"</strong> Everything runs on the main thread; Fiber only takes turns with the browser.<br>• <strong>\"Since React 18 every render is interruptible.\"</strong> Only transition, retry, offscreen and idle work is sliced, and an expired transition is not. Clicks, typing and ordinary state updates render without yielding.<br>• <strong>\"The commit can pause too.\"</strong> No. It runs in one synchronous pass, so the DOM never shows a mix of old and new.<br>• <strong>\"Fiber is just another name for the virtual DOM.\"</strong> React elements are the description your components return; fibers are the mutable records React keeps between renders to compare them and track the work."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Follow-up: \"What are Fiber's scheduling strategies?\"</strong><br><br>Some interviewers ask for them as a list:<br>• <em>Time slicing</em>: fiber-sized units of work, with a yield about every 5 ms for interruptible lanes.<br>• <em>Priorities</em>: lanes rank updates from discrete input down to idle work.<br>• <em>Interruption and restart</em>: a more urgent update discards the unfinished tree.<br>• <em>Starvation protection</em>: expired transition lanes render without yielding.<br><br><strong>Follow-up: what does interruption cost your code?</strong><br><br>A sliced render can read a mutable store at two different moments and show two versions of it on one screen, which is called tearing. <code>useSyncExternalStore</code> prevents it: when the store changes during a concurrent render, React renders that update again without yielding. It is also why render must stay pure: a render can be paused and thrown away."
+        },
+        {
+          "type": "text",
+          "text": "For what happens on each side of the render and commit split, see <a href=\"/react/trivia/react-render-vs-commit-phase\">render phase vs commit phase</a>. For the APIs that move an update into an interruptible lane, see <a href=\"/react/trivia/react-concurrent-rendering\">concurrent rendering</a>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"A fiber is React's record for one element in the tree, a component or a DOM node: its props, state, pending work and links to parent, child and sibling. Rendering walks those records in a loop, so React can stop between any two of them. For transitions and other low-priority lanes it yields about every 5 ms and can throw the half-built tree away when something more urgent arrives; clicks, typing and default updates render without yielding. The finished tree is committed in one synchronous pass, which is why the user never sees a partial update.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Fiber turns rendering from one recursive call into a loop over records it can pause between. Lanes decide which updates may wait, and a synchronous commit keeps the screen consistent. Work inside a single component still runs to the end."
+        }
+      ]
+    },
+    "incidentCard": {
+      "title": "Transition Still Freezes Typing",
+      "scenario": "Typing in a filter box freezes for about 300 ms per keystroke. The input keeps its own state, and the team moved setFilter, the state the results read, into startTransition, but the freeze remains. The profiler shows a single ResultsChart render taking 280 ms on every filter change. What is the most likely reason?",
+      "options": [
+        {
+          "id": "single-fiber-cannot-yield",
+          "label": "React yields only between fibers, so one 280 ms component render cannot be interrupted; make that unit of work smaller or move the calculation off the main thread."
+        },
+        {
+          "id": "events-ignore-transitions",
+          "label": "React ignores startTransition inside event handlers; transitions only apply to updates made outside events."
+        },
+        {
+          "id": "transition-runs-first",
+          "label": "startTransition renders before the input update, so the keystroke waits for the chart."
+        }
+      ],
+      "correctOptionId": "single-fiber-cannot-yield",
+      "rereadPrompt": "Close. Re-read what yielding cannot do: the work loop checks the clock between fibers, so a single long component render blocks input even inside a transition."
+    }
   }
 ]

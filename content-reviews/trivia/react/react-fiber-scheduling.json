@@ -1,0 +1,144 @@
+{
+  "contentId": "react-fiber-scheduling",
+  "tech": "react",
+  "query": "what is react fiber interview question",
+  "reviewedAt": "2026-11-19",
+  "reviewedBy": "Claude AI draft, fact-checked against the React v19.1.0 source (ReactFiberWorkLoop, ReactFiberLane, ReactInternalTypes, Scheduler)",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd has a directly relevant quiz (what-is-react-fiber-and-how-is-it-an-improvement-over-the-previous-approach), but it answered HTTP 429 to automated reads on 2026-11-19, and the site owner decided the same day to ship this entry without a GreatFrontEnd comparison. Add it when the page can be read."
+  },
+  "competitors": [
+    {
+      "label": "React Fiber Architecture (acdlite)",
+      "url": "https://github.com/acdlite/react-fiber-architecture",
+      "category": "tutorial_reference",
+      "selectionReason": "The explainer by a React core team member that most Fiber articles still quote, and a top result for the query.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Explains why the stack reconciler could not pause and defines a fiber as a virtual stack frame.",
+        "Shows child, sibling and return pointers with a worked example, and current versus work-in-progress fibers through alternate."
+      ],
+      "theirGaps": [
+        "Self-described unofficial draft; priority is a single numeric field with no lanes, and the scheduling sections were never written.",
+        "No production scenario and nothing on which updates are interruptible in React 18 and 19."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "If one component's render takes 280 ms"
+        ],
+        "followUpConfusion": [
+          "Only transition, retry, offscreen and idle work is sliced, and an expired transition is not.",
+          "Lanes are bits in a 31-bit mask, and a lower bit means more urgent."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It motivates Fiber with animation and responsiveness in the abstract but never shows a case where scheduling fails or helps."
+        ],
+        "actionableExamples": [
+          "Its child, sibling and return example is as concrete as our pointer diagram, so this stays tied."
+        ],
+        "followUpConfusion": [
+          "It predates React 18: no lanes, no Scheduler, and no answer to which renders can be interrupted."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a small runnable trace that logs beginWork and completeWork order for a three-level tree."
+        ]
+      },
+      "winReason": "The README is the classic conceptual source, but it stops before scheduling and uses a priority model React replaced with lanes, so it cannot answer the interview follow-ups about which work runs first and what can be interrupted."
+    },
+    {
+      "label": "React v18.0",
+      "url": "https://react.dev/blog/2022/03/29/react-v18",
+      "category": "canonical_docs",
+      "selectionReason": "The official explanation of concurrent rendering, the behavior Fiber's scheduling exists to provide.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Explains concurrent rendering as interruptible, resumable and abandonable work, and that DOM mutations wait until the whole tree is evaluated.",
+        "Concrete startTransition and Suspense examples with urgent versus transition updates."
+      ],
+      "theirGaps": [
+        "Never mentions fibers, lanes, the Scheduler or how often React yields."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "React can only yield between fibers"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Its filter dropdown and search examples show the same responsiveness problem we describe, so this is tied."
+        ],
+        "actionableExamples": [
+          "startTransition and Suspense snippets are directly reusable, matching our work loop and lane material."
+        ],
+        "followUpConfusion": [
+          "It does not explain why a single slow component still blocks inside a transition, which is the common follow-up after 'what does Fiber do'."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a short before and after profile description for the filter case: one long task versus several short ones."
+        ],
+        "actionableExamples": [
+          "Add a startTransition snippet next to the lane table so the reader can map the API to the lane."
+        ]
+      }
+    },
+    {
+      "label": "A deep dive into React Fiber",
+      "url": "https://blog.logrocket.com/deep-dive-react-fiber/",
+      "category": "tutorial_reference",
+      "selectionReason": "A long tutorial that ranks for the query and walks through React's actual work loop functions, updated in July 2026.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "theirs",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Walks through workLoopSync, performUnitOfWork, beginWork and completeWork with a test and an expected log sequence.",
+        "Explains the fiber node fields and current versus work-in-progress trees."
+      ],
+      "theirGaps": [
+        "Uses a numeric pendingWorkPriority instead of lanes, and describes time slicing as general behavior without separating blocking updates from transitions.",
+        "Its 10 ms frame budget is a rule of thumb rather than the Scheduler's yield interval."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "Clicks, typing and ordinary state updates render without yielding."
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It frames Fiber around frame budgets and jank, similar in depth to our single-component example, so this is tied."
+        ],
+        "actionableExamples": [
+          "Its source walkthrough with a test and logger output is a more hands-on example than our simplified loop."
+        ],
+        "followUpConfusion": [
+          "A reader could conclude every render yields each frame; it does not say which updates are blocking in React 18 and 19."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add one sentence on how the 280 ms case looks in the React DevTools profiler, so readers can recognize it."
+        ],
+        "actionableExamples": [
+          "Add a traced example of the work loop order for a small tree, similar to their logger test but tied to lanes."
+        ]
+      }
+    }
+  ]
+}

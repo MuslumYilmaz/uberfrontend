@@ -1,0 +1,146 @@
+{
+  "contentId": "react-render-vs-commit-phase",
+  "tech": "react",
+  "query": "react render phase vs commit phase interview question",
+  "reviewedAt": "2026-11-19",
+  "reviewedBy": "Claude AI draft, fact-checked against react.dev and the React v19.1.0 source",
+  "selection": {
+    "querySource": "manual",
+    "greatFrontendRelevant": false,
+    "greatFrontendReasonIfOmitted": "GreatFrontEnd has related quizzes (what-is-reconciliation-in-react, what-does-re-rendering-mean-in-react), but both answered HTTP 429 to automated reads on 2026-11-19, and the site owner decided the same day to ship this entry without a GreatFrontEnd comparison. Add one when a page can be read."
+  },
+  "competitors": [
+    {
+      "label": "Render and Commit",
+      "url": "https://react.dev/learn/render-and-commit",
+      "category": "canonical_docs",
+      "selectionReason": "The canonical React explanation of the trigger, render and commit steps, and the first result for the phase vocabulary.",
+      "verdicts": {
+        "realWorldUseCases": "ours",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Clear trigger, render and commit steps, with painting as a separate epilogue.",
+        "States that a re-render only changes the DOM nodes that differ, shown with a Clock whose input keeps its value."
+      ],
+      "theirGaps": [
+        "No refs, effect timing, or the cases where a render never commits (interrupted transitions, Suspense).",
+        "Examples are teaching sketches rather than production failures."
+      ],
+      "ourEvidence": {
+        "realWorldUseCases": [
+          "so the dashboard counts views nobody saw",
+          "A tooltip needs its own height before it can decide whether to open above or below its anchor."
+        ],
+        "followUpConfusion": [
+          "Effects caused by a click, or flushed by a layout effect's",
+          "React re-runs that component at once, before its children"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "The page explains the steps with a gallery and a clock; it never shows a bug caused by work done during render."
+        ],
+        "actionableExamples": [
+          "Its interactive sandboxes (Image, Gallery, Clock) are as concrete as our two code examples, so this stays tied."
+        ],
+        "followUpConfusion": [
+          "It corrects 'a re-render means the DOM changed' but stops there; ref timing, layout versus passive effects and discarded renders are not covered."
+        ]
+      },
+      "nextActions": {
+        "actionableExamples": [
+          "Add a runnable sandbox for the analytics example that logs render and commit counts while typing inside a transition."
+        ]
+      },
+      "winReason": "The docs page is the authority on the step names, but it does not say where refs, layout effects and passive effects fall or why a render can run without committing, which are the follow-ups this interview question turns on."
+    },
+    {
+      "label": "React as a UI Runtime",
+      "url": "https://overreacted.io/react-as-a-ui-runtime/",
+      "category": "tutorial_reference",
+      "selectionReason": "Dan Abramov's deep dive is a widely linked explanation of how React calls components, reconciles and then touches the host tree, which is the render and commit split this question asks about.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Defines the render phase as calling components and reconciling, safe to interrupt, and the commit phase as the always-synchronous step that touches the host tree.",
+        "Concrete reconciliation examples: a dialog input that keeps or loses focus depending on position and type, keys in a shopping list, and batching with updater functions."
+      ],
+      "theirGaps": [
+        "Published February 2019: every example uses ReactDOM.render, and transitions, Suspense data fetching and StrictMode double rendering are not covered.",
+        "Never places refs, layout effects or passive effects inside the render and commit split; useLayoutEffect appears only as a rarely used opt-out."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "The common causes of renders that never reach the screen"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "Its dialog focus and list reordering cases are real UI problems, as concrete as our analytics and tooltip cases, so this is tied."
+        ],
+        "actionableExamples": [
+          "It has many short code examples with the equivalent DOM calls, matching our examples in usefulness."
+        ],
+        "followUpConfusion": [
+          "It says the render phase can be interrupted in the future but not which renders are discarded today or when effects run relative to paint."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a reconciliation-driven case, such as an input losing its state when a sibling is inserted before it, to connect commit to identity."
+        ],
+        "actionableExamples": [
+          "Show the DOM operations a commit performs for one small update, as comments next to the JSX."
+        ]
+      }
+    },
+    {
+      "label": "A (Mostly) Complete Guide to React Rendering Behavior",
+      "url": "https://blog.isquaredsoftware.com/2020/05/blogged-answers-a-mostly-complete-guide-to-react-rendering-behavior/",
+      "category": "tutorial_reference",
+      "selectionReason": "The most cited long-form explanation of React's render and commit phases outside the docs, updated for React 18 in October 2022.",
+      "verdicts": {
+        "realWorldUseCases": "tie",
+        "actionableExamples": "tie",
+        "followUpConfusion": "ours"
+      },
+      "theirStrengths": [
+        "Splits rendering into render and commit phases and lists the commit order: refs, layout effects, then passive effects.",
+        "Many examples on batching, closures and keys, including React 17 versus 18 render counts."
+      ],
+      "theirGaps": [
+        "Effect timing is described as 'a short timeout' with no mention of the click and layout-effect cases where effects run before paint.",
+        "Calls the render 'literally synchronous' without separating time-sliced transitions from blocking updates."
+      ],
+      "ourEvidence": {
+        "followUpConfusion": [
+          "Ordinary updates from a click, a key press or a network response are not sliced"
+        ]
+      },
+      "theirEvidence": {
+        "realWorldUseCases": [
+          "It covers many production rendering situations (batching, context, React-Redux), broader than ours, so this criterion is tied."
+        ],
+        "actionableExamples": [
+          "Its counter, closure and key examples are concrete and reusable, matching our two code examples."
+        ],
+        "followUpConfusion": [
+          "It does not answer when useEffect can run before paint or which updates can be interrupted, both of which we state."
+        ]
+      },
+      "nextActions": {
+        "realWorldUseCases": [
+          "Add a short note on batching: several setState calls in one event still produce one render and one commit."
+        ],
+        "actionableExamples": [
+          "Add a small log-based example that prints render, layout effect and effect order for one click."
+        ]
+      }
+    }
+  ]
+}
