@@ -696,6 +696,31 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Remote', passed: true }]);
   });
 
+  it('presses a key without a target on the last focus request when the frame did not honour native focus', async () => {
+    // A div without tabindex cannot take native focus, so body stays active, as in a background frame on Linux CI.
+    const page = `<!doctype html><html><body>
+      <div class="pad">Pad</div><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('keydown', (event) => { seen.textContent += ' key:' + event.key + '@' + event.target.className; });
+        document.querySelector('.pad').focus();
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      {
+        id: 'unhonoured',
+        name: 'Unhonoured focus',
+        steps: [
+          { type: 'expectFocused', selector: '.pad' },
+          { type: 'key', key: 'ArrowDown' },
+          { type: 'expectText', selector: '.seen', text: 'key:ArrowDown@pad', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Unhonoured focus', passed: true }]);
+  });
+
   it('drags from one element to another and clicks the nearest element that contains both, as a browser does', async () => {
     const page = `<!doctype html><html><body>
       <div class="outer"><input class="field"><span class="side">Side</span></div><p class="seen"></p>

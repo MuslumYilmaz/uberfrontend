@@ -644,6 +644,12 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (lastRequestedFocus === this) lastRequestedFocus = null;
     nativeBlur.call(this);
   };
+  /** Where focus is: the active element, or the last focus request when the frame did not honour native focus. */
+  const focusedElement = (): Element => {
+    const active = document.activeElement;
+    if (active && active !== document.body) return active;
+    return lastRequestedFocus?.isConnected ? lastRequestedFocus : document.body;
+  };
 
   const errorMessage = (error: unknown, fallback: string) => {
     const value = error instanceof Error ? error.message : String(error || fallback);
@@ -1110,7 +1116,8 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return Promise.resolve();
     }
     // A key with no target is pressed where focus already is, as on a keyboard or a TV remote; nothing is focused first.
-    if (type === 'key' && !target) return pressKey(document.activeElement || document.body, step, false);
+    // A frame that rejected native focus leaves body active, so the last focus request stands in, as for expectFocused.
+    if (type === 'key' && !target) return pressKey(focusedElement(), step, false);
     if (!target) throw new Error(`${type || 'step'} is missing a selector`);
     if (type === 'waitForText') return waitForText(step);
     if (type === 'waitForCount') return waitForCount(step);
