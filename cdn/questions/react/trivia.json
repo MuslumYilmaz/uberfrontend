@@ -1900,7 +1900,8 @@
     "title": "What is the significance of keys in lists in React?",
     "technology": "react",
     "companies": [
-      "shopee"
+      "shopee",
+      "binance"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -3137,7 +3138,8 @@
     "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
     "companies": [
-      "jpmorgan"
+      "jpmorgan",
+      "binance"
     ],
     "difficulty": "intermediate",
     "importance": 2,
@@ -3341,7 +3343,8 @@
     "companies": [
       "walmart",
       "jpmorgan",
-      "xai"
+      "xai",
+      "binance"
     ],
     "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
@@ -4077,6 +4080,9 @@
       "state",
       "best-practices",
       "control-flow"
+    ],
+    "companies": [
+      "binance"
     ],
     "updatedAt": "2026-04-10",
     "seo": {
@@ -5714,7 +5720,8 @@
       "walmart",
       "agoda",
       "capital-one",
-      "disney"
+      "disney",
+      "binance"
     ],
     "difficulty": "intermediate",
     "importance": 4,
@@ -5872,7 +5879,8 @@
     "technology": "react",
     "companies": [
       "walmart",
-      "agoda"
+      "agoda",
+      "binance"
     ],
     "difficulty": "hard",
     "importance": 4,
@@ -6601,6 +6609,9 @@
       "lifecycle",
       "performance"
     ],
+    "companies": [
+      "binance"
+    ],
     "publishedAt": "2026-11-19",
     "updatedAt": "2026-11-19",
     "seo": {
@@ -6760,6 +6771,9 @@
       "concurrent",
       "performance",
       "architecture"
+    ],
+    "companies": [
+      "binance"
     ],
     "publishedAt": "2026-11-19",
     "updatedAt": "2026-11-19",

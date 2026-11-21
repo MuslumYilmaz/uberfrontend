@@ -167,6 +167,16 @@
       "access": "free",
       "minutes": 15
     },
+    "/companies/binance/preview#binance-round-fourth-round-and-english": {
+      "id": "/companies/binance/preview#binance-round-fourth-round-and-english",
+      "title": "Fourth-round questions and English drill",
+      "route": "/companies/binance/preview",
+      "fragment": "binance-round-fourth-round-and-english",
+      "drill": true,
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview": {
       "id": "/companies/cloudflare/preview#cloudflare-round-orange-cloud-interview",
       "title": "Orange Cloud questions and story drill",
@@ -2640,6 +2650,19 @@
         "ui"
       ]
     },
+    "react-fiber-scheduling": {
+      "id": "react-fiber-scheduling",
+      "title": "What is React Fiber, and how does it decide which work to do first?",
+      "route": "/react/trivia/react-fiber-scheduling",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "react-file-explorer": {
       "id": "react-file-explorer",
       "title": "File Explorer Tree with Keyboard Navigation",
@@ -2649,6 +2672,18 @@
       "access": "premium",
       "minutes": 30,
       "pressure": true,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-file-upload-dropzone-progress": {
+      "id": "react-file-upload-dropzone-progress",
+      "title": "Receipt Upload: Drop Zone, Progress and Previews",
+      "route": "/react/coding/react-file-upload-dropzone-progress",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 40,
       "focus": [
         "ui"
       ]
@@ -2732,6 +2767,18 @@
         "ui"
       ]
     },
+    "react-modal-tooltip-portal": {
+      "id": "react-modal-tooltip-portal",
+      "title": "Delete Dialog and Tooltips Through Portals",
+      "route": "/react/coding/react-modal-tooltip-portal",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 40,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-nested-comments": {
       "id": "react-nested-comments",
       "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
@@ -2745,6 +2792,19 @@
         "ui"
       ],
       "family": "nested-comments"
+    },
+    "react-order-book-socket-feed": {
+      "id": "react-order-book-socket-feed",
+      "title": "Order Book Over a Socket: Snapshot, Sequence and Burst",
+      "route": "/react/coding/react-order-book-socket-feed",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 45,
+      "pressure": true,
+      "focus": [
+        "ui"
+      ]
     },
     "react-pagination-table": {
       "id": "react-pagination-table",
@@ -2784,6 +2844,18 @@
       "focus": [
         "concepts",
         "js"
+      ]
+    },
+    "react-role-aware-routes": {
+      "id": "react-role-aware-routes",
+      "title": "Support Console: Role-Aware Routes and Sidebar",
+      "route": "/react/coding/react-role-aware-routes",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 40,
+      "focus": [
+        "ui"
       ]
     },
     "react-select-compound-api": {
@@ -2983,6 +3055,18 @@
         "ui"
       ]
     },
+    "react-virtualized-list-recycling": {
+      "id": "react-virtualized-list-recycling",
+      "title": "Virtualized List: 10,000 Rows, Twenty Nodes",
+      "route": "/react/coding/react-virtualized-list-recycling",
+      "kind": "coding",
+      "tech": "react",
+      "access": "free",
+      "minutes": 30,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-webhook-deliveries-four-tasks": {
       "id": "react-webhook-deliveries-four-tasks",
       "title": "Webhook Deliveries Console: Four Tasks in One Hour",
@@ -2994,6 +3078,19 @@
       "pressure": true,
       "focus": [
         "ui"
+      ]
+    },
+    "react-why-hooks-have-rules": {
+      "id": "react-why-hooks-have-rules",
+      "title": "Why do Hooks have rules? What breaks if you call Hooks conditionally?",
+      "route": "/react/trivia/react-why-hooks-have-rules",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
       ]
     },
     "realtime-search-debounce-cache": {
@@ -5281,6 +5378,508 @@
             },
             {
               "id": "js-valid-anagram"
+            }
+          ]
+        }
+      ]
+    },
+    "binance": {
+      "name": "Binance",
+      "signature": "React internals questions",
+      "framework": "react",
+      "mixed": true,
+      "aliases": [
+        "幣安",
+        "币安"
+      ],
+      "checkedAt": "2026-11-18",
+      "sourceCount": 23,
+      "promptCount": 21,
+      "questionCount": 40,
+      "variants": [
+        {
+          "id": "frontend",
+          "title": "Frontend engineers, Taiwan and remote, 2020 to 2022",
+          "from": "Taiwan and remote loops from 2020 to 2022",
+          "ask": "Interviewing in Taiwan or remotely?",
+          "default": true,
+          "sourceCount": 4,
+          "newestReport": "2022-05",
+          "rounds": [
+            {
+              "id": "hr-contact",
+              "name": "HR contact",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "Taiwan and remote loops: an HR invitation on LinkedIn or a referral; in 2020, HR scheduled remote rounds.",
+              "sources": [
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                },
+                {
+                  "label": "Medium",
+                  "date": "2020-07"
+                }
+              ]
+            },
+            {
+              "id": "technical-round-1",
+              "name": "Technical round 1",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Frontend fundamentals and short code to write.",
+              "focus": [
+                "algo",
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "interview.tw",
+                  "date": "2022-05"
+                },
+                {
+                  "label": "GoodJob",
+                  "date": "2021-07"
+                },
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                }
+              ],
+              "moreSources": 1
+            },
+            {
+              "id": "technical-round-2",
+              "name": "Technical round 2",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Short implementations, the event loop, redux, token storage and an order book fed by a socket, in 2022.",
+              "focus": [
+                "algo",
+                "ui",
+                "js"
+              ],
+              "sources": [
+                {
+                  "label": "interview.tw",
+                  "date": "2022-05"
+                },
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                },
+                {
+                  "label": "Medium",
+                  "date": "2020-07"
+                }
+              ]
+            },
+            {
+              "id": "technical-round-3",
+              "name": "Technical round 3",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "By account: the résumé and a design question; SSR, bundlers and performance; or Vue against React and a slow page.",
+              "focus": [
+                "debug",
+                "algo",
+                "ui",
+                "js"
+              ],
+              "sources": [
+                {
+                  "label": "interview.tw",
+                  "date": "2022-05"
+                },
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                },
+                {
+                  "label": "Medium",
+                  "date": "2020-07"
+                }
+              ]
+            },
+            {
+              "id": "team-or-fourth-technical-round",
+              "name": "Team or fourth technical round",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "A fourth round in two accounts, on topics such as caching and a CDN, fiber, a list component and English.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [
+                {
+                  "label": "interview.tw",
+                  "date": "2022-05"
+                },
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                }
+              ]
+            },
+            {
+              "id": "hr-and-offer",
+              "name": "HR and offer",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "HR announced the offer and discussed salary in 2020.",
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2021-07"
+                },
+                {
+                  "label": "PTT",
+                  "date": "2021-02"
+                },
+                {
+                  "label": "Medium",
+                  "date": "2020-07"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "/guides/interview-blueprint/quiz",
+              "lead": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "/companies/binance/preview#binance-round-fourth-round-and-english",
+              "lead": true,
+              "rounds": [
+                "team-or-fourth-technical-round"
+              ]
+            },
+            {
+              "id": "infinite-scroll-list",
+              "report": {
+                "publisher": "interview.tw",
+                "date": "2022-05"
+              },
+              "rounds": [
+                "technical-round-1",
+                "technical-round-2",
+                "technical-round-3",
+                "team-or-fourth-technical-round"
+              ]
+            },
+            {
+              "id": "js-flatten-once",
+              "report": {
+                "publisher": "interview.tw",
+                "date": "2022-05"
+              },
+              "rounds": [
+                "technical-round-1",
+                "technical-round-2",
+                "technical-round-3",
+                "team-or-fourth-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-throttle",
+              "report": {
+                "publisher": "interview.tw",
+                "date": "2022-05"
+              },
+              "rounds": [
+                "technical-round-1",
+                "technical-round-2",
+                "technical-round-3",
+                "team-or-fourth-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-order-book-socket-feed",
+              "report": {
+                "publisher": "interview.tw",
+                "date": "2022-05"
+              },
+              "rounds": [
+                "technical-round-1",
+                "technical-round-2",
+                "technical-round-3",
+                "team-or-fourth-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "report": {
+                "publisher": "interview.tw",
+                "date": "2022-05"
+              },
+              "rounds": [
+                "technical-round-1",
+                "technical-round-2",
+                "technical-round-3",
+                "team-or-fourth-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-cookie-sessionstorage-localstorage",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "web-performance-optimize-load-time",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "js-event-loop",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-why-hooks-have-rules",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-fiber-scheduling",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "js-unique-array",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "js-promise-all",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "http-caching-basics",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "js-deep-clone"
+            },
+            {
+              "id": "react-file-upload-dropzone-progress"
+            },
+            {
+              "id": "react-modal-tooltip-portal"
+            },
+            {
+              "id": "react-role-aware-routes"
+            },
+            {
+              "id": "js-compose"
+            }
+          ]
+        },
+        {
+          "id": "juejin-and-senior",
+          "title": "Juejin account, 2020, and a senior loop, 2024",
+          "from": "a 2020 account on Juejin and a 2024 senior account",
+          "ask": "Interviewing for a senior role?",
+          "sourceCount": 2,
+          "newestReport": "2024-06",
+          "rounds": [
+            {
+              "id": "first-technical-interview",
+              "name": "First technical interview",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A compose and a deep copy to write, then closures, hooks and fiber, redux, design patterns and permissions.",
+              "focus": [
+                "js"
+              ],
+              "sources": [
+                {
+                  "label": "Juejin",
+                  "date": "2020-03"
+                }
+              ]
+            },
+            {
+              "id": "second-technical-interview",
+              "name": "Second technical interview",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "A modal and a tooltip component to write live, questions on file upload, and the highlights of past projects.",
+              "focus": [
+                "ui",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "Juejin",
+                  "date": "2020-03"
+                }
+              ]
+            },
+            {
+              "id": "senior-question-drill",
+              "name": "Senior question drill",
+              "kinds": [
+                "coding"
+              ],
+              "note": "One stream of questions on CSS, React, JavaScript, Webpack and algorithms, with no résumé questions.",
+              "focus": [
+                "algo",
+                "css",
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [
+                {
+                  "label": "GoodJob",
+                  "date": "2024-06"
+                }
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "/guides/interview-blueprint/quiz",
+              "lead": true,
+              "rounds": [
+                "senior-question-drill"
+              ]
+            },
+            {
+              "id": "js-compose",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-deep-clone",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-file-upload-dropzone-progress",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-modal-tooltip-portal",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-role-aware-routes",
+              "report": {
+                "publisher": "Juejin",
+                "date": "2020-03"
+              },
+              "rounds": [
+                "first-technical-interview",
+                "second-technical-interview"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-state-management-redux",
+              "prompt": true,
+              "rounds": [
+                "first-technical-interview"
+              ]
+            },
+            {
+              "id": "js-promise-all",
+              "prompt": true,
+              "rounds": [
+                "first-technical-interview"
+              ]
+            },
+            {
+              "id": "js-throttle"
+            },
+            {
+              "id": "react-order-book-socket-feed"
+            },
+            {
+              "id": "react-virtualized-list-recycling"
+            },
+            {
+              "id": "js-flatten-once"
+            },
+            {
+              "id": "infinite-scroll-list"
             }
           ]
         }

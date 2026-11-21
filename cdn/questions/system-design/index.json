@@ -419,7 +419,8 @@
       "responsive-ui"
     ],
     "companies": [
-      "datadog"
+      "datadog",
+      "binance"
     ],
     "type": "system-design",
     "access": "free",

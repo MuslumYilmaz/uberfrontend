@@ -385,7 +385,8 @@
       "meta",
       "booking-com",
       "shopee",
-      "anduril"
+      "anduril",
+      "binance"
     ],
     "sources": [
       {
@@ -411,6 +412,14 @@
         "publisher": "Blind",
         "date": "2024-05",
         "note": "A commenter in a thread about the Anduril frontend interview says they cleared it and were asked lodash-style questions: flatten, map and reduce. Flattening one level is a representative drill, not the reported depth."
+      },
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "In the second round of the same 2022 Binance loop the candidate flattened [[1,2,3],[2,3,4]] to one level without flat. This drill flattens one level; it is not the reported wording."
       }
     ],
     "updatedAt": "2026-11-10",
@@ -1768,7 +1777,8 @@
       "google",
       "netflix",
       "meta",
-      "booking-com"
+      "booking-com",
+      "binance"
     ],
     "sources": [
       {
@@ -1794,6 +1804,14 @@
         "publisher": "enginebogie",
         "date": "2023-05",
         "note": "One account lists debounce or throttle as a required part of a 60-minute typeahead machine-coding round. This exercise practises the throttle utility on its own; the reported round asked for it inside a larger component."
+      },
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "A 2022 Binance frontend loop in Taiwan opened its first round with writing a throttle. This drill practises the throttle on its own; it is not the reported wording."
       }
     ],
     "difficulty": "intermediate",
@@ -1903,7 +1921,8 @@
     "companies": [
       "google",
       "tesla",
-      "shopee"
+      "shopee",
+      "binance"
     ],
     "sources": [
       {
@@ -1921,6 +1940,14 @@
         "publisher": "Juejin",
         "date": "2020-10",
         "note": "The seller-platform first round asked for a deep-copy implementation (深复制) after questions on deep versus shallow copies. This drill is a practice version of that task, not its wording."
+      },
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "A 2020 Binance frontend loop in mainland China asked for a deep copy in its first round. This drill is a practice version of that task, not its wording."
       }
     ],
     "difficulty": "hard",
@@ -2483,7 +2510,18 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "google"
+      "google",
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The first round of a 2020 Binance frontend loop asked for a compose function whose arguments are unknown, promises included. This drill practises compose; it is not the reported wording."
+      }
     ],
     "difficulty": "intermediate",
     "importance": 3,

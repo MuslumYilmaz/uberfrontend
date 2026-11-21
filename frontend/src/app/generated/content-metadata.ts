@@ -1571,6 +1571,13 @@ export const SHOWCASE_STATS = {
       "system": 0,
       "debug": 0
     },
+    "binance": {
+      "all": 29,
+      "coding": 9,
+      "trivia": 19,
+      "system": 1,
+      "debug": 0
+    },
     "booking-com": {
       "all": 15,
       "coding": 9,

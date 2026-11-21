@@ -16815,6 +16815,19 @@
       "timers",
       "state"
     ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "The second round of a 2022 Binance frontend loop asked how the frontend should handle an order book that the server pushes over a socket in large volume, for performance and user experience. This task builds such a book; it is not the reported wording."
+      }
+    ],
     "description": {
       "summary": "Build an order book that loads a snapshot, applies deltas from a socket in sequence order, recovers from a lost message and stays responsive through a burst of 720 messages. The mock exchange runs inside the file, and the checks replay its four scenarios. Concepts: react, real time, performance, timers, sequence numbers.",
       "specs": {
@@ -17447,6 +17460,19 @@
       "lists",
       "dom",
       "accessibility"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "The fourth round of a 2022 Binance frontend loop asked how you would implement list recycling yourself. This task builds a list that recycles its rows; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a list that renders all 10,000 payment rows into one that renders twenty: a window that follows the scroll position, a jump to any payment, and row nodes that are recycled instead of recreated. The checks scroll the list and count the row nodes the page creates. Concepts: react, performance, lists, dom, accessibility.",
@@ -18220,6 +18246,19 @@
       "focus",
       "accessibility",
       "positioning"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The second round of a 2020 Binance frontend loop asked for a modal and a tooltip component, whether the modal mounts in body or in its parent, and how a tooltip in body positions itself. This task builds both; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Fix a project settings screen whose delete dialog and help tooltips are clipped by the card around them: move both into the body with portals, keep focus inside the open dialog while the page behind it is inert and does not scroll, and place each tooltip below or above its button, whichever fits in its panel. The checks open, tab through and close the dialog, and hover, focus and scroll the tooltips. Concepts: react, portals, dialog, focus, accessibility, positioning.",
@@ -19351,6 +19390,19 @@
       "async",
       "validation",
       "images"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The second round of a 2020 Binance frontend loop asked how drag-and-drop, a progress bar and a preview work in a file upload, and which events to listen to. This task builds that upload; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a receipts list that takes any file and uploads nothing into a working uploader: a drop zone that stays lit over its own text, type and size checks with reasons, uploads side by side with progress, cancel and retry, and image previews whose object URLs are released. The checks drag files over the page, choose them in the file picker and count the open preview URLs. Concepts: react, upload, events, async, validation, images.",
@@ -21203,6 +21255,19 @@
       "authentication",
       "navigation",
       "loading-states"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The first round of a 2020 Binance frontend loop asked about permission management for routes, pages and navigation, with a sidebar that shows different options to different users. This task builds that; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a support console that shows every page to everyone into one that follows roles: routes matched by whole segments, a sidebar and in-page links decided by the same permission check, and one guard that waits for the session, sends signed-out users to sign in and back, and turns refused paths into the dashboard with a notice. The checks type paths into the preview's address bar, press Back, start as or sign in as four demo accounts, and count which pages loaded. Concepts: react, routing, guards, authentication, navigation, loading-states.",

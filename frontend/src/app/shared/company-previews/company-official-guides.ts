@@ -19,6 +19,7 @@ const CHECKED_OCT_23 = '2026-10-23';
 const CHECKED_OCT_26 = '2026-10-26';
 const CHECKED_NOV_11 = '2026-11-11';
 const CHECKED_NOV_14 = '2026-11-14';
+const CHECKED_NOV_16 = '2026-11-16';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -497,6 +498,22 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'The 2026 internship push: applications reviewed in batches, an interview process of three to four weeks, and a fast-track review for Software Engineering applicants who build an AI-powered application on Cloudflare and submit it with their application.',
       checkedAt: CHECKED_NOV_14,
+    },
+  ],
+  binance: [
+    {
+      label: 'Careers',
+      url: 'https://www.binance.com/en/careers',
+      covers:
+        'Four steps, application review, interviews, offer and onboarding, and on average a two to four week interview process with four interviews. Nothing on assessments, round content or the use of AI by candidates.',
+      checkedAt: CHECKED_NOV_16,
+    },
+    {
+      label: 'Kickstart Your Web3 Career Early With Binance',
+      url: 'https://www.binance.com/en/square/post/445767',
+      covers:
+        "The recruitment process for Binance's early-career programs, which depending on the program may include an online or take-home assessment and interviews with talent acquisition or HR, the hiring manager, a business unit lead and cross-functional interviews.",
+      checkedAt: CHECKED_NOV_16,
     },
   ],
 };

@@ -15,7 +15,8 @@
     "responsive-ui"
   ],
   "companies": [
-    "datadog"
+    "datadog",
+    "binance"
   ],
   "sections": [
     {
@@ -65,6 +66,13 @@
         "sourceUrl": "https://www.jointaro.com/interviews/companies/datadog/experiences/senior-frontend-developer-valbonne-october-1-2024-accepted-offer-positive-47d59048/",
         "sourceTitle": "Datadog senior frontend developer interview, Valbonne, October 2024 (Taro)",
         "checkedAt": "2026-10-14"
+      },
+      {
+        "company": "binance",
+        "evidenceType": "reported-interview-question",
+        "sourceUrl": "https://interview.tw/c/CmbI",
+        "sourceTitle": "Binance frontend engineer interview, Taiwan, May 2022 (interview.tw)",
+        "checkedAt": "2026-11-18"
       }
     ]
   },
@@ -76,6 +84,14 @@
       "publisher": "Taro",
       "date": "2024-10",
       "note": "One senior account lists a design prompt for the frontend architecture to filter and display real-time logs (a Live Tail view). Bounded rendering of a growing list is the part of that prompt this case practises; it is not the reported wording."
+    },
+    {
+      "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+      "url": "https://interview.tw/c/CmbI",
+      "company": "binance",
+      "publisher": "interview.tw",
+      "date": "2022-05",
+      "note": "The fourth round of a 2022 Binance frontend loop asked how you would implement list recycling yourself, after a list component that calls an API. Recycling rows in a long list is the part this case practises; it is not the reported wording."
     }
   ]
 }

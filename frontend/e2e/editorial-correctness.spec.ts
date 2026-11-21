@@ -107,6 +107,10 @@ const publicCopyCases = [
     expected: 'What the Cloudflare loops reward: speed in React and TypeScript, and the web explained in order',
   },
   {
+    path: '/companies/binance/preview',
+    expected: 'Prepare for a stream of questions, not one long problem',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

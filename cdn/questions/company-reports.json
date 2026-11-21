@@ -576,6 +576,167 @@
         ]
       }
     ],
+    "binance": [
+      {
+        "id": "js-compose",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Compose Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-compose",
+        "sources": [
+          {
+            "label": "Juejin: Binance frontend interview summary, 2020",
+            "url": "https://juejin.cn/post/6844904096948813832",
+            "publisher": "Juejin",
+            "date": "2020-03"
+          }
+        ]
+      },
+      {
+        "id": "js-deep-clone",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Deep Clone",
+        "access": "premium",
+        "route": "/javascript/coding/js-deep-clone",
+        "sources": [
+          {
+            "label": "Juejin: Binance frontend interview summary, 2020",
+            "url": "https://juejin.cn/post/6844904096948813832",
+            "publisher": "Juejin",
+            "date": "2020-03"
+          }
+        ]
+      },
+      {
+        "id": "react-modal-tooltip-portal",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Delete Dialog and Tooltips Through Portals",
+        "access": "premium",
+        "route": "/react/coding/react-modal-tooltip-portal",
+        "sources": [
+          {
+            "label": "Juejin: Binance frontend interview summary, 2020",
+            "url": "https://juejin.cn/post/6844904096948813832",
+            "publisher": "Juejin",
+            "date": "2020-03"
+          }
+        ]
+      },
+      {
+        "id": "js-flatten-once",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Flatten One Level",
+        "access": "free",
+        "route": "/javascript/coding/js-flatten-once",
+        "sources": [
+          {
+            "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+            "url": "https://interview.tw/c/CmbI",
+            "publisher": "interview.tw",
+            "date": "2022-05"
+          }
+        ]
+      },
+      {
+        "id": "react-order-book-socket-feed",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Order Book Over a Socket: Snapshot, Sequence and Burst",
+        "access": "premium",
+        "route": "/react/coding/react-order-book-socket-feed",
+        "sources": [
+          {
+            "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+            "url": "https://interview.tw/c/CmbI",
+            "publisher": "interview.tw",
+            "date": "2022-05"
+          }
+        ]
+      },
+      {
+        "id": "react-file-upload-dropzone-progress",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Receipt Upload: Drop Zone, Progress and Previews",
+        "access": "premium",
+        "route": "/react/coding/react-file-upload-dropzone-progress",
+        "sources": [
+          {
+            "label": "Juejin: Binance frontend interview summary, 2020",
+            "url": "https://juejin.cn/post/6844904096948813832",
+            "publisher": "Juejin",
+            "date": "2020-03"
+          }
+        ]
+      },
+      {
+        "id": "react-role-aware-routes",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Support Console: Role-Aware Routes and Sidebar",
+        "access": "premium",
+        "route": "/react/coding/react-role-aware-routes",
+        "sources": [
+          {
+            "label": "Juejin: Binance frontend interview summary, 2020",
+            "url": "https://juejin.cn/post/6844904096948813832",
+            "publisher": "Juejin",
+            "date": "2020-03"
+          }
+        ]
+      },
+      {
+        "id": "js-throttle",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Throttle Function",
+        "access": "premium",
+        "route": "/javascript/coding/js-throttle",
+        "sources": [
+          {
+            "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+            "url": "https://interview.tw/c/CmbI",
+            "publisher": "interview.tw",
+            "date": "2022-05"
+          }
+        ]
+      },
+      {
+        "id": "react-virtualized-list-recycling",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Virtualized List: 10,000 Rows, Twenty Nodes",
+        "access": "free",
+        "route": "/react/coding/react-virtualized-list-recycling",
+        "sources": [
+          {
+            "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+            "url": "https://interview.tw/c/CmbI",
+            "publisher": "interview.tw",
+            "date": "2022-05"
+          }
+        ]
+      },
+      {
+        "id": "infinite-scroll-list",
+        "kind": "system-design",
+        "title": "Infinite Scroll System Design: Frontend Interview Answer",
+        "access": "free",
+        "route": "/system-design/infinite-scroll-list",
+        "sources": [
+          {
+            "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+            "url": "https://interview.tw/c/CmbI",
+            "publisher": "interview.tw",
+            "date": "2022-05"
+          }
+        ]
+      }
+    ],
     "booking-com": [
       {
         "id": "js-autocomplete-engine",

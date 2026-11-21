@@ -40,6 +40,12 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
     mixed: true,
     evidence: 'Screens and loops name React, JavaScript and TypeScript, and one reported autocomplete allowed Vue or React.',
   },
+  binance: {
+    framework: 'react',
+    mixed: true,
+    aliases: ['幣安', '币安'],
+    evidence: 'Every round-by-round frontend account names React; a 2026 frontend posting asks for React and Vue, and two accounts were asked Vue questions.',
+  },
   'booking-com': {
     framework: 'react',
     evidence: 'The assessment includes a React component and coding rounds use plain JavaScript or React.',

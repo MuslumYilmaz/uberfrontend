@@ -90,6 +90,7 @@
 /companies/amazon/preview
 /companies/anduril/preview
 /companies/apple/preview
+/companies/binance/preview
 /companies/booking-com/preview
 /companies/bytedance/preview
 /companies/capital-one/preview

@@ -28,7 +28,7 @@ export interface PricingCounts {
 
 export const PRICING_COUNTS: PricingCounts = {
   "updatedMonth": "2026-11",
-  "companyGuides": 32,
+  "companyGuides": 33,
   "premiumRehearsals": 5,
   "areas": {
     "react": {

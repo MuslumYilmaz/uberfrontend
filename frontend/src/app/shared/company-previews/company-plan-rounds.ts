@@ -341,6 +341,66 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       },
     ],
   },
+  binance: {
+    variants: [
+      {
+        id: 'frontend',
+        title: 'Frontend engineers, Taiwan and remote, 2020 to 2022',
+        from: 'Taiwan and remote loops from 2020 to 2022',
+        ask: 'Interviewing in Taiwan or remotely?',
+        default: true,
+        rounds: [
+          {
+            id: 'hr-contact',
+            stage: 'HR contact',
+            kinds: ['recruiter'],
+            note: 'Taiwan and remote loops: an HR invitation on LinkedIn or a referral; in 2020, HR scheduled remote rounds.',
+          },
+          { id: 'technical-round-1', stage: 'Technical round 1', kinds: ['coding'] },
+          {
+            id: 'technical-round-2',
+            stage: 'Technical round 2',
+            kinds: ['coding'],
+            note: 'Short implementations, the event loop, redux, token storage and an order book fed by a socket, in 2022.',
+          },
+          {
+            id: 'technical-round-3',
+            stage: 'Technical round 3',
+            kinds: ['coding', 'people'],
+            note: 'By account: the résumé and a design question; SSR, bundlers and performance; or Vue against React and a slow page.',
+          },
+          {
+            id: 'team-or-fourth-technical-round',
+            stage: 'Team or fourth technical round',
+            kinds: ['coding', 'people'],
+            note: 'A fourth round in two accounts, on topics such as caching and a CDN, fiber, a list component and English.',
+          },
+          { id: 'hr-and-offer', stage: 'HR and offer', kinds: ['outcome'] },
+        ],
+      },
+      {
+        id: 'juejin-and-senior',
+        title: 'Juejin account, 2020, and a senior loop, 2024',
+        from: 'a 2020 account on Juejin and a 2024 senior account',
+        ask: 'Interviewing for a senior role?',
+        rounds: [
+          {
+            id: 'first-technical-interview',
+            stage: 'First technical interview',
+            kinds: ['coding'],
+            note: 'A compose and a deep copy to write, then closures, hooks and fiber, redux, design patterns and permissions.',
+          },
+          { id: 'second-technical-interview', stage: 'Second technical interview', kinds: ['coding', 'people'] },
+          {
+            id: 'senior-question-drill',
+            stage: 'Senior question drill',
+            kinds: ['coding'],
+            note: 'One stream of questions on CSS, React, JavaScript, Webpack and algorithms, with no résumé questions.',
+          },
+        ],
+      },
+    ],
+  },
   'booking-com': {
     variants: [
       {

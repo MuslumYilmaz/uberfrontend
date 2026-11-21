@@ -609,6 +609,34 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://leetcode.com/discuss/post/7396827/',
   },
+  {
+    label: 'Binance',
+    route: '/companies/binance/preview',
+    title: 'Binance Frontend Interview Questions: 40 Reported + Prep Guide',
+    description:
+      'Binance frontend interview: remote rounds of quick JavaScript and React questions, short utilities, an order book over a socket and 40 reported questions.',
+    h1: 'Binance Frontend Interview Questions',
+    kicker: 'Public Binance prep guide',
+    headings: [
+      'Prepare for a stream of questions, not one long problem',
+      'Where the Binance evidence stops, and what only your recruiter can tell you',
+      'questions candidates reported',
+      'Rehearse rounds one and two as a run of quick questions',
+      'A 7-day Binance frontend interview preparation plan',
+      'Common Binance frontend interview preparation questions',
+      'Free practice for the Binance rounds',
+      'Sources (',
+    ],
+    trustFragment: 'nothing here has been confirmed by Binance',
+    resources: [
+      '/javascript/coding/js-debounce',
+      '/javascript/coding/js-create-deferred-promise',
+      '/react/trivia/react-fiber-scheduling',
+      '/react/trivia/react-render-vs-commit-phase',
+    ],
+    reportUrl:
+      'https://interview.tw/c/CmbI',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [
