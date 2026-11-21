@@ -278,6 +278,22 @@ describe('CompanyQuestionListComponent', () => {
       );
     });
 
+    it('shows a row marked open to everyone and leaves it out of every locked count', () => {
+      const openBare = (process: CompanyInterviewProcess) => ({
+        ...process,
+        questions: process.questions!.map((question) => (question.id === 'bare' ? { ...question, open: true as const } : question)),
+      });
+      const host = create('guest', { edit: openBare });
+      const bare = host.querySelector('#acme-question-bare') as HTMLElement;
+      expect(bare.classList.contains('cq-row--locked')).toBeFalse();
+      expect(bare.querySelector('.premium-locked')).toBeNull();
+      expect(bare.querySelector('[data-testid="company-question-reported"]')?.textContent?.trim()).toBe('Solve the bare puzzle.');
+      expect(host.querySelector('.cq__intro')?.textContent?.trim()).toBe(
+        '2 of the 4 are open to read. The others show their topic and what is behind the lock; Premium opens all 2 still locked.',
+      );
+      expect(host.querySelector('.cq-offer__title')?.textContent?.trim()).toBe('Unlock all 2 Acme questions');
+    });
+
     it('keeps the question opened with the free unlock in view when it sits past "Show all"', () => {
       const host = create('account', { rows: 12, freeUnlock: { company: 'acme', questionId: 'extra-8', practiceId: null, unlockedAt: '2026-11-13T00:00:00.000Z' } });
       const hidden = (id: string) => host.querySelector(`#acme-question-${id}`)!.classList.contains('cq-row--hidden');

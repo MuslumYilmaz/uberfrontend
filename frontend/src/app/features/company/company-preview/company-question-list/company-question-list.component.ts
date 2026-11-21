@@ -104,8 +104,9 @@ function whoLine(sources: readonly InterviewProcessSource[]): string {
 }
 
 /**
- * A guide's reported questions: the first open to everyone, the rest with their round, kind, reporter and frequency
- * in view and the question itself under a Premium lock, which stays in the page for search under `.premium-locked`.
+ * A guide's reported questions: the first, and any marked open, open to everyone, the rest with their round, kind,
+ * reporter and frequency in view and the question itself under a Premium lock, which stays in the page for search under
+ * `.premium-locked`.
  * Clicking a locked row offers the reader's one free unlock beside Premium. Behavioural questions follow, open.
  */
 @Component({
@@ -232,7 +233,7 @@ export class CompanyQuestionListComponent {
   readonly headingId = computed(() => `${this.slug()}-questions`);
   /** The list locks for anyone without Premium while the switch is on. */
   readonly locking = computed(() => this.features().lockedQuestions && this.viewer() !== 'member');
-  readonly lockedCount = computed(() => (this.locking() ? this.summary().total - (this.unlockedId() ? 2 : 1) : 0));
+  readonly lockedCount = computed(() => (this.locking() ? this.summary().locked - (this.unlockedId() ? 1 : 0) : 0));
 
   /** The question this guide's reader opened with the free unlock, if it is one of this guide's. */
   readonly unlockedId = computed(() => {
@@ -281,7 +282,10 @@ export class CompanyQuestionListComponent {
     const total = this.summary().total;
     if (!this.features().lockedQuestions) return `All ${total} are open to read, with their practice tasks and answer guides where they have one.`;
     if (this.viewer() === 'member') return `Premium opens all ${total}, with their practice tasks and answer guides where they have one.`;
-    const first = this.viewer() === 'guest' ? 'The first question is open to read; its answer outline opens with a free account.' : 'The first question is open.';
+    const open = total - this.summary().locked;
+    const first = open > 1
+      ? `${open} of the ${total} are open to read.`
+      : this.viewer() === 'guest' ? 'The first question is open to read; its answer outline opens with a free account.' : 'The first question is open.';
     const locked = this.lockedCount();
     if (!locked) return first;
     return `${first} The others show their topic and what is behind the lock; Premium opens ${locked === 1 ? 'the one still locked' : `all ${locked} still locked`}.`;

@@ -75,6 +75,10 @@ export function buildCompanyQuestionLists({ processes, questionList, catalogAcce
       if (question.practice && !catalogAccess.has(question.practice.path)) {
         problems.push(`${slug}: question ${question.id}: no catalog task at ${question.practice.path}`);
       }
+      // A Premium task is what a lock sells, so a row marked open links free practice only.
+      if (question.open && question.practice && catalogAccess.get(question.practice.path) === 'premium') {
+        problems.push(`${slug}: question ${question.id}: a row marked open links the Premium task ${question.practice.path}`);
+      }
       if (question.answerGuide && !answerGuides.get(slug)?.has(question.answerGuide)) {
         problems.push(`${slug}: question ${question.id}: the guide has no practice prompt "${question.answerGuide}"`);
       }

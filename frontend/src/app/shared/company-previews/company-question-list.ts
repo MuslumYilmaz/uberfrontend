@@ -21,7 +21,7 @@ export type QuestionListRow = {
   readonly latest: string | null;
   /** YYYY-MM-DD, the last day it shows as new; null when only a question bank lists it. */
   readonly newUntil: string | null;
-  /** The first row, open to every reader. */
+  /** The first row, or a row marked open, open to every reader. */
   readonly open: boolean;
   /** Locked and comes with a practice task or an answer guide, so the one free unlock can open it. */
   readonly unlockable: boolean;
@@ -38,6 +38,8 @@ export type BehaviouralRow = {
 export type QuestionListSummary = {
   /** Reported questions in the list; the behavioural group is counted apart. */
   readonly total: number;
+  /** The questions under the lock: every row but the open ones. */
+  readonly locked: number;
   /** Questions per stage, in the order the stages first appear in the process; stages with none are left out. */
   readonly rounds: readonly { readonly stage: string; readonly count: number }[];
   readonly roundNotStated: number;
@@ -81,7 +83,7 @@ export function summariseQuestionList(process: CompanyInterviewProcess): Questio
   if (!questions.length) return null;
   const rows = questions.map((question, index): QuestionListRow => {
     const seen = frequency(question.sources);
-    const open = index === 0;
+    const open = index === 0 || question.open === true;
     return {
       id: question.id,
       round: question.round ?? null,
@@ -99,6 +101,7 @@ export function summariseQuestionList(process: CompanyInterviewProcess): Questio
   const months = rows.map((row) => row.latest).filter((month): month is string => month !== null).sort();
   return {
     total: rows.length,
+    locked: rows.filter((row) => !row.open).length,
     rounds,
     roundNotStated: rows.filter((row) => row.round === null).length,
     newestAccount: months.at(-1) ?? null,
@@ -141,6 +144,8 @@ export function questionListProblems(process: CompanyInterviewProcess): string[]
     topics.add(topic.toLowerCase());
     if (question.round !== undefined && !stages.has(question.round)) problems.push(`${at}: no stage is named "${question.round}"`);
     if (index === 0 && question.promptNotShared) problems.push(`${at}: the open row must show a question, not a format`);
+    // An answer guide is what a lock sells; a row that carries one stays locked. The generator checks Premium tasks.
+    if (question.open && question.answerGuide) problems.push(`${at}: a row marked open cannot carry an answer guide`);
   });
   (process.behaviouralQuestions ?? []).forEach((question, index) => {
     check(`behavioural question ${question.id || index}`, question.id, question.question, question.sources);

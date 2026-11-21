@@ -65,6 +65,11 @@ export type ReportedQuestion = {
   readonly question: string;
   /** The sources name the task's subject but not its prompt, and the row says so. */
   readonly promptNotShared?: true;
+  /**
+   * Open to every reader, like the first row: its sources give nothing a lock would add to the topic (no constraint,
+   * follow-up, answer guide or Premium task), so locking it would sell the topic twice.
+   */
+  readonly open?: true;
   /** Every source that describes this same task. Two accounts share a row only when they describe the same task. */
   readonly sources: readonly InterviewProcessSource[];
   /** A catalog task that practises it. */
@@ -126,8 +131,8 @@ export type CompanyInterviewProcess = {
   readonly variants: readonly InterviewProcessVariant[];
   /**
    * The questions the sources report, kept by content: frontend and general questions stay whatever the role, while
-   * backend, network and security questions stay out. The first is open to every reader. A row needs the task or its
-   * subject; a round an account only names ("a technical interview") stays in the stage table.
+   * backend, network and security questions stay out. The first, and any marked open, are open to every reader. A row
+   * needs the task or its subject; a round an account only names ("a technical interview") stays in the stage table.
    */
   readonly questions?: readonly ReportedQuestion[];
   /** The behavioural questions the sources report, shown open as a small group beside the question list. */
