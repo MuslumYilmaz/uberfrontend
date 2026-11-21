@@ -1,0 +1,97 @@
+{
+  "questionId": "react-virtualized-list-recycling",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface Payment {\n  id: number;\n  amountCents: number;\n}\n\nexport const ITEM_COUNT = 10000;\nexport const ROW_HEIGHT = 36;\nexport const VIEWPORT_HEIGHT = 360;\nexport const VISIBLE_ROWS = VIEWPORT_HEIGHT / ROW_HEIGHT;\nexport const OVERSCAN = 5;\nexport const POOL_SIZE = VISIBLE_ROWS + 2 * OVERSCAN;\n\n/** Ten thousand payments, the same on every run. */\nexport const PAYMENTS: Payment[] = Array.from({ length: ITEM_COUNT }, (_, index) => ({\n  id: index + 1,\n  amountCents: ((index + 1) * 2654435761) % 100000,\n}));\n\nconst numberFormat = new Intl.NumberFormat('en-US');\nconst moneyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });\nexport const formatNumber = (value: number) => numberFormat.format(value);\nexport const formatMoney = (cents: number) => moneyFormat.format(cents / 100);\n\n/**\n * Given: counts the row nodes ever created inside the list, so the recycling check can read it. Keep\n * `ref={listRef}` on `.viewport` and `ref={meterRef}` on `.row-meter`.\n */\nfunction useRowNodeMeter() {\n  const listRef = useRef<HTMLDivElement>(null);\n  const meterRef = useRef<HTMLSpanElement>(null);\n  useEffect(() => {\n    const list = listRef.current;\n    const meter = meterRef.current;\n    if (!list || !meter) return;\n    const seen = new WeakSet<Element>();\n    let created = 0;\n    const note = (node: Node) => {\n      if (!(node instanceof Element)) return;\n      const rows = node.matches('.row') ? [node] : Array.from(node.querySelectorAll('.row'));\n      for (const row of rows) {\n        if (seen.has(row)) continue;\n        seen.add(row);\n        created += 1;\n      }\n    };\n    const show = () => {\n      meter.textContent = `${formatNumber(created)} row nodes created`;\n    };\n    note(list);\n    show();\n    const observer = new MutationObserver((records) => {\n      for (const record of records) record.addedNodes.forEach(note);\n      show();\n    });\n    observer.observe(list, { childList: true, subtree: true });\n    return () => observer.disconnect();\n  }, []);\n  return { listRef, meterRef };\n}\n\nconst LAST_FIRST_ROW = ITEM_COUNT - VISIBLE_ROWS;\n\n/**\n * The row at the top edge of the viewport, partly scrolled out or not. A row with less than half a pixel left on\n * screen counts as scrolled out: a zoomed browser can report 173519.4px for a jump to 173520px.\n */\nfunction rowAt(scrollTop: number) {\n  return Math.min(Math.max(Math.floor((scrollTop + 0.5) / ROW_HEIGHT), 0), LAST_FIRST_ROW);\n}\n\nexport default function App() {\n  const { listRef, meterRef } = useRowNodeMeter();\n  // Only the first visible row is state: a scroll that stays inside one row sets the same number, and React bails\n  // out without committing anything.\n  const [firstVisible, setFirstVisible] = useState(0);\n  const [jumpText, setJumpText] = useState('');\n  const [jumpStatus, setJumpStatus] = useState('');\n\n  const start = Math.min(Math.max(firstVisible - OVERSCAN, 0), ITEM_COUNT - POOL_SIZE);\n  const indexes = Array.from({ length: POOL_SIZE }, (_, offset) => start + offset);\n\n  // A jump moves the list and sets the window in the same handler, from the position the browser applied.\n  const handleJump = (event: React.FormEvent<HTMLFormElement>) => {\n    event.preventDefault();\n    const list = listRef.current;\n    const target = Number(jumpText.trim());\n    if (!/^\\d+$/.test(jumpText.trim()) || target < 1 || !list) {\n      setJumpStatus(`Enter a whole payment number from 1 to ${formatNumber(ITEM_COUNT)}.`);\n      return;\n    }\n    list.scrollTop = Math.min(target - 1, LAST_FIRST_ROW) * ROW_HEIGHT;\n    const row = rowAt(list.scrollTop);\n    setFirstVisible(row);\n    setJumpStatus(`Jumped to payment ${formatNumber(row + 1)}.`);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Payments (Solution)</h1>\n          <p className=\"subtitle\">Ten thousand rows. Draw the twenty that matter.</p>\n        </header>\n\n        <form className=\"jump-form\" onSubmit={handleJump}>\n          <label className=\"label\" htmlFor=\"jump\">Jump to payment</label>\n          <input\n            id=\"jump\"\n            className=\"jump\"\n            type=\"text\"\n            inputMode=\"numeric\"\n            autoComplete=\"off\"\n            value={jumpText}\n            onChange={(event) => setJumpText(event.target.value)}\n          />\n          <button type=\"submit\" className=\"go\">Go</button>\n          <p className=\"jump-status\" role=\"status\">{jumpStatus}</p>\n        </form>\n\n        <div className=\"list-status\">\n          <p className=\"range\">\n            Showing {formatNumber(firstVisible + 1)}–{formatNumber(firstVisible + VISIBLE_ROWS)} of {formatNumber(ITEM_COUNT)}\n          </p>\n          <span className=\"row-meter\" ref={meterRef} />\n        </div>\n\n        <div\n          className=\"viewport\"\n          ref={listRef}\n          role=\"list\"\n          aria-label=\"Payments\"\n          tabIndex={0}\n          style={{ height: VIEWPORT_HEIGHT }}\n          onScroll={(event) => setFirstVisible(rowAt(event.currentTarget.scrollTop))}\n        >\n          <div className=\"spacer\" style={{ height: ITEM_COUNT * ROW_HEIGHT }}>\n            {indexes.map((index, offset) => {\n              const payment = PAYMENTS[index];\n              // Keyed by position in the pool: element 0 always shows the pool's first payment, so scrolling\n              // rewrites the twenty elements in place and never creates, removes or reorders one.\n              return (\n                <div\n                  key={offset}\n                  className=\"row\"\n                  role=\"listitem\"\n                  aria-posinset={payment.id}\n                  aria-setsize={ITEM_COUNT}\n                  data-id={payment.id}\n                  style={{ transform: `translateY(${index * ROW_HEIGHT}px)` }}\n                >\n                  <span className=\"payment\">Payment {formatNumber(payment.id)}</span>\n                  <span className=\"amount\">{formatMoney(payment.amountCents)}</span>\n                </div>\n              );\n            })}\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-first-row-is-the-state",
+          "title": "Keep only the first visible row in state",
+          "anchor": {
+            "lineStart": 78,
+            "lineEnd": 78,
+            "snippet": "const [firstVisible, setFirstVisible] = useState(0);"
+          },
+          "why": "The pool, the range line and the offsets all follow from one number: the row at the top edge. A scroll that stays inside one row sets the same number again, so React bails out without committing, where a stored pixel position would change on every scroll event.",
+          "alternative": "Store the raw scrollTop and derive the row on render.",
+          "tradeoff": "The raw position is simpler to read, but every scroll event then commits all twenty rows again, even when the window has not moved."
+        },
+        {
+          "id": "a2-overscan-and-clamp",
+          "title": "Start five rows early and clamp the pool to the list",
+          "anchor": {
+            "lineStart": 82,
+            "lineEnd": 82,
+            "snippet": "const start = Math.min(Math.max(firstVisible - OVERSCAN, 0), ITEM_COUNT - POOL_SIZE);"
+          },
+          "why": "Overscan draws rows beyond the edges so a fast scroll does not show blank space before the next render. Clamping keeps twenty rows at both ends: payments 1 to 20 at the top, 9,981 to 10,000 at the bottom.",
+          "alternative": "Render only the rows that intersect the viewport, ten or eleven depending on the offset.",
+          "tradeoff": "Drawing only the visible rows is the least work per render, but the edges flash empty while the browser scrolls ahead of React."
+        },
+        {
+          "id": "a3-spacer-keeps-the-height",
+          "title": "Give the spacer the full list height",
+          "anchor": {
+            "lineStart": 139,
+            "lineEnd": 139,
+            "snippet": "<div className=\"spacer\" style={{ height: ITEM_COUNT * ROW_HEIGHT }}>"
+          },
+          "why": "The scrollbar and the scroll range come from the content height. A spacer as tall as all 10,000 rows lets the reader scroll anywhere while only twenty rows exist, each translated to its own offset inside it.",
+          "alternative": "Pad the list with top and bottom placeholders sized to the hidden rows.",
+          "tradeoff": "Padding avoids absolute positioning, but both paddings change on every window move; one spacer and per-row offsets keep the layout fixed."
+        },
+        {
+          "id": "a4-scroll-event",
+          "title": "Set state in the scroll handler",
+          "anchor": {
+            "lineStart": 137,
+            "lineEnd": 137,
+            "snippet": "onScroll={(event) => setFirstVisible(rowAt(event.currentTarget.scrollTop))}"
+          },
+          "why": "The browser fires scroll at most once per frame and only while the list moves, so one state update per event needs no extra throttle, and the rows render in the same update as the range line.",
+          "alternative": "Batch the update into requestAnimationFrame, or render the rows through useDeferredValue.",
+          "tradeoff": "Both are common, but they let the range and the rows disagree for a frame, and an animation-frame callback never runs where frames are paused, including the frame these checks use."
+        },
+        {
+          "id": "a5-jump-sets-state",
+          "title": "Let a jump move the list and set the window",
+          "anchor": {
+            "lineStart": 95,
+            "lineEnd": 95,
+            "snippet": "const row = rowAt(list.scrollTop);"
+          },
+          "why": "Setting scrollTop moves the list, and the scroll event it causes arrives on a later frame. Reading the position back and setting the row in the same handler renders the new window at once, from the position the browser actually applied.",
+          "alternative": "Set scrollTop and let the scroll handler update the window.",
+          "tradeoff": "Relying on the event is less code, but the window lags a frame behind the list, and longer where frames are paused, such as a background tab."
+        },
+        {
+          "id": "a6-recycle-by-position",
+          "title": "Key rows by their position in the pool",
+          "anchor": {
+            "lineStart": 146,
+            "lineEnd": 146,
+            "snippet": "key={offset}"
+          },
+          "why": "Element 0 always shows the pool's first payment, element 1 the second, and so on, so scrolling rewrites the same twenty elements in place: no element is created, removed or moved, in either direction.",
+          "alternative": "Key by slot (index modulo the pool size), or keep the payment id.",
+          "tradeoff": "Slot keys rewrite only the rows that changed, but React reorders the elements to match: one move per row scrolling down, nineteen scrolling up. Id keys create and destroy a row per row scrolled, and are the right choice when rows hold their own state, such as an input or focus, which any reused element would carry to another payment."
+        },
+        {
+          "id": "a7-tell-assistive-tech-the-size",
+          "title": "Tell assistive technology the full size",
+          "anchor": {
+            "lineStart": 150,
+            "lineEnd": 150,
+            "snippet": "aria-setsize={ITEM_COUNT}"
+          },
+          "why": "Only twenty rows exist in the DOM. aria-setsize and aria-posinset let screen readers that support them announce a row as 1,001 of 10,000 instead of one of twenty, and the role=status line announces where a jump landed.",
+          "alternative": "Leave the list semantics to the rendered rows.",
+          "tradeoff": "Support varies by screen reader, and a virtual cursor still only reaches the rendered rows; the attributes make the size honest, not the whole list browsable."
+        }
+      ]
+    }
+  }
+}

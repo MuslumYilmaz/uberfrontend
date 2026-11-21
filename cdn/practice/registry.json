@@ -7252,6 +7252,28 @@
     "assetRef": "questions/react/coding.json#react-debug-transcript-sync"
   },
   {
+    "id": "react-modal-tooltip-portal",
+    "family": "question",
+    "title": "Delete Dialog and Tooltips Through Portals",
+    "route": "/react/coding/react-modal-tooltip-portal",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Fix a settings screen whose delete dialog and help tooltips are clipped by a card: portal both into the body, keep focus inside the dialog, make the page behind it inert and unscrollable, and flip a tooltip that would leave its panel.",
+    "tags": [
+      "react",
+      "portals",
+      "dialog",
+      "focus",
+      "accessibility",
+      "positioning"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-modal-tooltip-portal"
+  },
+  {
     "id": "react-files-table-select-all",
     "family": "question",
     "title": "Downloadable Files Table: Select All Across Pages",
@@ -7644,6 +7666,28 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-multi-step-signup"
+  },
+  {
+    "id": "react-order-book-socket-feed",
+    "family": "question",
+    "title": "Order Book Over a Socket: Snapshot, Sequence and Burst",
+    "route": "/react/coding/react-order-book-socket-feed",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build an order book from a snapshot and a socket of deltas, recover from a lost message, and keep the screen calm through a burst. 2 seconds.",
+    "tags": [
+      "react",
+      "real-time",
+      "performance",
+      "async",
+      "timers",
+      "state"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 45,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-order-book-socket-feed"
   },
   {
     "id": "react-accordion-faq",
@@ -8101,6 +8145,28 @@
     "assetRef": "questions/react/coding.json#react-transfer-list"
   },
   {
+    "id": "react-file-upload-dropzone-progress",
+    "family": "question",
+    "title": "Receipt Upload: Drop Zone, Progress and Previews",
+    "route": "/react/coding/react-file-upload-dropzone-progress",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a receipts list that takes any file into a working uploader: a drop zone that stays lit over its own text, type and size checks, per-file progress with cancel and retry, and image previews that release their object URLs.",
+    "tags": [
+      "react",
+      "upload",
+      "events",
+      "async",
+      "validation",
+      "images"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-file-upload-dropzone-progress"
+  },
+  {
     "id": "react-select-compound-api",
     "family": "question",
     "title": "Select With Compound Components (Single + Multi)",
@@ -8142,6 +8208,28 @@
     "updatedAt": "2026-07-15",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-use-effect-once"
+  },
+  {
+    "id": "react-role-aware-routes",
+    "family": "question",
+    "title": "Support Console: Role-Aware Routes and Sidebar",
+    "route": "/react/coding/react-role-aware-routes",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a support console that shows every page to everyone into one that follows roles: whole-segment routes, a sidebar and links from one permission check, and a guard that waits for the session and redirects without trapping Back.",
+    "tags": [
+      "react",
+      "routing",
+      "guards",
+      "authentication",
+      "navigation",
+      "loading-states"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-role-aware-routes"
   },
   {
     "id": "react-tictactoe",
@@ -8187,6 +8275,28 @@
     "assetRef": "questions/react/coding.json#react-todo-list"
   },
   {
+    "id": "react-living-room-home",
+    "family": "question",
+    "title": "TV Home Screen: Remote Focus, Lazy Rows and Details",
+    "route": "/react/coding/react-living-room-home",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Turn a streaming home screen built for a mouse into one a TV remote can drive: arrow-key focus that keeps its column, rows that load as they come into view without IntersectionObserver, and details that hold focus until Back.",
+    "tags": [
+      "react",
+      "keyboard",
+      "focus",
+      "lazy-loading",
+      "dialog",
+      "images"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 60,
+    "updatedAt": "2026-11-20",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-living-room-home"
+  },
+  {
     "id": "react-useeffect-purpose",
     "family": "question",
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
@@ -8227,6 +8337,50 @@
     "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
+  },
+  {
+    "id": "react-virtualized-list-recycling",
+    "family": "question",
+    "title": "Virtualized List: 10,000 Rows, Twenty Nodes",
+    "route": "/react/coding/react-virtualized-list-recycling",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Turn a list that renders all 10,000 payment rows into one that renders twenty: a window that follows the scroll position, a jump to any payment, and row nodes that are recycled instead of recreated.",
+    "tags": [
+      "react",
+      "performance",
+      "lists",
+      "dom",
+      "accessibility"
+    ],
+    "access": "free",
+    "estimatedMinutes": 30,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-virtualized-list-recycling"
+  },
+  {
+    "id": "react-webhook-deliveries-four-tasks",
+    "family": "question",
+    "title": "Webhook Deliveries Console: Four Tasks in One Hour",
+    "route": "/react/coding/react-webhook-deliveries-four-tasks",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Extend a webhook-deliveries console in four timed tasks: request states, a typed payload, a filter with retries and a planted refresh bug. The tasks build on each other the way a one-hour app round does.",
+    "tags": [
+      "react",
+      "typescript",
+      "async",
+      "api-calls",
+      "loading-states",
+      "error-handling",
+      "debugging"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 60,
+    "updatedAt": "2026-11-18",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-webhook-deliveries-four-tasks"
   },
   {
     "id": "react-render-props-vs-hocs",
@@ -8292,6 +8446,27 @@
     "assetRef": "questions/react/trivia.json#react-core-problem-and-non-goals"
   },
   {
+    "id": "react-fiber-scheduling",
+    "family": "question",
+    "title": "What is React Fiber, and how does it decide which work to do first?",
+    "route": "/react/trivia/react-fiber-scheduling",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Explain what a fiber is (one object per component with parent, child and sibling pointers, state, flags and lanes), why React replaced its recursive reconciler, how the work loop renders and yields, how lanes rank updates, and why the commit runs in one synchronous pass.",
+    "tags": [
+      "react",
+      "rendering",
+      "concurrent",
+      "performance",
+      "architecture"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-fiber-scheduling"
+  },
+  {
     "id": "react-keys-in-lists",
     "family": "question",
     "title": "What is the significance of keys in lists in React?",
@@ -8332,6 +8507,27 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-function-treated-as-component-rules"
+  },
+  {
+    "id": "react-render-vs-commit-phase",
+    "family": "question",
+    "title": "What runs in React's render phase, and what runs in the commit phase?",
+    "route": "/react/trivia/react-render-vs-commit-phase",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain what React does in the render phase (call components, compute and diff the next tree, possibly more than once or for nothing) and in the commit phase (apply DOM changes, attach refs, run layout effects synchronously, then passive effects), and where each piece of component code runs.",
+    "tags": [
+      "react",
+      "rendering",
+      "effects",
+      "lifecycle",
+      "performance"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-11-19",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-render-vs-commit-phase"
   },
   {
     "id": "react-18-whats-new",

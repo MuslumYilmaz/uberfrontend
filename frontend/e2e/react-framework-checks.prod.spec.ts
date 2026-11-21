@@ -261,6 +261,14 @@ const BOOKING_WIDGET_PRESSURE_SOLUTION = readCanonicalFiles(
   '../cdn/sb/react/solution/react-listing-booking-widget-pressure-solution.v1.json',
 );
 
+const WEBHOOK_DELIVERIES_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-webhook-deliveries-four-tasks-pressure-solution.v1.json',
+);
+
+const ORDER_BOOK_PRESSURE_SOLUTION = readCanonicalFiles(
+  '../cdn/sb/react/solution/react-order-book-socket-feed-pressure-solution.v1.json',
+);
+
 const LIKE_BUTTON_PRESSURE_SOLUTIONS = {
   react: readCanonicalFiles(
     '../cdn/sb/react/solution/react-like-button-pressure-solution.v1.json',
@@ -370,6 +378,27 @@ const FILES_TABLE_PRESSURE_FLOW: PressureFlowContract = {
     'full-export',
   ],
   debriefText: 'You kept the selection true at any size',
+};
+
+const WEBHOOK_DELIVERIES_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [2, 3, 5, 6],
+  roundIds: [
+    'request-states',
+    'typed-payload',
+    'filter-and-retry',
+    'refresh-bug',
+  ],
+  debriefText: 'You shipped four tasks under the clock',
+};
+
+const ORDER_BOOK_PRESSURE_FLOW: PressureFlowContract = {
+  checkCounts: [2, 4, 6],
+  roundIds: [
+    'snapshot-and-deltas',
+    'sequence-and-resync',
+    'burst-and-cleanup',
+  ],
+  debriefText: 'You kept the book right at socket speed',
 };
 
 const BOOKING_WIDGET_PRESSURE_FLOW: PressureFlowContract = {
@@ -1922,6 +1951,20 @@ test.describe('Framework checks against the production SSR build', () => {
       readySelector: '.book',
       solution: BOOKING_WIDGET_PRESSURE_SOLUTION,
       flow: BOOKING_WIDGET_PRESSURE_FLOW,
+    },
+    {
+      label: 'Cloudflare four-task webhook console',
+      route: '/react/coding/react-webhook-deliveries-four-tasks',
+      readySelector: '.row',
+      solution: WEBHOOK_DELIVERIES_PRESSURE_SOLUTION,
+      flow: WEBHOOK_DELIVERIES_PRESSURE_FLOW,
+    },
+    {
+      label: 'Order book over a socket',
+      route: '/react/coding/react-order-book-socket-feed',
+      readySelector: '.scenario',
+      solution: ORDER_BOOK_PRESSURE_SOLUTION,
+      flow: ORDER_BOOK_PRESSURE_FLOW,
     },
   ] as const) {
     test(`${contract.label} opens its Premium pressure mode and clears every round`, async ({ page, baseURL }) => {

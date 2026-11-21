@@ -1533,8 +1533,8 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 520,
-  "premiumPracticeCount": 185,
+  "totalQuestions": 529,
+  "premiumPracticeCount": 191,
   "companyCounts": {
     "agoda": {
       "all": 12,
@@ -1593,8 +1593,8 @@ export const SHOWCASE_STATS = {
       "debug": 3
     },
     "cloudflare": {
-      "all": 5,
-      "coding": 1,
+      "all": 6,
+      "coding": 2,
       "trivia": 3,
       "system": 0,
       "debug": 1
@@ -1614,8 +1614,8 @@ export const SHOWCASE_STATS = {
       "debug": 0
     },
     "disney": {
-      "all": 5,
-      "coding": 1,
+      "all": 6,
+      "coding": 2,
       "trivia": 3,
       "system": 1,
       "debug": 0
