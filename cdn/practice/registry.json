@@ -5387,7 +5387,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-11-22",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-mock-vs-stub-vs-spy"
   },

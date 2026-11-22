@@ -4,6 +4,7 @@ backend
 JavaScript
 TypeScript
 Playwright
+Vitest
 WebKit
 GitHub
 Node.js
