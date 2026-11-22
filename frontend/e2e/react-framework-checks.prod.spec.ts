@@ -1723,6 +1723,27 @@ test.describe('Framework checks against the production SSR build', () => {
     });
   }
 
+  test('Vue names a compile error and the line it is on, in the preview and in the checks', async ({ page }) => {
+    await page.goto('/vue/coding/vue-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    await loadCanonicalBundle(page, {
+      'src/App.vue': ['<template>', '  <p v-if>missing</p>', '</template>', ''].join('\n'),
+    });
+    await page.getByTestId('framework-rebuild-preview').click();
+    const where = /Preview compilation failed: \S.* \(src\/App\.vue:2:\d+\)/;
+    const previewError = page.getByTestId('framework-preview-error');
+    await expect(previewError).toHaveAttribute('data-failure-kind', 'compilation');
+    await expect(previewError).toContainText(where);
+
+    await runChecks(page, COUNTER_CHECKS.length);
+    await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(COUNTER_CHECKS.length);
+    for (const error of await checkRows(page).locator('.framework-check-result__error').all()) {
+      await expect(error).toContainText(where);
+    }
+  });
+
   test('React Debounced Search keeps its premium pressure draft isolated and passes every round', async ({
     page,
     baseURL,

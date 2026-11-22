@@ -1867,6 +1867,22 @@ export default function App() {
     });
   });
 
+  it('names a Vue compile error and the file and line it is in, in every check', async () => {
+    const html = makeVuePreviewHtml({
+      'src/App.vue': '<template><p class="out">{{ label }}</p></template>\n<script setup lang="ts">\nimport { label } from \'./labels\';\n</script>',
+      'src/labels.ts': ['// labels', "export const label = 'x' +;"].join('\n'),
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      { id: 'first', name: 'First', steps: [{ type: 'expectExists', selector: '.out' }] },
+      { id: 'second', name: 'Second', steps: [{ type: 'expectExists', selector: '.out' }] },
+    ] as any);
+
+    expect(results.map((result) => result.failureKind)).toEqual(['compilation', 'compilation']);
+    for (const result of results) {
+      expect(result.error).toMatch(/^Preview compilation failed: \S.* \(src\/labels\.ts:2:\d+\)$/);
+    }
+  });
+
   it('removes the frame and rejects promptly when a run is cancelled', async () => {
     const run = runner.runFramework(
       '<!doctype html><html><body><div>never ready</div></body></html>',
