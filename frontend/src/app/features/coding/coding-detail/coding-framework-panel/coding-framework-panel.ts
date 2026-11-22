@@ -79,6 +79,15 @@ function scriptStringLiteral(value: string): string {
   return JSON.stringify(value).replace(/[<>\/\u2028\u2029]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
 
+/** The sandboxed preview has no storage (localStorage throws), so it gets empty in-memory stores per build, as checks do. */
+export const PREVIEW_MEMORY_STORAGE = `(function(){function memory(){var items=new Map();return{get length(){return items.size;},`
+  + `key:function(i){var k=Array.from(items.keys())[i];return k===undefined?null:k;},`
+  + `getItem:function(k){k=String(k);return items.has(k)?items.get(k):null;},`
+  + `setItem:function(k,v){items.set(String(k),String(v));},removeItem:function(k){items.delete(String(k));},`
+  + `clear:function(){items.clear();}};}`
+  + `['localStorage','sessionStorage'].forEach(function(name){var store=memory();`
+  + `try{Object.defineProperty(window,name,{configurable:true,get:function(){return store;}});}catch(_e){}});})();`;
+
 /**
  * Injected first into the preview document: console.log/info/warn/error/debug and uncaught errors are posted to this
  * panel with the preview's token, then go on to the browser console as before. Values are written as a console writes
@@ -1435,7 +1444,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
     const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridge = `<script>${previewConsoleBridge(token)}(function(){var token=${scriptStringLiteral(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
+    const bridge = `<script>${PREVIEW_MEMORY_STORAGE}${previewConsoleBridge(token)}(function(){var token=${scriptStringLiteral(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
 
     if (/<head[^>]*>/i.test(html)) {
       return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };

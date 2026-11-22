@@ -117,6 +117,81 @@ const THROWING_HANDLER_CASES = [
   ].join('\n')],
 ] as const;
 
+// The preview's sandbox has no storage of its own; these read and write it with no try/catch.
+const STORAGE_PREVIEW_CASES = [
+  ['react', 'react-counter', 'src/App.tsx'],
+  ['angular', 'angular-counter-starter', 'src/app/app.component.ts'],
+  ['vue', 'vue-counter', 'src/App.vue'],
+] as const;
+
+const STORAGE_PREVIEW_CODE = {
+  react: [
+    "import React, { useState } from 'react';",
+    '',
+    'export default function App() {',
+    "  const [count, setCount] = useState(() => Number(localStorage.getItem('count')));",
+    '  const increment = () => {',
+    "    localStorage.setItem('count', String(count + 1));",
+    "    sessionStorage.setItem('count', String(count + 1));",
+    '    setCount(count + 1);',
+    '  };',
+    "  const stored = localStorage.getItem('count');",
+    '  return (',
+    '    <>',
+    '      <div className="value">{count}</div>',
+    "      <div className=\"stored\">{stored === null ? 'none' : `${stored} / ${sessionStorage.getItem('count')}`}</div>",
+    '      <button className="stored-increment" onClick={increment}>+</button>',
+    '    </>',
+    '  );',
+    '}',
+    '',
+  ].join('\n'),
+  angular: [
+    "import { Component } from '@angular/core';",
+    '',
+    '@Component({',
+    "  selector: 'app-root',",
+    '  standalone: true,',
+    "  template: '<div class=\"value\">{{ count }}</div><div class=\"stored\">{{ stored }}</div>'",
+    "    + '<button class=\"stored-increment\" (click)=\"increment()\">+</button>',",
+    '})',
+    'export class AppComponent {',
+    "  count = Number(localStorage.getItem('count'));",
+    "  stored = localStorage.getItem('count') ?? 'none';",
+    '',
+    '  increment(): void {',
+    "    localStorage.setItem('count', String(this.count + 1));",
+    "    sessionStorage.setItem('count', String(this.count + 1));",
+    '    this.count += 1;',
+    "    this.stored = `${localStorage.getItem('count')} / ${sessionStorage.getItem('count')}`;",
+    '  }',
+    '}',
+    '',
+  ].join('\n'),
+  vue: [
+    '<script setup>',
+    "import { ref } from 'vue';",
+    '',
+    "const count = ref(Number(localStorage.getItem('count')));",
+    "const stored = ref(localStorage.getItem('count') ?? 'none');",
+    '',
+    'function increment() {',
+    "  localStorage.setItem('count', String(count.value + 1));",
+    "  sessionStorage.setItem('count', String(count.value + 1));",
+    '  count.value += 1;',
+    "  stored.value = `${localStorage.getItem('count')} / ${sessionStorage.getItem('count')}`;",
+    '}',
+    '</script>',
+    '',
+    '<template>',
+    '  <div class="value">{{ count }}</div>',
+    '  <div class="stored">{{ stored }}</div>',
+    '  <button class="stored-increment" @click="increment">+</button>',
+    '</template>',
+    '',
+  ].join('\n'),
+} as const;
+
 const REVIEW_SOLUTION = readCanonicalFiles(
   '../cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json',
 );
@@ -1625,6 +1700,28 @@ test.describe('Framework checks against the production SSR build', () => {
       });
     }
   });
+
+  for (const [framework, questionId, path] of STORAGE_PREVIEW_CASES) {
+    test(`${framework} live preview runs code that uses localStorage and sessionStorage without try/catch`, async ({ page }) => {
+      await page.goto(`/${framework}/coding/${questionId}`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+
+      await loadCanonicalBundle(page, { [path]: STORAGE_PREVIEW_CODE[framework] });
+      await rebuildPreview(page, '.stored');
+      const preview = livePreview(page);
+      await expect(preview.locator('.value')).toHaveText('0');
+      await expect(preview.locator('.stored')).toHaveText('none');
+
+      await preview.locator('.stored-increment').click();
+      await expect(preview.locator('.value')).toHaveText('1');
+      await expect(preview.locator('.stored')).toHaveText('1 / 1');
+
+      // Each build starts with empty storage, as each check does.
+      await rebuildPreview(page, '.stored');
+      await expect(preview.locator('.stored')).toHaveText('none');
+    });
+  }
 
   test('React Debounced Search keeps its premium pressure draft isolated and passes every round', async ({
     page,
