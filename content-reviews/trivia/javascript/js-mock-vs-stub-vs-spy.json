@@ -2,8 +2,8 @@
   "contentId": "js-mock-vs-stub-vs-spy",
   "tech": "javascript",
   "query": "mocks vs stubs vs spies javascript interview question",
-  "reviewedAt": "2026-04-13",
-  "reviewedBy": "Codex AI draft",
+  "reviewedAt": "2026-11-22",
+  "reviewedBy": "Claude Code draft",
   "selection": {
     "querySource": "manual",
     "greatFrontendRelevant": true
@@ -16,7 +16,7 @@
       "selectionReason": "Sinon is an established testing library whose docs are a strong canonical reference for mocks, stubs, and spies in JavaScript testing.",
       "verdicts": {
         "realWorldUseCases": "ours",
-        "actionableExamples": "theirs",
+        "actionableExamples": "tie",
         "followUpConfusion": "ours"
       },
       "theirStrengths": [
@@ -31,6 +31,9 @@
         ],
         "followUpConfusion": [
           "Mocks are useful for strict contracts, but I avoid over-mocking because it makes tests brittle."
+        ],
+        "actionableExamples": [
+          "mock.expects('fetchJson').once().withExactArgs('/api/users?q=a').resolves([]);"
         ]
       },
       "theirEvidence": {
@@ -38,7 +41,7 @@
           "Sinon is strong on the tool mechanics, but our page is more explicit about the behavior boundary question interviewers actually care about."
         ],
         "actionableExamples": [
-          "The Sinon docs are deeper on concrete spy/stub/mock APIs and thus win on actionable example detail."
+          "The Sinon docs still cover far more of the spy, stub and mock API surface, such as matchers, call-order assertions and fake timers."
         ],
         "followUpConfusion": [
           "Our page is stronger on the likely follow-up confusion: when to assert outputs first, when interaction assertions are justified, and why over-mocking creates brittle tests."
@@ -47,11 +50,11 @@
       "nextActions": {
         "realWorldUseCases": [],
         "actionableExamples": [
-          "Add one compact spy-versus-stub code example later if we want to compete more directly with Sinon API docs."
+          "Recheck the Sinon example against each new Sinon major release; it was run against sinon 22.1.0 on 2026-11-22."
         ],
         "followUpConfusion": []
       },
-      "winReason": "Sinon is deeper on tool specifics, but our page is stronger for the interview prompt because it frames mocks, stubs, and spies around boundary choice and test brittleness."
+      "winReason": "Sinon is deeper on API breadth, but our page now pairs a runnable stub, spy and mock example in Sinon itself with the boundary-choice and brittleness guidance the interview prompt asks for."
     },
     {
       "label": "GreatFrontEnd mocks and stubs",
