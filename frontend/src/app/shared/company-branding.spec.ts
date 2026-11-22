@@ -32,6 +32,7 @@ describe('company branding helpers', () => {
       'anduril',
       'amazon',
       'apple',
+      'binance',
       'booking-com',
       'bytedance',
       'capital-one',

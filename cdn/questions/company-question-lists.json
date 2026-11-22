@@ -2543,6 +2543,655 @@
         }
       ]
     },
+    "binance": {
+      "total": 40,
+      "rounds": [
+        {
+          "stage": "Technical round 1",
+          "count": 8
+        },
+        {
+          "stage": "Technical round 2",
+          "count": 10
+        },
+        {
+          "stage": "Technical round 3",
+          "count": 4
+        },
+        {
+          "stage": "Team or fourth technical round",
+          "count": 5
+        },
+        {
+          "stage": "First technical interview",
+          "count": 6
+        },
+        {
+          "stage": "Second technical interview",
+          "count": 2
+        }
+      ],
+      "roundNotStated": 5,
+      "newestAccount": "2022-06",
+      "questions": [
+        {
+          "id": "react-fiber-core",
+          "round": "Team or fourth technical round",
+          "kind": "React concepts",
+          "accounts": 3,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-fiber-scheduling",
+            "access": "free"
+          },
+          "answerGuide": "react-fiber-core-function"
+        },
+        {
+          "id": "write-a-throttle",
+          "round": "Technical round 1",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-throttle",
+            "access": "premium"
+          },
+          "answerGuide": "throttle-which-calls-run"
+        },
+        {
+          "id": "hooks-and-their-rules",
+          "round": "Technical round 1",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-why-hooks-have-rules",
+            "access": "free"
+          },
+          "answerGuide": "hooks-rules-and-early-return"
+        },
+        {
+          "id": "browser-cache-status-codes",
+          "round": "Technical round 1",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/http-caching-basics",
+            "access": "free"
+          },
+          "answerGuide": "browser-cache-and-status-codes"
+        },
+        {
+          "id": "render-and-commit-phases",
+          "round": "Technical round 1",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-07",
+          "newUntil": "2020-09-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-render-vs-commit-phase",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "event-delegation-and-bubbling",
+          "round": "Technical round 1",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-02",
+          "newUntil": "2021-04-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/trivia/js-event-delegation",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "typeof-and-instanceof",
+          "round": "Technical round 1",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/trivia/js-check-data-type-with-typeof",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "higher-order-component-use",
+          "round": "Technical round 1",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-higher-order-components",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "react-redux-connect",
+          "round": "Technical round 1",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "order-book-over-socket",
+          "round": "Technical round 2",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-order-book-socket-feed",
+            "access": "premium"
+          },
+          "answerGuide": "order-book-over-a-socket"
+        },
+        {
+          "id": "event-loop-ordering-snippet",
+          "round": "Technical round 2",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-event-loop",
+            "access": "free"
+          },
+          "answerGuide": "event-loop-order-and-timeout-zero"
+        },
+        {
+          "id": "token-storage-safety",
+          "round": "Technical round 2",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-cookie-sessionstorage-localstorage",
+            "access": "free"
+          },
+          "answerGuide": "token-storage-and-safety"
+        },
+        {
+          "id": "flatten-without-flat",
+          "round": "Technical round 2",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-flatten-once",
+            "access": "free"
+          },
+          "answerGuide": "flatten-one-level-by-hand"
+        },
+        {
+          "id": "dedupe-without-set",
+          "round": "Technical round 2",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-unique-array",
+            "access": "premium"
+          },
+          "answerGuide": "dedupe-without-set-by-hand"
+        },
+        {
+          "id": "includes-and-array-methods",
+          "round": "Technical round 2",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "usememo-and-usecallback",
+          "round": "Technical round 2",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-usememo-vs-usecallback",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "localstorage-returns-nothing",
+          "round": "Technical round 2",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "react-key",
+          "round": "Technical round 2",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-02",
+          "newUntil": "2021-04-29",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-keys-in-lists",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "optimise-react-performance",
+          "round": "Technical round 2",
+          "kind": "React concepts",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-02",
+          "newUntil": "2021-04-29",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "slow-page-follow-up",
+          "round": "Technical round 3",
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/web-performance-optimize-load-time",
+            "access": "free"
+          },
+          "answerGuide": "slow-page-triage"
+        },
+        {
+          "id": "vue-versus-react",
+          "round": "Technical round 3",
+          "kind": "Vue concepts",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/vue/trivia/vue-internal-rendering-pipeline",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "ssr-csr-and-bundlers",
+          "round": "Technical round 3",
+          "kind": "Web fundamentals",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/react/trivia/react-ssr-hydration",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "design-a-js-object",
+          "round": "Technical round 3",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-07",
+          "newUntil": "2020-09-29",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "api-list-component",
+          "round": "Team or fourth technical round",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-fetch-list-states",
+            "access": "free"
+          },
+          "answerGuide": "api-list-component-and-improvements"
+        },
+        {
+          "id": "list-recycling",
+          "round": "Team or fourth technical round",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-virtualized-list-recycling",
+            "access": "free"
+          },
+          "answerGuide": "list-recycling-by-hand"
+        },
+        {
+          "id": "page-caching-and-cdn",
+          "round": "Team or fourth technical round",
+          "kind": "Web fundamentals",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/http-caching-basics",
+            "access": "free"
+          },
+          "answerGuide": "caching-a-page-and-cdn"
+        },
+        {
+          "id": "code-review-view",
+          "round": "Team or fourth technical round",
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        },
+        {
+          "id": "redux-data-flow",
+          "round": "First technical interview",
+          "kind": "React concepts",
+          "accounts": 3,
+          "banks": 0,
+          "latest": "2022-05",
+          "newUntil": "2022-07-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-state-management-redux",
+            "access": "free"
+          },
+          "answerGuide": "redux-data-flow-and-cost"
+        },
+        {
+          "id": "compose-unknown-arguments",
+          "round": "First technical interview",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-compose",
+            "access": "premium"
+          },
+          "answerGuide": "compose-with-any-arguments"
+        },
+        {
+          "id": "deep-copy",
+          "round": "First technical interview",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-deep-clone",
+            "access": "premium"
+          },
+          "answerGuide": "deep-copy-with-cycles"
+        },
+        {
+          "id": "route-and-page-permissions",
+          "round": "First technical interview",
+          "kind": "Frontend system design",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-role-aware-routes",
+            "access": "premium"
+          },
+          "answerGuide": "role-aware-routes-and-sidebar"
+        },
+        {
+          "id": "closures",
+          "round": "First technical interview",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/trivia/js-closures",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "pub-sub-and-singleton",
+          "round": "First technical interview",
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/trivia/js-design-patterns",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "modal-and-tooltip",
+          "round": "Second technical interview",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-modal-tooltip-portal",
+            "access": "premium"
+          },
+          "answerGuide": "modal-and-tooltip-in-body"
+        },
+        {
+          "id": "file-upload",
+          "round": "Second technical interview",
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-03",
+          "newUntil": "2020-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-file-upload-dropzone-progress",
+            "access": "premium"
+          },
+          "answerGuide": "file-upload-drop-progress-preview"
+        },
+        {
+          "id": "promise-all-by-hand",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-promise-all",
+            "access": "premium"
+          },
+          "answerGuide": "promise-all-in-order"
+        },
+        {
+          "id": "promise-implementation-exercise",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2020-12",
+          "newUntil": "2021-03-01",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/coding/js-create-deferred-promise",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "debounce-for-a-scroll-bar",
+          "round": null,
+          "kind": "JavaScript",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-03",
+          "newUntil": "2022-05-30",
+          "open": true,
+          "unlockable": false,
+          "practice": {
+            "route": "/javascript/coding/js-debounce",
+            "access": "free"
+          },
+          "answerGuide": null
+        },
+        {
+          "id": "k-line-and-price-table",
+          "round": null,
+          "kind": "UI build",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2021-03",
+          "newUntil": "2021-05-30",
+          "open": false,
+          "unlockable": true,
+          "practice": null,
+          "answerGuide": "k-line-and-live-price-table"
+        },
+        {
+          "id": "cms-take-home",
+          "round": null,
+          "kind": "Practical coding",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2022-06",
+          "newUntil": "2022-08-29",
+          "open": true,
+          "unlockable": false,
+          "practice": null,
+          "answerGuide": null
+        }
+      ]
+    },
     "booking-com": {
       "total": 7,
       "rounds": [
@@ -5788,7 +6437,7 @@
       ]
     },
     "elevenlabs": {
-      "total": 19,
+      "total": 21,
       "rounds": [
         {
           "stage": "Coding assessment",
@@ -5796,15 +6445,15 @@
         },
         {
           "stage": "Live technical round",
-          "count": 5
+          "count": 6
         },
         {
           "stage": "Product or design round",
-          "count": 3
+          "count": 4
         }
       ],
       "roundNotStated": 3,
-      "newestAccount": "2026-10",
+      "newestAccount": "2026-11",
       "questions": [
         {
           "id": "audio-transcript-highlight",
@@ -5831,9 +6480,12 @@
           "latest": "2026-01",
           "newUntil": "2026-04-01",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-voice-service-wiring",
+            "access": "premium"
+          },
+          "answerGuide": "voice-service-from-types"
         },
         {
           "id": "assessment-react-and-algorithm-tasks",
@@ -5845,10 +6497,7 @@
           "newUntil": "2026-12-30",
           "open": false,
           "unlockable": true,
-          "practice": {
-            "route": "/react/coding/react-autocomplete-search-starter",
-            "access": "free"
-          },
+          "practice": null,
           "answerGuide": "timed-assessment-react-and-algorithms"
         },
         {
@@ -5877,8 +6526,11 @@
           "newUntil": "2024-10-30",
           "open": false,
           "unlockable": true,
-          "practice": null,
-          "answerGuide": "timed-assessment-react-and-algorithms"
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": "coderpad-react-bug"
         },
         {
           "id": "coderpad-finish-react-component",
@@ -5889,9 +6541,12 @@
           "latest": "2024-08",
           "newUntil": "2024-10-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-contact-form-starter",
+            "access": "premium"
+          },
+          "answerGuide": "finish-a-partly-written-component"
         },
         {
           "id": "live-practical-fix",
@@ -5904,8 +6559,8 @@
           "open": false,
           "unlockable": true,
           "practice": {
-            "route": "/javascript/debug/js-debug-async-race",
-            "access": "free"
+            "route": "/javascript/debug/js-debug-bug-squash-invoices",
+            "access": "premium"
           },
           "answerGuide": "fix-a-practical-react-problem"
         },
@@ -5918,9 +6573,9 @@
           "latest": "2025-11",
           "newUntil": "2026-01-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "transcription-studio-roadmap"
         },
         {
           "id": "dubbing-re-review-status",
@@ -5931,9 +6586,12 @@
           "latest": "2025-05",
           "newUntil": "2025-07-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-dubbing-review-status",
+            "access": "premium"
+          },
+          "answerGuide": "re-review-status-roll-up"
         },
         {
           "id": "folder-permissions",
@@ -5944,9 +6602,28 @@
           "latest": "2025-08",
           "newUntil": "2025-10-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-folder-access-over-time",
+            "access": "premium"
+          },
+          "answerGuide": "folder-access-at-a-time"
+        },
+        {
+          "id": "spoken-prefix-with-repeats",
+          "round": "Live technical round",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-11",
+          "newUntil": "2027-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/debug/js-debug-spoken-prefix-review",
+            "access": "premium"
+          },
+          "answerGuide": "spoken-prefix-with-repeats"
         },
         {
           "id": "adapt-product-key-account",
@@ -5957,9 +6634,25 @@
           "latest": "2026-02",
           "newUntil": "2026-04-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "adapt-product-for-key-account"
+        },
+        {
+          "id": "voice-chat-product-search",
+          "round": "Product or design round",
+          "kind": "Product design",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2026-11",
+          "newUntil": "2027-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ai-voice-shopping-assistant",
+            "access": "premium"
+          },
+          "answerGuide": "voice-shopping-search-design"
         },
         {
           "id": "valid-sudoku",
@@ -5969,7 +6662,7 @@
           "banks": 0,
           "latest": "2024-08",
           "newUntil": "2024-10-30",
-          "open": false,
+          "open": true,
           "unlockable": false,
           "practice": null,
           "answerGuide": null
@@ -5983,9 +6676,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "next-larger-with-no-shared-digit"
         },
         {
           "id": "merge-equal-level-stones",
@@ -5996,9 +6689,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "fewest-stones-after-merging"
         },
         {
           "id": "shirt-colours-no-repeat",
@@ -6009,9 +6702,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "cheapest-shirt-colours"
         },
         {
           "id": "map-queue-bfs-problems",
@@ -6022,9 +6715,12 @@
           "latest": "2026-07",
           "newUntil": "2026-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-maze-path",
+            "access": "premium"
+          },
+          "answerGuide": "maps-queues-breadth-first"
         },
         {
           "id": "merge-sorted-drop-duplicates",
@@ -6040,7 +6736,7 @@
             "route": "/javascript/coding/js-merge-sorted-arrays",
             "access": "premium"
           },
-          "answerGuide": null
+          "answerGuide": "merge-sorted-and-dedupe"
         },
         {
           "id": "reverse-linked-list",
@@ -6050,7 +6746,7 @@
           "banks": 1,
           "latest": null,
           "newUntil": null,
-          "open": false,
+          "open": true,
           "unlockable": false,
           "practice": null,
           "answerGuide": null
@@ -6069,7 +6765,7 @@
             "route": "/javascript/coding/js-longest-substring-without-repeating",
             "access": "premium"
           },
-          "answerGuide": null
+          "answerGuide": "longest-run-without-repeats"
         }
       ]
     },

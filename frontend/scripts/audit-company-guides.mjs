@@ -102,7 +102,8 @@ async function bait(base, slugs) {
     const process = COMPANY_INTERVIEW_PROCESSES[slug];
     const html = pages.get(slug);
     const text = openText(html);
-    const locked = (process?.questions ?? []).slice(1);
+    // The first row and the rows marked open are open to every reader, as the question list renders them.
+    const locked = (process?.questions ?? []).filter((question, index) => index > 0 && !question.open);
     for (const question of locked) {
       const pairs = baitPairs(question.question, text);
       if (pairs.length) {

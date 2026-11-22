@@ -1,5 +1,73 @@
 [
   {
+    "id": "ai-voice-shopping-assistant",
+    "title": "Design an AI Voice Shopping Assistant for an Online Store",
+    "description": "Design an AI voice assistant that helps shoppers find products: a simple loop first, one phase machine, a model limited to filter patches and choices, products from the catalog, and a typed path in every state.",
+    "discovery": {
+      "teaser": "A spoken search, an interruption and an empty result must keep every product real and the voice quiet when the shopper talks.",
+      "guideLabel": "Trace one spoken product search"
+    },
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "cancellation",
+      "error-handling",
+      "frontend-architecture",
+      "loading-states",
+      "search",
+      "state-management",
+      "streaming"
+    ],
+    "companies": [
+      "elevenlabs"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "publishedAt": "2026-11-22",
+    "updatedAt": "2026-11-22",
+    "difficulty": "intermediate",
+    "contentSchemaVersion": 2,
+    "practice": {
+      "targetLevel": "senior",
+      "timeboxMinutes": 20,
+      "candidatePrompt": "Design the frontend of an AI voice assistant that helps shoppers find products in an online store. A shopper presses a talk button and asks for something, such as running shoes in size 42 under 120. Products appear while a short spoken summary plays, and the shopper can refine by voice or by typing. Walk through the voice states, where the model sits, and how follow-ups and failures are handled.",
+      "constraints": [
+        "Every product, price and stock level comes from the catalog.",
+        "Every voice action has a typed alternative.",
+        "The shopper can interrupt the voice."
+      ],
+      "expectedDecisions": [
+        "Start with a simple loop of talk, transcript, filter patch, catalog search, results and a templated summary, run by one store with idle, listening, thinking and speaking phases.",
+        "Give the model the transcript, the filters, the facet values and any pending choice; parse its reply into a patch, a facet choice or out-of-scope, and commit a patch when its search lands.",
+        "Use tap to talk with a visible Cancel, and let talk cancel a busy turn, stopping speech and keeping the results."
+      ],
+      "prerequisites": [
+        "Microphone permissions in the browser",
+        "Streaming speech services",
+        "ARIA live regions"
+      ],
+      "coreSkills": [
+        "Voice interaction states",
+        "Model output as structured data",
+        "Conversational search state",
+        "Accessible voice and text input"
+      ],
+      "guidedMock": false,
+      "evaluationSpine": {
+        "mustCover": [
+          "One phase machine drives listening, thinking and speaking.",
+          "The model returns a filter patch; the catalog supplies products."
+        ],
+        "strongSignals": [
+          "A follow-up edits the current filters.",
+          "Every voice state has a typed path."
+        ],
+        "expertStretch": "Speculating on a stable partial, shown only if the final draft matches.",
+        "redFlag": "Showing products the model invented."
+      }
+    }
+  },
+  {
     "id": "credit-card-application-page",
     "title": "Design a Credit Card Application Page and Its Confirmation Page",
     "description": "Design a credit card application page and its confirmation page: one form store with layered validation, sensitive fields kept out of logs and storage, a submit that creates one application, and a confirmation that reads status.",
@@ -419,7 +487,8 @@
       "responsive-ui"
     ],
     "companies": [
-      "datadog"
+      "datadog",
+      "binance"
     ],
     "type": "system-design",
     "access": "free",

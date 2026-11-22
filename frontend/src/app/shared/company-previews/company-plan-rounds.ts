@@ -341,6 +341,66 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       },
     ],
   },
+  binance: {
+    variants: [
+      {
+        id: 'frontend',
+        title: 'Frontend engineers, Taiwan and remote, 2020 to 2022',
+        from: 'Taiwan and remote loops from 2020 to 2022',
+        ask: 'Interviewing in Taiwan or remotely?',
+        default: true,
+        rounds: [
+          {
+            id: 'hr-contact',
+            stage: 'HR contact',
+            kinds: ['recruiter'],
+            note: 'Taiwan and remote loops: an HR invitation on LinkedIn or a referral; in 2020, HR scheduled remote rounds.',
+          },
+          { id: 'technical-round-1', stage: 'Technical round 1', kinds: ['coding'] },
+          {
+            id: 'technical-round-2',
+            stage: 'Technical round 2',
+            kinds: ['coding'],
+            note: 'Short implementations, the event loop, redux, token storage and an order book fed by a socket, in 2022.',
+          },
+          {
+            id: 'technical-round-3',
+            stage: 'Technical round 3',
+            kinds: ['coding', 'people'],
+            note: 'By account: the résumé and a design question; SSR, bundlers and performance; or Vue against React and a slow page.',
+          },
+          {
+            id: 'team-or-fourth-technical-round',
+            stage: 'Team or fourth technical round',
+            kinds: ['coding', 'people'],
+            note: 'A fourth round in two accounts, on topics such as caching and a CDN, fiber, a list component and English.',
+          },
+          { id: 'hr-and-offer', stage: 'HR and offer', kinds: ['outcome'] },
+        ],
+      },
+      {
+        id: 'juejin-and-senior',
+        title: 'Juejin account, 2020, and a senior loop, 2024',
+        from: 'a 2020 account on Juejin and a 2024 senior account',
+        ask: 'Interviewing for a senior role?',
+        rounds: [
+          {
+            id: 'first-technical-interview',
+            stage: 'First technical interview',
+            kinds: ['coding'],
+            note: 'A compose and a deep copy to write, then closures, hooks and fiber, redux, design patterns and permissions.',
+          },
+          { id: 'second-technical-interview', stage: 'Second technical interview', kinds: ['coding', 'people'] },
+          {
+            id: 'senior-question-drill',
+            stage: 'Senior question drill',
+            kinds: ['coding'],
+            note: 'One stream of questions on CSS, React, JavaScript, Webpack and algorithms, with no résumé questions.',
+          },
+        ],
+      },
+    ],
+  },
   'booking-com': {
     variants: [
       {
@@ -758,21 +818,29 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
   elevenlabs: {
     // The 2026 Aced account behind the async-race task is cited on the assessment too, but the task practises its live
     // round, where the candidate fixed a practical problem with the interviewer; the guide links it there as well.
+    // Each account below is cited on both coding stages, so without an entry its task would land on both; the entry
+    // keeps the round the account put it in.
     reportRounds: {
       'js-debug-async-race': ['live-technical-round'],
+      'react-debug-transcript-sync': ['live-technical-round'],
+      'react-voice-service-wiring': ['live-technical-round'],
+      'react-chat-streaming-ui': ['live-technical-round'],
+      'js-dubbing-review-status': ['live-technical-round'],
+      'react-debug-api-misuse': ['coding-assessment'],
+      'react-autocomplete-search-starter': ['coding-assessment'],
     },
     variants: [
       {
         id: 'main',
-        title: 'Full-stack engineers, frontend-leaning',
-        reported: { levels: ['mid', 'senior', 'staff'], who: 'senior, frontend and full-stack candidates' },
+        title: 'Full-stack and software engineers',
+        reported: { levels: ['mid', 'senior'], who: 'senior, full-stack and frontend-leaning candidates' },
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
             id: 'coding-assessment',
             stage: 'Coding assessment',
             kinds: ['coding'],
-            note: 'A timed test of about 90 minutes, often on CoderPad, with React or JavaScript tasks beside LeetCode-style problems.',
+            note: 'Usually a timed test of about 90 minutes, sometimes on CoderPad: React or JS tasks beside LeetCode-style problems.',
             picks: ['/javascript/coding/js-stream-to-text'],
           },
           {

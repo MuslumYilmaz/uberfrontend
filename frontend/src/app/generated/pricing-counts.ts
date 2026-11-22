@@ -28,13 +28,13 @@ export interface PricingCounts {
 
 export const PRICING_COUNTS: PricingCounts = {
   "updatedMonth": "2026-11",
-  "companyGuides": 32,
+  "companyGuides": 33,
   "premiumRehearsals": 5,
   "areas": {
     "react": {
-      "total": 46,
+      "total": 47,
       "free": 7,
-      "premium": 39,
+      "premium": 40,
       "premiumHard": 6
     },
     "angular": {
@@ -50,15 +50,15 @@ export const PRICING_COUNTS: PricingCounts = {
       "premiumHard": 0
     },
     "javascript": {
-      "total": 96,
+      "total": 98,
       "free": 44,
-      "premium": 52,
+      "premium": 54,
       "premiumHard": 11
     },
     "debug": {
-      "total": 13,
+      "total": 14,
       "free": 10,
-      "premium": 3,
+      "premium": 4,
       "premiumHard": 1
     },
     "htmlCss": {
@@ -68,9 +68,9 @@ export const PRICING_COUNTS: PricingCounts = {
       "premiumHard": 0
     },
     "systemDesign": {
-      "total": 27,
+      "total": 28,
       "free": 7,
-      "premium": 20,
+      "premium": 21,
       "premiumHard": 11
     },
     "trivia": {

@@ -1,0 +1,109 @@
+{
+  "questionId": "js-dubbing-review-status",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "// When a file or the project rolls up its lines, the first of these that any line has wins; with none, it is approved.\nconst ROLL_UP = ['changes-requested', 'needs-recording', 'needs-review'];\nconst emptyTally = () => ({ 'changes-requested': 0, 'needs-recording': 0, 'needs-review': 0, approved: 0 });\n\nexport default function createReviewBoard({ files }) {\n  const lines = new Map();\n  // Files in input order, each with its line ids in script order and its count of each status.\n  const filesById = new Map();\n  const projectTally = emptyTally();\n  for (const file of files) {\n    const tally = emptyTally();\n    for (const lineId of file.lines) {\n      lines.set(lineId, { fileTally: tally, status: 'needs-recording', version: 0 });\n      tally['needs-recording'] += 1;\n      projectTally['needs-recording'] += 1;\n    }\n    // A copy, so toReview keeps script order even if the caller reorders its array later.\n    filesById.set(file.id, { lineIds: [...file.lines], tally });\n  }\n\n  const lineOf = (lineId) => {\n    const line = lines.get(lineId);\n    if (!line) throw new Error(`Unknown line: ${lineId}`);\n    return line;\n  };\n  // After setup, the only place a status changes: the line leaves the count of the status it really had, in its file\n  // and in the project.\n  const setStatus = (line, status) => {\n    line.fileTally[line.status] -= 1;\n    projectTally[line.status] -= 1;\n    line.fileTally[status] += 1;\n    projectTally[status] += 1;\n    line.status = status;\n  };\n  const rollUp = (tally) => ROLL_UP.find((status) => tally[status] > 0) ?? 'approved';\n  // A review verdict counts only for the recording that is on the line now and still matches its text.\n  const reviewable = (line, version) => version === line.version && (line.status === 'needs-review' || line.status === 'approved');\n\n  return {\n    record(lineId) {\n      const line = lineOf(lineId);\n      line.version += 1;\n      setStatus(line, 'needs-review');\n      return line.version;\n    },\n    edit(lineId) {\n      setStatus(lineOf(lineId), 'needs-recording');\n    },\n    approve(lineId, version) {\n      const line = lineOf(lineId);\n      if (!reviewable(line, version)) return false;\n      setStatus(line, 'approved');\n      return true;\n    },\n    requestChanges(lineId, version) {\n      const line = lineOf(lineId);\n      if (!reviewable(line, version)) return false;\n      setStatus(line, 'changes-requested');\n      return true;\n    },\n    lineStatus(lineId) {\n      return lineOf(lineId).status;\n    },\n    fileStatus(fileId) {\n      const file = filesById.get(fileId);\n      if (!file) throw new Error(`Unknown file: ${fileId}`);\n      return rollUp(file.tally);\n    },\n    projectStatus() {\n      return rollUp(projectTally);\n    },\n    toReview() {\n      const result = [];\n      for (const [fileId, file] of filesById) {\n        if (file.tally['needs-review'] === 0) continue;\n        result.push({ fileId, lineIds: file.lineIds.filter((lineId) => lineOf(lineId).status === 'needs-review') });\n      }\n      return result;\n    },\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "r1-roll-up-order",
+          "title": "Fix one order for the roll-up",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const ROLL_UP = ['changes-requested', 'needs-recording', 'needs-review'];"
+          },
+          "why": "A file whose lines disagree needs one status, and the order says what a producer must act on first: a change request blocks the scene, a missing take comes next, then takes waiting for an editor. Approved is what is left when none of these is, which also covers a file with no lines.",
+          "alternative": "Show the status of the line that changed last, or a mix such as 'in progress'.",
+          "tradeoff": "The last change hides a change request made earlier on another line, and a vague mix tells nobody what to do next."
+        },
+        {
+          "id": "r2-counts-per-file-and-project",
+          "title": "Keep a count of each status per file and for the project",
+          "anchor": {
+            "lineStart": 9,
+            "lineEnd": 9,
+            "snippet": "const projectTally = emptyTally();"
+          },
+          "why": "With a count per status, a file's or the project's roll-up reads at most three numbers instead of walking lines, so it stays O(1) however long the script is.",
+          "alternative": "Walk the lines on every status query.",
+          "tradeoff": "Simpler and always right, but each query costs the lines it covers: projectStatus walks the whole project every time, and so does a dashboard that shows every file's status on each refresh."
+        },
+        {
+          "id": "r3-unknown-ids-throw",
+          "title": "Throw for an id the board does not know",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "if (!line) throw new Error(`Unknown line: ${lineId}`);"
+          },
+          "why": "A misspelt line id is a bug in the caller. Throwing stops it at the call instead of reporting a status for a line that does not exist. The lookup is a Map, so a name every object inherits, such as constructor, is unknown too.",
+          "alternative": "Return undefined or false.",
+          "tradeoff": "Quieter, but a typo then reads like a refused verdict, or as a status of undefined that the caller has to notice."
+        },
+        {
+          "id": "r4-one-place-for-changes",
+          "title": "Change statuses in one place only",
+          "anchor": {
+            "lineStart": 28,
+            "lineEnd": 28,
+            "snippet": "const setStatus = (line, status) => {"
+          },
+          "why": "setStatus takes the line out of the count of the status it really has and adds it to the new one, in its file and in the project. Because no operation touches a count directly, none can assume the old status or forget the project.",
+          "alternative": "Adjust the counts inside each operation.",
+          "tradeoff": "Each operation has to know which status the line left. Approving an already approved take, or sending back an approved one, is where a count quietly goes wrong, and then a file reads approved while one of its lines waits for review."
+        },
+        {
+          "id": "r5-verdict-names-the-take",
+          "title": "Tie a verdict to the take it was made on",
+          "anchor": {
+            "lineStart": 37,
+            "lineEnd": 37,
+            "snippet": "const reviewable = (line, version) =>"
+          },
+          "why": "An editor listens to one take. Asking for its version means an approval of take 1 cannot land on take 2, recorded while they listened. The status check refuses the rest: a take that an edit has made stale, one that was already sent back, and a line that was never recorded.",
+          "alternative": "Approve whatever is on the line now.",
+          "tradeoff": "Two editors and an actor working at once can approve audio nobody heard; the version is the cheapest guard against it."
+        },
+        {
+          "id": "r6-a-new-take-reopens-review",
+          "title": "Let a new take reopen review from any status",
+          "anchor": {
+            "lineStart": 43,
+            "lineEnd": 43,
+            "snippet": "setStatus(line, 'needs-review');"
+          },
+          "why": "Recording raises the version and sets needs-review whatever the line was, approved included. That is the point of the workflow: a re-recorded line has to come back up for review, and a file or project that read approved must stop doing so.",
+          "alternative": "Keep an approved line approved when it is recorded again.",
+          "tradeoff": "Fewer statuses change, but audio nobody reviewed ships as approved."
+        },
+        {
+          "id": "r7-an-edit-voids-the-take",
+          "title": "Send an edited line back to recording",
+          "anchor": {
+            "lineStart": 47,
+            "lineEnd": 47,
+            "snippet": "setStatus(lineOf(lineId), 'needs-recording');"
+          },
+          "why": "When the text changes, the take on the line no longer matches it. needs-recording is not a status a verdict accepts, so the old take is refused without touching the version, and the next take is numbered on from the last.",
+          "alternative": "Set needs-review after an edit, or leave the status alone.",
+          "tradeoff": "An editor could then approve a take of words the script no longer has, and a line with a change request would keep blocking its scene over a take that no longer matters."
+        },
+        {
+          "id": "r8-skip-quiet-files",
+          "title": "List only the files with something to review",
+          "anchor": {
+            "lineStart": 75,
+            "lineEnd": 75,
+            "snippet": "if (file.tally['needs-review'] === 0) continue;"
+          },
+          "why": "toReview visits the files in input order and, thanks to the counts, skips every file with nothing waiting. Only the files it lists have their lines filtered, in script order.",
+          "alternative": "Collect lines from every file, then drop the empty groups.",
+          "tradeoff": "The same answer, but every call filters every line of the project, even when one line is waiting."
+        }
+      ]
+    }
+  }
+}

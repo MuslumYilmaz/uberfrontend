@@ -5617,8 +5617,8 @@
         "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
         "company": "elevenlabs",
         "publisher": "Aced",
-        "date": "2026-08",
-        "note": "One senior account describes a 90-minute technical assessment before the recruiter screen without listing its questions; two Taro full-stack accounts describe React and LeetCode-style problems on CoderPad. This React starter is a representative timed task, not a reported one."
+        "date": "2026-07",
+        "note": "One senior account describes a 90-minute technical assessment before the recruiter screen without listing its questions; a 2024 Taro full-stack account describes React and LeetCode problems on CoderPad. This React starter is a representative timed task, not a reported one."
       },
       {
         "label": "LeetCode Discuss: Intuit senior frontend engineer interview experience, November 2025",
@@ -9299,7 +9299,8 @@
     "companies": [
       "openai",
       "intuit",
-      "xai"
+      "xai",
+      "elevenlabs"
     ],
     "sources": [
       {
@@ -9325,6 +9326,14 @@
         "publisher": "Taro",
         "date": "2025-08",
         "note": "A one-hour pair-coding session built a chat interface in React while an engineer reviewed the code live. This chat UI is a practice version of that session, not its wording."
+      },
+      {
+        "label": "Taro: ElevenLabs senior software engineer interview, New York, January 2026",
+        "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-new-york-new-york-january-24-2026-no-offer-neutral-ae62f4d3/",
+        "company": "elevenlabs",
+        "publisher": "Taro",
+        "date": "2026-01",
+        "note": "An hour-long call with a senior engineer was mostly a React task: set up a fake ElevenLabs service, known only from its types, so a given child component works, without running the code. This chat UI practises wiring a React screen to an AI service; it is not that task."
       }
     ],
     "access": "premium",
@@ -11985,7 +11994,8 @@
     "companies": [
       "walmart",
       "disney",
-      "cloudflare"
+      "cloudflare",
+      "elevenlabs"
     ],
     "sources": [
       {
@@ -12019,6 +12029,14 @@
         "publisher": "Taro",
         "date": "2025-05",
         "note": "After an HR interview, the technical stages included typing a JSON object in TypeScript and debugging an issue in a React app. This exercise practises React debugging; it is not the reported bug."
+      },
+      {
+        "label": "Taro: ElevenLabs full-stack engineer interview, United States, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/",
+        "company": "elevenlabs",
+        "publisher": "Taro",
+        "date": "2024-08",
+        "note": "The CoderPad round of this account opened with \"Fix React bug\", beside finishing a React component and two LeetCode problems; it does not describe the bug. This exercise practises fixing bugs in a small, unfamiliar React app; it is not that bug."
       }
     ],
     "premiumPreview": {
@@ -14991,12 +15009,12 @@
         "note": "The account describes a live technical round of pair work with an engineer on a practical problem. This item practises that round as a debugging session on a small React app."
       },
       {
-        "label": "Aced: ElevenLabs frontend engineer interview account, November 2025",
+        "label": "Aced: ElevenLabs full-stack (frontend-leaning) interview account, November 2025",
         "url": "https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72",
         "company": "elevenlabs",
         "publisher": "Aced",
         "date": "2025-11",
-        "note": "The account describes debugging a small React app with the interviewer. The bugs here, a stale closure, a missing cleanup, a filter that never reruns and a late response that overwrites a newer one, are the kinds the ElevenLabs guide lists for that round."
+        "note": "The account describes a small React audio player with a transcript whose highlight logic was missing and had to be built with the interviewer. The bugs here, a stale closure, a missing cleanup, a filter that never reruns and a late response that overwrites a newer one, are ours."
       }
     ],
     "premiumPreview": {
@@ -16815,6 +16833,19 @@
       "timers",
       "state"
     ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "The second round of a 2022 Binance frontend loop asked how the frontend should handle an order book that the server pushes over a socket in large volume, for performance and user experience. This task builds such a book; it is not the reported wording."
+      }
+    ],
     "description": {
       "summary": "Build an order book that loads a snapshot, applies deltas from a socket in sequence order, recovers from a lost message and stays responsive through a burst of 720 messages. The mock exchange runs inside the file, and the checks replay its four scenarios. Concepts: react, real time, performance, timers, sequence numbers.",
       "specs": {
@@ -17447,6 +17478,19 @@
       "lists",
       "dom",
       "accessibility"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "interview.tw: Binance frontend engineer interview, Taiwan, 2022",
+        "url": "https://interview.tw/c/CmbI",
+        "company": "binance",
+        "publisher": "interview.tw",
+        "date": "2022-05",
+        "note": "The fourth round of a 2022 Binance frontend loop asked how you would implement list recycling yourself. This task builds a list that recycles its rows; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a list that renders all 10,000 payment rows into one that renders twenty: a window that follows the scroll position, a jump to any payment, and row nodes that are recycled instead of recreated. The checks scroll the list and count the row nodes the page creates. Concepts: react, performance, lists, dom, accessibility.",
@@ -18220,6 +18264,19 @@
       "focus",
       "accessibility",
       "positioning"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The second round of a 2020 Binance frontend loop asked for a modal and a tooltip component, whether the modal mounts in body or in its parent, and how a tooltip in body positions itself. This task builds both; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Fix a project settings screen whose delete dialog and help tooltips are clipped by the card around them: move both into the body with portals, keep focus inside the open dialog while the page behind it is inert and does not scroll, and place each tooltip below or above its button, whichever fits in its panel. The checks open, tab through and close the dialog, and hover, focus and scroll the tooltips. Concepts: react, portals, dialog, focus, accessibility, positioning.",
@@ -19351,6 +19408,19 @@
       "async",
       "validation",
       "images"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The second round of a 2020 Binance frontend loop asked how drag-and-drop, a progress bar and a preview work in a file upload, and which events to listen to. This task builds that upload; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a receipts list that takes any file and uploads nothing into a working uploader: a drop zone that stays lit over its own text, type and size checks with reasons, uploads side by side with progress, cancel and retry, and image previews whose object URLs are released. The checks drag files over the page, choose them in the file picker and count the open preview URLs. Concepts: react, upload, events, async, validation, images.",
@@ -21203,6 +21273,19 @@
       "authentication",
       "navigation",
       "loading-states"
+    ],
+    "companies": [
+      "binance"
+    ],
+    "sources": [
+      {
+        "label": "Juejin: Binance frontend interview summary, 2020",
+        "url": "https://juejin.cn/post/6844904096948813832",
+        "company": "binance",
+        "publisher": "Juejin",
+        "date": "2020-03",
+        "note": "The first round of a 2020 Binance frontend loop asked about permission management for routes, pages and navigation, with a sidebar that shows different options to different users. This task builds that; it is not the reported wording."
+      }
     ],
     "description": {
       "summary": "Turn a support console that shows every page to everyone into one that follows roles: routes matched by whole segments, a sidebar and in-page links decided by the same permission check, and one guard that waits for the session, sends signed-out users to sign in and back, and turns refused paths into the dashboard with a notice. The checks type paths into the preview's address bar, press Back, start as or sign in as four demo accounts, and count which pages loaded. Concepts: react, routing, guards, authentication, navigation, loading-states.",
@@ -24837,6 +24920,817 @@
     "seo": {
       "title": "React TV Remote Navigation: Focus, Lazy Rows and Details",
       "description": "A TV home screen in React: arrow-key focus that keeps its column, rows that load as they come into view without IntersectionObserver, and a details dialog."
+    }
+  },
+  {
+    "id": "react-voice-service-wiring",
+    "title": "Speech Studio: Wire a Panel to a Typed Speech Service",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "estimatedMinutes": 40,
+    "tags": [
+      "react",
+      "async",
+      "abort-controller",
+      "cancellation",
+      "loading-states",
+      "error-handling",
+      "typescript"
+    ],
+    "companies": [
+      "elevenlabs"
+    ],
+    "sources": [
+      {
+        "label": "Taro: ElevenLabs senior software engineer interview, New York, January 2026",
+        "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-new-york-new-york-january-24-2026-no-offer-neutral-ae62f4d3/",
+        "publisher": "Taro",
+        "date": "2026-01",
+        "note": "An hour-long call with a senior engineer was mostly a React task: set up a fake ElevenLabs service, known only from its types, so a given child component works, without running the code. This item practises that wiring as runnable code; it is not the reported task.",
+        "company": "elevenlabs"
+      },
+      {
+        "label": "Taro: ElevenLabs full-stack engineer interview, United States, 2024",
+        "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/",
+        "publisher": "Taro",
+        "date": "2024-08",
+        "note": "The second round was a text-to-speech React component written with an engineer from type declarations, without running it. This item practises reading a service from its types and wiring a component to it; it is not the reported task.",
+        "company": "elevenlabs"
+      },
+      {
+        "label": "Taro: ElevenLabs senior software engineer interview, Germany, 2025",
+        "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-germany-january-1-2025-no-offer-negative-e52ed2a9/",
+        "publisher": "Taro",
+        "date": "2025-01",
+        "note": "An interview with a team member built a small React app that talks to a voice SDK. This item practises a React screen around a voice service; it is not the reported task.",
+        "company": "elevenlabs"
+      }
+    ],
+    "description": {
+      "summary": "Wire a given speech panel to a speech service you know only from its TypeScript types: load the voices, keep Generate within the selected voice's character limit, show each percentage a job reports, turn failures into the right message, cancel a job, and let only the newest job change the screen. The checks switch the fake service between five scenarios, sample the progress in the middle of a job, and count the timers left after a Cancel and after Studio unmounts. Public interview reports describe this round at ElevenLabs. Reports from 2024 and 2026 describe wiring a React component to a voice service known only from its types, without running the code, so try writing Studio once before you run it; a 2025 report describes a small React app calling a voice SDK. Concepts: react, async, abort-controller, cancellation, loading-states, error-handling.",
+      "specs": {
+        "requirements": [
+          "Work in `Studio` in `src/App.tsx`, which the preview runs with React 18 and without StrictMode. Treat the rest of the file and `App.css` as given and working: the service types (`Voice`, `Clip`, `SpeechError`, `ERROR_MESSAGES`, `SynthesisOptions`, `SpeechService`), the fake service from `createSpeechService`, `SpeakerPanel`, and `App`, which switches the service between five scenarios and mounts a new `Studio` for each. Read the types first: they say what the service resolves, how it fails and how a job is stopped. Studio's job is the props it passes to `SpeakerPanel`, which draws the status, the progress, the error and the clip from them.",
+          "Task 1: load the voices when Studio mounts. The panel shows `loading-voices` until `listVoices` answers, then `idle` with the voices and the first one selected. If it rejects, show `voices-failed` with the `ERROR_MESSAGES` text for the error's `code` as `error`, and on `onRetryVoices` load again, back through `loading-voices` with no error. `canGenerate` is false while the voices load or have failed, whatever the text; once they are in, it is true for text that is not blank (spaces alone count as blank) and no longer than the selected voice's `maxCharacters`, measured with `text.length` like the panel's counter, spaces included.",
+          "Task 2: on `onGenerate`, voice the text with the selected voice through `synthesize`. Show `generating` with the percentage this job last reported as `progress`, never one left from an earlier job, then `done` with the clip. A `SpeechError` ends the job in `failed`, with the `ERROR_MESSAGES` text for its `code` as `error`, not its `message`. A new job starts with no clip and no error on screen.",
+          "Task 3: `onCancel` stops the job through its `AbortSignal` and returns to `idle` with no error. Generate stays enabled during a job: a new Generate replaces the running job, which must stop, and only the newest job may change the screen, whether with progress, a clip or a failure. A stopped job rejects with an `AbortError`, which is not a failure to show. When Studio unmounts (App mounts a new one on every scenario switch), stop the job that is still running, so none of its timers keeps going.",
+          "Keep `SpeakerPanel` and the class names it renders: `.status`, `.progress`, `.error`, `.retry-voices`, `.voice`, `.text`, `.char-count`, `.generate`, `.cancel` and the `.clip` block."
+        ],
+        "expectedBehavior": [
+          "On load the status reads Loading voices…, then Ready, with three voices and Rowan selected; Generate stays disabled while the text is empty or blank.",
+          "With Kit (40 characters) selected, 41 characters disable Generate and 40 enable it; switching to Inès or Rowan applies their limits instead.",
+          "A job shows 10%, 20% and so on as it reports them, then Done with the clip in the selected voice. With Quota used up, it ends in Failed with \"You have used this month's characters.\"",
+          "With Slow jobs, Cancel returns to Ready at once, and a second Generate during a job replaces it: only the newest text ever appears as the clip."
+        ],
+        "implementationNotes": [
+          "Try every scenario in the selector; Slow jobs gives you time to cancel and to start a job over a running one.",
+          "Watch the status and the clip after a Cancel and after a replaced job, until just past the moment the old job would have finished."
+        ],
+        "techFocus": [
+          "Reading an API from its types",
+          "Async request state",
+          "Cancellation with AbortController",
+          "Ignoring stale results",
+          "Effect cleanup on unmount"
+        ]
+      }
+    },
+    "frameworkTests": [
+      {
+        "id": "voices-load-first-selected",
+        "name": "Loads the voices on mount, selects the first one, and enables Generate only after they arrive, for text that is not blank",
+        "steps": [
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Loading voices…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".voice option",
+            "count": 0
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Hello"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectCount",
+            "selector": ".voice option",
+            "count": 3
+          },
+          {
+            "type": "expectValue",
+            "selector": ".voice",
+            "value": "rowan"
+          },
+          {
+            "type": "expectText",
+            "selector": ".char-count",
+            "text": "5 / 200"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "   "
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "\n\t "
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Welcome back."
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "voices-failure-retry",
+        "name": "Shows the service-unavailable message when the voices fail, and loads them again on retry with the first voice selected",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "voices-down"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Loading voices…"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".error",
+            "text": "The voice service is unavailable. Try again in a moment.",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Voices unavailable"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Hello"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "click",
+            "selector": ".retry-voices"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Loading voices…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".error",
+            "count": 0
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectValue",
+            "selector": ".voice",
+            "value": "rowan"
+          },
+          {
+            "type": "expectText",
+            "selector": ".char-count",
+            "text": "5 / 200"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "limit-from-selected-voice",
+        "name": "Takes the character limit from the selected voice's maxCharacters, counting every character",
+        "steps": [
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".voice",
+            "value": "kit"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectText",
+            "selector": ".char-count",
+            "text": "41 / 40"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  "
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙🎙"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".voice",
+            "value": "ines"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".voice",
+            "value": "rowan"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          },
+          {
+            "type": "setValue",
+            "selector": ".voice",
+            "value": "ines"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "id": "progress-then-clip",
+        "name": "Shows the progress the job reports, then the clip, and starts the next job with no clip and no old progress",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "slow"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".voice",
+            "value": "ines"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Your order has shipped."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".clip",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "30%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "60%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Done",
+            "timeoutMs": 3000
+          },
+          {
+            "type": "expectText",
+            "selector": ".clip-text",
+            "text": "Your order has shipped."
+          },
+          {
+            "type": "expectText",
+            "selector": ".clip-voice",
+            "text": "Inès · conversational"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".error",
+            "count": 0
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".clip",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".progress[data-percent=\"100\"]",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "errors-from-error-messages",
+        "name": "Ends a failed job with the ERROR_MESSAGES text for the error's code, and clears it when the next job starts",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "quota"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Read this aloud."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".error",
+            "text": "You have used this month's characters.",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Failed"
+          },
+          {
+            "type": "expectDisabled",
+            "selector": ".generate",
+            "disabled": false
+          },
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "rejected"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Read this aloud."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".error",
+            "text": "This text can't be voiced. Edit it and try again.",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Failed"
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".error",
+            "count": 0
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".progress[data-percent=\"30\"]",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "cancel-and-newest-job-wins",
+        "name": "Cancel stops the job and returns to Ready with no error, and only the newest job changes the screen when Generate replaces one",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "slow"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "First take."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".cancel"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Ready"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".error",
+            "count": 0
+          },
+          {
+            "type": "expectNoPreviewTimers"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Second take."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".progress[data-percent=\"10\"]",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "20%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Third take."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".progress[data-percent=\"20\"]",
+            "count": 0
+          },
+          {
+            "type": "wait",
+            "durationMs": 2500
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Generating…"
+          },
+          {
+            "type": "expectCount",
+            "selector": ".clip",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": ".error",
+            "count": 0
+          },
+          {
+            "type": "waitForText",
+            "selector": ".clip-text",
+            "text": "Third take.",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "expectText",
+            "selector": ".status",
+            "text": "Done"
+          }
+        ]
+      },
+      {
+        "id": "unmount-stops-the-job",
+        "name": "Stops a replaced job, and the running job when Studio unmounts on a scenario switch or when the app unmounts",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "slow"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Leaving soon."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Leaving now."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "click",
+            "selector": ".cancel"
+          },
+          {
+            "type": "expectNoPreviewTimers"
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Leaving later."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "setValue",
+            "selector": ".scenario",
+            "value": "normal"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".status",
+            "text": "Ready",
+            "timeoutMs": 2000
+          },
+          {
+            "type": "setValue",
+            "selector": ".text",
+            "value": "Closing the app."
+          },
+          {
+            "type": "click",
+            "selector": ".generate"
+          },
+          {
+            "type": "waitForText",
+            "selector": ".progress",
+            "text": "10%",
+            "timeoutMs": 1500
+          },
+          {
+            "type": "unmountPreview"
+          },
+          {
+            "type": "expectNoPreviewTimers"
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "asset": "assets/sb/react/question/react-voice-service-wiring.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-voice-service-wiring"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-voice-service-wiring-solution.v1.json",
+    "decisionGraphAsset": "assets/questions/react/decision-graphs/react-voice-service-wiring.v1.json",
+    "premiumPreview": {
+      "summary": "Wire a given speech panel to a speech service known only from its types: load the voices, respect each voice's character limit, show job progress and the right error messages, cancel jobs, and let only the newest job win.",
+      "learningOutcomes": [
+        "Read a service contract from its TypeScript types before writing any code.",
+        "Model a request as loading, done and failed, with progress and messages people can act on.",
+        "Stop work that is no longer needed and keep its late results off the screen.",
+        "Stop running work when a component unmounts."
+      ],
+      "unlockDescription": "Premium unlocks the runnable workspace, behavioral checks, implementation walkthrough, and edge-case discussion."
+    },
+    "solutionBlock": {
+      "overview": "Studio keeps the panel's props in state and allows one current job, identified by its AbortController: only that job's progress, clip or failure may reach the screen, and every other job is stopped.",
+      "approaches": [
+        {
+          "title": "One current job, guarded by its AbortController",
+          "prose": "1. Read the types before writing. `synthesize` needs a signal and a progress callback; a failure is a `SpeechError` whose `code` picks the text in `ERROR_MESSAGES`; an aborted job rejects with an `AbortError`; `Voice` carries its own `maxCharacters`.\n2. Load the voices in an effect that depends on the service and on a retry counter: on the answer, store the voices and select the first, or show `voices-failed` with the mapped message. The retry handler sets `loading-voices`, clears the error and bumps the counter. A `current` flag that the cleanup clears lets only the current request land.\n3. Derive `canGenerate` on every render: a voice selected (which only happens once the voices are in), text that is not blank, and text that fits that voice's limit.\n4. On Generate, abort the job in the ref, put a new controller there, and show `generating` with no clip and no error. Pass the signal and an `onProgress` that sets progress only while this controller is current. On success or failure, do nothing unless the controller is still current; then clear the ref and show `done` with the clip, or `failed` with the mapped message.\n5. Cancel clears the ref, aborts and shows `idle`, so the `AbortError` that follows finds a job that is no longer current. An effect with an empty dependency list does the same when Studio unmounts: it clears the ref and aborts the job that was in it.\n\n**Follow-ups an interviewer asks**\n- Why not disable Generate while a job runs? It removes overlapping jobs and is a fine product choice; this exercise keeps Generate enabled because a person who spots a typo wants to voice the fix at once. The guard stays either way: a cancelled or unmounted job still rejects after the screen has moved on.\n- What if the service ignored the signal? Aborting would then not stop the job, and the guard alone keeps its result off the screen. Ask whether the backend can cancel, since a job nobody waits for still uses quota.\n- What does StrictMode change? In development React 18 runs each effect, its cleanup and the effect again on mount, so the voices are requested twice and the first answer is ignored by the flag. With Voices down at first, the ignored answer is the failure, so under StrictMode that scenario would load at once; the preview runs without StrictMode.\n- How is progress announced? The status is a `role=\"status\"` region that announces Generating… and Done; the percentage sits outside it, so a screen reader is not interrupted at every step. A `<progress>` element would give it a role and a value too.",
+          "codeJs": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\n// ---------------------------------------------------------------------------------------------------------------\n// Given: the speech service's types and a fake implementation. Read the types; treat everything down to Studio as\n// given and working.\n// ---------------------------------------------------------------------------------------------------------------\n\nexport type VoiceId = string;\n\nexport interface Voice {\n  id: VoiceId;\n  name: string;\n  /** The longest text this voice accepts, in characters. */\n  maxCharacters: number;\n}\n\nexport interface Clip {\n  voiceId: VoiceId;\n  /** The text the clip speaks. */\n  text: string;\n  /** Length of the audio in seconds. */\n  seconds: number;\n}\n\nexport type SpeechErrorCode = 'quota-exceeded' | 'text-rejected' | 'service-unavailable';\n\n/**\n * Every failure the service reports is a SpeechError; a job stopped through its signal rejects with an AbortError\n * instead. A SpeechError's `message` is a code for logs, not for people.\n */\nexport class SpeechError extends Error {\n  readonly code: SpeechErrorCode;\n\n  constructor(code: SpeechErrorCode) {\n    super(`speech_error:${code}`);\n    this.name = 'SpeechError';\n    this.code = code;\n  }\n}\n\n/** What people should read for each failure. */\nexport const ERROR_MESSAGES: Record<SpeechErrorCode, string> = {\n  'quota-exceeded': \"You have used this month's characters.\",\n  'text-rejected': \"This text can't be voiced. Edit it and try again.\",\n  'service-unavailable': 'The voice service is unavailable. Try again in a moment.',\n};\n\nexport interface SynthesisOptions {\n  /**\n   * Aborting stops the job: its timers stop, `onProgress` is not called again, and the promise rejects with a\n   * DOMException named 'AbortError'.\n   */\n  signal: AbortSignal;\n  /** Called with 10, 20, … 100 as the job runs. */\n  onProgress: (percent: number) => void;\n}\n\nexport interface SpeechService {\n  /** Resolves with the voices after 300 ms. Rejects with a SpeechError when the service is down. */\n  listVoices(): Promise<Voice[]>;\n  /**\n   * Voices `text` with the voice. Resolves with the clip after progress reaches 100. Rejects with a SpeechError when\n   * the job fails, or with an AbortError once it is stopped through `options.signal`.\n   */\n  synthesize(text: string, voiceId: VoiceId, options: SynthesisOptions): Promise<Clip>;\n}\n\nexport type Scenario = 'normal' | 'slow' | 'voices-down' | 'quota' | 'rejected';\n\nconst VOICES: Voice[] = [\n  { id: 'rowan', name: 'Rowan · narration', maxCharacters: 200 },\n  { id: 'ines', name: 'Inès · conversational', maxCharacters: 120 },\n  { id: 'kit', name: 'Kit · short form', maxCharacters: 40 },\n];\n\n/**\n * A fake service for one scenario. Progress moves every 100 ms (every 300 ms when slow). With 'voices-down' the\n * first listVoices fails and later ones answer; with 'quota' and 'rejected' a job fails after 30 %.\n */\nexport function createSpeechService(scenario: Scenario): SpeechService {\n  let voiceCalls = 0;\n  const every = scenario === 'slow' ? 300 : 100;\n  return {\n    listVoices() {\n      voiceCalls += 1;\n      const fail = scenario === 'voices-down' && voiceCalls === 1;\n      return new Promise((resolve, reject) => {\n        window.setTimeout(() => {\n          if (fail) reject(new SpeechError('service-unavailable'));\n          else resolve(VOICES.map((voice) => ({ ...voice })));\n        }, 300);\n      });\n    },\n    synthesize(text, voiceId, { signal, onProgress }) {\n      return new Promise((resolve, reject) => {\n        const abortError = () => new DOMException('The job was cancelled.', 'AbortError');\n        if (signal.aborted) {\n          reject(abortError());\n          return;\n        }\n        const voice = VOICES.find((candidate) => candidate.id === voiceId);\n        let percent = 0;\n        const stop = () => {\n          window.clearInterval(timer);\n          signal.removeEventListener('abort', onAbort);\n        };\n        const onAbort = () => {\n          stop();\n          reject(abortError());\n        };\n        const timer = window.setInterval(() => {\n          if (percent === 30 && (scenario === 'quota' || scenario === 'rejected')) {\n            stop();\n            reject(new SpeechError(scenario === 'quota' ? 'quota-exceeded' : 'text-rejected'));\n            return;\n          }\n          if (!voice || text.trim() === '' || text.length > voice.maxCharacters) {\n            stop();\n            reject(new SpeechError('text-rejected'));\n            return;\n          }\n          percent += 10;\n          onProgress(percent);\n          if (percent === 100) {\n            stop();\n            resolve({ voiceId, text, seconds: Math.max(1, Math.round(text.length / 14)) });\n          }\n        }, every);\n        signal.addEventListener('abort', onAbort);\n      });\n    },\n  };\n}\n\nexport type PanelStatus = 'loading-voices' | 'voices-failed' | 'idle' | 'generating' | 'done' | 'failed';\n\nexport interface SpeakerPanelProps {\n  status: PanelStatus;\n  /** Empty until the voices load. */\n  voices: Voice[];\n  voiceId: VoiceId | null;\n  text: string;\n  /** The job's last reported percentage while generating; null otherwise. */\n  progress: number | null;\n  clip: Clip | null;\n  /** A message for people, shown whenever it is not null. */\n  error: string | null;\n  /** Generate is disabled when this is false. */\n  canGenerate: boolean;\n  onVoiceChange: (voiceId: VoiceId) => void;\n  onTextChange: (text: string) => void;\n  onGenerate: () => void;\n  onCancel: () => void;\n  onRetryVoices: () => void;\n}\n\nconst STATUS_TEXT: Record<PanelStatus, string> = {\n  'loading-voices': 'Loading voices…',\n  'voices-failed': 'Voices unavailable',\n  idle: 'Ready',\n  generating: 'Generating…',\n  done: 'Done',\n  failed: 'Failed',\n};\n\n/** Given and working: it renders what its props say and reports what the user does. */\nexport function SpeakerPanel(props: SpeakerPanelProps) {\n  const voice = props.voices.find((candidate) => candidate.id === props.voiceId) ?? null;\n  const clipVoice = props.clip ? props.voices.find((candidate) => candidate.id === props.clip?.voiceId) : null;\n  return (\n    <section className=\"panel\" aria-label=\"Speech studio\">\n      <p className=\"status\" role=\"status\">\n        {STATUS_TEXT[props.status]}\n      </p>\n      {props.status === 'generating' && props.progress !== null && (\n        <p className=\"progress\" data-percent={props.progress}>\n          {props.progress}%\n        </p>\n      )}\n      {props.error !== null && (\n        <p className=\"error\" role=\"alert\">\n          {props.error}\n        </p>\n      )}\n      {props.status === 'voices-failed' && (\n        <button type=\"button\" className=\"retry-voices\" onClick={props.onRetryVoices}>\n          Load voices again\n        </button>\n      )}\n      <label className=\"field\">\n        <span className=\"field-label\">Voice</span>\n        <select\n          className=\"voice\"\n          value={props.voiceId ?? ''}\n          disabled={props.voices.length === 0}\n          onChange={(event) => props.onVoiceChange(event.target.value)}\n        >\n          {props.voices.map((candidate) => (\n            <option key={candidate.id} value={candidate.id}>\n              {candidate.name}\n            </option>\n          ))}\n        </select>\n      </label>\n      <label className=\"field\">\n        <span className=\"field-label\">Text</span>\n        <textarea className=\"text\" rows={4} value={props.text} onChange={(event) => props.onTextChange(event.target.value)} />\n      </label>\n      <p className={voice && props.text.length > voice.maxCharacters ? 'char-count over' : 'char-count'}>\n        {props.text.length} / {voice ? voice.maxCharacters : '—'}\n      </p>\n      <div className=\"actions\">\n        <button type=\"button\" className=\"generate\" disabled={!props.canGenerate} onClick={props.onGenerate}>\n          Generate\n        </button>\n        {props.status === 'generating' && (\n          <button type=\"button\" className=\"cancel\" onClick={props.onCancel}>\n            Cancel\n          </button>\n        )}\n      </div>\n      {props.clip && (\n        <figure className=\"clip\">\n          <figcaption className=\"clip-voice\">{clipVoice ? clipVoice.name : props.clip.voiceId}</figcaption>\n          <blockquote className=\"clip-text\">{props.clip.text}</blockquote>\n          <span className=\"clip-seconds\">{props.clip.seconds} s</span>\n        </figure>\n      )}\n    </section>\n  );\n}\n\n// ---------------------------------------------------------------------------------------------------------------\n\nconst messageFor = (reason: unknown) =>\n  reason instanceof SpeechError ? ERROR_MESSAGES[reason.code] : ERROR_MESSAGES['service-unavailable'];\n\nfunction Studio({ service }: { service: SpeechService }) {\n  const [voices, setVoices] = useState<Voice[]>([]);\n  const [voiceId, setVoiceId] = useState<VoiceId | null>(null);\n  const [text, setText] = useState('');\n  const [status, setStatus] = useState<PanelStatus>('loading-voices');\n  const [progress, setProgress] = useState<number | null>(null);\n  const [clip, setClip] = useState<Clip | null>(null);\n  const [error, setError] = useState<string | null>(null);\n  const [voiceRequest, setVoiceRequest] = useState(0);\n  // The job that may change the screen. Any other job's progress, clip or failure is ignored.\n  const jobRef = useRef<AbortController | null>(null);\n\n  useEffect(() => {\n    let current = true;\n    service.listVoices().then(\n      (list) => {\n        if (!current) return;\n        setVoices(list);\n        setVoiceId(list[0]?.id ?? null);\n        setStatus('idle');\n      },\n      (reason) => {\n        if (!current) return;\n        setStatus('voices-failed');\n        setError(messageFor(reason));\n      },\n    );\n    return () => {\n      current = false;\n    };\n  }, [service, voiceRequest]);\n\n  // Unmounting stops the job still running, which stops its timers.\n  useEffect(\n    () => () => {\n      const job = jobRef.current;\n      jobRef.current = null;\n      job?.abort();\n    },\n    [],\n  );\n\n  const voice = voices.find((candidate) => candidate.id === voiceId) ?? null;\n  // A voice is selected only once the voices are in, so this is false while they load or after they fail.\n  const canGenerate = voice !== null && text.trim() !== '' && text.length <= voice.maxCharacters;\n\n  const generate = () => {\n    if (!canGenerate || voice === null) return;\n    jobRef.current?.abort();\n    const job = new AbortController();\n    jobRef.current = job;\n    setStatus('generating');\n    setProgress(null);\n    setClip(null);\n    setError(null);\n    service\n      .synthesize(text, voice.id, {\n        signal: job.signal,\n        onProgress: (percent) => {\n          if (jobRef.current === job) setProgress(percent);\n        },\n      })\n      .then(\n        (result) => {\n          if (jobRef.current !== job) return;\n          jobRef.current = null;\n          setProgress(null);\n          setClip(result);\n          setStatus('done');\n        },\n        (reason) => {\n          // A replaced or cancelled job has already handed the screen on; its AbortError changes nothing.\n          if (jobRef.current !== job) return;\n          jobRef.current = null;\n          setProgress(null);\n          setStatus('failed');\n          setError(messageFor(reason));\n        },\n      );\n  };\n\n  const retryVoices = () => {\n    setStatus('loading-voices');\n    setError(null);\n    setVoiceRequest((count) => count + 1);\n  };\n\n  const cancel = () => {\n    const job = jobRef.current;\n    if (job === null) return;\n    jobRef.current = null;\n    job.abort();\n    setProgress(null);\n    setStatus('idle');\n  };\n\n  return (\n    <SpeakerPanel\n      status={status}\n      voices={voices}\n      voiceId={voiceId}\n      text={text}\n      progress={progress}\n      clip={clip}\n      error={error}\n      canGenerate={canGenerate}\n      onVoiceChange={setVoiceId}\n      onTextChange={setText}\n      onGenerate={generate}\n      onCancel={cancel}\n      onRetryVoices={retryVoices}\n    />\n  );\n}\n\n// Given: the page around Studio. A scenario switch builds a new service and mounts a new Studio for it.\nexport default function App() {\n  const [scenario, setScenario] = useState<Scenario>('normal');\n  const service = useMemo(() => createSpeechService(scenario), [scenario]);\n  return (\n    <main className=\"main\">\n      <header className=\"header\">\n        <h1 className=\"title\">Speech Studio</h1>\n        <label className=\"scenario-field\">\n          <span className=\"field-label\">Service scenario</span>\n          <select className=\"scenario\" value={scenario} onChange={(event) => setScenario(event.target.value as Scenario)}>\n            <option value=\"normal\">Normal</option>\n            <option value=\"slow\">Slow jobs</option>\n            <option value=\"voices-down\">Voices down at first</option>\n            <option value=\"quota\">Quota used up</option>\n            <option value=\"rejected\">Text rejected</option>\n          </select>\n        </label>\n      </header>\n      <Studio key={scenario} service={service} />\n    </main>\n  );\n}\n"
+        }
+      ]
+    },
+    "access": "premium",
+    "updatedAt": "2026-11-21",
+    "seo": {
+      "title": "React Async UI: Wire a Panel to a Typed Speech Service",
+      "description": "Wire a React panel to a speech service known only from its types: load voices, show job progress, map errors, cancel jobs and let only the newest job win."
     }
   }
 ]

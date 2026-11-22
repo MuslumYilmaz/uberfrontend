@@ -279,6 +279,9 @@
       "virtual-dom",
       "basics"
     ],
+    "companies": [
+      "binance"
+    ],
     "updatedAt": "2026-01-30",
     "seo": {
       "title": "Vue rendering pipeline: state to DOM",

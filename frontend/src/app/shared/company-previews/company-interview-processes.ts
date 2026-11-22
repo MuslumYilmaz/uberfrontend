@@ -65,6 +65,11 @@ export type ReportedQuestion = {
   readonly question: string;
   /** The sources name the task's subject but not its prompt, and the row says so. */
   readonly promptNotShared?: true;
+  /**
+   * Open to every reader, like the first row: its sources give nothing a lock would add to the topic (no constraint,
+   * follow-up, answer guide or Premium task), so locking it would sell the topic twice.
+   */
+  readonly open?: true;
   /** Every source that describes this same task. Two accounts share a row only when they describe the same task. */
   readonly sources: readonly InterviewProcessSource[];
   /** A catalog task that practises it. */
@@ -126,8 +131,8 @@ export type CompanyInterviewProcess = {
   readonly variants: readonly InterviewProcessVariant[];
   /**
    * The questions the sources report, kept by content: frontend and general questions stay whatever the role, while
-   * backend, network and security questions stay out. The first is open to every reader. A row needs the task or its
-   * subject; a round an account only names ("a technical interview") stays in the stage table.
+   * backend, network and security questions stay out. The first, and any marked open, are open to every reader. A row
+   * needs the task or its subject; a round an account only names ("a technical interview") stays in the stage table.
    */
   readonly questions?: readonly ReportedQuestion[];
   /** The behavioural questions the sources report, shown open as a small group beside the question list. */
@@ -1936,8 +1941,8 @@ const NETFLIX_NF12_FULLSTACK_2024: InterviewProcessSource = {
   location: 'United States',
 };
 
-// ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
-// so their dates are the interview months the pages implied when read.
+// ElevenLabs accounts cover full-stack, software engineering and a few other titles. The Aced dates are the
+// "Interviewed <month>" of Aced's experience listing; a Taro date marked approx. is the first of a month.
 const ELEVENLABS_CAREERS_FAQ = official('ElevenLabs careers FAQ', 'https://elevenlabs.io/careers');
 const ELEVENLABS_EL1_SENIOR_2026: InterviewProcessSource = {
   ...report('Aced', 'https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04', '2026-07'),
@@ -1967,10 +1972,10 @@ const ELEVENLABS_EL5_2025 = report(
   `${ELEVENLABS_TARO}/full-stack-engineer-united-kingdom-may-1-2025-accepted-offer-positive-8ac03948/`,
   '2025-05',
 );
-// Read 2026-11-03 for the question list (docs/references/elevenlabs-questions-and-process-2026-11.md keeps the quotes).
-// The Aced bank marks each item "I was asked this" without a round or a date of its own.
+// Read 2026-11-03 and 2026-11-21 for the question list (docs/references/elevenlabs-questions-and-process-2026-11.md
+// keeps the quotes). The bank says "Last updated Nov 2026" and gives no item a round or a date of its own.
 const ELEVENLABS_BANK: InterviewProcessSource = {
-  ...report('Aced question bank', 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions', '2026-10'),
+  ...report('Aced question bank', 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions', '2026-11'),
   reportForm: 'question-bank',
 };
 const ELEVENLABS_EL6_2026 = report('Taro', `${ELEVENLABS_TARO}/full-stack-engineer-october-27-2026-no-offer-negative-c63c5ddb/`, '2026-10');
@@ -2025,14 +2030,25 @@ const ELEVENLABS_EC5_FDE_2025: InterviewProcessSource = {
   location: 'United Kingdom',
   outcome: 'no offer',
 };
-// PracHub's page states the three problems only in its own paraphrase, so their rows paraphrase too.
+// PracHub's page states the three problems only in its own paraphrase, so their rows paraphrase too. Unlike the
+// onsite below, the saved page carries no "curated and edited" mark.
 const ELEVENLABS_EC6_2026: InterviewProcessSource = {
   ...report(
-    'PracHub (curated)',
+    'PracHub',
     'https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-three-question-oa-with-a-surprise-2-minute-ai-follow-up',
     '2026-09',
   ),
   role: 'Software engineer',
+};
+// Read 2026-11-21. PracHub marks this onsite account curated and edited too; its own page says "Published Nov 11, 2026".
+const ELEVENLABS_EC15_2026: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-live-coding-and-product-decomposition-onsite-rejected',
+    '2026-11',
+  ),
+  role: 'Software engineer',
+  outcome: 'no offer',
 };
 
 // Waymo's hiring page gives the stage structure. The one complete frontend loop is a PracHub account that the
@@ -2925,6 +2941,78 @@ const CLOUDFLARE_CF35_SOC_2024: InterviewProcessSource = {
   role: 'SOC engineer',
 };
 const CLOUDFLARE_CF39_2025 = report('Taro', `${CLOUDFLARE_TARO}/software-engineer-new-york-new-york-october-27-2025-no-offer-positive-cb009227/`, '2025-10');
+
+// Binance: research and sources in docs/references/binance-questions-and-process-2026-11.md. Every account but the Hacker
+// News comment (B7) is written in Chinese; each was saved on 2026-11-16 (the interview.tw cards only up to their lock) and
+// re-read on 2026-11-18 (research_notes/company-candidates-2026-11-16/raw/binance/); the Medium post answers 403, so it
+// was read through its author's RSS feed. Roles, places and outcomes
+// are what each account gives: an offer an account does not say was accepted carries no outcome. The stage table cites
+// accounts read in full; interview.tw cards whose text is locked back a question only by their visible first line.
+const BINANCE_B1_JUEJIN_2020: InterviewProcessSource = {
+  ...report('Juejin', 'https://juejin.cn/post/6844904096948813832', '2020-03'),
+  role: 'Frontend engineer',
+}; // B1, a Binance section beside JD and ByteDance loops
+const BINANCE_B2_MEDIUM_2020: InterviewProcessSource = {
+  ...report(
+    'Medium',
+    'https://yixuntseng-bruce.medium.com/2020%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%B8%AB%E9%9D%A2%E8%A9%A6%E5%88%86%E4%BA%ABline-17live-binance-tiktok-bytedance-a9a7e01fd613',
+    '2020-07',
+  ),
+  role: 'Frontend engineer',
+  location: 'Taiwan',
+}; // B2, posted 2021-01
+const BINANCE_B3_PTT_2021: InterviewProcessSource = {
+  ...report('PTT', 'https://www.ptt.cc/bbs/Soft_Job/M.1614929795.A.64E.html', '2021-02'),
+  role: 'Frontend engineer',
+  outcome: 'accepted offer',
+}; // B3
+// The card's four rounds render on the company listing; its own page shows a stub, and 1,992 more characters stay locked.
+const BINANCE_B4_INTERVIEWTW_2022: InterviewProcessSource = {
+  ...report('interview.tw', 'https://interview.tw/c/CmbI', '2022-05'),
+  role: 'Frontend engineer',
+}; // B4
+const BINANCE_B5_GOODJOB_2021: InterviewProcessSource = {
+  ...report('GoodJob', 'https://www.goodjob.life/experiences/60fc213a6fcbb2001915730b', '2021-07'),
+  role: 'Frontend engineer',
+  location: 'Taiwan',
+  outcome: 'no offer',
+}; // B5
+const BINANCE_B6_SENIOR_2024: InterviewProcessSource = {
+  ...report('GoodJob', 'https://www.goodjob.life/experiences/6685a098c7b004f2288fd178', '2024-06'),
+  role: 'Senior frontend engineer',
+  outcome: 'no offer',
+}; // B6
+// A take-home brief quoted by a commenter who skipped the interview; it names no role.
+const BINANCE_B7_HN_2022 = report('Hacker News comment', 'https://news.ycombinator.com/item?id=31868750', '2022-06'); // B7
+// A comment under B3 by a candidate who guesses their opening, found by a headhunter, leaned staff; it names no role.
+const BINANCE_B9_PTT_COMMENT_2021 = report('PTT comment', 'https://www.ptt.cc/bbs/Soft_Job/M.1614929795.A.64E.html', '2021-03'); // B9
+const BINANCE_C1_CARD_2020: InterviewProcessSource = {
+  ...report('interview.tw card', 'https://interview.tw/i/5ff3ba8f4183ab59a50d05c2', '2020-12'),
+  role: 'Frontend engineer',
+  location: 'Taiwan',
+  outcome: 'no offer',
+};
+const BINANCE_C2_CARD_2022: InterviewProcessSource = {
+  ...report('interview.tw card', 'https://interview.tw/i/625d9695c8661259db6f3467', '2022-03'),
+  role: 'Frontend engineer',
+  outcome: 'no offer',
+};
+const BINANCE_C4_CARD_2022: InterviewProcessSource = {
+  ...report('interview.tw card', 'https://interview.tw/i/6245173766582508ad355b92', '2022-03'),
+  role: 'Frontend engineer',
+  outcome: 'no offer',
+};
+const BINANCE_C7_CARD_2022: InterviewProcessSource = {
+  ...report('interview.tw card', 'https://interview.tw/i/6215d65c3574ad6fdb51afc8', '2022-02'),
+  role: 'Frontend engineer',
+  outcome: 'no offer',
+};
+const BINANCE_C10_CARD_2021: InterviewProcessSource = {
+  ...report('interview.tw card', 'https://interview.tw/i/60c243d2b40bb84ab6418b82', '2021-06'),
+  role: 'Frontend engineer',
+  location: 'Taiwan',
+};
+const BINANCE_FE_ROLE = 'Frontend engineers in the accounts';
 
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
@@ -13085,19 +13173,19 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   elevenlabs: {
     summary:
-      'ElevenLabs says steps vary by role and most processes include a pre-screen, virtual interviews with a possible skills assessment, a hiring-manager conversation and a final round with a founder or Bar Raiser. Full-stack and frontend-leaning accounts from 2024 to 2026 describe a timed coding assessment that often comes before the recruiter call, a live technical round with an engineer, a product or design round and a final conversation.',
+      'ElevenLabs says steps vary by role and most processes include a pre-screen, virtual interviews with a possible skills assessment, a hiring-manager conversation and a final round with a founder or Bar Raiser. Full-stack, frontend-leaning and software engineer accounts from 2024 to 2026 describe a timed coding assessment that often comes before the recruiter call, a live technical round with an engineer, a product or design round and a final conversation.',
     caveat:
       'No account covers a purely frontend title: these are full-stack and general engineering loops. The assessment changed shape from loop to loop, and one 2025 loop had no system design round while a 2024 loop did.',
-    checkedAt: '2026-11-03',
+    checkedAt: '2026-11-21',
     variants: [
       {
-        title: 'Full-stack engineers, frontend-leaning',
+        title: 'Full-stack and software engineers',
         stages: [
           {
             stage: 'Recruiter call',
             format:
               'A call about your background and why ElevenLabs. In several 2026 loops it came after the assessment, and in one the recruiter spent the whole call on the candidate\'s own questions.',
-            appliesTo: 'All candidates',
+            appliesTo: 'Most loops',
             sources: [
               ELEVENLABS_CAREERS_FAQ,
               ELEVENLABS_EL1_SENIOR_2026,
@@ -13112,8 +13200,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Coding assessment',
             format:
-              'Usually the first technical step: a timed test of about 90 minutes, often on CoderPad, setting React or JavaScript tasks beside LeetCode-style problems. Some loops used an asynchronous task, a take-home or a Python algorithm round instead; in the 2025 Python round the candidate was told not to use LLMs.',
-            appliesTo: 'All candidates',
+              'Usually the first technical step: a timed test, about 90 minutes in three accounts, sometimes on CoderPad, setting React or JavaScript tasks beside LeetCode-style problems. Two 2024 accounts call it asynchronous and give no length; one 2025 loop used a take-home instead and another a Python algorithm round, where the candidate was told not to use LLMs.',
+            appliesTo: 'Most loops',
             sources: [
               ELEVENLABS_EL1_SENIOR_2026,
               ELEVENLABS_EL2_FE_2025,
@@ -13126,12 +13214,13 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EC3_2025,
             ],
-            practice: { label: 'Poll until, with timeout and abort', path: '/javascript/coding/js-poll-until' },
+            // The free starter modelled on a 2026 assessment account; a locked row's practice task would give its lock away.
+            practice: { label: 'React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
           },
           {
             stage: 'Live technical round',
             format:
-              'About an hour of pair work with an engineer, mostly in React on a small app or component. One 2026 loop had the candidate write code in a Google Doc, and in a 2024 loop the constraints changed during the task.',
+              'About an hour of pair work with an engineer, often in React on a small app or component. One 2026 loop had the candidate write code in a Google Doc, and in a 2024 loop the constraints changed during the task.',
             appliesTo: 'All candidates',
             sources: [
               ELEVENLABS_EL1_SENIOR_2026,
@@ -13142,6 +13231,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL9_SENIOR_2025,
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EL14_2026,
+              ELEVENLABS_EL22_2024,
+              ELEVENLABS_EC3_2025,
+              ELEVENLABS_EC15_2026,
             ],
             practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
           },
@@ -13157,15 +13249,24 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EL12_2026,
               ELEVENLABS_EL13_2024,
+              ELEVENLABS_EL16_2026,
               ELEVENLABS_EC3_2025,
+              ELEVENLABS_EC15_2026,
             ],
           },
           {
             stage: 'Final conversation',
             format:
               'A call with the CTO, a co-founder or the head of the organisation; one 2026 loop ended with manager calibration and team-fit interviews. The careers FAQ names a founder or Bar Raiser.',
-            appliesTo: 'All candidates',
-            sources: [ELEVENLABS_CAREERS_FAQ, ELEVENLABS_EL3_2024, ELEVENLABS_EL5_2025, ELEVENLABS_EL10_2024, ELEVENLABS_EL12_2026],
+            appliesTo: 'Most loops',
+            sources: [
+              ELEVENLABS_CAREERS_FAQ,
+              ELEVENLABS_EL3_2024,
+              ELEVENLABS_EL5_2025,
+              ELEVENLABS_EL10_2024,
+              ELEVENLABS_EL12_2026,
+              ELEVENLABS_EC15_2026,
+            ],
           },
         ],
       },
@@ -13174,7 +13275,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     // scenario and the airline rescheduling case. Left out for want of a subject: "one larger task live", "typical
     // TypeScript and React problem-solving exercises", a changing-constraints problem, a LeetCode variant in a Google
     // Doc and a product round in a sketching app. Left out for its source: the 2026 landing-page take-home, known only
-    // from a candidate's GitHub repository. Behavioural questions are in behaviouralQuestions, open.
+    // from a candidate's GitHub repository. Behavioural questions are in behaviouralQuestions, open. A question is locked
+    // only when its unlock gives more than its topic (a constraint or follow-up, an answer guide or a Premium task); the
+    // rest are marked open.
     questions: [
       {
         id: 'audio-transcript-highlight',
@@ -13184,7 +13287,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'In a small React audio player with a transcript, find what is broken and build the missing logic so the text being spoken highlights as the audio plays.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
-        practice: { label: 'Debug a transcript highlight that lags behind the audio', path: '/react/coding/react-debug-transcript-sync' },
+        practice: { label: 'Debug a transcript highlight that lags behind the audio, with tests and a reference solution', path: '/react/coding/react-debug-transcript-sync' },
         answerGuide: 'audio-transcript-sync',
       },
       {
@@ -13193,8 +13296,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'React build',
         topic: 'Voice service component',
         question:
-          'Build a small React component or app around an ElevenLabs voice service with an engineer; in the 2026 account the service was a fake known only from its types, and the code was never run.',
+          'Build a small React component or app around a voice service with an engineer; in the 2026 account the service was a fake ElevenLabs service known only from its types, and the code was never run.',
         sources: [ELEVENLABS_EL8_SENIOR_2026, ELEVENLABS_EL9_SENIOR_2025, ELEVENLABS_EL3_2024],
+        practice: { label: 'Wire a speech panel to a typed speech service, with tests and a reference solution', path: '/react/coding/react-voice-service-wiring' },
+        answerGuide: 'voice-service-from-types',
       },
       {
         id: 'assessment-react-and-algorithm-tasks',
@@ -13205,7 +13310,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           'React and JavaScript tasks beside LeetCode-style problems in the timed assessment: two front-end and two algorithm questions in one 2026 account, four tasks in 90 minutes with the hardest last in another.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL6_2026, ELEVENLABS_EL7_SENIOR_2026, ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL8_SENIOR_2026, ELEVENLABS_EL4_2024],
-        practice: { label: 'React autocomplete starter against a clock', path: '/react/coding/react-autocomplete-search-starter' },
+        // No practice task of its own: the free autocomplete starter its guide suggests is linked in the open sections.
         answerGuide: 'timed-assessment-react-and-algorithms',
       },
       {
@@ -13227,8 +13332,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Fix a bug in a React component, in a CoderPad round that also held LeetCode problems.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
-        // The asynchronous CoderPad round, so the assessment's guide; the live-fix guide is question 7's.
-        answerGuide: 'timed-assessment-react-and-algorithms',
+        practice: { label: 'Debug a React search page that misuses its API, with tests and a reference solution', path: '/react/coding/react-debug-api-misuse' },
+        answerGuide: 'coderpad-react-bug',
       },
       {
         id: 'coderpad-finish-react-component',
@@ -13238,16 +13343,20 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Finish the implementation of a partly written React component, in the same CoderPad round.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
+        practice: { label: 'Finish a contact form from its starter, with tests and a reference solution', path: '/react/coding/react-contact-form-starter' },
+        answerGuide: 'finish-a-partly-written-component',
       },
       {
         id: 'live-practical-fix',
         round: 'Live technical round',
         kind: 'Practical coding',
-        topic: 'Live practical bug fix',
+        topic: 'Fixing a practical problem live',
         question: 'Fix a practical, real-life problem live while working through it with the interviewer.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL1_SENIOR_2026],
-        practice: { label: 'Fix an async race in a cached fetch', path: '/javascript/debug/js-debug-async-race' },
+        // The account names neither the framework nor the bug, so an unfamiliar repo with reported bugs; the transcript
+        // task modelled on this round is question 1's, and the async-race task is the stage's, open.
+        practice: { label: 'Fix four reported bugs in an unfamiliar repo, with tests and a reference solution', path: '/javascript/debug/js-debug-bug-squash-invoices' },
         answerGuide: 'fix-a-practical-react-problem',
       },
       {
@@ -13258,6 +13367,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'For an audio transcription studio used by dubbing teams, propose features, prioritise them and turn them into a roadmap; the follow-ups covered the task list view, the transcription view, authentication and roles.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
+        answerGuide: 'transcription-studio-roadmap',
       },
       {
         id: 'dubbing-re-review-status',
@@ -13265,8 +13375,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'Practical coding',
         topic: 'Re-review marking in a dubbing workflow',
         question:
-          'Write functions for a dubbing workflow kept in a spreadsheet that apply edits and approvals, and mark which lines, and the files above them, need review again after a line is re-recorded.',
+          'Instead of a spreadsheet, write functions for a dubbing workflow that apply edits and approvals, and mark which lines, and the files above them, need review again after a line is re-recorded.',
         sources: [ELEVENLABS_EC3_2025, ELEVENLABS_BANK],
+        practice: { label: 'Roll dubbing review statuses up to files, with tests and a reference solution', path: '/javascript/coding/js-dubbing-review-status' },
+        answerGuide: 're-review-status-roll-up',
       },
       {
         id: 'folder-permissions',
@@ -13276,6 +13388,19 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Folders allow or deny users and groups, permissions are inherited unless a folder overrides them, and each change is timestamped: check whether a user can open a file at a given time.',
         sources: [ELEVENLABS_EC5_FDE_2025, ELEVENLABS_EL22_2024, ELEVENLABS_EL23_2024, ELEVENLABS_BANK],
+        practice: { label: 'Check folder access at a point in time, with tests and a reference solution', path: '/javascript/coding/js-folder-access-over-time' },
+        answerGuide: 'folder-access-at-a-time',
+      },
+      {
+        id: 'spoken-prefix-with-repeats',
+        round: 'Live technical round',
+        kind: 'Algorithm',
+        topic: 'Longest intended prefix in repeated speech',
+        question:
+          'An agent speaks a generated text but may repeat characters, words or phrases: return the longest prefix of the intended text it has spoken. First review a junior\'s solution built on the longest common subsequence, which has two mistakes, then write a simpler one, given that the speech only repeats and never drops or swaps words.',
+        sources: [ELEVENLABS_EC15_2026],
+        practice: { label: 'Review a junior\'s caption code, then rewrite it in one pass, with a sample review, tests and a reference solution', path: '/javascript/debug/js-debug-spoken-prefix-review' },
+        answerGuide: 'spoken-prefix-with-repeats',
       },
       {
         id: 'adapt-product-key-account',
@@ -13284,6 +13409,18 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Adapting a product for key accounts',
         question: 'Adapt an ElevenLabs product so that a particular kind of key account can use it.',
         sources: [ELEVENLABS_EL20_GROWTH_2026],
+        answerGuide: 'adapt-product-for-key-account',
+      },
+      {
+        id: 'voice-chat-product-search',
+        round: 'Product or design round',
+        kind: 'Product design',
+        topic: 'Voice chat for retail product search',
+        question:
+          'Design voice chat for an online shop: a system design question on retail product search in one 2026 account, and an open product decomposition of a voice chat system for a retailer\'s website in another, where the interviewer turned the question of what it should look like back on the candidate.',
+        sources: [ELEVENLABS_EL16_2026, ELEVENLABS_EC15_2026],
+        practice: { label: 'Design an AI voice shopping assistant', path: '/system-design/ai-voice-shopping-assistant' },
+        answerGuide: 'voice-shopping-search-design',
       },
       {
         id: 'valid-sudoku',
@@ -13291,6 +13428,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'Algorithm',
         topic: 'Valid Sudoku',
         question: 'Check whether a partly filled Sudoku board is valid (LeetCode\'s Valid Sudoku).',
+        open: true,
         sources: [ELEVENLABS_EL3_2024],
       },
       {
@@ -13300,6 +13438,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Next larger number sharing no digits',
         question: 'Find the next number larger than n that shares no digit with n.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'next-larger-with-no-shared-digit',
       },
       {
         id: 'merge-equal-level-stones',
@@ -13308,6 +13447,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Merging equal-level stones',
         question: 'Repeatedly merge stones of equal level and return the fewest stones that can remain.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'fewest-stones-after-merging',
       },
       {
         id: 'shirt-colours-no-repeat',
@@ -13316,6 +13456,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Lowest-cost shirt colour sequence',
         question: 'Choose the lowest-cost sequence of shirt colours with no colour used twice in a row.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'cheapest-shirt-colours',
       },
       {
         id: 'map-queue-bfs-problems',
@@ -13325,6 +13466,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Three assessment problems on maps, queues and breadth-first traversal, the first two easy and the last medium to hard.',
         promptNotShared: true,
         sources: [ELEVENLABS_EC4_2026],
+        practice: { label: 'Find a path through a grid maze, with tests and a reference solution', path: '/javascript/coding/js-maze-path' },
+        answerGuide: 'maps-queues-breadth-first',
       },
       {
         id: 'merge-sorted-drop-duplicates',
@@ -13332,22 +13475,25 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Merging sorted lists without duplicates',
         question: 'Merge sorted lists into one and drop the duplicates.',
         sources: [ELEVENLABS_EL16_2026],
-        practice: { label: 'Merge two sorted arrays', path: '/javascript/coding/js-merge-sorted-arrays' },
+        practice: { label: 'Merge two sorted arrays, with tests and a reference solution', path: '/javascript/coding/js-merge-sorted-arrays' },
+        answerGuide: 'merge-sorted-and-dedupe',
       },
       {
         id: 'reverse-linked-list',
         kind: 'Algorithm',
         topic: 'Linked list reversal',
         question: 'Reverse a linked list.',
+        open: true,
         sources: [ELEVENLABS_BANK],
       },
       {
         id: 'longest-substring-no-repeats',
         kind: 'Algorithm',
         topic: 'Longest substring without repeating characters',
-        question: 'Find the longest substring without repeating characters.',
+        question: 'Find the longest stretch of a string in which no character repeats.',
         sources: [ELEVENLABS_BANK],
-        practice: { label: 'Longest substring without repeating characters', path: '/javascript/coding/js-longest-substring-without-repeating' },
+        practice: { label: 'Longest substring without repeating characters, with tests and a reference solution', path: '/javascript/coding/js-longest-substring-without-repeating' },
+        answerGuide: 'longest-run-without-repeats',
       },
     ],
     // A growth-role question about inventing AI showcases is left out as specific to that role.
@@ -16404,6 +16550,556 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'tell-me-about-yourself',
         question: 'Tell me about yourself.',
         sources: [CLOUDFLARE_CF35_SOC_2024],
+      },
+    ],
+  },
+  binance: {
+    summary:
+      "Binance's careers page lists four steps (application review, interviews, an offer and onboarding) and an average of two to four weeks with four interviews, and describes no engineering round. The frontend accounts behind the first table, Taiwan and remote loops from 2020 to 2022, describe three remote technical rounds, with an HR round after them in the 2020 account and a fourth technical round in two accounts: in 2021 because the head of the department the candidate was referred to had not interviewed them, and in 2022 because the team that interviewed first turned the candidate down. In a 2021 account each round's result came about one to two hours after it. A 2020 account on Juejin, a mainland Chinese site, had two technical rounds, and a 2024 senior candidate describes one long stream of questions on CSS, React, JavaScript, Webpack and algorithms, with no questions on the résumé.",
+    caveat:
+      'The newest round-by-round account is from May 2022, and most of the questions below come from that one four-round loop; the 2020 and 2021 Taiwan and remote accounts follow the same three-round shape with fewer exact questions, while the 2020 Juejin account had two rounds and the 2024 senior account gives no round count. Every round-by-round account is written in Chinese, and none describes a loop in Hong Kong, Singapore or Europe. Where the accounts say where interviewers came from, it was Taiwan or mainland China; a 2021 third round was partly in English but mainly in Chinese, and the 2022 fourth round checked English in a conversation. The two take-homes come from comments, not from the loops in the tables.',
+    checkedAt: '2026-11-18',
+    variants: [
+      {
+        title: 'Frontend engineers, Taiwan and remote, 2020 to 2022',
+        note: 'Three round-by-round accounts carry this table: an offer in 2020 after three technical rounds and HR, a hire in 2021 after four technical rounds, and an offer in 2022 after four video rounds. A 2021 account from New Taipei adds the topics of its online interviews and who led its first round.',
+        stages: [
+          {
+            stage: 'HR contact',
+            format: 'An HR invitation on LinkedIn in 2020, and in 2021 a referral from a friend a headhunter introduced. HR scheduled the rounds, all of them remote, in the 2020 account.',
+            appliesTo: BINANCE_FE_ROLE,
+            sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B3_PTT_2021],
+          },
+          {
+            stage: 'Technical round 1',
+            format:
+              'Frontend fundamentals and short code to write. In 2020, React\'s render and commit phases, Redux state management and JavaScript whiteboard questions with a frontend engineer from Taiwan; in 2021, online coding on CodeShare, then event delegation, the event loop and React internals, and in another loop, online interviews on JavaScript fundamentals and algorithms, with a senior engineer in the first round; in 2022, a throttle to write, then hooks, higher-order components, react-redux\'s connect, the browser cache, HTTP status codes, typeof and instanceof.',
+            appliesTo: BINANCE_FE_ROLE,
+            sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B3_PTT_2021, BINANCE_B5_GOODJOB_2021, BINANCE_B4_INTERVIEWTW_2022],
+            practice: { label: 'Frontend fundamentals quiz', path: '/guides/interview-blueprint/quiz' },
+          },
+          {
+            stage: 'Technical round 2',
+            format:
+              'In 2022, short implementations (a flatten, a dedupe, String.includes), the event loop, the redux data flow, useMemo and useCallback, token storage, and an order book fed by a socket. The 2021 invitation announced algorithms, garbage collection and bundlers; the round asked instead how to optimise React performance, gave a React coding exercise and asked about new ESNext and React features and React\'s key. The 2020 round leaned on performance, such as optimising a web app for a given scenario.',
+            appliesTo: BINANCE_FE_ROLE,
+            sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B3_PTT_2021, BINANCE_B4_INTERVIEWTW_2022],
+          },
+          {
+            stage: 'Technical round 3',
+            format:
+              'In 2020, the head of the frontend business: the résumé, experience, and a design question such as a JavaScript object for a scenario. In 2021, SSR and CSR, bundlers, performance, WebSocket and HTTP, and how to debug a performance problem a user reports; the round was partly in English. In 2022, with the team that was hiring: Vue against React, a page a user says is slow, SSR, Node.js and the candidate\'s biggest project.',
+            appliesTo: BINANCE_FE_ROLE,
+            sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B3_PTT_2021, BINANCE_B4_INTERVIEWTW_2022],
+          },
+          {
+            stage: 'Team or fourth technical round',
+            format:
+              'In 2021, a fourth round because the head of the department the candidate was referred to had not interviewed them yet: WebSocket, CDN, CORS, redux, error handling and async. In 2022, candidates who passed round two went first to a team that was hiring; it turned this candidate down in round three, so a fourth round with another interviewer followed: micro-frontends, a React snippet, fiber, page caching and a CDN, a list component fed by an API and list recycling, code review, a conversation in English, why the candidate was leaving their job, what they hoped to gain at Binance and what would make them leave it.',
+            appliesTo: 'Some candidates',
+            sources: [BINANCE_B3_PTT_2021, BINANCE_B4_INTERVIEWTW_2022],
+            practice: { label: 'Fourth-round questions and English drill', path: '/companies/binance/preview', fragment: 'binance-round-fourth-round-and-english', drill: true },
+          },
+          {
+            stage: 'HR and offer',
+            format:
+              'HR announced the offer and discussed salary in 2020. In a 2021 account each round\'s result came about one to two hours after it, and the salary could be taken in cryptocurrency; another 2021 candidate, who was not hired, received feedback.',
+            appliesTo: 'Candidates in the accounts',
+            sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B3_PTT_2021, BINANCE_B5_GOODJOB_2021],
+          },
+        ],
+      },
+      {
+        title: 'Juejin account, 2020, and a senior loop, 2024',
+        note: 'A Juejin write-up of March 2020, whose Binance section sits beside JD and ByteDance loops, carries the two rounds; it names no place. The last row is a 2024 account on GoodJob by a senior candidate with three years of experience who was not hired; it names no place and no round count.',
+        stages: [
+          {
+            stage: 'First technical interview',
+            format:
+              'A compose function and a deep copy to write; then closures, hooks and fiber, redux, the publish-subscribe and singleton patterns, and permission management for routes and pages.',
+            appliesTo: 'Frontend engineers (2020 account)',
+            sources: [BINANCE_B1_JUEJIN_2020],
+          },
+          {
+            stage: 'Second technical interview',
+            format: 'A modal and a tooltip component to write live, questions on file upload, and the highlights of past projects.',
+            appliesTo: 'Candidates who pass round one',
+            sources: [BINANCE_B1_JUEJIN_2020],
+          },
+          {
+            stage: 'Senior question drill',
+            format:
+              'One continuous stream of questions on CSS, React, JavaScript, frontend tooling such as Webpack, and algorithm problems, with no questions on the résumé. The candidate\'s advice: prepare the fundamentals and expect a string of questions.',
+            appliesTo: 'Senior frontend engineers (2024 account)',
+            sources: [BINANCE_B6_SENIOR_2024],
+            practice: { label: 'Frontend fundamentals quiz', path: '/guides/interview-blueprint/quiz' },
+          },
+        ],
+      },
+    ],
+    // Rows merge accounts only when they report the same task; a row's round is the stage its first source asked it in.
+    // The card stubs and the two take-home comments name no stage the tables carry, so their rows have no round. A row is
+    // locked only when its unlock gives more than its topic: reported constraints or follow-ups, an answer guide or a
+    // Premium task; the rest are marked open (the String.includes pair and the CMS brief stay open as decided on
+    // 2026-11-18). Left out by content: Node.js experience, a company's CI/CD process and the CMS brief's API and backend
+    // half. Left out for want of a subject: rounds named only as online coding or whiteboard questions, and topic lists
+    // (micro-frontends, ESNext features, the final 2021 round's topics), which the stage cells keep; the quick sort and
+    // all-algorithm cards (C3, C11) are cited by the guide's round decoder instead. Left out as screening or personal: a
+    // floating-point card whose answer line is not a standard answer, the move from a degree into frontend, and the
+    // manager's rules for his reports.
+    questions: [
+      {
+        id: 'react-fiber-core',
+        round: 'Team or fourth technical round',
+        kind: 'React concepts',
+        topic: 'React fiber',
+        question:
+          "Do you know React fiber, and what is its core function? A first round in a Juejin write-up posted in March 2020 asked about hooks and fiber and what it calls fiber's three ordering strategies, and a 2021 card opens with React fiber.",
+        sources: [BINANCE_B4_INTERVIEWTW_2022, BINANCE_B1_JUEJIN_2020, BINANCE_C10_CARD_2021],
+        practice: { label: 'React fiber and how it schedules work', path: '/react/trivia/react-fiber-scheduling' },
+        answerGuide: 'react-fiber-core-function',
+      },
+      {
+        id: 'write-a-throttle',
+        round: 'Technical round 1',
+        kind: 'JavaScript',
+        topic: 'Throttle function',
+        question: "Write a throttle function: the first question of the 2022 loop's first round.",
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Throttle function', path: '/javascript/coding/js-throttle' },
+        answerGuide: 'throttle-which-calls-run',
+      },
+      {
+        id: 'hooks-and-their-rules',
+        round: 'Technical round 1',
+        kind: 'React concepts',
+        topic: 'Hooks and their rules',
+        question:
+          'Why did React introduce hooks, and why does it forbid calling a hook conditionally? In the fourth round, a snippet to review: a useEffect, then an early return under an if, then a second useEffect. What is wrong with it?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Why hooks have rules', path: '/react/trivia/react-why-hooks-have-rules' },
+        answerGuide: 'hooks-rules-and-early-return',
+      },
+      {
+        id: 'browser-cache-status-codes',
+        round: 'Technical round 1',
+        kind: 'Web fundamentals',
+        topic: 'Browser cache and status codes',
+        question:
+          "Explain the browser's cache, and what the HTTP status codes 200, 301, 302 and 304 each mean. The candidate's notes answer the cache question with the memory cache, the disk cache and the service worker cache.",
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'HTTP caching basics', path: '/javascript/trivia/http-caching-basics' },
+        answerGuide: 'browser-cache-and-status-codes',
+      },
+      {
+        id: 'render-and-commit-phases',
+        round: 'Technical round 1',
+        kind: 'React concepts',
+        topic: 'Render and commit phases',
+        question:
+          "What does React's render phase do, and what does its commit phase do? A discussion with a frontend engineer from Taiwan, beside Redux state management and JavaScript whiteboard questions.",
+        open: true,
+        sources: [BINANCE_B2_MEDIUM_2020],
+        practice: { label: 'React render and commit phases', path: '/react/trivia/react-render-vs-commit-phase' },
+      },
+      {
+        id: 'event-delegation-and-bubbling',
+        round: 'Technical round 1',
+        kind: 'JavaScript',
+        topic: 'Event delegation and bubbling',
+        question:
+          'Questions on event delegation, the event loop, and capture and bubbling, after online coding on CodeShare, with questions on React internals in the same round.',
+        promptNotShared: true,
+        open: true,
+        sources: [BINANCE_B3_PTT_2021],
+        practice: { label: 'Bubbling, capturing and event delegation', path: '/javascript/trivia/js-event-delegation' },
+      },
+      {
+        id: 'typeof-and-instanceof',
+        round: 'Technical round 1',
+        kind: 'JavaScript',
+        topic: 'typeof and instanceof',
+        question: 'Which values can typeof return? What is instanceof for, and does it keep walking up the prototype chain?',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Data types and typeof', path: '/javascript/trivia/js-check-data-type-with-typeof' },
+      },
+      {
+        id: 'higher-order-component-use',
+        round: 'Technical round 1',
+        kind: 'React concepts',
+        topic: 'Higher-order components',
+        question: 'Give a situation that calls for a React higher-order component, and say what it gains you.',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Higher-order components in React', path: '/react/trivia/react-higher-order-components' },
+      },
+      {
+        id: 'react-redux-connect',
+        round: 'Technical round 1',
+        kind: 'React concepts',
+        topic: 'How connect passes data',
+        question: "Why can react-redux's connect pass data into a component? Asked in the first round, beside hooks and higher-order components.",
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'order-book-over-socket',
+        round: 'Technical round 2',
+        kind: 'Frontend system design',
+        topic: 'Order book over a socket',
+        question:
+          "Take the order book beside Binance's spot trading page: the server pushes a large volume of data over a socket. As the frontend engineer, how do you handle that much data while keeping both performance and the user's experience?",
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Order book over a socket', path: '/react/coding/react-order-book-socket-feed' },
+        answerGuide: 'order-book-over-a-socket',
+      },
+      {
+        id: 'event-loop-ordering-snippet',
+        round: 'Technical round 2',
+        kind: 'JavaScript',
+        topic: 'Event loop and an ordering snippet',
+        question:
+          'Explain the event loop, then walk through a snippet: a setTimeout that logs 0, a new Promise that logs 1, its then logging 2, and a console.log of 3. Why does the setTimeout log come last, and given 0 ms, how long does setTimeout really wait?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'JavaScript event loop visualizer', path: '/javascript/trivia/js-event-loop' },
+        answerGuide: 'event-loop-order-and-timeout-zero',
+      },
+      {
+        id: 'token-storage-safety',
+        round: 'Technical round 2',
+        kind: 'Web fundamentals',
+        topic: 'Token storage and safety',
+        question:
+          'How do you make sure a token the backend gives you is safe? And whether the token sits in localStorage or in a cookie, what keeps it safe there?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Cookies, sessionStorage and localStorage', path: '/javascript/trivia/js-cookie-sessionstorage-localstorage' },
+        answerGuide: 'token-storage-and-safety',
+      },
+      {
+        id: 'flatten-without-flat',
+        round: 'Technical round 2',
+        kind: 'JavaScript',
+        topic: 'Flattening an array',
+        question: 'Write a function that flattens an array, turning [[1,2,3], [2,3,4]] into [1,2,3,2,3,4], without the built-in flat.',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Flatten one level', path: '/javascript/coding/js-flatten-once' },
+        answerGuide: 'flatten-one-level-by-hand',
+      },
+      {
+        id: 'dedupe-without-set',
+        round: 'Technical round 2',
+        kind: 'JavaScript',
+        topic: 'Removing duplicate values',
+        question: 'Write a function that removes duplicate values, turning [1,2,3,2,3,4] into [1,2,3,4], without using Set.',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Remove duplicates', path: '/javascript/coding/js-unique-array' },
+        answerGuide: 'dedupe-without-set-by-hand',
+      },
+      {
+        id: 'includes-and-array-methods',
+        round: 'Technical round 2',
+        kind: 'JavaScript',
+        topic: 'String.includes and array methods',
+        question: 'What does String.prototype.includes do, and how would you write it yourself? Then: what do forEach, map and reduce on an array each do?',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'usememo-and-usecallback',
+        round: 'Technical round 2',
+        kind: 'React concepts',
+        topic: 'useMemo and useCallback',
+        question: 'Explain useMemo and useCallback, in the round that also asked for the redux data flow.',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'useMemo versus useCallback', path: '/react/trivia/react-usememo-vs-usecallback' },
+      },
+      {
+        id: 'localstorage-returns-nothing',
+        round: 'Technical round 2',
+        kind: 'Web fundamentals',
+        topic: 'localStorage returning nothing',
+        question: "Have you met localStorage giving back nothing for a key you expected to be there? The candidate wrote the call as localstorage.get('name').",
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'react-key',
+        round: 'Technical round 2',
+        kind: 'React concepts',
+        topic: "React's key prop",
+        question: "Questions on React's key, in a second round that also asked how to optimise React performance and gave a React coding exercise.",
+        promptNotShared: true,
+        open: true,
+        sources: [BINANCE_B3_PTT_2021],
+        practice: { label: 'Keys in React lists', path: '/react/trivia/react-keys-in-lists' },
+      },
+      {
+        id: 'optimise-react-performance',
+        round: 'Technical round 2',
+        kind: 'React concepts',
+        topic: 'Optimising React performance',
+        question: 'How do you optimise React performance? An open question the interviewer took deeper from each answer, in a second round announced as algorithms, garbage collection and bundlers.',
+        open: true,
+        sources: [BINANCE_B3_PTT_2021],
+      },
+      {
+        id: 'slow-page-follow-up',
+        round: 'Technical round 3',
+        kind: 'Web fundamentals',
+        topic: 'A user reports a slow page',
+        question:
+          "A user says a page is slow: how do you follow it up? And if the page really is slow, what can you optimise? A 2021 third round asked the same in its own words: how to debug a performance problem a user reports, and how to tell a real one from the user's network.",
+        sources: [BINANCE_B4_INTERVIEWTW_2022, BINANCE_B3_PTT_2021],
+        practice: { label: 'Optimise page load time', path: '/javascript/trivia/web-performance-optimize-load-time' },
+        answerGuide: 'slow-page-triage',
+      },
+      {
+        id: 'vue-versus-react',
+        round: 'Technical round 3',
+        kind: 'Vue concepts',
+        topic: 'Vue versus React',
+        question:
+          "How do Vue and React differ to write in? By what principle does a state change update the UI in each? A 2022 card from another candidate opens with Vue's rendering mechanism.",
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022, BINANCE_C7_CARD_2022],
+        practice: { label: 'How Vue tracks state changes', path: '/vue/trivia/vue-internal-rendering-pipeline' },
+      },
+      {
+        id: 'ssr-csr-and-bundlers',
+        round: 'Technical round 3',
+        kind: 'Web fundamentals',
+        topic: 'SSR and CSR',
+        question: 'Do you understand how server-side rendering works? A 2021 third round covered SSR and CSR beside bundlers, performance, WebSocket and HTTP.',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022, BINANCE_B3_PTT_2021],
+        practice: { label: 'SSR and hydration in React', path: '/react/trivia/react-ssr-hydration' },
+      },
+      {
+        id: 'design-a-js-object',
+        round: 'Technical round 3',
+        kind: 'JavaScript',
+        topic: 'Designing a JavaScript object',
+        question:
+          'A design question at the end of a round with the head of the frontend business: design a JavaScript object for a scenario the interviewer gives.',
+        promptNotShared: true,
+        open: true,
+        sources: [BINANCE_B2_MEDIUM_2020],
+      },
+      {
+        id: 'api-list-component',
+        round: 'Team or fourth technical round',
+        kind: 'UI build',
+        topic: 'List component fed by an API',
+        question:
+          "Write a component that calls an API for data and shows it as a list, core code only. Then: with time to spare, what would you improve in that list, for the user's experience or for the code's architecture?",
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Fetch and render a list with its states', path: '/react/coding/react-fetch-list-states' },
+        answerGuide: 'api-list-component-and-improvements',
+      },
+      {
+        id: 'list-recycling',
+        round: 'Team or fourth technical round',
+        kind: 'UI build',
+        topic: 'List recycling',
+        question: 'After the list component: if you had to write list recycling yourself, how would you implement it?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'Virtualized list with recycled rows', path: '/react/coding/react-virtualized-list-recycling' },
+        answerGuide: 'list-recycling-by-hand',
+      },
+      {
+        id: 'page-caching-and-cdn',
+        round: 'Team or fourth technical round',
+        kind: 'Web fundamentals',
+        topic: 'Page caching and CDNs',
+        question:
+          "Describe an optimisation of a page that uses the cache. Then: can every resource be cached? When a resource's cache time runs out, is a request always sent again, and does it always bring the latest data? Can the page's own files be cached? And what is a CDN?",
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+        practice: { label: 'HTTP caching basics', path: '/javascript/trivia/http-caching-basics' },
+        answerGuide: 'caching-a-page-and-cdn',
+      },
+      {
+        id: 'code-review-view',
+        round: 'Team or fourth technical round',
+        kind: 'Practical coding',
+        topic: 'Your view of code review',
+        question: 'What is your view of code review? Asked in the fourth round, after the list component and list recycling.',
+        open: true,
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'redux-data-flow',
+        round: 'First technical interview',
+        kind: 'React concepts',
+        topic: 'Redux and its data flow',
+        question:
+          'What is redux for? Write out how it processes data, say which performance problems you have met with it, and explain how you would build a redux of your own. A 2022 second round asked for the redux data flow, and a 2020 first round discussed Redux state management.',
+        sources: [BINANCE_B1_JUEJIN_2020, BINANCE_B4_INTERVIEWTW_2022, BINANCE_B2_MEDIUM_2020],
+        practice: { label: 'When a React app needs Redux', path: '/react/trivia/react-state-management-redux' },
+        answerGuide: 'redux-data-flow-and-cost',
+      },
+      {
+        id: 'compose-unknown-arguments',
+        round: 'First technical interview',
+        kind: 'JavaScript',
+        topic: 'Compose function',
+        question: "Write a compose function when the number of arguments is not known in advance; the account's note adds arguments and promises.",
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Compose function', path: '/javascript/coding/js-compose' },
+        answerGuide: 'compose-with-any-arguments',
+      },
+      {
+        id: 'deep-copy',
+        round: 'First technical interview',
+        kind: 'JavaScript',
+        topic: 'Deep copy',
+        question: 'Write a deep copy, in the same first round as the compose function.',
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Deep clone', path: '/javascript/coding/js-deep-clone' },
+        answerGuide: 'deep-copy-with-cycles',
+      },
+      {
+        id: 'route-and-page-permissions',
+        round: 'First technical interview',
+        kind: 'Frontend system design',
+        topic: 'Route and page permissions',
+        question:
+          "Implement permission management: for routes, for pages, and for which parts of the navigation show. For example, a page's side navigation must show different options to different people: how do you build it?",
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Role-aware routes and sidebar', path: '/react/coding/react-role-aware-routes' },
+        answerGuide: 'role-aware-routes-and-sidebar',
+      },
+      {
+        id: 'closures',
+        round: 'First technical interview',
+        kind: 'JavaScript',
+        topic: 'Closures',
+        question: 'Explain closures, and the mechanism by which a closure reads the variables defined in its outer function.',
+        open: true,
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Closures in JavaScript', path: '/javascript/trivia/js-closures' },
+      },
+      {
+        id: 'pub-sub-and-singleton',
+        round: 'First technical interview',
+        kind: 'JavaScript',
+        topic: 'Pub-sub and singleton patterns',
+        question: 'Explain the publish-subscribe and singleton patterns. In publish-subscribe, how do you listen for events, and for which kinds of events?',
+        open: true,
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'JavaScript design patterns', path: '/javascript/trivia/js-design-patterns' },
+      },
+      {
+        id: 'modal-and-tooltip',
+        round: 'Second technical interview',
+        kind: 'UI build',
+        topic: 'Modal and tooltip components',
+        question:
+          'Write a modal and a tooltip component of your own; the candidate did not finish them. Should the modal mount in body or in its parent div, and why, given its overlay? If the tooltip mounts in body, how does it position itself against its element?',
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Dialog and tooltips through portals', path: '/react/coding/react-modal-tooltip-portal' },
+        answerGuide: 'modal-and-tooltip-in-body',
+      },
+      {
+        id: 'file-upload',
+        round: 'Second technical interview',
+        kind: 'UI build',
+        topic: 'File upload',
+        question:
+          'How did you implement file upload? How do you build drag-and-drop for it, how does its progress bar work, and how do you show a preview, listening to which events?',
+        sources: [BINANCE_B1_JUEJIN_2020],
+        practice: { label: 'Drop zone, progress and previews', path: '/react/coding/react-file-upload-dropzone-progress' },
+        answerGuide: 'file-upload-drop-progress-preview',
+      },
+      {
+        id: 'promise-all-by-hand',
+        kind: 'JavaScript',
+        topic: 'Promise.all by hand',
+        question: 'Write Promise.all by hand, in a 2022 round of about an hour.',
+        sources: [BINANCE_C4_CARD_2022],
+        practice: { label: 'Implement Promise.all', path: '/javascript/coding/js-promise-all' },
+        answerGuide: 'promise-all-in-order',
+      },
+      {
+        id: 'promise-implementation-exercise',
+        kind: 'JavaScript',
+        topic: 'A Promise implementation exercise',
+        question: 'One Promise implementation exercise in a 2020 round on asynchronous JavaScript; the card shows only that line, and the rest is locked on interview.tw.',
+        promptNotShared: true,
+        open: true,
+        sources: [BINANCE_C1_CARD_2020],
+        practice: { label: 'Create a deferred promise', path: '/javascript/coding/js-create-deferred-promise' },
+      },
+      {
+        id: 'debounce-for-a-scroll-bar',
+        kind: 'JavaScript',
+        topic: 'Debounce for a scroll bar',
+        question: 'A debounce function for a scroll bar: the first question a 2022 card shows, from a loop of two video rounds; the rest of the card is locked on interview.tw.',
+        promptNotShared: true,
+        open: true,
+        sources: [BINANCE_C2_CARD_2022],
+        practice: { label: 'Debounce function', path: '/javascript/coding/js-debounce' },
+      },
+      {
+        id: 'k-line-and-price-table',
+        kind: 'UI build',
+        topic: 'K-line chart and live price table',
+        question:
+          'A take-home: implement a K-line (candlestick) chart and a price table that keeps updating, with no library allowed. The commenter, who took the opening to lean staff, found it hard and gave up.',
+        sources: [BINANCE_B9_PTT_COMMENT_2021],
+        answerGuide: 'k-line-and-live-price-table',
+      },
+      {
+        id: 'cms-take-home',
+        kind: 'Practical coding',
+        topic: 'CMS take-home with translations',
+        question:
+          'A take-home brief: design and code a content management system for a site in up to 17 languages, where each article has some of its translations but not always all, with a user interface for entering the translations of an article, handed in as a public repository. The commenter declined it.',
+        open: true,
+        sources: [BINANCE_B7_HN_2022],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'resume-and-experience',
+        question: 'Walk through your résumé and your experience.',
+        sources: [BINANCE_B2_MEDIUM_2020, BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'project-highlights',
+        question: 'What were the highlights of your past projects, or the most challenging thing you did?',
+        sources: [BINANCE_B1_JUEJIN_2020],
+      },
+      {
+        id: 'biggest-project',
+        question: 'Share your biggest or most complex project so far, or the one that contributed most to your company, and the projects on your résumé.',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'current-company-stack',
+        question: 'Introduce the technology your current company uses, and explain its end-to-end testing.',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'greatest-achievement',
+        question: 'What is the achievement you are proudest of in your years of work?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'why-leave-your-job',
+        question: 'Why do you want to leave your current job?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'what-you-hope-to-gain',
+        question: 'If you join Binance, what do you hope to gain?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+      {
+        id: 'what-would-make-you-leave',
+        question: 'At Binance, what would make you want to leave?',
+        sources: [BINANCE_B4_INTERVIEWTW_2022],
       },
     ],
   },

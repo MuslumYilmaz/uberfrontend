@@ -1,0 +1,121 @@
+{
+  "questionId": "js-folder-access-over-time",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function createPermissions({ folders, files, groups }) {\n  const parentOf = new Map(folders.map((folder) => [folder.id, folder.parentId]));\n  const folderOf = new Map(files.map((file) => [file.id, file.folderId]));\n  const groupsOf = new Map();\n  for (const [groupId, members] of Object.entries(groups)) {\n    for (const userId of members) {\n      if (!groupsOf.has(userId)) groupsOf.set(userId, []);\n      groupsOf.get(userId).push(groupId);\n    }\n  }\n  // folder id -> subject key -> changes sorted by time; at the same time, a later call comes after an earlier one.\n  const history = new Map();\n  // A subject has exactly one key, user or group, whose value is a string id.\n  const keyOf = (subject) => {\n    const keys = subject !== null && typeof subject === 'object' ? Reflect.ownKeys(subject) : [];\n    const kind = keys.length === 1 ? keys[0] : undefined;\n    const id = kind === undefined ? undefined : subject[kind];\n    if ((kind !== 'user' && kind !== 'group') || typeof id !== 'string') {\n      throw new TypeError('setRule: subject must be { user } or { group } with a string id');\n    }\n    return `${kind}:${id}`;\n  };\n\n  // The number of changes in `changes` made at or before `at`.\n  const countUpTo = (changes, at) => {\n    let low = 0;\n    let high = changes.length;\n    while (low < high) {\n      const mid = (low + high) >> 1;\n      if (changes[mid].at <= at) low = mid + 1;\n      else high = mid;\n    }\n    return low;\n  };\n\n  function setRule(folderId, subject, effect, at) {\n    // A mistyped effect, subject or time must never become a rule: check all three before storing anything.\n    if (effect !== 'allow' && effect !== 'deny' && effect !== null) throw new TypeError(\"setRule: effect must be 'allow', 'deny' or null\");\n    if (!Number.isFinite(at)) throw new TypeError('setRule: at must be a finite number');\n    const key = keyOf(subject);\n    if (!history.has(folderId)) history.set(folderId, new Map());\n    const bySubject = history.get(folderId);\n    if (!bySubject.has(key)) bySubject.set(key, []);\n    const changes = bySubject.get(key);\n    changes.splice(countUpTo(changes, at), 0, { at, effect });\n  }\n\n  // The effect in force for one subject on one folder at `at`: 'allow', 'deny', or null for none.\n  const effectAt = (folderId, key, at) => {\n    const changes = history.get(folderId)?.get(key);\n    if (!changes) return null;\n    const count = countUpTo(changes, at);\n    return count === 0 ? null : changes[count - 1].effect;\n  };\n\n  function canAccess(userId, fileId, at) {\n    if (!folderOf.has(fileId)) return false;\n    const groupKeys = (groupsOf.get(userId) ?? []).map((groupId) => `group:${groupId}`);\n    for (let folderId = folderOf.get(fileId); folderId != null; folderId = parentOf.get(folderId)) {\n      const own = effectAt(folderId, `user:${userId}`, at);\n      if (own !== null) return own === 'allow';\n      const fromGroups = groupKeys.map((key) => effectAt(folderId, key, at)).filter((effect) => effect !== null);\n      if (fromGroups.length > 0) return !fromGroups.includes('deny');\n    }\n    return false;\n  }\n\n  return { setRule, canAccess };\n}\n",
+      "nodes": [
+        {
+          "id": "n1-index-the-input-once",
+          "title": "Index the input once",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "const parentOf = new Map(folders.map((folder) => [folder.id, folder.parentId]));"
+          },
+          "why": "Every check walks a file's folder path and needs the user's groups. Maps from folder to parent, file to folder and user to groups, built once, turn each step of the walk into a lookup instead of a search through the arrays.",
+          "alternative": "Search the folders and files arrays on every check.",
+          "tradeoff": "No setup, but each step of every walk becomes a linear search, and a check costs the path length times the number of folders."
+        },
+        {
+          "id": "n2-one-history-per-subject",
+          "title": "Keep one history per folder and subject",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "const history = new Map();"
+          },
+          "why": "A change replaces only the earlier changes for the same folder and the same user or group. Keying the histories by folder and then by subject (`user:ana`, `group:editors`) keeps those lists separate, so finding the change in force never has to skip other subjects' changes.",
+          "alternative": "One list per folder holding every subject's changes.",
+          "tradeoff": "Fewer maps, but every lookup filters the list by subject first, and the per-subject order has to be found again each time."
+        },
+        {
+          "id": "n3-insert-in-time-order",
+          "title": "Insert each change in time order, after its ties",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "changes.splice(countUpTo(changes, at), 0, { at, effect });"
+          },
+          "why": "Changes may be recorded out of time order. Inserting each one after every change at or before its timestamp keeps the list sorted by time, and puts a later call after an earlier one with the same timestamp, which is the tie rule the task sets.",
+          "alternative": "Append in call order and sort when checking.",
+          "tradeoff": "Appending is O(1) and a dirty flag can sort once after a batch of writes, but the first check after every write pays for a sort, which is every check when writes and reads alternate. The tie rule then also relies on a stable sort, which Array.prototype.sort has guaranteed since ES2019."
+        },
+        {
+          "id": "n4-last-change-at-or-before",
+          "title": "Binary-search the last change at or before the moment",
+          "anchor": {
+            "lineStart": 30,
+            "lineEnd": 30,
+            "snippet": "if (changes[mid].at <= at) low = mid + 1;"
+          },
+          "why": "With the list sorted, the change in force at `at` is the last one whose timestamp is at or before `at`. The search counts those changes, so a change made exactly at `at` counts, and the one before the count is the answer.",
+          "alternative": "Scan the list from the start until a change is later than `at`.",
+          "tradeoff": "Simple and correct, but linear in the history; a folder with years of changes makes every check slow."
+        },
+        {
+          "id": "n5-cleared-means-no-rule",
+          "title": "Read a cleared rule as no rule",
+          "anchor": {
+            "lineStart": 53,
+            "lineEnd": 53,
+            "snippet": "return count === 0 ? null : changes[count - 1].effect;"
+          },
+          "why": "A change with effect null clears the rule, and from then on the folder has no rule for that subject: if it was the user's own rule, their groups' rules on that folder decide, and with none of those the walk moves on to the folder above. Returning the stored null does that without a special case.",
+          "alternative": "Treat a cleared rule as a deny.",
+          "tradeoff": "It is safer by default, but it is a different product: clearing a child's rule would then block access the parent grants."
+        },
+        {
+          "id": "n6-nearest-folder-decides",
+          "title": "Let the nearest folder with a rule decide",
+          "anchor": {
+            "lineStart": 59,
+            "lineEnd": 59,
+            "snippet": "for (let folderId = folderOf.get(fileId); folderId != null; folderId = parentOf.get(folderId)) {"
+          },
+          "why": "Permissions propagate down unless a folder overrides them, so the walk starts at the file's folder and stops at the first folder with a rule in force for the user. A folder further up never overrides a nearer one, even if it changed more recently.",
+          "alternative": "Let the most recent change anywhere on the path win.",
+          "tradeoff": "Some systems work that way, and the two rules answer differently when a parent changes after a child's own rule. Agree on one before coding; this task sets nearest-wins."
+        },
+        {
+          "id": "n7-user-before-groups",
+          "title": "Check the user's own rule before their groups",
+          "anchor": {
+            "lineStart": 61,
+            "lineEnd": 61,
+            "snippet": "if (own !== null) return own === 'allow';"
+          },
+          "why": "On the folder that decides, a rule naming the user is more specific than a rule for a group they belong to, so it wins whichever way it points: a user allowed on a folder their group is denied can still open the file.",
+          "alternative": "Check the group rules first, or let any deny win.",
+          "tradeoff": "Either way a user-specific exception could no longer override their group on the same folder. Deny-first is a common safe default, but then a user cannot be let into a folder their group is kept out of without leaving the group."
+        },
+        {
+          "id": "n8-deny-between-groups",
+          "title": "Let deny win between groups",
+          "anchor": {
+            "lineStart": 63,
+            "lineEnd": 63,
+            "snippet": "if (fromGroups.length > 0) return !fromGroups.includes('deny');"
+          },
+          "why": "A user in two groups with opposite rules on one folder gets the deny. Neither rule is more specific than the other, so the safer one wins.",
+          "alternative": "Let any allow win.",
+          "tradeoff": "A deny meant to keep some members out would be undone by any other group of theirs that allows the folder."
+        },
+        {
+          "id": "n9-refuse-unknown-effects",
+          "title": "Refuse arguments the rules do not know",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 38,
+            "snippet": "if (effect !== 'allow' && effect !== 'deny' && effect !== null) throw new TypeError"
+          },
+          "why": "A typo such as 'Deny', or undefined meant as a clear, would otherwise be stored as a rule, and with this canAccess it would read as a deny for a user and as an allow for a group. A subject like { users: 'ana' } would be filed under a key no check reads, and a time of NaN would break the sorted order. Checking all three before storing anything stops these mistakes where they are made; a misspelt folder id still goes through, since the task does not ask for a folder check.",
+          "alternative": "Store whatever arrives and compare with the expected strings when checking.",
+          "tradeoff": "Nothing throws, but a mistyped rule silently changes who gets in, and the bug shows up as an access problem far from the call that caused it."
+        }
+      ]
+    }
+  }
+}

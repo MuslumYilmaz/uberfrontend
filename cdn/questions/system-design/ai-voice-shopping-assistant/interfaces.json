@@ -1,0 +1,48 @@
+{
+  "key": "I",
+  "title": "Interfaces",
+  "blocks": [
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type IntentResult =\n  | { kind: 'patch'; patch: FilterPatch }\n  | { kind: 'choose'; choice: Choice }\n  | { kind: 'out-of-scope' };\n\ntype FacetValues = Record<FacetKey, string[]>;\n\ninterface IntentContext {\n  filters: SearchFilters;\n  facets: FacetValues;\n  choice: Choice | null;\n}\n\ninterface IntentClient {\n  interpret(transcript: string, context: IntentContext, signal: AbortSignal): Promise<unknown>;\n}\n\ninterface SearchPage {\n  products: ProductCard[];\n  total: number;\n}\n\ninterface CatalogGateway {\n  facets(category: string | null, signal: AbortSignal): Promise<FacetValues>;\n  search(filters: SearchFilters, signal: AbortSignal): Promise<SearchPage>;\n}\n\ntype ValidateReply = (\n  raw: unknown,\n  transcript: string,\n  context: IntentContext,\n  catalog: CatalogGateway,\n  signal: AbortSignal,\n) => Promise<IntentResult | null>;\n\ninterface SpeechClient {\n  unlock(): void;\n  listen(onLive: () => void, onPartial: (text: string) => void, signal: AbortSignal): Promise<string | null>;\n  finish(): void;\n  speak(text: string, signal: AbortSignal): Promise<void>;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-voice-shopping-assistant-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Voice shopping API semantics",
+      "columns": [
+        "Request",
+        "Reply",
+        "Browser behavior"
+      ],
+      "rows": [
+        [
+          "Audio over a WebSocket opened on the tap, with a token fetched after consent",
+          "Partial text, then final text",
+          "Buffer audio until the socket opens; a null result skips the model"
+        ],
+        [
+          "POST /intent with the transcript and the context",
+          "Raw JSON",
+          "Validate it; choice options must be facet values, and an answer merges into the pending patch"
+        ],
+        [
+          "GET /products with the draft filters",
+          "A SearchPage in relevance order",
+          "Commit the draft and render; at total 0 keep the chips and offer Undo"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Accessible voice and text input",
+      "text": "The talk and consent taps call unlock(), which resumes audio and primes speechSynthesis inside the gesture. Talk keeps its name, aria-pressed is true only while listening, and a denied or missing microphone sets aria-disabled with the reason in aria-describedby. Partial text is not live and focus stays put when listening starts; headphones keep a screen reader out of the microphone. Choices and Undo are buttons, spoken replies can be switched off, and the listening animation respects reduced motion."
+    }
+  ]
+}
