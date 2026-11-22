@@ -764,6 +764,428 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-webhook-deliveries-four-tasks-requests',
+    questionId: 'react-webhook-deliveries-four-tasks',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['older source', 'legacy export', 'reloads the current source', 'failed refresh']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-webhook-deliveries-four-tasks-requests',
+      title: 'Number every request, narrow the payload, and reproduce the refresh report',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Three of the four tasks fail for one reason each: an answer from an older request still paints the screen, the legacy export is cast instead of narrowed, and Refresh does not reload the source the select shows.',
+      ),
+      actions: [
+        'Keep a request counter in a ref, bump it per request and in the effect cleanup, and return early in `.then` and `.catch` when the number is no longer the newest.',
+        'Replace the cast in `parseDeliveries` with `Array.isArray`, a record guard, `typeof` checks per field and a status allow-list, and count the records you drop.',
+        'Switch to the legacy export, press Refresh and log the source the request uses; once it matches the select, keep the rows on screen while a refresh runs and when it fails.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'react-webhook-deliveries-four-tasks-default',
+    questionId: 'react-webhook-deliveries-four-tasks',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-webhook-deliveries-four-tasks-default',
+      title: 'Show one request state at a time and derive the table from it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The request-state, filter and retry checks all read one state object and one derived list: loading, ready, empty or error decides the status line, and the filter decides which rows and which count show.',
+      ),
+      actions: [
+        'Hold `{ kind: \'loading\' | \'ready\' | \'empty\' | \'error\' }` next to the rows and render `.status--loading`, `.empty`, `.status--error` with `.retry`, or `.count` from it.',
+        'Derive `visible` with `useMemo` over the rows and the filter, and read `N of M deliveries` from both lengths.',
+        'On `.retry-delivery`, map the row to `pending` with functional `setDeliveries`, call `retryDelivery`, and map the answer in when it arrives.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-order-book-socket-feed-sequence',
+    questionId: 'react-order-book-socket-feed',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['late snapshot', 'lost message', 'burst', 'outlives its scenario']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-order-book-socket-feed-sequence',
+      title: 'Queue by seq, resync on a gap, and draw on a timer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The later checks fail for one reason each: messages that arrive before the snapshot are lost or applied twice, a missing seq goes unnoticed, every message renders, or a timer outlives the scenario.',
+      ),
+      actions: [
+        'Queue every message and drain only after a snapshot: drop seq at or below `lastSeq`, apply `lastSeq + 1`, and treat anything newer as a gap.',
+        'On a gap, show `Resyncing…`, count it, and run the first load again while the old book stays on screen.',
+        'Change the maps per message but draw from a 100 ms `setInterval`, keep `ref={bookRef}` on `.book`, and clear the timer with the connection in the effect cleanup.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-order-book-socket-feed-default',
+    questionId: 'react-order-book-socket-feed',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-order-book-socket-feed-default',
+      title: 'Build the book from the snapshot, then apply each delta',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The first checks read one projection of the book: the best ten levels per side, best first, the spread and the seq of the newest message the book includes.',
+      ),
+      actions: [
+        'Load the snapshot\'s levels into two maps keyed by price, and set a level\'s size from each message, deleting it at 0.',
+        'Sort bids high to low and asks low to high, slice ten, and render `.price` with two decimals and `.size`.',
+        'Show `Spread` as best ask minus best bid with two decimals, `Last update #N` for the newest seq the book includes, and `Live` once the snapshot is in.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-virtualized-list-recycling-scroll',
+    questionId: 'react-virtualized-list-recycling',
+    priority: 100,
+    matches: (snapshot) =>
+      anyFailingTestNameIncludes(snapshot, ['Scrolling to payment', 'partly hidden top row', 'Go moves the list', 'Go leaves the list', 'reuses the same']) ||
+      snapshot.failCount >= 2,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-virtualized-list-recycling-scroll',
+      title: 'Keep the first visible row in state, and key rows by their place in the pool',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The scrolling and jump checks read one window built from the first visible row, and they read it as soon as the range line changes. The recycling check counts the row elements ever created, so a key per payment adds one for every row that scrolls in.',
+      ),
+      actions: [
+        'In `onScroll`, set `firstVisible` to `floor((scrollTop + 0.5) / ROW_HEIGHT)` capped at index 9,990, directly rather than through `requestAnimationFrame`, and derive `start = clamp(firstVisible - OVERSCAN, 0, ITEM_COUNT - POOL_SIZE)`.',
+        'On Go, accept only digits from 1 up, write the capped position to `listRef.current.scrollTop`, set the row from it, and report the result or the error in `.jump-status`.',
+        'Key each row by its position in the pool (`offset`), so the same twenty elements are rewritten instead of new ones being created.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-virtualized-list-recycling-default',
+    questionId: 'react-virtualized-list-recycling',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-virtualized-list-recycling-default',
+      title: 'Render twenty rows inside a full-height spacer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check starts from the same window: twenty `.row` elements from payment 1 inside a labelled list, with `Showing 1–10 of 10,000` above them.',
+      ),
+      actions: [
+        'Map `POOL_SIZE` indexes from the window start instead of all of `PAYMENTS`.',
+        'Keep the spacer at `ITEM_COUNT * ROW_HEIGHT` and translate each row to `index * ROW_HEIGHT`.',
+        'Keep the list\'s role, label and tabIndex, give each row `data-id`, `aria-posinset` and `aria-setsize`, and format the range with `Intl.NumberFormat(\'en-US\')`.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-drop',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['drop zone lights', 'Only PNG and JPEG', 'file picker accepts']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-drop',
+      title: 'Try the drop zone and the picker the way the checks do',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The drop checks send dragenter, dragover, dragleave and drop on `.dropzone`, on its text and elsewhere on the page, some with text instead of files, and choose files in `.picker`. They require file drags to be cancelled and read `data-active`, the picker\'s attributes, the new `.upload` rows, the `.rejections` list and where focus goes after Remove.',
+      ),
+      actions: [
+        'Drag a file from the text inside the zone to outside it: the zone should stay active until the drag has left all of it.',
+        'Drop several files that each break a different rule, and compare the messages and their order with the page.',
+        'Choose two files with the same name: they should make two rows, and removing one should leave the other and move focus to a neighbouring Remove.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-upload',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['upload at once', 'Cancel and Remove stop', 'preview URL']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-upload',
+      title: 'Follow one upload from drop to unmount',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The upload checks wait for each `.upload-status` text, read the progress bar\'s `aria-valuenow`, click Cancel, Retry and Remove while uploads run and check where focus goes, also when an upload ends while its Cancel has focus, look for timers still running, and read the preview URL counts on the body.',
+      ),
+      actions: [
+        'Drop two files at once and watch both rows: they should move together, 25% at a time.',
+        'Cancel or remove a running upload, then check that nothing keeps running for it.',
+        'Tab to a running upload\'s Cancel and let it finish or fail: focus should land on that row\'s Remove or Retry, not on the page.',
+        'Watch `data-preview-urls-created` on the body while a row uploads: it should not grow when the row renders again.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-file-upload-dropzone-progress-default',
+    questionId: 'react-file-upload-dropzone-progress',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-file-upload-dropzone-progress-default',
+      title: 'Start from the drop',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The starter never cancels dragover, uploads nothing and accepts any file. Most checks drop files on `.dropzone`, so start with the drop: cancel dragover and drop, check each file, and start its upload.',
+      ),
+      actions: [
+        'Cancel `dragover` and `drop` on `.dropzone`.',
+        'Send dropped and chosen files through one function that checks them and adds a row for each accepted one.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-guard',
+    questionId: 'react-role-aware-routes',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['session loads', 'never renders']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-guard',
+      title: 'Watch the address while the session loads and after a refusal',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks type paths before the session loads and as a role without access, then read the address, `.page-loading`, `.access-notice` and the `data-loads-*` counts on the body. They press Back from the Dashboard a refusal led to, and later from another page back onto it.',
+      ),
+      actions: [
+        'Type a path in the first half second, before `fetchSession` answers: the address should stay on it.',
+        'As Sam, open /settings and watch `data-loads-settings` on the body: it should stay 0.',
+        'After a refusal, follow a link and press Back: the Dashboard should come back without the notice.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-session',
+    questionId: 'react-role-aware-routes',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['signing in returns', 'role change']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-session',
+      title: 'Follow the session through sign-in, sign-out and a role change',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks ask for a page while signed out, sign in, press Back, sign out, and save the signed-in user\'s own role. The last one unmounts App and reads `data-session-listeners` and `data-history-listeners` on the body.',
+      ),
+      actions: [
+        'Signed out, ask for /audit-log, sign in as Ana, then press Back: you should land on the Dashboard, not on Sign in.',
+        'As Ana, save your own role as support on your edit page: once the session reports it, the page and the sidebar should change, and Back should reach Users.',
+        'Remove every listener and timer you add when App unmounts.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-links',
+    questionId: 'react-role-aware-routes',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['sidebar and the links', 'whole segments']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-links',
+      title: 'Compare the sidebar, the links and the address for each account',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read the `.nav-link` list and its `aria-current` as different accounts, count the `.new-refund` and `.edit-user` links, and type paths such as /refunds/new, /users/2/edit, /users-export, /tickets/42/notes and /tickets//42.',
+      ),
+      actions: [
+        'Sign in as each demo account and compare the sidebar and the page links with `ROLE_PERMISSIONS`.',
+        'Open /tickets/42 and check that Tickets is the only link marked current.',
+        'Type paths that only start like a route, such as /users-export: they should show Page not found.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-role-aware-routes-default',
+    questionId: 'react-role-aware-routes',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-role-aware-routes-default',
+      title: 'Start with what the console shows first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check begins before the session has loaded, then reads the address, the sidebar and the page title. Compare what the console shows with the task\'s rules, one demo account at a time.',
+      ),
+      actions: [
+        'Watch the console in the first half second, before `fetchSession` answers.',
+        'Type paths into the address bar as well as following links.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-focus',
+    questionId: 'react-living-room-home',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['Left and Right move', 'keep the column', 'still loading', 'arriving on a focused', 'arrive after focus']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-focus',
+      title: 'Drive the rows with the arrow keys alone',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks press the arrow keys where focus is and read which `.tile` or `.row-placeholder` has focus: along a row and past its ends, down through rows of different lengths, and onto a row whose titles have not arrived yet.',
+      ),
+      actions: [
+        'From the sixth tile of Trending now, press Down three times: New this week\'s sixth tile, the last documentary, then Family nights\' sixth tile.',
+        'From the first row, press Down three times quickly: the Documentaries placeholder should take focus, then a documentary at the kept column when the row loads.',
+        'Leave a loading row before it arrives: focus should stay where you moved it.',
+        'When the rows appear, The Lighthouse Keeper should already have focus.',
+        'Open and close a title on a short row, then press Down: the column you chose with Left and Right should still hold.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-details',
+    questionId: 'react-living-room-home',
+    priority: 95,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['opens the focused title']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-details',
+      title: 'Open and close the details with the remote',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'This check presses Enter on a tile, moves between `.play` and `.watchlist` with every arrow, presses Enter on both, and closes the details with Escape and with Backspace, reading where focus goes each time.',
+      ),
+      actions: [
+        'Open a title from a lower row and press every arrow: focus should stay on the two buttons, and Back should return to that title.',
+        'Close the details with Escape and with Backspace: focus should be back on the tile you opened.',
+        'Press Play and My list, open another title, then the first again: My list is kept per title, and the status starts empty.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-loading',
+    questionId: 'react-living-room-home',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['first tile takes focus', 'load their titles once', 'image fails']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-loading',
+      title: 'Watch what loads, and when',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read `.home-loading`, the rows and their titles, the first focus, the `data-set-*` request counts on the body as focus moves down and back, and the `.tile-fallback` of the titles whose artwork is broken.',
+      ),
+      actions: [
+        'Check that a loading line shows first, then six rows in order, with the first tile focused.',
+        'Watch `data-set-docs` on the body: it should become 1 when focus reaches Trending now, and stay 1.',
+        'Look at Night Market in New this week: its artwork does not load, so the tile should show its name instead of the image.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-living-room-home-default',
+    questionId: 'react-living-room-home',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-living-room-home-default',
+      title: 'Use the keyboard alone',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The starter is built for a mouse, and the checks drive the home with the arrow keys, Enter and Back alone, pressed where focus is.',
+      ),
+      actions: [
+        'Click the preview once so it receives your keys (a click on a tile opens it), then use only the keyboard.',
+        'Watch which element has focus after each key.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'react-modal-tooltip-portal-dialog',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['modal dialog outside #root', 'return focus to Delete project', 'Tab and Shift+Tab', 'page is inert']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-dialog',
+      title: 'Try the dialog by hand, the way the checks do',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The dialog checks look for `[role="dialog"]` inside `.modal-backdrop` and outside `#root`, follow focus from Delete project into the field and back, press Tab through the dialog, and read `inert` and `modal-open` after every kind of close and after an unmount.',
+      ),
+      actions: [
+        'Check that the dialog is named by `.modal-title` through `aria-labelledby`.',
+        'Click the backdrop, then select the typed name and release over the backdrop, then press on the backdrop and release over the field: only the first should close the dialog.',
+        'After each kind of close, look at what still has `inert` or `modal-open`, and where focus is.',
+        'Press Tab and Shift+Tab at both ends of the dialog, with Delete this project disabled and enabled.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-modal-tooltip-portal-tooltip',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 90,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['Info tooltips', 'above near the bottom']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-tooltip',
+      title: 'Watch a tooltip while you hover, focus and scroll',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The tooltip checks look for `[role="tooltip"]` outside `#root` after a hover or a focus, follow the button\'s `aria-describedby` to it while it shows, and measure where it sits against its button before and after `.settings` scrolls.',
+      ),
+      actions: [
+        'Check that the tooltip appears on both hover and focus, and that only its own button names it, and only while it shows.',
+        'Use only the `.tooltip` class on the portaled tooltip; the starter\'s `.tooltip-inline` transform shifts it.',
+        'Scroll `.settings` while a tooltip shows: it should follow its button while the button is in view, and stay hidden once the button is scrolled out until it is hovered or focused again.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-modal-tooltip-portal-default',
+    questionId: 'react-modal-tooltip-portal',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-modal-tooltip-portal-default',
+      title: 'Move both layers out of the clipping card',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The card\'s slide-in transform pins the dialog\'s fixed backdrop to the card, and the scrolling `.settings` panel clips the tooltips. Every check reads the dialog or a tooltip in `document.body`, so start by moving both there.',
+      ),
+      actions: [
+        'Render the dialog and each tooltip with `createPortal(…, document.body)` instead of inside `.card`.',
+        'Keep the class names, `.page` as App\'s root element, and the `.status` text after a confirmed delete.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-listing-booking-widget-quote',
     questionId: 'react-listing-booking-widget',
     priority: 100,

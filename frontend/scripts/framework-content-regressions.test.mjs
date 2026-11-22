@@ -173,7 +173,7 @@ function assertFrameworkCssFormatting() {
       canonicalRoot: path.join(repoRoot, 'cdn', 'sb'),
       mirrorRoot: path.join(repoRoot, 'frontend', 'src', 'assets', 'sb'),
     }),
-    { assets: 257, cssSources: 329, changedAssets: 0, changedCssSources: 0 },
+    { assets: 273, cssSources: 345, changedAssets: 0, changedCssSources: 0 },
     'The full framework CSS corpus must stay canonical and exactly mirrored'
   );
 }
@@ -6586,10 +6586,11 @@ for (const node of vanillaPortVariant.nodes) {
 // Every Pressure Mode scenario must pass the checks PressureModeService.normalize applies. The service drops a
 // scenario that fails any of them, so a broken file means the mode silently never opens on its task.
 const PRESSURE_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit',
-  'mouseDown', 'pointerDown', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
+  'mouseDown', 'pointerDown', 'hover', 'unhover', 'focus', 'drag', 'fileDrag', 'chooseFiles', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
   'waitForCount', 'expectAttribute', 'expectClass', 'mockHttp', 'expectHttpRequest', 'key', 'unmountPreview',
   'expectNoPreviewTimers', 'expectNoPreviewLeaks', 'expectChecked', 'expectLineThrough', 'mockRandom', 'expectStandsOut',
-  'expectColor', 'expectReferenced', 'expectIndented', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion']);
+  'expectColor', 'expectReferenced', 'expectIndented', 'expectPlaced', 'mockStorage', 'expectStorage', 'expectName', 'expectLiveRegion',
+  'scroll']);
 const PRESSURE_FRAMEWORKS = ['react', 'angular', 'vue'];
 const pressureScenarios = new Map();
 for (const file of fs.readdirSync(path.join(repoRoot, 'cdn/questions/pressure-modes')).filter((name) => name.endsWith('.json')).sort()) {

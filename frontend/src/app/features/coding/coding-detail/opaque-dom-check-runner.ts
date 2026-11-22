@@ -630,16 +630,25 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   // Backgrounded and non-rendered sandbox frames may reject native focus even
   // though the application made the correct focus request. Track focus/blur
   // calls inside the opaque document so structured checks remain deterministic.
+  // A request a browser always ignores, on a disabled control or inside an
+  // inert element, does not count.
   const nativeFocus = HTMLElement.prototype.focus;
   const nativeBlur = HTMLElement.prototype.blur;
   HTMLElement.prototype.focus = function focus(options?: FocusOptions): void {
-    lastRequestedFocus = this;
+    const ignored = (this as HTMLElement & { disabled?: boolean }).disabled === true || !!this.closest('[inert]');
+    if (!ignored) lastRequestedFocus = this;
     if (options === undefined) nativeFocus.call(this);
     else nativeFocus.call(this, options);
   };
   HTMLElement.prototype.blur = function blur(): void {
     if (lastRequestedFocus === this) lastRequestedFocus = null;
     nativeBlur.call(this);
+  };
+  /** Where focus is: the active element, or the last focus request when the frame did not honour native focus. */
+  const focusedElement = (): Element => {
+    const active = document.activeElement;
+    if (active && active !== document.body) return active;
+    return lastRequestedFocus?.isConnected ? lastRequestedFocus : document.body;
   };
 
   const errorMessage = (error: unknown, fallback: string) => {
@@ -897,6 +906,93 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     try { field.setSelectionRange(start + 1, start + 1); } catch { }
     field.dispatchEvent(new InputEvent('input', { bubbles: true, data: character, inputType: 'insertText' }));
   };
+  // A frame without system focus, such as the hidden check frame, moves focus without firing focus events. When the
+  // browser fires none, these send the ones a focused window would, so React's onFocus and onBlur run.
+  const moveFocus = (target: HTMLElement) => {
+    const previous = document.activeElement;
+    if (previous === target) return;
+    let heard = false;
+    const hear = () => { heard = true; };
+    target.addEventListener('focus', hear);
+    target.focus();
+    target.removeEventListener('focus', hear);
+    if (heard) return;
+    if (previous instanceof HTMLElement && previous !== document.body) {
+      previous.dispatchEvent(new FocusEvent('blur', { relatedTarget: target }));
+      previous.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: target }));
+    }
+    target.dispatchEvent(new FocusEvent('focus', { relatedTarget: previous }));
+    target.dispatchEvent(new FocusEvent('focusin', { bubbles: true, relatedTarget: previous }));
+  };
+  const leaveFocus = () => {
+    const previous = document.activeElement;
+    if (!(previous instanceof HTMLElement) || previous === document.body) return;
+    let heard = false;
+    const hear = () => { heard = true; };
+    previous.addEventListener('blur', hear);
+    previous.blur();
+    previous.removeEventListener('blur', hear);
+    if (heard) return;
+    previous.dispatchEvent(new FocusEvent('blur'));
+    previous.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+  };
+  // The elements Tab visits, in a browser's order: positive tabindex values first, then the rest in document order.
+  // Disabled, hidden and inert elements are skipped.
+  const tabOrder = (): HTMLElement[] => Array.from(document.querySelectorAll<HTMLElement>(
+    'a[href], area[href], button, input, select, textarea, iframe, summary, [tabindex], [contenteditable]',
+  ))
+    .filter((node) => node.tabIndex >= 0
+      && (node as HTMLElement & { disabled?: boolean }).disabled !== true
+      && !(node instanceof HTMLInputElement && node.type === 'hidden')
+      && !node.closest('[inert]')
+      && node.getClientRects().length > 0
+      && getComputedStyle(node).visibility !== 'hidden')
+    .map((node, position) => ({ node, position }))
+    .sort((a, b) => (a.node.tabIndex || Infinity) - (b.node.tabIndex || Infinity) || a.position - b.position)
+    .map(({ node }) => node);
+  // What a browser does with a Tab the page did not cancel: focus moves to the next element in tab order (the
+  // previous one with Shift), or leaves the page past either end.
+  const followTab = (backwards: boolean) => {
+    const order = tabOrder();
+    const from = document.activeElement;
+    const index = from instanceof HTMLElement ? order.indexOf(from) : -1;
+    let next: HTMLElement | undefined;
+    if (index >= 0) {
+      next = order[index + (backwards ? -1 : 1)];
+    } else if (from && from !== document.body) {
+      const side = backwards ? Node.DOCUMENT_POSITION_PRECEDING : Node.DOCUMENT_POSITION_FOLLOWING;
+      const candidates = order.filter((node) => from.compareDocumentPosition(node) & side);
+      next = backwards ? candidates[candidates.length - 1] : candidates[0];
+    } else {
+      next = backwards ? order[order.length - 1] : order[0];
+    }
+    if (next) moveFocus(next); else leaveFocus();
+  };
+  // What Enter activates when the page does not cancel it: a button or a link is clicked, as a browser does.
+  const activatedByEnter = (element: Element) =>
+    (element instanceof HTMLButtonElement && !element.disabled)
+    || (element instanceof HTMLAnchorElement && element.hasAttribute('href'))
+    || (element instanceof HTMLInputElement && ['button', 'submit', 'reset'].indexOf(element.type) >= 0 && !element.disabled);
+  const pressKey = (element: Element, step: FrameworkTestStep, focusFirst: boolean): Promise<void> => {
+    const key = String(step.key || step.value || 'Enter');
+    const shiftKey = step.shift === true;
+    if (focusFirst) (element as HTMLElement).focus?.();
+    const allowed = element.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
+    const typed = allowed && key.length === 1 && isTextField(element);
+    // With defaultAction, a Tab the page does not cancel moves focus as a browser's would, and an Enter on a button
+    // or a link clicks it; without it, nothing follows the keydown.
+    const tabbed = allowed && key === 'Tab' && step.defaultAction === true;
+    const clicked = allowed && key === 'Enter' && step.defaultAction === true && activatedByEnter(element);
+    // A printable key the page does not cancel types its character into a text field, as a real keypress does,
+    // once the page has handled the keydown and re-rendered.
+    return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key))
+      : tabbed ? delay(0).then(() => followTab(shiftKey))
+        : clicked ? delay(0).then(() => (element as HTMLElement).click()) : Promise.resolve())
+      .then(() => {
+        element.dispatchEvent(new KeyboardEvent('keyup', { key, shiftKey, bubbles: true, cancelable: true }));
+        return delay(50);
+      });
+  };
   const describeElement = (element: Element | null) => {
     if (!element) return 'none';
     const id = element.id ? `#${element.id}` : '';
@@ -1019,6 +1115,9 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }
       return Promise.resolve();
     }
+    // A key with no target is pressed where focus already is, as on a keyboard or a TV remote; nothing is focused first.
+    // A frame that rejected native focus leaves body active, so the last focus request stands in, as for expectFocused.
+    if (type === 'key' && !target) return pressKey(focusedElement(), step, false);
     if (!target) throw new Error(`${type || 'step'} is missing a selector`);
     if (type === 'waitForText') return waitForText(step);
     if (type === 'waitForCount') return waitForCount(step);
@@ -1065,8 +1164,14 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const actual = element.getAttribute(attribute);
       if (step.expected === false && actual !== null) throw new Error(`${target} expected ${attribute} to be absent`);
       if ((step.expected === undefined || step.expected === true) && actual === null) throw new Error(`${target} expected ${attribute} to exist`);
-      if (step.expected !== undefined && step.expected !== true && step.expected !== false && actual !== String(step.expected)) {
-        throw new Error(`${target} expected ${attribute}="${String(step.expected)}" but found "${actual ?? ''}"`);
+      if (step.expected !== undefined && step.expected !== true && step.expected !== false) {
+        // match: 'contains' reads one part of a longer value, such as one declaration of an inline style.
+        const wanted = String(step.expected);
+        if (step.match === 'contains' ? !(actual ?? '').includes(wanted) : actual !== wanted) {
+          throw new Error(step.match === 'contains'
+            ? `${target} expected ${attribute} to contain "${wanted}" but found "${actual ?? ''}"`
+            : `${target} expected ${attribute}="${wanted}" but found "${actual ?? ''}"`);
+        }
       }
       return Promise.resolve();
     }
@@ -1090,6 +1195,19 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       form.dispatchEvent(new SubmitEventCtor('submit', { bubbles: true, cancelable: true }));
       return delay(50);
     }
+    if (type === 'scroll') {
+      // Moves the target's scroll position once the frame has laid it out (before that it has no height, so any
+      // position clamps to 0), then fires the scroll event itself: a browser only fires it on its next frame, which
+      // the offscreen check frame may not get. The frame is 1px wide, so a task's scroll box needs a min-width of
+      // its own; at zero width Chromium counts none of its content as overflow and nothing scrolls.
+      const scroller = element as HTMLElement;
+      return laidOutRects([scroller]).then(() => {
+        if (step.top !== undefined) scroller.scrollTop = Number(step.top);
+        if (step.left !== undefined) scroller.scrollLeft = Number(step.left);
+        scroller.dispatchEvent(new Event('scroll'));
+        return delay(50);
+      });
+    }
     if (type === 'mouseDown') {
       element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));
       element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, button: 0 }));
@@ -1101,19 +1219,94 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       element.dispatchEvent(new EventCtor('pointerup', { bubbles: true, cancelable: true, button: 0 }));
       return delay(50);
     }
-    if (type === 'key') {
-      const key = String(step.key || step.value || 'Enter');
-      (element as HTMLElement).focus?.();
-      const typed = element.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
-        && key.length === 1 && isTextField(element);
-      // A printable key the page does not cancel types its character into a text field, as a real keypress does,
-      // once the page has handled the keydown and re-rendered.
-      return (typed ? delay(0).then(() => typeCharacter(element as HTMLInputElement | HTMLTextAreaElement, key)) : Promise.resolve())
-        .then(() => {
-          element.dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true, cancelable: true }));
-          return delay(50);
-        });
+    if (type === 'focus') {
+      // Moves focus to the target, as a keyboard user's Tab does, with the focus events a focused window fires. An
+      // element that cannot take focus fails the step.
+      const focusable = element as HTMLElement;
+      const unfocusable = typeof focusable.focus !== 'function'
+        || (!focusable.hasAttribute('tabindex') && focusable.tabIndex < 0)
+        || (focusable as HTMLElement & { disabled?: boolean }).disabled === true
+        || !!focusable.closest('[inert]');
+      if (unfocusable) throw new Error(`${target} cannot take focus`);
+      moveFocus(focusable);
+      return delay(50);
     }
+    if (type === 'fileDrag' || type === 'chooseFiles') {
+      // Files from the desktop, made of zero bytes at the sizes the step gives. No object spread in this code: it
+      // runs inside the check frame, where the production build's spread helper does not exist.
+      const transfer = new DataTransfer();
+      for (const file of step.files || []) {
+        const size = Math.max(0, Math.floor(Number(file.size ?? 0)) || 0);
+        transfer.items.add(new File([new Uint8Array(size)], String(file.name || 'file'), { type: String(file.type || '') }));
+      }
+      if (type === 'chooseFiles') {
+        const input = element as HTMLInputElement;
+        if (!(input instanceof HTMLInputElement) || input.type !== 'file') throw new Error(`${target} is not a file input`);
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        return delay(50);
+      }
+      // A drag of those files, and of `text` when the step gives it, over the target: dragenter, dragover, dragleave
+      // or drop. `to` is where the pointer moves next, a dragleave's relatedTarget. With `cancelled: true` the page
+      // must cancel the event, as a drop target must cancel dragover for a browser to allow the drop; with
+      // `cancelled: false` it must not.
+      const name = String(step.event || 'drop');
+      if (step.text !== undefined) transfer.setData('text/plain', String(step.text));
+      // Browsers keep the files out of reach until the drop: before it, `files` reads empty and only `types` says
+      // that files are coming.
+      if (name !== 'drop') Object.defineProperty(transfer, 'files', { get: () => new DataTransfer().files });
+      const destination = { selector: step.to?.selector, by: step.to?.by } as FrameworkTestStep;
+      const related = destination.selector || destination.by ? queryElement(destination) : null;
+      const event = new DragEvent(name, {
+        bubbles: true,
+        cancelable: name !== 'dragleave',
+        dataTransfer: transfer,
+        relatedTarget: related,
+      });
+      const allowed = element.dispatchEvent(event);
+      if (step.cancelled === true && allowed) {
+        throw new Error(`${target} did not cancel ${name}, so a browser would not allow the drop`);
+      }
+      // With `cancelled: false` the page must leave the event alone, as with text dragged to a text field.
+      if (step.cancelled === false && !allowed) throw new Error(`${target} cancelled ${name}, which only a drop target should do`);
+      return delay(50);
+    }
+    if (type === 'drag') {
+      // A press on the target released over another element, as when a text selection ends outside its field.
+      // Pointer and mouse down go to the target and up to the other element, and the click goes to the nearest
+      // element that contains both, where browsers send it.
+      const destination = { selector: step.to?.selector, by: step.to?.by } as FrameworkTestStep;
+      const other = queryElement(destination);
+      if (!other) throw new Error(`${describeTarget(destination)} was not found`);
+      const PointerCtor = window.PointerEvent || MouseEvent;
+      const init: PointerEventInit = { bubbles: true, cancelable: true, button: 0, pointerType: 'mouse', isPrimary: true };
+      element.dispatchEvent(new PointerCtor('pointerdown', init));
+      element.dispatchEvent(new MouseEvent('mousedown', init));
+      other.dispatchEvent(new PointerCtor('pointerup', init));
+      other.dispatchEvent(new MouseEvent('mouseup', init));
+      let common: Element | null = element;
+      while (common && !common.contains(other)) common = common.parentElement;
+      (common ?? document.body).dispatchEvent(new MouseEvent('click', init));
+      return delay(50);
+    }
+    if (type === 'hover' || type === 'unhover') {
+      // A pointer moving onto the target from outside the page (hover) or off it (unhover). The over and out events
+      // bubble, and React builds onMouseEnter and onMouseLeave from them; the enter and leave events go to the target
+      // alone, for listeners added with addEventListener.
+      const entering = type === 'hover';
+      const PointerCtor = window.PointerEvent || MouseEvent;
+      // No object spread here: this code runs inside the check frame, and the production build turns spread into a
+      // helper that only exists outside it.
+      const bubbling: PointerEventInit = { pointerType: 'mouse', isPrimary: true, bubbles: true, cancelable: true };
+      const direct: PointerEventInit = { pointerType: 'mouse', isPrimary: true };
+      element.dispatchEvent(new PointerCtor(entering ? 'pointerover' : 'pointerout', bubbling));
+      element.dispatchEvent(new PointerCtor(entering ? 'pointerenter' : 'pointerleave', direct));
+      element.dispatchEvent(new MouseEvent(entering ? 'mouseover' : 'mouseout', { bubbles: true, cancelable: true }));
+      element.dispatchEvent(new MouseEvent(entering ? 'mouseenter' : 'mouseleave'));
+      return delay(50);
+    }
+    if (type === 'key') return pressKey(element, step, true);
     if (type === 'expectFocused') {
       if (document.activeElement !== element && lastRequestedFocus !== element) {
         throw new Error(`${target} expected focus but active element was ${describeElement(document.activeElement)}`);
@@ -1169,6 +1362,26 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         throw new Error(`${target} sits in a live region that is ${atomic ? '' : 'not '}atomic, expected ${step.atomic ? '' : 'not '}atomic`);
       }
       return Promise.resolve();
+    }
+    if (type === 'expectPlaced') {
+      // Where the target sits once laid out, within a pixel: `gap` px below or above another element (a tooltip
+      // against its button), and with `left`, how far its left edge is from the frame's left edge.
+      const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
+      const side = step.side;
+      const other = side ? queryElement(reference) : null;
+      if (side && !other) throw new Error(`${describeTarget(reference)} was not found`);
+      return laidOutRects(other ? [element, other] : [element]).then(([own, theirs]) => {
+        if (side && theirs) {
+          const gap = Number(step.gap ?? 0);
+          const actual = side === 'below' ? own.top - theirs.bottom : theirs.top - own.bottom;
+          if (Math.abs(actual - gap) > 1) {
+            throw new Error(`${target} sits ${Math.round(actual)}px ${side} ${describeTarget(reference)}; expected ${gap}px`);
+          }
+        }
+        if (step.left !== undefined && Math.abs(own.left - Number(step.left)) > 1) {
+          throw new Error(`${target} starts ${Math.round(own.left)}px from the left edge; expected ${step.left}px`);
+        }
+      });
     }
     if (type === 'expectIndented') {
       // The target starts further right than another element, as a reply sits indented under its comment.

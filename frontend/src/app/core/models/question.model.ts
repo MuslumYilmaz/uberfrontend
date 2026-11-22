@@ -101,6 +101,10 @@ export type FrameworkTestStepType =
   | 'submit'
   | 'mouseDown'
   | 'pointerDown'
+  | 'hover'
+  | 'unhover'
+  | 'focus'
+  | 'drag'
   | 'wait'
   | 'waitForText'
   | 'setValue'
@@ -123,10 +127,14 @@ export type FrameworkTestStepType =
   | 'expectColor'
   | 'expectReferenced'
   | 'expectIndented'
+  | 'expectPlaced'
+  | 'fileDrag'
+  | 'chooseFiles'
   | 'mockStorage'
   | 'expectStorage'
   | 'expectName'
-  | 'expectLiveRegion';
+  | 'expectLiveRegion'
+  | 'scroll';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -154,6 +162,13 @@ export type FrameworkTestStep = {
   durationMs?: number;
   value?: string;
   key?: string;
+  /** key: hold Shift while pressing the key, as Shift+Tab does. */
+  shift?: boolean;
+  /**
+   * key: when the page does not cancel the key, do what a browser does: a Tab moves focus to the next element in tab
+   * order, and an Enter on a button or a link clicks it. A key step without a selector is pressed where focus is.
+   */
+  defaultAction?: boolean;
   count?: number;
   attribute?: string;
   className?: string;
@@ -174,12 +189,32 @@ export type FrameworkTestStep = {
   property?: string;
   /** expectIndented: the element the target must start further right than. */
   than?: { selector?: string; by?: FrameworkTestLocator };
+  /** drag: the element the press is released over. fileDrag: the element the pointer moves to (relatedTarget). */
+  to?: { selector?: string; by?: FrameworkTestLocator };
+  /**
+   * fileDrag and chooseFiles: the files, made of zero bytes at the given sizes. fileDrag also drags `text` as
+   * text/plain, and like a browser shows the files only on drop; before it, only `types` lists them.
+   */
+  files?: { name?: string; type?: string; size?: number }[];
+  /** fileDrag: which drag event to send. */
+  event?: 'dragenter' | 'dragover' | 'dragleave' | 'drop';
+  /** fileDrag: true when the page must cancel the event, false when it must not. */
+  cancelled?: boolean;
   /** mockStorage: the check's localStorage entries, set before the preview boots. */
   entries?: Record<string, string>;
   /** expectLiveRegion: how the live region around the target announces, polite or assertive. */
   politeness?: string;
   /** expectLiveRegion: whether the live region announces itself whole. */
   atomic?: boolean;
+  /**
+   * scroll: the scroll position to set on the target, in CSS pixels from the top and from the left.
+   * expectPlaced: `left` is where the target's left edge must be, in CSS pixels from the frame's left edge.
+   */
+  top?: number;
+  left?: number;
+  /** expectPlaced: the side of `than` the target must sit on, and the space between them in CSS pixels. */
+  side?: 'below' | 'above';
+  gap?: number;
 };
 
 export type FrameworkTest = {

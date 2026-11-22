@@ -1,0 +1,835 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "webhook-deliveries-pressure-v1",
+  "family": "webhook-deliveries",
+  "title": "Webhook Deliveries Interview Pressure Mode",
+  "access": "premium",
+  "estimatedMinutes": 60,
+  "supportedQuestions": {
+    "react": "react-webhook-deliveries-four-tasks"
+  },
+  "rounds": [
+    {
+      "id": "request-states",
+      "title": "One request, four states",
+      "interviewerPrompt": "Load the deliveries and show exactly one state at a time: loading, the table, an empty message, or an error the user can recover from. If the source changes while a request is running, only the newest request may change the screen.",
+      "constraints": [
+        "Call `fetchDeliveries(source)` when the page opens and whenever the Data source select changes. The select keeps its class `source`.",
+        "While loading, show `Loading deliveries…` in an element with the class `status--loading` and no rows.",
+        "On success, show one `.row` per delivery and `6 deliveries` in an element with the class `count`.",
+        "For an empty export, show `No deliveries` in an element with the class `empty`.",
+        "On failure, show `Could not load the deliveries:` and the reason in an element with the class `status--error`, plus a Retry button with the class `retry` that reloads the source selected now. Show nothing else while the error is up.",
+        "A response or an error from an older request must not change the screen once the source has changed again."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-webhook-request-states",
+          "name": "Round 1 · Each request state shows alone and Retry reloads the selected source",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--loading",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--loading",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "live"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "click",
+              "selector": ".fail-next"
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not load the deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--error",
+              "text": "Gateway timeout",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--loading",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".empty",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "click",
+              "selector": ".retry"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--loading",
+              "count": 0
+            }
+          ]
+        },
+        {
+          "id": "pressure-webhook-newest-request-wins",
+          "name": "Round 1 · A late answer from an older source cannot change the screen",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "error"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "wait",
+              "durationMs": 150
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "live"
+            },
+            {
+              "type": "wait",
+              "durationMs": 250
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "legacy"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "empty"
+            },
+            {
+              "type": "wait",
+              "durationMs": 250
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".skipped",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--loading",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "typed-payload",
+      "title": "Type the payload",
+      "interviewerPrompt": "The payload arrives as unknown. Replace the cast in parseDeliveries with narrowing that keeps every well-formed record and counts the rest. The legacy export has five malformed records, each with one bad field.",
+      "constraints": [
+        "A record counts as well-formed when `id`, `endpoint` and `lastAttempt` are strings, `attempts` is a whole number of zero or more, and `status` is one of delivered, failed or pending.",
+        "Show `N records skipped` in an element with the class `skipped` when at least one record was dropped, and nothing otherwise; a source change clears it.",
+        "The legacy export shows six rows and `5 records skipped`; the live export shows no skipped line.",
+        "Keep the mock API and the exports as they are."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-webhook-legacy-export-narrowing",
+          "name": "Round 2 · The legacy export keeps six well-formed records and counts five skipped",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".skipped",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "legacy"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".skipped",
+              "text": "5 records skipped",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--ok",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".endpoint",
+              "index": 5,
+              "text": "https://legacy.example/hooks/receipts",
+              "match": "equals"
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "error"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".skipped",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not load the deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "live"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".skipped",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "filter-and-retry",
+      "title": "Filter and retry a delivery",
+      "interviewerPrompt": "Wire the Status select so the rows narrow to one status, and let a failed delivery be retried: the row reads pending at once and delivered when the call answers.",
+      "constraints": [
+        "The Status select keeps its class `status-filter`; All shows every row.",
+        "With a filter active, show `N of M deliveries` in the `count` element, where M is the whole export; with All, show `M deliveries`.",
+        "Only failed rows show a `retry-delivery` button. Clicking it calls `retryDelivery` for that row. Rows keep the export's order.",
+        "The row reads `pending` right away, with no button, and `delivered` with one more attempt when the call answers; the filter keeps applying to the updated row.",
+        "Two retries started one after the other must both land: the second answer may not undo the first."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-webhook-status-filter",
+          "name": "Round 3 · The status filter narrows the rows and the count reads N of M",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "failed"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "2 of 6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-delivery",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".endpoint",
+              "index": 0,
+              "text": "https://crm.example/webhooks/contacts",
+              "match": "equals"
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "pending"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 1
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "1 of 6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-delivery",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "all"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "6 deliveries",
+              "match": "equals"
+            }
+          ]
+        },
+        {
+          "id": "pressure-webhook-retry-delivery",
+          "name": "Round 3 · Two retries in a row both go pending, then delivered with one more attempt",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".status",
+              "index": 1,
+              "text": "failed",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".attempts",
+              "index": 1,
+              "text": "3",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".retry-delivery",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status",
+              "index": 1,
+              "text": "pending",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-delivery",
+              "count": 1
+            },
+            {
+              "type": "click",
+              "selector": ".retry-delivery",
+              "index": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status",
+              "index": 4,
+              "text": "pending",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-delivery",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "index": 1,
+              "text": "delivered",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status",
+              "index": 4,
+              "text": "delivered",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".status",
+              "index": 1,
+              "text": "delivered",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".attempts",
+              "index": 1,
+              "text": "4",
+              "match": "equals"
+            },
+            {
+              "type": "expectText",
+              "selector": ".attempts",
+              "index": 4,
+              "text": "3",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".retry-delivery",
+              "count": 0
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "failed"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "0 of 6 deliveries",
+              "match": "equals"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "refresh-bug",
+      "title": "Fix the refresh",
+      "interviewerPrompt": "A tester reports that Refresh goes back to the live export after a source change and that the table disappears while it loads. Find the cause, fix it, and keep the rows through a refresh and through its failure.",
+      "constraints": [
+        "Refresh keeps its class `refresh`, reloads the source that is selected now, and is disabled while a request is running.",
+        "During a refresh, keep the rows and the filter on screen and show `Refreshing deliveries…` in the `status--loading` element.",
+        "If a refresh fails, keep the rows, show `Could not refresh the deliveries:` and the reason in the `status--error` element, and show the Retry button.",
+        "Retry after a failed refresh also keeps the rows; when it succeeds, the error disappears and the skipped count still describes the current source.",
+        "A source change during a refresh wins: the rows clear, `Loading deliveries…` shows, and the refresh answer never reaches the screen."
+      ],
+      "frameworkTests": [
+        {
+          "id": "pressure-webhook-refresh",
+          "name": "Round 4 · Refresh reloads the current source, keeps the rows through a failure and loses to a source change",
+          "steps": [
+            {
+              "type": "waitForCount",
+              "selector": ".row",
+              "count": 6,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "legacy"
+            },
+            {
+              "type": "waitForText",
+              "selector": ".skipped",
+              "text": "5 records skipped",
+              "match": "equals",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "failed"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 2
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Refreshing deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".refresh",
+              "disabled": true
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".status--loading",
+              "count": 0,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".skipped",
+              "text": "5 records skipped",
+              "match": "equals"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 2
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "2 of 6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "expectDisabled",
+              "selector": ".refresh",
+              "disabled": false
+            },
+            {
+              "type": "setValue",
+              "selector": ".status-filter",
+              "value": "all"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "expectText",
+              "selector": ".endpoint",
+              "index": 5,
+              "text": "https://legacy.example/hooks/receipts",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".fail-next"
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "waitForText",
+              "selector": ".status--error",
+              "text": "Could not refresh the deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--error",
+              "text": "Gateway timeout",
+              "match": "contains"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "expectText",
+              "selector": ".count",
+              "text": "6 deliveries",
+              "match": "equals"
+            },
+            {
+              "type": "click",
+              "selector": ".retry"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Refreshing deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "waitForCount",
+              "selector": ".status--loading",
+              "count": 0,
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 6
+            },
+            {
+              "type": "click",
+              "selector": ".refresh"
+            },
+            {
+              "type": "wait",
+              "durationMs": 100
+            },
+            {
+              "type": "setValue",
+              "selector": ".source",
+              "value": "empty"
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectText",
+              "selector": ".status--loading",
+              "text": "Loading deliveries",
+              "match": "contains"
+            },
+            {
+              "type": "wait",
+              "durationMs": 300
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            },
+            {
+              "type": "expectCount",
+              "selector": ".status--error",
+              "count": 0
+            },
+            {
+              "type": "waitForText",
+              "selector": ".empty",
+              "text": "No deliveries",
+              "match": "contains",
+              "timeoutMs": 2500
+            },
+            {
+              "type": "expectCount",
+              "selector": ".row",
+              "count": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "You shipped four tasks under the clock",
+    "summary": "You took a small React and TypeScript app from a bare fetch to a console that shows one request state at a time, types its payload, filters and retries rows, and refreshes without losing them. The interview signal is the order you worked in and the bug you found on the way: a handler that captured the first source and never saw another.",
+    "takeaways": [
+      "Hold one request state object and derive the screen from it; separate booleans drift apart under time pressure.",
+      "Number every request and compare the number when it settles, so a stale source can never paint the screen.",
+      "Narrow an unknown payload with type guards and count what you drop; a cast hides the five records that break the table.",
+      "A refresh is not a first load: it has rows worth keeping, and it must read the current source, not the one a stale closure remembers."
+    ],
+    "frameworkNotes": {
+      "react": "A `useCallback` with an empty dependency list captures the first render's `source`. Reading the state in a plain handler, or listing it in the dependencies, fixes the refresh; a ref holding the latest request id keeps older answers out."
+    }
+  },
+  "solutionAssets": {
+    "react": "assets/sb/react/solution/react-webhook-deliveries-four-tasks-pressure-solution.v1.json"
+  }
+}

@@ -4,6 +4,7 @@ backend
 JavaScript
 TypeScript
 Playwright
+Vitest
 WebKit
 GitHub
 Node.js
@@ -129,3 +130,4 @@ defences
 Contentful
 microtask
 microtasks
+interruptible

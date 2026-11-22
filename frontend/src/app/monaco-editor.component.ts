@@ -826,6 +826,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "    interface FormEvent<T = Element> extends SyntheticEvent<T> {}",
               "    interface FocusEvent<T = Element> extends SyntheticEvent<T> {}",
               "    interface MouseEvent<T = Element> extends SyntheticEvent<T> {}",
+              "    interface DragEvent<T = Element> extends MouseEvent<T> { dataTransfer: DataTransfer; }",
               "    interface KeyboardEvent<T = Element> extends SyntheticEvent<T> { key: string; }",
               "    function useState<T = any>(initial: T | (() => T)): [T, (v: T | ((prev: T) => T)) => void];",
               "    function useEffect(fn: () => void | (() => void), deps?: any[]): void;",

@@ -1,0 +1,97 @@
+{
+  "questionId": "react-webhook-deliveries-four-tasks",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\nexport type DeliveryStatus = 'delivered' | 'failed' | 'pending';\n\nexport interface Delivery {\n  id: string;\n  endpoint: string;\n  status: DeliveryStatus;\n  attempts: number;\n  lastAttempt: string;\n}\n\nexport type Source = 'live' | 'legacy' | 'empty' | 'error';\nexport type StatusFilter = 'all' | DeliveryStatus;\n\n/** Six deliveries from the live export. */\nexport const LIVE: Delivery[] = [\n  { id: 'd1', endpoint: 'https://shop.example/hooks/orders', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:12:00Z' },\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-18T09:10:30Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-18T09:14:05Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T09:01:44Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-18T08:58:12Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-18T08:40:00Z' }\n];\n\n/** The legacy export: six well-formed records and five that each break one field. */\nexport const LEGACY_RAW: unknown[] = [\n  { id: 'd2', endpoint: 'https://crm.example/webhooks/contacts', status: 'failed', attempts: 3, lastAttempt: '2026-11-17T18:10:30Z' },\n  { id: 'd7', endpoint: 'https://legacy.example/hooks/orders', status: 'ok', attempts: 1, lastAttempt: '2026-11-17T18:09:00Z' },\n  { id: 'd3', endpoint: 'https://billing.example/events', status: 'pending', attempts: 1, lastAttempt: '2026-11-17T18:04:05Z' },\n  { id: 10, endpoint: 'https://legacy.example/hooks/shipments', status: 'failed', attempts: 1, lastAttempt: '2026-11-17T18:01:00Z' },\n  { id: 'd4', endpoint: 'https://ops.example/alerts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:51:44Z' },\n  { id: 'd8', endpoint: 'https://legacy.example/hooks/invoices', status: 'failed', attempts: '2', lastAttempt: '2026-11-17T17:49:00Z' },\n  { id: 'd5', endpoint: 'https://shop.example/hooks/refunds', status: 'failed', attempts: 2, lastAttempt: '2026-11-17T17:38:12Z' },\n  { id: 'd11', endpoint: null, status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:30:00Z' },\n  { id: 'd6', endpoint: 'https://analytics.example/ingest', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:20:00Z' },\n  { id: 'd9', endpoint: 'https://legacy.example/hooks/receipts', status: 'delivered', attempts: 1, lastAttempt: '2026-11-17T17:02:00Z' },\n  { id: 'd12', endpoint: 'https://legacy.example/hooks/payouts', status: 'pending', attempts: 1 }\n];\n\nlet failNextRequest = false;\n\n/** Mock API, treat it as given: it answers after 400 ms. \"Fail next request\" makes the next request reject once. */\nexport function armFailure(): void {\n  failNextRequest = true;\n}\n\nexport function fetchDeliveries(source: Source): Promise<unknown> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (failNextRequest) {\n        failNextRequest = false;\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'error') {\n        reject(new Error('Gateway timeout'));\n        return;\n      }\n      if (source === 'empty') {\n        resolve([]);\n        return;\n      }\n      if (source === 'legacy') {\n        resolve(LEGACY_RAW.map((record) => (typeof record === 'object' && record !== null ? { ...record } : record)));\n        return;\n      }\n      resolve(LIVE.map((delivery) => ({ ...delivery })));\n    }, 400);\n  });\n}\n\n/** Mock API: a retry answers after 200 ms and the endpoint accepts the delivery. */\nexport function retryDelivery(delivery: Delivery): Promise<Delivery> {\n  return new Promise((resolve) => {\n    window.setTimeout(() => {\n      resolve({ ...delivery, status: 'delivered', attempts: delivery.attempts + 1, lastAttempt: new Date().toISOString() });\n    }, 200);\n  });\n}\n\nconst STATUSES: readonly DeliveryStatus[] = ['delivered', 'failed', 'pending'];\n\nfunction isRecord(value: unknown): value is Record<string, unknown> {\n  return typeof value === 'object' && value !== null;\n}\n\nfunction isDeliveryStatus(value: unknown): value is DeliveryStatus {\n  return typeof value === 'string' && (STATUSES as readonly string[]).includes(value);\n}\n\n/** Narrow the raw payload: keep every well-formed record, count the rest. A payload that is not a list is an error. */\nexport function parseDeliveries(raw: unknown): { deliveries: Delivery[]; skipped: number } {\n  if (!Array.isArray(raw)) {\n    throw new Error('Unexpected payload');\n  }\n  const deliveries: Delivery[] = [];\n  let skipped = 0;\n  for (const record of raw) {\n    if (\n      isRecord(record) &&\n      typeof record.id === 'string' &&\n      typeof record.endpoint === 'string' &&\n      isDeliveryStatus(record.status) &&\n      typeof record.attempts === 'number' &&\n      Number.isInteger(record.attempts) &&\n      record.attempts >= 0 &&\n      typeof record.lastAttempt === 'string'\n    ) {\n      deliveries.push({\n        id: record.id,\n        endpoint: record.endpoint,\n        status: record.status,\n        attempts: record.attempts,\n        lastAttempt: record.lastAttempt\n      });\n    } else {\n      skipped += 1;\n    }\n  }\n  return { deliveries, skipped };\n}\n\ntype RequestState =\n  | { kind: 'loading'; keepRows: boolean }\n  | { kind: 'ready' }\n  | { kind: 'empty' }\n  | { kind: 'error'; message: string; keepRows: boolean };\n\nexport default function App() {\n  const [source, setSource] = useState<Source>('live');\n  const [filter, setFilter] = useState<StatusFilter>('all');\n  const [deliveries, setDeliveries] = useState<Delivery[]>([]);\n  const [skipped, setSkipped] = useState(0);\n  const [request, setRequest] = useState<RequestState>({ kind: 'loading', keepRows: false });\n  const latestRequest = useRef(0);\n\n  // One request at a time counts: the newest. A refresh keeps the rows on screen; a source change does not.\n  function runRequest(nextSource: Source, kind: 'initial' | 'refresh') {\n    const requestId = latestRequest.current + 1;\n    latestRequest.current = requestId;\n    const keepRows = kind === 'refresh' && deliveries.length > 0;\n    setRequest({ kind: 'loading', keepRows });\n    if (!keepRows) {\n      setDeliveries([]);\n      setSkipped(0);\n    }\n    fetchDeliveries(nextSource)\n      .then((raw) => {\n        if (requestId !== latestRequest.current) return;\n        const parsed = parseDeliveries(raw);\n        setDeliveries(parsed.deliveries);\n        setSkipped(parsed.skipped);\n        setRequest(parsed.deliveries.length > 0 ? { kind: 'ready' } : { kind: 'empty' });\n      })\n      .catch((error: unknown) => {\n        if (requestId !== latestRequest.current) return;\n        const message = error instanceof Error ? error.message : 'Unknown error';\n        setRequest({ kind: 'error', message, keepRows });\n      });\n  }\n\n  useEffect(() => {\n    runRequest(source, 'initial');\n    return () => {\n      latestRequest.current += 1;\n    };\n  }, [source]);\n\n  // The refresh handler reads source from the current render, so it never reloads a stale source.\n  function handleRefresh() {\n    runRequest(source, 'refresh');\n  }\n\n  function handleRetryRequest() {\n    runRequest(source, request.kind === 'error' && request.keepRows ? 'refresh' : 'initial');\n  }\n\n  // Both updates map over the current rows, so a second retry or a refresh in between is never overwritten.\n  function handleRetryDelivery(delivery: Delivery) {\n    setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'pending' } : item)));\n    retryDelivery(delivery)\n      .then((updated) => {\n        setDeliveries((current) =>\n          current.map((item) =>\n            item.id === updated.id\n              ? { ...item, status: updated.status, attempts: updated.attempts, lastAttempt: updated.lastAttempt }\n              : item\n          )\n        );\n      })\n      .catch(() => {\n        setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'failed' } : item)));\n      });\n  }\n\n  const visible = useMemo(\n    () => (filter === 'all' ? deliveries : deliveries.filter((delivery) => delivery.status === filter)),\n    [deliveries, filter]\n  );\n\n  const loading = request.kind === 'loading';\n  const countLine = filter === 'all' ? `${deliveries.length} deliveries` : `${visible.length} of ${deliveries.length} deliveries`;\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Webhook Deliveries (Solution)</h1>\n          <p className=\"subtitle\">Load the deliveries, type the payload, filter and retry, then fix the refresh.</p>\n        </header>\n\n        <div className=\"toolbar\">\n          <label className=\"label\" htmlFor=\"source\">Data source</label>\n          <select id=\"source\" className=\"source\" value={source} onChange={(event) => setSource(event.target.value as Source)}>\n            <option value=\"live\">Live export</option>\n            <option value=\"legacy\">Legacy export</option>\n            <option value=\"empty\">Empty export</option>\n            <option value=\"error\">Failing export</option>\n          </select>\n          <label className=\"label\" htmlFor=\"status-filter\">Status</label>\n          <select\n            id=\"status-filter\"\n            className=\"status-filter\"\n            value={filter}\n            onChange={(event) => setFilter(event.target.value as StatusFilter)}\n          >\n            <option value=\"all\">All</option>\n            <option value=\"delivered\">Delivered</option>\n            <option value=\"failed\">Failed</option>\n            <option value=\"pending\">Pending</option>\n          </select>\n          <button type=\"button\" className=\"refresh\" onClick={handleRefresh} disabled={loading}>\n            Refresh\n          </button>\n          <button type=\"button\" className=\"fail-next\" onClick={armFailure}>\n            Fail next request\n          </button>\n        </div>\n\n        <div className=\"status-line\" aria-live=\"polite\">\n          {request.kind === 'loading' && (\n            <span className=\"status--loading\">{request.keepRows ? 'Refreshing deliveries…' : 'Loading deliveries…'}</span>\n          )}\n          {request.kind === 'error' && (\n            <span className=\"status--error\">\n              {request.keepRows ? 'Could not refresh the deliveries:' : 'Could not load the deliveries:'} {request.message}{' '}\n              <button type=\"button\" className=\"retry\" onClick={handleRetryRequest}>\n                Retry\n              </button>\n            </span>\n          )}\n          {request.kind === 'empty' && <span className=\"empty\">No deliveries</span>}\n          {deliveries.length > 0 && <span className=\"count\">{countLine}</span>}\n          {skipped > 0 && <span className=\"skipped\">{skipped} records skipped</span>}\n        </div>\n\n        {visible.length > 0 && (\n          <div className=\"table-scroll\">\n            <table className=\"deliveries\">\n              <thead>\n                <tr>\n                  <th scope=\"col\">Endpoint</th>\n                  <th scope=\"col\">Status</th>\n                  <th scope=\"col\">Attempts</th>\n                  <th scope=\"col\">\n                    <span className=\"visually-hidden\">Actions</span>\n                  </th>\n                </tr>\n              </thead>\n              <tbody>\n                {visible.map((delivery) => (\n                  <tr key={delivery.id} className={`row row--${delivery.status}`}>\n                    <td className=\"endpoint\">{delivery.endpoint}</td>\n                    <td className={`status status--${delivery.status}`}>{delivery.status}</td>\n                    <td className=\"attempts\">{delivery.attempts}</td>\n                    <td className=\"actions\">\n                      {delivery.status === 'failed' && (\n                        <button\n                          type=\"button\"\n                          className=\"retry-delivery\"\n                          onClick={() => handleRetryDelivery(delivery)}\n                          disabled={loading}\n                        >\n                          Retry delivery\n                        </button>\n                      )}\n                    </td>\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-one-request-state",
+          "title": "Hold one request state object",
+          "anchor": {
+            "lineStart": 125,
+            "lineEnd": 125,
+            "snippet": "type RequestState ="
+          },
+          "why": "Loading, ready, empty and error are one question with one answer at a time. A tagged union makes the screen derive from it, and the keepRows flag tells a first load from a refresh.",
+          "alternative": "Keep separate loading, error and empty booleans.",
+          "tradeoff": "Separate flags are quicker to add but can all be true at once after a fast sequence of requests; the union cannot."
+        },
+        {
+          "id": "a2-number-every-request",
+          "title": "Number every request and compare when it settles",
+          "anchor": {
+            "lineStart": 141,
+            "lineEnd": 141,
+            "snippet": "const requestId = latestRequest.current + 1;"
+          },
+          "why": "A source change while a request is running makes the old answer wrong. The ref holds the newest number, and a response that carries an older one returns without touching state.",
+          "alternative": "Flip a cancelled flag in the effect cleanup.",
+          "tradeoff": "A flag covers the effect but not the refresh handler; one counter in a ref covers both paths with the same check."
+        },
+        {
+          "id": "a3-refresh-keeps-rows",
+          "title": "Treat a refresh differently from a first load",
+          "anchor": {
+            "lineStart": 143,
+            "lineEnd": 143,
+            "snippet": "const keepRows = kind === 'refresh' && deliveries.length > 0;"
+          },
+          "why": "A first load has nothing to show, so clearing is right. A refresh already has rows worth keeping, so the loading and error states carry a keepRows flag and the table stays.",
+          "alternative": "Clear the rows at the start of every request.",
+          "tradeoff": "Clearing is simpler and makes the table flash on every refresh; keeping the rows needs the flag but matches what the tester asked for."
+        },
+        {
+          "id": "a4-narrow-the-payload",
+          "title": "Narrow the payload with type guards",
+          "anchor": {
+            "lineStart": 94,
+            "lineEnd": 94,
+            "snippet": "export function parseDeliveries(raw: unknown)"
+          },
+          "why": "The export is unknown until each field is checked. A guard per field keeps the well-formed records, counts the rest and gives the component a real Delivery array.",
+          "alternative": "Cast the payload to Delivery[] and let the table render whatever arrives.",
+          "tradeoff": "A cast compiles and renders eleven legacy rows, five of them broken in a different field each; narrowing costs a loop and shows six rows and the skipped count."
+        },
+        {
+          "id": "a5-read-the-current-source",
+          "title": "Read the current source in the refresh handler",
+          "anchor": {
+            "lineStart": 172,
+            "lineEnd": 172,
+            "snippet": "function handleRefresh() {"
+          },
+          "why": "The reported bug was a useCallback with an empty dependency list: it captured the first source and reloaded the live export forever. A plain handler reads the state of the current render.",
+          "alternative": "Keep useCallback and list source in its dependencies.",
+          "tradeoff": "Both fix the bug; the dependency list is right when a memoized child needs a stable handler, and nothing here does."
+        },
+        {
+          "id": "a6-optimistic-row-update",
+          "title": "Update the retried row with functional setState",
+          "anchor": {
+            "lineStart": 182,
+            "lineEnd": 182,
+            "snippet": "setDeliveries((current) => current.map((item) => (item.id === delivery.id ? { ...item, status: 'pending' } : item)));"
+          },
+          "why": "The row turns pending before the call answers and delivered when it does. Both updates map over the current rows and merge only the fields the call changed, so a second retry or a refresh in between is never undone; a failed call puts the row back to failed.",
+          "alternative": "Set a copy of the rows captured when the button was clicked.",
+          "tradeoff": "The captured copy is easier to read but loses any change made during the 200 ms call: two quick retries leave the first row stuck at pending."
+        },
+        {
+          "id": "a7-derive-the-filter",
+          "title": "Derive the visible rows from the filter",
+          "anchor": {
+            "lineStart": 198,
+            "lineEnd": 198,
+            "snippet": "const visible = useMemo("
+          },
+          "why": "The filter is a view over the rows, not a second list. Deriving it means a retry, a refresh and a filter change can never disagree, and the count line reads both lengths.",
+          "alternative": "Filter the rows into a second state array when the select changes.",
+          "tradeoff": "A second array renders once with stale rows after every retry or refresh; the memo recomputes only when the rows or the filter change."
+        }
+      ]
+    }
+  }
+}
