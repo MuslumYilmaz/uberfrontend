@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-20T18:17:23.168Z",
+  "generatedAt": "2026-11-22T06:20:03.255Z",
   "entries": [
     {
       "tech": "angular",
@@ -1055,6 +1055,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-dubbing-review-status",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-escape-html",
       "file": "javascript/coding.json"
     },
@@ -1086,6 +1092,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-flatten-once",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-folder-access-over-time",
       "file": "javascript/coding.json"
     },
     {
@@ -1464,6 +1476,12 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-off-by-one",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-spoken-prefix-review",
       "file": "javascript/debug.json"
     },
     {
@@ -2208,6 +2226,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-virtualized-list-recycling",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-voice-service-wiring",
       "file": "react/coding.json"
     },
     {

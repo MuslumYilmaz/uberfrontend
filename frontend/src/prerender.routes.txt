@@ -278,12 +278,14 @@
 /javascript/coding/js-dom-walk-text-content-1
 /javascript/coding/js-dom-walk-text-content-2
 /javascript/coding/js-dom-walk-text-content-3
+/javascript/coding/js-dubbing-review-status
 /javascript/coding/js-escape-html
 /javascript/coding/js-event-emitter-mini
 /javascript/coding/js-fetch-json-timeout
 /javascript/coding/js-filter-tree-render-indented
 /javascript/coding/js-flatten-depth
 /javascript/coding/js-flatten-once
+/javascript/coding/js-folder-access-over-time
 /javascript/coding/js-format-date-timezone
 /javascript/coding/js-get-by-path-1
 /javascript/coding/js-group-by
@@ -347,6 +349,7 @@
 /javascript/debug/js-debug-nullish-defaults
 /javascript/debug/js-debug-numeric-sort
 /javascript/debug/js-debug-off-by-one
+/javascript/debug/js-debug-spoken-prefix-review
 /javascript/debug/js-debug-stale-closure-autosave
 /javascript/interview-questions
 /javascript/trivia/ai-streaming-data-handling
@@ -482,6 +485,7 @@
 /react/coding/react-use-effect-once
 /react/coding/react-vanilla-dropdown-port
 /react/coding/react-virtualized-list-recycling
+/react/coding/react-voice-service-wiring
 /react/coding/react-webhook-deliveries-four-tasks
 /react/interview-questions
 /react/trivia/react-18-whats-new
@@ -532,6 +536,7 @@
 /system-design/ai-chat-textarea-design
 /system-design/ai-image-generation-mvp
 /system-design/ai-ux-considerations
+/system-design/ai-voice-shopping-assistant
 /system-design/car-rental-booking-frontend
 /system-design/component-design-system-architecture
 /system-design/credit-card-application-page

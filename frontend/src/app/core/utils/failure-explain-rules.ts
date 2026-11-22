@@ -1037,6 +1037,89 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-voice-service-wiring-jobs',
+    questionId: 'react-voice-service-wiring',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['only the newest job', 'when Studio unmounts']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-voice-service-wiring-jobs',
+      title: 'Follow each job after it is cancelled, replaced or left behind',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks mostly use Slow jobs. One cancels a job and counts the timers still running, then starts a job over another and reads the status and the clip after the moment the old jobs would have finished. The other replaces a job, switches the scenario, starts a third job and unmounts the app, then counts the timers again.',
+      ),
+      actions: [
+        'Cancel a slow job: the status should read Ready with no error at once, and the job\'s timers should stop.',
+        'Start a job, then press Generate again with new text: until the new job ends, the status should read Generating… and no clip should appear.',
+        'Replace a slow job, switch the scenario, start another job and unmount the app: no timer of any of the three jobs should keep running.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-voice-service-wiring-results',
+    questionId: 'react-voice-service-wiring',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['progress the job reports', 'ERROR_MESSAGES text']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-voice-service-wiring-results',
+      title: 'Compare what the panel shows with what the job reported',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks sample `.progress` in the middle of a slow job, read the clip and its voice, look for a percentage left from an earlier job when the next one starts, and run the Quota used up and Text rejected scenarios, reading `.error` and `.status`.',
+      ),
+      actions: [
+        'Watch `.progress` during a slow job: it should move through 10%, 20% and on, and start empty for the next job.',
+        'With Quota used up, the error should read the `ERROR_MESSAGES` text for `quota-exceeded`, not the error\'s message.',
+        'Start a second job after a clip or a failure: both should disappear as it starts.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-voice-service-wiring-voices',
+    questionId: 'react-voice-service-wiring',
+    priority: 100,
+    // On the untouched starter every check fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['Loads the voices', 'voices fail', 'character limit']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-voice-service-wiring-voices',
+      title: 'Check the voices and the limit before the first job',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks type text while the voices load and after they fail, read the selected voice once they arrive, and check whether Generate is enabled for blank text and for text at and just over each voice\'s limit, trailing spaces included. One starts with the voices down, then presses Load voices again.',
+      ),
+      actions: [
+        'Reload and watch the status go from Loading voices… to Ready, with the first voice selected.',
+        'Pick Kit and type 41 characters, then 40: Generate should go from disabled to enabled.',
+        'Switch to Voices down at first and press Load voices again.',
+      ],
+      confidence: 0.85,
+    }),
+  },
+  {
+    ruleId: 'react-voice-service-wiring-default',
+    questionId: 'react-voice-service-wiring',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-voice-service-wiring-default',
+      title: 'Start from the types and the first render',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check begins when Studio mounts, before the voices have loaded, and reads the panel its props describe. Read the service and panel types, then compare what the panel shows with the task\'s rules, one scenario at a time.',
+      ),
+      actions: [
+        'Read `SpeechService` and `SpeakerPanelProps` before writing code.',
+        'Watch the panel in the first half second, before `listVoices` answers.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
     ruleId: 'react-living-room-home-focus',
     questionId: 'react-living-room-home',
     priority: 100,
@@ -1803,6 +1886,358 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Never add `children` to the input objects; the nodes must be new objects.',
       ],
       confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-dubbing-review-status-verdicts',
+    questionId: 'js-dubbing-review-status',
+    priority: 100,
+    // File and project roll-ups build on the line statuses, so a wrong line transition is the first thing to fix.
+    // On the untouched starter every test fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, [
+        'new version',
+        'own version count',
+        'on the line now',
+        'sends an approved line back',
+        'only a new recording',
+        'approval into a change request',
+        'voids the recording',
+        'never recorded',
+        'same recording twice',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-dubbing-review-status-verdicts',
+      title: "Get each line's own status right first",
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests read only line statuses and return values while lines are recorded, edited, approved and sent back, with verdicts on older, newer and never-made takes.',
+      ),
+      actions: [
+        'Count takes per line: record adds 1, returns the new number and sets needs-review, whatever the line was.',
+        'Let approve and requestChanges apply only to the current take of a line that is needs-review or approved; otherwise return false and change nothing.',
+        'Let edit set needs-recording, keep the version and return nothing, so the take the line had can no longer be reviewed.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-dubbing-review-status-rollup',
+    questionId: 'js-dubbing-review-status',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, [
+        'rolls that up',
+        'approved only when every',
+        'outranks',
+        'follow every kind of change',
+        'no lines counts',
+        'many changes across many files',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-dubbing-review-status-rollup',
+      title: 'Roll up from every line, in one fixed order',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests read fileStatus and projectStatus as lines change: changes-requested first, then needs-recording, then needs-review, and approved only when every line is approved or there are none.',
+      ),
+      actions: [
+        'Give a file the first of changes-requested, needs-recording and needs-review that any of its lines has, and approved when none does.',
+        'Do the same for the project over every line.',
+        "If you keep counts, take the line out of the count of the status it really had on every change, in its file and in the project.",
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-dubbing-review-status-edges',
+    questionId: 'js-dubbing-review-status',
+    priority: 92,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['unknown line and file', 'input arrays']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-dubbing-review-status-edges',
+      title: 'Check unknown ids and the input',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests pass ids the board does not know to every method that takes one, including names a plain object inherits and a line id used as a file id, and compare the input before and after every kind of call.',
+      ),
+      actions: [
+        'Throw for an unknown line or file id before any other check, even when the version could never match.',
+        'Keep lines and files in separate stores (Maps, or Object.create(null) objects checked with Object.hasOwn), so neither an inherited name such as constructor nor an id of the other kind is taken for a known one.',
+        'Build your own maps and copies instead of changing, sorting or freezing the input.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-dubbing-review-status-review-list',
+    questionId: 'js-dubbing-review-status',
+    priority: 90,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['toReview']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-dubbing-review-status-review-list',
+      title: 'List only the lines waiting for review, in order',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests read toReview before and after recordings and verdicts, with several lines of one file waiting at once and approved lines recorded again.',
+      ),
+      actions: [
+        'Include only lines whose status is needs-review, and only the files that have one.',
+        "Keep the files in input order and each file's lines in script order: not the order they were recorded in, and not sorted.",
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-dubbing-review-status-default',
+    questionId: 'js-dubbing-review-status',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-dubbing-review-status-default',
+      title: 'Start with one line and one file',
+      why: buildProgressAwareWhy(snapshot, 'Most tests build a project, record and review some of its lines, and then read statuses or the review list.'),
+      actions: [
+        'Make every line start as needs-recording, and let fileStatus and projectStatus say the same for a file or project with lines while nothing is recorded.',
+        "Then make record return 1 for a line's first take and set the line to needs-review.",
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-debug-spoken-prefix-review-table',
+    questionId: 'js-debug-spoken-prefix-review',
+    priority: 100,
+    // The junior's table throws whenever the speech is shorter than the text, which is most calls.
+    matches: (snapshot) =>
+      anyFailingErrorIncludes(snapshot, [
+        'properties of undefined',
+        'undefined is not an object',
+        'is undefined',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debug-spoken-prefix-review-table',
+      title: 'An index runs past the end of an array',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'A test threw while reading or writing a property of undefined, which usually means an index ran past what an array holds.',
+      ),
+      actions: [
+        'If you still have the junior\'s table, compare how many rows it builds with how far the loop that walks the rows goes.',
+        'Fixing the table stops the crash but keeps a longest common subsequence; check the tests that follow before you keep it.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-debug-spoken-prefix-review-prefix',
+    questionId: 'js-debug-spoken-prefix-review',
+    priority: 97,
+    // Repeats are handled and no space is left over, yet captions that a repeat's letters could stretch still fail:
+    // the code takes letters from further on, as a longest common subsequence does.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['said twice at the end', 'come again later', 'long reply']) &&
+      !anyFailingTestNameIncludes(snapshot, ['stuttered letter', 'on a space']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debug-spoken-prefix-review-prefix',
+      title: 'A common subsequence is not a prefix',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests repeat words whose letters also appear later in the intended text, dozens of times in the long one. A common subsequence may take those letters from further on; the caption may not.',
+      ),
+      actions: [
+        'Work "I can can" against "I can help you book an air ticket" by hand: which letters does a longest common subsequence take, and which belong in the caption?',
+        'Grow the caption only from the start of the intended text, one character at a time, in the order the spoken text says them.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-debug-spoken-prefix-review-words',
+    questionId: 'js-debug-spoken-prefix-review',
+    priority: 96,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['whole words only', 'on a space', 'first word', 'whole text']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debug-spoken-prefix-review-words',
+      title: 'Cut the caption back to whole words',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests stop the speech inside a word or right after a space, and say all of the text or none of it.',
+      ),
+      actions: [
+        'A word counts once its last letter has been said: the text ends there, or a space comes next. Otherwise cut back to the last space.',
+        'Never leave that space at the end of the caption.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-debug-spoken-prefix-review-repeats',
+    questionId: 'js-debug-spoken-prefix-review',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, [
+        'words said so far',
+        'stuttered letter',
+        'starts like the next word',
+        'longer reading',
+        'inside a repeat',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debug-spoken-prefix-review-repeats',
+      title: 'Let only the spoken side move past a repeat',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests repeat a word or a phrase, restart a word, double a letter, and end on repeats whose letters could also be the next words.',
+      ),
+      actions: [
+        'Keep one position in each text. When the characters match, both move on; when they do not, the spoken character is part of a repeat.',
+        'Compare characters, not words: a doubled letter or a restarted word is not a whole word said twice.',
+        'Never drop a doubled word up front: when a repeat could also be the next words, the caption takes the longer reading.',
+        'Letters inside a repeat still count, in order, and so do spaces: "I can can" against "I can a lot" reaches "a", but "I cana" does not.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-debug-spoken-prefix-review-default',
+    questionId: 'js-debug-spoken-prefix-review',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-debug-spoken-prefix-review-default',
+      title: 'Start from the worked example',
+      why: buildProgressAwareWhy(snapshot, 'Each test gives an intended text and what the agent said, and expects the caption.'),
+      actions: [
+        'Make "I can can" against "I can help you book an air ticket" return "I can" first.',
+        'Then try "I can can help you book", where the speech goes on past the repeat.',
+      ],
+      confidence: 0.72,
+    }),
+  },
+  {
+    ruleId: 'js-folder-access-over-time-precedence',
+    questionId: 'js-folder-access-over-time',
+    priority: 100,
+    // On the untouched starter every test fails; the default hint fits that first run better.
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, [
+        'nearer folder overrides',
+        'nearest folder decides',
+        "user's own rule beats",
+        'deny for any of',
+        'group rule on a nearer folder',
+        'another branch',
+        'only other users and groups',
+        'does not depend on which change is newer',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-folder-access-over-time-precedence',
+      title: 'Write the precedence down, then walk from the file upward',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests set rules on folders at different depths and for users and groups, recorded in both orders, then check which one decides: the nearest folder with a rule in force for the user, the user before their groups on that folder, and deny between groups.',
+      ),
+      actions: [
+        "Walk from the file's folder towards the root and return at the first folder that has a rule in force for the user; pass over folders whose rules name only others.",
+        "On that folder, check the user's own rule before the rules of their groups; between groups, a deny wins.",
+        'Do not compare timestamps across folders: a newer change further up does not beat a nearer folder.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-folder-access-over-time-history',
+    questionId: 'js-folder-access-over-time',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, [
+        'later change replaces',
+        'out of order',
+        'same timestamp',
+        'clearing a rule',
+        'long history',
+        'separate histories',
+        'group rules follow their own history',
+        'lets their groups on that folder decide',
+      ]),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-folder-access-over-time-history',
+      title: 'Find the change in force at that moment',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests record changes out of time order, at the same timestamp and with null to clear a rule, then ask about moments before, at and after each change.',
+      ),
+      actions: [
+        'Keep the changes in timestamp order, and make sure a later call at the same timestamp ends up after the earlier one.',
+        'A change counts from its own timestamp: at that exact moment it is already in force.',
+        "A cleared or future rule is no rule for that subject: the user's groups on that folder decide, and without them the folders above.",
+        'Keep a separate history for each folder and each user or group.',
+      ],
+      confidence: 0.86,
+    }),
+  },
+  {
+    ruleId: 'js-folder-access-over-time-edges',
+    questionId: 'js-folder-access-over-time',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['unknown file', 'rejects an effect', 'same name', 'input arrays', 'folder id no file']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-folder-access-over-time-edges',
+      title: 'Check the edges: unknown ids, bad arguments and the input',
+      why: buildProgressAwareWhy(
+        snapshot,
+        "These tests ask about a file that does not exist and a user in no group, set a rule on a folder no file sits under, pass bad effects, subjects and times to setRule, give a user the same name as a group, and compare every own key of the input before and after a few calls.",
+      ),
+      actions: [
+        'Return false for a file id that is not in files; judge a user in no group by their own rules; accept a rule on any folder id.',
+        "Throw a TypeError from setRule, before storing anything, for an effect other than 'allow', 'deny' or null, a subject that is not exactly { user } or { group } with a string id, or a time that is not a finite number.",
+        'Keep user and group rules apart even when the ids are the same string, and build your own maps instead of changing the input.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-folder-access-over-time-membership',
+    questionId: 'js-folder-access-over-time',
+    priority: 92,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['group rule applies']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-folder-access-over-time-membership',
+      title: "Find each user's groups",
+      why: buildProgressAwareWhy(snapshot, 'This test gives a rule to a whole group and checks two members and one user outside it.'),
+      actions: ["groups maps a group to its members; turn it round once, when the object is created, into a map from a user to the user's groups."],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-folder-access-over-time-default',
+    questionId: 'js-folder-access-over-time',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-folder-access-over-time-default',
+      title: 'Get the basic walk right first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every test builds the same small drive (root, projects, dub-es, dub-fr and admin), sets a few rules, then calls canAccess.',
+      ),
+      actions: [
+        'Make canAccess return false when no folder on the path has a rule.',
+        'Then let an allow on root reach every file below it, from its timestamp on.',
+      ],
+      confidence: 0.72,
     }),
   },
   {

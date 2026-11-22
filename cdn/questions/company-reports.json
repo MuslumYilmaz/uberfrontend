@@ -1356,6 +1356,22 @@
     ],
     "elevenlabs": [
       {
+        "id": "react-chat-streaming-ui",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Chat UI with Streaming Response",
+        "access": "premium",
+        "route": "/react/coding/react-chat-streaming-ui",
+        "sources": [
+          {
+            "label": "Taro: ElevenLabs senior software engineer interview, New York, January 2026",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-new-york-new-york-january-24-2026-no-offer-neutral-ae62f4d3/",
+            "publisher": "Taro",
+            "date": "2026-01"
+          }
+        ]
+      },
+      {
         "id": "js-timer-manager",
         "kind": "coding",
         "tech": "javascript",
@@ -1364,10 +1380,26 @@
         "route": "/javascript/coding/js-timer-manager",
         "sources": [
           {
-            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, read November 2026",
             "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
             "publisher": "Aced",
-            "date": "2026-10"
+            "date": "2026-11"
+          }
+        ]
+      },
+      {
+        "id": "react-debug-api-misuse",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Debug: Product Search That Misuses Its API",
+        "access": "premium",
+        "route": "/react/coding/react-debug-api-misuse",
+        "sources": [
+          {
+            "label": "Taro: ElevenLabs full-stack engineer interview, United States, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/",
+            "publisher": "Taro",
+            "date": "2024-08"
           }
         ]
       },
@@ -1386,10 +1418,66 @@
             "date": "2026-07"
           },
           {
-            "label": "Aced: ElevenLabs frontend engineer interview account, November 2025",
+            "label": "Aced: ElevenLabs full-stack (frontend-leaning) interview account, November 2025",
             "url": "https://www.aced.io/experiences/eleven-labs-frontend-engineer-interview-c79e72",
             "publisher": "Aced",
             "date": "2025-11"
+          }
+        ]
+      },
+      {
+        "id": "js-dubbing-review-status",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Dubbing Review Board: Roll Line Statuses Up to Files",
+        "access": "premium",
+        "route": "/javascript/coding/js-dubbing-review-status",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs software engineer interview account, May 2025",
+            "url": "https://www.aced.io/experiences/eleven-labs-software-engineer-interview-8e1b37",
+            "publisher": "Aced",
+            "date": "2025-05"
+          },
+          {
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, read November 2026",
+            "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+            "publisher": "Aced",
+            "date": "2026-11"
+          }
+        ]
+      },
+      {
+        "id": "js-folder-access-over-time",
+        "kind": "coding",
+        "tech": "javascript",
+        "title": "Folder Permissions Over Time: Who Could Open the File?",
+        "access": "premium",
+        "route": "/javascript/coding/js-folder-access-over-time",
+        "sources": [
+          {
+            "label": "Aced: ElevenLabs forward deployed engineer interview account, August 2025",
+            "url": "https://www.aced.io/experiences/eleven-labs-solutions-architect-interview-ce0689",
+            "publisher": "Aced",
+            "date": "2025-08"
+          },
+          {
+            "label": "Taro: ElevenLabs software engineer interview, Spain, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/software-engineer-spain-may-1-2024-no-offer-neutral-fec0ec2e/",
+            "publisher": "Taro",
+            "date": "2024-05"
+          },
+          {
+            "label": "Taro: ElevenLabs backend engineer interview, Singapore, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/backend-engineer-singapore-december-1-2024-no-offer-negative-d4322bee/",
+            "publisher": "Taro",
+            "date": "2024-12"
+          },
+          {
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, read November 2026",
+            "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
+            "publisher": "Aced",
+            "date": "2026-11"
           }
         ]
       },
@@ -1402,10 +1490,10 @@
         "route": "/javascript/coding/js-poll-until",
         "sources": [
           {
-            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, read November 2026",
             "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
             "publisher": "Aced",
-            "date": "2026-10"
+            "date": "2026-11"
           }
         ]
       },
@@ -1421,7 +1509,56 @@
             "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
             "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
             "publisher": "Aced",
-            "date": "2026-08"
+            "date": "2026-07"
+          }
+        ]
+      },
+      {
+        "id": "react-voice-service-wiring",
+        "kind": "coding",
+        "tech": "react",
+        "title": "Speech Studio: Wire a Panel to a Typed Speech Service",
+        "access": "premium",
+        "route": "/react/coding/react-voice-service-wiring",
+        "sources": [
+          {
+            "label": "Taro: ElevenLabs senior software engineer interview, New York, January 2026",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-new-york-new-york-january-24-2026-no-offer-neutral-ae62f4d3/",
+            "publisher": "Taro",
+            "date": "2026-01"
+          },
+          {
+            "label": "Taro: ElevenLabs full-stack engineer interview, United States, 2024",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/full-stack-engineer-united-states-august-1-2024-no-offer-positive-675ce47d/",
+            "publisher": "Taro",
+            "date": "2024-08"
+          },
+          {
+            "label": "Taro: ElevenLabs senior software engineer interview, Germany, 2025",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/senior-software-engineer-germany-january-1-2025-no-offer-negative-e52ed2a9/",
+            "publisher": "Taro",
+            "date": "2025-01"
+          }
+        ]
+      },
+      {
+        "id": "ai-voice-shopping-assistant",
+        "kind": "system-design",
+        "title": "Design an AI Voice Shopping Assistant for an Online Store",
+        "access": "premium",
+        "route": "/system-design/ai-voice-shopping-assistant",
+        "sources": [
+          {
+            "label": "Taro: ElevenLabs software engineer interview, London, March 2026",
+            "url": "https://www.jointaro.com/interviews/companies/elevenlabs/experiences/software-engineer-london-england-march-9-2026-no-offer-neutral-9f916c8f/",
+            "publisher": "Taro",
+            "date": "2026-03"
+          },
+          {
+            "label": "PracHub: ElevenLabs software engineer onsite, live coding and product decomposition, November 2026",
+            "url": "https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-live-coding-and-product-decomposition-onsite-rejected",
+            "publisher": "PracHub",
+            "date": "2026-11"
           }
         ]
       },
@@ -1433,10 +1570,26 @@
         "route": "/system-design/ai-ux-considerations",
         "sources": [
           {
-            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, October 2026",
+            "label": "Aced: ElevenLabs software engineer interview questions, candidate-sourced, read November 2026",
             "url": "https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions",
             "publisher": "Aced",
-            "date": "2026-10"
+            "date": "2026-11"
+          }
+        ]
+      },
+      {
+        "id": "js-debug-spoken-prefix-review",
+        "kind": "debug",
+        "tech": "javascript",
+        "title": "Case: Review a Junior's Caption Code, Then Rewrite It in One Pass",
+        "access": "premium",
+        "route": "/javascript/debug/js-debug-spoken-prefix-review",
+        "sources": [
+          {
+            "label": "PracHub: ElevenLabs software engineer onsite, live coding and product decomposition, November 2026",
+            "url": "https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-live-coding-and-product-decomposition-onsite-rejected",
+            "publisher": "PracHub",
+            "date": "2026-11"
           }
         ]
       },
@@ -1452,7 +1605,7 @@
             "label": "Aced: ElevenLabs senior full-stack (frontend-leaning) interview experience, 2026",
             "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
             "publisher": "Aced",
-            "date": "2026-08"
+            "date": "2026-07"
           }
         ]
       }

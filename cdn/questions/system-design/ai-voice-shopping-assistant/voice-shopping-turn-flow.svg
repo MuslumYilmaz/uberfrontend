@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="vs-flow-title vs-flow-desc">
+  <title id="vs-flow-title">Voice shopping turn flow</title>
+  <desc id="vs-flow-desc">The assistant panel sends taps and text to the conversation store, which sends the phase, chips and choices back. The store asks the speech client to listen, which streams audio to the speech service and returns the transcript, and to speak the summary through speechSynthesis. The store sends the text and its context through the intent client to the intent service and validates the raw reply. It gets facets and products through the catalog gateway, and sends the products to the results grid.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#172033">One turn: the store runs every client; the catalog supplies products</text>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="117" y="98">Shopper side</text>
+    <text x="345" y="98">Store</text>
+    <text x="595" y="98">Clients</text>
+    <text x="850" y="98">Services</text>
+  </g>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="32" y="118" width="170" height="92" rx="12"/>
+    <rect x="32" y="380" width="170" height="64" rx="12"/>
+    <rect x="250" y="200" width="190" height="150" rx="14"/>
+    <rect x="500" y="110" width="190" height="64" rx="12"/>
+    <rect x="500" y="245" width="190" height="60" rx="12"/>
+    <rect x="500" y="380" width="190" height="64" rx="12"/>
+    <rect x="770" y="110" width="160" height="64" rx="12"/>
+    <rect x="770" y="245" width="160" height="60" rx="12"/>
+    <rect x="770" y="380" width="160" height="64" rx="12"/>
+  </g>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="46" y="142" font-size="15" font-weight="700">AssistantPanel</text>
+    <text x="46" y="162" font-size="12" fill="#526078">talk button, text box</text>
+    <text x="46" y="180" font-size="12" fill="#526078">Cancel, chips, Undo</text>
+    <text x="46" y="405" font-size="15" font-weight="700">ResultsGrid</text>
+    <text x="46" y="425" font-size="12" fill="#526078">cards and skeletons</text>
+    <text x="264" y="228" font-size="16" font-weight="700">ConversationStore</text>
+    <text x="264" y="252" font-size="12" fill="#526078">phase</text>
+    <text x="264" y="270" font-size="12" fill="#526078">active turn, draft</text>
+    <text x="264" y="288" font-size="12" fill="#526078">filters</text>
+    <text x="264" y="306" font-size="12" fill="#526078">results and total</text>
+    <text x="264" y="330" font-size="12" fill="#526078">validates every reply</text>
+    <text x="514" y="135" font-size="15" font-weight="700">SpeechClient</text>
+    <text x="514" y="155" font-size="12" fill="#526078">socket, speechSynthesis</text>
+    <text x="514" y="270" font-size="15" font-weight="700">IntentClient</text>
+    <text x="514" y="290" font-size="12" fill="#526078">text in, raw reply out</text>
+    <text x="514" y="405" font-size="15" font-weight="700">CatalogGateway</text>
+    <text x="514" y="425" font-size="12" fill="#526078">facets and search</text>
+    <text x="850" y="137" font-size="15" font-weight="700" text-anchor="middle">Speech service</text>
+    <text x="850" y="155" font-size="12" fill="#526078" text-anchor="middle">recognition</text>
+    <text x="850" y="272" font-size="15" font-weight="700" text-anchor="middle">Intent service</text>
+    <text x="850" y="290" font-size="12" fill="#526078" text-anchor="middle">the model</text>
+    <text x="850" y="407" font-size="15" font-weight="700" text-anchor="middle">Catalog API</text>
+    <text x="850" y="425" font-size="12" fill="#526078" text-anchor="middle">products, prices, stock</text>
+  </g>
+  <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M690 132H770" stroke="#7950b8"/>
+    <path d="m758 122 12 10-12 10" stroke="#7950b8"/>
+    <path d="M770 156H690" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m702 146-12 10 12 10" stroke="#268455"/>
+    <path d="M500 164H478V232H440" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m452 222-12 10 12 10" stroke="#268455"/>
+    <path d="M440 212H460V146H500" stroke="#315ee8"/>
+    <path d="m488 136 12 10-12 10" stroke="#315ee8"/>
+    <path d="M117 210V275H250" stroke="#315ee8"/>
+    <path d="m238 265 12 10-12 10" stroke="#315ee8"/>
+    <path d="M440 262H500" stroke="#315ee8"/>
+    <path d="m488 252 12 10-12 10" stroke="#315ee8"/>
+    <path d="M690 265H770" stroke="#7950b8"/>
+    <path d="m758 255 12 10-12 10" stroke="#7950b8"/>
+    <path d="M770 287H690" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m702 277-12 10 12 10" stroke="#268455"/>
+    <path d="M500 290H440" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m452 280-12 10 12 10" stroke="#268455"/>
+    <path d="M440 330H470V398H500" stroke="#315ee8"/>
+    <path d="m488 388 12 10-12 10" stroke="#315ee8"/>
+    <path d="M690 400H770" stroke="#7950b8"/>
+    <path d="m758 390 12 10-12 10" stroke="#7950b8"/>
+    <path d="M770 422H690" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m702 412-12 10 12 10" stroke="#268455"/>
+    <path d="M500 430H455V345H440" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m452 335-12 10 12 10" stroke="#268455"/>
+    <path d="M250 340H117V380" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="M250 245H165V210" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m155 222 10-12 10 12" stroke="#268455"/>
+    <path d="m107 368 10 12 10-12" stroke="#268455"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#172033" text-anchor="middle">
+        <text x="730" y="124">audio</text>
+    <text x="730" y="174">transcript</text>
+    <text x="185" y="292">taps, text</text>
+    <text x="730" y="257">text, context</text>
+    <text x="730" y="307">raw reply</text>
+    <text x="730" y="392">category, filters</text>
+    <text x="730" y="442">facets, products</text>
+    <text x="180" y="333">products</text>
+    <text x="207" y="238">phase, chips</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#172033">
+    <text x="372" y="156">listen, speak</text>
+    <text x="484" y="216">transcript</text>
+  </g>
+  <text x="48" y="500" font-family="Arial, sans-serif" font-size="14" fill="#526078">No model text reaches the shopper: the grid and the spoken summary are filled from catalog records.</text>
+</svg>

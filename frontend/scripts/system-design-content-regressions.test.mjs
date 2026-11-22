@@ -87,6 +87,7 @@ const pilotExpectations = {
   'messaging-inbox-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
   'hotel-search-page-frontend': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
   'credit-card-application-page': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
+  'ai-voice-shopping-assistant': { targetLevel: 'senior', timeboxMinutes: 20, guidedMock: false },
 };
 
 for (const [id, expected] of Object.entries(pilotExpectations)) {
@@ -637,6 +638,48 @@ for (const contract of [
 assert.match(cardApplicationContractCode, /saveDraft\(draftId: string, fields: Partial<Record<NonSensitiveField, string>>\)/);
 assert.match(cardApplicationContractCode, /type NonSensitiveField = Exclude<FieldName, SensitiveField>/);
 assert.doesNotMatch(cardApplicationContractCode, /name: 'field_error'[^}]*\bvalue\b/, 'A field error event must not carry the value');
+
+const voiceShopping = bundleText('ai-voice-shopping-assistant');
+const voiceShoppingContractCode = ['data', 'interfaces']
+  .flatMap((section) => read('ai-voice-shopping-assistant', section).blocks)
+  .filter((block) => block.type === 'code' && block.language === 'typescript')
+  .map((block) => block.code)
+  .join('\n');
+assert.match(voiceShopping, /no product fact ever comes from the model/i, 'Every product fact must come from the catalog');
+assert.match(voiceShopping, /validates that JSON against the schema and the facets/i, "The model's output must be validated at runtime");
+assert.match(voiceShopping, /edits the current filters/i, 'A follow-up must edit the current filters');
+assert.match(voiceShopping, /stops the spoken summary before the microphone opens/i, 'The summary must stop before the microphone listens');
+assert.match(voiceShopping, /commits only when its search lands/i, 'A patch must not change the chips before its search lands');
+assert.match(voiceShopping, /feeds the same loop/i, 'Every voice action must have a typed path');
+for (const contract of [
+  'AssistantPhase',
+  'SearchFilters',
+  'ProductCard',
+  'Turn',
+  'ConversationState',
+  'FilterPatch',
+  'IntentResult',
+  'IntentContext',
+  'IntentClient',
+  'Choice',
+  'ValidateReply',
+  'SearchPage',
+  'CatalogGateway',
+  'SpeechClient',
+]) {
+  assert.match(
+    voiceShoppingContractCode,
+    new RegExp(`(?:interface|type)\\s+${contract}\\b`),
+    `Voice shopping must define ${contract}`,
+  );
+}
+// The model's reply is untrusted until the store parses it; a patch cannot carry null, and a choice carries no free text.
+assert.match(voiceShoppingContractCode, /interpret\(transcript: string, context: IntentContext, signal: AbortSignal\): Promise<unknown>/);
+assert.match(voiceShoppingContractCode, /type ValidateReply = \(\n  raw: unknown,\n  transcript: string,/);
+assert.match(voiceShopping, /Only words the transcript contains/i, 'Query words must come from the transcript, not the model');
+assert.match(voiceShoppingContractCode, /NonNullable<SearchFilters\[K\]>/, 'A patch must clear through clear, not by setting null');
+assert.doesNotMatch(voiceShoppingContractCode, /kind: 'patch'[^}]*ProductCard/, 'A patch must not carry products');
+assert.doesNotMatch(voiceShoppingContractCode, /kind: 'choose'[^}]*\b(?:text|question)\b/, 'A choice must not carry free model text');
 
 const autosave = bundleText('multi-step-form-autosave');
 assert.match(autosave, /schemaVersion/);

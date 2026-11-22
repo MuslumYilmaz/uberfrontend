@@ -1,0 +1,169 @@
+{
+  "key": "O",
+  "title": "Optimizations",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Voice shopping latency budget",
+      "columns": [
+        "Stage",
+        "Aim",
+        "How"
+      ],
+      "rows": [
+        [
+          "First partial text",
+          "About 300 ms after speech begins",
+          "Fetch the token on the consent tap, or when the panel opens once consent exists"
+        ],
+        [
+          "End of listening",
+          "A second tap, or under a second of silence after speech",
+          "Nothing heard after about 5 s; a 15-second cap; a timeout on the final text"
+        ],
+        [
+          "First cards",
+          "About 2 s after listening ends",
+          "Preload the category list and popular facets; a new category may run longer"
+        ],
+        [
+          "Model, facets and search",
+          "A timeout near 3 s each",
+          "Abort with the reason timeout; speak resolves on end, error or a watchdog"
+        ],
+        [
+          "Stretch",
+          "Earlier cards",
+          "Speculate on a stable partial with its own controller; show it only if the final draft matches"
+        ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Voice shopping failure playbook",
+      "columns": [
+        "Failure",
+        "Detection",
+        "Response"
+      ],
+      "rows": [
+        [
+          "Microphone denied or prompt dismissed",
+          "NotAllowedError, then the permission state",
+          "Dismissed: keep talk for a retry; denied: aria-disabled talk and how to allow it"
+        ],
+        [
+          "No microphone, or an insecure page",
+          "NotFoundError, or no mediaDevices",
+          "aria-disabled talk with the reason"
+        ],
+        [
+          "Microphone busy or failing",
+          "NotReadableError, or AbortError from getUserMedia",
+          "Keep talk for a retry"
+        ],
+        [
+          "Bad JSON or an unrelated request",
+          "ValidateReply returns null, or out-of-scope",
+          "not-understood or out-of-scope; transcript to the text box"
+        ],
+        [
+          "A slow service",
+          "The signal's reason is 'timeout'",
+          "timeout; keep the results"
+        ],
+        [
+          "A dropped socket or request",
+          "A closed socket or a network error",
+          "connection-lost; the final or partial text to the text box"
+        ],
+        [
+          "A cancel by the shopper",
+          "The signal's reason is 'cancel'",
+          "Not a failure: show nothing"
+        ]
+      ]
+    },
+    {
+      "type": "heading",
+      "text": "Cancelling while the model thinks"
+    },
+    {
+      "type": "steps",
+      "title": "Scenario walkthrough: a cancelled turn and an empty result",
+      "steps": [
+        {
+          "title": "A request is in flight",
+          "text": "After the six blue shoes, the shopper says in red, and turn t_3 is thinking."
+        },
+        {
+          "title": "The shopper changes it",
+          "text": "Before t_3 lands, the shopper taps talk and says actually in black. t_3 is aborted with the reason 'cancel', and t_4 commits four black shoes."
+        },
+        {
+          "title": "A stale reply is ignored",
+          "text": "A t_3 reply that had already resolved reaches the store, but t_3 is not the active turn, so it changes nothing."
+        },
+        {
+          "title": "The search empties",
+          "text": "Only waterproof ones in stock, says the shopper. Turn t_5 sets inStockOnly and a query of waterproof, which the transcript contains, and lands with total 0."
+        },
+        {
+          "title": "Undo recovers it",
+          "text": "The voice says no matches, and the chips stay. The shopper taps Undo, a direct turn restores the four black shoes, and no model call is made."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/ai-voice-shopping-assistant/voice-shopping-phases.svg",
+      "alt": "State diagram of idle, listening, thinking and speaking, where talk cancels a busy turn and text turns skip the voice.",
+      "caption": "Phases: talk cancels a busy turn and listens again, text and direct turns skip the voice, and Cancel or Escape returns to idle.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: Talk moves idle to listening once the microphone is live, and talk or silence moves it to thinking. A voice turn then speaks a summary, a choice or a line and returns to idle; text and direct turns, or replies off, skip speaking. Talk during thinking or speaking cancels and listens again, and Cancel or Escape returns to idle."
+    },
+    {
+      "type": "checklist",
+      "title": "Voice shopping tests that protect shoppers",
+      "items": [
+        "Tap talk during the summary; assert speech stops first and no track is live while speaking.",
+        "Cancel a thinking turn; assert no message, unchanged chips, and that its reply changes nothing.",
+        "Return a size outside the facets; assert a choice that keeps the category and price.",
+        "Return choice options outside the facets, or a query word the transcript lacks; assert they are rejected.",
+        "Run keyboard and screen-reader passes over talk, Cancel, the choices and the announcements."
+      ]
+    },
+    {
+      "type": "text",
+      "text": "The model is measured too. Its schema makes only the category an enum, recorded transcripts with expected patches catch regressions, and an injected instruction can at worst yield a reply that validation bounds."
+    },
+    {
+      "type": "links",
+      "title": "Technical references",
+      "items": [
+        {
+          "label": "MDN MediaDevices.getUserMedia()",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia",
+          "description": "Microphone access, secure contexts and its errors."
+        },
+        {
+          "label": "MDN Web Speech API",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API",
+          "description": "speechSynthesis for the summary, unlocked inside a tap."
+        },
+        {
+          "label": "MDN AbortController",
+          "href": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+          "description": "One controller per turn, aborted with a typed reason."
+        },
+        {
+          "label": "WCAG 2.2 Understanding Status Messages",
+          "href": "https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html",
+          "description": "Announcing status without moving focus."
+        }
+      ],
+      "editorialRole": "references"
+    }
+  ]
+}

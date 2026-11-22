@@ -1,0 +1,89 @@
+{
+  "key": "A",
+  "title": "Architecture",
+  "blocks": [
+    {
+      "type": "table",
+      "title": "Who owns each part of the voice assistant",
+      "columns": [
+        "Part",
+        "Owns",
+        "Talks to"
+      ],
+      "rows": [
+        [
+          "AssistantPanel",
+          "Talk, Cancel, the text box, chips, choices and Undo",
+          "ConversationStore"
+        ],
+        [
+          "ConversationStore",
+          "The phase, the active turn, filters, results, validation and the problem",
+          "The three clients"
+        ],
+        [
+          "SpeechClient",
+          "The microphone, the recognition socket, speechSynthesis and the start tone",
+          "The speech service"
+        ],
+        [
+          "IntentClient",
+          "Text and context in, the raw reply out",
+          "The intent service"
+        ],
+        [
+          "CatalogGateway",
+          "Facet values per category, and searches",
+          "The catalog API"
+        ],
+        [
+          "ResultsGrid",
+          "Cards and skeletons, from the store only",
+          "ConversationStore"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "One phase machine, a model that patches filters, products from the catalog",
+      "text": "AssistantPanel sends every tap and submit to one ConversationStore, which runs idle, listening, thinking and speaking. SpeechClient streams the live microphone to the speech service. IntentClient sends the final text with the SearchFilters, the facet values and any choice; the store validates the raw reply into an IntentResult, applies its FilterPatch to the turn draft and searches through CatalogGateway. When the SearchPage lands, the draft commits, ResultsGrid renders it and SpeechClient speaks a summary filled from it.",
+      "editorialRole": "canonical-model"
+    },
+    {
+      "type": "steps",
+      "title": "Worked example: a spoken search and an interruption",
+      "steps": [
+        {
+          "title": "The shopper asks",
+          "text": "The shopper taps talk, opening turn t_1; a tone plays once the microphone is live. They say running shoes in size 42 under 120 and tap again."
+        },
+        {
+          "title": "The reply becomes a patch",
+          "text": "Skeleton cards fill the empty grid. The validated patch sets category running-shoes, size 42 and a maximum price of 120; the store checks the category, fetches its facets and checks the size."
+        },
+        {
+          "title": "The catalog answers",
+          "text": "The search returns 14 products, so the draft commits: three chips, 14 cards, and a summary filled from the first card, the Trail 3 at 98."
+        },
+        {
+          "title": "The shopper interrupts",
+          "text": "Halfway through, the shopper taps talk and says in blue. speechSynthesis is cancelled before the microphone opens, and the 14 cards stay."
+        },
+        {
+          "title": "A follow-up edits the filters",
+          "text": "Turn t_2 returns a patch that sets color to blue. Its search lands with six products, the draft commits, and a fourth chip appears."
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "questions/system-design/ai-voice-shopping-assistant/voice-shopping-turn-flow.svg",
+      "alt": "Flow from the panel through the conversation store to the speech, intent and catalog clients, and back to the panel and the results grid.",
+      "caption": "One turn: the store runs every client, validates the model reply, and gets the products from the catalog.",
+      "width": 960,
+      "height": 540,
+      "fallbackText": "Text fallback: Taps and text go to the store, which runs the speech client, validates the intent reply, gets facets and products from the catalog, and updates the panel and the grid."
+    }
+  ]
+}

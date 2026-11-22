@@ -3490,6 +3490,25 @@
     "assetRef": "questions/javascript/debug.json#js-debug-intern-budget-summary"
   },
   {
+    "id": "js-debug-spoken-prefix-review",
+    "family": "question",
+    "title": "Case: Review a Junior's Caption Code, Then Rewrite It in One Pass",
+    "route": "/javascript/debug/js-debug-spoken-prefix-review",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "A junior's caption code for a voice agent looks wrong to users: review it without running it, name what is wrong and why, then rewrite it in one pass.",
+    "tags": [
+      "debugging",
+      "strings",
+      "algorithms"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-22",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-spoken-prefix-review"
+  },
+  {
     "id": "js-palindrome-check",
     "family": "question",
     "title": "Check if a String Is a Palindrome",
@@ -4161,6 +4180,25 @@
     "assetRef": "questions/javascript/trivia.json#js-xss-dom-sinks"
   },
   {
+    "id": "js-dubbing-review-status",
+    "family": "question",
+    "title": "Dubbing Review Board: Roll Line Statuses Up to Files",
+    "route": "/javascript/coding/js-dubbing-review-status",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Track voice lines through recording and review, and roll their statuses up to files and the project, so a re-recorded line is back up for review and an approved scene stops reading as approved.",
+    "tags": [
+      "state",
+      "hash-map",
+      "data-structures"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-22",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-dubbing-review-status"
+  },
+  {
     "id": "js-escape-html",
     "family": "question",
     "title": "Escape HTML for Safe Text",
@@ -4582,6 +4620,27 @@
     "updatedAt": "2026-01-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-flatten-depth"
+  },
+  {
+    "id": "js-folder-access-over-time",
+    "family": "question",
+    "title": "Folder Permissions Over Time: Who Could Open the File?",
+    "route": "/javascript/coding/js-folder-access-over-time",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Answer whether a user could open a file at a given moment, when folders allow or deny users and groups, inherit unless overridden, and keep a timestamped history of every change.",
+    "tags": [
+      "tree",
+      "hash-map",
+      "sorting",
+      "algorithms",
+      "security"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-21",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-folder-access-over-time"
   },
   {
     "id": "js-format-date-timezone",
@@ -8189,6 +8248,29 @@
     "assetRef": "questions/react/coding.json#react-select-compound-api"
   },
   {
+    "id": "react-voice-service-wiring",
+    "family": "question",
+    "title": "Speech Studio: Wire a Panel to a Typed Speech Service",
+    "route": "/react/coding/react-voice-service-wiring",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Wire a given speech panel to a speech service known only from its types: load the voices, respect each voice's character limit, show job progress and the right error messages, cancel jobs, and let only the newest job win.",
+    "tags": [
+      "react",
+      "async",
+      "abort-controller",
+      "cancellation",
+      "loading-states",
+      "error-handling",
+      "typescript"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 40,
+    "updatedAt": "2026-11-21",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-voice-service-wiring"
+  },
+  {
     "id": "react-use-effect-once",
     "family": "question",
     "title": "StrictMode-safe Effect Setup and Cleanup",
@@ -9245,6 +9327,31 @@
     "updatedAt": "2026-08-06",
     "schemaVersion": "question.v1",
     "assetRef": "questions/system-design/ai-chat-textarea-design/meta.json"
+  },
+  {
+    "id": "ai-voice-shopping-assistant",
+    "family": "question",
+    "title": "Design an AI Voice Shopping Assistant for an Online Store",
+    "route": "/system-design/ai-voice-shopping-assistant",
+    "tech": "system-design",
+    "difficulty": "intermediate",
+    "summary": "Design an AI voice assistant for an online store as a simple loop first: the shopper talks, types or interrupts, the model is limited to filter patches and choices, and every product on screen comes from the catalog.",
+    "tags": [
+      "accessibility",
+      "api-calls",
+      "cancellation",
+      "error-handling",
+      "frontend-architecture",
+      "loading-states",
+      "search",
+      "state-management",
+      "streaming"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 20,
+    "updatedAt": "2026-11-22",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/system-design/ai-voice-shopping-assistant/meta.json"
   },
   {
     "id": "ai-ux-considerations",
