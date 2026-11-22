@@ -1255,6 +1255,36 @@ export default function App() {
     expect(results).toEqual([{ name: 'Hover', passed: true }]);
   });
 
+  it('reports a React handler error that a check sets off with its own message, not as a render failure', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': `import React from 'react';
+export default function App() {
+  const save = () => { throw new Error('Save handler broke'); };
+  return <button className="save" onClick={save}>Save</button>;
+}
+`,
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'save',
+        name: 'Save',
+        steps: [
+          { type: 'waitForCount', selector: '.save', count: 1, timeoutMs: 3000 },
+          { type: 'click', selector: '.save' },
+          { type: 'wait', durationMs: 2000 },
+        ],
+      },
+    ] as any);
+
+    expect(results.length).toBe(1);
+    expect(results[0].passed).toBeFalse();
+    expect(results[0].failureKind).toBe('preview-runtime');
+    expect(results[0].error).toContain('Your code threw an error while the checks ran');
+    expect(results[0].error).toContain('Save handler broke');
+    expect(results[0].error).not.toContain('Script error');
+    expect(results[0].error).not.toContain('during render');
+  });
+
   it('focuses an element so React focus and blur handlers run, and refuses an element that cannot take focus', async () => {
     const html = makeReactPreviewHtml({
       'src/App.tsx': `import React, { useState } from 'react';

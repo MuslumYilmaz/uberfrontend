@@ -273,7 +273,7 @@ export class OpaqueDomCheckRunner {
             return;
           }
           if (state === 'compile-error' || state === 'boot-error' || state === 'runtime-error') {
-            fail(this.lifecycleError(state, payload.error));
+            fail(this.lifecycleError(state, payload.error, ready));
           }
           return;
         }
@@ -365,8 +365,18 @@ export class OpaqueDomCheckRunner {
     return 'preview-boot';
   }
 
-  private lifecycleError(state: Exclude<PreviewLifecycleState, 'render-ready'>, detail: unknown): OpaquePreviewLifecycleError {
+  private lifecycleError(
+    state: Exclude<PreviewLifecycleState, 'render-ready'>,
+    detail: unknown,
+    afterRender = false,
+  ): OpaquePreviewLifecycleError {
     const message = this.sanitizeLifecycleError(detail);
+    if (state === 'runtime-error' && afterRender) {
+      return new OpaquePreviewLifecycleError(
+        'preview-runtime',
+        `Your code threw an error while the checks ran${message ? `: ${message}` : ''}`,
+      );
+    }
     if (state === 'compile-error') {
       return new OpaquePreviewLifecycleError('compilation', `Preview compilation failed${message ? `: ${message}` : ''}`);
     }
