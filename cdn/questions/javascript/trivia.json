@@ -11602,6 +11602,15 @@
         },
         {
           "type": "text",
+          "text": "<i class='fa-solid fa-flask'></i> <strong>The same three doubles in Sinon.JS</strong>\n\nIn Sinon.JS (v22, used with Mocha, Jest or Vitest) each double has its own call. <code>sinon.stub()</code> returns the values you program, and because a stub is also a spy you can still check how it was called. <code>sinon.spy(obj, 'method')</code> records calls while the real method keeps running. <code>sinon.mock(obj)</code> declares the expected calls up front, and <code>mock.verify()</code> fails the test if they did not happen. All three go into Sinon's default sandbox, so one <code>sinon.restore()</code> in <code>afterEach</code> puts every original method back."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Same searchUsers as above, tested with Sinon.JS (v22).\n// expect() is the Jest/Vitest matcher; with Mocha, use your assertion library.\nimport sinon from 'sinon';\nimport { searchUsers } from './search-users.js';\n\nafterEach(() => sinon.restore());\n\nit('stub: control the input, assert the output', async () => {\n  const fetchJson = sinon.stub().resolves([{ id: 1, name: 'Ada' }]);\n\n  const users = await searchUsers('a', { fetchJson });\n\n  expect(users).toEqual([{ id: 1, name: 'Ada' }]);\n  // A stub is also a spy, so the boundary call can be checked too.\n  sinon.assert.calledOnceWithExactly(fetchJson, '/api/users?q=a');\n});\n\nit('spy: record the call, keep the real behavior', async () => {\n  const api = { fetchJson: async () => [{ id: 2, name: 'Lin' }] };\n  const fetchJson = sinon.spy(api, 'fetchJson');\n\n  const users = await searchUsers('l', api);\n\n  expect(users).toEqual([{ id: 2, name: 'Lin' }]); // the real method ran\n  sinon.assert.calledOnceWithExactly(fetchJson, '/api/users?q=l');\n});\n\nit('mock: fail if the expected call never happens', async () => {\n  const api = { fetchJson: async () => [] };\n  const mock = sinon.mock(api);\n  mock.expects('fetchJson').once().withExactArgs('/api/users?q=a').resolves([]);\n\n  await searchUsers('a', api);\n\n  mock.verify();\n});\n\n// Newer Sinon code often reaches for fakes instead:\n// sinon.replace(api, 'fetchJson', sinon.fake.resolves([])) records calls like a spy\n// and returns programmed values like a stub; sinon.restore() undoes it too."
+        },
+        {
+          "type": "text",
           "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n\n- <strong>Over-mocking</strong>: tests fail on harmless refactors because they assert internal steps, not outcomes.\n- <strong>Leaking globals</strong>: stubbing <code>global.fetch</code> or <code>Date.now</code> without restoring breaks other tests.\n- <strong>Async flakiness</strong>: tests that depend on real timers or network ordering become flaky.\n- <strong>Missing error paths</strong>: only testing the happy path hides retries/timeouts/empty responses bugs."
         },
         {
@@ -11635,7 +11644,7 @@
       "rereadPrompt": "Not quite. The goal of test doubles is to isolate the unit at the right boundary. Stubs provide controlled inputs, spies verify interactions when those interactions are part of the contract, and heavy mocking of internal steps often makes tests fragile for little benefit."
     },
     "access": "free",
-    "updatedAt": "2026-02-05",
+    "updatedAt": "2026-11-22",
     "seo": {
       "title": "Mocks vs stubs vs spies: what is the difference?",
       "description": "Mocks verify interactions, stubs provide controlled responses, and spies observe calls while keeping original behavior or wrapping it."
