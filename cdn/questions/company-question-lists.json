@@ -6437,7 +6437,7 @@
       ]
     },
     "elevenlabs": {
-      "total": 19,
+      "total": 21,
       "rounds": [
         {
           "stage": "Coding assessment",
@@ -6445,15 +6445,15 @@
         },
         {
           "stage": "Live technical round",
-          "count": 5
+          "count": 6
         },
         {
           "stage": "Product or design round",
-          "count": 3
+          "count": 4
         }
       ],
       "roundNotStated": 3,
-      "newestAccount": "2026-10",
+      "newestAccount": "2026-11",
       "questions": [
         {
           "id": "audio-transcript-highlight",
@@ -6480,9 +6480,12 @@
           "latest": "2026-01",
           "newUntil": "2026-04-01",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-voice-service-wiring",
+            "access": "premium"
+          },
+          "answerGuide": "voice-service-from-types"
         },
         {
           "id": "assessment-react-and-algorithm-tasks",
@@ -6494,10 +6497,7 @@
           "newUntil": "2026-12-30",
           "open": false,
           "unlockable": true,
-          "practice": {
-            "route": "/react/coding/react-autocomplete-search-starter",
-            "access": "free"
-          },
+          "practice": null,
           "answerGuide": "timed-assessment-react-and-algorithms"
         },
         {
@@ -6526,8 +6526,11 @@
           "newUntil": "2024-10-30",
           "open": false,
           "unlockable": true,
-          "practice": null,
-          "answerGuide": "timed-assessment-react-and-algorithms"
+          "practice": {
+            "route": "/react/coding/react-debug-api-misuse",
+            "access": "premium"
+          },
+          "answerGuide": "coderpad-react-bug"
         },
         {
           "id": "coderpad-finish-react-component",
@@ -6538,9 +6541,12 @@
           "latest": "2024-08",
           "newUntil": "2024-10-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-contact-form-starter",
+            "access": "premium"
+          },
+          "answerGuide": "finish-a-partly-written-component"
         },
         {
           "id": "live-practical-fix",
@@ -6553,8 +6559,8 @@
           "open": false,
           "unlockable": true,
           "practice": {
-            "route": "/javascript/debug/js-debug-async-race",
-            "access": "free"
+            "route": "/javascript/debug/js-debug-bug-squash-invoices",
+            "access": "premium"
           },
           "answerGuide": "fix-a-practical-react-problem"
         },
@@ -6567,9 +6573,9 @@
           "latest": "2025-11",
           "newUntil": "2026-01-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "transcription-studio-roadmap"
         },
         {
           "id": "dubbing-re-review-status",
@@ -6580,9 +6586,12 @@
           "latest": "2025-05",
           "newUntil": "2025-07-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-dubbing-review-status",
+            "access": "premium"
+          },
+          "answerGuide": "re-review-status-roll-up"
         },
         {
           "id": "folder-permissions",
@@ -6593,9 +6602,28 @@
           "latest": "2025-08",
           "newUntil": "2025-10-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-folder-access-over-time",
+            "access": "premium"
+          },
+          "answerGuide": "folder-access-at-a-time"
+        },
+        {
+          "id": "spoken-prefix-with-repeats",
+          "round": "Live technical round",
+          "kind": "Algorithm",
+          "accounts": 1,
+          "banks": 0,
+          "latest": "2026-11",
+          "newUntil": "2027-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/debug/js-debug-spoken-prefix-review",
+            "access": "premium"
+          },
+          "answerGuide": "spoken-prefix-with-repeats"
         },
         {
           "id": "adapt-product-key-account",
@@ -6606,9 +6634,25 @@
           "latest": "2026-02",
           "newUntil": "2026-04-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "adapt-product-for-key-account"
+        },
+        {
+          "id": "voice-chat-product-search",
+          "round": "Product or design round",
+          "kind": "Product design",
+          "accounts": 2,
+          "banks": 0,
+          "latest": "2026-11",
+          "newUntil": "2027-01-29",
+          "open": false,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ai-voice-shopping-assistant",
+            "access": "premium"
+          },
+          "answerGuide": "voice-shopping-search-design"
         },
         {
           "id": "valid-sudoku",
@@ -6618,7 +6662,7 @@
           "banks": 0,
           "latest": "2024-08",
           "newUntil": "2024-10-30",
-          "open": false,
+          "open": true,
           "unlockable": false,
           "practice": null,
           "answerGuide": null
@@ -6632,9 +6676,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "next-larger-with-no-shared-digit"
         },
         {
           "id": "merge-equal-level-stones",
@@ -6645,9 +6689,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "fewest-stones-after-merging"
         },
         {
           "id": "shirt-colours-no-repeat",
@@ -6658,9 +6702,9 @@
           "latest": "2026-09",
           "newUntil": "2026-11-29",
           "open": false,
-          "unlockable": false,
+          "unlockable": true,
           "practice": null,
-          "answerGuide": null
+          "answerGuide": "cheapest-shirt-colours"
         },
         {
           "id": "map-queue-bfs-problems",
@@ -6671,9 +6715,12 @@
           "latest": "2026-07",
           "newUntil": "2026-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
-          "answerGuide": null
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-maze-path",
+            "access": "premium"
+          },
+          "answerGuide": "maps-queues-breadth-first"
         },
         {
           "id": "merge-sorted-drop-duplicates",
@@ -6689,7 +6736,7 @@
             "route": "/javascript/coding/js-merge-sorted-arrays",
             "access": "premium"
           },
-          "answerGuide": null
+          "answerGuide": "merge-sorted-and-dedupe"
         },
         {
           "id": "reverse-linked-list",
@@ -6699,7 +6746,7 @@
           "banks": 1,
           "latest": null,
           "newUntil": null,
-          "open": false,
+          "open": true,
           "unlockable": false,
           "practice": null,
           "answerGuide": null
@@ -6718,7 +6765,7 @@
             "route": "/javascript/coding/js-longest-substring-without-repeating",
             "access": "premium"
           },
-          "answerGuide": null
+          "answerGuide": "longest-run-without-repeats"
         }
       ]
     },

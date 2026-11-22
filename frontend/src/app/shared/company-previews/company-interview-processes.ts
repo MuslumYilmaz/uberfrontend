@@ -1941,8 +1941,8 @@ const NETFLIX_NF12_FULLSTACK_2024: InterviewProcessSource = {
   location: 'United States',
 };
 
-// ElevenLabs accounts cover full-stack, frontend-leaning titles. The two Aced entries show relative dates only,
-// so their dates are the interview months the pages implied when read.
+// ElevenLabs accounts cover full-stack, software engineering and a few other titles. The Aced dates are the
+// "Interviewed <month>" of Aced's experience listing; a Taro date marked approx. is the first of a month.
 const ELEVENLABS_CAREERS_FAQ = official('ElevenLabs careers FAQ', 'https://elevenlabs.io/careers');
 const ELEVENLABS_EL1_SENIOR_2026: InterviewProcessSource = {
   ...report('Aced', 'https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04', '2026-07'),
@@ -1972,10 +1972,10 @@ const ELEVENLABS_EL5_2025 = report(
   `${ELEVENLABS_TARO}/full-stack-engineer-united-kingdom-may-1-2025-accepted-offer-positive-8ac03948/`,
   '2025-05',
 );
-// Read 2026-11-03 for the question list (docs/references/elevenlabs-questions-and-process-2026-11.md keeps the quotes).
-// The Aced bank marks each item "I was asked this" without a round or a date of its own.
+// Read 2026-11-03 and 2026-11-21 for the question list (docs/references/elevenlabs-questions-and-process-2026-11.md
+// keeps the quotes). The bank says "Last updated Nov 2026" and gives no item a round or a date of its own.
 const ELEVENLABS_BANK: InterviewProcessSource = {
-  ...report('Aced question bank', 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions', '2026-10'),
+  ...report('Aced question bank', 'https://www.aced.io/guides/elevenlabs-software-engineer-interview/questions', '2026-11'),
   reportForm: 'question-bank',
 };
 const ELEVENLABS_EL6_2026 = report('Taro', `${ELEVENLABS_TARO}/full-stack-engineer-october-27-2026-no-offer-negative-c63c5ddb/`, '2026-10');
@@ -2030,14 +2030,25 @@ const ELEVENLABS_EC5_FDE_2025: InterviewProcessSource = {
   location: 'United Kingdom',
   outcome: 'no offer',
 };
-// PracHub's page states the three problems only in its own paraphrase, so their rows paraphrase too.
+// PracHub's page states the three problems only in its own paraphrase, so their rows paraphrase too. Unlike the
+// onsite below, the saved page carries no "curated and edited" mark.
 const ELEVENLABS_EC6_2026: InterviewProcessSource = {
   ...report(
-    'PracHub (curated)',
+    'PracHub',
     'https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-three-question-oa-with-a-surprise-2-minute-ai-follow-up',
     '2026-09',
   ),
   role: 'Software engineer',
+};
+// Read 2026-11-21. PracHub marks this onsite account curated and edited too; its own page says "Published Nov 11, 2026".
+const ELEVENLABS_EC15_2026: InterviewProcessSource = {
+  ...report(
+    'PracHub (curated)',
+    'https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-live-coding-and-product-decomposition-onsite-rejected',
+    '2026-11',
+  ),
+  role: 'Software engineer',
+  outcome: 'no offer',
 };
 
 // Waymo's hiring page gives the stage structure. The one complete frontend loop is a PracHub account that the
@@ -13162,19 +13173,19 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
   },
   elevenlabs: {
     summary:
-      'ElevenLabs says steps vary by role and most processes include a pre-screen, virtual interviews with a possible skills assessment, a hiring-manager conversation and a final round with a founder or Bar Raiser. Full-stack and frontend-leaning accounts from 2024 to 2026 describe a timed coding assessment that often comes before the recruiter call, a live technical round with an engineer, a product or design round and a final conversation.',
+      'ElevenLabs says steps vary by role and most processes include a pre-screen, virtual interviews with a possible skills assessment, a hiring-manager conversation and a final round with a founder or Bar Raiser. Full-stack, frontend-leaning and software engineer accounts from 2024 to 2026 describe a timed coding assessment that often comes before the recruiter call, a live technical round with an engineer, a product or design round and a final conversation.',
     caveat:
       'No account covers a purely frontend title: these are full-stack and general engineering loops. The assessment changed shape from loop to loop, and one 2025 loop had no system design round while a 2024 loop did.',
-    checkedAt: '2026-11-03',
+    checkedAt: '2026-11-21',
     variants: [
       {
-        title: 'Full-stack engineers, frontend-leaning',
+        title: 'Full-stack and software engineers',
         stages: [
           {
             stage: 'Recruiter call',
             format:
               'A call about your background and why ElevenLabs. In several 2026 loops it came after the assessment, and in one the recruiter spent the whole call on the candidate\'s own questions.',
-            appliesTo: 'All candidates',
+            appliesTo: 'Most loops',
             sources: [
               ELEVENLABS_CAREERS_FAQ,
               ELEVENLABS_EL1_SENIOR_2026,
@@ -13189,8 +13200,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           {
             stage: 'Coding assessment',
             format:
-              'Usually the first technical step: a timed test of about 90 minutes, often on CoderPad, setting React or JavaScript tasks beside LeetCode-style problems. Some loops used an asynchronous task, a take-home or a Python algorithm round instead; in the 2025 Python round the candidate was told not to use LLMs.',
-            appliesTo: 'All candidates',
+              'Usually the first technical step: a timed test, about 90 minutes in three accounts, sometimes on CoderPad, setting React or JavaScript tasks beside LeetCode-style problems. Two 2024 accounts call it asynchronous and give no length; one 2025 loop used a take-home instead and another a Python algorithm round, where the candidate was told not to use LLMs.',
+            appliesTo: 'Most loops',
             sources: [
               ELEVENLABS_EL1_SENIOR_2026,
               ELEVENLABS_EL2_FE_2025,
@@ -13203,12 +13214,13 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EC3_2025,
             ],
-            practice: { label: 'Poll until, with timeout and abort', path: '/javascript/coding/js-poll-until' },
+            // The free starter modelled on a 2026 assessment account; a locked row's practice task would give its lock away.
+            practice: { label: 'React autocomplete starter', path: '/react/coding/react-autocomplete-search-starter' },
           },
           {
             stage: 'Live technical round',
             format:
-              'About an hour of pair work with an engineer, mostly in React on a small app or component. One 2026 loop had the candidate write code in a Google Doc, and in a 2024 loop the constraints changed during the task.',
+              'About an hour of pair work with an engineer, often in React on a small app or component. One 2026 loop had the candidate write code in a Google Doc, and in a 2024 loop the constraints changed during the task.',
             appliesTo: 'All candidates',
             sources: [
               ELEVENLABS_EL1_SENIOR_2026,
@@ -13219,6 +13231,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL9_SENIOR_2025,
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EL14_2026,
+              ELEVENLABS_EL22_2024,
+              ELEVENLABS_EC3_2025,
+              ELEVENLABS_EC15_2026,
             ],
             practice: { label: 'Fix an async race', path: '/javascript/debug/js-debug-async-race' },
           },
@@ -13234,15 +13249,24 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
               ELEVENLABS_EL10_2024,
               ELEVENLABS_EL12_2026,
               ELEVENLABS_EL13_2024,
+              ELEVENLABS_EL16_2026,
               ELEVENLABS_EC3_2025,
+              ELEVENLABS_EC15_2026,
             ],
           },
           {
             stage: 'Final conversation',
             format:
               'A call with the CTO, a co-founder or the head of the organisation; one 2026 loop ended with manager calibration and team-fit interviews. The careers FAQ names a founder or Bar Raiser.',
-            appliesTo: 'All candidates',
-            sources: [ELEVENLABS_CAREERS_FAQ, ELEVENLABS_EL3_2024, ELEVENLABS_EL5_2025, ELEVENLABS_EL10_2024, ELEVENLABS_EL12_2026],
+            appliesTo: 'Most loops',
+            sources: [
+              ELEVENLABS_CAREERS_FAQ,
+              ELEVENLABS_EL3_2024,
+              ELEVENLABS_EL5_2025,
+              ELEVENLABS_EL10_2024,
+              ELEVENLABS_EL12_2026,
+              ELEVENLABS_EC15_2026,
+            ],
           },
         ],
       },
@@ -13251,7 +13275,9 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
     // scenario and the airline rescheduling case. Left out for want of a subject: "one larger task live", "typical
     // TypeScript and React problem-solving exercises", a changing-constraints problem, a LeetCode variant in a Google
     // Doc and a product round in a sketching app. Left out for its source: the 2026 landing-page take-home, known only
-    // from a candidate's GitHub repository. Behavioural questions are in behaviouralQuestions, open.
+    // from a candidate's GitHub repository. Behavioural questions are in behaviouralQuestions, open. A question is locked
+    // only when its unlock gives more than its topic (a constraint or follow-up, an answer guide or a Premium task); the
+    // rest are marked open.
     questions: [
       {
         id: 'audio-transcript-highlight',
@@ -13261,7 +13287,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'In a small React audio player with a transcript, find what is broken and build the missing logic so the text being spoken highlights as the audio plays.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
-        practice: { label: 'Debug a transcript highlight that lags behind the audio', path: '/react/coding/react-debug-transcript-sync' },
+        practice: { label: 'Debug a transcript highlight that lags behind the audio, with tests and a reference solution', path: '/react/coding/react-debug-transcript-sync' },
         answerGuide: 'audio-transcript-sync',
       },
       {
@@ -13270,8 +13296,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'React build',
         topic: 'Voice service component',
         question:
-          'Build a small React component or app around an ElevenLabs voice service with an engineer; in the 2026 account the service was a fake known only from its types, and the code was never run.',
+          'Build a small React component or app around a voice service with an engineer; in the 2026 account the service was a fake ElevenLabs service known only from its types, and the code was never run.',
         sources: [ELEVENLABS_EL8_SENIOR_2026, ELEVENLABS_EL9_SENIOR_2025, ELEVENLABS_EL3_2024],
+        practice: { label: 'Wire a speech panel to a typed speech service, with tests and a reference solution', path: '/react/coding/react-voice-service-wiring' },
+        answerGuide: 'voice-service-from-types',
       },
       {
         id: 'assessment-react-and-algorithm-tasks',
@@ -13282,7 +13310,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
           'React and JavaScript tasks beside LeetCode-style problems in the timed assessment: two front-end and two algorithm questions in one 2026 account, four tasks in 90 minutes with the hardest last in another.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL6_2026, ELEVENLABS_EL7_SENIOR_2026, ELEVENLABS_EL1_SENIOR_2026, ELEVENLABS_EL8_SENIOR_2026, ELEVENLABS_EL4_2024],
-        practice: { label: 'React autocomplete starter against a clock', path: '/react/coding/react-autocomplete-search-starter' },
+        // No practice task of its own: the free autocomplete starter its guide suggests is linked in the open sections.
         answerGuide: 'timed-assessment-react-and-algorithms',
       },
       {
@@ -13304,8 +13332,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Fix a bug in a React component, in a CoderPad round that also held LeetCode problems.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
-        // The asynchronous CoderPad round, so the assessment's guide; the live-fix guide is question 7's.
-        answerGuide: 'timed-assessment-react-and-algorithms',
+        practice: { label: 'Debug a React search page that misuses its API, with tests and a reference solution', path: '/react/coding/react-debug-api-misuse' },
+        answerGuide: 'coderpad-react-bug',
       },
       {
         id: 'coderpad-finish-react-component',
@@ -13315,16 +13343,20 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Finish the implementation of a partly written React component, in the same CoderPad round.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL3_2024],
+        practice: { label: 'Finish a contact form from its starter, with tests and a reference solution', path: '/react/coding/react-contact-form-starter' },
+        answerGuide: 'finish-a-partly-written-component',
       },
       {
         id: 'live-practical-fix',
         round: 'Live technical round',
         kind: 'Practical coding',
-        topic: 'Live practical bug fix',
+        topic: 'Fixing a practical problem live',
         question: 'Fix a practical, real-life problem live while working through it with the interviewer.',
         promptNotShared: true,
         sources: [ELEVENLABS_EL1_SENIOR_2026],
-        practice: { label: 'Fix an async race in a cached fetch', path: '/javascript/debug/js-debug-async-race' },
+        // The account names neither the framework nor the bug, so an unfamiliar repo with reported bugs; the transcript
+        // task modelled on this round is question 1's, and the async-race task is the stage's, open.
+        practice: { label: 'Fix four reported bugs in an unfamiliar repo, with tests and a reference solution', path: '/javascript/debug/js-debug-bug-squash-invoices' },
         answerGuide: 'fix-a-practical-react-problem',
       },
       {
@@ -13335,6 +13367,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'For an audio transcription studio used by dubbing teams, propose features, prioritise them and turn them into a roadmap; the follow-ups covered the task list view, the transcription view, authentication and roles.',
         sources: [ELEVENLABS_EL2_FE_2025, ELEVENLABS_BANK],
+        answerGuide: 'transcription-studio-roadmap',
       },
       {
         id: 'dubbing-re-review-status',
@@ -13342,8 +13375,10 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'Practical coding',
         topic: 'Re-review marking in a dubbing workflow',
         question:
-          'Write functions for a dubbing workflow kept in a spreadsheet that apply edits and approvals, and mark which lines, and the files above them, need review again after a line is re-recorded.',
+          'Instead of a spreadsheet, write functions for a dubbing workflow that apply edits and approvals, and mark which lines, and the files above them, need review again after a line is re-recorded.',
         sources: [ELEVENLABS_EC3_2025, ELEVENLABS_BANK],
+        practice: { label: 'Roll dubbing review statuses up to files, with tests and a reference solution', path: '/javascript/coding/js-dubbing-review-status' },
+        answerGuide: 're-review-status-roll-up',
       },
       {
         id: 'folder-permissions',
@@ -13353,6 +13388,19 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Folders allow or deny users and groups, permissions are inherited unless a folder overrides them, and each change is timestamped: check whether a user can open a file at a given time.',
         sources: [ELEVENLABS_EC5_FDE_2025, ELEVENLABS_EL22_2024, ELEVENLABS_EL23_2024, ELEVENLABS_BANK],
+        practice: { label: 'Check folder access at a point in time, with tests and a reference solution', path: '/javascript/coding/js-folder-access-over-time' },
+        answerGuide: 'folder-access-at-a-time',
+      },
+      {
+        id: 'spoken-prefix-with-repeats',
+        round: 'Live technical round',
+        kind: 'Algorithm',
+        topic: 'Longest intended prefix in repeated speech',
+        question:
+          'An agent speaks a generated text but may repeat characters, words or phrases: return the longest prefix of the intended text it has spoken. First review a junior\'s solution built on the longest common subsequence, which has two mistakes, then write a simpler one, given that the speech only repeats and never drops or swaps words.',
+        sources: [ELEVENLABS_EC15_2026],
+        practice: { label: 'Review a junior\'s caption code, then rewrite it in one pass, with a sample review, tests and a reference solution', path: '/javascript/debug/js-debug-spoken-prefix-review' },
+        answerGuide: 'spoken-prefix-with-repeats',
       },
       {
         id: 'adapt-product-key-account',
@@ -13361,6 +13409,18 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Adapting a product for key accounts',
         question: 'Adapt an ElevenLabs product so that a particular kind of key account can use it.',
         sources: [ELEVENLABS_EL20_GROWTH_2026],
+        answerGuide: 'adapt-product-for-key-account',
+      },
+      {
+        id: 'voice-chat-product-search',
+        round: 'Product or design round',
+        kind: 'Product design',
+        topic: 'Voice chat for retail product search',
+        question:
+          'Design voice chat for an online shop: a system design question on retail product search in one 2026 account, and an open product decomposition of a voice chat system for a retailer\'s website in another, where the interviewer turned the question of what it should look like back on the candidate.',
+        sources: [ELEVENLABS_EL16_2026, ELEVENLABS_EC15_2026],
+        practice: { label: 'Design an AI voice shopping assistant', path: '/system-design/ai-voice-shopping-assistant' },
+        answerGuide: 'voice-shopping-search-design',
       },
       {
         id: 'valid-sudoku',
@@ -13368,6 +13428,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         kind: 'Algorithm',
         topic: 'Valid Sudoku',
         question: 'Check whether a partly filled Sudoku board is valid (LeetCode\'s Valid Sudoku).',
+        open: true,
         sources: [ELEVENLABS_EL3_2024],
       },
       {
@@ -13377,6 +13438,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Next larger number sharing no digits',
         question: 'Find the next number larger than n that shares no digit with n.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'next-larger-with-no-shared-digit',
       },
       {
         id: 'merge-equal-level-stones',
@@ -13385,6 +13447,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Merging equal-level stones',
         question: 'Repeatedly merge stones of equal level and return the fewest stones that can remain.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'fewest-stones-after-merging',
       },
       {
         id: 'shirt-colours-no-repeat',
@@ -13393,6 +13456,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Lowest-cost shirt colour sequence',
         question: 'Choose the lowest-cost sequence of shirt colours with no colour used twice in a row.',
         sources: [ELEVENLABS_EC6_2026],
+        answerGuide: 'cheapest-shirt-colours',
       },
       {
         id: 'map-queue-bfs-problems',
@@ -13402,6 +13466,8 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Three assessment problems on maps, queues and breadth-first traversal, the first two easy and the last medium to hard.',
         promptNotShared: true,
         sources: [ELEVENLABS_EC4_2026],
+        practice: { label: 'Find a path through a grid maze, with tests and a reference solution', path: '/javascript/coding/js-maze-path' },
+        answerGuide: 'maps-queues-breadth-first',
       },
       {
         id: 'merge-sorted-drop-duplicates',
@@ -13409,22 +13475,25 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Merging sorted lists without duplicates',
         question: 'Merge sorted lists into one and drop the duplicates.',
         sources: [ELEVENLABS_EL16_2026],
-        practice: { label: 'Merge two sorted arrays', path: '/javascript/coding/js-merge-sorted-arrays' },
+        practice: { label: 'Merge two sorted arrays, with tests and a reference solution', path: '/javascript/coding/js-merge-sorted-arrays' },
+        answerGuide: 'merge-sorted-and-dedupe',
       },
       {
         id: 'reverse-linked-list',
         kind: 'Algorithm',
         topic: 'Linked list reversal',
         question: 'Reverse a linked list.',
+        open: true,
         sources: [ELEVENLABS_BANK],
       },
       {
         id: 'longest-substring-no-repeats',
         kind: 'Algorithm',
         topic: 'Longest substring without repeating characters',
-        question: 'Find the longest substring without repeating characters.',
+        question: 'Find the longest stretch of a string in which no character repeats.',
         sources: [ELEVENLABS_BANK],
-        practice: { label: 'Longest substring without repeating characters', path: '/javascript/coding/js-longest-substring-without-repeating' },
+        practice: { label: 'Longest substring without repeating characters, with tests and a reference solution', path: '/javascript/coding/js-longest-substring-without-repeating' },
+        answerGuide: 'longest-run-without-repeats',
       },
     ],
     // A growth-role question about inventing AI showcases is left out as specific to that role.

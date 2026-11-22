@@ -894,7 +894,7 @@ describe('CompanyPreviewComponent', () => {
     it('closes with the reported questions Premium opens, and names none once the locked-questions switch is off', async () => {
       await createComponent('elevenlabs');
       const guide = fixture.componentInstance;
-      expect(guide.ctaCopy()).toBe(`Premium opens the other ${summary.total - 1} reported ElevenLabs questions, every question in the ElevenLabs set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
+      expect(guide.ctaCopy()).toBe(`Premium opens the other ${summary.locked} reported ElevenLabs questions, every question in the ElevenLabs set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
       // The SEO rollback turns this switch off alone; the list then opens every row, so the closing call locks none.
       (guide as unknown as { features: CompanyGuideFeatures }).features = { ...COMPANY_GUIDE_FEATURES, lockedQuestions: false };
       expect(guide.ctaCopy()).toBe(`Premium opens every question in the ElevenLabs set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`);
@@ -904,19 +904,24 @@ describe('CompanyPreviewComponent', () => {
       const opened = COMPANY_INTERVIEW_PROCESSES['elevenlabs'].questions![2].id;
       user.set({ ...FREE, freeUnlock: { company: 'elevenlabs', questionId: opened, practiceId: null, unlockedAt: '2026-11-13T00:00:00.000Z' } });
       await createComponent('elevenlabs');
-      expect(fixture.componentInstance.ctaCopy()).toContain(`the other ${summary.total - 2} reported ElevenLabs questions`);
+      expect(fixture.componentInstance.ctaCopy()).toContain(`the other ${summary.locked - 1} reported ElevenLabs questions`);
       // Checkout charges US dollars everywhere, so the card says so.
       expect(fixture.componentInstance.offer()?.price).toMatch(/^US\$\d/);
     });
 
-    it('keeps the first question open and locks the rest in the page', async () => {
+    it('keeps the first question and the rows marked open readable, and locks the rest in the page', async () => {
       await createComponent('elevenlabs');
       const rows = Array.from(host().querySelectorAll<HTMLElement>('[data-testid="company-question-row"]'));
       expect(rows.length).toBe(summary.total);
-      expect(rows[0].querySelector('.premium-locked.cq-row__question')).toBeNull();
-      expect(readable(rows[0].querySelector('.cq-row__title'))).toBeTrue();
-      // Every other question stays in the HTML for search, under the lock and out of snippets.
-      const locked = rows.slice(1).map((row) => row.querySelector('.cq-row__question'));
+      expect(summary.rows.filter((row) => row.open).length).toBeGreaterThan(1);
+      rows.forEach((row, index) => {
+        if (!summary.rows[index].open) return;
+        expect(row.querySelector('.premium-locked.cq-row__question')).withContext(summary.rows[index].id).toBeNull();
+        expect(readable(row.querySelector('.cq-row__title'))).withContext(summary.rows[index].id).toBeTrue();
+      });
+      // Every locked question stays in the HTML for search, under the lock and out of snippets.
+      const locked = rows.filter((_, index) => !summary.rows[index].open).map((row) => row.querySelector('.cq-row__question'));
+      expect(locked.length).toBe(summary.locked);
       expect(locked.every((el) => el?.classList.contains('premium-locked') && el.hasAttribute('data-nosnippet') && (el.textContent ?? '').trim().length > 0)).toBeTrue();
     });
 
@@ -969,7 +974,7 @@ describe('CompanyPreviewComponent', () => {
     it('renders the visitor view on the first render, as hydration finds it', async () => {
       user.set(MEMBER);
       await createComponent('elevenlabs', undefined, AUTHORED_COMPANY_PREVIEWS, {}, { firstRenderOnly: true });
-      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.total - 1);
+      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.locked);
       expect(host().querySelectorAll('[data-testid="company-guide-sources"] a[href^="http"]').length).toBe(0);
     });
 
@@ -977,7 +982,7 @@ describe('CompanyPreviewComponent', () => {
       user.set(FREE);
       await createComponent('elevenlabs');
       expect(host().querySelector('[data-testid="company-question-outline-gate"]')).toBeNull();
-      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.total - 1);
+      expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.locked);
       expect(host().querySelector('.company-prep-sequence__body.premium-locked')).toBeNull();
       expect(host().querySelector('.company-prep-body.premium-locked')).not.toBeNull();
       const links = host().querySelectorAll('[data-testid="company-guide-sources"] a[href^="http"]');

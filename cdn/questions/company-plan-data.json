@@ -42,11 +42,11 @@
       "design": "/guides/system-design-blueprint"
     },
     "premiumCounts": {
-      "react": 39,
+      "react": 40,
       "angular": 23,
       "vue": 22,
-      "javascript": 52,
-      "systemDesign": 20
+      "javascript": 54,
+      "systemDesign": 21
     },
     "familyMembers": {
       "accordion": {
@@ -341,6 +341,14 @@
         "concepts",
         "js"
       ]
+    },
+    "ai-voice-shopping-assistant": {
+      "id": "ai-voice-shopping-assistant",
+      "title": "Design an AI Voice Shopping Assistant for an Online Store",
+      "route": "/system-design/ai-voice-shopping-assistant",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
     },
     "angular-autocomplete-search-starter": {
       "id": "angular-autocomplete-search-starter",
@@ -1396,6 +1404,19 @@
         "js"
       ]
     },
+    "js-debug-spoken-prefix-review": {
+      "id": "js-debug-spoken-prefix-review",
+      "title": "Case: Review a Junior's Caption Code, Then Rewrite It in One Pass",
+      "route": "/javascript/debug/js-debug-spoken-prefix-review",
+      "kind": "debug",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "debug",
+        "js"
+      ]
+    },
     "js-debug-stale-closure-autosave": {
       "id": "js-debug-stale-closure-autosave",
       "title": "Fix stale closure in delayed autosave callback",
@@ -1552,6 +1573,19 @@
         "js"
       ]
     },
+    "js-dubbing-review-status": {
+      "id": "js-dubbing-review-status",
+      "title": "Dubbing Review Board: Roll Line Statuses Up to Files",
+      "route": "/javascript/coding/js-dubbing-review-status",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "algo",
+        "js"
+      ]
+    },
     "js-event-delegation": {
       "id": "js-event-delegation",
       "title": "Why does my click handler fire twice? Bubbling, capturing, and event delegation",
@@ -1654,6 +1688,19 @@
       "focus": [
         "js",
         "algo"
+      ]
+    },
+    "js-folder-access-over-time": {
+      "id": "js-folder-access-over-time",
+      "title": "Folder Permissions Over Time: Who Could Open the File?",
+      "route": "/javascript/coding/js-folder-access-over-time",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "algo",
+        "js"
       ]
     },
     "js-get-by-path-1": {
@@ -3063,6 +3110,18 @@
       "tech": "react",
       "access": "free",
       "minutes": 30,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-voice-service-wiring": {
+      "id": "react-voice-service-wiring",
+      "title": "Speech Studio: Wire a Panel to a Typed Speech Service",
+      "route": "/react/coding/react-voice-service-wiring",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 40,
       "focus": [
         "ui"
       ]
@@ -9151,24 +9210,23 @@
       "name": "ElevenLabs",
       "signature": "Timed coding assessment",
       "framework": "react",
-      "checkedAt": "2026-11-03",
-      "sourceCount": 25,
-      "promptCount": 4,
-      "questionCount": 19,
+      "checkedAt": "2026-11-21",
+      "sourceCount": 26,
+      "promptCount": 19,
+      "questionCount": 21,
       "variants": [
         {
           "id": "main",
-          "title": "Full-stack engineers, frontend-leaning",
+          "title": "Full-stack and software engineers",
           "reported": {
             "levels": [
               "mid",
-              "senior",
-              "staff"
+              "senior"
             ],
-            "who": "senior, frontend and full-stack candidates"
+            "who": "senior, full-stack and frontend-leaning candidates"
           },
-          "sourceCount": 15,
-          "newestReport": "2026-10",
+          "sourceCount": 18,
+          "newestReport": "2026-11",
           "rounds": [
             {
               "id": "recruiter-call",
@@ -9202,7 +9260,7 @@
               "kinds": [
                 "coding"
               ],
-              "note": "A timed test of about 90 minutes, often on CoderPad, with React or JavaScript tasks beside LeetCode-style problems.",
+              "note": "Usually a timed test of about 90 minutes, sometimes on CoderPad: React or JS tasks beside LeetCode-style problems.",
               "focus": [
                 "algo",
                 "ui",
@@ -9230,11 +9288,15 @@
               "kinds": [
                 "coding"
               ],
-              "note": "About an hour of pair work with an engineer, mostly in React on a small app or component.",
+              "note": "About an hour of pair work with an engineer, often in React on a small app or component.",
               "focus": [
                 "ui"
               ],
               "sources": [
+                {
+                  "label": "PracHub (curated)",
+                  "date": "2026-11"
+                },
                 {
                   "label": "Aced",
                   "date": "2026-07"
@@ -9242,13 +9304,9 @@
                 {
                   "label": "Taro",
                   "date": "2026-05"
-                },
-                {
-                  "label": "Taro",
-                  "date": "2026-01"
                 }
               ],
-              "moreSources": 5
+              "moreSources": 8
             },
             {
               "id": "product-or-design-round",
@@ -9259,19 +9317,19 @@
               "note": "A product discussion, a product decomposition or a system design interview.",
               "sources": [
                 {
+                  "label": "PracHub (curated)",
+                  "date": "2026-11"
+                },
+                {
                   "label": "Taro",
                   "date": "2026-09"
                 },
                 {
-                  "label": "Aced",
-                  "date": "2025-11"
-                },
-                {
-                  "label": "Taro (approx.)",
-                  "date": "2025-05"
+                  "label": "Taro",
+                  "date": "2026-03"
                 }
               ],
-              "moreSources": 4
+              "moreSources": 6
             },
             {
               "id": "final-conversation",
@@ -9286,29 +9344,18 @@
                   "date": "2026-10"
                 },
                 {
-                  "label": "Taro",
-                  "date": "2026-09"
+                  "label": "PracHub (curated)",
+                  "date": "2026-11"
                 },
                 {
-                  "label": "Taro (approx.)",
-                  "date": "2025-05"
+                  "label": "Taro",
+                  "date": "2026-09"
                 }
               ],
-              "moreSources": 2
+              "moreSources": 3
             }
           ],
           "tasks": [
-            {
-              "id": "js-poll-until",
-              "report": {
-                "publisher": "Aced",
-                "date": "2026-10"
-              },
-              "lead": true,
-              "rounds": [
-                "coding-assessment"
-              ]
-            },
             {
               "id": "js-debug-async-race",
               "report": {
@@ -9321,10 +9368,22 @@
               "lead": true
             },
             {
+              "id": "react-autocomplete-search-starter",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-07"
+              },
+              "rounds": [
+                "coding-assessment"
+              ],
+              "lead": true,
+              "prompt": true
+            },
+            {
               "id": "ai-ux-considerations",
               "report": {
                 "publisher": "Aced",
-                "date": "2026-10"
+                "date": "2026-11"
               },
               "prompt": true,
               "rounds": [
@@ -9332,20 +9391,59 @@
               ]
             },
             {
-              "id": "js-timer-manager",
+              "id": "js-dubbing-review-status",
               "report": {
                 "publisher": "Aced",
-                "date": "2026-10"
+                "date": "2025-05"
+              },
+              "rounds": [
+                "live-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-folder-access-over-time",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-11"
+              },
+              "rounds": [
+                "live-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-poll-until",
+              "report": {
+                "publisher": "Aced",
+                "date": "2026-11"
               }
             },
             {
-              "id": "react-autocomplete-search-starter",
+              "id": "js-timer-manager",
               "report": {
                 "publisher": "Aced",
-                "date": "2026-07"
+                "date": "2026-11"
+              }
+            },
+            {
+              "id": "ai-voice-shopping-assistant",
+              "report": {
+                "publisher": "Taro",
+                "date": "2026-03"
               },
               "rounds": [
-                "coding-assessment",
+                "product-or-design-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "js-debug-spoken-prefix-review",
+              "report": {
+                "publisher": "PracHub",
+                "date": "2026-11"
+              },
+              "rounds": [
                 "live-technical-round"
               ],
               "prompt": true
@@ -9357,8 +9455,39 @@
                 "date": "2026-07"
               },
               "rounds": [
-                "coding-assessment",
                 "live-technical-round"
+              ]
+            },
+            {
+              "id": "react-chat-streaming-ui",
+              "report": {
+                "publisher": "Taro",
+                "date": "2026-01"
+              },
+              "rounds": [
+                "live-technical-round"
+              ]
+            },
+            {
+              "id": "react-voice-service-wiring",
+              "report": {
+                "publisher": "Taro",
+                "date": "2026-01"
+              },
+              "rounds": [
+                "live-technical-round"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "report": {
+                "publisher": "Taro",
+                "date": "2024-08",
+                "approx": true
+              },
+              "rounds": [
+                "coding-assessment"
               ],
               "prompt": true
             },
@@ -9380,6 +9509,41 @@
                 "product-or-design-round"
               ],
               "prompt": true
+            },
+            {
+              "id": "js-debug-bug-squash-invoices",
+              "prompt": true,
+              "rounds": [
+                "coding-assessment"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "coding-assessment"
+              ]
+            },
+            {
+              "id": "js-maze-path",
+              "prompt": true,
+              "rounds": [
+                "coding-assessment"
+              ]
+            },
+            {
+              "id": "js-merge-sorted-arrays",
+              "prompt": true,
+              "rounds": [
+                "coding-assessment"
+              ]
+            },
+            {
+              "id": "js-longest-substring-without-repeating",
+              "prompt": true,
+              "rounds": [
+                "coding-assessment"
+              ]
             }
           ]
         }

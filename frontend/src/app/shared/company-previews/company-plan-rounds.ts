@@ -818,21 +818,29 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
   elevenlabs: {
     // The 2026 Aced account behind the async-race task is cited on the assessment too, but the task practises its live
     // round, where the candidate fixed a practical problem with the interviewer; the guide links it there as well.
+    // Each account below is cited on both coding stages, so without an entry its task would land on both; the entry
+    // keeps the round the account put it in.
     reportRounds: {
       'js-debug-async-race': ['live-technical-round'],
+      'react-debug-transcript-sync': ['live-technical-round'],
+      'react-voice-service-wiring': ['live-technical-round'],
+      'react-chat-streaming-ui': ['live-technical-round'],
+      'js-dubbing-review-status': ['live-technical-round'],
+      'react-debug-api-misuse': ['coding-assessment'],
+      'react-autocomplete-search-starter': ['coding-assessment'],
     },
     variants: [
       {
         id: 'main',
-        title: 'Full-stack engineers, frontend-leaning',
-        reported: { levels: ['mid', 'senior', 'staff'], who: 'senior, frontend and full-stack candidates' },
+        title: 'Full-stack and software engineers',
+        reported: { levels: ['mid', 'senior'], who: 'senior, full-stack and frontend-leaning candidates' },
         rounds: [
           { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
           {
             id: 'coding-assessment',
             stage: 'Coding assessment',
             kinds: ['coding'],
-            note: 'A timed test of about 90 minutes, often on CoderPad, with React or JavaScript tasks beside LeetCode-style problems.',
+            note: 'Usually a timed test of about 90 minutes, sometimes on CoderPad: React or JS tasks beside LeetCode-style problems.',
             picks: ['/javascript/coding/js-stream-to-text'],
           },
           {

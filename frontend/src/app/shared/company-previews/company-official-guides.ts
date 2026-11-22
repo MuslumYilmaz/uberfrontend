@@ -20,6 +20,7 @@ const CHECKED_OCT_26 = '2026-10-26';
 const CHECKED_NOV_11 = '2026-11-11';
 const CHECKED_NOV_14 = '2026-11-14';
 const CHECKED_NOV_16 = '2026-11-16';
+const CHECKED_NOV_21 = '2026-11-21';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -217,8 +218,8 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       label: 'Careers FAQ',
       url: 'https://elevenlabs.io/careers',
       covers:
-        'Most processes include a pre-screen, virtual interviews (sometimes with a take-home or case study), a hiring manager conversation and a final round with a founder or Bar Raiser.',
-      checkedAt: CHECKED_OCT_20,
+        'Most processes include a pre-screen, virtual interviews (sometimes with a skills assessment such as a take-home or case study), a hiring manager conversation and a final round with a founder or Bar Raiser.',
+      checkedAt: CHECKED_NOV_21,
     },
   ],
   stripe: [

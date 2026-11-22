@@ -36,7 +36,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/elevenlabs/preview',
-    expected: 'Prepare for product judgment, not ElevenLabs trivia',
+    expected: 'Study in the order the loop runs: the assessment, the live round, then product',
   },
   {
     path: '/companies/datadog/preview',
