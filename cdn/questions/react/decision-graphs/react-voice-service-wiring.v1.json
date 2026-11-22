@@ -1,0 +1,109 @@
+{
+  "questionId": "react-voice-service-wiring",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useMemo, useRef, useState } from 'react';\nimport './App.css';\n\n// ---------------------------------------------------------------------------------------------------------------\n// Given: the speech service's types and a fake implementation. Read the types; treat everything down to Studio as\n// given and working.\n// ---------------------------------------------------------------------------------------------------------------\n\nexport type VoiceId = string;\n\nexport interface Voice {\n  id: VoiceId;\n  name: string;\n  /** The longest text this voice accepts, in characters. */\n  maxCharacters: number;\n}\n\nexport interface Clip {\n  voiceId: VoiceId;\n  /** The text the clip speaks. */\n  text: string;\n  /** Length of the audio in seconds. */\n  seconds: number;\n}\n\nexport type SpeechErrorCode = 'quota-exceeded' | 'text-rejected' | 'service-unavailable';\n\n/**\n * Every failure the service reports is a SpeechError; a job stopped through its signal rejects with an AbortError\n * instead. A SpeechError's `message` is a code for logs, not for people.\n */\nexport class SpeechError extends Error {\n  readonly code: SpeechErrorCode;\n\n  constructor(code: SpeechErrorCode) {\n    super(`speech_error:${code}`);\n    this.name = 'SpeechError';\n    this.code = code;\n  }\n}\n\n/** What people should read for each failure. */\nexport const ERROR_MESSAGES: Record<SpeechErrorCode, string> = {\n  'quota-exceeded': \"You have used this month's characters.\",\n  'text-rejected': \"This text can't be voiced. Edit it and try again.\",\n  'service-unavailable': 'The voice service is unavailable. Try again in a moment.',\n};\n\nexport interface SynthesisOptions {\n  /**\n   * Aborting stops the job: its timers stop, `onProgress` is not called again, and the promise rejects with a\n   * DOMException named 'AbortError'.\n   */\n  signal: AbortSignal;\n  /** Called with 10, 20, … 100 as the job runs. */\n  onProgress: (percent: number) => void;\n}\n\nexport interface SpeechService {\n  /** Resolves with the voices after 300 ms. Rejects with a SpeechError when the service is down. */\n  listVoices(): Promise<Voice[]>;\n  /**\n   * Voices `text` with the voice. Resolves with the clip after progress reaches 100. Rejects with a SpeechError when\n   * the job fails, or with an AbortError once it is stopped through `options.signal`.\n   */\n  synthesize(text: string, voiceId: VoiceId, options: SynthesisOptions): Promise<Clip>;\n}\n\nexport type Scenario = 'normal' | 'slow' | 'voices-down' | 'quota' | 'rejected';\n\nconst VOICES: Voice[] = [\n  { id: 'rowan', name: 'Rowan · narration', maxCharacters: 200 },\n  { id: 'ines', name: 'Inès · conversational', maxCharacters: 120 },\n  { id: 'kit', name: 'Kit · short form', maxCharacters: 40 },\n];\n\n/**\n * A fake service for one scenario. Progress moves every 100 ms (every 300 ms when slow). With 'voices-down' the\n * first listVoices fails and later ones answer; with 'quota' and 'rejected' a job fails after 30 %.\n */\nexport function createSpeechService(scenario: Scenario): SpeechService {\n  let voiceCalls = 0;\n  const every = scenario === 'slow' ? 300 : 100;\n  return {\n    listVoices() {\n      voiceCalls += 1;\n      const fail = scenario === 'voices-down' && voiceCalls === 1;\n      return new Promise((resolve, reject) => {\n        window.setTimeout(() => {\n          if (fail) reject(new SpeechError('service-unavailable'));\n          else resolve(VOICES.map((voice) => ({ ...voice })));\n        }, 300);\n      });\n    },\n    synthesize(text, voiceId, { signal, onProgress }) {\n      return new Promise((resolve, reject) => {\n        const abortError = () => new DOMException('The job was cancelled.', 'AbortError');\n        if (signal.aborted) {\n          reject(abortError());\n          return;\n        }\n        const voice = VOICES.find((candidate) => candidate.id === voiceId);\n        let percent = 0;\n        const stop = () => {\n          window.clearInterval(timer);\n          signal.removeEventListener('abort', onAbort);\n        };\n        const onAbort = () => {\n          stop();\n          reject(abortError());\n        };\n        const timer = window.setInterval(() => {\n          if (percent === 30 && (scenario === 'quota' || scenario === 'rejected')) {\n            stop();\n            reject(new SpeechError(scenario === 'quota' ? 'quota-exceeded' : 'text-rejected'));\n            return;\n          }\n          if (!voice || text.trim() === '' || text.length > voice.maxCharacters) {\n            stop();\n            reject(new SpeechError('text-rejected'));\n            return;\n          }\n          percent += 10;\n          onProgress(percent);\n          if (percent === 100) {\n            stop();\n            resolve({ voiceId, text, seconds: Math.max(1, Math.round(text.length / 14)) });\n          }\n        }, every);\n        signal.addEventListener('abort', onAbort);\n      });\n    },\n  };\n}\n\nexport type PanelStatus = 'loading-voices' | 'voices-failed' | 'idle' | 'generating' | 'done' | 'failed';\n\nexport interface SpeakerPanelProps {\n  status: PanelStatus;\n  /** Empty until the voices load. */\n  voices: Voice[];\n  voiceId: VoiceId | null;\n  text: string;\n  /** The job's last reported percentage while generating; null otherwise. */\n  progress: number | null;\n  clip: Clip | null;\n  /** A message for people, shown whenever it is not null. */\n  error: string | null;\n  /** Generate is disabled when this is false. */\n  canGenerate: boolean;\n  onVoiceChange: (voiceId: VoiceId) => void;\n  onTextChange: (text: string) => void;\n  onGenerate: () => void;\n  onCancel: () => void;\n  onRetryVoices: () => void;\n}\n\nconst STATUS_TEXT: Record<PanelStatus, string> = {\n  'loading-voices': 'Loading voices…',\n  'voices-failed': 'Voices unavailable',\n  idle: 'Ready',\n  generating: 'Generating…',\n  done: 'Done',\n  failed: 'Failed',\n};\n\n/** Given and working: it renders what its props say and reports what the user does. */\nexport function SpeakerPanel(props: SpeakerPanelProps) {\n  const voice = props.voices.find((candidate) => candidate.id === props.voiceId) ?? null;\n  const clipVoice = props.clip ? props.voices.find((candidate) => candidate.id === props.clip?.voiceId) : null;\n  return (\n    <section className=\"panel\" aria-label=\"Speech studio\">\n      <p className=\"status\" role=\"status\">\n        {STATUS_TEXT[props.status]}\n      </p>\n      {props.status === 'generating' && props.progress !== null && (\n        <p className=\"progress\" data-percent={props.progress}>\n          {props.progress}%\n        </p>\n      )}\n      {props.error !== null && (\n        <p className=\"error\" role=\"alert\">\n          {props.error}\n        </p>\n      )}\n      {props.status === 'voices-failed' && (\n        <button type=\"button\" className=\"retry-voices\" onClick={props.onRetryVoices}>\n          Load voices again\n        </button>\n      )}\n      <label className=\"field\">\n        <span className=\"field-label\">Voice</span>\n        <select\n          className=\"voice\"\n          value={props.voiceId ?? ''}\n          disabled={props.voices.length === 0}\n          onChange={(event) => props.onVoiceChange(event.target.value)}\n        >\n          {props.voices.map((candidate) => (\n            <option key={candidate.id} value={candidate.id}>\n              {candidate.name}\n            </option>\n          ))}\n        </select>\n      </label>\n      <label className=\"field\">\n        <span className=\"field-label\">Text</span>\n        <textarea className=\"text\" rows={4} value={props.text} onChange={(event) => props.onTextChange(event.target.value)} />\n      </label>\n      <p className={voice && props.text.length > voice.maxCharacters ? 'char-count over' : 'char-count'}>\n        {props.text.length} / {voice ? voice.maxCharacters : '—'}\n      </p>\n      <div className=\"actions\">\n        <button type=\"button\" className=\"generate\" disabled={!props.canGenerate} onClick={props.onGenerate}>\n          Generate\n        </button>\n        {props.status === 'generating' && (\n          <button type=\"button\" className=\"cancel\" onClick={props.onCancel}>\n            Cancel\n          </button>\n        )}\n      </div>\n      {props.clip && (\n        <figure className=\"clip\">\n          <figcaption className=\"clip-voice\">{clipVoice ? clipVoice.name : props.clip.voiceId}</figcaption>\n          <blockquote className=\"clip-text\">{props.clip.text}</blockquote>\n          <span className=\"clip-seconds\">{props.clip.seconds} s</span>\n        </figure>\n      )}\n    </section>\n  );\n}\n\n// ---------------------------------------------------------------------------------------------------------------\n\nconst messageFor = (reason: unknown) =>\n  reason instanceof SpeechError ? ERROR_MESSAGES[reason.code] : ERROR_MESSAGES['service-unavailable'];\n\nfunction Studio({ service }: { service: SpeechService }) {\n  const [voices, setVoices] = useState<Voice[]>([]);\n  const [voiceId, setVoiceId] = useState<VoiceId | null>(null);\n  const [text, setText] = useState('');\n  const [status, setStatus] = useState<PanelStatus>('loading-voices');\n  const [progress, setProgress] = useState<number | null>(null);\n  const [clip, setClip] = useState<Clip | null>(null);\n  const [error, setError] = useState<string | null>(null);\n  const [voiceRequest, setVoiceRequest] = useState(0);\n  // The job that may change the screen. Any other job's progress, clip or failure is ignored.\n  const jobRef = useRef<AbortController | null>(null);\n\n  useEffect(() => {\n    let current = true;\n    service.listVoices().then(\n      (list) => {\n        if (!current) return;\n        setVoices(list);\n        setVoiceId(list[0]?.id ?? null);\n        setStatus('idle');\n      },\n      (reason) => {\n        if (!current) return;\n        setStatus('voices-failed');\n        setError(messageFor(reason));\n      },\n    );\n    return () => {\n      current = false;\n    };\n  }, [service, voiceRequest]);\n\n  // Unmounting stops the job still running, which stops its timers.\n  useEffect(\n    () => () => {\n      const job = jobRef.current;\n      jobRef.current = null;\n      job?.abort();\n    },\n    [],\n  );\n\n  const voice = voices.find((candidate) => candidate.id === voiceId) ?? null;\n  // A voice is selected only once the voices are in, so this is false while they load or after they fail.\n  const canGenerate = voice !== null && text.trim() !== '' && text.length <= voice.maxCharacters;\n\n  const generate = () => {\n    if (!canGenerate || voice === null) return;\n    jobRef.current?.abort();\n    const job = new AbortController();\n    jobRef.current = job;\n    setStatus('generating');\n    setProgress(null);\n    setClip(null);\n    setError(null);\n    service\n      .synthesize(text, voice.id, {\n        signal: job.signal,\n        onProgress: (percent) => {\n          if (jobRef.current === job) setProgress(percent);\n        },\n      })\n      .then(\n        (result) => {\n          if (jobRef.current !== job) return;\n          jobRef.current = null;\n          setProgress(null);\n          setClip(result);\n          setStatus('done');\n        },\n        (reason) => {\n          // A replaced or cancelled job has already handed the screen on; its AbortError changes nothing.\n          if (jobRef.current !== job) return;\n          jobRef.current = null;\n          setProgress(null);\n          setStatus('failed');\n          setError(messageFor(reason));\n        },\n      );\n  };\n\n  const retryVoices = () => {\n    setStatus('loading-voices');\n    setError(null);\n    setVoiceRequest((count) => count + 1);\n  };\n\n  const cancel = () => {\n    const job = jobRef.current;\n    if (job === null) return;\n    jobRef.current = null;\n    job.abort();\n    setProgress(null);\n    setStatus('idle');\n  };\n\n  return (\n    <SpeakerPanel\n      status={status}\n      voices={voices}\n      voiceId={voiceId}\n      text={text}\n      progress={progress}\n      clip={clip}\n      error={error}\n      canGenerate={canGenerate}\n      onVoiceChange={setVoiceId}\n      onTextChange={setText}\n      onGenerate={generate}\n      onCancel={cancel}\n      onRetryVoices={retryVoices}\n    />\n  );\n}\n\n// Given: the page around Studio. A scenario switch builds a new service and mounts a new Studio for it.\nexport default function App() {\n  const [scenario, setScenario] = useState<Scenario>('normal');\n  const service = useMemo(() => createSpeechService(scenario), [scenario]);\n  return (\n    <main className=\"main\">\n      <header className=\"header\">\n        <h1 className=\"title\">Speech Studio</h1>\n        <label className=\"scenario-field\">\n          <span className=\"field-label\">Service scenario</span>\n          <select className=\"scenario\" value={scenario} onChange={(event) => setScenario(event.target.value as Scenario)}>\n            <option value=\"normal\">Normal</option>\n            <option value=\"slow\">Slow jobs</option>\n            <option value=\"voices-down\">Voices down at first</option>\n            <option value=\"quota\">Quota used up</option>\n            <option value=\"rejected\">Text rejected</option>\n          </select>\n        </label>\n      </header>\n      <Studio key={scenario} service={service} />\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-words-from-the-code",
+          "title": "Turn the error code into words",
+          "anchor": {
+            "lineStart": 236,
+            "lineEnd": 236,
+            "snippet": "const messageFor = (reason: unknown) =>"
+          },
+          "why": "The types say the service fails with a SpeechError whose message is a code for logs, and that ERROR_MESSAGES holds what people should read for each code. One helper maps a rejection to that text for the voices and the jobs. The only other rejection the service sends is the AbortError of a stopped job, which the guard drops before it gets here; anything else would be a bug, and the helper still shows the unavailable text rather than raw output, where a real app would also report it.",
+          "alternative": "Show the error's message, or a generic 'Something went wrong'.",
+          "tradeoff": "The message reads speech_error:quota-exceeded, which tells nobody what to do; a generic line hides the one case, a used-up quota, where the user can act."
+        },
+        {
+          "id": "a2-ignore-a-late-voice-list",
+          "title": "Ignore a voice list that arrives too late",
+          "anchor": {
+            "lineStart": 252,
+            "lineEnd": 252,
+            "snippet": "let current = true;"
+          },
+          "why": "listVoices takes no signal, so an answer cannot be stopped, only ignored. The flag is cleared when the effect is cleaned up, on unmount or before a retry runs it again, so an answer only lands for the request that is still current.",
+          "alternative": "Let every answer set state.",
+          "tradeoff": "In this app nothing goes wrong yet: a retry only starts after a failure, and a scenario switch mounts a new Studio. The flag keeps it that way if a reload button is ever shown while the voices load, when a second request could overtake the first."
+        },
+        {
+          "id": "a3-limit-from-the-voice",
+          "title": "Read the limit from the selected voice",
+          "anchor": {
+            "lineStart": 283,
+            "lineEnd": 283,
+            "snippet": "const canGenerate = voice !== null && text.trim() !== '' && text.length <= voice.maxCharacters;"
+          },
+          "why": "maxCharacters is a field of Voice, so the limit changes with the selection: Kit takes 40 characters, Inès 120, Rowan 200. Deriving canGenerate on every render keeps it right after a voice change, a text change or the voices arriving, with no state to keep in sync.",
+          "alternative": "Use one limit for every voice, or store canGenerate in state and update it in handlers.",
+          "tradeoff": "A fixed number enables text the service will reject for a short-form voice; stored state goes stale the first time a handler forgets to update it."
+        },
+        {
+          "id": "a4-one-current-job",
+          "title": "Keep one job that may change the screen",
+          "anchor": {
+            "lineStart": 249,
+            "lineEnd": 249,
+            "snippet": "const jobRef = useRef<AbortController | null>(null);"
+          },
+          "why": "The controller of the running job lives in a ref: it is not something to render, and every callback reads the latest value. A job's progress, clip or failure reaches the screen only while its controller is still the one in the ref.",
+          "alternative": "Keep the controller in state.",
+          "tradeoff": "State would re-render for something nothing displays, and callbacks created before the update would compare against an old value."
+        },
+        {
+          "id": "a5-replace-stops-the-old-job",
+          "title": "Stop the old job when a new one starts",
+          "anchor": {
+            "lineStart": 287,
+            "lineEnd": 287,
+            "snippet": "    jobRef.current?.abort();"
+          },
+          "why": "Generate stays enabled during a job, so a second click replaces the first. Aborting the old job stops its timers and its progress through the signal, instead of letting it run to the end for nothing; the guard below still decides what may reach the screen.",
+          "alternative": "Leave the old job running and only ignore its results.",
+          "tradeoff": "The screen stays right, but the old job keeps its timers and its quota cost until it ends; the checks count those timers after a replacement."
+        },
+        {
+          "id": "a6-guard-every-result",
+          "title": "Ignore every result of a job that is no longer current",
+          "anchor": {
+            "lineStart": 310,
+            "lineEnd": 310,
+            "snippet": "// A replaced or cancelled job has already handed the screen on; its AbortError changes nothing."
+          },
+          "why": "Aborting makes the old job reject with an AbortError, and that rejection arrives after the new job has started. If it were handled as a failure, or as 'back to idle', it would overwrite the new job's generating state; comparing the job with the current one in the ref drops it, and the same check guards progress and the clip.",
+          "alternative": "Treat an AbortError as idle wherever it arrives.",
+          "tradeoff": "It is right for Cancel and wrong for a replaced job: the replaced job aborts while the new one runs, so the screen falls back to Ready mid-job."
+        },
+        {
+          "id": "a7-cancel-hands-the-screen-back",
+          "title": "Cancel hands the screen back before the rejection arrives",
+          "anchor": {
+            "lineStart": 326,
+            "lineEnd": 326,
+            "snippet": "const cancel = () => {"
+          },
+          "why": "Cancel clears the ref, aborts and sets idle. The job's AbortError reaches its handler later, as a microtask, finds no current job and changes nothing, so the screen stays on Ready with no error. What matters is that Cancel clears the ref; the order of the three lines does not.",
+          "alternative": "Only abort, and let the rejection handler turn an AbortError into Ready.",
+          "tradeoff": "It works if the handler checks the error name while the job is still current, but Ready then arrives a microtask later, and the handler grows a branch that is right only for that one case."
+        },
+        {
+          "id": "a8-stop-on-unmount",
+          "title": "Stop the running job when Studio unmounts",
+          "anchor": {
+            "lineStart": 276,
+            "lineEnd": 276,
+            "snippet": "job?.abort();"
+          },
+          "why": "A scenario switch mounts a new Studio and the old one unmounts, as it does when the app unmounts. Aborting the job in the cleanup stops its timers. Clearing the ref first is not needed for the screen, since state set after an unmount goes nowhere, but it keeps one rule for the guard: a job that is not in the ref changes nothing.",
+          "alternative": "Let the job finish and ignore its result.",
+          "tradeoff": "The screen stays right, but the job keeps its timers and its quota cost until it ends, which the timer check counts as a leak."
+        }
+      ]
+    }
+  }
+}

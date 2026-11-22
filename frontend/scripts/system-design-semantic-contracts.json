@@ -1503,6 +1503,197 @@
           ]
         }
       ]
+    },
+    "ai-voice-shopping-assistant": {
+      "assertions": [
+        {
+          "id": "one-phase-machine",
+          "target": "all",
+          "require": [
+            "idle, listening, thinking",
+            "AbortController",
+            "stops the spoken summary before the microphone opens"
+          ]
+        },
+        {
+          "id": "model-returns-patch",
+          "target": "all",
+          "require": [
+            "FilterPatch",
+            "facet values",
+            "validates that JSON against the schema and the facets"
+          ]
+        },
+        {
+          "id": "catalog-owns-products",
+          "target": "visible",
+          "require": [
+            "no product fact ever comes from the model",
+            "filled from catalog records"
+          ]
+        },
+        {
+          "id": "follow-up-edits-filters",
+          "target": "all",
+          "require": [
+            "edits the current filters",
+            "removable chips",
+            "commits only when its search lands"
+          ]
+        },
+        {
+          "id": "typed-path",
+          "target": "visible",
+          "require": [
+            "text box",
+            "feeds the same loop",
+            "live region"
+          ]
+        },
+        {
+          "id": "cancel-is-not-failure",
+          "target": "visible",
+          "require": [
+            "cancels and listens again",
+            "reason is 'cancel'"
+          ]
+        },
+        {
+          "id": "empty-result",
+          "target": "visible",
+          "require": [
+            "keep the chips",
+            "Undo"
+          ]
+        }
+      ],
+      "symbols": [
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "ConversationState",
+          "requiredMembers": [
+            "phase",
+            "consent",
+            "partialText",
+            "textBox",
+            "activeTurn",
+            "filters",
+            "undo",
+            "results",
+            "total",
+            "summary",
+            "choice",
+            "problem",
+            "speakReplies"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "AssistantPhase",
+          "requiredLiterals": [
+            "idle",
+            "listening",
+            "thinking",
+            "speaking"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "SearchFilters",
+          "requiredMembers": [
+            "category",
+            "size",
+            "color",
+            "priceMin",
+            "priceMax",
+            "inStockOnly",
+            "query"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "FilterPatch",
+          "requiredMembers": [
+            "set",
+            "clear"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "IntentResult",
+          "requiredLiterals": [
+            "patch",
+            "choose",
+            "out-of-scope"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "IntentContext",
+          "requiredMembers": [
+            "filters",
+            "facets",
+            "choice"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "IntentClient",
+          "requiredMembers": [
+            "interpret"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "SearchPage",
+          "requiredMembers": [
+            "products",
+            "total"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "CatalogGateway",
+          "requiredMembers": [
+            "facets",
+            "search"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "SpeechClient",
+          "requiredMembers": [
+            "unlock",
+            "listen",
+            "finish",
+            "speak"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "AssistantProblem",
+          "requiredLiterals": [
+            "mic-denied",
+            "no-mic",
+            "mic-busy",
+            "nothing-heard",
+            "not-understood",
+            "out-of-scope",
+            "no-results",
+            "timeout",
+            "connection-lost"
+          ]
+        },
+        {
+          "group": "ai-voice-shopping-assistant-contract",
+          "name": "Choice",
+          "requiredMembers": [
+            "about",
+            "options",
+            "pending"
+          ]
+        }
+      ]
     }
   }
 }

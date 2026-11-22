@@ -147,7 +147,8 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/tesla.svg`,
     monogram: 'T',
   },
-  // Tagged on 2026-10-21. Simple Icons has no JPMorgan, Agoda or xAI mark, so these keep monograms.
+  // Tagged on 2026-10-21. Simple Icons has no JPMorgan, Agoda or xAI mark (checked again on 2026-11-20 against
+  // Simple Icons 16.36.0), so JPMorgan and Agoda keep monograms; xAI's mark is Boxicons' bxl-xai (MIT), added 2026-11-20.
   jpmorgan: {
     slug: 'jpmorgan',
     label: 'JPMorgan Chase',
@@ -161,12 +162,14 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
   xai: {
     slug: 'xai',
     label: 'xAI',
+    logoUrl: `${COMPANY_LOGO_BASE}/xai.svg`,
     monogram: 'X',
   },
-  // Tagged on 2026-10-21; Simple Icons has no Shopee mark, so it keeps a monogram.
+  // Tagged on 2026-10-21; the mark is from Simple Icons 16.36.0 (added 2026-11-20).
   shopee: {
     slug: 'shopee',
     label: 'Shopee',
+    logoUrl: `${COMPANY_LOGO_BASE}/shopee.svg`,
     monogram: 'S',
   },
   // Tagged on 2026-10-23; Simple Icons has no Anduril mark, so it keeps a monogram.
@@ -193,7 +196,8 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     label: 'CrowdStrike',
     monogram: 'C',
   },
-  // Tagged on 2026-11-14. Simple Icons has a Cloudflare mark but none for Disney, so Disney keeps a monogram.
+  // Tagged on 2026-11-14. Cloudflare's mark is from Simple Icons, which has none for Disney; Disney's is Tabler Icons'
+  // brand-disney outline (MIT), added 2026-11-20.
   cloudflare: {
     slug: 'cloudflare',
     label: 'Cloudflare',
@@ -203,7 +207,15 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
   disney: {
     slug: 'disney',
     label: 'Disney',
+    logoUrl: `${COMPANY_LOGO_BASE}/disney.svg`,
     monogram: 'D',
+  },
+  // Tagged on 2026-11-20; the mark is from Simple Icons 16.36.0.
+  binance: {
+    slug: 'binance',
+    label: 'Binance',
+    logoUrl: `${COMPANY_LOGO_BASE}/binance.svg`,
+    monogram: 'B',
   },
 };
 

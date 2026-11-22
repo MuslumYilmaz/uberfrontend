@@ -222,8 +222,8 @@
                 "url": "https://www.aced.io/experiences/eleven-labs-senior-frontend-engineer-interview-925c04",
                 "company": "elevenlabs",
                 "publisher": "Aced",
-                "date": "2026-08",
-                "note": "One senior account describes a live round spent fixing a practical problem together with the interviewer. This async-race fix is a practice version of that round shape, not the reported problem."
+                "date": "2026-07",
+                "note": "One senior account describes a live round that included fixing a practical problem together with the interviewer. This async-race fix is a practice version of that round shape, not the reported problem."
             },
             {
                 "label": "Taro: Stripe frontend engineer interview, 2023",
@@ -424,5 +424,77 @@
             }
         ],
         "reviewModeAsset": "assets/questions/review-modes/intern-budget-case.v1.json"
+    },
+    {
+        "id": "js-debug-spoken-prefix-review",
+        "title": "Case: Review a Junior's Caption Code, Then Rewrite It in One Pass",
+        "seo": {
+            "h1IntentLabel": "Review a junior's caption code, then rewrite it in one pass"
+        },
+        "difficulty": "intermediate",
+        "importance": 3,
+        "updatedAt": "2026-11-22",
+        "tags": [
+            "debugging",
+            "strings",
+            "algorithms"
+        ],
+        "description": {
+            "text": "This case runs in two parts. First a review: work an example by hand, mark the lines you would change and say why while the code stays read-only, then compare with a sample answer. Then the rewrite, checked by tests.\n\nA voice agent reads out text a language model wrote. The written text is always right; what the agent says may repeat a character, part of a word, a word or a phrase, but never drops or changes one. The live caption shows the longest run of whole words from the start of the written text whose characters, spaces included, appear in the spoken text in order. A junior wrote spokenPrefix(intended, spoken) for it. Users report captions that go missing or look wrong.\n\nRewrite it with a single pass over the spoken text: O(n + m) time for a written text of n characters and a spoken one of m, and O(1) extra memory besides the caption. The tests check the captions, not the speed."
+        },
+        "starterCode": "// How much of the intended text the voice agent has said, for the live caption.\n// Written by a junior on the team; users report captions that go missing or look wrong.\nexport default function spokenPrefix(intended, spoken) {\n  const n = intended.length;\n  const m = spoken.length;\n  // dp[i][j] is the length of the longest common subsequence of intended.slice(0, i) and spoken.slice(0, j).\n  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));\n  for (let i = 1; i <= n; i++) {\n    for (let j = 1; j <= m; j++) {\n      if (intended[i - 1] === spoken[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;\n      else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n    }\n  }\n\n  // Walk back from the last cell to rebuild the common subsequence: that is what the agent said.\n  let i = n;\n  let j = m;\n  let said = '';\n  while (i > 0 && j > 0) {\n    if (intended[i - 1] === spoken[j - 1]) {\n      said = intended[i - 1] + said;\n      i -= 1;\n      j -= 1;\n    } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n      i -= 1;\n    } else {\n      j -= 1;\n    }\n  }\n  return said.trimEnd();\n}\n",
+        "tests": "import spokenPrefix from './spokenPrefix';\n\nconst TICKET = 'I can help you book an air ticket';\n\ndescribe('spokenPrefix', () => {\n  test('returns the words said so far, skipping a repeated word', () => {\n    expect(spokenPrefix(TICKET, 'I can can help you book')).toBe('I can help you book');\n  });\n\n  test('a word said twice at the end of the speech counts once', () => {\n    expect(spokenPrefix(TICKET, 'I can can')).toBe('I can');\n    expect(spokenPrefix('your table is booked', 'your table table')).toBe('your table');\n  });\n\n  test('counts a repeated phrase, a restarted word and a stuttered letter once', () => {\n    expect(spokenPrefix(TICKET, 'I can I can heelp you')).toBe('I can help you');\n    expect(spokenPrefix(TICKET, 'I can he help you')).toBe('I can help you');\n    expect(spokenPrefix('you can see your bookings here', 'yyou can see your')).toBe('you can see your');\n  });\n\n  test('reads a repeat as a repeat even when its letters come again later in the text', () => {\n    expect(spokenPrefix('you can see your bookings here', 'you you can see')).toBe('you can see');\n    expect(spokenPrefix('let me check that for you', 'let let me')).toBe('let me');\n  });\n\n  test('a repeat that starts like the next word does not move the caption', () => {\n    expect(spokenPrefix('the thing is here', 'the the')).toBe('the');\n    expect(spokenPrefix(TICKET, 'I can help you book an an')).toBe('I can help you book an');\n  });\n\n  test('returns the whole text once all of it has been said', () => {\n    expect(spokenPrefix(TICKET, TICKET)).toBe(TICKET);\n    expect(spokenPrefix(TICKET, `${TICKET} ticket`)).toBe(TICKET);\n  });\n\n  test('shows whole words only, leaving out a word the speech has not finished', () => {\n    expect(spokenPrefix(TICKET, 'I can he')).toBe('I can');\n    expect(spokenPrefix(TICKET, 'I can help you bo')).toBe('I can help you');\n    expect(spokenPrefix(TICKET, 'I can help')).toBe('I can help');\n  });\n\n  test('never ends the caption on a space', () => {\n    expect(spokenPrefix(TICKET, 'I can ')).toBe('I can');\n    expect(spokenPrefix('let me check that for you', 'let me ')).toBe('let me');\n  });\n\n  test('takes the longer reading when a repeat could also be the next words', () => {\n    expect(spokenPrefix('bye bye for now', 'bye bye')).toBe('bye bye');\n  });\n\n  test('counts the letters inside a repeat toward the next word, in order', () => {\n    // The second \"can\" holds an \"a\" after a space, so by the rule the word \"a\" counts.\n    expect(spokenPrefix('I can a lot', 'I can can')).toBe('I can a');\n    // Spaces count as well: with no space after \"can\", the repeated \"a\" cannot start the next word.\n    expect(spokenPrefix('I can a lot', 'I cana')).toBe('I can');\n  });\n\n  test('returns an empty caption until the first word has been said', () => {\n    expect(spokenPrefix(TICKET, '')).toBe('');\n    expect(spokenPrefix('', '')).toBe('');\n    expect(spokenPrefix('hello there', 'hel')).toBe('');\n  });\n\n  test('gets a long reply full of repeats right', () => {\n    const words = Array.from({ length: 400 }, (_, i) => ['we', 'can', 'book', 'it', 'for', 'you', 'today'][i % 7]);\n    const intended = words.join(' ');\n    // The first 350 words, every fifth one said twice and every eleventh with its first letter doubled.\n    const spoken = words\n      .slice(0, 350)\n      .map((word, i) => (i % 11 === 0 ? word[0] + word : word) + (i % 5 === 0 ? ` ${word}` : ''))\n      .join(' ');\n    expect(spokenPrefix(intended, spoken)).toBe(words.slice(0, 350).join(' '));\n  });\n});\n",
+        "solution": "// How much of the intended text the voice agent has said, for the live caption.\n// The agent only ever repeats itself, so what it has said of the intended text shows up in the spoken text in order:\n// one pass over the spoken text finds how far that reaches, and the caption keeps the whole words up to there.\nexport default function spokenPrefix(intended, spoken) {\n  let said = 0;\n  for (let j = 0; j < spoken.length && said < intended.length; j++) {\n    if (spoken[j] === intended[said]) said += 1;\n  }\n  // A word counts once its last letter has been said: the text ends there, or a space comes next.\n  if (said === intended.length || intended[said] === ' ') return intended.slice(0, said);\n  const lastSpace = intended.lastIndexOf(' ', said - 1);\n  return lastSpace < 0 ? '' : intended.slice(0, lastSpace);\n}\n",
+        "solutionBlock": {
+            "overview": "The rewrite uses what the brief gives: the agent only repeats, so what it has said appears in the spoken text in order, and one pass with a position in each text finds how far that reaches.",
+            "approaches": [
+                {
+                    "title": "Rewrite: one pass with a position in each text",
+                    "prose": "1. Keep a position in the intended text, starting at 0, and walk the spoken text once.\n2. When the spoken character equals the intended one at that position, move the position on. Otherwise the spoken character belongs to a repeat, so only the spoken side moves.\n3. Stop when either text runs out. If the position sits at the end of the text or right before a space, the last word is finished and the caption ends there; otherwise cut back to the last space before the position. Either way the caption never ends on a space.\n\n**Why it is right**\n- Matching each intended character at the first place it can go never costs anything: any later place leaves less of the spoken text for the characters after it. So the position ends at the longest prefix whose characters the spoken text contains in order.\n- That makes an ambiguous repeat count as the next words, the longer reading: \"bye bye\" against \"bye bye for now\" captions \"bye bye\".\n- Cutting back to whole words drops the letters a repeat shares with the next word: \"the the\" against \"the thing is here\" reaches \"the th\" and captions \"the\".\n\n**Cost**\n- O(n + m) time, and O(1) extra memory besides the caption, where the table took O(n × m) of both.\n\n**Follow-ups an interviewer asks**\n- Is \"I can a\" right for \"I can can\" against \"I can a lot\"? By this rule, yes: the second \"can\" holds an \"a\" after a space, letters inside a repeat count in order, and a test pins it. A stricter rule would accept a skipped piece only when it copies the text just said; that is a different contract, and it adds a check of each skipped piece against the text just said.\n- Does the speech arrive in chunks? Keep the position between calls and feed each chunk through the same loop; nothing before it needs reading again.\n- What if the speech may also drop or change words? Then the in-order match no longer holds, and an alignment such as edit distance, with its table, comes back.",
+                    "codeJs": "// How much of the intended text the voice agent has said, for the live caption.\n// The agent only ever repeats itself, so what it has said of the intended text shows up in the spoken text in order:\n// one pass over the spoken text finds how far that reaches, and the caption keeps the whole words up to there.\nexport default function spokenPrefix(intended, spoken) {\n  let said = 0;\n  for (let j = 0; j < spoken.length && said < intended.length; j++) {\n    if (spoken[j] === intended[said]) said += 1;\n  }\n  // A word counts once its last letter has been said: the text ends there, or a space comes next.\n  if (said === intended.length || intended[said] === ' ') return intended.slice(0, said);\n  const lastSpace = intended.lastIndexOf(' ', said - 1);\n  return lastSpace < 0 ? '' : intended.slice(0, lastSpace);\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Fixing the table and returning its longest common subsequence, which can take letters from words the agent never reached.",
+                    "Comparing whole words, so a doubled letter or a restarted word breaks the match.",
+                    "Keeping the letters a repeat shares with the next word, so \"the the\" captions \"the th\".",
+                    "Dropping a doubled word as a repeat when the text itself says it twice."
+                ],
+                "techniques": [
+                    "Before trusting a table, ask which question it answers (a common subsequence) and compare it with the one asked (a prefix).",
+                    "Find the input that separates the two answers: a repeat whose letters appear later in the text.",
+                    "Turn the constraint into the algorithm: if the speech only repeats, a mismatch can only be a repeat, so only the spoken side moves."
+                ]
+            }
+        },
+        "access": "premium",
+        "previewSample": {
+            "label": "From the case brief",
+            "quote": "Users report captions that go missing or look wrong.",
+            "note": "A junior wrote the function behind a voice agent's live caption. Review it without running it, then rewrite it in one pass."
+        },
+        "premiumPreview": {
+            "summary": "A junior's caption code for a voice agent looks wrong to users: review it without running it, name what is wrong and why, then rewrite it in one pass.",
+            "learningOutcomes": [
+                "Review someone else's code for both a crash and a wrong idea, without running it.",
+                "Use a constraint you are given to replace a general algorithm with a simpler one."
+            ],
+            "unlockDescription": "Premium unlocks the junior's code, the sample review, the one-pass rewrite and the tests that check yours."
+        },
+        "companies": [
+            "elevenlabs"
+        ],
+        "sources": [
+            {
+                "label": "PracHub: ElevenLabs software engineer onsite, live coding and product decomposition, November 2026",
+                "url": "https://prachub.com/interview-experiences/elevenlabs-software-engineer-interview-experience-live-coding-and-product-decomposition-onsite-rejected",
+                "company": "elevenlabs",
+                "publisher": "PracHub",
+                "date": "2026-11",
+                "note": "Its live coding round asked for the longest prefix of an agent's intended text in speech that repeats characters, words or phrases: first review a junior's LCS solution, which had two mistakes, then write a simpler one. Here the code, faults and tests are ours."
+            }
+        ],
+        "reviewModeAsset": "assets/questions/review-modes/spoken-prefix-case.v1.json"
     }
 ]

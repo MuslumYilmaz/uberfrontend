@@ -114,6 +114,26 @@ test('the generated file carries practice access and rejects links to missing ta
   );
 });
 
+test('a row marked open leaves the lock count and cannot carry what a lock sells', () => {
+  const rows = [
+    { id: 'first', round: 'Coding round', kind: 'React build', topic: 'Topic 8', question: 'Q', sources: [account('a', '2026-01')] },
+    { id: 'topic-only', round: 'Coding round', kind: 'JavaScript', topic: 'Topic 9', question: 'Q', open: true, sources: [account('a', '2026-01')], practice: { label: 'Y', path: '/javascript/trivia/js-y' } },
+    { id: 'locked', round: 'Coding round', kind: 'JavaScript', topic: 'Topic 10', question: 'Q', sources: [account('a', '2026-01')], practice: { label: 'X', path: '/react/coding/react-x' } },
+  ];
+  const summary = questionList.summariseQuestionList(acme(rows));
+  assert.deepEqual(summary.rows.map((row) => [row.id, row.open, row.unlockable]), [['first', true, false], ['topic-only', true, false], ['locked', false, true]]);
+  assert.equal(summary.locked, 1);
+
+  const selling = [rows[0], { ...rows[1], answerGuide: 'p1', practice: { label: 'X', path: '/react/coding/react-x' } }];
+  assert.deepEqual(questionList.questionListProblems(acme(selling)), ['question topic-only: a row marked open cannot carry an answer guide']);
+  const catalogAccess = new Map([['/react/coding/react-x', 'premium'], ['/javascript/trivia/js-y', 'free']]);
+  assert.throws(
+    () => buildCompanyQuestionLists({ processes: { acme: acme(selling) }, questionList, catalogAccess, answerGuides: new Map([['acme', new Set(['p1'])]]) }),
+    (error) => /a row marked open links the Premium task \/react\/coding\/react-x/.test(error.message),
+  );
+  assert.doesNotThrow(() => buildCompanyQuestionLists({ processes: { acme: acme(rows) }, questionList, catalogAccess, answerGuides: new Map() }));
+});
+
 test('the committed question lists match the process data', () => {
   const committed = fs.readFileSync(path.resolve(here, '..', '..', 'cdn', COMPANY_QUESTION_LISTS_RELATIVE_PATH), 'utf8');
   assert.equal(committed, renderCompanyQuestionLists(buildFromRepo()));

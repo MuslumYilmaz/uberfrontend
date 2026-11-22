@@ -126,7 +126,7 @@ describe('CompanyPlanPreviewComponent', () => {
       setup(ELEVENLABS);
       expect(text('h1')).toBe('Your ElevenLabs plan at a glance');
       expect(Array.from(host.querySelectorAll('.preview__chip')).map((chip) => chip.textContent)).toEqual(['Next week', 'Senior', 'React, from reports']);
-      expect(text('.preview__evidence')).toBe('Rounds and tasks from 25 public sources, last checked Nov 3, 2026. These are practice versions, not leaked questions.');
+      expect(text('.preview__evidence')).toBe('Rounds and tasks from 26 public sources, last checked Nov 21, 2026. These are practice versions, not leaked questions.');
       expect(host.textContent).not.toContain('Which framework');
     });
 
@@ -150,7 +150,7 @@ describe('CompanyPlanPreviewComponent', () => {
       expect(rows.length).toBe(3);
       expect(text('#company-plan-open-title')).toBe('Try these 3 tasks for free');
       expect(text('.preview__section-sub')).toBe('They run in your browser. No account needed.');
-      expect(rows[0].getAttribute('href')).toMatch(/^\/javascript\/(coding|debug)\//);
+      expect(rows[0].getAttribute('href')).toMatch(/^\/(javascript|react)\/(coding|debug)\//);
       expect(rows[0].textContent).toMatch(/Modelled on a report: Aced, (Jul|Oct) 2026 · Coding assessment/);
       // A phone shows each row's minutes in its line, so the rows still add up to the plan's total there.
       const times = fixture.componentInstance.openTasks().map((row) => ` · ${row.time}`);

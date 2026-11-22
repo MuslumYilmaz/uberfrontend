@@ -1,0 +1,39 @@
+{
+  "key": "R",
+  "title": "Requirements",
+  "blocks": [
+    {
+      "type": "steps",
+      "title": "A 20-minute spoken search trace",
+      "steps": [
+        {
+          "title": "Start with the simple loop",
+          "text": "The shopper taps talk and asks for running shoes in size 42 under 120. A speech service returns the transcript, the model turns it into a filter patch, the catalog returns products in relevance order, and the browser speaks a short summary filled from them. A text box feeds the same loop without the voice. Product questions and the basket are out of scope."
+        },
+        {
+          "title": "Draw the ownership line",
+          "text": "The browser owns the microphone, the phase, the filters, the results and the summary. Recognition streams to a speech service because browser recognition is uneven; the summary uses the browser speechSynthesis, which a branded server voice can replace later. The model and the catalog API each stay a black box behind its contract, and no product fact ever comes from the model."
+        },
+        {
+          "title": "Keep one conversation store",
+          "text": "One store holds the phase (idle, listening, thinking or speaking) and the active turn with its AbortController. A tap of talk opens a turn, a status beside Talk says Starting until the microphone is live, and a second tap ends listening and releases the microphone. Cancel, shown from the tap through speaking, or Escape drops the turn; a text submit drops it and starts a text turn; talk during thinking or speaking cancels and listens again. Cancelling stops the spoken summary before the microphone opens and leaves the results; talking over the voice is not offered, since an open microphone would hear it."
+        },
+        {
+          "title": "Turn words into a filter patch",
+          "text": "The model gets the transcript, the filters, the facet values and any pending choice, and returns a FilterPatch, a choice or out-of-scope. The store validates that JSON against the schema and the facets, using the rules in the Data section, and the patch commits only when its search lands. A follow-up such as in blue edits the current filters, shown as removable chips."
+        },
+        {
+          "title": "Give every state a way out",
+          "text": "On a voice turn, a choice, an empty result or a problem met while thinking is spoken as a short templated line; problems met while listening are shown, not spoken. Every line also appears as text next to the text box, and the live region announces status once nothing is speaking."
+        }
+      ],
+      "editorialRole": "timeboxed-answer"
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Rejected alternative: let the model recommend in its own words",
+      "text": "A model suggesting products from memory names items, prices and stock the store may not have. Here every line the shopper hears or reads is a template filled from catalog records, facet values or the transcript."
+    }
+  ]
+}

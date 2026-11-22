@@ -887,18 +887,18 @@ const AUTHORED_GUIDE_CASES = [
     path: '/companies/elevenlabs/preview',
     title: 'ElevenLabs Frontend Interview Questions and Coding Assessment Guide',
     description:
-      'ElevenLabs frontend interview: the coding assessment (a 90-minute test, often on CoderPad, or a take-home), the live technical round and 19 reported questions.',
+      'ElevenLabs frontend interview: the coding assessment (a timed test, sometimes on CoderPad, or a take-home), the live technical round and 21 reported questions.',
     h1: 'ElevenLabs Frontend Interview Questions',
     kicker: 'Public ElevenLabs prep guide',
     headings: [
-      'Prepare for product judgment, not ElevenLabs trivia',
-      'What these accounts can tell you, and what to ask the recruiter',
+      'Study in the order the loop runs: the assessment, the live round, then product',
+      'What the accounts settle, what they leave open, and what to ask',
       'ElevenLabs coding assessment and live technical round: how each one runs',
       'questions candidates reported',
-      'Scope the transcript highlight before writing the first line',
+      'Rehearse the timed assessment on one clock',
       'A 7-day ElevenLabs frontend interview preparation plan',
       'Common ElevenLabs frontend interview preparation questions',
-      'Build the underlying skills with free practice',
+      'Free tasks for skills near the ElevenLabs rounds',
       'Sources (',
     ],
     trustFragment: 'not leaked, confirmed or official ElevenLabs questions',
@@ -1392,6 +1392,34 @@ const AUTHORED_GUIDE_CASES = [
     ],
     reportUrl:
       'https://leetcode.com/discuss/post/7396827/',
+  },
+  {
+    label: 'Binance',
+    path: '/companies/binance/preview',
+    title: 'Binance Frontend Interview Questions: 40 Reported + Prep Guide',
+    description:
+      'Binance frontend interview: remote rounds of quick JavaScript and React questions, short utilities, an order book over a socket and 40 reported questions.',
+    h1: 'Binance Frontend Interview Questions',
+    kicker: 'Public Binance prep guide',
+    headings: [
+      'Prepare for a stream of questions, not one long problem',
+      'Where the Binance evidence stops, and what only your recruiter can tell you',
+      'questions candidates reported',
+      'Rehearse rounds one and two as a run of quick questions',
+      'A 7-day Binance frontend interview preparation plan',
+      'Common Binance frontend interview preparation questions',
+      'Free practice for the Binance rounds',
+      'Sources (',
+    ],
+    trustFragment: 'nothing here has been confirmed by Binance',
+    resources: [
+      '/javascript/coding/js-debounce',
+      '/javascript/coding/js-create-deferred-promise',
+      '/react/trivia/react-fiber-scheduling',
+      '/react/trivia/react-render-vs-commit-phase',
+    ],
+    reportUrl:
+      'https://interview.tw/c/CmbI',
   },
 ] as const;
 
@@ -4020,6 +4048,16 @@ test.describe('seo-ssr', () => {
       practicePath: '/javascript/coding/js-get-by-path-1',
     },
     {
+      path: '/companies/binance/preview',
+      heading: 'Binance frontend interview process',
+      tables: 2,
+      after: '<h1',
+      before: 'id="binance-role-lenses"',
+      reportUrl:
+        'https://interview.tw/c/CmbI',
+      practicePath: '/guides/interview-blueprint/quiz',
+    },
+    {
       path: '/companies/airbnb/preview',
       heading: 'Airbnb frontend interview process',
       tables: 1,
@@ -4032,7 +4070,7 @@ test.describe('seo-ssr', () => {
 
   // Every company with a sourced table.
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit',
+    'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'binance', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit',
     'jpmorgan', 'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
     'walmart', 'waymo', 'xai', 'zalando',
   ];

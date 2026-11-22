@@ -23,7 +23,8 @@
       "spotify",
       "walmart",
       "jpmorgan",
-      "shopee"
+      "shopee",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -623,7 +624,8 @@
       "walmart",
       "jpmorgan",
       "agoda",
-      "disney"
+      "disney",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -3625,7 +3627,8 @@
       "tesla",
       "jpmorgan",
       "agoda",
-      "shopee"
+      "shopee",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -4148,7 +4151,8 @@
     "companies": [
       "google",
       "meta",
-      "amazon"
+      "amazon",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -6503,7 +6507,8 @@
       "revolut",
       "zalando",
       "spotify",
-      "shopee"
+      "shopee",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -6885,7 +6890,8 @@
     ],
     "importance": 5,
     "companies": [
-      "apple"
+      "apple",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -7913,7 +7919,8 @@
     "importance": 4,
     "companies": [
       "netflix",
-      "walmart"
+      "walmart",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -8260,7 +8267,8 @@
       "bytedance",
       "agoda",
       "shopee",
-      "cloudflare"
+      "cloudflare",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -8424,7 +8432,8 @@
       "bytedance",
       "apple",
       "zalando",
-      "walmart"
+      "walmart",
+      "binance"
     ],
     "answer": {
       "blocks": [
@@ -9159,7 +9168,8 @@
     "technology": "javascript",
     "companies": [
       "openai",
-      "walmart"
+      "walmart",
+      "binance"
     ],
     "difficulty": "intermediate",
     "importance": 4,

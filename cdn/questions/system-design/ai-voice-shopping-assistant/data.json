@@ -1,0 +1,52 @@
+{
+  "key": "D",
+  "title": "Data",
+  "blocks": [
+    {
+      "type": "code",
+      "language": "typescript",
+      "code": "type AssistantPhase = 'idle' | 'listening' | 'thinking' | 'speaking';\n\ninterface SearchFilters {\n  category: string | null;\n  size: string | null;\n  color: string | null;\n  priceMin: number | null;\n  priceMax: number | null;\n  inStockOnly: boolean;\n  query: string | null;\n}\n\ntype FilterKey = keyof SearchFilters;\ntype FacetKey = 'category' | 'size' | 'color';\n\ninterface FilterPatch {\n  set: Partial<{ [K in FilterKey]: NonNullable<SearchFilters[K]> }>;\n  clear: Exclude<FilterKey, 'inStockOnly'>[];\n}\n\ninterface ProductCard {\n  productId: string;\n  name: string;\n  price: number;\n  currency: string;\n  inStock: boolean;\n  url: string;\n  imageUrl: string;\n}\n\ntype AbortReason = 'cancel' | 'timeout';\n\ninterface Turn {\n  turnId: string;\n  mode: 'voice' | 'text' | 'direct';\n  text: string;\n  draft: SearchFilters | null;\n  controller: AbortController;\n}\n\ninterface Choice {\n  about: FacetKey;\n  options: string[];\n  pending: FilterPatch | null;\n}\n\ntype AssistantProblem =\n  | 'mic-denied'\n  | 'no-mic'\n  | 'mic-busy'\n  | 'nothing-heard'\n  | 'not-understood'\n  | 'out-of-scope'\n  | 'no-results'\n  | 'timeout'\n  | 'connection-lost';\n\ninterface ConversationState {\n  phase: AssistantPhase;\n  consent: 'unknown' | 'given' | 'declined';\n  mic: 'unknown' | 'ready' | 'denied' | 'missing';\n  partialText: string;\n  textBox: string;\n  activeTurn: Turn | null;\n  filters: SearchFilters;\n  undo: SearchFilters | null;\n  results: ProductCard[];\n  total: number;\n  summary: string | null;\n  choice: Choice | null;\n  problem: AssistantProblem | null;\n  speakReplies: boolean;\n}",
+      "validation": {
+        "kind": "contract",
+        "level": "typecheck",
+        "group": "ai-voice-shopping-assistant-contract"
+      }
+    },
+    {
+      "type": "table",
+      "title": "Voice shopping filter rules",
+      "columns": [
+        "Filter",
+        "Rule"
+      ],
+      "rows": [
+        [
+          "category",
+          "Checked first against the category list; a change clears size and color unless the patch sets them"
+        ],
+        [
+          "size and color",
+          "Checked against that category's facets; a miss becomes a choice that keeps the rest of the patch"
+        ],
+        [
+          "priceMin and priceMax",
+          "A patch whose bounds cross is rejected; a bound that would cross an old one clears it"
+        ],
+        [
+          "inStockOnly",
+          "In the chosen size if one is set, otherwise in any size; ProductCard.inStock means the same"
+        ],
+        [
+          "query",
+          "Only words the transcript contains, used by the catalog for relevance"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Consent, storage and the URL",
+      "text": "The first tap of talk asks for voice consent before the microphone prompt: audio goes to the speech service and transcripts to the intent service under their retention terms, and the browser stores neither. Typed searches go to the intent service like any site search, under the store privacy notice. Declining keeps the text box and a link to change the decision later. Each committed search replaces the URL with its filters, so a refresh or a shared link restores it after the same checks."
+    }
+  ]
+}

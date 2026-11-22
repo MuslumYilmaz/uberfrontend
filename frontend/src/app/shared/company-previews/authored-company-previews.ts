@@ -16,6 +16,7 @@ import { CAPITALONE_COMPANY_PREVIEW } from './capital-one-preview-content';
 import { CROWDSTRIKE_COMPANY_PREVIEW } from './crowdstrike-preview-content';
 import { DISNEY_COMPANY_PREVIEW } from './disney-preview-content';
 import { CLOUDFLARE_COMPANY_PREVIEW } from './cloudflare-preview-content';
+import { BINANCE_COMPANY_PREVIEW } from './binance-preview-content';
 import { SPOTIFY_COMPANY_PREVIEW } from './spotify-preview-content';
 import { WAYMO_COMPANY_PREVIEW } from './waymo-preview-content';
 import { XAI_COMPANY_PREVIEW } from './xai-preview-content';
@@ -47,6 +48,7 @@ export const AUTHORED_COMPANY_PREVIEWS: Readonly<Record<string, AuthoredCompanyP
   crowdstrike: CROWDSTRIKE_COMPANY_PREVIEW,
   disney: DISNEY_COMPANY_PREVIEW,
   cloudflare: CLOUDFLARE_COMPANY_PREVIEW,
+  binance: BINANCE_COMPANY_PREVIEW,
 };
 
 export type AuthoredCompanyPreviewRegistry = Readonly<Record<string, AuthoredCompanyPreview>>;

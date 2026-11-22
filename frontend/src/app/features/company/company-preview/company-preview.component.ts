@@ -366,8 +366,8 @@ export class CompanyPreviewComponent implements OnInit {
   /** The closing call of a guide, which names no Premium task. With `lockedQuestions` off the list is open, so it names none. */
   ctaCopy(): string {
     const summary = this.questionSummary();
-    // The first question is open, and a question this reader opened with the free unlock is theirs: neither is counted.
-    const locked = summary ? summary.total - 1 - (this.freeUnlock()?.company === this.slug ? 1 : 0) : 0;
+    // Open questions, and a question this reader opened with the free unlock, are not counted.
+    const locked = summary ? summary.locked - (this.freeUnlock()?.company === this.slug ? 1 : 0) : 0;
     const reported = this.features.lockedQuestions && locked > 0 ? `the other ${locked} reported ${this.label} questions, ` : '';
     return `Premium opens ${reported}every question in the ${this.label} set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`;
   }

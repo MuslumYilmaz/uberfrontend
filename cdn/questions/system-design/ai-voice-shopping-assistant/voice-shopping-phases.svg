@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="vs-phases-title vs-phases-desc">
+  <title id="vs-phases-title">Voice shopping assistant phases</title>
+  <desc id="vs-phases-desc">Talk moves idle to listening once the microphone is live, and talk or silence moves listening to thinking. A summary, a choice or a message moves thinking to speaking on a voice turn; a text or direct turn, or spoken replies switched off, returns to idle instead. Talk during thinking or speaking cancels the turn and listens again, and the end of the summary returns to idle. Cancel or Escape returns to idle from any busy phase, and a text submit starts a text turn. A problem while listening returns to idle with a line on screen; one while thinking is spoken on a voice turn.</desc>
+  <rect width="960" height="540" rx="24" fill="#f7f9fc"/>
+  <text x="48" y="56" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#172033">Talk cancels a busy turn; text and direct turns skip the voice</text>
+  <g fill="#ffffff" stroke="#9aa7bc" stroke-width="2">
+    <rect x="50" y="170" width="160" height="70" rx="14"/>
+    <rect x="300" y="170" width="150" height="70" rx="14"/>
+    <rect x="540" y="170" width="150" height="70" rx="14"/>
+    <rect x="780" y="170" width="150" height="70" rx="14"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#172033" text-anchor="middle">
+    <text x="130" y="202">Idle</text>
+    <text x="375" y="210">Listening</text>
+    <text x="615" y="210">Thinking</text>
+    <text x="855" y="210">Speaking</text>
+  </g>
+  <text x="130" y="224" font-family="Arial, sans-serif" font-size="12" fill="#526078" text-anchor="middle">a message after a problem</text>
+  <g fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M210 205H300" stroke="#315ee8"/>
+    <path d="m288 195 12 10-12 10" stroke="#315ee8"/>
+    <path d="M450 205H540" stroke="#315ee8"/>
+    <path d="m528 195 12 10-12 10" stroke="#315ee8"/>
+    <path d="M690 205H780" stroke="#315ee8"/>
+    <path d="m768 195 12 10-12 10" stroke="#315ee8"/>
+    <path d="M830 170V128H375V170M615 170V128" stroke="#7950b8"/>
+    <path d="m365 158 10 12 10-12" stroke="#7950b8"/>
+    <path d="M900 170V96H130V170" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m120 158 10 12 10-12" stroke="#268455"/>
+    <path d="M110 240V300H590V240" stroke="#315ee8"/>
+    <path d="m580 252 10-12 10 12" stroke="#315ee8"/>
+    <path d="M640 240V345H80V240" stroke="#268455" stroke-dasharray="8 6"/>
+    <path d="m70 252 10-12 10 12" stroke="#268455"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#172033" text-anchor="middle">
+    <text x="255" y="193">talk</text>
+    <text x="495" y="179">talk or</text>
+    <text x="495" y="193">silence</text>
+    <text x="735" y="193">a reply</text>
+    <text x="500" y="120">talk: cancel and listen again</text>
+    <text x="515" y="88">summary ends</text>
+    <text x="350" y="292">text, a tap or Undo</text>
+    <text x="360" y="362">no voice: a text or direct turn, or replies off</text>
+  </g>
+  <text x="48" y="430" font-family="Arial, sans-serif" font-size="14" fill="#526078">Cancel or Escape returns to idle from any busy phase, and a text submit starts a text turn.</text>
+  <text x="48" y="452" font-family="Arial, sans-serif" font-size="14" fill="#526078">A problem while listening returns to idle with a line on screen; one while thinking is spoken on a voice turn.</text>
+</svg>

@@ -8,6 +8,7 @@ export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
   amazon: 'Leadership Principles',
   anduril: 'Onsite',
   apple: 'Team loop',
+  binance: 'React internals questions',
   'booking-com': 'Fit interview',
   bytedance: 'Hiring manager round',
   'capital-one': 'Power Day',

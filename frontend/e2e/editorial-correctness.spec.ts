@@ -36,7 +36,7 @@ const publicCopyCases = [
   },
   {
     path: '/companies/elevenlabs/preview',
-    expected: 'Prepare for product judgment, not ElevenLabs trivia',
+    expected: 'Study in the order the loop runs: the assessment, the live round, then product',
   },
   {
     path: '/companies/datadog/preview',
@@ -105,6 +105,10 @@ const publicCopyCases = [
   {
     path: '/companies/cloudflare/preview',
     expected: 'What the Cloudflare loops reward: speed in React and TypeScript, and the web explained in order',
+  },
+  {
+    path: '/companies/binance/preview',
+    expected: 'Prepare for a stream of questions, not one long problem',
   },
   {
     path: '/system-design',

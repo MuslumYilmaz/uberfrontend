@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "spoken-prefix-case",
+  "title": "Case: review a junior's caption code, then rewrite it",
+  "access": "premium",
+  "format": "find",
+  "sessionMinutes": 45,
+  "supportedQuestions": {
+    "javascript": "js-debug-spoken-prefix-review"
+  },
+  "workedExample": {
+    "prompt": "The model wrote \"I can help you book an air ticket\", and so far the agent has said \"I can can\". What should the caption show, and what does this code do?",
+    "answer": "The caption is \"I can\": the second \"can\" is a repeat, and the agent has not reached \"help\". The code throws. The intended text has 33 characters and the speech 9, but the table has only 10 rows, so the loop reaches a row that was never built. With the table the right way round it returns \"I can an\"."
+  },
+  "mergeRequest": {
+    "title": "Review a junior's caption code, then rewrite it",
+    "description": "Mark what is wrong in spokenPrefix and why, without running it.",
+    "issue": {
+      "title": "What the caption should show",
+      "requirements": [
+        "The intended text, written by the model, is always right; its words are separated by single spaces. The spoken text may repeat a character, part of a word, a word or a phrase, but never drops or changes one.",
+        "The caption is the longest run of whole words from the start of the intended text whose characters, spaces included, appear in the spoken text in order; anything else in the spoken text counts as a repeat.",
+        "A word counts once its last letter has been said; a word the speech has not finished stays out, and the caption never ends on a space.",
+        "When a repeat could also be the next words, the caption takes the longer reading. The letters inside a repeat count in order too, so a repeat can complete a short next word."
+      ]
+    },
+    "files": [
+      {
+        "path": "spokenPrefix.js",
+        "after": "// How much of the intended text the voice agent has said, for the live caption.\n// Written by a junior on the team; users report captions that go missing or look wrong.\nexport default function spokenPrefix(intended, spoken) {\n  const n = intended.length;\n  const m = spoken.length;\n  // dp[i][j] is the length of the longest common subsequence of intended.slice(0, i) and spoken.slice(0, j).\n  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));\n  for (let i = 1; i <= n; i++) {\n    for (let j = 1; j <= m; j++) {\n      if (intended[i - 1] === spoken[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;\n      else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n    }\n  }\n\n  // Walk back from the last cell to rebuild the common subsequence: that is what the agent said.\n  let i = n;\n  let j = m;\n  let said = '';\n  while (i > 0 && j > 0) {\n    if (intended[i - 1] === spoken[j - 1]) {\n      said = intended[i - 1] + said;\n      i -= 1;\n      j -= 1;\n    } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n      i -= 1;\n    } else {\n      j -= 1;\n    }\n  }\n  return said.trimEnd();\n}\n"
+      }
+    ]
+  },
+  "sampleReview": {
+    "summary": "Three faults and a cost: the table's shape (line 7), what the walk back returns (line 19), the half-said word (line 30), and an n × m table where the brief asks for one pass.",
+    "comments": [
+      {
+        "path": "spokenPrefix.js",
+        "line": 7,
+        "snippet": "Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0))",
+        "severity": "blocker",
+        "checked": true,
+        "title": "The table is built the wrong way round",
+        "body": "dp[i][j] puts the intended text on i and the spoken text on j, but the table has m + 1 rows of n + 1 cells. Whenever the spoken text is shorter than the intended one and not empty, the usual case while the agent is still talking, the loop reaches row m + 1, which was never built, and line 10 or 11 throws. When the spoken text is longer, every row is still n + 1 cells wide and row 0 is never written past column n, so the cells beyond it read as undefined and the lengths there go to NaN; no error is raised. Build n + 1 rows of m + 1 cells."
+      },
+      {
+        "path": "spokenPrefix.js",
+        "line": 19,
+        "snippet": "while (i > 0 && j > 0) {",
+        "severity": "blocker",
+        "checked": true,
+        "title": "A common subsequence is not what was said",
+        "body": "The walk back rebuilds a longest common subsequence, and the comment on line 15 calls that what the agent said. With the table fixed, \"I can can\" returns \"I can an\": a common subsequence may take letters from anywhere in the intended text, and \"an\" comes from \"book an air\", which the agent never reached. The caption is a prefix, the whole words from the start that the speech contains in order. Fixing line 7 alone leaves this."
+      },
+      {
+        "path": "spokenPrefix.js",
+        "line": 30,
+        "snippet": "return said.trimEnd();",
+        "severity": "major",
+        "checked": true,
+        "title": "A half-said word stays in the caption",
+        "body": "trimEnd only drops a trailing space. Once the walk back yields a prefix, \"I can he\" against the ticket text still captions \"I can he\", though the agent has not finished \"help\". Keep a word only once its last letter has been said, and otherwise cut back to the last space."
+      },
+      {
+        "path": "spokenPrefix.js",
+        "line": 8,
+        "snippet": "for (let i = 1; i <= n; i++) {",
+        "severity": "minor",
+        "checked": false,
+        "title": "The table costs n × m; the brief asks for one pass",
+        "body": "Two nested loops fill (n + 1) × (m + 1) numbers on every caption update: a 2,000-character reply against its speech is four million cells. The table answers a general question, but the speech only ever repeats, and the brief asks for one pass with no table."
+      }
+    ]
+  }
+}
