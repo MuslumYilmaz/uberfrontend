@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const BillingEvent = require('../models/BillingEvent');
 const CheckoutAttempt = require('../models/CheckoutAttempt');
@@ -16,19 +17,28 @@ const { isProEntitlementActive } = require('../services/billing/entitlements');
 const { applyPendingEntitlementsForUser, normalizeEmail } = require('../services/billing/pending-entitlements');
 const {
   applyNormalizedGumroadEventToUser,
-  applyNormalizedLemonSqueezyEventToUser,
+  applyNormalizedProviderEventToUser,
 } = require('../services/billing/user-billing-state');
 const { normalizeGumroadEvent, verifyGumroadSignature } = require('../services/billing/providers/gumroad');
 const {
   normalizeLemonSqueezyEvent,
   verifyLemonSqueezySignature,
 } = require('../services/billing/providers/lemonsqueezy');
+const {
+  normalizePolarEvent,
+  verifyPolarSignature,
+} = require('../services/billing/providers/polar');
+const {
+  resolvePolarLifetimeProductIds,
+  resolvePolarPlanByProductId,
+  resolvePolarWebhookSecrets,
+} = require('../services/billing/providers/polar-config');
 const { recordPendingEntitlement } = require('../services/billing/pending-entitlements');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 
 const router = express.Router();
 const { requireAuth } = require('../middleware/Auth');
-const SUPPORTED_PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe']);
+const SUPPORTED_PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe', 'polar']);
 const DEFAULT_PROVIDER = String(process.env.BILLING_PROVIDER || 'gumroad').toLowerCase();
 
 function normalizeProvider(raw) {
@@ -186,9 +196,12 @@ function serializeCheckoutAttemptStatus(attempt, user) {
   };
 }
 
-function validateCheckoutAttemptForWebhook(attempt, { eventMode, normalizedUserId, normalized }) {
+function validateCheckoutAttemptForWebhook(
+  attempt,
+  { provider = 'lemonsqueezy', eventMode, normalizedUserId, normalized }
+) {
   if (!attempt) return null;
-  if (attempt.provider !== 'lemonsqueezy') {
+  if (attempt.provider !== provider) {
     return {
       code: 'CHECKOUT_ATTEMPT_PROVIDER_MISMATCH',
       message: 'Webhook provider does not match the checkout attempt provider.',
@@ -213,6 +226,14 @@ function validateCheckoutAttemptForWebhook(attempt, { eventMode, normalizedUserI
       return {
         code: 'CHECKOUT_ATTEMPT_PLAN_MISMATCH',
         message: 'Webhook lifetime status does not match the checkout attempt plan.',
+      };
+    }
+    // Providers that name the product (Polar) must match the plan the attempt sold.
+    const eventPlanId = String(normalized?.planId || '').trim();
+    if (eventPlanId && attempt.planId !== eventPlanId) {
+      return {
+        code: 'CHECKOUT_ATTEMPT_PLAN_MISMATCH',
+        message: 'Webhook product does not match the checkout attempt plan.',
       };
     }
   }
@@ -285,6 +306,7 @@ function serializeVerifiedPurchase(attempt) {
 }
 
 async function persistVerifiedOrderPayment({
+  provider = 'lemonsqueezy',
   attemptId,
   customerUserId,
   eventId,
@@ -308,7 +330,7 @@ async function persistVerifiedOrderPayment({
   await CheckoutAttempt.updateOne(
     {
       attemptId,
-      provider: 'lemonsqueezy',
+      provider,
       mode: eventMode,
       customerUserId,
       $or: [
@@ -488,10 +510,284 @@ async function handleGumroadWebhook(req, res) {
   }
 }
 
-async function handleLemonSqueezyWebhook(req, res) {
+// Everything after signature verification is provider-agnostic: claim the event
+// once, correlate it with the checkout attempt, record the verified payment,
+// defer to a pending entitlement when the user is unknown, then apply the
+// entitlement in order. `normalized` is the provider module's output and
+// `eventMode` the mode its secret proved.
+async function processVerifiedProviderEvent({ provider, req, res, normalized, eventMode, debug }) {
   let normalizedAttemptId = '';
   let acquisition = null;
   let acquiredEventId = '';
+  try {
+    if (!normalized.eventTypeKnown) {
+      console.warn(`[${provider}] unknown event type`, {
+        eventId: normalized.eventId,
+        eventType: normalized.eventType,
+        keys: Object.keys(req.body || {}),
+      });
+    }
+    if (normalized.validUntilInferred && normalized.entitlement.status === 'cancelled') {
+      console.warn(`[${provider}] cancelled event missing end date; preserving existing validUntil`, {
+        eventId: normalized.eventId,
+        eventType: normalized.eventType,
+      });
+    }
+    const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
+    const purchaseEmail = normalized.purchaseEmail ? normalized.purchaseEmail.trim().toLowerCase() : '';
+    const rawUserId = normalized.userId ? String(normalized.userId).trim() : '';
+    // A foreign customer reference that is not one of our ids cannot be looked up; the
+    // event then waits as a pending entitlement instead of crashing the webhook.
+    const normalizedUserId = rawUserId && mongoose.isValidObjectId(rawUserId) ? rawUserId : '';
+    if (rawUserId && !normalizedUserId && debug) {
+      console.warn(`[${provider}] customer reference is not a user id; deferring`, { eventType: normalized.eventType });
+    }
+    normalizedAttemptId = normalized.attemptId ? String(normalized.attemptId).trim() : '';
+    const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
+    if (!normalized.eventId) {
+      if (debug) {
+        console.warn(`[${provider}] missing event id`);
+      }
+      return res.status(400).json({ error: 'Missing event id' });
+    }
+    if (!normalizedEmail && !normalizedUserId) {
+      if (debug) {
+        console.warn(`[${provider}] missing email and user id`);
+      }
+      return res.status(400).json({ error: 'Missing email' });
+    }
+
+    acquiredEventId = eventId;
+    acquisition = await eventStore.acquireEvent({
+      provider,
+      eventId,
+      eventType: normalized.eventType,
+      email: normalizedEmail || purchaseEmail || undefined,
+      payload: req.body,
+    });
+
+    if (!acquisition.acquired) {
+      return respondToUnacquiredEvent(res, acquisition);
+    }
+
+    let checkoutAttempt = normalizedAttemptId
+      ? await CheckoutAttempt.findOne({ attemptId: normalizedAttemptId }).lean()
+      : null;
+    // Polar copies the checkout id onto the order and the subscription, so an event
+    // without our metadata still finds the attempt that created the session.
+    const providerCheckoutId = normalized.checkoutId ? String(normalized.checkoutId).trim() : '';
+    if (!checkoutAttempt && providerCheckoutId) {
+      checkoutAttempt = await CheckoutAttempt.findOne({ provider, providerCheckoutId }).lean();
+      if (checkoutAttempt?.attemptId) normalizedAttemptId = checkoutAttempt.attemptId;
+    }
+    const checkoutMismatch =
+      validateRuntimeModeForWebhook(eventMode, normalized) ||
+      validateCheckoutAttemptForWebhook(checkoutAttempt, {
+        provider,
+        eventMode,
+        normalizedUserId,
+        normalized,
+      });
+    if (checkoutMismatch) {
+      await updateCheckoutAttempt(normalizedAttemptId, {
+        status: 'failed',
+        billingEventId: eventId,
+        lastErrorCode: checkoutMismatch.code,
+        lastErrorMessage: checkoutMismatch.message,
+      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+      await completeClaimedEvent({
+        provider,
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'processed_checkout_mismatch',
+      });
+      return res.status(200).json({
+        ok: true,
+        ignored: true,
+        code: checkoutMismatch.code,
+      });
+    }
+
+    await persistVerifiedOrderPayment({
+      provider,
+      attemptId: normalizedAttemptId,
+      customerUserId: normalizedUserId,
+      eventId,
+      eventMode,
+      normalized,
+      verifiedAt: acquisition.event.receivedAt,
+    });
+
+    await updateCheckoutAttempt(normalizedAttemptId, {
+      status: 'webhook_received',
+      billingEventId: eventId,
+      providerOrderId: normalized.orderId || undefined,
+      providerSubscriptionId: normalized.subscriptionId || undefined,
+    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+
+    if (normalized.shouldApplyEntitlement === false) {
+      await completeClaimedEvent({
+        provider,
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'processed_no_entitlement',
+      });
+      return res.status(200).json({ ok: true, ignored: true });
+    }
+
+    let user = null;
+    if (normalizedUserId) {
+      user = await User.findById(normalizedUserId);
+    }
+
+    if (!normalizedUserId && normalizedEmail) {
+      if (debug) {
+        console.warn(`[${provider}] missing user id; deferring to pending entitlement`, {
+          eventId,
+          eventType: normalized.eventType,
+        });
+      }
+      await recordPendingEntitlement(PendingEntitlement, {
+        provider,
+        eventId,
+        eventType: normalized.eventType,
+        userId: normalizedUserId || undefined,
+        email: normalizedEmail,
+        entitlement: normalized.entitlement,
+        orderId: normalized.orderId,
+        subscriptionId: normalized.subscriptionId,
+        customerId: normalized.customerId,
+        manageUrl: normalized.manageUrl,
+        payload: req.body,
+        eventReceivedAt: acquisition.event.receivedAt,
+        eventOrderKey: acquisition.eventOrderKey,
+      });
+      await updateCheckoutAttempt(normalizedAttemptId, {
+        status: 'pending_user_match',
+        billingEventId: eventId,
+        providerOrderId: normalized.orderId || undefined,
+        providerSubscriptionId: normalized.subscriptionId || undefined,
+        lastErrorCode: 'PENDING_USER_MATCH',
+        lastErrorMessage: 'Payment received, but we could not safely match it to this account yet.',
+      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+      await completeClaimedEvent({
+        provider,
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'pending_user',
+      });
+      return res.status(200).json({ ok: true, userFound: false });
+    }
+
+    if (!user) {
+      if (debug) {
+        console.warn(`[${provider}] user not found for event ${eventId}`);
+      }
+      if (normalizedEmail || normalizedUserId) {
+        await recordPendingEntitlement(PendingEntitlement, {
+          provider,
+          eventId,
+          eventType: normalized.eventType,
+          userId: normalizedUserId || undefined,
+          email: normalizedEmail,
+          entitlement: normalized.entitlement,
+          orderId: normalized.orderId,
+          subscriptionId: normalized.subscriptionId,
+          customerId: normalized.customerId,
+          manageUrl: normalized.manageUrl,
+          payload: req.body,
+          eventReceivedAt: acquisition.event.receivedAt,
+          eventOrderKey: acquisition.eventOrderKey,
+        });
+        await updateCheckoutAttempt(normalizedAttemptId, {
+          status: 'pending_user_match',
+          billingEventId: eventId,
+          providerOrderId: normalized.orderId || undefined,
+          providerSubscriptionId: normalized.subscriptionId || undefined,
+          lastErrorCode: 'PENDING_USER_MATCH',
+          lastErrorMessage: 'Payment received, but the referenced account could not be found yet.',
+        }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+      }
+      await completeClaimedEvent({
+        provider,
+        eventId,
+        leaseToken: acquisition.leaseToken,
+        processingStatus: 'pending_user',
+      });
+      return res.status(200).json({ ok: true, userFound: false });
+    }
+
+    const orderedUpdate = await applyOrderedProviderEvent({
+      user,
+      provider,
+      eventId,
+      eventOrderKey: acquisition.eventOrderKey,
+      mutate: (currentUser) => {
+        applyNormalizedProviderEventToUser(currentUser, normalized, {
+          provider,
+          eventId,
+          purchaseEmail,
+          eventReceivedAt: acquisition.event.receivedAt,
+          eventOrderKey: acquisition.eventOrderKey,
+        });
+      },
+    });
+    user = orderedUpdate.user;
+    let processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
+    if (orderedUpdate.outcome === 'stale') {
+      processedStatus = 'processed_stale';
+    }
+    await updateCheckoutAttempt(normalizedAttemptId, {
+      status: 'applied',
+      billingEventId: eventId,
+      providerOrderId: normalized.orderId || undefined,
+      providerSubscriptionId: normalized.subscriptionId || undefined,
+      completedAt: new Date(),
+      customerEmail: user.email,
+      customerUserId: String(user._id),
+      lastErrorCode: null,
+      lastErrorMessage: null,
+    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
+    await completeClaimedEvent({
+      provider,
+      eventId,
+      leaseToken: acquisition.leaseToken,
+      processingStatus: processedStatus,
+      userId: user._id,
+    });
+    if (debug) {
+      console.log(`[${provider}] updated user ${user._id} -> ${user.entitlements.pro.status}`);
+    }
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error(`[${provider}] webhook error:`, err);
+    let failureOwned = false;
+    if (acquisition?.acquired && acquiredEventId) {
+      try {
+        const failureResult = await eventStore.failEvent({
+          provider,
+          eventId: acquiredEventId,
+          leaseToken: acquisition.leaseToken,
+          error: err,
+        });
+        failureOwned = failureResult.failed;
+      } catch (failErr) {
+        console.error(`[${provider}] failed to persist retryable event state:`, failErr);
+      }
+    }
+    if (normalizedAttemptId && failureOwned) {
+      try {
+        await failCheckoutAttemptForOwnedEvent(normalizedAttemptId, acquiredEventId, err);
+      } catch (attemptErr) {
+        console.error(`[${provider}] failed to persist checkout attempt failure:`, attemptErr);
+      }
+    }
+    return res.status(500).json({ error: 'Webhook processing failed' });
+  }
+}
+
+async function handleLemonSqueezyWebhook(req, res) {
   try {
     const debug =
       process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
@@ -591,254 +887,85 @@ async function handleLemonSqueezyWebhook(req, res) {
     }
 
     const normalized = normalizeLemonSqueezyEvent(req.body || {}, rawBody);
-    if (!normalized.eventTypeKnown) {
-      console.warn('[lemonsqueezy] unknown event type', {
-        eventId: normalized.eventId,
-        eventType: normalized.eventType,
-        keys: Object.keys(req.body || {}),
-      });
-    }
-    if (normalized.validUntilInferred && normalized.entitlement.status === 'cancelled') {
-      console.warn('[lemonsqueezy] cancelled event missing end date; preserving existing validUntil', {
-        eventId: normalized.eventId,
-        eventType: normalized.eventType,
-      });
-    }
-    const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
-    const purchaseEmail = normalized.purchaseEmail ? normalized.purchaseEmail.trim().toLowerCase() : '';
-    const normalizedUserId = normalized.userId ? String(normalized.userId).trim() : '';
-    normalizedAttemptId = normalized.attemptId ? String(normalized.attemptId).trim() : '';
-    const eventMode = chosenMode || 'unknown';
-    const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
-    if (!normalized.eventId) {
-      if (debug) {
-        console.warn('[lemonsqueezy] missing event id');
-      }
-      return res.status(400).json({ error: 'Missing event id' });
-    }
-    if (!normalizedEmail && !normalizedUserId) {
-      if (debug) {
-        console.warn('[lemonsqueezy] missing email and user id');
-      }
-      return res.status(400).json({ error: 'Missing email' });
-    }
-
-    acquiredEventId = eventId;
-    acquisition = await eventStore.acquireEvent({
+    return processVerifiedProviderEvent({
       provider: 'lemonsqueezy',
-      eventId,
-      eventType: normalized.eventType,
-      email: normalizedEmail || purchaseEmail || undefined,
-      payload: req.body,
-    });
-
-    if (!acquisition.acquired) {
-      return respondToUnacquiredEvent(res, acquisition);
-    }
-
-    const checkoutAttempt = normalizedAttemptId
-      ? await CheckoutAttempt.findOne({ attemptId: normalizedAttemptId }).lean()
-      : null;
-    const checkoutMismatch =
-      validateRuntimeModeForWebhook(eventMode, normalized) ||
-      validateCheckoutAttemptForWebhook(checkoutAttempt, {
-        eventMode,
-        normalizedUserId,
-        normalized,
-      });
-    if (checkoutMismatch) {
-      await updateCheckoutAttempt(normalizedAttemptId, {
-        status: 'failed',
-        billingEventId: eventId,
-        lastErrorCode: checkoutMismatch.code,
-        lastErrorMessage: checkoutMismatch.message,
-      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
-      await completeClaimedEvent({
-        provider: 'lemonsqueezy',
-        eventId,
-        leaseToken: acquisition.leaseToken,
-        processingStatus: 'processed_checkout_mismatch',
-      });
-      return res.status(200).json({
-        ok: true,
-        ignored: true,
-        code: checkoutMismatch.code,
-      });
-    }
-
-    await persistVerifiedOrderPayment({
-      attemptId: normalizedAttemptId,
-      customerUserId: normalizedUserId,
-      eventId,
-      eventMode,
+      req,
+      res,
       normalized,
-      verifiedAt: acquisition.event.receivedAt,
+      eventMode: chosenMode || 'unknown',
+      debug,
     });
-
-    await updateCheckoutAttempt(normalizedAttemptId, {
-      status: 'webhook_received',
-      billingEventId: eventId,
-      providerOrderId: normalized.orderId || undefined,
-      providerSubscriptionId: normalized.subscriptionId || undefined,
-    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
-
-    if (normalized.shouldApplyEntitlement === false) {
-      await completeClaimedEvent({
-        provider: 'lemonsqueezy',
-        eventId,
-        leaseToken: acquisition.leaseToken,
-        processingStatus: 'processed_no_entitlement',
-      });
-      return res.status(200).json({ ok: true, ignored: true });
-    }
-
-    let user = null;
-    if (normalizedUserId) {
-      user = await User.findById(normalizedUserId);
-    }
-
-    if (!normalizedUserId && normalizedEmail) {
-      if (debug) {
-        console.warn('[lemonsqueezy] missing userId in custom_data; deferring to pending entitlement', {
-          eventId,
-          eventType: normalized.eventType,
-        });
-      }
-      await recordPendingEntitlement(PendingEntitlement, {
-        provider: 'lemonsqueezy',
-        eventId,
-        eventType: normalized.eventType,
-        userId: normalizedUserId || undefined,
-        email: normalizedEmail,
-        entitlement: normalized.entitlement,
-        orderId: normalized.orderId,
-        subscriptionId: normalized.subscriptionId,
-        customerId: normalized.customerId,
-        manageUrl: normalized.manageUrl,
-        payload: req.body,
-        eventReceivedAt: acquisition.event.receivedAt,
-        eventOrderKey: acquisition.eventOrderKey,
-      });
-      await updateCheckoutAttempt(normalizedAttemptId, {
-        status: 'pending_user_match',
-        billingEventId: eventId,
-        providerOrderId: normalized.orderId || undefined,
-        providerSubscriptionId: normalized.subscriptionId || undefined,
-        lastErrorCode: 'PENDING_USER_MATCH',
-        lastErrorMessage: 'Payment received, but we could not safely match it to this account yet.',
-      }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
-      await completeClaimedEvent({
-        provider: 'lemonsqueezy',
-        eventId,
-        leaseToken: acquisition.leaseToken,
-        processingStatus: 'pending_user',
-      });
-      return res.status(200).json({ ok: true, userFound: false });
-    }
-
-    if (!user) {
-      if (debug) {
-        console.warn(`[lemonsqueezy] user not found for event ${eventId}`);
-      }
-      if (normalizedEmail || normalizedUserId) {
-        await recordPendingEntitlement(PendingEntitlement, {
-          provider: 'lemonsqueezy',
-          eventId,
-          eventType: normalized.eventType,
-          userId: normalizedUserId || undefined,
-          email: normalizedEmail,
-          entitlement: normalized.entitlement,
-          orderId: normalized.orderId,
-          subscriptionId: normalized.subscriptionId,
-          customerId: normalized.customerId,
-          manageUrl: normalized.manageUrl,
-          payload: req.body,
-          eventReceivedAt: acquisition.event.receivedAt,
-          eventOrderKey: acquisition.eventOrderKey,
-        });
-        await updateCheckoutAttempt(normalizedAttemptId, {
-          status: 'pending_user_match',
-          billingEventId: eventId,
-          providerOrderId: normalized.orderId || undefined,
-          providerSubscriptionId: normalized.subscriptionId || undefined,
-          lastErrorCode: 'PENDING_USER_MATCH',
-          lastErrorMessage: 'Payment received, but the referenced account could not be found yet.',
-        }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
-      }
-      await completeClaimedEvent({
-        provider: 'lemonsqueezy',
-        eventId,
-        leaseToken: acquisition.leaseToken,
-        processingStatus: 'pending_user',
-      });
-      return res.status(200).json({ ok: true, userFound: false });
-    }
-
-    const orderedUpdate = await applyOrderedProviderEvent({
-      user,
-      provider: 'lemonsqueezy',
-      eventId,
-      eventOrderKey: acquisition.eventOrderKey,
-      mutate: (currentUser) => {
-        applyNormalizedLemonSqueezyEventToUser(currentUser, normalized, {
-          eventId,
-          purchaseEmail,
-          eventReceivedAt: acquisition.event.receivedAt,
-          eventOrderKey: acquisition.eventOrderKey,
-        });
-      },
-    });
-    user = orderedUpdate.user;
-    let processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
-    if (orderedUpdate.outcome === 'stale') {
-      processedStatus = 'processed_stale';
-    }
-    await updateCheckoutAttempt(normalizedAttemptId, {
-      status: 'applied',
-      billingEventId: eventId,
-      providerOrderId: normalized.orderId || undefined,
-      providerSubscriptionId: normalized.subscriptionId || undefined,
-      completedAt: new Date(),
-      customerEmail: user.email,
-      customerUserId: String(user._id),
-      lastErrorCode: null,
-      lastErrorMessage: null,
-    }, { status: { $in: NONTERMINAL_ATTEMPT_STATUSES } });
-    await completeClaimedEvent({
-      provider: 'lemonsqueezy',
-      eventId,
-      leaseToken: acquisition.leaseToken,
-      processingStatus: processedStatus,
-      userId: user._id,
-    });
-    if (debug) {
-      console.log(`[lemonsqueezy] updated user ${user._id} -> ${user.entitlements.pro.status}`);
-    }
-
-    return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('[lemonsqueezy] webhook error:', err);
-    let failureOwned = false;
-    if (acquisition?.acquired && acquiredEventId) {
-      try {
-        const failureResult = await eventStore.failEvent({
-          provider: 'lemonsqueezy',
-          eventId: acquiredEventId,
-          leaseToken: acquisition.leaseToken,
-          error: err,
-        });
-        failureOwned = failureResult.failed;
-      } catch (failErr) {
-        console.error('[lemonsqueezy] failed to persist retryable event state:', failErr);
-      }
+    return res.status(500).json({ error: 'Webhook processing failed' });
+  }
+}
+
+// Polar signs with Standard Webhooks and has no test flag in the payload: the
+// sandbox and the production organization are different servers with their own
+// secrets, so the secret that verifies the signature names the mode.
+function resolvePolarWebhookHeaders(req) {
+  return {
+    webhookId: req.get('webhook-id') || '',
+    webhookTimestamp: req.get('webhook-timestamp') || '',
+    webhookSignature: req.get('webhook-signature') || '',
+  };
+}
+
+async function handlePolarWebhook(req, res) {
+  try {
+    const debug =
+      process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
+    const secrets = resolvePolarWebhookSecrets();
+    if (!secrets.test && !secrets.live) {
+      if (debug) console.warn('[polar] webhook secrets missing');
+      return res.status(500).json({ error: 'Webhook secret missing' });
     }
-    if (normalizedAttemptId && failureOwned) {
-      try {
-        await failCheckoutAttemptForOwnedEvent(normalizedAttemptId, acquiredEventId, err);
-      } catch (attemptErr) {
-        console.error('[lemonsqueezy] failed to persist checkout attempt failure:', attemptErr);
-      }
+
+    const rawBody = req.rawBody || '';
+    const headers = resolvePolarWebhookHeaders(req);
+    if (debug) {
+      console.log('[polar] webhook received', {
+        contentType: req.get('content-type') || '(none)',
+        rawBodyLength: Buffer.isBuffer(rawBody) ? rawBody.length : Buffer.byteLength(String(rawBody || '')),
+        hasId: Boolean(headers.webhookId),
+        hasTimestamp: Boolean(headers.webhookTimestamp),
+        hasSignature: Boolean(headers.webhookSignature),
+      });
     }
+
+    const verifiedModes = [];
+    for (const mode of ['test', 'live']) {
+      if (!secrets[mode]) continue;
+      if (mode === 'live' && secrets.live === secrets.test && verifiedModes.includes('test')) {
+        verifiedModes.push('live');
+        continue;
+      }
+      if (verifyPolarSignature({ rawBody, secret: secrets[mode], ...headers })) verifiedModes.push(mode);
+    }
+    if (!verifiedModes.length) {
+      if (debug) console.warn('[polar] signature verification failed');
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+    // One secret shared by both modes cannot tell them apart; the runtime mode decides.
+    const eventMode = verifiedModes.length === 1 ? verifiedModes[0] : resolveMode();
+
+    const normalized = normalizePolarEvent(req.body || {}, rawBody, {
+      webhookId: headers.webhookId,
+      lifetimeProductIds: resolvePolarLifetimeProductIds(eventMode),
+      planByProductId: resolvePolarPlanByProductId(eventMode),
+    });
+    if (debug) {
+      console.log('[polar] webhook verified', {
+        eventMode,
+        eventType: normalized.eventType,
+        eventId: normalized.eventId,
+        requestId: req.get('x-vercel-id') || req.get('x-request-id') || 'none',
+      });
+    }
+    return processVerifiedProviderEvent({ provider: 'polar', req, res, normalized, eventMode, debug });
+  } catch (err) {
+    console.error('[polar] webhook error:', err);
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
 }
@@ -1178,6 +1305,9 @@ router.post('/webhooks/:provider', gumroadParsers, async (req, res) => {
   }
   if (provider === 'lemonsqueezy') {
     return handleLemonSqueezyWebhook(req, res);
+  }
+  if (provider === 'polar') {
+    return handlePolarWebhook(req, res);
   }
   return res.status(404).json({ error: `Provider not supported: ${provider}` });
 });

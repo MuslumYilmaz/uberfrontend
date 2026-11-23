@@ -1,6 +1,7 @@
 const BillingEvent = require('../models/BillingEvent');
 const CheckoutAttempt = require('../models/CheckoutAttempt');
 const PendingEntitlement = require('../models/PendingEntitlement');
+const { isUserBoundProvider } = require('../services/billing/pending-entitlements');
 const router = require('express').Router();
 const { getMongoDiagnostics } = require('../config/mongo');
 const User = require('../models/User');
@@ -82,7 +83,7 @@ function resolvePendingBindingStatus(item) {
     if (item.provider === 'gumroad') {
         return 'verified_email_required';
     }
-    if (item.provider !== 'lemonsqueezy') {
+    if (!isUserBoundProvider(item.provider)) {
         return 'email_claimable';
     }
     const bindingUserId = item.userId || extractPendingUserIdFromPayload(item.payload);

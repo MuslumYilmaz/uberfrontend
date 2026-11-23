@@ -47,6 +47,20 @@ const LemonSqueezyProviderSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const PolarProviderSchema = new mongoose.Schema(
+  {
+    customerId: String,
+    subscriptionId: String,
+    startedAt: Date,
+    purchaserEmail: String,
+    lastEventId: String,
+    lastEventAt: Date,
+    lastEventReceivedAt: Date,
+    lastEventOrderKey: String,
+  },
+  { _id: false }
+);
+
 const StripeProviderSchema = new mongoose.Schema(
   {
     customerId: String,
@@ -188,6 +202,7 @@ const UserSchema =new mongoose.Schema(
         gumroad: { type: GumroadProviderSchema, default: () => ({}) },
         lemonsqueezy: { type: LemonSqueezyProviderSchema, default: () => ({}) },
         stripe: { type: StripeProviderSchema, default: () => ({}) },
+        polar: { type: PolarProviderSchema, default: () => ({}) },
       },
     },
 

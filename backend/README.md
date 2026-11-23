@@ -47,6 +47,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `LEMONSQUEEZY_API_KEY_TEST` / `LEMONSQUEEZY_API_KEY_LIVE`: mode-scoped read-only API keys for price/order audits. Each falls back to the legacy unscoped key only when its scoped value is absent.
 - `LEMONSQUEEZY_STORE_ID`: numeric store id used by the optional read-only orders reconciliation.
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
+- `POLAR_WEBHOOK_SECRET_TEST` / `POLAR_WEBHOOK_SECRET_LIVE`: Polar webhook secrets (Standard Webhooks `whsec_…`; the raw secret string is also accepted for secrets created before 2026-09-08). Polar payloads carry no test flag: the sandbox and the production organization are separate servers, so the secret that verifies the signature names the event mode, and a mode that differs from `PAYMENTS_MODE` is recorded as `processed_checkout_mismatch` without touching the user.
+- `POLAR_ACCESS_TOKEN_TEST` / `POLAR_ACCESS_TOKEN_LIVE`: organization access tokens (sandbox / production) for the checkout and customer-portal APIs.
+- `POLAR_<PLAN>_PRODUCT_ID_TEST` / `_LIVE`: the four product ids per mode. The lifetime id (or the product metadata `fa_plan_id=lifetime`) is how `order.paid` grants the one-time plan; the other ids let the webhook check that the product matches the plan the attempt sold.
 - `PAYMENTS_MODE`: `test` or `live` for checkout-start URL selection. Production should use `live`. Local/E2E should stay on `test` unless you explicitly intend to hit live billing.
 - `BILLING_TAX_INCLUSIVE`: public checkout metadata flag. Defaults to `true` because the store uses tax-inclusive pricing; set it explicitly to `false` only if the store setting is deliberately rolled back.
 - `BILLING_OFFER_VERSION`: sequential pricing/offer version. Defaults to `pricing_baseline_v1`; use `interview_sprint_v2` when that offer is deliberately released.
@@ -62,6 +65,14 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - Live LemonSqueezy checkout requires the matching `*_URL_LIVE` value. The legacy unscoped URL is test-only. A URL reused across test/live or copied from an earlier plan (including Lifetime) is disabled fail-closed.
 - Hosted checkout URLs must use HTTPS on the configured provider's own domain.
 - Gumroad checkout is exposed only in `PAYMENTS_MODE=live`; the app has no separate Gumroad sandbox URL contract.
+
+### Polar webhooks
+
+- Route: `POST /api/billing/webhooks/polar`, verified with the `webhook-id`, `webhook-timestamp` and `webhook-signature` headers (HMAC-SHA256 over `id.timestamp.body`, five-minute tolerance). The `webhook-id` is the idempotency key, so a redelivery answers `{ ok: true, duplicate: true }`.
+- Entitlement mapping (`services/billing/providers/polar.js`): `subscription.*` events apply the subscription state (`active`/`trialing` → active until `current_period_end`; `cancel_at_period_end` or `past_due` → cancelled until the paid-through date; `canceled` with a past `ended_at`, `revoked`, `unpaid` → none); `order.paid` grants `lifetime` only for the lifetime product and otherwise just records the verified payment on the attempt; `order.refunded` revokes on a full refund and ignores a partial one; checkout, customer, refund and benefit events are acknowledged without changes.
+- Correlation: the checkout attempt is found by `metadata.fa_checkout_attempt_id`, or by `checkout_id` against the attempt's `providerCheckoutId`; the user by `customer.external_id` (our user id) or `metadata.fa_user_id`. A reference that is not one of our ids is kept as a pending entitlement bound by email, exactly like Lemon Squeezy.
+- Amounts: Polar orders are tax inclusive (`total = subtotal - discount`, `net = total - tax`). The attempt stores the tax-exclusive subtotal (`net + discount`) so `subtotal - discount + tax = total` holds for every provider and the analytics value stays `total - tax`.
+- Refunding an order in Polar does not end the subscription; cancel the subscription in the dashboard as well when a refund should stop access.
 
 ### LemonSqueezy prod setup
 

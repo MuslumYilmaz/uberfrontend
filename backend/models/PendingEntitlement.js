@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const PendingEntitlementSchema = new mongoose.Schema(
   {
-    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe'], required: true },
+    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe', 'polar'], required: true },
     scope: { type: String, enum: ['pro', 'projects'], default: 'pro' },
     eventId: { type: String, required: true },
     eventType: { type: String },
