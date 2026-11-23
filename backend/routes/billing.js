@@ -29,10 +29,12 @@ const {
   verifyPolarSignature,
 } = require('../services/billing/providers/polar');
 const {
+  resolvePolarAccessToken,
   resolvePolarLifetimeProductIds,
   resolvePolarPlanByProductId,
   resolvePolarWebhookSecrets,
 } = require('../services/billing/providers/polar-config');
+const { createPolarCustomerSession } = require('../services/billing/providers/polar-portal');
 const { recordPendingEntitlement } = require('../services/billing/pending-entitlements');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 
@@ -970,6 +972,13 @@ async function handlePolarWebhook(req, res) {
   }
 }
 
+// The customer's address for the provider's tax and currency detection: the first
+// hop of X-Forwarded-For behind the edge, otherwise the socket address.
+function resolveClientIp(req) {
+  const forwarded = String(req.get('x-forwarded-for') || '').split(',')[0].trim();
+  return forwarded || String(req.ip || '').trim();
+}
+
 router.post('/checkout/start', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.auth.userId);
@@ -1011,6 +1020,7 @@ router.post('/checkout/start', requireAuth, async (req, res) => {
         referrerHost: req.body?.referrerHost,
         countryCode: req.headers['x-vercel-ip-country'],
         studentEligible: resolveStudentEligibility(user).eligible,
+        clientIp: resolveClientIp(req),
       });
 
     return res.status(200).json({
@@ -1151,6 +1161,21 @@ router.post('/checkout/attempts/:attemptId/client-state', requireAuth, async (re
   }
 });
 
+// Which provider owns the billing portal for this account: stored provider
+// metadata wins over the configured provider, and when both Lemon Squeezy and
+// Polar left metadata (a customer who bought on both) the most recent event
+// decides.
+function resolveManageProvider({ hasLsMeta, hasPolarMeta, lsMeta, polarMeta, requestedProvider }) {
+  if (hasLsMeta && hasPolarMeta) {
+    const lsAt = new Date(lsMeta.lastEventAt || 0).getTime();
+    const polarAt = new Date(polarMeta.lastEventAt || 0).getTime();
+    return polarAt >= lsAt ? 'polar' : 'lemonsqueezy';
+  }
+  if (hasPolarMeta) return 'polar';
+  if (hasLsMeta) return 'lemonsqueezy';
+  return requestedProvider || 'gumroad';
+}
+
 function normalizeManageUrlCandidate(url) {
   if (!url) return '';
   const str = String(url).trim();
@@ -1217,9 +1242,37 @@ router.get('/manage-url', requireAuth, async (req, res) => {
     }
 
     const lsMeta = user?.billing?.providers?.lemonsqueezy || {};
+    const polarMeta = user?.billing?.providers?.polar || {};
     const requestedProvider = String(req.query.provider || process.env.BILLING_PROVIDER || '').toLowerCase();
     const hasLsMeta = !!(lsMeta.manageUrl || lsMeta.subscriptionId || lsMeta.customerId);
-    const provider = hasLsMeta ? 'lemonsqueezy' : requestedProvider || 'gumroad';
+    const hasPolarMeta = !!(polarMeta.subscriptionId || polarMeta.customerId);
+    const provider = resolveManageProvider({ hasLsMeta, hasPolarMeta, lsMeta, polarMeta, requestedProvider });
+
+    if (provider === 'polar') {
+      // Polar portal links are short-lived sessions, so one is created on every
+      // click and never stored. The customer exists only after a confirmed
+      // checkout; before that the portal is simply not ready.
+      const mode = resolveMode();
+      const accessToken = resolvePolarAccessToken(mode);
+      if (!accessToken) {
+        return res.status(409).json({ error: 'Manage URL unavailable', code: 'MANAGE_URL_UNAVAILABLE' });
+      }
+      const session = await createPolarCustomerSession({
+        accessToken,
+        mode,
+        externalCustomerId: String(user._id),
+        customerId: polarMeta.customerId || undefined,
+      });
+      if (!session.ok) {
+        if (session.reason === 'customer_missing') {
+          return res.status(409).json({ error: 'Manage URL not ready for this account', code: 'MANAGE_URL_NOT_READY' });
+        }
+        console.warn(`[polar] customer session unavailable (${session.reason})`);
+        return res.status(409).json({ error: 'Manage URL unavailable', code: 'MANAGE_URL_UNAVAILABLE' });
+      }
+      return res.status(200).json({ url: session.url });
+    }
+
     if (provider !== 'lemonsqueezy') {
       return res.status(400).json({
         error: 'Provider not supported for manage URL',

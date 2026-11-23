@@ -74,6 +74,13 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - Amounts: Polar orders are tax inclusive (`total = subtotal - discount`, `net = total - tax`). The attempt stores the tax-exclusive subtotal (`net + discount`) so `subtotal - discount + tax = total` holds for every provider and the analytics value stays `total - tax`.
 - Refunding an order in Polar does not end the subscription; cancel the subscription in the dashboard as well when a refund should stop access.
 
+### Polar checkout and portal
+
+- With `BILLING_PROVIDER=polar`, `POST /api/billing/checkout/start` creates a checkout session per attempt (`POST /v1/checkouts/`, `services/billing/providers/polar-checkouts.js`): the plan's product id, `external_customer_id` = our user id, the attempt and attribution as `metadata`, `success_url` / `return_url` on the frontend origin, `embed_origin` when the overlay surface is on, `allow_discount_codes: false`, and the first `X-Forwarded-For` hop as `customer_ip_address` for tax and currency detection. Sessions expire after an hour; the five-minute attempt reuse window stays well inside that.
+- Regional and student prices are ad-hoc fixed prices on the session (`prices[productId]`), so nothing is created in Polar and the list price never changes. A campaign from `BILLING_DISCOUNT_CAMPAIGNS_JSON` with `provider: "polar"` applies its `providerDiscountId` as `discount_id` and, as with Lemon Squeezy, wins over the regional price; a Polar entry may omit `discountCode`. Polar would stack a discount on an ad-hoc price, so the backend never sends both.
+- The session's returned `amount` must equal the requested price and the URL must be on the host of the mode (`sandbox.polar.sh` / `polar.sh`); otherwise the start fails closed (`CHECKOUT_CREATE_FAILED` or `CUSTOM_CHECKOUT_UNAVAILABLE`, 503) and no attempt is stored. `GET /api/billing/checkout/config` lists a plan as available only when the token and its product id are configured, and publishes the regional block whenever the provider is Polar.
+- `GET /api/billing/manage-url` for a Polar customer creates a short-lived customer session (`POST /v1/customer-sessions/` with `external_customer_id`) on every call and stores nothing; before the first confirmed checkout the customer does not exist yet and the route answers `MANAGE_URL_NOT_READY`. An account with both Lemon Squeezy and Polar metadata uses the provider of its latest event.
+
 ### LemonSqueezy prod setup
 
 1) Environment variables (backend):

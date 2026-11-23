@@ -2,7 +2,10 @@ const CAMPAIGN_ID_PATTERN = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const PROVIDER_DISCOUNT_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$/;
 const DISCOUNT_CODE_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$/;
 const ANALYTICS_SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
-const PROVIDERS = new Set(['lemonsqueezy']);
+// Lemon Squeezy applies a campaign by code on the buy link, Polar by discount id on
+// the session; a Polar entry may therefore omit the code.
+const PROVIDERS = new Set(['lemonsqueezy', 'polar']);
+const CODE_OPTIONAL_PROVIDERS = new Set(['polar']);
 const MODES = new Set(['test', 'live']);
 const PLAN_IDS = new Set(['monthly', 'quarterly', 'annual', 'lifetime']);
 // Eligibility campaigns apply by themselves at checkout when the account
@@ -55,7 +58,9 @@ function normalizeCampaignEntry(raw) {
   const campaignId = normalizeCampaignId(raw.campaignId);
   const provider = String(raw.provider || '').trim().toLowerCase();
   const providerDiscountId = normalizeProviderDiscountId(raw.providerDiscountId);
-  const discountCode = normalizeDiscountCode(raw.discountCode);
+  const discountCode = CODE_OPTIONAL_PROVIDERS.has(provider) && (raw.discountCode === undefined || raw.discountCode === null || raw.discountCode === '')
+    ? null
+    : normalizeDiscountCode(raw.discountCode);
   const modes = normalizeStringList(
     raw.modes,
     (value) => String(value || '').trim().toLowerCase(),
@@ -82,7 +87,7 @@ function normalizeCampaignEntry(raw) {
     || !campaignId
     || !PROVIDERS.has(provider)
     || !providerDiscountId
-    || !discountCode
+    || (!discountCode && !CODE_OPTIONAL_PROVIDERS.has(provider))
     || !modes
     || !planIds
     || !analyticsSources
