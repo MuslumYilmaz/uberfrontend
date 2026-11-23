@@ -239,6 +239,16 @@ function compileTS(src, filename){
     if (provide && !${JSON.stringify(choosesChangeDetection)}) {
       config = Object.assign({}, config, { providers: [provide()].concat(config.providers || []) });
     }
+    // Angular sends handler and change-detection errors here, not to window. First, so the app's own handler wins.
+    var errorHandler = globalThis.__FA_ErrorHandler;
+    if (errorHandler) {
+      config = Object.assign({}, config, { providers: [{ provide: errorHandler, useValue: {
+        handleError: function(error){
+          try { console.error('ERROR', error); } catch (_e) {}
+          if (typeof globalThis.__FA_REPORT_RUNTIME_ERROR === 'function') globalThis.__FA_REPORT_RUNTIME_ERROR(error);
+        }
+      } }].concat(config.providers || []) });
+    }
     var promise = bootstrap.apply(null, [component, config].concat(rest));
     globalThis.__FA_BOOTSTRAP_PROMISE = promise;
     return promise;
@@ -316,6 +326,11 @@ function compileTS(src, filename){
       notifyReady(reason, lifecycleDetail(msg));
     };
     const hideOverlay = () => { try { overlay.style.display='none'; overlayMsg.textContent=''; overlayMeta.textContent=''; } catch {} };
+    window.__FA_REPORT_RUNTIME_ERROR = (error) => {
+      const message = String(error && error.message ? error.message : error || 'Error');
+      const stack = error && error.stack ? '\n\n'+error.stack : '';
+      showOverlay(message+stack, 'runtime', 'runtime-error');
+    };
 
     // Strip common network APIs inside the sandboxed preview (keep navigator for libs)
     ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
@@ -471,7 +486,9 @@ function compileTS(src, filename){
       // ESM Angular deps
       await import('zone.js');
       await import('@angular/compiler');
-      globalThis.__FA_provideZoneChangeDetection = (await import('@angular/core')).provideZoneChangeDetection;
+      const angularCore = await import('@angular/core');
+      globalThis.__FA_provideZoneChangeDetection = angularCore.provideZoneChangeDetection;
+      globalThis.__FA_ErrorHandler = angularCore.ErrorHandler;
       if (typeof window.__FA_PREPARE_ANGULAR_HTTP_CHECK === 'function') {
         const [{ HttpClient }, { Observable }] = await Promise.all([
           import('@angular/common/http'),

@@ -10676,14 +10676,11 @@
             }
           },
           {
-            "type": "wait",
-            "durationMs": 150
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 105,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectClass",
@@ -10750,14 +10747,11 @@
             }
           },
           {
-            "type": "wait",
-            "durationMs": 150
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 105,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },
@@ -10787,14 +10781,11 @@
             "key": "ArrowUp"
           },
           {
-            "type": "wait",
-            "durationMs": 100
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 90,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },
@@ -10829,14 +10820,11 @@
             "key": "ArrowLeft"
           },
           {
-            "type": "wait",
-            "durationMs": 50
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 90,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectCount",
@@ -10878,14 +10866,11 @@
             "key": "ArrowDown"
           },
           {
-            "type": "wait",
-            "durationMs": 50
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 118,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectCount",
@@ -11113,14 +11098,11 @@
             }
           },
           {
-            "type": "wait",
-            "durationMs": 150
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 105,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },

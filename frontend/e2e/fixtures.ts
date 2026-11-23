@@ -45,9 +45,14 @@ async function installUnhandledRejectionHook(page: Page, issues: CollectedIssue[
   });
 }
 
-async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[], extraAllowlist: RegExp[]) {
+async function attachAndFailIfNeeded(
+  testInfo: TestInfo,
+  issues: CollectedIssue[],
+  extraAllowlist: RegExp[],
+  pageErrorAllowlist: RegExp[],
+) {
   const relevant = issues.filter((i) => {
-    const scopedAllowlist = i.type === 'console.error' ? extraAllowlist : [];
+    const scopedAllowlist = i.type === 'console.error' ? extraAllowlist : i.type === 'pageerror' ? pageErrorAllowlist : [];
     return !isAllowlisted(i.message, scopedAllowlist);
   });
   if (!relevant.length) return;
@@ -66,11 +71,14 @@ async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[
 
 export const test = baseTest.extend<{
   consoleErrorAllowlist: string[];
+  // Only for a test that sets off an uncaught error on purpose; name the error it expects.
+  pageErrorAllowlist: string[];
   realBackendRequests: boolean;
 }>({
   consoleErrorAllowlist: [[], { option: true }],
+  pageErrorAllowlist: [[], { option: true }],
   realBackendRequests: [false, { option: true }],
-  page: async ({ page, consoleErrorAllowlist, realBackendRequests }, use, testInfo) => {
+  page: async ({ page, consoleErrorAllowlist, pageErrorAllowlist, realBackendRequests }, use, testInfo) => {
     const issues: CollectedIssue[] = [];
     const extraAllowlist = compileAllowlist(consoleErrorAllowlist);
 
@@ -198,7 +206,7 @@ export const test = baseTest.extend<{
 
     await use(page);
 
-    await attachAndFailIfNeeded(testInfo, issues, extraAllowlist);
+    await attachAndFailIfNeeded(testInfo, issues, extraAllowlist, compileAllowlist(pageErrorAllowlist));
   },
 });
 

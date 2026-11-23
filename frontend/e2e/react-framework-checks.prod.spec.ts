@@ -75,6 +75,47 @@ const COUNTER_PRESSURE_SOLUTIONS = {
   ),
 } as const;
 
+// Renders a counter whose '+' handler throws, so the error comes from a click, after the preview rendered.
+const THROWING_HANDLER_CASES = [
+  ['react', 'react-counter', 'src/App.tsx', [
+    "import React, { useState } from 'react';",
+    '',
+    'export default function App() {',
+    '  const [count, setCount] = useState(0);',
+    "  const increment = () => { throw new Error('Increment handler broke'); };",
+    '  return (',
+    '    <div>',
+    '      <div className="value">{count}</div>',
+    '      <button disabled={count === 0} onClick={() => setCount(count - 1)}>-</button>',
+    '      <button onClick={increment}>+</button>',
+    '      <button onClick={() => setCount(0)}>Reset</button>',
+    '    </div>',
+    '  );',
+    '}',
+    '',
+  ].join('\n')],
+  ['angular', 'angular-counter-starter', 'src/app/app.component.ts', [
+    "import { Component } from '@angular/core';",
+    '',
+    '@Component({',
+    "  selector: 'app-root',",
+    '  standalone: true,',
+    "  template: '<div class=\"value\">{{ count }}</div>'",
+    "    + '<button [disabled]=\"count === 0\" (click)=\"count = count - 1\">-</button>'",
+    "    + '<button (click)=\"increment()\">+</button>'",
+    "    + '<button (click)=\"count = 0\">Reset</button>',",
+    '})',
+    'export class AppComponent {',
+    '  count = 0;',
+    '',
+    '  increment(): void {',
+    "    throw new Error('Increment handler broke');",
+    '  }',
+    '}',
+    '',
+  ].join('\n')],
+] as const;
+
 const REVIEW_SOLUTION = readCanonicalFiles(
   '../cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json',
 );
@@ -1416,6 +1457,70 @@ test.describe('Framework checks against the production SSR build', () => {
       await completePressureRounds(page);
     });
   }
+
+  test.describe('when the code throws on a click', () => {
+    // These counters throw on purpose; any other browser error still fails the test.
+    test.use({
+      consoleErrorAllowlist: ['Increment handler broke'],
+      pageErrorAllowlist: ['^Error: Increment handler broke'],
+    });
+
+    test('an Angular app with its own ErrorHandler keeps it, so the checks see only what the page shows', async ({ page }) => {
+      await page.goto('/angular/coding/angular-counter-starter');
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+      await loadCanonicalBundle(page, {
+        'src/main.ts': [
+          "import { ErrorHandler } from '@angular/core';",
+          "import { bootstrapApplication } from '@angular/platform-browser';",
+          "import { AppComponent } from './app/app.component';",
+          '',
+          'class QuietErrorHandler implements ErrorHandler {',
+          '  handleError(): void {}',
+          '}',
+          '',
+          'bootstrapApplication(AppComponent, {',
+          '  providers: [{ provide: ErrorHandler, useClass: QuietErrorHandler }],',
+          '}).catch(console.error);',
+          '',
+        ].join('\n'),
+        'src/app/app.component.ts': THROWING_HANDLER_CASES[1][3],
+      });
+      await rebuildPreview(page, '.value');
+
+      await runPressureChecks(page, COUNTER_CHECKS.length);
+      const plusRow = checkRows(page).filter({ hasText: "'+' adds 1 on every click" });
+      await expect(plusRow).toHaveAttribute('data-failure-kind', /^assertion/);
+      await expect(plusRow.locator('.framework-check-result__error')).not.toContainText('threw an error');
+
+      await livePreview(page).getByRole('button', { name: '+', exact: true }).click();
+      await expect(livePreview(page).locator('#_fa_overlay')).toBeHidden();
+    });
+
+    for (const [framework, questionId, path, code] of THROWING_HANDLER_CASES) {
+      test(`${framework} reports an error a click sets off with its own message, in the checks and the preview`, async ({ page }) => {
+        await page.goto(`/${framework}/coding/${questionId}`);
+        await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+        await waitForFrameworkPreview(page, '.value');
+        await loadCanonicalBundle(page, { [path]: code });
+        await rebuildPreview(page, '.value');
+
+        const results = await runPressureChecks(page, COUNTER_CHECKS.length);
+        const plusRow = checkRows(page).filter({ hasText: "'+' adds 1 on every click" });
+        await expect(plusRow).toHaveAttribute('data-failure-kind', 'preview-runtime');
+        await expect(plusRow.locator('.framework-check-result__error')).toContainText(
+          'Your code threw an error while the checks ran',
+        );
+        await expect(plusRow.locator('.framework-check-result__error')).toContainText('Increment handler broke');
+        await expect(results).not.toContainText('Script error');
+        await expect(results).not.toContainText('during render');
+
+        await livePreview(page).getByRole('button', { name: '+', exact: true }).click();
+        await expect(livePreview(page).locator('#_fa_overlay')).toBeVisible();
+        await expect(livePreview(page).locator('#_fa_overlay_msg')).toContainText('Increment handler broke');
+      });
+    }
+  });
 
   test('React Debounced Search keeps its premium pressure draft isolated and passes every round', async ({
     page,

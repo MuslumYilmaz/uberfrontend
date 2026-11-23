@@ -136,6 +136,26 @@ test('deployment app rewrites use the same CSR shell and preserve the public 404
   assert.equal(await deployedDestination.text(), csrHtml);
 });
 
+test('preview vendor scripts allow CORS in the deployment and the local server, pages do not', async (t) => {
+  const config = JSON.parse(await fs.readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const vendor = config.headers.find(({ source }) => source === '/assets/vendor/:path*');
+  assert.ok(vendor, 'vercel.json must keep a /assets/vendor/:path* header rule');
+  assert.ok(
+    vendor.headers.some(({ key, value }) => key === 'Access-Control-Allow-Origin' && value === '*'),
+    'The sandboxed preview loads vendor scripts with crossorigin; without this header they never load',
+  );
+
+  const request = await serveBuild(t, {
+    'index.html': marketingHtml,
+    'assets/vendor/react/react.production.min.js': 'window.React = {};',
+  });
+  const script = await request('/assets/vendor/react/react.production.min.js?cors=1');
+  assert.equal(script.status, 200);
+  assert.equal(script.headers.get('access-control-allow-origin'), '*');
+  const home = await request('/');
+  assert.equal(home.headers.get('access-control-allow-origin'), null);
+});
+
 test('legacy builds without an explicit CSR file retain their index fallback', async (t) => {
   const request = await serveBuild(t, { 'index.html': csrHtml });
   const response = await request('/interview');

@@ -1,6 +1,10 @@
 /** Turn a module-style React file into plain script that runs with UMD globals */
 // core/utils/react-preview-builder.ts
 
+// Vendor scripts load with crossorigin so their errors keep a message in the opaque preview. The query gives them a
+// new cache key: a response cached without the CORS header would block the script.
+export const VENDOR_CORS_QUERY = 'cors=1';
+
 // These reach the compiled code as function parameters, so declaring them again would be an error.
 const REACT_PREVIEW_PARAMETERS = new Set([
   'React',
@@ -268,9 +272,9 @@ export function makeReactPreviewHtml(files: Record<string, string>, assetBase?: 
     #_fa_overlay pre{white-space:pre-wrap;margin:0}
     #_fa_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
-  <script src="${assetUrl('/assets/vendor/react/react.production.min.js')}"></script>
-  <script src="${assetUrl('/assets/vendor/react-dom/react-dom.production.min.js')}"></script>
-  <script src="${assetUrl('/assets/vendor/babel/babel.min.js')}"></script>
+  <script crossorigin="anonymous" src="${assetUrl(`/assets/vendor/react/react.production.min.js?${VENDOR_CORS_QUERY}`)}"></script>
+  <script crossorigin="anonymous" src="${assetUrl(`/assets/vendor/react-dom/react-dom.production.min.js?${VENDOR_CORS_QUERY}`)}"></script>
+  <script crossorigin="anonymous" src="${assetUrl(`/assets/vendor/babel/babel.min.js?${VENDOR_CORS_QUERY}`)}"></script>
 </head>
 <body>
   <div id="root"></div>

@@ -88,13 +88,14 @@ export function resolveStaticFileForPath(buildDir, pathname) {
   return resolveStaticFile(path.resolve(buildDir), pathname);
 }
 
-function sendFile(res, filePath, statusCode) {
+function sendFile(res, filePath, statusCode, extraHeaders = {}) {
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME.get(ext) || 'application/octet-stream';
   const body = fs.readFileSync(filePath);
   res.writeHead(statusCode, {
     'Content-Type': contentType,
     'Content-Length': body.length,
+    ...extraHeaders,
   });
   res.end(body);
 }
@@ -143,7 +144,8 @@ export async function startSeoStaticServer({
     // Filesystem-first routing so prerendered pages always win.
     const staticFile = resolveStaticFile(root, pathname);
     if (staticFile) {
-      sendFile(res, staticFile, 200);
+      // The sandboxed coding preview (origin "null") loads these with crossorigin, as vercel.json allows.
+      sendFile(res, staticFile, 200, pathname.startsWith('/assets/vendor/') ? { 'Access-Control-Allow-Origin': '*' } : {});
       return;
     }
 
