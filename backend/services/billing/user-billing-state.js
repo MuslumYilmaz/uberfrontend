@@ -59,7 +59,12 @@ function applyNormalizedGumroadEventToUser(user, normalized, options = {}) {
   return user;
 }
 
-function applyNormalizedLemonSqueezyEventToUser(user, normalized, options = {}) {
+// Shared entitlement rules for the providers that bind events to a user id
+// (Lemon Squeezy, Polar): lifetime never drops except on a refund, the later
+// paid-through date wins, and a cancel without a date keeps the current one.
+function applyNormalizedProviderEventToUser(user, normalized, options = {}) {
+  const provider = String(options.provider || '').trim();
+  if (!provider) throw new TypeError('applyNormalizedProviderEventToUser requires options.provider');
   if (normalized?.shouldApplyEntitlement === false) {
     return user;
   }
@@ -104,26 +109,36 @@ function applyNormalizedLemonSqueezyEventToUser(user, normalized, options = {}) 
     }
   }
 
-  const lsMeta = user.billing.providers.lemonsqueezy || {};
-  if (normalized.customerId) lsMeta.customerId = normalized.customerId;
-  if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
-  if (normalized.startedAt && (!lsMeta.startedAt || normalized.startedAt < lsMeta.startedAt)) {
-    lsMeta.startedAt = normalized.startedAt;
+  const meta = user.billing.providers[provider] || {};
+  if (normalized.customerId) meta.customerId = normalized.customerId;
+  if (normalized.subscriptionId) meta.subscriptionId = normalized.subscriptionId;
+  if (normalized.startedAt && (!meta.startedAt || normalized.startedAt < meta.startedAt)) {
+    meta.startedAt = normalized.startedAt;
   }
-  if (normalized.manageUrl) lsMeta.manageUrl = normalized.manageUrl;
-  if (options.purchaseEmail) lsMeta.purchaserEmail = options.purchaseEmail;
-  lsMeta.lastEventId = options.eventId || normalized.eventId || lsMeta.lastEventId;
-  lsMeta.lastEventAt = new Date();
-  if (options.eventReceivedAt) lsMeta.lastEventReceivedAt = options.eventReceivedAt;
-  if (options.eventOrderKey) lsMeta.lastEventOrderKey = options.eventOrderKey;
-  user.billing.providers.lemonsqueezy = lsMeta;
+  if (normalized.manageUrl) meta.manageUrl = normalized.manageUrl;
+  if (options.purchaseEmail) meta.purchaserEmail = options.purchaseEmail;
+  meta.lastEventId = options.eventId || normalized.eventId || meta.lastEventId;
+  meta.lastEventAt = new Date();
+  if (options.eventReceivedAt) meta.lastEventReceivedAt = options.eventReceivedAt;
+  if (options.eventOrderKey) meta.lastEventOrderKey = options.eventOrderKey;
+  user.billing.providers[provider] = meta;
 
   syncAccessTierFromEntitlements(user);
   return user;
 }
 
+function applyNormalizedLemonSqueezyEventToUser(user, normalized, options = {}) {
+  return applyNormalizedProviderEventToUser(user, normalized, { ...options, provider: 'lemonsqueezy' });
+}
+
+function applyNormalizedPolarEventToUser(user, normalized, options = {}) {
+  return applyNormalizedProviderEventToUser(user, normalized, { ...options, provider: 'polar' });
+}
+
 module.exports = {
   applyNormalizedGumroadEventToUser,
   applyNormalizedLemonSqueezyEventToUser,
+  applyNormalizedPolarEventToUser,
+  applyNormalizedProviderEventToUser,
   syncAccessTierFromEntitlements,
 };

@@ -1,12 +1,24 @@
 const BillingEvent = require('../models/BillingEvent');
 const CheckoutAttempt = require('../models/CheckoutAttempt');
 const PendingEntitlement = require('../models/PendingEntitlement');
+const { isUserBoundProvider } = require('../services/billing/pending-entitlements');
 const router = require('express').Router();
 const { getMongoDiagnostics } = require('../config/mongo');
 const User = require('../models/User');
 const { createBillingEventStore } = require('../services/billing/billing-events');
-const { applyNormalizedLemonSqueezyEventToUser } = require('../services/billing/user-billing-state');
+const { applyNormalizedProviderEventToUser } = require('../services/billing/user-billing-state');
 const { normalizeLemonSqueezyEvent } = require('../services/billing/providers/lemonsqueezy');
+const { normalizePolarEvent } = require('../services/billing/providers/polar');
+const {
+    resolvePolarAccessToken,
+    resolvePolarLifetimeProductIds,
+    resolvePolarPlanByProductId,
+} = require('../services/billing/providers/polar-config');
+const { fetchRecentPolarOrders } = require('../services/billing/providers/polar-orders');
+const {
+    SUPPORTED_SCENARIOS: POLAR_SUPPORTED_SCENARIOS,
+    buildPolarSimulationPayload,
+} = require('../services/billing/providers/polar-simulator');
 const { applyOrderedProviderEvent } = require('../services/billing/ordered-user-event');
 const {
     findVerifiedPurchaseEntitlementMismatches,
@@ -82,7 +94,7 @@ function resolvePendingBindingStatus(item) {
     if (item.provider === 'gumroad') {
         return 'verified_email_required';
     }
-    if (item.provider !== 'lemonsqueezy') {
+    if (!isUserBoundProvider(item.provider)) {
         return 'email_claimable';
     }
     const bindingUserId = item.userId || extractPendingUserIdFromPayload(item.payload);
@@ -227,39 +239,16 @@ router.put('/users/:id', async (req, res) => {
     }
 });
 
-// POST /api/admin/billing/simulate/lemonsqueezy
-router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
+// Shared tail of the simulators: claim the simulated event, apply it through
+// the same ordered CAS path as a webhook, and mark it processed_simulated.
+async function applySimulatedProviderEvent({ provider, user, simulation, normalized, res }) {
     let acquisition = null;
     let acquiredEventId = '';
     try {
-        const userId = String(req.body?.userId || '').trim();
-        if (!userId) {
-            return res.status(400).json({ error: 'Missing "userId"' });
-        }
-
-        let user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        let simulation;
-        try {
-            simulation = buildLemonSqueezySimulationPayload({ user, input: req.body || {} });
-        } catch (err) {
-            const statusCode = Number(err?.statusCode) || 400;
-            return res.status(statusCode).json({
-                error: err.message,
-                supportedScenarios: Array.from(SUPPORTED_SCENARIOS),
-            });
-        }
-
-        const rawBody = JSON.stringify(simulation.payload);
-        const normalized = normalizeLemonSqueezyEvent(simulation.payload, rawBody);
         const eventId = `simulate:${simulation.mode}:${normalized.eventId}`;
-
         acquiredEventId = eventId;
         acquisition = await eventStore.acquireEvent({
-            provider: 'lemonsqueezy',
+            provider,
             eventId,
             eventType: normalized.eventType,
             email: normalized.email || normalized.purchaseEmail || user.email,
@@ -281,11 +270,12 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
 
         const orderedUpdate = await applyOrderedProviderEvent({
             user,
-            provider: 'lemonsqueezy',
+            provider,
             eventId,
             eventOrderKey: acquisition.eventOrderKey,
             mutate: (currentUser) => {
-                applyNormalizedLemonSqueezyEventToUser(currentUser, normalized, {
+                applyNormalizedProviderEventToUser(currentUser, normalized, {
+                    provider,
                     eventId,
                     purchaseEmail: normalized.purchaseEmail,
                     eventReceivedAt: acquisition.event.receivedAt,
@@ -293,27 +283,27 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
                 });
             },
         });
-        user = orderedUpdate.user;
+        const updatedUser = orderedUpdate.user;
         await updateCheckoutAttempt(normalized.attemptId, {
             status: 'applied',
             billingEventId: eventId,
             providerOrderId: normalized.orderId || undefined,
             providerSubscriptionId: normalized.subscriptionId || undefined,
             completedAt: new Date(),
-            customerEmail: user.email,
-            customerUserId: String(user._id),
+            customerEmail: updatedUser.email,
+            customerUserId: String(updatedUser._id),
             lastErrorCode: null,
             lastErrorMessage: null,
         });
         await completeClaimedEvent({
-            provider: 'lemonsqueezy',
+            provider,
             eventId,
             leaseToken: acquisition.leaseToken,
             processingStatus: orderedUpdate.outcome === 'stale' ? 'processed_stale' : 'processed_simulated',
-            userId: user._id,
+            userId: updatedUser._id,
         });
 
-        const safeUser = await User.findById(user._id).select('-passwordHash').lean();
+        const safeUser = await User.findById(updatedUser._id).select('-passwordHash').lean();
         return res.json({
             ok: true,
             scenario: simulation.scenario,
@@ -328,11 +318,11 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
             user: safeUser,
         });
     } catch (err) {
-        console.error('[admin] lemonsqueezy simulation failed:', err);
+        console.error(`[admin] ${provider} simulation failed:`, err);
         if (acquisition?.acquired && acquiredEventId) {
             try {
                 await eventStore.failEvent({
-                    provider: 'lemonsqueezy',
+                    provider,
                     eventId: acquiredEventId,
                     leaseToken: acquisition.leaseToken,
                     error: err,
@@ -343,6 +333,76 @@ router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
         }
         return res.status(500).json({ error: err.message || 'Simulation failed' });
     }
+}
+
+async function loadSimulationUser(req, res) {
+    const userId = String(req.body?.userId || '').trim();
+    if (!userId) {
+        res.status(400).json({ error: 'Missing "userId"' });
+        return null;
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return null;
+    }
+    return user;
+}
+
+// POST /api/admin/billing/simulate/lemonsqueezy
+router.post('/billing/simulate/lemonsqueezy', async (req, res) => {
+    try {
+        const user = await loadSimulationUser(req, res);
+        if (!user) return undefined;
+
+        let simulation;
+        try {
+            simulation = buildLemonSqueezySimulationPayload({ user, input: req.body || {} });
+        } catch (err) {
+            const statusCode = Number(err?.statusCode) || 400;
+            return res.status(statusCode).json({
+                error: err.message,
+                supportedScenarios: Array.from(SUPPORTED_SCENARIOS),
+            });
+        }
+
+        const rawBody = JSON.stringify(simulation.payload);
+        const normalized = normalizeLemonSqueezyEvent(simulation.payload, rawBody);
+        return await applySimulatedProviderEvent({ provider: 'lemonsqueezy', user, simulation, normalized, res });
+    } catch (err) {
+        console.error('[admin] lemonsqueezy simulation failed:', err);
+        return res.status(500).json({ error: err.message || 'Simulation failed' });
+    }
+});
+
+// POST /api/admin/billing/simulate/polar
+router.post('/billing/simulate/polar', async (req, res) => {
+    try {
+        const user = await loadSimulationUser(req, res);
+        if (!user) return undefined;
+
+        let simulation;
+        try {
+            simulation = buildPolarSimulationPayload({ user, input: req.body || {} });
+        } catch (err) {
+            const statusCode = Number(err?.statusCode) || 400;
+            return res.status(statusCode).json({
+                error: err.message,
+                supportedScenarios: Array.from(POLAR_SUPPORTED_SCENARIOS),
+            });
+        }
+
+        const rawBody = JSON.stringify(simulation.payload);
+        const normalized = normalizePolarEvent(simulation.payload, rawBody, {
+            webhookId: simulation.webhookId,
+            lifetimeProductIds: resolvePolarLifetimeProductIds(simulation.mode),
+            planByProductId: resolvePolarPlanByProductId(simulation.mode),
+        });
+        return await applySimulatedProviderEvent({ provider: 'polar', user, simulation, normalized, res });
+    } catch (err) {
+        console.error('[admin] polar simulation failed:', err);
+        return res.status(500).json({ error: err.message || 'Simulation failed' });
+    }
 });
 
 // GET /api/admin/billing/reconciliation
@@ -351,15 +411,19 @@ router.get('/billing/reconciliation', async (req, res) => {
         const limit = clampLimit(req.query?.limit, 50, 200);
         const mode = req.query?.mode === 'test' ? 'test' : 'live';
         const includeProviderOrders = req.query?.includeProviderOrders === 'true';
+        // The provider whose orders are reconciled: the one asked for, else the
+        // configured checkout provider, else Lemon Squeezy.
+        const requestedProvider = String(req.query?.provider || process.env.BILLING_PROVIDER || '').trim().toLowerCase();
+        const orderProvider = requestedProvider === 'polar' ? 'polar' : 'lemonsqueezy';
         const providerApiKey = resolveLemonSqueezyApiKey(mode);
-        if (
-            includeProviderOrders
-            && (!providerApiKey
-                || !String(process.env.LEMONSQUEEZY_STORE_ID || '').trim())
-        ) {
+        const polarAccessToken = resolvePolarAccessToken(mode);
+        const providerOrdersConfigured = orderProvider === 'polar'
+            ? Boolean(polarAccessToken)
+            : Boolean(providerApiKey && String(process.env.LEMONSQUEEZY_STORE_ID || '').trim());
+        if (includeProviderOrders && !providerOrdersConfigured) {
             return res.status(409).json({
-                error: 'LemonSqueezy order reconciliation is not configured',
-                code: 'LEMONSQUEEZY_RECONCILIATION_NOT_CONFIGURED',
+                error: `${orderProvider === 'polar' ? 'Polar' : 'LemonSqueezy'} order reconciliation is not configured`,
+                code: `${orderProvider === 'polar' ? 'POLAR' : 'LEMONSQUEEZY'}_RECONCILIATION_NOT_CONFIGURED`,
             });
         }
 
@@ -447,18 +511,24 @@ router.get('/billing/reconciliation', async (req, res) => {
 
         let providerOrders = { status: 'not_requested' };
         if (includeProviderOrders) {
-            const fetched = await fetchRecentLemonSqueezyOrders({
-                apiKey: providerApiKey,
-                storeId: process.env.LEMONSQUEEZY_STORE_ID,
-                mode,
+            const window = {
                 createdAfter: verifiedPurchaseReport.window.verifiedAfter,
                 createdBefore: verifiedPurchaseReport.window.verifiedBefore,
-            });
+            };
+            const fetched = orderProvider === 'polar'
+                ? await fetchRecentPolarOrders({ accessToken: polarAccessToken, mode, ...window })
+                : await fetchRecentLemonSqueezyOrders({
+                    apiKey: providerApiKey,
+                    storeId: process.env.LEMONSQUEEZY_STORE_ID,
+                    mode,
+                    ...window,
+                });
             const reconciliation = await findProviderOrderMismatches({
                 CheckoutAttempt,
                 User,
                 orders: fetched.orders,
                 mode,
+                provider: orderProvider,
             });
             providerOrders = {
                 status: 'checked',

@@ -29,11 +29,11 @@ describe('RefundComponent', () => {
     );
     expect(copy).toContain('One first-purchase refund per person and per account');
     expect(copy).toContain('Later purchases and renewals follow Section 4');
-    expect(copy).toContain('Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.');
+    expect(copy).toContain('Your renewal date is shown in your profile and in the Polar billing portal; for the annual plan, Polar, our payment provider, also emails a reminder seven days before the renewal date.');
     expect(copy).toContain('Renewal charges are generally non-refundable.');
     expect(copy).not.toContain('limited usage');
     expect(copy).toContain('This policy does not limit mandatory consumer rights');
-    expect(copy).toContain('Effective date: 2026-10-15');
+    expect(copy).toContain('Effective date: 2026-11-23');
     expect(supportLink).toBeTruthy();
 
     for (const forbidden of [

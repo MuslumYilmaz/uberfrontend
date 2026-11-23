@@ -28,7 +28,7 @@ import {
   releaseExternalWindowReservation,
   reserveExternalWindow,
 } from '../../../../core/utils/external-window.util';
-import { isLemonSqueezyCheckoutUrl, PlanId } from '../../../../core/utils/payments-provider.util';
+import { isCheckoutUrlForProvider, PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import {
   AuthPromptAccountStep,
@@ -276,7 +276,7 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
       <div class="pr-trust-strip" *ngIf="isOfferV2() && !countedLayout()" data-testid="pricing-trust-strip" aria-label="Checkout assurances">
         <span><i class="pi pi-check" aria-hidden="true"></i>{{ taxTrustCopy() }}</span>
         <span><i class="pi pi-refresh" aria-hidden="true"></i>Cancel anytime</span>
-        <span><i class="pi pi-lock" aria-hidden="true"></i>Secure checkout by Lemon Squeezy</span>
+        <span><i class="pi pi-lock" aria-hidden="true"></i>Secure checkout by Polar</span>
         <span><i class="pi pi-eye" aria-hidden="true"></i>Free examples available</span>
         <span class="pr-trust-strip__refund">
           <i class="pi pi-replay" aria-hidden="true"></i>
@@ -364,8 +364,8 @@ const STUDENT_PRICE_MULTIPLIER = 0.6;
             <p class="pr-discount__eyebrow">Employers</p>
             <p class="pr-discount__figure pr-discount__figure--text">Often covered by a learning budget</p>
             <p class="pr-discount__copy">
-              Every order comes with an emailed receipt, and a PDF invoice is available from your orders page or the
-              billing portal in your profile.
+              Every paid order comes with a receipt and a PDF invoice, both available from the Polar billing portal in
+              your profile.
             </p>
           </article>
         </div>
@@ -762,7 +762,7 @@ Every paid plan unlocks the same library; only the access period changes.`,
           q: 'Can I cancel a subscription anytime?',
           a: `Yes.<br><br>
 Cancel anytime and you keep access until the end of your current billing period.<br>
-Lemon Squeezy, our payment provider, emails a renewal reminder seven days before a renewal.<br>
+Your renewal date is shown in your profile and in the Polar billing portal; for the annual plan, Polar also emails a reminder seven days before the renewal.<br>
 No surprises: cancelling only stops the next renewal.`,
         },
         {
@@ -776,14 +776,14 @@ To request a refund or report a wrong charge, email <code>support@frontendatlas.
         {
           id: 'payment-methods',
           q: 'Which payment methods work?',
-          a: `Checkout runs on Lemon Squeezy, our payment provider, and charges in US dollars. Every plan takes Visa, Mastercard, American Express and Discover cards, and PayPal; the one-time plan also takes Alipay.<br><br>
-UPI is not available.`,
+          a: `Checkout runs on Polar, our payment provider, and charges in US dollars. Every plan takes Visa, Mastercard, American Express and Discover cards.<br><br>
+PayPal, Alipay and UPI are not available.`,
         },
         {
           id: 'employer-reimbursement',
           q: 'Can my employer pay?',
           a: `Often, yes: interview prep usually fits a learning or development budget.<br><br>
-Lemon Squeezy, our payment provider, emails a receipt for every order. You can create a PDF invoice from its My Orders page, or from the billing portal linked in your profile for subscriptions.`,
+Polar, our payment provider, issues a receipt and a PDF invoice for every paid order. Download both from the Polar billing portal linked in your profile, where you can also add a company name, VAT number or billing address to the invoice.`,
         },
         student,
         {
@@ -793,7 +793,7 @@ Lemon Squeezy, our payment provider, emails a receipt for every order. You can c
 - billing details that do not match the card: name, address or postal code<br>
 - a bank that blocks online or international payments<br>
 - a VPN or ad blocker that breaks the checkout<br><br>
-Try another card or PayPal. If it still fails, email ${support} with the time of the attempt and your account email.`,
+Try another card. If it still fails, email ${support} with the time of the attempt and your account email.`,
         },
       ],
     },
@@ -1637,7 +1637,7 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
         : 'Sign in or create a free account. Your plan is kept for checkout when you are back.',
       kicker: `Step 1 of 2 · ${plan?.title ?? 'Premium'} · ${this.displayPrice(planId)} ${detail?.currency || 'USD'} ${when}`,
       reason: 'Why an account first: your Premium access, saved plan and solved tasks attach to it.',
-      assurance: `14-day refund on your first purchase, no usage test. Secure checkout by Lemon Squeezy. ${this.taxTrustCopy()}.`,
+      assurance: `14-day refund on your first purchase, no usage test. Secure checkout by Polar. ${this.taxTrustCopy()}.`,
     };
   }
 
@@ -1767,7 +1767,8 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
           ? 'same_tab'
           : result.mode;
       if (result.mode === 'same-tab') {
-        if (result.provider !== 'lemonsqueezy' || !isLemonSqueezyCheckoutUrl(result.url)) {
+        const sameTabProvider = result.provider === 'lemonsqueezy' || result.provider === 'polar';
+        if (!sameTabProvider || !isCheckoutUrlForProvider(result.provider, result.url)) {
           this.trackCheckoutLaunchFailed(planId, result.provider, 'invalid_same_tab_url', source, surface);
           this.setCheckoutNotice('Checkout could not open safely. Please try again in a moment.', true);
           this.pendingCheckoutIntent = this.checkoutIntent.load();

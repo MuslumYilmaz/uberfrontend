@@ -1,5 +1,7 @@
 import {
+  isCheckoutUrlForProvider,
   isLemonSqueezyCheckoutUrl,
+  isPolarCheckoutUrl,
   resolveCheckoutPaymentsProvider,
   resolveCheckoutUrl,
   resolvePaymentsMode,
@@ -15,6 +17,32 @@ describe('payments-provider util', () => {
     expect(isLemonSqueezyCheckoutUrl('https://attacker.example/checkout/custom/abc?signature=sig')).toBeFalse();
     expect(isLemonSqueezyCheckoutUrl('https://frontendatlas.lemonsqueezy.com/billing')).toBeFalse();
     expect(isLemonSqueezyCheckoutUrl('not a url')).toBeFalse();
+  });
+
+  it('accepts Polar checkout sessions on the sandbox and production hosts only', () => {
+    expect(isPolarCheckoutUrl('https://sandbox.polar.sh/checkout/polar_c_abc123')).toBeTrue();
+    expect(isPolarCheckoutUrl('https://polar.sh/checkout/polar_c_abc123?embed=true')).toBeTrue();
+    expect(isPolarCheckoutUrl('http://sandbox.polar.sh/checkout/polar_c_abc123')).toBeFalse();
+    expect(isPolarCheckoutUrl('https://sandbox.polar.sh.attacker.example/checkout/polar_c_abc')).toBeFalse();
+    expect(isPolarCheckoutUrl('https://polar.sh/frontendatlas/portal')).toBeFalse();
+    expect(isPolarCheckoutUrl('not a url')).toBeFalse();
+  });
+
+  it('checks a returned checkout URL against the provider that returned it', () => {
+    expect(isCheckoutUrlForProvider('polar', 'https://sandbox.polar.sh/checkout/polar_c_abc')).toBeTrue();
+    expect(isCheckoutUrlForProvider('polar', 'https://frontendatlas.lemonsqueezy.com/checkout/buy/abc')).toBeFalse();
+    expect(isCheckoutUrlForProvider('lemonsqueezy', 'https://frontendatlas.lemonsqueezy.com/checkout/buy/abc')).toBeTrue();
+    expect(isCheckoutUrlForProvider('lemonsqueezy', 'https://sandbox.polar.sh/checkout/polar_c_abc')).toBeFalse();
+    expect(isCheckoutUrlForProvider('gumroad', 'https://frontendatlas.gumroad.com/l/abc')).toBeTrue();
+    expect(isCheckoutUrlForProvider('stripe', 'https://checkout.stripe.com/pay/abc')).toBeFalse();
+  });
+
+  it('resolves no hosted URL for Polar because the backend creates each session', () => {
+    const env = { PAYMENTS_PROVIDER: 'polar', PAYMENTS_MODE: 'test' };
+    expect(resolvePaymentsProvider(env)).toBe('polar');
+    expect(resolveCheckoutPaymentsProvider(env)).toBe('polar');
+    expect(resolveCheckoutUrl('polar', 'monthly', env)).toBeNull();
+    expect(resolveCheckoutUrl('polar', 'lifetime', env)).toBeNull();
   });
 
   it('defaults to test mode when not production', () => {

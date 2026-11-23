@@ -637,7 +637,7 @@ describe('Admin billing reconciliation', () => {
 
     try {
       const res = await request(app)
-        .get('/api/admin/billing/reconciliation?mode=test&includeProviderOrders=true')
+        .get('/api/admin/billing/reconciliation?mode=test&includeProviderOrders=true&provider=lemonsqueezy')
         .set('Authorization', authHeader(admin._id));
 
       expect(res.status).toBe(200);

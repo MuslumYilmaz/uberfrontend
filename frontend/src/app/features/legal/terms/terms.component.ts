@@ -284,5 +284,5 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
 })
 export class TermsComponent {
   readonly lastUpdated = LEGAL_POLICY_LAST_UPDATED.terms;
-  readonly merchantOfRecord = 'Lemon Squeezy';
+  readonly merchantOfRecord = 'Polar (Polar Software, Inc.)';
 }

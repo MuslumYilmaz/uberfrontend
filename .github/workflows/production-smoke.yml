@@ -23,6 +23,9 @@ jobs:
     env:
       API_BASE: https://api.frontendatlas.com
       SITE_BASE: https://frontendatlas.com
+      # The checkout provider production is expected to run on. Set the repository
+      # variable EXPECTED_BILLING_PROVIDER to `polar` at the Polar cutover.
+      EXPECTED_BILLING_PROVIDER: ${{ vars.EXPECTED_BILLING_PROVIDER || 'lemonsqueezy' }}
 
     steps:
       - name: Probe the live API
@@ -40,10 +43,11 @@ jobs:
 
           # Checkout configuration only; this never creates a checkout attempt.
           fetch "checkout config" "$API_BASE/api/billing/checkout/config" /tmp/checkout-config.json
-          jq -e '.mode == "live" and .enabled == true and .provider == "lemonsqueezy"' /tmp/checkout-config.json >/dev/null \
-            || { echo "Production checkout config is not live/enabled:"; cat /tmp/checkout-config.json; exit 1; }
+          jq -e --arg provider "$EXPECTED_BILLING_PROVIDER" '.mode == "live" and .enabled == true and .provider == $provider' /tmp/checkout-config.json >/dev/null \
+            || { echo "Production checkout config is not live/enabled on $EXPECTED_BILLING_PROVIDER:"; cat /tmp/checkout-config.json; exit 1; }
 
       - name: Probe the checkout overlay script
+        if: env.EXPECTED_BILLING_PROVIDER == 'lemonsqueezy'
         run: |
           set -euo pipefail
           # Lemon Squeezy moving this script behind a new host silently took the
@@ -63,6 +67,20 @@ jobs:
             printf '%s' "$allowed" | grep -qF "https://$host" \
               || { echo "The deployed CSP blocks https://$host, so the checkout overlay cannot load:"; echo "$allowed"; exit 1; }
           done
+
+      - name: Probe the Polar embed frame
+        if: env.EXPECTED_BILLING_PROVIDER == 'polar'
+        run: |
+          set -euo pipefail
+          # The overlay is an iframe on polar.sh opened by the bundled embed, so
+          # the deployed CSP must frame that host and the host must answer.
+          curl -sS -I --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "$SITE_BASE/robots.txt" > /tmp/site-headers.txt
+          allowed="$(tr -d '\r' < /tmp/site-headers.txt | grep -i '^content-security-policy:' | grep -o 'frame-src [^;]*')"
+          printf '%s' "$allowed" | grep -qF 'https://polar.sh' \
+            || { echo "The deployed CSP does not frame https://polar.sh, so the checkout overlay cannot open:"; echo "$allowed"; exit 1; }
+          code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors "https://polar.sh/checkout/polar_c_production_smoke" || true)"
+          echo "polar.sh checkout host -> HTTP $code"
+          case "$code" in 2*|3*|404) ;; *) echo "polar.sh is not answering"; exit 1 ;; esac
 
       - name: Probe the crawl surfaces
         run: |

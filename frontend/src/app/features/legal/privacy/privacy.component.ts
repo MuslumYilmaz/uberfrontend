@@ -383,8 +383,8 @@ export class PrivacyComponent {
   readonly companyName = 'FrontendAtlas';
   readonly operatorName = 'Müslim Yılmaz';
   readonly operatorLocation = 'Istanbul, Türkiye';
-  readonly merchantOfRecord = 'Lemon Squeezy';
+  readonly merchantOfRecord = 'Polar (Polar Software, Inc.)';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'November 18, 2026';
+  readonly effectiveDate = 'November 23, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }

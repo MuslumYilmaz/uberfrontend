@@ -4,7 +4,7 @@ const CheckoutAttemptSchema = new mongoose.Schema(
   {
     attemptId: { type: String, required: true, unique: true, trim: true },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe'], required: true },
+    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe', 'polar'], required: true },
     planId: {
       type: String,
       enum: ['monthly', 'quarterly', 'annual', 'lifetime'],

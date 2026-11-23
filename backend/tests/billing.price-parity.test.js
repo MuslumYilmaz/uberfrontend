@@ -1,8 +1,69 @@
 const {
   checkLemonSqueezyPriceParity,
+  checkPolarPriceParity,
+  comparePolarProduct,
   compareVariant,
   resolveVariantId,
 } = require('../services/billing/price-parity');
+
+describe('Polar price parity', () => {
+  const product = (overrides = {}) => ({
+    id: '6fb90ee2-8b50-4764-9d4a-cd9a0d2a6fb8',
+    name: 'FrontendAtlas Premium — Monthly Access',
+    is_archived: false,
+    recurring_interval: 'month',
+    recurring_interval_count: 1,
+    prices: [{ amount_type: 'fixed', price_amount: 2400, price_currency: 'usd' }],
+    ...overrides,
+  });
+
+  test('matches recurring, quarterly and one-time products against the catalog', () => {
+    expect(comparePolarProduct('monthly', 'p1', product())).toEqual(expect.objectContaining({ ok: true, mismatches: [] }));
+    expect(comparePolarProduct('quarterly', 'p2', product({ recurring_interval_count: 3, prices: [{ amount_type: 'fixed', price_amount: 4900, price_currency: 'usd' }] }))).toEqual(expect.objectContaining({ ok: true }));
+    const lifetime = comparePolarProduct('lifetime', 'p3', product({ recurring_interval: null, recurring_interval_count: null, prices: [{ amount_type: 'fixed', price_amount: 17900, price_currency: 'usd' }] }));
+    expect(lifetime.ok).toBe(true);
+    expect(lifetime.actual).toEqual(expect.objectContaining({ interval: 'one_time', intervalCount: null, currency: 'USD' }));
+  });
+
+  test('reports amount, currency, interval drift, a missing fixed price and an archived product', () => {
+    expect(comparePolarProduct('monthly', 'p1', product({ prices: [{ amount_type: 'fixed', price_amount: 2900, price_currency: 'eur' }] })).mismatches)
+      .toEqual(['amount_mismatch', 'currency_mismatch']);
+    expect(comparePolarProduct('annual', 'p4', product()).mismatches).toEqual(['amount_mismatch', 'interval_mismatch']);
+    expect(comparePolarProduct('monthly', 'p1', product({ prices: [{ amount_type: 'custom' }] })).mismatches).toEqual(['fixed_price_missing']);
+    expect(comparePolarProduct('monthly', 'p1', product({ is_archived: true })).mismatches).toEqual(['product_archived']);
+  });
+
+  test('reads each enabled plan from the API of the mode and flags a missing product id', async () => {
+    const env = {
+      POLAR_MONTHLY_PRODUCT_ID_TEST: '6fb90ee2-8b50-4764-9d4a-cd9a0d2a6fb8',
+      POLAR_LIFETIME_PRODUCT_ID_TEST: '87975549-328f-4a1f-a9c4-09245282d2bd',
+    };
+    const fetchImpl = jest.fn(async (url) => ({
+      ok: true,
+      json: async () => (url.includes('87975549')
+        ? product({ id: '87975549-328f-4a1f-a9c4-09245282d2bd', recurring_interval: null, recurring_interval_count: null, prices: [{ amount_type: 'fixed', price_amount: 17900, price_currency: 'usd' }] })
+        : product()),
+    }));
+    const report = await checkPolarPriceParity({
+      accessToken: 'polar_oat_test',
+      mode: 'test',
+      enabledPlans: { monthly: true, quarterly: true, lifetime: true },
+      env,
+      fetchImpl,
+    });
+    expect(report.provider).toBe('polar');
+    expect(report.ok).toBe(false);
+    expect(report.results.map((entry) => [entry.planId, entry.ok, entry.mismatches])).toEqual([
+      ['monthly', true, []],
+      ['quarterly', false, ['product_id_missing']],
+      ['lifetime', true, []],
+    ]);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl.mock.calls[0][0]).toBe('https://sandbox-api.polar.sh/v1/products/6fb90ee2-8b50-4764-9d4a-cd9a0d2a6fb8');
+    expect(fetchImpl.mock.calls[0][1].headers.Authorization).toBe('Bearer polar_oat_test');
+    await expect(checkPolarPriceParity({ accessToken: '', mode: 'test', enabledPlans: {}, env, fetchImpl })).rejects.toThrow(/POLAR_ACCESS_TOKEN/);
+  });
+});
 
 describe('LemonSqueezy price parity', () => {
   test('matches recurring and one-time variant contracts', () => {

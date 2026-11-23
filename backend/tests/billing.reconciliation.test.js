@@ -1,4 +1,5 @@
 const {
+  findProviderOrderMismatches,
   findVerifiedPurchaseEntitlementMismatches,
 } = require('../services/billing/reconciliation');
 
@@ -10,6 +11,58 @@ function leanQuery(result) {
   query.lean = jest.fn(async () => result);
   return query;
 }
+
+describe('billing reconciliation providers', () => {
+  test('scans Lemon Squeezy and Polar attempts by default and only the asked provider otherwise', async () => {
+    const CheckoutAttempt = { find: jest.fn(() => leanQuery([])) };
+    const User = { find: jest.fn(() => leanQuery([])) };
+    const BillingEvent = { find: jest.fn(() => leanQuery([])) };
+
+    const both = await findVerifiedPurchaseEntitlementMismatches({ CheckoutAttempt, User, BillingEvent, mode: 'live' });
+    expect(both.providers).toEqual(['lemonsqueezy', 'polar']);
+    expect(CheckoutAttempt.find.mock.calls[0][0].provider).toEqual({ $in: ['lemonsqueezy', 'polar'] });
+
+    const polarOnly = await findVerifiedPurchaseEntitlementMismatches({ CheckoutAttempt, User, BillingEvent, mode: 'test', providers: 'polar' });
+    expect(polarOnly.providers).toEqual(['polar']);
+    expect(CheckoutAttempt.find.mock.calls[1][0].provider).toEqual({ $in: ['polar'] });
+
+    const unknown = await findVerifiedPurchaseEntitlementMismatches({ CheckoutAttempt, User, BillingEvent, mode: 'test', providers: ['stripe'] });
+    expect(unknown.providers).toEqual(['lemonsqueezy', 'polar']);
+  });
+
+  test('matches Polar orders to Polar attempts by provider order id with tax-inclusive totals', async () => {
+    const userId = '68a000000000000000000002';
+    const attempt = {
+      attemptId: 'chk_polar_order',
+      userId,
+      provider: 'polar',
+      planId: 'monthly',
+      mode: 'test',
+      status: 'applied',
+      providerOrderId: 'ord-1',
+      paymentEventId: 'test:msg_1',
+      paymentVerifiedAt: new Date('2026-11-23T08:07:08Z'),
+      paymentCurrency: 'USD',
+      paymentSubtotalCents: 1000,
+      paymentDiscountCents: 0,
+      paymentTaxCents: 200,
+      paymentTotalCents: 1200,
+    };
+    const CheckoutAttempt = { find: jest.fn(() => leanQuery([attempt])) };
+    const User = {
+      find: jest.fn(() => leanQuery([{ _id: userId, accessTier: 'premium', entitlements: { pro: { status: 'active', validUntil: '2026-12-23T08:07:07Z' } } }])),
+    };
+    const orders = [
+      { orderId: 'ord-1', identifiers: ['ord-1'], status: 'paid', refunded: false, totalCents: 1200, discountCents: 0, currency: 'USD', createdAt: new Date('2026-11-23T08:07:08Z') },
+      { orderId: 'ord-2', identifiers: ['ord-2'], status: 'paid', refunded: false, totalCents: 2400, discountCents: 0, currency: 'USD', createdAt: new Date('2026-11-23T09:00:00Z') },
+    ];
+    const report = await findProviderOrderMismatches({ CheckoutAttempt, User, orders, mode: 'test', provider: 'polar' });
+    expect(report.provider).toBe('polar');
+    expect(CheckoutAttempt.find.mock.calls[0][0]).toEqual(expect.objectContaining({ provider: 'polar', mode: 'test' }));
+    expect(report.summary).toEqual({ orders: 2, matched: 1, mismatches: 1 });
+    expect(report.mismatches[0]).toEqual(expect.objectContaining({ orderId: 'ord-2', reasons: ['checkout_attempt_missing'] }));
+  });
+});
 
 describe('billing campaign reconciliation', () => {
   test('reports refunded campaign purchases without counting them in recorded revenue totals', async () => {

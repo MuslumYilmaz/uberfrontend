@@ -71,6 +71,13 @@ export interface Billing {
       lastEventId?: string;
       lastEventAt?: string;
     };
+    polar?: {
+      customerId?: string;
+      subscriptionId?: string;
+      startedAt?: string;
+      lastEventId?: string;
+      lastEventAt?: string;
+    };
   };
 }
 

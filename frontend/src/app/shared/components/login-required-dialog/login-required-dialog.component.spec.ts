@@ -94,7 +94,7 @@ describe('LoginRequiredDialogComponent', () => {
     fixture.componentRef.setInput('accountStep', {
       kicker: 'Step 1 of 2 · Quarterly · $49 USD today',
       reason: 'Why an account first: your Premium access, saved plan and solved tasks attach to it.',
-      assurance: '14-day refund on your first purchase, no usage test. Secure checkout by Lemon Squeezy. Taxes included.',
+      assurance: '14-day refund on your first purchase, no usage test. Secure checkout by Polar. Taxes included.',
     });
     fixture.detectChanges();
 

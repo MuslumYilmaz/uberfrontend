@@ -9,7 +9,7 @@ export const environment = {
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
-    PAYMENTS_PROVIDER: 'lemonsqueezy',
+    PAYMENTS_PROVIDER: 'polar',
     PAYMENTS_MODE: 'test',
     GUMROAD_MONTHLY_URL: 'https://frontendatlas.gumroad.com/l/xsoew',
     GUMROAD_QUARTERLY_URL: 'https://frontendatlas.gumroad.com/l/rwsapy',
