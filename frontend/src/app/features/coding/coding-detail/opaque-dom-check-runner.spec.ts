@@ -366,6 +366,35 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results).toEqual([{ name: 'Locators', passed: true }]);
   });
 
+  it('waits for a class when the step gives timeoutMs, and reads it at once when it does not', async () => {
+    // The head moves from the first cell to the second on a timer, as a game tick does.
+    const html = `<!doctype html><html><body>
+      <div class="cell cell--head"></div><div class="cell"></div>
+      <script>
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+        setTimeout(() => {
+          const cells = document.querySelectorAll('.cell');
+          cells[0].classList.remove('cell--head');
+          cells[1].classList.add('cell--head');
+        }, 300);
+      <\/script>
+    </body></html>`;
+    const at = (index: number, extra: Record<string, unknown> = {}) =>
+      ({ type: 'expectClass', selector: '.cell', index, className: 'cell--head', ...extra });
+
+    const results = await runner.runFramework(html, [
+      { id: 'waits', name: 'Waits for the move', steps: [at(1, { timeoutMs: 2000 }), at(0, { expected: false })] },
+      { id: 'at-once', name: 'Reads at once', steps: [at(1)] },
+      { id: 'too-short', name: 'Gives up after its timeout', steps: [at(1, { timeoutMs: 50 })] },
+    ] as any);
+
+    expect(results[0]).toEqual({ name: 'Waits for the move', passed: true });
+    expect(results[1].passed).toBeFalse();
+    expect(results[1].error).toMatch(/expected class "cell--head" to be present$/);
+    expect(results[2].passed).toBeFalse();
+    expect(results[2].error).toMatch(/expected class "cell--head" to be present within 50 ms$/);
+  });
+
   it('names the locator that found nothing, and counts what it finds', async () => {
     const results = await runner.runFramework(
       `<!doctype html><html><body>

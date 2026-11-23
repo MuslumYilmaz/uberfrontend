@@ -1189,8 +1189,19 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       const className = String(step.className || step.value || '').trim();
       if (!className) throw new Error(`${target} is missing a className`);
       const expected = step.expected !== false;
-      if (element.classList.contains(className) !== expected) throw new Error(`${target} expected class "${className}" to be ${expected ? 'present' : 'absent'}`);
-      return Promise.resolve();
+      // With timeoutMs the step waits for the class, so a check does not bet on a timer firing inside a fixed wait.
+      const rawTimeout = Number(step.timeoutMs);
+      const timeoutMs = Number.isFinite(rawTimeout) && rawTimeout > 0 ? rawTimeout : 0;
+      const startedAt = nativeNow();
+      const poll = (): Promise<void> => {
+        const current = queryElement(step);
+        if (current && current.classList.contains(className) === expected) return Promise.resolve();
+        if (nativeNow() - startedAt >= timeoutMs) {
+          return Promise.reject(new Error(`${target} expected class "${className}" to be ${expected ? 'present' : 'absent'}${timeoutMs ? ` within ${timeoutMs} ms` : ''}`));
+        }
+        return delay(25).then(poll);
+      };
+      return poll();
     }
     if (type === 'click') {
       const clickable = element as HTMLElement;
