@@ -290,7 +290,7 @@ async function buildLegacyGamificationRepairPlan(db, { now = new Date() } = {}) 
 
 async function buildPendingEntitlementIgnorePlan(db, { now = new Date(), minAgeHours = 24 } = {}) {
   const pending = await db.collection('pendingentitlements')
-    .find({ provider: 'lemonsqueezy', appliedAt: null, ignoredAt: null })
+    .find({ provider: { $in: ['lemonsqueezy', 'polar'] }, appliedAt: null, ignoredAt: null })
     .sort({ receivedAt: 1, createdAt: 1, _id: 1 })
     .toArray();
 
@@ -312,13 +312,14 @@ async function buildPendingEntitlementIgnorePlan(db, { now = new Date(), minAgeH
       ? await db.collection('users').findOne({ _id: boundObjectId }, { projection: { _id: 1 } })
       : null;
 
+    const provider = String(item.provider || 'lemonsqueezy');
     let reason = '';
     if (!bindingUserId) {
-      reason = 'lemonsqueezy_user_binding_missing';
+      reason = `${provider}_user_binding_missing`;
     } else if (!boundObjectId || !boundUser) {
-      reason = 'lemonsqueezy_user_binding_missing_user';
+      reason = `${provider}_user_binding_missing_user`;
     } else if (emailUser && !sameId(emailUser._id, boundUser._id)) {
-      reason = 'lemonsqueezy_user_binding_mismatch';
+      reason = `${provider}_user_binding_mismatch`;
     } else if (!emailUser) {
       manualReview.push({
         reason: 'stale_pending_without_email_user_but_valid_binding',

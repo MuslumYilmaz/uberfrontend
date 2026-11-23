@@ -333,8 +333,9 @@ describe('Polar webhook integration', () => {
     const futureUserId = new mongoose.Types.ObjectId();
     const customer = buildCustomer({ externalId: String(futureUserId), email: 'later@example.com' });
     const response = await post(buildEvent('subscription.updated', buildSubscription({ customer })), { webhookId: 'msg_pending' });
-    expect(response.status).toBe(200);
+    // The body first: a wrong status then names the route that answered.
     expect(response.body).toEqual({ ok: true, userFound: false });
+    expect(response.status).toBe(200);
     const pending = await PendingEntitlement.findOne({ provider: 'polar', eventId: 'test:msg_pending' }).lean();
     expect(pending).toEqual(expect.objectContaining({ userId: String(futureUserId), email: 'later@example.com' }));
     expect(pending.entitlement.status).toBe('active');

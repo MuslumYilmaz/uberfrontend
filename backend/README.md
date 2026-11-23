@@ -81,6 +81,14 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - The session's returned `amount` must equal the requested price and the URL must be on the host of the mode (`sandbox.polar.sh` / `polar.sh`); otherwise the start fails closed (`CHECKOUT_CREATE_FAILED` or `CUSTOM_CHECKOUT_UNAVAILABLE`, 503) and no attempt is stored. `GET /api/billing/checkout/config` lists a plan as available only when the token and its product id are configured, and publishes the regional block whenever the provider is Polar.
 - `GET /api/billing/manage-url` for a Polar customer creates a short-lived customer session (`POST /v1/customer-sessions/` with `external_customer_id`) on every call and stores nothing; before the first confirmed checkout the customer does not exist yet and the route answers `MANAGE_URL_NOT_READY`. An account with both Lemon Squeezy and Polar metadata uses the provider of its latest event.
 
+### Polar operations
+
+- `npm run audit:billing-reconciliation` reconciles verified purchases for both providers and, per provider with read credentials, the provider's recent orders (`providers/polar-orders.js` reads `GET /v1/orders/` newest first until the window start). `GET /api/admin/billing/reconciliation?includeProviderOrders=true&provider=polar` does the same for one provider (default: `BILLING_PROVIDER`, else Lemon Squeezy).
+- `npm run audit:billing-price-parity` follows the configured provider: for Polar it reads each plan's product (`GET /v1/products/{id}`) and compares the fixed price, currency, billing interval and interval count with `PLAN_CATALOG`, and flags archived products.
+- `POST /api/admin/billing/simulate/polar` replays Polar-shaped events for a test account (`scenario`: `activate`, `renew`, `cancel`, `refund`, `lifetime`, `expire`, `revoke`; `validUntil` for activate/renew/cancel; optional `attemptId`, `externalId`, `planId`, `amountCents`) through the real normalizer, with the same lease and CAS path as the webhook.
+- `scripts/prod-integrity-repair.js` treats Polar pending entitlements like Lemon Squeezy ones (user-bound; stale records without a valid binding are ignored, never claimed by email).
+- The full-stack E2E backend refuses any live Polar value (`POLAR_*_LIVE`, `POLAR_ACCESS_TOKEN_LIVE`, `POLAR_WEBHOOK_SECRET_LIVE`).
+
 ### LemonSqueezy prod setup
 
 1) Environment variables (backend):
