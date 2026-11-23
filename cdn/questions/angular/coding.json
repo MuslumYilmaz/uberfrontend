@@ -9367,14 +9367,11 @@
             "expected": false
           },
           {
-            "type": "wait",
-            "durationMs": 110
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 105,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectClass",
@@ -9400,14 +9397,11 @@
             "key": "ArrowLeft"
           },
           {
-            "type": "wait",
-            "durationMs": 200
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 106,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectText",
@@ -9432,14 +9426,11 @@
             "key": "ArrowDown"
           },
           {
-            "type": "wait",
-            "durationMs": 100
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 120,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },
@@ -9575,14 +9566,11 @@
             }
           },
           {
-            "type": "wait",
-            "durationMs": 150
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 105,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },
@@ -9617,14 +9605,11 @@
             "key": "ArrowLeft"
           },
           {
-            "type": "wait",
-            "durationMs": 50
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 90,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectCount",
@@ -9666,14 +9651,11 @@
             "key": "ArrowDown"
           },
           {
-            "type": "wait",
-            "durationMs": 50
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 118,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "expectCount",
@@ -9710,14 +9692,11 @@
             "key": "w"
           },
           {
-            "type": "wait",
-            "durationMs": 100
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 90,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           },
           {
             "type": "key",
@@ -9725,14 +9704,11 @@
             "key": "a"
           },
           {
-            "type": "wait",
-            "durationMs": 80
-          },
-          {
             "type": "expectClass",
             "selector": ".cell",
             "index": 89,
-            "className": "cell--head"
+            "className": "cell--head",
+            "timeoutMs": 1500
           }
         ]
       },
