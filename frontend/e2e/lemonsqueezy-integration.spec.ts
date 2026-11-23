@@ -4,10 +4,8 @@ import { buildMockUser } from './auth-mocks';
 import { enforceProductionCsp } from './helpers/production-csp';
 import { environment } from '../src/environments/environment';
 import {
-  resolveCheckoutPaymentsProvider,
   resolveCheckoutUrl,
   resolvePaymentsMode,
-  resolvePaymentsProvider,
 } from '../src/app/core/utils/payments-provider.util';
 
 declare global {
@@ -35,11 +33,10 @@ if (paymentsMode === 'live' && !allowLive) {
   throw new Error('Refusing to run E2E with PAYMENTS_MODE=live. Set E2E_ALLOW_LIVE_PAYMENTS=true to override.');
 }
 
-const configuredProvider = resolvePaymentsProvider(environment);
-const provider = resolveCheckoutPaymentsProvider(environment);
-if (!provider) {
-  throw new Error(`Local LemonSqueezy integration E2E requires a checkout-capable provider. Configured: ${configuredProvider}`);
-}
+// The spec exercises the Lemon Squeezy overlay with the backend mocked, so the provider is pinned rather
+// than read from PAYMENTS_PROVIDER, which names Polar since the cutover.
+const configuredProvider = 'lemonsqueezy' as const;
+const provider = configuredProvider;
 const expectedUrlFor = (plan: typeof PLAN_IDS[number]) =>
   resolveCheckoutUrl(provider, plan, environment) || '';
 const liveUrls = new Set(

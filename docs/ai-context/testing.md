@@ -63,7 +63,7 @@ A push to `dev` runs no workflow; `dev` is first tested in CI by the open dev→
 | Security Verify | PR, main, Mondays | backend `npm audit --omit=dev --audit-level=high`; frontend audit against `docs/security/npm-audit-allowlist.json` (entries expire, criticals cannot be allowlisted); secret scan; CodeQL |
 | Action Policy | PR, main | every GitHub Action pinned to a full SHA |
 | WebKit Critical | Mondays | the critical suite in WebKit |
-| Production Smoke | after each production deploy, every 6 h | live API health, checkout config mode, the Lemon.js URL and its redirect hosts against the deployed CSP, crawl surfaces, read-only |
+| Production Smoke | after each production deploy, every 6 h | live API health, checkout config mode and provider, the checkout surface of the provider named by the repository variable `EXPECTED_BILLING_PROVIDER` against the deployed CSP (the Lemon.js URL and its redirect hosts, or the Polar frame host), crawl surfaces, read-only |
 | IndexNow | after each `frontendatlas-fe` production deploy, manual `all` | see below |
 | LemonSqueezy Test Checkout, Perf Smoke | manual only | hosted test-mode checkout (production refused); `e2e:perf` with `run_perf` |
 

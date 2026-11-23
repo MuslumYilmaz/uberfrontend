@@ -70,7 +70,7 @@ import { RouterModule } from '@angular/router';
         <h2>4. Subscriptions &amp; automatic renewals</h2>
         <ul>
           <li>Subscriptions renew automatically unless canceled.</li>
-          <li>Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.</li>
+          <li>Your renewal date is shown in your profile and in the Polar billing portal; for the annual plan, Polar, our payment provider, also emails a reminder seven days before the renewal date.</li>
           <li>You can cancel anytime in your account settings; access continues until the period ends.</li>
           <li>
             To avoid being charged for the next period, cancel before your renewal date

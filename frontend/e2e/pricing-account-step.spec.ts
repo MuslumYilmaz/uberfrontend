@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 import { environment } from '../src/environments/environment';
-import { resolveCheckoutPaymentsProvider, resolveCheckoutUrl } from '../src/app/core/utils/payments-provider.util';
+import { resolveCheckoutUrl } from '../src/app/core/utils/payments-provider.util';
 
 declare global {
   interface Window {
@@ -17,7 +17,9 @@ const appOrigin = new URL(
   process.env.PLAYWRIGHT_BASE_URL
     || `http://${process.env.PLAYWRIGHT_HOST || '127.0.0.1'}:${process.env.PLAYWRIGHT_PORT || '4200'}`,
 ).origin;
-const provider = resolveCheckoutPaymentsProvider(environment);
+// The flow under test is the Lemon Squeezy overlay with the backend mocked, so the provider is pinned
+// rather than read from PAYMENTS_PROVIDER, which names Polar since the cutover.
+const provider = 'lemonsqueezy' as const;
 const quarterlyUrl = (provider && resolveCheckoutUrl(provider, 'quarterly', environment)) || '';
 
 const SPRINT_OVERLAY_CONFIG = {
