@@ -1,7 +1,7 @@
 import { environment } from '../../../environments/environment';
 
-export type ConfiguredPaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'stripe';
-export type PaymentsProvider = 'gumroad' | 'lemonsqueezy';
+export type ConfiguredPaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'stripe' | 'polar';
+export type PaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'polar';
 export type PaymentsMode = 'test' | 'live';
 export type PlanId = 'monthly' | 'quarterly' | 'annual' | 'lifetime';
 
@@ -35,8 +35,11 @@ type PaymentsEnv = {
   STRIPE_MANAGE_URL?: string;
 };
 
-const CONFIGURED_PROVIDERS: ConfiguredPaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'stripe'];
-const CHECKOUT_PROVIDERS: PaymentsProvider[] = ['gumroad', 'lemonsqueezy'];
+const CONFIGURED_PROVIDERS: ConfiguredPaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'stripe', 'polar'];
+const CHECKOUT_PROVIDERS: PaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'polar'];
+// Polar checkout sessions are created by the backend per attempt (sandbox and
+// production are separate hosts); the frontend only recognises their URLs.
+const POLAR_CHECKOUT_HOSTS = ['polar.sh', 'sandbox.polar.sh'];
 
 export function resolvePaymentsProvider(env: PaymentsEnv = environment): ConfiguredPaymentsProvider {
   const raw = String(env.PAYMENTS_PROVIDER || 'gumroad').trim().toLowerCase();
@@ -153,6 +156,11 @@ export function resolveCheckoutUrlWithMeta(
     return { provider, planId, mode, url: chosen.value || null, sourceKey: chosen.value ? chosen.key : null };
   }
 
+  if (provider === 'polar') {
+    // No hosted Polar URL exists in the environment: the backend creates a session per attempt.
+    return { provider, planId, mode, url: null, sourceKey: null };
+  }
+
   const stripeMap: Record<PlanId, { value?: string; key: string }> = {
     monthly: { value: env.STRIPE_MONTHLY_URL, key: 'STRIPE_MONTHLY_URL' },
     quarterly: { value: env.STRIPE_QUARTERLY_URL, key: 'STRIPE_QUARTERLY_URL' },
@@ -198,6 +206,37 @@ export function isLemonSqueezyCheckoutUrl(value: string): boolean {
   }
 }
 
+export function isPolarCheckoutUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'https:'
+      && POLAR_CHECKOUT_HOSTS.includes(parsed.hostname)
+      && /^\/checkout\/[^/]+/.test(parsed.pathname);
+  } catch {
+    return false;
+  }
+}
+
+/** The checkout URL the backend returned must sit on the provider's own host before it is opened. */
+export function isCheckoutUrlForProvider(provider: string, value: string): boolean {
+  switch (provider) {
+    case 'lemonsqueezy':
+      return isLemonSqueezyCheckoutUrl(value);
+    case 'polar':
+      return isPolarCheckoutUrl(value);
+    case 'gumroad':
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'https:'
+          && (parsed.hostname === 'gumroad.com' || parsed.hostname.endsWith('.gumroad.com'));
+      } catch {
+        return false;
+      }
+    default:
+      return false;
+  }
+}
+
 export function resolveManageUrl(
   provider: ConfiguredPaymentsProvider,
   env: PaymentsEnv = environment
@@ -211,6 +250,8 @@ export function resolveManageUrl(
     gumroad: env.GUMROAD_MANAGE_URL,
     lemonsqueezy: lsManage,
     stripe: env.STRIPE_MANAGE_URL,
+    // Polar portal links are short-lived sessions the backend creates on demand.
+    polar: undefined,
   };
   const url = map[provider];
   return url ? url : null;

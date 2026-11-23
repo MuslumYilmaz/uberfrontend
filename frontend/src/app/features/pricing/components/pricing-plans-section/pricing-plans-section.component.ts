@@ -28,7 +28,7 @@ import {
   releaseExternalWindowReservation,
   reserveExternalWindow,
 } from '../../../../core/utils/external-window.util';
-import { isLemonSqueezyCheckoutUrl, PlanId } from '../../../../core/utils/payments-provider.util';
+import { isCheckoutUrlForProvider, PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import {
   AuthPromptAccountStep,
@@ -1767,7 +1767,8 @@ HTML and CSS tasks rely on the live preview instead, because visuals are the pri
           ? 'same_tab'
           : result.mode;
       if (result.mode === 'same-tab') {
-        if (result.provider !== 'lemonsqueezy' || !isLemonSqueezyCheckoutUrl(result.url)) {
+        const sameTabProvider = result.provider === 'lemonsqueezy' || result.provider === 'polar';
+        if (!sameTabProvider || !isCheckoutUrlForProvider(result.provider, result.url)) {
           this.trackCheckoutLaunchFailed(planId, result.provider, 'invalid_same_tab_url', source, surface);
           this.setCheckoutNotice('Checkout could not open safely. Please try again in a moment.', true);
           this.pendingCheckoutIntent = this.checkoutIntent.load();

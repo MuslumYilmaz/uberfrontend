@@ -4,12 +4,14 @@ import { apiUrl } from '../utils/api-base';
 import { BillingCheckoutService } from './billing-checkout.service';
 import { GumroadOverlayService } from './gumroad-overlay.service';
 import { LemonSqueezyCheckoutService } from './lemonsqueezy-checkout.service';
+import { PolarCheckoutService } from './polar-checkout.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('BillingCheckoutService', () => {
   let service: BillingCheckoutService;
   let httpMock: HttpTestingController;
   let lemonSqueezyCheckout: jasmine.SpyObj<LemonSqueezyCheckoutService>;
+  let polarCheckout: jasmine.SpyObj<PolarCheckoutService>;
 
   beforeEach(() => {
     lemonSqueezyCheckout = jasmine.createSpyObj<LemonSqueezyCheckoutService>(
@@ -18,6 +20,9 @@ describe('BillingCheckoutService', () => {
     );
     lemonSqueezyCheckout.open.and.resolveTo('new-tab');
     lemonSqueezyCheckout.prefetch.and.resolveTo();
+    polarCheckout = jasmine.createSpyObj<PolarCheckoutService>('PolarCheckoutService', ['open', 'prefetch']);
+    polarCheckout.open.and.resolveTo('overlay');
+    polarCheckout.prefetch.and.resolveTo();
 
     TestBed.configureTestingModule({
     imports: [],
@@ -25,6 +30,7 @@ describe('BillingCheckoutService', () => {
         BillingCheckoutService,
         { provide: GumroadOverlayService, useValue: jasmine.createSpyObj('GumroadOverlayService', ['open', 'prefetch']) },
         { provide: LemonSqueezyCheckoutService, useValue: lemonSqueezyCheckout },
+        { provide: PolarCheckoutService, useValue: polarCheckout },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
     ]
@@ -93,6 +99,57 @@ describe('BillingCheckoutService', () => {
       checkoutSurface: 'hosted_new_tab',
     });
     expect(lemonSqueezyCheckout.open).toHaveBeenCalled();
+  });
+
+  it('hands a Polar session to the Polar opener and rejects one off the Polar hosts', async () => {
+    const configPromise = service.getCheckoutConfig();
+    httpMock.expectOne(apiUrl('/billing/checkout/config')).flush({
+      configuredProvider: 'polar',
+      provider: 'polar',
+      mode: 'test',
+      enabled: true,
+      plans: { monthly: true, quarterly: true, annual: true, lifetime: true },
+      checkoutSurface: 'overlay',
+    });
+    await configPromise;
+    expect(service.reserveCheckoutWindow()).toBeNull();
+
+    const checkoutPromise = service.checkout('quarterly', { userId: 'user_1', email: 'b@example.com', username: 'buyer' }, 'pricing_page');
+    await Promise.resolve();
+    httpMock.expectOne(apiUrl('/billing/checkout/start')).flush({
+      attemptId: 'chk_polar',
+      provider: 'polar',
+      planId: 'quarterly',
+      mode: 'test',
+      checkoutUrl: 'https://sandbox.polar.sh/checkout/polar_c_abc123',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_polar',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_polar',
+      checkoutSurface: 'overlay',
+      reused: false,
+    });
+    const result = await checkoutPromise;
+    expect(result).toEqual(jasmine.objectContaining({ ok: true, mode: 'overlay', provider: 'polar', attemptId: 'chk_polar', checkoutSurface: 'overlay' }));
+    expect(polarCheckout.open).toHaveBeenCalledWith(
+      'https://sandbox.polar.sh/checkout/polar_c_abc123',
+      jasmine.objectContaining({ checkoutSurface: 'overlay', successUrl: 'http://localhost:4200/billing/success?attempt=chk_polar' }),
+      undefined,
+    );
+    expect(lemonSqueezyCheckout.open).not.toHaveBeenCalled();
+
+    const foreignPromise = service.checkout('monthly', { userId: 'user_1', email: 'b@example.com', username: 'buyer' }, 'pricing_page');
+    await Promise.resolve();
+    httpMock.expectOne(apiUrl('/billing/checkout/start')).flush({
+      attemptId: 'chk_foreign',
+      provider: 'polar',
+      planId: 'monthly',
+      mode: 'test',
+      checkoutUrl: 'https://attacker.example/checkout/polar_c_abc',
+      successUrl: 'http://localhost:4200/billing/success?attempt=chk_foreign',
+      cancelUrl: 'http://localhost:4200/billing/cancel?attempt=chk_foreign',
+      reused: false,
+    });
+    expect(await foreignPromise).toEqual({ ok: false, reason: 'invalid-url', provider: 'polar' });
+    expect(polarCheckout.open).toHaveBeenCalledTimes(1);
   });
 
   it('sends the stored first touch with the checkout start request', async () => {

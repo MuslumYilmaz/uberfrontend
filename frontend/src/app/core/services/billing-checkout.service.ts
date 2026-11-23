@@ -7,7 +7,7 @@ import { CheckoutLaunchMode } from '../utils/billing-ux.util';
 import {
   PaymentsProvider,
   PlanId,
-  isLemonSqueezyCheckoutUrl,
+  isCheckoutUrlForProvider,
   resolveCheckoutPaymentsProvider,
   resolvePaymentsProvider,
 } from '../utils/payments-provider.util';
@@ -21,6 +21,7 @@ import {
   LemonSqueezyCheckoutSurface,
   LemonSqueezyLaunchResult,
 } from './lemonsqueezy-checkout.service';
+import { PolarCheckoutService, PolarLaunchResult } from './polar-checkout.service';
 
 export type CheckoutSurface = LemonSqueezyCheckoutSurface;
 export type CheckoutOfferVersion = string;
@@ -47,7 +48,7 @@ type BillingProvider = {
 };
 
 type CheckoutMode = CheckoutLaunchMode;
-type ProviderCheckoutMode = CheckoutMode | LemonSqueezyLaunchResult;
+type ProviderCheckoutMode = CheckoutMode | LemonSqueezyLaunchResult | PolarLaunchResult;
 type CheckoutFailureReason =
   | 'missing-url'
   | 'provider-unavailable'
@@ -204,6 +205,7 @@ export class BillingCheckoutService {
     private http: HttpClient,
     private gumroadOverlay: GumroadOverlayService,
     private lemonSqueezyCheckout: LemonSqueezyCheckoutService,
+    private polarCheckout: PolarCheckoutService,
     private conversionContext: ConversionContextService
   ) {
     this.providers = {
@@ -224,6 +226,17 @@ export class BillingCheckoutService {
           return result === 'same_tab' ? 'same-tab' : result;
         },
         prefetch: (surface) => this.lemonSqueezyCheckout.prefetch(surface),
+      },
+      polar: {
+        checkout: async (url, context) => {
+          const result = await this.polarCheckout.open(
+            url,
+            context,
+            context?.launchReservation || undefined,
+          );
+          return result === 'same_tab' ? 'same-tab' : result;
+        },
+        prefetch: (surface) => this.polarCheckout.prefetch(surface),
       },
     };
   }
@@ -270,7 +283,8 @@ export class BillingCheckoutService {
     const cachedConfig = this.checkoutConfigCache?.value;
     const cachedProvider = cachedConfig?.provider;
     if (cachedProvider === 'gumroad') return null;
-    if (cachedProvider === 'lemonsqueezy' && cachedConfig?.checkoutSurface === 'overlay') return null;
+    const overlayProvider = cachedProvider === 'lemonsqueezy' || cachedProvider === 'polar';
+    if (overlayProvider && cachedConfig?.checkoutSurface === 'overlay') return null;
     return this.lemonSqueezyCheckout.reserve();
   }
 
@@ -353,9 +367,10 @@ export class BillingCheckoutService {
       console.warn('[billing] missing checkout url from backend', { provider: start.provider, planId });
       return { ok: false, reason: 'missing-url', provider: start.provider };
     }
-    if (start.provider === 'lemonsqueezy' && !isLemonSqueezyCheckoutUrl(start.checkoutUrl)) {
+    const hostCheckedProvider = start.provider === 'lemonsqueezy' || start.provider === 'polar';
+    if (hostCheckedProvider && !isCheckoutUrlForProvider(start.provider, start.checkoutUrl)) {
       this.releaseCheckoutWindow(context?.launchReservation);
-      console.error('[billing] invalid LemonSqueezy checkout URL.');
+      console.error(`[billing] invalid ${start.provider} checkout URL.`);
       return { ok: false, reason: 'invalid-url', provider: start.provider };
     }
 
