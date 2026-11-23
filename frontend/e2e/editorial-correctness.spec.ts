@@ -191,7 +191,7 @@ test('refund policy states the support channel and the first-purchase refund cle
       'used does not matter.',
   );
   await expect(body).toContainText('This policy does not limit mandatory consumer rights');
-  await expect(body).toContainText('Effective date: 2026-10-15');
+  await expect(body).toContainText('Effective date: 2026-11-23');
 });
 
 const correctedRouteCases: ReadonlyArray<{

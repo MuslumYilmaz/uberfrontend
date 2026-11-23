@@ -186,5 +186,5 @@ import { RouterModule } from '@angular/router';
 })
 export class RefundComponent {
   // Don’t use a “moving” legal date.
-  readonly effectiveDate = '2026-10-15';
+  readonly effectiveDate = '2026-11-23';
 }
