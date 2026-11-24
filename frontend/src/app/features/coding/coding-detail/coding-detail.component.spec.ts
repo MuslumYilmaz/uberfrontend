@@ -590,6 +590,37 @@ describe('CodingDetailComponent', () => {
     expect(record).toHaveBeenCalledOnceWith('tests');
   });
 
+  it('collapses a framework task\'s description on a laptop once the visitor comes back to it, never on a first visit', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance as any;
+    const width = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1280);
+    const question = { id: 'react-spec-collapse-default' } as any;
+    const key = `fa:coding:descCollapsed:react:${question.id}`;
+    localStorage.removeItem(key);
+    component.browserViewReady.set(true);
+    component.tech = 'react';
+    const collapsedWith = (openedBefore: boolean) => {
+      component.openedBefore = openedBefore;
+      component.loadCollapsePref(question);
+      return component.descCollapsed();
+    };
+
+    try {
+      expect(collapsedWith(false)).withContext('first visit').toBeFalse();
+      expect(collapsedWith(true)).withContext('back to the task at 1280').toBeTrue();
+      width.and.returnValue(1440);
+      expect(collapsedWith(true)).withContext('a wider screen keeps it open').toBeFalse();
+      width.and.returnValue(1366);
+      component.tech = 'javascript';
+      expect(collapsedWith(true)).withContext('a JavaScript task keeps it open').toBeFalse();
+      component.tech = 'react';
+      localStorage.setItem(key, 'false');
+      expect(collapsedWith(true)).withContext('the toggle wins').toBeFalse();
+    } finally {
+      localStorage.removeItem(key);
+    }
+  });
+
   it('uses mobile reading below 768px and compact workspace layout through 980px', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

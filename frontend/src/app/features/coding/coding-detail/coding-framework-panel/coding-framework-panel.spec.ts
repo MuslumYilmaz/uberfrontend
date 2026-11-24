@@ -231,6 +231,60 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(component.frameworkChecks()).toEqual([]);
   });
 
+  it('tabs the files a task is solved in, code before template before styles, and walks them with the arrow keys', () => {
+    const component = createComponent();
+    component.filesMap.set({
+      '/package.json': '{}',
+      '/tsconfig.json': '{}',
+      '/src/index.html': '<app-root></app-root>',
+      '/src/main.ts': 'bootstrapApplication(AppComponent);',
+      '/src/styles.css': 'body {}',
+      '/src/app/app.component.css': ':host {}',
+      '/src/app/app.component.html': '<p>Hi</p>',
+      '/src/app/app.component.ts': 'export class AppComponent {}',
+    });
+    component.openFile('/src/app/app.component.ts');
+
+    expect(component.tabFiles()).toEqual([
+      '/src/app/app.component.ts',
+      '/src/app/app.component.html',
+      '/src/app/app.component.css',
+      '/src/styles.css',
+    ]);
+
+    const press = (key: string) => {
+      const event = new KeyboardEvent('keydown', { key, cancelable: true });
+      component.onFileTabsKey(event);
+      return event.defaultPrevented;
+    };
+    expect(press('ArrowRight')).toBeTrue();
+    expect(component.currentPath()).toBe('/src/app/app.component.html');
+    press('ArrowLeft');
+    press('ArrowLeft');
+    expect(component.currentPath()).toBe('/src/styles.css');
+    press('Home');
+    expect(component.currentPath()).toBe('/src/app/app.component.ts');
+    expect(press('Enter')).toBeFalse();
+
+    // A set-up file opened from the file tree joins the tabs while it is open.
+    component.openFile('/src/main.ts');
+    expect(component.tabFiles()).toContain('/src/main.ts');
+  });
+
+  it('moves the splitter above the checks from the keyboard, starting from the split on screen', () => {
+    const component = createComponent();
+    expect(component.previewRowsPercent()).toBeNull();
+
+    const press = (key: string) => component.onPreviewRowsKey(new KeyboardEvent('keydown', { key, cancelable: true }));
+    press('ArrowUp');
+    // Unrendered, the split on screen reads as the default 60%; one step gives the checks 2% more.
+    expect(component.previewRowsPercent()).toBe(58);
+    press('End');
+    expect(component.previewRowsPercent()).toBe(85);
+    press('Home');
+    expect(component.previewRowsPercent()).toBe(20);
+  });
+
   it('keeps every configured framework check instead of truncating after six', () => {
     const component = createComponent();
     component.question = {

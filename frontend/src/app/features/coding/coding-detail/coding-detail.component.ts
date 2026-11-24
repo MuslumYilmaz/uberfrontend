@@ -36,6 +36,7 @@ import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../co
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import { AccessLevel, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { checkSelectors, frameworkCheckCoverage } from '../../../core/utils/framework-check-coverage.util';
+import { readDraftIndex } from '../../../core/utils/versioned-drafts.util';
 import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
 import type { PlanId } from '../../../core/utils/payments-provider.util';
 import { premiumPriceLine } from '../../../core/utils/plan-price.util';
@@ -279,6 +280,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
   descCollapsed = signal(false);
+  /** This task had been opened in this browser before the current visit (see collapsedByDefault). */
+  private openedBefore = false;
   descriptionCollapsed = computed(() => this.descCollapsed() && !this.showMobileDesktopGuard());
   private lastAsideRatio = 0.3;
   asideFlex = computed(() => {
@@ -1231,8 +1234,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.descCollapsed.set(false);
       return;
     }
-    try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
-    catch { this.descCollapsed.set(false); }
+    try {
+      const stored = localStorage.getItem(this.collapseKey(q));
+      this.descCollapsed.set(stored === null ? this.collapsedByDefault() : !!JSON.parse(stored));
+    } catch { this.descCollapsed.set(false); }
+  }
+
+  /**
+   * On a laptop (768 to 1366 px wide) a framework task's editor and preview get the width once the visitor comes back
+   * to it: a task opened before in this browser starts with its description collapsed. A first visit keeps it open,
+   * since it says what to build; a choice made with the toggle wins either way.
+   */
+  private collapsedByDefault(): boolean {
+    const width = window.innerWidth;
+    return this.isFrameworkTech() && width >= 768 && width <= 1366 && this.openedBefore;
   }
   private saveCollapsePref(q: Question, v: boolean) {
     if (!this.isBrowser) return;
@@ -2040,6 +2055,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!this.isBrowser) return;
 
     this.solved.set(this.progress.isSolved(q.id));
+    // Read before the workspace records this visit in the draft index.
+    this.openedBefore = !!readDraftIndex(q.id);
     this.loadCollapsePref(q);
 
     await Promise.all([

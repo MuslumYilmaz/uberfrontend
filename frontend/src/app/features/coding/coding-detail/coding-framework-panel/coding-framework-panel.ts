@@ -102,6 +102,12 @@ export function previewConsoleBridge(token: string): string {
     + `window.addEventListener('unhandledrejection',function(e){post('error','Unhandled promise rejection: '+fmt(e&&e.reason));});})();`;
 }
 
+/** Set-up files a task is not solved in; the file tree lists them, the editor's tabs leave them out. */
+const SETUP_FILE = /(^|\/)(package\.json|tsconfig[^/]*\.json|index\.html)$|(^|\/)src\/(main|index)\.(ts|tsx|js|jsx)$/i;
+
+/** The preview's share of its column, within which the splitter above the checks moves. */
+const PREVIEW_ROWS = { min: 0.2, max: 0.85 };
+
 @Component({
     selector: 'app-coding-framework-panel',
     imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent, ConsoleLoggerComponent],
@@ -140,6 +146,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Output() filesChanged = new EventEmitter<Record<string, string>>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
+  @ViewChild('previewColumn', { read: ElementRef }) previewColumn?: ElementRef<HTMLElement>;
+  @ViewChild('previewStage', { read: ElementRef }) previewStage?: ElementRef<HTMLElement>;
   @ViewChild('frameworkEditor') frameworkEditor?: MonacoEditorComponent;
 
   // Workspace state
@@ -239,11 +247,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const open = this.currentPath();
     return Object.fromEntries(Object.entries(this.filesMap()).filter(([path]) => path !== open));
   });
-  currentFileLabel = computed(() => {
-    const p = this.currentPath();
-    if (!p) return 'Select a file';
-    const i = p.lastIndexOf('/');
-    return i >= 0 ? p.slice(i + 1) : p;
+  /**
+   * The files a task is solved in, as tabs over the editor, the open file always among them: code, then template,
+   * then styles, a component's own files before shared ones (app.component.ts, .html, .css, then styles.css).
+   */
+  tabFiles = computed(() => {
+    const open = this.currentPath();
+    const kind = (path: string) => (/\.(tsx?|jsx?|vue)$/i.test(path) ? 0 : /\.html$/i.test(path) ? 1 : /\.s?css$/i.test(path) ? 2 : 3);
+    const depth = (path: string) => path.split('/').length;
+    return this.fileList()
+      .filter((path) => path === open || !SETUP_FILE.test(path))
+      .sort((a, b) => kind(a) - kind(b) || depth(b) - depth(a) || a.localeCompare(b));
   });
 
   // editor | preview oranı (0–1)
@@ -254,6 +268,23 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   );
 
   isDraggingFrameworkCols = signal(false);
+
+  /**
+   * The preview's share of its column once the visitor takes hold of the splitter above the checks; until then null,
+   * and the checks take what they need up to their cap.
+   */
+  previewRowsRatio = signal<number | null>(null);
+  previewRowsPercent = computed(() => {
+    const ratio = this.previewRowsRatio();
+    return ratio === null ? null : Math.round(ratio * 100);
+  });
+  checksShown = computed(() => this.frameworkChecksRunning() || this.frameworkCheckResults().length > 0);
+  previewStageFlex = computed(() => {
+    const ratio = this.previewRowsRatio();
+    return ratio !== null && this.checksShown() ? `0 0 ${ratio * 100}%` : null;
+  });
+  isDraggingPreviewRows = signal(false);
+  private draggingPreviewRows = false;
 
   private draggingFrameworkCols = false;
   private startXFrameworkCols = 0;
@@ -316,6 +347,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.addEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.addEventListener('pointermove', this.onPointerMovePreviewRows);
+      window.addEventListener('pointerup', this.onPointerUpPreviewRows);
       window.addEventListener('message', this.onPreviewMessage);
     });
   }
@@ -379,6 +412,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.removeEventListener('pointermove', this.onPointerMovePreviewRows);
+      window.removeEventListener('pointerup', this.onPointerUpPreviewRows);
       window.removeEventListener('message', this.onPreviewMessage);
     }
   }
@@ -861,6 +896,33 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   toggleFiles() { this.showFileDrawer.set(!this.showFileDrawer()); }
   closeFiles() { this.showFileDrawer.set(false); }
+
+  fileName(path: string): string {
+    const i = path.lastIndexOf('/');
+    return i >= 0 ? path.slice(i + 1) : path;
+  }
+
+  fileTabId(path: string): string {
+    return `fw-file-tab-${path.replace(/[^a-z0-9]+/gi, '-')}`;
+  }
+
+  trackByPath = (_: number, path: string): string => path;
+
+  /** The tabs pattern: the arrow keys, Home and End open the next file and move focus to its tab. */
+  onFileTabsKey(ev: KeyboardEvent): void {
+    const tabs = this.tabFiles();
+    const at = tabs.indexOf(this.currentPath());
+    if (at < 0) return;
+    let next: number;
+    if (ev.key === 'ArrowRight') next = (at + 1) % tabs.length;
+    else if (ev.key === 'ArrowLeft') next = (at - 1 + tabs.length) % tabs.length;
+    else if (ev.key === 'Home') next = 0;
+    else if (ev.key === 'End') next = tabs.length - 1;
+    else return;
+    ev.preventDefault();
+    this.openFile(tabs[next]);
+    if (this.isBrowser) document.getElementById(this.fileTabId(tabs[next]))?.focus();
+  }
 
   openFile(path: string) {
     const files = this.filesMap();
@@ -1562,5 +1624,49 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!this.draggingFrameworkCols) return;
     this.draggingFrameworkCols = false;
     this.isDraggingFrameworkCols.set(false);
+  };
+
+  // --- HORIZONTAL SPLITTER (preview | console and checks) ---
+
+  /** Takes hold of the split on screen, so focusing or grabbing the splitter moves nothing. */
+  holdPreviewRows(): number {
+    const held = this.previewRowsRatio();
+    if (held !== null) return held;
+    const column = this.previewColumn?.nativeElement.getBoundingClientRect();
+    const stage = this.previewStage?.nativeElement.getBoundingClientRect();
+    const measured = column && stage && column.height > 0 ? stage.height / column.height : 0.6;
+    const ratio = Math.max(PREVIEW_ROWS.min, Math.min(PREVIEW_ROWS.max, measured));
+    this.previewRowsRatio.set(ratio);
+    return ratio;
+  }
+
+  /** ArrowUp gives the checks more room, ArrowDown the preview, as dragging the splitter does. */
+  onPreviewRowsKey(ev: KeyboardEvent): void {
+    const next = splitterKeyRatio(ev.key, this.holdPreviewRows(), PREVIEW_ROWS, 'y');
+    if (next === null) return;
+    ev.preventDefault();
+    this.previewRowsRatio.set(next);
+  }
+
+  startPreviewRowsDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.holdPreviewRows();
+    this.draggingPreviewRows = true;
+    this.isDraggingPreviewRows.set(true);
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  private onPointerMovePreviewRows = (ev: PointerEvent) => {
+    if (!this.draggingPreviewRows) return;
+    const column = this.previewColumn?.nativeElement.getBoundingClientRect();
+    if (!column || column.height <= 0) return;
+    const next = Math.max(PREVIEW_ROWS.min, Math.min(PREVIEW_ROWS.max, (ev.clientY - column.top) / column.height));
+    this.zone.run(() => this.previewRowsRatio.set(next));
+  };
+
+  private onPointerUpPreviewRows = () => {
+    if (!this.draggingPreviewRows) return;
+    this.draggingPreviewRows = false;
+    this.zone.run(() => this.isDraggingPreviewRows.set(false));
   };
 }

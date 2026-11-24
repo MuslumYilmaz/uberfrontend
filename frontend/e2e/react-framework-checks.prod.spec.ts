@@ -1257,6 +1257,34 @@ test.describe('Framework checks against the production SSR build', () => {
     });
   });
 
+  test('Counter\'s file tabs and the splitter above its checks work from the keyboard', async ({ page }) => {
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    // The files the task is solved in, code first; the set-up files stay in the file tree.
+    const tabs = page.getByTestId('framework-file-tabs').getByRole('tab');
+    await expect(tabs).toHaveText(['App.tsx', 'App.css']);
+    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+    await tabs.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#framework-editor-panel')).toHaveAttribute('aria-labelledby', await tabs.nth(1).getAttribute('id') ?? '');
+    await page.keyboard.press('Home');
+    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+
+    const results = await runChecks(page, 5);
+    const before = (await results.boundingBox())!.height;
+    const splitter = page.getByTestId('framework-rows-splitter');
+    await splitter.focus();
+    const held = Number(await splitter.getAttribute('aria-valuenow'));
+    expect(held).toBeGreaterThanOrEqual(20);
+    for (let press = 0; press < 5; press += 1) await page.keyboard.press('ArrowUp');
+    await expect.poll(async () => Number(await splitter.getAttribute('aria-valuenow'))).toBeLessThan(held);
+    await expect.poll(async () => (await results.boundingBox())!.height).toBeGreaterThan(before);
+  });
+
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });

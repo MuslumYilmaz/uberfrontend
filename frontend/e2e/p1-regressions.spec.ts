@@ -373,6 +373,21 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(solutionTab).toBeEnabled();
 });
 
+test('on a tablet the run bar and the results stay above the fixed footer', async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 900 });
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel.getByTestId('js-run-tests')).toBeEnabled();
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.getByTestId('test-result').first()).toBeVisible();
+
+  const footerTop = (await page.getByTestId('practice-footer').boundingBox())!.y;
+  const run = (await jsPanel.getByTestId('js-run-tests').boundingBox())!;
+  const results = (await jsPanel.getByTestId('js-results-panel').boundingBox())!;
+  expect(run.y + run.height).toBeLessThanOrEqual(footerTop);
+  expect(results.y + results.height).toBeLessThanOrEqual(footerTop + 1);
+});
+
 test('Ctrl+Enter runs the tests from the editor, and the splitter and Run tests work from the keyboard', async ({ page }) => {
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   const jsPanel = page.getByTestId('js-panel');

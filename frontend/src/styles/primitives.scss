@@ -60,6 +60,13 @@
   color: var(--uf-text-secondary);
   font-size: var(--fa-runner-font);
 }
+/* The run button, the tabs and the count keep one line each; the shortcut hint between them gives way first. */
+.fa-runner-run-btn,
+.fa-runner-tab-btn,
+.fa-runner-summary {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
 .fa-results, .fa-results * {
   font-size: var(--fa-runner-font);
