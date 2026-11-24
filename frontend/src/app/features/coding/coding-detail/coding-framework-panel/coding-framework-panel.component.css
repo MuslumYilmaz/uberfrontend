@@ -471,6 +471,27 @@
   background: var(--uf-accent);
 }
 
+/* A grip in the middle shows the splitter at rest; without one, people did not find it and read the checks under a
+   preview cut to a strip. */
+.rows-splitter::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 1px;
+  width: 32px;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
+  transform: translateX(-50%);
+  transition: background 0.15s ease;
+}
+
+.rows-splitter:hover::after,
+.rows-splitter:focus-visible::after,
+.rows-splitter.dragging::after {
+  background: var(--uf-accent);
+}
+
 .rows-splitter:focus-visible {
   outline: none;
 }
