@@ -7,10 +7,9 @@
   --framework-preview-bg: color-mix(in srgb, var(--uf-surface-alt) 78%, var(--uf-bg) 22%);
   --framework-preview-border: color-mix(in srgb, var(--fa-text) 10%, transparent);
   --framework-preview-muted: color-mix(in srgb, var(--fa-text) 72%, transparent);
-  --framework-check-neutral: color-mix(in srgb, var(--fa-text-subtle) 80%, transparent);
-  --framework-check-pass: var(--uf-badge-green-a);
-  --framework-check-fail: var(--uf-status-danger-text);
-  --framework-check-running: var(--uf-badge-blue-a);
+  --framework-check-pass: var(--uf-status-success);
+  --framework-check-fail: var(--uf-status-danger);
+  --framework-check-running: var(--uf-accent);
 }
 
 .editor-shell {
@@ -73,6 +72,28 @@
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* The toolbar's one emphasised action takes the accent; Rebuild preview stays neutral beside it. */
+.run-checks-btn {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: transparent;
+  color: var(--uf-text-primary);
+}
+
+.run-checks-btn:hover:not(:disabled) {
+  background: var(--uf-accent-soft);
+}
+
+.solution-loaded-label {
+  color: var(--uf-accent);
+  font-size: 11px;
+}
+
+.solution-preview-banner {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  color: var(--uf-text-primary);
 }
 
 /* Drawer overlay lives inside the panel container (which is relative) */
@@ -162,9 +183,9 @@
   opacity: .7;
 }
 .file-row.active {
-  background: rgba(59,130,246,.12);
-  color: #93c5fd;
-  border-left: 2px solid #3b82f6;
+  background: var(--uf-accent-soft);
+  color: var(--uf-text-primary);
+  border-left: 2px solid var(--uf-accent);
 }
 .file-row .name {
   white-space: nowrap;
@@ -255,18 +276,18 @@
 /* Drag sırasında da görünür */
 .splitter.dragging::before {
   opacity: 1;
-  background: rgba(59,130,246,0.9);
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
+  background: var(--uf-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 40%, transparent);
 }
 
 
-/* Hover / drag state – parlak mavi */
+/* Hover / drag state: the accent */
 .splitter:hover::before,
 .splitter:focus-visible::before,
 .splitter.dragging::before {
   opacity: 1;
-  background: rgba(59, 130, 246, 0.9);
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+  background: var(--uf-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 40%, transparent);
 }
 
 .preview-loading {
@@ -378,20 +399,26 @@
   height: 9px;
   margin-top: 4px;
   border-radius: 999px;
-  background: var(--framework-check-neutral);
-}
-
-.framework-check-dot.is-pass {
-  background: var(--framework-check-pass);
-}
-
-.framework-check-dot.is-fail {
-  background: var(--framework-check-fail);
 }
 
 .framework-check-dot.is-running {
   background: var(--framework-check-running);
   animation: pulseCheck 1s ease-in-out infinite;
+}
+
+/* A result shows a check mark or a cross as well as the color, as the JavaScript results do. */
+.framework-check-icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.framework-check-icon.is-pass {
+  color: var(--framework-check-pass);
+}
+
+.framework-check-icon.is-fail {
+  color: var(--framework-check-fail);
 }
 
 .framework-check-result__body {
@@ -404,7 +431,7 @@
 
 .framework-check-result__error {
   margin-top: 2px;
-  color: var(--framework-check-fail);
+  color: var(--uf-status-danger-text);
   word-break: break-word;
 }
 

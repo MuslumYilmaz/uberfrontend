@@ -93,9 +93,9 @@
 
                 <div class="flex items-center gap-2">
                     <span *ngIf="clockLabel || locked" class="rehearsal-pill" data-testid="framework-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
-                    <span *ngIf="viewingSolution()" class="text-[11px] text-yellow-300">Solution loaded</span>
+                    <span *ngIf="viewingSolution()" class="solution-loaded-label">Solution loaded</span>
                     <button *ngIf="frameworkChecks().length" type="button"
-                        class="text-xs px-3 py-1.5 rounded border border-emerald-300/40 text-emerald-100 hover:bg-emerald-300/10 disabled:opacity-60"
+                        class="run-checks-btn text-xs px-3 py-1.5 rounded disabled:opacity-60"
                         data-testid="framework-run-checks"
                         [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run checks (' + keys.run + ')'"
                         [disabled]="frameworkChecksRunning() || locked"
@@ -167,7 +167,7 @@
             data-testid="framework-preview-column">
             <div class="framework-preview-stage">
                 <div *ngIf="showingFrameworkSolutionPreview()"
-                    class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+                    class="solution-preview-banner absolute top-2 right-3 z-20 text-xs px-3 py-1.5 rounded flex items-center gap-3">
                     <span class="font-medium">Showing solution preview</span>
                     <button class="text-xs underline" (click)="closeSolutionPreview()">
                         Close preview
@@ -229,7 +229,9 @@
                     data-testid="framework-check-result"
                     [attr.data-failure-kind]="result.failureKind || (!result.passed ? 'assertion' : null)"
                     [class.is-pass]="result.passed" [class.is-fail]="!result.passed">
-                    <span class="framework-check-dot" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"></span>
+                    <app-fa-glyph class="framework-check-icon" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"
+                        [icon]="result.passed ? 'check-circle' : 'times-circle'"></app-fa-glyph>
+                    <span class="sr-only">{{ result.passed ? 'Passed:' : 'Failed:' }}</span>
                     <div class="framework-check-result__body">
                         <div class="framework-check-result__name">{{ result.name }}</div>
                         <div *ngIf="result.error" class="framework-check-result__error">{{ result.error }}</div>

@@ -1268,6 +1268,9 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
     expect(await failureKinds(page)).toEqual([null, 'assertion', 'assertion', 'assertion', 'assertion']);
     await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(4);
+    // Each row says passed or failed in words and with a check or a cross, not only in color.
+    await expect(checkRows(page).locator('.sr-only')).toHaveText(['Passed:', 'Failed:', 'Failed:', 'Failed:', 'Failed:']);
+    await expect(checkRows(page).locator('app-fa-glyph.framework-check-icon.is-fail')).toHaveCount(4);
     await expectAssertionLayer(starterResults);
 
     await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);

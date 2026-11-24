@@ -84,13 +84,22 @@
   --uf-shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.28);
   --uf-shadow-md: 0 14px 36px rgba(0, 0, 0, 0.38);
 
-  /* Status palette */
+  /*
+   * Status palette. Every test, check and solved state uses the one success and the one danger color, never the
+   * accent. The bare token colors a mark (an icon, a dot, a short status word); -bg, -border and -text are a tinted
+   * panel and the text inside it.
+   */
   --uf-status-info-bg: color-mix(in srgb, #38bdf8 18%, var(--uf-surface));
   --uf-status-info-border: color-mix(in srgb, #38bdf8 44%, var(--uf-border-subtle));
   --uf-status-info-text: color-mix(in srgb, #dbeafe 88%, var(--uf-text-primary));
+  --uf-status-success: #86efac;
+  --uf-status-success-bg: color-mix(in srgb, #10b981 10%, var(--uf-surface));
+  --uf-status-success-border: color-mix(in srgb, #10b981 45%, var(--uf-border-subtle));
+  --uf-status-success-text: color-mix(in srgb, #dcfce7 90%, var(--uf-text-primary));
   --uf-status-warn-bg: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
   --uf-status-warn-border: color-mix(in srgb, var(--uf-accent) 48%, var(--uf-border-subtle));
   --uf-status-warn-text: var(--uf-text-primary);
+  --uf-status-danger: #f87171;
   --uf-status-danger-bg: color-mix(in srgb, #ef4444 18%, var(--uf-surface));
   --uf-status-danger-border: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
   --uf-status-danger-text: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
