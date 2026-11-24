@@ -626,12 +626,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
 
-  /** How much of this framework task its checks cover; only 'full' marks it solved on a passing run. */
-  checkCoverage = computed(() => (this.isFrameworkTech() ? frameworkCheckCoverage(this.question()) : 'none'));
+  /** How much of this framework or HTML/CSS task its checks cover; only 'full' marks it solved on a passing run. */
+  checkCoverage = computed(() => (this.isFrameworkTech() || this.isWebTech() ? frameworkCheckCoverage(this.question()) : 'none'));
   /** A smoke check passed on the code as it stands, so the footer offers to mark the task solved. */
   smokeChecksPassed = signal(false);
   /** What the checks find elements by, shown with the task so the markup can match them. */
-  checkSelectorList = computed(() => (this.isFrameworkTech() ? checkSelectors(this.question()?.frameworkTests) : []));
+  checkSelectorList = computed(() => (
+    this.isFrameworkTech() || this.isWebTech() ? checkSelectors(this.question()?.frameworkTests) : []
+  ));
   pressureRoundSelectors = computed(() => checkSelectors(this.pressureCurrentRound()?.frameworkTests));
   /** The requirements as the description shows them, for the list beside a passed smoke check. */
   smokeRequirements = computed(() => (this.descSpecs()?.requirements ?? []).map((item) => this.displayText(item)));
@@ -2410,7 +2412,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     if (this.hasFrameworkStructuredChecks(q)) {
-      const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      const results = (this.isWebTech()
+        ? await this.webPanel?.runWebChecks({ emitCompletion: false })
+        : await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false })) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
       this.recordRehearsalChecks(q.id, results);
       const event = {
@@ -2463,8 +2467,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     await this.celebrate('submit');
   }
 
+  /** A framework or an HTML/CSS task with checks: they run on its preview, and complete it when they all pass. */
   hasFrameworkStructuredChecks(q: Question | null = this.question()): boolean {
-    return this.isFrameworkTech()
+    return (this.isFrameworkTech() || this.isWebTech())
       && Array.isArray((q as any)?.frameworkTests)
       && (q as any).frameworkTests.length > 0;
   }
@@ -3966,7 +3971,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         streak: Math.max(0, Number(res?.stats?.streak?.current || 0)),
       });
       const actionType: ChallengeActionType = reason === 'tests'
-        ? (this.isFrameworkTech() ? 'run_checks' : 'run_tests')
+        ? (this.isFrameworkTech() || this.isWebTech() ? 'run_checks' : 'run_tests')
         : (this.isFrameworkTech() || this.isWebTech() ? 'mark_complete' : 'run_tests');
       this.analytics.track('challenge_completion_saved', {
         ...this.challengeEventParams(q),

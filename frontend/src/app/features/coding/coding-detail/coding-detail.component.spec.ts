@@ -590,6 +590,47 @@ describe('CodingDetailComponent', () => {
     expect(record).toHaveBeenCalledOnceWith('tests');
   });
 
+  it('runs an HTML/CSS task\'s checks in the web panel, and solves it on a full pass or leads a smoke pass to "Mark as solved"', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'css';
+    component.kind = 'coding';
+    const checks = [
+      { id: 'grid', name: 'Grid', steps: [{ type: 'expectStyle', selector: '.gallery', property: 'display', value: 'grid' }] },
+      { id: 'cols', name: 'Columns', steps: [{ type: 'expectLayout', selector: '.card', columns: 4 }] },
+    ];
+    const task = { id: 'css-grid-card-gallery', technology: 'css', access: 'free', difficulty: 'intermediate', frameworkTests: checks } as any;
+    component.question.set(task);
+    const record = spyOn(component as any, 'recordCompletion').and.resolveTo(true);
+    const runWebChecks = jasmine.createSpy('runWebChecks').and.resolveTo([
+      { name: 'Grid', passed: true },
+      { name: 'Columns', passed: true },
+    ]);
+    component.webPanel = { runWebChecks } as any;
+
+    expect(component.hasFrameworkStructuredChecks()).toBeTrue();
+    expect(component.checkCoverage()).toBe('full');
+    expect(component.checkSelectorList()).toEqual(['.gallery', '.card']);
+    expect(component.submitLabel()).toBe('Run checks');
+
+    await component.submitCode();
+    expect(runWebChecks).toHaveBeenCalledOnceWith({ emitCompletion: false });
+    expect(record).toHaveBeenCalledOnceWith('tests');
+    expect(component.solved()).toBeTrue();
+
+    // Checks that cover the core only: a pass offers "Mark as solved", which the visitor presses after comparing.
+    component.solved.set(false);
+    record.calls.reset();
+    component.question.set({ ...task, id: 'css-forms-pseudoclasses', checkCoverage: 'smoke' });
+    await component.submitCode();
+    expect(record).not.toHaveBeenCalled();
+    expect(component.submitLabel()).toBe('Mark as solved');
+    component.onFrameworkFilesChanged();
+    expect(component.submitLabel()).toBe('Run checks');
+  });
+
   it('collapses a framework task\'s description on a laptop once the visitor comes back to it, never on a first visit', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance as any;

@@ -882,7 +882,13 @@
         [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
         [hideRestoreBanner]="demoMode || hideRestoreBanner"
         [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex"
-        (requestEditorUpgrade)="requestLiteUpgrade()">
+        [checkCoverage]="checkCoverage()" [requirements]="smokeRequirements()" [solved]="uiSolved()"
+        (requestEditorUpgrade)="requestLiteUpgrade()"
+        (filesChanged)="onFrameworkFilesChanged()"
+        (checkRun)="onFrameworkCheckRun($event)">
+        <ng-container ngProjectAs="[postPassCard]">
+          <ng-container *ngTemplateOutlet="postPassCard; context: { $implicit: 'framework' }"></ng-container>
+        </ng-container>
       </app-coding-web-panel>
 
       <!-- JS / TS EDITOR stays the same -->
