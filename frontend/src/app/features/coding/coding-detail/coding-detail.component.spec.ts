@@ -744,7 +744,8 @@ describe('CodingDetailComponent', () => {
     const idea = host.querySelector('[data-testid="coding-solution-idea"]') as HTMLDetailsElement;
     expect(idea).not.toBeNull();
     expect(description.contains(idea)).toBeTrue();
-    expect(idea.open).toBeTrue();
+    // Closed on a phone too, so it does not spoil a first attempt; its text stays in the page.
+    expect(idea.open).toBeFalse();
     expect(idea.textContent).toContain('Keep one pending promise per key and resolve it from the outside.');
     expect(idea.textContent).not.toContain('second paragraph');
     expect(host.querySelector('[data-testid="coding-solution-panel"]')?.textContent).toContain('second paragraph');

@@ -43,7 +43,7 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { editorKeys } from '../../../../core/utils/editor-keys.util';
-import { ANGULAR_PREVIEW_LABEL } from '../../../../core/utils/angular-preview-version';
+import { angularPreviewLabel } from '../../../../core/utils/angular-preview-version';
 import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
@@ -992,8 +992,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   readonly keys = editorKeys();
-  /** Which Angular the preview runs, so a reader knows what the starter and the checks expect. */
-  readonly angularRuntimeLabel = ANGULAR_PREVIEW_LABEL;
+  /** Which Angular the preview runs, and whether this app runs zoneless, so a reader knows what the checks expect. */
+  readonly angularRuntimeLabel = computed(() => angularPreviewLabel(Object.values(this.filesMap())));
 
   /** Ctrl/Cmd+Enter in the editor: the checks when the task has them and they can run, else a fresh preview. */
   onRunShortcut(): void {

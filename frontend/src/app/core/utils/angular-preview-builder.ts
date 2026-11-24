@@ -178,6 +178,11 @@ function compileTS(src, filename){
       });
       return 'styles: [' + cssArr.join(',') + ']';
     });
+    // styleUrl (one file, Angular 17+) -> inline styles
+    src = src.replace(/styleUrl\\s*:\\s*(['"])(.+?)\\1/g, function(_m, _q, url){
+      var resolved = url.startsWith('.') || !/^\\//.test(url) ? join(fromPath, url) : norm(url);
+      return 'styles: [' + JSON.stringify(String(readFile(resolved) || '')) + ']';
+    });
     return src;
   }
 

@@ -221,7 +221,8 @@ app-monaco-editor {
   position:absolute;
   top:calc(100% + 8px);
   right:0;
-  z-index:7;
+  /* Above the draft restore banner (z-index 20), which sits right under the header where this opens. */
+  z-index:30;
   min-width:220px;
   border:1px solid rgba(255,255,255,.18);
   border-radius:10px;

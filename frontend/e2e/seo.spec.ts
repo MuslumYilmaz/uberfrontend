@@ -163,8 +163,8 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   await expect(page.locator('[data-testid="coding-breadcrumb"] a[href="/css/interview-questions"]')).toHaveCount(1);
   const starterCss = await getMonacoModelValue(page, 'q-css-theme-variables-dark-mode-css');
   expect(starterCss).toMatch(/box-shadow:\s*var\(--panel-shadow\)/i);
-  await page.getByRole('button', { name: 'Show preview' }).click();
-  await expect(page.getByText('Showing solution preview')).toBeVisible();
+  await page.getByRole('button', { name: 'Preview what you need to build' }).click();
+  await expect(page.getByText('Showing the result to build')).toBeVisible();
 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');

@@ -133,17 +133,17 @@ type WebEditorLang = 'html' | 'css';
     align-items: center;
     gap: 8px;
   }
+  /* Secondary on purpose: it swaps the reader's own preview for the reference result. */
   .pill-btn {
     padding: 6px 10px;
     border-radius: var(--uf-radius-pill);
-    background: var(--uf-accent);
-    border: 1px solid var(--uf-accent);
-    color: var(--uf-bg);
-    font-weight: 700;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--uf-accent) 38%, transparent);
+    background: var(--uf-surface);
+    border: 1px solid var(--uf-border-subtle);
+    color: var(--uf-text-primary);
+    font-weight: 600;
     transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   }
-  .pill-btn:hover { background: var(--uf-accent-strong); }
+  .pill-btn:hover { border-color: var(--uf-accent); }
   .pill-btn:active { transform: translateY(1px); }
 
   .solution-banner {
@@ -334,13 +334,13 @@ type WebEditorLang = 'html' | 'css';
 	                    class="pill-btn"
 	                    type="button"
 	                    (click)="openSolutionPreview()">
-	              Show preview
+	              Preview what you need to build
 	            </button>
 
 	            <div *ngIf="showingSolutionPreview"
 	                 class="solution-banner">
-	              <span class="font-medium">Showing solution preview</span>
-	              <button class="text-xs underline" type="button" (click)="closeSolutionPreview()">Close preview</button>
+	              <span class="font-medium">Showing the result to build</span>
+	              <button class="text-xs underline" type="button" (click)="closeSolutionPreview()">Back to my preview</button>
 	            </div>
 	          </div>
 

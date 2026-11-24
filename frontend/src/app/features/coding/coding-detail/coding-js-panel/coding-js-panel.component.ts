@@ -15,7 +15,7 @@ import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.u
 import { buildFailureHint } from '../../../../core/utils/failure-explain-rules';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-prompts.util';
-import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
+import { deriveStuckState, isStuckNudgeVisible } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
 import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
@@ -1298,8 +1298,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   assistNudgeBody(): string {
     const state = this.stuckState();
     if (!state || state.level < 1) return '';
-    const label = stuckLevelLabel(state.level).toLowerCase();
-    return `${label}: ${state.consecutiveCount} similar run${state.consecutiveCount === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
+    const runs = state.consecutiveCount;
+    return `The same failure came back ${runs} run${runs === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
   }
 
   toggleHintExpanded(): void {

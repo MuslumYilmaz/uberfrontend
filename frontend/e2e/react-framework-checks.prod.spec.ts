@@ -3080,6 +3080,35 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(normalizeRunnerText(await jsResults.innerText())).not.toMatch(RUNNER_FAILURE);
   });
 
+  test('an Angular component with a single styleUrl gets its stylesheet in the preview', async ({ page }) => {
+    await page.goto('/angular/coding/angular-counter-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+    await loadCanonicalBundle(page, {
+      'src/app/app.component.ts': [
+        "import { Component } from '@angular/core';",
+        '',
+        '@Component({',
+        "  selector: 'app-root',",
+        '  standalone: true,',
+        "  template: '<p class=\"value\">0</p>',",
+        "  styleUrl: './app.component.css',",
+        '})',
+        'export class AppComponent {}',
+        '',
+      ].join('\n'),
+      'src/app/app.component.css': '.value { color: rgb(200, 30, 40); }\n',
+    });
+    await rebuildPreview(page, '.value');
+
+    await expect(livePreview(page).locator('.value')).toHaveCSS('color', 'rgb(200, 30, 40)');
+  });
+
+  test('a zoneless Angular app is named zoneless in the workspace', async ({ page }) => {
+    await page.goto('/angular/debug/ng-debug-zoneless-shipment-board');
+    await expect(page.getByTestId('framework-runtime-label')).toHaveText('Angular 21 · zoneless', { timeout: 30_000 });
+  });
+
   test('Angular 21 runs signal inputs, outputs and models under zone.js, and names its runtime', async ({ page }) => {
     await page.goto('/angular/coding/angular-counter-starter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });

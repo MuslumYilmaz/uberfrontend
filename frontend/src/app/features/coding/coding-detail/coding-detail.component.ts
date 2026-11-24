@@ -4228,8 +4228,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return overview.split(/\n\s*\n/)[0].trim();
   });
 
-  /** Open in the initial HTML and in mobile reading mode; collapsed beside a desktop workspace so the prompt is not spoiled. */
-  solutionIdeaOpen = computed<boolean>(() => !this.isBrowser || this.showMobileDesktopGuard());
+  /**
+   * Open in the initial HTML, so crawlers and readers without scripts see it; collapsed in the browser, on phones as
+   * on desktops, so the idea does not spoil a reader's own first attempt. It opens with one tap.
+   */
+  solutionIdeaOpen = computed<boolean>(() => !this.isBrowser);
 
   curatedNextStepsOnly = computed<boolean>(() => this.structuredSolution()?.curatedNextStepsOnly === true);
 

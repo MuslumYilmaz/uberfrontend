@@ -2468,7 +2468,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Return a regular function wrapper (not arrow) if `this` must be preserved.',
         'Inside timeout use `fn.apply(this, args)`.',
         'Keep the `this` and the whole `args` array of every call, so the call that fires is the last one, with all of its arguments.',
-        'Confirm context-based examples like `search-box:react` still pass after the delay.',
+        "The test calls the wrapper as `debounced.call({ tag: 'search-box' }, 'react')` and expects `'search-box:react'` after the delay: the object it was called on, then its argument.",
       ],
       confidence: 0.9,
     }),
