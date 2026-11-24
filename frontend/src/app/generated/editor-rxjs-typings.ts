@@ -5,7 +5,7 @@ export const EDITOR_RXJS_TYPINGS = [
   "  export * from 'rxjs/operators';",
   "  export class Observable<T = any> {",
   "    constructor(subscribe?: (subscriber: Subscriber<T>) => any);",
-  "    subscribe(observerOrNext?: any, error?: (error: any) => void, complete?: () => void): Subscription;",
+  "    subscribe(observerOrNext?: Partial<{ next: (value: T) => void; error: (error: any) => void; complete: () => void }> | ((value: T) => void) | null, error?: ((error: any) => void) | null, complete?: (() => void) | null): Subscription;",
   "    pipe(...operations: any[]): Observable<any>;",
   "    forEach(next: (value: T) => void): Promise<void>;",
   "  }",
