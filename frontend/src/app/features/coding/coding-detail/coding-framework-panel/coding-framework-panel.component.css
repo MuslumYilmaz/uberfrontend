@@ -363,8 +363,10 @@
   color: var(--fa-text);
 }
 
-/* Failures need room for their messages: up to 45% of the screen height, the preview keeps the rest. */
-.framework-check-results.has-failures {
+/* Failures need room for their messages, and a pass card for its actions: up to 45% of the screen height, the
+   preview keeps the rest. */
+.framework-check-results.has-failures,
+.framework-check-results:has(app-coding-post-pass) {
   max-height: min(45vh, 360px);
 }
 

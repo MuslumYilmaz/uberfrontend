@@ -287,60 +287,6 @@
                 </ng-container>
             </div>
 
-            <div
-                *ngIf="topTab()==='code' && !interviewModeEnabled() && !rehearsing && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
-                class="editor-assist-dock"
-                data-testid="editor-assist-dock"
-            >
-                <div *ngIf="showStuckNudge()" class="assist-chip assist-chip--hint" [class.expanded]="hintExpanded()" data-testid="assist-stuck-nudge">
-                    <button
-                        type="button"
-                        class="assist-chip__trigger"
-                        [class.active]="hintExpanded()"
-                        [attr.aria-expanded]="hintExpanded()"
-                        aria-controls="assist-hint-panel"
-                        (click)="toggleHintExpanded()"
-                    >
-                        <app-fa-glyph icon="pi pi-info-circle" aria-hidden="true"></app-fa-glyph>
-                        <span>Hint</span>
-                    </button>
-                    <!-- Closed, it is out of the tab order and the accessibility tree, not only transparent. -->
-                    <div class="assist-chip__panel" id="assist-hint-panel" [attr.inert]="hintExpanded() ? null : ''">
-                        <div class="assist-chip__panel-head">
-                            <strong>{{ assistNudgeTitle() }}</strong>
-                            <div class="assist-chip__panel-actions">
-                                <button type="button" class="assist-chip__dismiss" (click)="dismissHintPanel()">Dismiss 30m</button>
-                                <button type="button" class="assist-chip__dismiss" (click)="collapseHintPanel()">Close</button>
-                            </div>
-                        </div>
-                        <p class="assist-chip__panel-body">{{ assistNudgeBody() }}</p>
-                    </div>
-                </div>
-
-                <div *ngIf="showExplainCard()" class="assist-chip assist-chip--explain" [class.expanded]="explainExpanded()" data-testid="assist-explain-card">
-                    <button
-                        type="button"
-                        class="assist-chip__trigger"
-                        [class.active]="explainExpanded()"
-                        [attr.aria-expanded]="explainExpanded()"
-                        aria-controls="assist-explain-panel"
-                        (click)="toggleExplainExpanded()"
-                    >
-                        <app-fa-glyph icon="pi pi-search" aria-hidden="true"></app-fa-glyph>
-                        <span>Explain failure</span>
-                    </button>
-                    <div class="assist-chip__panel" id="assist-explain-panel" [attr.inert]="explainExpanded() ? null : ''">
-                        <div class="assist-chip__panel-head">
-                            <strong>{{ explainHint()?.title }}</strong>
-                            <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
-                        </div>
-                        <p class="assist-chip__panel-body"><fa-inline-code [text]="explainHint()?.why"></fa-inline-code></p>
-                        <ul class="assist-chip__actions">
-                            <li *ngFor="let action of explainHint()?.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- SPLITTER between editors and results -->
@@ -435,6 +381,59 @@
                             class="suite-note suite-note--next" data-testid="js-submit-hint">
                             All tests pass. Submit to save it as solved.
                         </p>
+
+                        <!-- After a failed run, the hint and the explanation sit with the results, not over the code. -->
+                        <div *ngIf="!interviewModeEnabled() && !rehearsing && !solutionPanelOpen && (showStuckNudge() || showExplainCard())"
+                            class="results-assist" data-testid="results-assist">
+                            <div *ngIf="showStuckNudge()" class="assist-chip assist-chip--hint" [class.expanded]="hintExpanded()" data-testid="assist-stuck-nudge">
+                                <button
+                                    type="button"
+                                    class="assist-chip__trigger"
+                                    [class.active]="hintExpanded()"
+                                    [attr.aria-expanded]="hintExpanded()"
+                                    aria-controls="assist-hint-panel"
+                                    (click)="toggleHintExpanded()"
+                                >
+                                    <app-fa-glyph icon="pi pi-info-circle" aria-hidden="true"></app-fa-glyph>
+                                    <span>Hint</span>
+                                </button>
+                                <!-- Closed, it is out of the tab order and the accessibility tree, not only transparent. -->
+                                <div class="assist-chip__panel" id="assist-hint-panel" [attr.inert]="hintExpanded() ? null : ''">
+                                    <div class="assist-chip__panel-head">
+                                        <strong>{{ assistNudgeTitle() }}</strong>
+                                        <div class="assist-chip__panel-actions">
+                                            <button type="button" class="assist-chip__dismiss" (click)="dismissHintPanel()">Dismiss 30m</button>
+                                            <button type="button" class="assist-chip__dismiss" (click)="collapseHintPanel()">Close</button>
+                                        </div>
+                                    </div>
+                                    <p class="assist-chip__panel-body">{{ assistNudgeBody() }}</p>
+                                </div>
+                            </div>
+
+                            <div *ngIf="showExplainCard()" class="assist-chip assist-chip--explain" [class.expanded]="explainExpanded()" data-testid="assist-explain-card">
+                                <button
+                                    type="button"
+                                    class="assist-chip__trigger"
+                                    [class.active]="explainExpanded()"
+                                    [attr.aria-expanded]="explainExpanded()"
+                                    aria-controls="assist-explain-panel"
+                                    (click)="toggleExplainExpanded()"
+                                >
+                                    <app-fa-glyph icon="pi pi-search" aria-hidden="true"></app-fa-glyph>
+                                    <span>Explain failure</span>
+                                </button>
+                                <div class="assist-chip__panel" id="assist-explain-panel" [attr.inert]="explainExpanded() ? null : ''">
+                                    <div class="assist-chip__panel-head">
+                                        <strong>{{ explainHint()?.title }}</strong>
+                                        <button type="button" class="assist-chip__dismiss" (click)="dismissExplainPanel()">Dismiss</button>
+                                    </div>
+                                    <p class="assist-chip__panel-body"><fa-inline-code [text]="explainHint()?.why"></fa-inline-code></p>
+                                    <ul class="assist-chip__actions">
+                                        <li *ngFor="let action of explainHint()?.actions"><fa-inline-code [text]="action"></fa-inline-code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
 
                         <div *ngFor="let t of orderedResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">

@@ -2,6 +2,7 @@ import { test, expect } from './fixtures';
 import {
   JS_QUESTION,
   WEB_QUESTION,
+  boxesOverlap,
   getMonacoModelValue,
   seedIndexedDbRecord,
   setMonacoModelValue,
@@ -334,15 +335,27 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(jsPanel.getByTestId('assist-stuck-nudge')).toBeVisible();
   await expect(jsPanel.getByTestId('assist-explain-card')).toBeVisible();
 
-  // Closed, the panels keep their buttons out of the tab order: Shift+Tab from Run tests reaches the splitter, then
-  // the Explain failure chip, never an invisible Dismiss.
+  // Closed, the panels keep their buttons out of the tab order: Tab from the Hint chip reaches the Explain failure
+  // chip, never an invisible Dismiss.
   await expect(jsPanel.locator('#assist-hint-panel')).toHaveAttribute('inert', '');
   await expect(jsPanel.locator('#assist-explain-panel')).toHaveAttribute('inert', '');
-  await jsPanel.getByTestId('js-run-tests').focus();
-  await page.keyboard.press('Shift+Tab');
-  await expect(jsPanel.getByTestId('js-editor-splitter')).toBeFocused();
-  await page.keyboard.press('Shift+Tab');
+  await jsPanel.getByRole('button', { name: 'Hint' }).focus();
+  await page.keyboard.press('Tab');
   await expect(jsPanel.getByRole('button', { name: 'Explain failure' })).toBeFocused();
+
+  // Open, the explanation sits with the results under the splitter and covers no code, on a laptop or a desktop.
+  await jsPanel.getByRole('button', { name: 'Explain failure' }).click();
+  const explainPanel = jsPanel.locator('#assist-explain-panel');
+  await expect(explainPanel).not.toHaveAttribute('inert', '');
+  await expect(jsPanel.getByTestId('js-results-panel').getByTestId('assist-explain-card')).toBeVisible();
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport);
+    await expect.poll(async () => boxesOverlap(
+      await explainPanel.boundingBox(),
+      await jsPanel.getByTestId('js-code-editor').boundingBox(),
+    ), { message: `explanation clear of the code at ${viewport.width}x${viewport.height}` }).toBe(false);
+  }
+  await page.setViewportSize({ width: 1280, height: 720 });
 
   await jsPanel.getByTestId('interview-mode-setup-toggle').click();
   await expect(jsPanel.getByTestId('interview-mode-setup-panel')).toBeVisible();

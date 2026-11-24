@@ -633,20 +633,14 @@ app-monaco-editor {
   }
 }
 
-.editor-assist-dock{
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:12px;
+.results-assist{
   display:flex;
   flex-wrap:wrap;
+  align-items:flex-start;
   gap:8px;
-  z-index:4;
-  pointer-events:none;
 }
 
 .assist-chip{
-  pointer-events:auto;
   max-width:min(540px, 100%);
 }
 
@@ -661,7 +655,6 @@ app-monaco-editor {
   font-size:.73rem;
   line-height:1rem;
   padding:.34rem .72rem;
-  box-shadow:0 10px 24px rgba(2,6,23,.35);
 }
 
 .assist-chip__trigger.active{
@@ -691,7 +684,8 @@ app-monaco-editor {
 }
 
 .assist-chip.expanded .assist-chip__panel{
-  max-height:250px;
+  /* In the results, an open panel pushes the tests down instead of covering code: no need to cut a long one short. */
+  max-height:480px;
   opacity:1;
   visibility:visible;
   transition-delay:0s;

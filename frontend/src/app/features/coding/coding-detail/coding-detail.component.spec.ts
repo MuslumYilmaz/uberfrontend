@@ -4154,6 +4154,8 @@ describe('CodingDetailComponent', () => {
       const footerLinks = () => ['footer-prev', 'footer-next'].filter((id) => find(id)?.tagName === 'A');
       for (const line of coaching) expect(description()).withContext(line).toContain(line);
       expect(find('coding-interview-hero')?.textContent).toContain('30 min');
+      // The explanation follows a failed run and sits with its results.
+      jsPanel().hasRunTests.set(true);
       jsPanel().explainHint.set({ ruleId: 'off-by-one', title: 'Off by one', why: 'The loop stops one step early.', actions: ['Check the bound'], confidence: 0.9 });
       fixture.detectChanges();
       expect(find('assist-explain-card')?.textContent).toContain('Explain failure');
@@ -4169,7 +4171,7 @@ describe('CodingDetailComponent', () => {
 
       for (const line of coaching) expect(description()).withContext(line).not.toContain(line);
       expect(find('coding-interview-hero')).toBeNull();
-      expect(find('editor-assist-dock')).toBeNull();
+      expect(find('results-assist')).toBeNull();
       // The task's own statement, requirements and notes stay: the round would give them too.
       expect(description()).toContain('Return the node of tree B');
       expect(description()).toContain('Return null when the node is not in tree A');

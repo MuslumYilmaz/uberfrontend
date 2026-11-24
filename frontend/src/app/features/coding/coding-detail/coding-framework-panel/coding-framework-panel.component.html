@@ -221,6 +221,8 @@
                         {{ frameworkCheckPassedCount() }}/{{ frameworkCheckResults().length }} passed
                     </span>
                 </div>
+                <!-- The pass card heads the checks it reports on, inside their scroll area, so it covers none of them. -->
+                <ng-content select="[postPassCard]"></ng-content>
                 <div *ngIf="frameworkChecksRunning()" class="framework-check-result">
                     <span class="framework-check-dot is-running"></span>
                     <span>Running structured checks…</span>
@@ -255,7 +257,6 @@
                     </ul>
                 </div>
             </section>
-            <ng-content select="[postPassCard]"></ng-content>
         </div>
     </div>
 

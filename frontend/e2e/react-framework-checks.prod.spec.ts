@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import {
+  boxesOverlap,
   getMonacoModelValue,
   setMonacoModelValue,
   waitForIndexedDbKeyPrefixContains,
@@ -1286,6 +1287,17 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(firstPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
     expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
+    // The pass card heads the checks inside their panel and covers none of them, on a laptop or a desktop.
+    const passCard = firstPassingRun.getByTestId('coding-post-pass');
+    await expect(passCard).toBeVisible();
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 900 }]) {
+      await page.setViewportSize(viewport);
+      for (const row of await checkRows(page).all()) {
+        expect(boxesOverlap(await passCard.boundingBox(), await row.boundingBox()), `at ${viewport.width}x${viewport.height}`)
+          .toBe(false);
+      }
+    }
+    await page.setViewportSize({ width: 1280, height: 720 });
     await dismissPostPassPrompt(page);
 
     await rebuildPreview(page, '.value');
