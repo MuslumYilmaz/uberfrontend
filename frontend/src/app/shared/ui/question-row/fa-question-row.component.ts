@@ -82,9 +82,23 @@ export type FaQuestionRowVariant = {
 
     <ng-template #contentTpl>
       <div class="fa-question-row__content">
+        <span
+          class="fa-question-row__status"
+          [class.is-solved]="solved"
+          [class.is-todo]="isTodo()"
+          [class.fa-question-row__locked]="isLockedRow()"
+          [attr.data-testid]="solved ? solvedTestId() : null"
+          [attr.role]="statusLabel() ? 'img' : null"
+          [attr.aria-label]="statusLabel() || null"
+          [attr.title]="statusLabel() || null"
+        >
+          <app-fa-glyph *ngIf="solved" icon="check-circle" size="16"></app-fa-glyph>
+          <app-fa-glyph *ngIf="isLockedRow()" icon="lock" size="13"></app-fa-glyph>
+        </span>
+
         <div class="fa-question-row__body">
-          <div class="fa-question-row__topline">
-            <span class="fa-question-row__kind" *ngIf="kindLabel">{{ kindLabel }}</span>
+          <span class="fa-question-row__kind" *ngIf="kindLabel">{{ kindLabel }}</span>
+          <div class="fa-question-row__titleline">
             <div
               class="fa-question-row__title fa-card-title"
               [class.fa-question-row__concealed]="concealed"
@@ -95,22 +109,12 @@ export type FaQuestionRowVariant = {
             >
               {{ title | stripInlineMarkup }}
             </div>
-            <span
-              class="fa-question-row__solved-mark"
-              *ngIf="solved"
-              [attr.data-testid]="solvedTestId()"
-              aria-label="Solved"
-              title="Solved"
-            >
-              <app-fa-glyph icon="check-circle" size="16"></app-fa-glyph>
-            </span>
             <app-company-signal
               *ngIf="companies.length"
               class="fa-question-row__company-signal"
               [companies]="companies"
               [preferredSlug]="preferredCompanySlug"
             ></app-company-signal>
-            <span class="fa-question-row__locked" *ngIf="lockedLabel">{{ lockedLabel }}</span>
           </div>
 
           <div
@@ -157,7 +161,12 @@ export type FaQuestionRowVariant = {
               [ngClass]="metaToneClass(chip)"
               [attr.aria-label]="chip.ariaLabel"
             >
-              <span class="fa-question-row__meta-mark" aria-hidden="true">{{ metaMark(chip) }}</span>
+              <span
+                *ngIf="difficultyLevel(chip) as level"
+                class="fa-question-row__meter"
+                [attr.data-level]="level"
+                aria-hidden="true"
+              ></span>
               <span class="fa-question-row__meta-label">{{ chip.label }}</span>
             </span>
           </ng-container>
@@ -165,11 +174,11 @@ export type FaQuestionRowVariant = {
           <span class="fa-question-row__sr-meta" *ngIf="secondaryMetaSummary()">
             {{ secondaryMetaSummary() }}
           </span>
-
-          <span class="fa-question-row__chevron" *ngIf="hasLink() && !disabled" aria-hidden="true">
-            <app-fa-glyph icon="chevron-right" size="16"></app-fa-glyph>
-          </span>
         </div>
+
+        <span class="fa-question-row__chevron" *ngIf="hasLink() && !disabled" aria-hidden="true">
+          <app-fa-glyph icon="chevron-right" size="16"></app-fa-glyph>
+        </span>
       </div>
     </ng-template>
   `,
@@ -239,14 +248,29 @@ export class FaQuestionRowComponent {
     return `fa-question-row__meta-chip--${chip.tone || 'neutral'}`;
   }
 
-  metaMark(chip: FaQuestionRowMetaChip): string {
-    const tone = chip.tone || 'neutral';
-    if (tone === 'tech') return '*';
-    if (tone === 'score') return '#';
-    if (tone === 'time') return 'T';
-    if (tone === 'access') return '$';
-    const first = (chip.label || '').trim().charAt(0);
-    return first ? first.toUpperCase() : '-';
+  /** A Premium item the viewer cannot open: a lock in the status column, named for screen readers. */
+  isLockedRow(): boolean {
+    return !this.solved && !!this.lockedLabel;
+  }
+
+  /** An open item not done yet: an empty ring in the status column, as a to-do mark. */
+  isTodo(): boolean {
+    return this.hasLink() && !this.solved && !this.lockedLabel;
+  }
+
+  statusLabel(): string {
+    if (this.solved) return 'Solved';
+    return this.lockedLabel;
+  }
+
+  /** Filled bars for a difficulty chip: 1 easy, 2 intermediate, 3 hard; null for any other chip. */
+  difficultyLevel(chip: FaQuestionRowMetaChip): 1 | 2 | 3 | null {
+    if (chip.tone !== 'difficulty') return null;
+    const label = (chip.label || '').trim().toLowerCase();
+    if (label === 'easy' || label === 'beginner') return 1;
+    if (label === 'intermediate' || label === 'medium') return 2;
+    if (label === 'hard' || label === 'advanced') return 3;
+    return null;
   }
 
   solvedTestId(): string | null {

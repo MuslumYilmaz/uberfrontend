@@ -1764,10 +1764,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   // ---------- helpers used by template ----------
+  /** A row names its kind only where it differs from the list's own kind: no "Coding" on every row of a coding list. */
   questionRowKindLabel(q: Row): string {
     if (q.__sd) return 'System design';
     if (q.__debug) return 'Debugging';
     if (q.questionFormat === 'output') return 'Output';
+    const listKind = this.source === 'global-coding' ? this.selectedKind$.value : this.kind;
+    if (q.__kind === listKind) return '';
     return q.__kind === 'trivia' ? 'Concept' : 'Coding';
   }
 
@@ -1786,6 +1789,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
         label: `Priority: ${this.capitalize(this.impLabel(q))}`,
         ariaLabel: `Practice priority: ${this.capitalize(this.impLabel(q))}`,
         tone: 'importance',
+        // The recommended and priority orders already rank by it; there it is read out, not drawn on every row.
+        priority: this.priorityChipShown() ? 'primary' : 'secondary',
       },
     ];
 
@@ -1798,6 +1803,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     return chips;
+  }
+
+  private priorityChipShown(): boolean {
+    const sort = this.sort$.value;
+    return sort !== 'default' && sort !== 'importance-desc' && sort !== 'importance-asc';
   }
 
   questionRowVariants(q: Row): FaQuestionRowVariant[] {

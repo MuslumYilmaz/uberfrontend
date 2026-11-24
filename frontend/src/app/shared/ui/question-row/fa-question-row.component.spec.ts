@@ -196,7 +196,8 @@ describe('FaQuestionRowComponent', () => {
     const title = host.querySelector('.fa-question-row__title') as HTMLElement;
     const meta = host.querySelector('.fa-question-row__meta') as HTMLElement;
 
-    expect(getComputedStyle(row).minHeight).toBe('108px');
+    // Rows take the height of their content: a fixed minimum left an empty band under short rows.
+    expect(getComputedStyle(row).minHeight).toBe('0px');
     expect(getComputedStyle(title).whiteSpace).toBe('normal');
     expect(getComputedStyle(title).getPropertyValue('-webkit-line-clamp')).toBe('2');
     expect(getComputedStyle(meta).minWidth).toBe('0px');

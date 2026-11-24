@@ -158,7 +158,9 @@ describe('CodingListComponent', () => {
       type: 'trivia',
       questionFormat: 'output',
     }) as any)).toBe('Output');
-    expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('Coding');
+    // A coding row in the coding list says nothing: every row there is coding.
+    expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('');
+    expect(component.questionRowKindLabel(question({ __kind: 'coding', __debug: true }) as any)).toBe('Debugging');
   });
 
   it('gives the question catalog search control an accessible name', async () => {
@@ -268,6 +270,11 @@ describe('CodingListComponent', () => {
     expect(text).toContain(
       'Practice priority is relative FrontendAtlas editorial ordering—not measured interview frequency.',
     );
+    // The recommended order ranks by priority, so each row reads it out instead of drawing it.
+    expect(host.querySelector('[aria-label="Practice priority: High"]')).toBeNull();
+    expect(host.querySelector('.fa-question-row__sr-meta')?.textContent).toContain('Practice priority: High');
+    fixture.componentInstance.setSort('title-asc');
+    fixture.detectChanges();
     expect(host.querySelector('[aria-label="Practice priority: High"]')?.textContent).toContain('Priority: High');
     expect(text).not.toContain('Importance: High to Low');
   });

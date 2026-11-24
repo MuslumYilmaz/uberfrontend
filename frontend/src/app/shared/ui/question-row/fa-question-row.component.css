@@ -3,31 +3,27 @@
   min-width: 0;
 }
 
+/*
+ * One grid for every row: a status column (to-do ring, solved check or lock), the title block, the metadata and the
+ * chevron. Titles start at the same x in every row, whatever labels a row carries.
+ */
 .fa-question-row {
   display: block;
-  min-height: 96px;
   padding: 12px 14px;
   overflow: visible;
   border-radius: var(--fa-radius-12);
   border-color: color-mix(in srgb, var(--fa-border-subtle) 82%, var(--fa-text-muted) 18%);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--fa-text) 4%, transparent), color-mix(in srgb, var(--fa-accent) 5%, transparent)),
-    var(--fa-surface);
+  background: var(--fa-surface);
   color: inherit;
   text-decoration: none;
-  box-shadow:
-    0 8px 24px color-mix(in srgb, var(--fa-bg) 28%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--fa-text) 4%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fa-text) 4%, transparent);
   will-change: auto;
 }
 
 .fa-question-row.fa-card--interactive:hover {
   transform: translateY(-1px);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--fa-text) 5%, transparent), color-mix(in srgb, var(--fa-accent) 8%, transparent)),
-    color-mix(in srgb, var(--fa-surface) 92%, var(--fa-surface-alt) 8%);
+  background: color-mix(in srgb, var(--fa-surface) 92%, var(--fa-surface-alt) 8%);
   border-color: color-mix(in srgb, var(--fa-border-strong) 72%, var(--fa-accent) 28%);
-  box-shadow: 0 14px 32px color-mix(in srgb, var(--fa-bg) 36%, transparent);
 }
 
 .fa-question-row--static {
@@ -40,60 +36,66 @@
 }
 
 .fa-question-row.is-solved {
-  border-color: color-mix(in srgb, var(--fa-border-subtle) 50%, var(--fa-accent) 50%);
-  background: color-mix(in srgb, var(--fa-surface) 88%, var(--fa-accent) 12%);
-  box-shadow:
-    0 8px 24px color-mix(in srgb, var(--fa-bg) 28%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--fa-accent) 34%, transparent);
-}
-
-.fa-question-row.has-variants {
-  min-height: 108px;
+  border-color: color-mix(in srgb, var(--fa-border-subtle) 58%, var(--fa-accent) 42%);
 }
 
 .fa-question-row__content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) fit-content(34rem);
+  grid-template-columns: 22px minmax(0, 1fr) auto auto;
+  grid-template-areas: "status body meta chevron";
   align-items: center;
-  gap: 14px;
+  column-gap: 12px;
 }
 
-.fa-question-row.has-variants .fa-question-row__content {
-  align-items: start;
+.fa-question-row__status {
+  grid-area: status;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--fa-text-muted) 80%, var(--fa-text) 20%);
+}
+
+.fa-question-row__status.is-todo {
+  border: 1.5px solid color-mix(in srgb, var(--fa-text-muted) 45%, transparent);
+}
+
+.fa-question-row__status.is-solved {
+  color: var(--fa-accent);
+}
+
+.fa-question-row__status.fa-question-row__locked {
+  background: color-mix(in srgb, var(--fa-surface-alt) 82%, transparent);
 }
 
 .fa-question-row__body {
-  min-width: 0;
-}
-
-.fa-question-row__topline {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 6px 8px;
+  grid-area: body;
   min-width: 0;
 }
 
 .fa-question-row__kind {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-  min-height: 22px;
-  padding: 3px 7px;
-  border-radius: 7px;
-  border: 1px solid color-mix(in srgb, var(--fa-border-subtle) 82%, var(--fa-text-muted) 18%);
-  background: color-mix(in srgb, var(--fa-surface-alt) 74%, var(--fa-surface) 26%);
+  display: block;
+  margin-bottom: 2px;
   color: color-mix(in srgb, var(--fa-text-muted) 86%, var(--fa-text) 14%);
   font-size: 10.5px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.25;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
+.fa-question-row__titleline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+
 .fa-question-row__title {
   display: -webkit-box;
-  flex: 1 1 18rem;
+  flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
@@ -110,7 +112,7 @@
 .fa-question-row__description {
   display: block;
   max-width: 100%;
-  margin-top: 5px;
+  margin-top: 3px;
   overflow: hidden;
   color: color-mix(in srgb, var(--fa-text-muted) 76%, transparent);
   font-size: 12.5px;
@@ -125,41 +127,10 @@
   letter-spacing: 0;
 }
 
-.fa-question-row__solved-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  color: color-mix(in srgb, var(--fa-accent) 82%, var(--fa-text) 18%);
-  background: color-mix(in srgb, var(--fa-accent) 18%, var(--fa-surface));
-  border: 1px solid color-mix(in srgb, var(--fa-accent) 52%, var(--fa-border-subtle) 48%);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fa-text) 6%, transparent);
-}
-
 /* A Premium item for a viewer without Premium: the text stays in the page for search engines, under a blur. */
 .fa-question-row__concealed {
   filter: blur(8px);
   user-select: none;
-}
-
-.fa-question-row__locked {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-  min-height: 22px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--fa-accent) 40%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent) 22%, transparent);
-  color: var(--fa-text);
-  font-size: 10.5px;
-  font-weight: 800;
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .fa-question-row__variants {
@@ -197,30 +168,74 @@
 }
 
 .fa-question-row__meta {
-  display: inline-flex;
+  grid-area: meta;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 6px;
   min-width: 0;
-  max-width: 34rem;
+  max-width: 30rem;
 }
 
 .fa-question-row__meta-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 5px 8px;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
   border-radius: var(--fa-radius-pill);
-  border: 1px solid color-mix(in srgb, var(--fa-border-subtle) 76%, var(--fa-text-muted) 24%);
   background: color-mix(in srgb, var(--fa-surface-alt) 78%, var(--fa-surface) 22%);
-  color: var(--fa-text);
+  color: color-mix(in srgb, var(--fa-text) 86%, var(--fa-text-muted) 14%);
   font-size: 12px;
   font-weight: 650;
   line-height: 1.1;
   white-space: nowrap;
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--fa-text) 8%, transparent);
+}
+
+.fa-question-row__meta-chip--tech,
+.fa-question-row__meta-chip--time {
+  color: color-mix(in srgb, var(--fa-text-muted) 88%, var(--fa-text) 12%);
+}
+
+.fa-question-row__meta-chip--tier,
+.fa-question-row__meta-chip--score {
+  border-color: color-mix(in srgb, var(--fa-accent) 36%, var(--fa-border-subtle));
+}
+
+.fa-question-row__meta-chip--access {
+  color: var(--fa-accent);
+}
+
+/* Three bars, the first one, two or three filled for easy, intermediate and hard. */
+.fa-question-row__meter {
+  --meter-off: color-mix(in srgb, var(--fa-text-muted) 38%, transparent);
+  --meter-1: var(--meter-off);
+  --meter-2: var(--meter-off);
+  --meter-3: var(--meter-off);
+  flex: 0 0 auto;
+  width: 13px;
+  height: 11px;
+  background:
+    linear-gradient(var(--meter-1), var(--meter-1)) 0 100% / 3px 5px no-repeat,
+    linear-gradient(var(--meter-2), var(--meter-2)) 5px 100% / 3px 8px no-repeat,
+    linear-gradient(var(--meter-3), var(--meter-3)) 10px 100% / 3px 11px no-repeat;
+}
+
+.fa-question-row__meter[data-level="1"] {
+  --meter-1: var(--fa-accent);
+}
+
+.fa-question-row__meter[data-level="2"] {
+  --meter-1: var(--fa-accent);
+  --meter-2: var(--fa-accent);
+}
+
+.fa-question-row__meter[data-level="3"] {
+  --meter-1: var(--fa-accent);
+  --meter-2: var(--fa-accent);
+  --meter-3: var(--fa-accent);
 }
 
 .fa-question-row__sr-meta {
@@ -235,98 +250,40 @@
   border: 0;
 }
 
-.fa-question-row__meta-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 15px;
-  height: 15px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--fa-text) 8%, var(--fa-surface));
-  color: inherit;
-  font-size: 9px;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.fa-question-row__meta-chip--difficulty {
-  border-color: color-mix(in srgb, var(--fa-accent) 38%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent) 12%, var(--fa-surface));
-}
-
-.fa-question-row__meta-chip--importance {
-  border-color: color-mix(in srgb, var(--fa-accent-strong) 40%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent-strong) 14%, var(--fa-surface));
-}
-
-.fa-question-row__meta-chip--tech,
-.fa-question-row__meta-chip--time {
-  border-color: color-mix(in srgb, var(--fa-text-muted) 36%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-text-muted) 10%, var(--fa-surface));
-}
-
-.fa-question-row__meta-chip--tier,
-.fa-question-row__meta-chip--score {
-  border-color: color-mix(in srgb, var(--fa-accent) 42%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent) 16%, var(--fa-surface));
-}
-
-.fa-question-row__meta-chip--access {
-  border-color: color-mix(in srgb, var(--fa-accent-strong) 46%, var(--fa-border-subtle));
-  background: color-mix(in srgb, var(--fa-accent-strong) 18%, var(--fa-surface));
-}
-
 .fa-question-row__chevron {
+  grid-area: chevron;
   display: inline-grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--fa-border-subtle) 80%, var(--fa-text-muted) 20%);
-  background: color-mix(in srgb, var(--fa-surface-alt) 68%, transparent);
+  width: 24px;
+  height: 24px;
   color: color-mix(in srgb, var(--fa-text-muted) 72%, var(--fa-text) 28%);
-  transition: border-color 150ms ease, color 150ms ease, transform 150ms ease;
+  transition: color 150ms ease, transform 150ms ease;
 }
 
 .fa-question-row:hover .fa-question-row__chevron {
-  border-color: color-mix(in srgb, var(--fa-accent) 46%, var(--fa-border-subtle));
   color: var(--fa-text);
   transform: translateX(1px);
 }
 
+/* Narrow screens: the metadata moves under the text, and the chevron stays at the top right of the row. */
 @media (max-width: 760px) {
   .fa-question-row {
-    min-height: 112px;
-    padding: 10px;
+    padding: 10px 12px;
   }
 
   .fa-question-row__content {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .fa-question-row__topline {
-    flex-wrap: wrap;
-  }
-
-  .fa-question-row__title {
-    flex-basis: 100%;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "status body chevron"
+      "status meta chevron";
+    align-items: start;
+    row-gap: 8px;
+    column-gap: 10px;
   }
 
   .fa-question-row__meta {
     justify-content: flex-start;
-    min-width: 0;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 460px) {
-  .fa-question-row__title {
-    flex-basis: 100%;
-  }
-
-  .fa-question-row__description {
-    font-size: 12px;
+    max-width: none;
   }
 }
 
@@ -334,6 +291,7 @@
 @media (max-width: 460px) {
   .fa-question-row__description {
     display: -webkit-box;
+    font-size: 12px;
     white-space: normal;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;

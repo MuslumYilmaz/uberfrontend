@@ -393,7 +393,8 @@ test.describe('production/SSR public remediation smoke', () => {
     expect(bodyText).not.toMatch(/\bImportance(?: score)?\b/i);
     assertNoQuestionScoreOrCompanyBadge(bodyText, '/coding');
     await expect(page.locator('app-company-signal')).toHaveCount(0);
-    await expect(page.locator('[aria-label^="Practice priority:"]').first()).toBeVisible();
+    // In the recommended order each row reads its priority out; the order itself shows it.
+    await expect(page.locator('.fa-question-row__sr-meta').first()).toContainText('Practice priority:');
 
     const jsonLd = await page.locator('script#seo-jsonld').textContent();
     expect(jsonLd || '').not.toMatch(/"companies?"\s*:/i);
