@@ -118,7 +118,7 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
   await expect(technologyLinks).toHaveAttribute('href', '/javascript/interview-questions');
 
   await expect(page.getByTestId('coding-list-search')).toHaveValue(JS_QUESTION.title);
-  await expect(page.getByTestId('filter-tech-javascript')).toHaveClass(/is-active/);
+  await expect(page.getByTestId('filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId(`filter-difficulty-${jsFilters.difficulty}`).locator('input')).toBeChecked();
   await expect(page.getByTestId(`filter-importance-${jsFilters.importance}`).locator('input')).toBeChecked();
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();
@@ -139,7 +139,7 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
   await expect(page).toHaveURL(new RegExp(`imp=${jsFilters.importance}`));
   await expect(page).toHaveURL(/q=Clamp/);
   await expect(page.getByTestId('coding-list-search')).toHaveValue(JS_QUESTION.title);
-  await expect(page.getByTestId('filter-tech-javascript')).toHaveClass(/is-active/);
+  await expect(page.getByTestId('filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
   await expect(page.getByTestId(`filter-difficulty-${jsFilters.difficulty}`).locator('input')).toBeChecked();
   await expect(page.getByTestId(`filter-importance-${jsFilters.importance}`).locator('input')).toBeChecked();
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();

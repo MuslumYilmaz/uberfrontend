@@ -29,6 +29,7 @@ import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util'
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import {
   FaQuestionRowComponent,
@@ -55,6 +56,9 @@ type Row = Question & {
   /** A debugging task in a coding list (/coding or a company's set): it opens on its own route, /<tech>/debug/<id>. */
   __debug?: boolean;
 };
+
+/** A filter shown above the list: "Angular", "Easy", "#async", a search term. `id` says how to remove it. */
+type ActiveFilter = { id: string; label: string };
 
 /** `access` lets the task page's Next step over Premium tasks for a visitor who cannot open them. */
 type PracticeItem = { tech: Tech; kind: QuestionKind | 'debug'; id: string; access?: Row['access'] };
@@ -289,6 +293,7 @@ function inferCategory(q: any): CategoryKey {
         FaChipComponent,
         FaButtonComponent,
         FaCardComponent,
+        FaGlyphComponent,
         FaSpinnerComponent,
         FaQuestionRowComponent,
         StripInlineMarkupPipe,
@@ -1085,6 +1090,43 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return 'Opens the first matching prompt from this filtered list.';
   }
 
+  /** Every filter narrowing the list now, the restored ones included, so none hides out of view; each one removable. */
+  activeFilters(): ActiveFilter[] {
+    const filters: ActiveFilter[] = [];
+    const term = (this.searchTerm || '').trim();
+    if (term) filters.push({ id: 'search', label: `“${term}”` });
+    if (this.source === 'global-coding' && !this.isFormatsMode() && this.selectedTech$.value) {
+      const tech = this.selectedTech$.value;
+      filters.push({ id: `tech:${tech}`, label: this.techTabs.find((tab) => tab.key === tech)?.label ?? tech });
+    }
+    if (this.source === 'global-coding' && this.isFormatsMode() && this.selectedCategory$.value) {
+      const category = this.selectedCategory$.value;
+      filters.push({ id: `category:${category}`, label: this.categoryTabs.find((tab) => tab.key === category)?.label ?? category });
+    }
+    for (const diff of this.diffs$.value) {
+      filters.push({ id: `diff:${diff}`, label: this.difficultyOptions.find((option) => option.value === diff)?.label ?? diff });
+    }
+    for (const tier of this.impTiers$.value) filters.push({ id: `imp:${tier}`, label: `${this.capitalize(tier)} priority` });
+    for (const tag of this.selectedTags$.value) filters.push({ id: `tag:${tag}`, label: `#${tag}` });
+    if (this.freeOnly$.value && this.freeOnlyAvailable()) filters.push({ id: 'free', label: 'Free only' });
+    return filters;
+  }
+
+  removeActiveFilter(id: string): void {
+    if (id === 'search') return this.onSearchTermChange('');
+    if (id === 'free') return this.toggleFreeOnly();
+    const separator = id.indexOf(':');
+    const type = id.slice(0, separator);
+    const value = id.slice(separator + 1);
+    if (type === 'tech') this.toggleTech(value as Tech);
+    else if (type === 'category') this.toggleCategory(value as CategoryKey);
+    else if (type === 'diff') this.toggleDiff(value as Difficulty, false);
+    else if (type === 'imp') this.toggleImp(value as ImportanceTier, false);
+    else if (type === 'tag') this.clearTag(value);
+  }
+
+  trackByActiveFilter = (_: number, filter: ActiveFilter): string => filter.id;
+
   /** A search that finds no coding task may still name a concept ("closure"): the empty list offers that list. */
   canSearchConcepts(): boolean {
     return this.source === 'global-coding'
@@ -1167,8 +1209,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
       : 'Hides the Premium tasks.';
   }
 
+  /** "Free only" lives in the URL (`access=free`) as well as in this browser, so a shared link keeps it. */
   toggleFreeOnly(): void {
-    this.setFreeOnly(!this.freeOnly$.value);
+    const on = !this.freeOnly$.value;
+    this.setFreeOnly(on);
+    this.replaceQueryParams({ access: on ? 'free' : null });
   }
 
   private setFreeOnly(on: boolean): void {
@@ -1559,12 +1604,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     // A URL names kind only for concepts (`?kind=trivia`), so a link that sets any other filter means the coding
     // list, whichever kind this visitor last had open.
-    const linkNamesFilters = ['tech', 'q', 'diff', 'imp', 'focus', 'topic', 'category'].some((k) => qp.get(k) !== null);
+    const linkNamesFilters = ['tech', 'q', 'diff', 'imp', 'focus', 'topic', 'category', 'access'].some((k) => qp.get(k) !== null);
     if (kindFromUrl) {
       this.selectedKind$.next(this.normalizeSelectedKind(kindFromUrl));
     } else if (shouldReset || linkNamesFilters) {
       this.selectedKind$.next('coding');
     }
+    if (qp.get('access') === 'free') this.setFreeOnly(true);
 
     const focus = qp.get('focus') as FocusSlug | null;
     const topic = qp.get('topic');
@@ -1591,7 +1637,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     // If we restored from persisted state and the URL is "plain /coding",
     // sync the full filter set into the URL once (replaceUrl) so refresh/share works.
     if (this.source === 'global-coding' && viewKey === 'tech' && restoredFromState) {
-      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'topic', 'category']
+      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'topic', 'category', 'access']
         .some((k) => qp.get(k) !== null);
 
       const tech = this.selectedTech$.value;
@@ -1607,6 +1653,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
           q: q || null,
           diff: diffs.length ? diffs.join(',') : null,
           imp: imps.length ? imps.join(',') : null,
+          access: this.freeOnly$.value ? 'free' : null,
         };
         this.router.navigate([], {
           relativeTo: this.route,
@@ -2162,7 +2209,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   onImpChange(tier: ImportanceTier, ev: Event) {
-    const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
+    this.toggleImp(tier, (ev.target as HTMLInputElement | null)?.checked ?? false);
+  }
+
+  toggleImp(tier: ImportanceTier, checked: boolean) {
     const curr = new Set(this.impTiers$.value);
     checked ? curr.add(tier) : curr.delete(tier);
     const next = Array.from(curr);
@@ -2227,6 +2277,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       category: null,
       focus: null,
       topic: null,
+      access: null,
       reset: null,
     });
   }

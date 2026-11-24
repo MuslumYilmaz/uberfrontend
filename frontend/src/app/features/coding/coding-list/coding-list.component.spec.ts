@@ -473,6 +473,43 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('[data-testid="coding-list-free-only"]')).toBeNull();
   });
 
+  it('shows every active filter above the list and removes each one on its own', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'javascript', diff: 'easy', q: 'clamp', access: 'free' },
+      items: [question({ id: 'js-number-clamp', title: 'Clamp', difficulty: 'easy' })],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const labels = () => Array.from(host.querySelectorAll('[data-testid^="coding-active-filter-"]'))
+      .map((chip) => (chip.textContent || '').replace('Remove filter:', '').trim());
+
+    expect(labels()).toEqual(['“clamp”', 'JavaScript', 'Easy', 'Free only']);
+
+    (host.querySelector('[data-testid="coding-active-filter-diff:easy"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.diffs$.value).toEqual([]);
+    expect(labels()).toEqual(['“clamp”', 'JavaScript', 'Free only']);
+
+    (host.querySelector('[data-testid="coding-active-filters-clear"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="coding-active-filters"]')).toBeNull();
+    expect(fixture.componentInstance.freeOnly$.value).toBeFalse();
+  });
+
+  it('turns Free only on from a shared link', async () => {
+    const fixture = await createComponent({
+      queryParams: { access: 'free' },
+      items: [
+        question({ id: 'js-free-task', title: 'Free task' }),
+        question({ id: 'js-locked-task', title: 'Locked task', access: 'premium' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+
+    expect(fixture.componentInstance.freeOnly$.value).toBeTrue();
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
+    expect(host.querySelector('[data-testid="question-card-js-free-task"]')).not.toBeNull();
+  });
+
   it('keeps filtered library start actions tied to the first visible unlocked row', async () => {
     const fixture = await createComponent({
       queryParams: { tech: 'react', kind: 'coding' },

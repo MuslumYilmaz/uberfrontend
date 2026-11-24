@@ -44,7 +44,7 @@
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
     [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
     [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
-    [filteredCount]="(filteredCount$ | async) || 0" [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
+    [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
@@ -56,9 +56,6 @@
             <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
           </div>
           <div class="fa-filter-panel__header-actions">
-            <div class="fa-filter-panel__count">
-              <span class="pill fa-chip fa-chip--label">{{ countLabel(filteredCount$ | async, 'item', 'items') }}</span>
-            </div>
             <button *ngIf="drawer" type="button" faButton variant="ghost" class="fa-filter-panel__close"
               data-testid="coding-list-mobile-filter-close" (click)="closeMobileFilters()">
               <i class="pi pi-times" aria-hidden="true"></i>
@@ -112,18 +109,6 @@
                 High
               </span>
             </label>
-          </div>
-        </div>
-
-        <div class="fa-filter-section" *ngIf="source === 'global-coding'">
-          <div class="fa-filter-section__title fa-meta-label">Technologies</div>
-          <div class="fa-filter-options fa-filter-options--pills">
-            <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
-              [attr.data-testid]="'filter-tech-' + tab.key"
-              [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
-              <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
-              <span class="fa-tech-pill__label">{{ tab.label }}</span>
-            </button>
           </div>
         </div>
 
@@ -204,6 +189,19 @@
             </div>
           </ng-container>
         </div>
+      </div>
+
+      <div class="fa-active-filters" *ngIf="activeFilters().length" data-testid="coding-active-filters">
+        <span class="fa-active-filters__label fa-meta-label">Active filters</span>
+        <fa-chip *ngFor="let filter of activeFilters(); trackBy: trackByActiveFilter" class="fa-active-filters__chip" size="sm"
+          [toggle]="false" [testId]="'coding-active-filter-' + filter.id" (chipClick)="removeActiveFilter(filter.id)">
+          <span class="fa-active-filters__sr">Remove filter: </span>{{ filter.label }}
+          <app-fa-glyph class="fa-active-filters__x" icon="xmark" size="12"></app-fa-glyph>
+        </fa-chip>
+        <button type="button" faButton variant="ghost" class="fa-link-btn" data-testid="coding-active-filters-clear"
+          (click)="resetAllFilters()">
+          Clear all
+        </button>
       </div>
 
       <div class="list">
