@@ -74,6 +74,9 @@ test('a visitor\'s first filter leaves the filters where they are on a wide scre
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-loading')).toBeHidden();
   await expect(page.getByTestId('coding-start-paths')).toBeVisible();
+  // The prerendered page already shows both, and a click before hydration is lost (no event replay). The header's
+  // account button renders only after the app's first browser render.
+  await expect(page.getByTestId('header-profile-button')).toBeVisible();
   const hard = page.getByTestId('filter-difficulty-hard');
   const before = (await hard.boundingBox())!.y;
 
