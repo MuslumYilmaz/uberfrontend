@@ -8114,6 +8114,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Tooltip component',
         question: 'Implement a tooltip, in the first of two live coding rounds.',
         sources: [BOOKINGCOM_BK11],
+        practice: { label: 'Tooltips and a dialog through portals', path: '/react/coding/react-modal-tooltip-portal' },
       },
       {
         id: 'react-component-api-design-spec',
@@ -8132,6 +8133,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Add a new feature to an application prepared in advance, in the framework of your choice.',
         promptNotShared: true,
         sources: [BOOKINGCOM_BK6],
+        practice: { label: 'Extend a prepared React console in one hour', path: '/react/coding/react-webhook-deliveries-four-tasks' },
       },
       {
         id: 'get-api-display-components',
@@ -10083,6 +10085,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Easy LeetCode-style problems on array and string manipulation, in a Codility test of about two hours.',
         promptNotShared: true,
         sources: [ZALANDO_ZA4],
+        practice: { label: 'Capitalize words, a string warm-up', path: '/javascript/coding/js-capitalize-words' },
       },
       {
         id: 'debounce-from-scratch',
@@ -10100,6 +10103,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Removing imports from a React app',
         question: 'What would happen to the submitted React application if its imports were removed?',
         sources: [ZALANDO_ZA1],
+        practice: { label: 'How JSX compiles, and why React no longer needs importing', path: '/react/trivia/react-jsx-transform-and-why-not-required' },
       },
       {
         id: 'optimise-search-app',
@@ -11087,6 +11091,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Rank Transform of an Array',
         question: 'Replace each number in an array with its rank among the distinct values (LeetCode 1331, Rank Transform of an Array).',
         sources: [AGODA_A1_BANGKOK_2026],
+        practice: { label: 'Remove duplicates, a warm-up for ranking distinct values', path: '/javascript/coding/js-unique-array' },
       },
       {
         id: 'climbing-stairs-three-steps',
@@ -11144,6 +11149,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'In-place array sort',
         question: 'Sort an array in place.',
         sources: [AGODA_T1_SENIOR_FE_2024],
+        practice: { label: 'Array.sort pitfalls: the comparator and in-place mutation', path: '/javascript/trivia/js-array-sort-pitfalls' },
       },
       {
         id: 'doctor-appointment-booking',
@@ -11211,6 +11217,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'A straightforward array question and a medium hash-map problem.',
         promptNotShared: true,
         sources: [AGODA_A13_SDE2_2024],
+        practice: { label: 'Valid anagram, a hash-map counting warm-up', path: '/javascript/coding/js-valid-anagram' },
       },
       {
         id: 'travel-booking-frontend-architecture',
@@ -11241,6 +11248,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Questions on structuring a front end with atomic design, and on testing and debugging practice.',
         promptNotShared: true,
         sources: [AGODA_A7_GURGAON_2025],
+        practice: { label: 'Design a component library and its building blocks', path: '/system-design/component-design-system-architecture' },
       },
       {
         id: 'add-functionality-to-react-page',
@@ -11249,6 +11257,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Add functionality to an existing React web page in an online session, with Google allowed and the interviewer helping.',
         promptNotShared: true,
         sources: [AGODA_T5_FULL_STACK_2025],
+        practice: { label: 'Extend a prepared React console in one hour', path: '/react/coding/react-webhook-deliveries-four-tasks' },
       },
       {
         id: 'react-usecontext-and-hooks',
@@ -11280,6 +11289,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Simple tool explanation and flashcard',
         question: 'Explain a tool from your own project as simply as you would to a child, then machine-code a flashcard.',
         sources: [AGODA_A6_FULL_STACK_2024],
+        practice: { label: 'Design a flashcard study app', path: '/system-design/flashcard-language-trainer' },
       },
       {
         id: 'planes-stopped-before-landing',
@@ -11294,6 +11304,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         topic: 'Grid paths with obstacles',
         question: 'Count the paths a robot can take through a grid with obstacles, moving only right or down.',
         sources: [AGODA_A6_FULL_STACK_2024],
+        practice: { label: 'Find a path through a grid maze, a grid warm-up', path: '/javascript/coding/js-maze-path' },
       },
     ],
     // Values-round topics from generic Staff loops are left out: the research record does not tie them to one URL each.
@@ -12860,6 +12871,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Design a version of the OpenAI Playground for developers, starting from its UI screens. The interviewer left it to you what to focus on and what to abstract away, including whether serving the model was in scope.',
         sources: [OPENAI_OA10_FULLSTACK_2025, OPENAI_PLAYGROUND_BANK],
+        practice: { label: 'Design an AI agent run inspector for developers', path: '/system-design/ai-agent-run-inspector' },
       },
       {
         id: 'credit-pool-with-expirations',
@@ -12878,6 +12890,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Code a map-type data structure with create, update and delete operations, around maintaining a list of tuples; the follow-ups needed sorting and merging.',
         sources: [OPENAI_OA8_SCREEN_2024],
+        practice: { label: 'LRU cache, a data-structure warm-up', path: '/javascript/coding/js-create-lru-cache' },
       },
       {
         id: 'chatgpt-system-design',
@@ -12898,6 +12911,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Refactor messy code so that it handles new requirements while the existing tests keep passing. Follow-ups: which abstractions or class structure would help it scale, and can it keep its current behaviour while meeting the new cases?',
         sources: [OPENAI_OA10_FULLSTACK_2025],
+        practice: { label: 'Review a junior\'s code, then rewrite it under tests', path: '/javascript/debug/js-debug-spoken-prefix-review' },
       },
       {
         id: 'simplified-vector-store',
@@ -12907,6 +12921,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'Implement a simplified vector store: add(index, val) inserts a string at an index and shifts everything after it back by one, and get(index) returns the value there. A plain linked list was too slow to read, so the interviewer hinted at a linked list with a checkpoint every k nodes.',
         sources: [OPENAI_OA9_SWE_2026],
+        practice: { label: 'Update an array at an index, a warm-up', path: '/javascript/coding/js-update-at-index' },
       },
     ],
     // Same-question accounts share a row. Left out: questions about the candidate's own project in the 2025
@@ -13835,6 +13850,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question:
           'A drone senses objects in a zone and reports what it finds: write a class with two methods that retrieve and send data to an external source.',
         sources: [ANDURIL_AN30_SWE_2024],
+        practice: { label: 'Fetch JSON with a timeout, for the external-source calls', path: '/javascript/coding/js-fetch-json-timeout' },
       },
       {
         id: 'largest-sensor-distance',
@@ -13867,6 +13883,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'Breadth-first and depth-first search questions of LeetCode medium difficulty, each pushed further by harder follow-ups.',
         promptNotShared: true,
         sources: [ANDURIL_AN35_BFS_2023],
+        practice: { label: 'Find a node in a DOM tree with DFS or BFS', path: '/javascript/coding/js-dom-find-node' },
       },
       {
         id: 'hard-graph-problems',
@@ -13875,6 +13892,7 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         question: 'LeetCode-style data structure and graph problems, which the candidate found hard, in rounds of 45 to 60 minutes.',
         promptNotShared: true,
         sources: [ANDURIL_AN33_SWE_2025],
+        practice: { label: 'Find a path through a grid maze', path: '/javascript/coding/js-maze-path' },
       },
     ],
     behaviouralQuestions: [
