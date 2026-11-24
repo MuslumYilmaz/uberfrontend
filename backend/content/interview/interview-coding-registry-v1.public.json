@@ -1517,7 +1517,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
+      "contentHash": "34761f5354379e1cc1ac3c19d152de4526138e53a9cb2b0171492f0c539a0ca9",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "level": "mid",
@@ -1537,7 +1537,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-24",
       "sourceQuestionId": "js-fetch-json-timeout",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-fetch-json-timeout.starterCode",
       "starterFiles": [
@@ -1585,7 +1585,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
+      "contentHash": "9710dd90c371e083943910be660520de82081c2a4eeee4db519ee5ad984d0bd5",
       "enabled": true,
       "id": "int-code-core-web-mid-take-latest-v1",
       "level": "mid",
@@ -1604,7 +1604,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-24",
       "sourceQuestionId": "js-take-latest",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-take-latest.starterCode",
       "starterFiles": [

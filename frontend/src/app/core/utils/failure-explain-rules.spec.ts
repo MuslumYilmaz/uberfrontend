@@ -1042,6 +1042,41 @@ describe('failure-explain-rules', () => {
     expect(hint.actions.join(' ')).toContain('identical');
   });
 
+  it('explains a cancellation rejected with a plain Error in each abort-aware task', () => {
+    for (const [questionId, testName] of [
+      ['js-take-latest', 'aborts the previous controller immediately'],
+      ['js-fetch-json-timeout', 'aborts on timeout'],
+      ['js-stream-to-text', 'rejects on abort'],
+    ]) {
+      const hint = buildFailureHint({
+        questionId,
+        errorLine: 'Expected Error: Timeout to match {"name":"AbortError"}',
+        firstFailName: testName,
+        passCount: 3,
+        totalCount: 4,
+        failCount: 1,
+        failedTests: [{ name: testName, errorLine: 'Expected Error: Timeout to match {"name":"AbortError"}' }],
+      });
+
+      expect(hint.ruleId).withContext(questionId).toBe('abort-rejection-is-not-abort-error');
+      expect(hint.actions.join(' ')).withContext(questionId).toContain("err.name = 'AbortError'");
+    }
+  });
+
+  it('keeps the takeLatest sequencing hint when the rejection already is an AbortError', () => {
+    const hint = buildFailureHint({
+      questionId: 'js-take-latest',
+      errorLine: 'Expected promise to reject, resolved with "first"',
+      firstFailName: 'resolves only the latest call',
+      passCount: 4,
+      totalCount: 5,
+      failCount: 1,
+      failedTests: [{ name: 'resolves only the latest call', errorLine: 'Expected promise to reject, resolved with "first"' }],
+    });
+
+    expect(hint.ruleId).toBe('js-take-latest-abort-sequencing');
+  });
+
   it('explains stream reader lock cleanup after decoder failure', () => {
     const hint = buildFailureHint({
       questionId: 'js-stream-to-text',

@@ -9,7 +9,7 @@
     "approvedBy": "project-owner",
     "approvedAt": "2026-08-24",
     "registryVersion": "1.1.0",
-    "registryContentHash": "f2d22c500b986b0e46bb11ea9ed5249c2057abc086a6e7b306555aa997ac54bf",
+    "registryContentHash": "00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e",
     "notes": [
       "Project owner approved coding registry v1.1.0 for editorial-gold production use after the release-readiness audit.",
@@ -39,12 +39,13 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the fourth batch of coding-trust step 12, approved by the project owner. Six pinned Premium questions gained full framework checks: shopping cart (React, Angular, Vue) for Add to cart once and again, + and −, Remove, a row's name, unit price, quantity and line total, and the item count and total price; transfer list for buttons that follow their own list's selection, ↓ and ↑ appending in order, moved items arriving unselected, and per-list selection. Six pressure pins move with the counter and todo scenarios, whose rounds now find what their text names: counter rounds 2 to 4 find the step selector as a select box, the focusable container by tabindex, its keyboard instructions by any aria-describedby, and the Start/Pause button by aria-pressed; todo round 1 finds the Add button and the text box by role and reads task text from the starters' rows. The round texts, order, time limits and solutions are unchanged. Question hashes are re-pinned; starters are unchanged, as are the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
-      "2026-11-14 source-pin maintenance: registryContentHash refreshed after react-debounced-search lost its Spotify company tag and its Spotify source in the company guide fixes of 2026-11-13 (step 9 of the redesign the project owner approved): that source says the Spotify round was framework-free, so the React task no longer counts as Spotify practice. Its requirements, expected behavior, starter, checks and solution are unchanged; this is not a new approval of the task."
+      "2026-11-14 source-pin maintenance: registryContentHash refreshed after react-debounced-search lost its Spotify company tag and its Spotify source in the company guide fixes of 2026-11-13 (step 9 of the redesign the project owner approved): that source says the Spotify round was framework-free, so the React task no longer counts as Spotify practice. Its requirements, expected behavior, starter, checks and solution are unchanged; this is not a new approval of the task.",
+      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-take-latest and js-fetch-json-timeout dropped a sandbox workaround from their official solutions and test helpers: `toAbortError` now sets `err.name = 'AbortError'` directly instead of wrapping it in try/catch with an Object.defineProperty fallback, because the code sandbox no longer turns inherited built-in properties read-only. Both questions also moved updatedAt to 2026-11-24. Requirements, expected behavior, starters, test names and assertions are unchanged; this is not a new approval of the tasks."
     ]
   },
-  "definitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
+  "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
   "reviewBatch": {
-    "reviewedDefinitionHash": "3a307a91295c0929427a65da601627812920bd0316470288600ad39ea8a5d75e",
+    "reviewedDefinitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
     "reviewedAt": "2026-08-24",
     "technical": {
       "reviewer": "codex-interview-coding-technical-v1",
@@ -80,7 +81,8 @@
         "2026-11-12 source-pin maintenance review: react/angular/vue shopping cart and transfer list changed in frameworkTests only, and the counter and todo pressure scenarios changed only the locators of the rounds named in the finalApproval note of the same date. In the preview each official solution passes all its checks, each starter fails them, and each mutant fails the check for its bug; the pressure reference solutions pass their rounds in the production React framework suite.",
         "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
         "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
-        "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical."
+        "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
+        "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
       ]
     },
     "editorial": {
@@ -327,7 +329,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-take-latest",
-      "expectedQuestionHash": "d37f8d33114051f89e5d20affa0a177a9898150f28ad4c73d0e94d3688e9e66c",
+      "expectedQuestionHash": "6805f824436cfda59c5669946be69803853bc04df5c722ecea6ff6d7b64d1f89",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
@@ -382,7 +384,7 @@
       "level": "mid",
       "catalog": "javascript",
       "sourceQuestionId": "js-fetch-json-timeout",
-      "expectedQuestionHash": "b780ccb4b2d19a8c59c9cb5015ee1580335e73e538b1161cee2767a48554f430",
+      "expectedQuestionHash": "9369a3d894929e004021adf9da2dea4653ff09b6ea0168fb1b254b2ead51fdf7",
       "timeLimitSeconds": 2100,
       "roundLimit": 1,
       "runner": "javascript",
