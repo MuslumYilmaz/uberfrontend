@@ -6,6 +6,11 @@ import {
 } from '@angular/core';
 import { EDITOR_RXJS_TYPINGS } from './generated/editor-rxjs-typings';
 import {
+  EDITOR_ANGULAR_CORE_LOOSE_TYPINGS,
+  EDITOR_ANGULAR_FORMS_LOOSE_TYPINGS,
+  EDITOR_ANGULAR_HTTP_LOOSE_TYPINGS,
+} from './generated/editor-angular-loose-typings';
+import {
   EDITOR_ANGULAR_CORE_TYPINGS,
   EDITOR_ANGULAR_FORMS_TYPINGS,
   EDITOR_ANGULAR_HTTP_TYPINGS,
@@ -728,7 +733,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
           const mAny = monaco as any;
           if (!mAny.__faAngularCoreLib) {
-            const angularCoreLib = EDITOR_ANGULAR_CORE_TYPINGS;
+            // The stubs' precise shapes, then loose declarations of every other export, generated from the installed
+            // typings, so importing a name the stubs leave out shows no "has no exported member" in correct code.
+            const angularCoreLib = `${EDITOR_ANGULAR_CORE_TYPINGS}\n${EDITOR_ANGULAR_CORE_LOOSE_TYPINGS}`;
 
             ts.typescriptDefaults.addExtraLib(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
@@ -793,14 +800,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           }
 
           if (!mAny.__faAngularFormsLib) {
-            const angularFormsLib = EDITOR_ANGULAR_FORMS_TYPINGS;
+            const angularFormsLib = `${EDITOR_ANGULAR_FORMS_TYPINGS}\n${EDITOR_ANGULAR_FORMS_LOOSE_TYPINGS}`;
             ts.typescriptDefaults.addExtraLib(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
             mAny.__faAngularFormsLib = true;
           }
 
           if (!mAny.__faAngularHttpLib) {
-            const angularHttpLib = EDITOR_ANGULAR_HTTP_TYPINGS;
+            const angularHttpLib = `${EDITOR_ANGULAR_HTTP_TYPINGS}\n${EDITOR_ANGULAR_HTTP_LOOSE_TYPINGS}`;
             ts.typescriptDefaults.addExtraLib(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             mAny.__faAngularHttpLib = true;

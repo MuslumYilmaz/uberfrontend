@@ -13,13 +13,15 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '../..');
 const appDir = path.join(scriptDir, '../src/app');
 const typings = loadTsModule(path.join(appDir, 'core/utils/editor-angular-typings.ts'));
+const loose = loadTsModule(path.join(appDir, 'generated/editor-angular-loose-typings.ts'));
 const { EDITOR_RXJS_TYPINGS } = loadTsModule(path.join(appDir, 'generated/editor-rxjs-typings.ts'));
 
-// The libraries and compiler options monaco-editor.component.ts gives the TypeScript worker.
+// The libraries and compiler options monaco-editor.component.ts gives the TypeScript worker: each Angular module's
+// stub, then the loose declarations of its other exports.
 const LIBS = {
-  '/node_modules/@angular/core/index.d.ts': typings.EDITOR_ANGULAR_CORE_TYPINGS,
-  '/node_modules/@angular/forms/index.d.ts': typings.EDITOR_ANGULAR_FORMS_TYPINGS,
-  '/node_modules/@angular/common/http/index.d.ts': typings.EDITOR_ANGULAR_HTTP_TYPINGS,
+  '/node_modules/@angular/core/index.d.ts': `${typings.EDITOR_ANGULAR_CORE_TYPINGS}\n${loose.EDITOR_ANGULAR_CORE_LOOSE_TYPINGS}`,
+  '/node_modules/@angular/forms/index.d.ts': `${typings.EDITOR_ANGULAR_FORMS_TYPINGS}\n${loose.EDITOR_ANGULAR_FORMS_LOOSE_TYPINGS}`,
+  '/node_modules/@angular/common/http/index.d.ts': `${typings.EDITOR_ANGULAR_HTTP_TYPINGS}\n${loose.EDITOR_ANGULAR_HTTP_LOOSE_TYPINGS}`,
   '/node_modules/rxjs/index.d.ts': EDITOR_RXJS_TYPINGS,
   '/node_modules/@types/fa-test/index.d.ts': typings.EDITOR_TEST_GLOBALS_TYPINGS,
   '/node_modules/@types/fa-node-shim/index.d.ts': typings.EDITOR_NODE_SHIM_TYPINGS,
@@ -111,4 +113,27 @@ const wrong = editorDiagnostics(fixture([
 ]));
 assert.equal(wrong.filter((line) => line.includes('TS2322')).length, 2, `types must reach the code:\n${wrong.join('\n')}`);
 
-console.log(`[editor-angular-typings] ${checked} Angular projects type-check with no editor error; typed inject and form values reach the code`);
+// Names the stubs leave out still resolve, as values, as types and with their type arguments, instead of showing
+// "has no exported member" in correct code.
+assert.deepEqual(editorDiagnostics({
+  '/src/app/extra.ts': [
+    "import { ApplicationRef, Injector, TemplateRef, ViewContainerRef, ViewEncapsulation, Directive, isSignal } from '@angular/core';",
+    "import type { ApplicationConfig, Provider } from '@angular/core';",
+    "import { FormArray, FormBuilder, ValidatorFn } from '@angular/forms';",
+    "import { HttpContext, HttpParams } from '@angular/common/http';",
+    '',
+    "@Directive({ selector: '[appTpl]', standalone: true })",
+    'export class TplDirective {',
+    '  constructor(private readonly view: ViewContainerRef, private readonly tpl: TemplateRef<unknown>, private readonly app: ApplicationRef) {}',
+    '  render(): void { this.view.createEmbeddedView(this.tpl); this.app.tick(); }',
+    '}',
+    'export const providers: Provider[] = [];',
+    'export const appConfig: ApplicationConfig = { providers };',
+    'export const encapsulation: ViewEncapsulation = ViewEncapsulation.None;',
+    'export const minimum: ValidatorFn = () => null;',
+    'export const signalCheck = (value: unknown) => isSignal(value);',
+    'export const parts = (injector: Injector, fb: FormBuilder) => [injector.get(FormBuilder), fb.array([]) as FormArray, new HttpParams(), new HttpContext()];',
+  ].join('\n'),
+}), [], 'exports the stubs leave out must resolve');
+
+console.log(`[editor-angular-typings] ${checked} Angular projects type-check with no editor error; typed inject and form values reach the code; the other exports resolve`);
