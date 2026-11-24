@@ -438,6 +438,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
   private pressureModeLoadSeq = 0;
   private pressureStartedAt = Date.now();
+  /** The countdown from the scenario's minutes: its deadline while the rounds run in the browser, else null. */
+  private readonly pressureDeadline = signal<number | null>(null);
+  private readonly pressureNow = signal(Date.now());
+  private pressureTicker: ReturnType<typeof setInterval> | null = null;
+  private readonly pressureRemainingMs = computed(() => {
+    const deadline = this.pressureDeadline();
+    return deadline === null ? null : Math.max(0, deadline - this.pressureNow());
+  });
+  /** At zero the rounds stay open: the clock says the time is over, and nothing locks. */
+  pressureTimeUp = computed(() => this.pressureRemainingMs() === 0);
+  pressureClockLabel = computed(() => {
+    const remaining = this.pressureRemainingMs();
+    if (remaining === null) return null;
+    return remaining > 0 ? `${formatRehearsalClock(remaining)} left` : "Time's up";
+  });
   private pressureStartTrackedKey: string | null = null;
   private pressurePreviousCollapsed: boolean | null = null;
   private pressurePreviousAsideRatio: number | null = null;
@@ -520,9 +535,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   });
-  /** The JavaScript workspace's timed practice, read from the panel so the Solution tab can close while it runs. */
+  /** The workspace's timed practice, read from its panel so the Solution tab can close while it runs. */
   private readonly jsPanelQuery = viewChild(CodingJsPanelComponent);
-  timedPracticeActive = computed(() => this.jsPanelQuery()?.interviewModeEnabled() ?? false);
+  private readonly frameworkPanelQuery = viewChild(CodingFrameworkPanelComponent);
+  timedPracticeActive = computed(() =>
+    (this.jsPanelQuery()?.interviewModeEnabled() ?? false)
+    || (this.frameworkPanelQuery()?.timedPractice.active() ?? false));
   /** Why the Solution tab is closed right now, as its label says it; null while it is open. */
   solutionLockReason = computed<string | null>(() => {
     if (this.pressureActive() && !this.pressureCompleted()) return 'Solution locked until all rounds pass';
@@ -1439,7 +1457,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.workspaceEpoch += 1;
     this.loadQuestionSeq += 1;
     this.pressureModeLoadSeq += 1;
-    if (this.pressureActive()) this.trackPressureExit('navigation');
+    if (this.pressureActive()) {
+      this.trackPressureExit('navigation');
+      this.endPressureClock();
+    }
+    this.stopPressureTicker();
     this.routeParamSub?.unsubscribe();
     this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
@@ -2006,7 +2028,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.allQuestions[idx];
     const routeRequestsPressure = !this.questionId
       && String(this.route.snapshot.queryParamMap.get('mode') || '').trim().toLowerCase() === 'pressure';
-    if (this.pressureActive()) this.trackPressureExit('navigation');
+    if (this.pressureActive()) {
+      this.trackPressureExit('navigation');
+      this.endPressureClock();
+    }
     this.clearPressureModeState(true);
     this.pressureRequested.set(routeRequestsPressure);
     this.pressureLoading.set(routeRequestsPressure && !!q.pressureModeAsset);
@@ -2537,6 +2562,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       );
       this.activePanel.set(1);
       this.trackPressureCompleted(false);
+      this.endPressureClock();
       this.ensureAuthenticated('coding_pressure');
       return;
     }
@@ -2567,6 +2593,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.solved.set(true);
     this.activePanel.set(1);
     this.trackPressureCompleted(true);
+    this.endPressureClock();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('tests');
@@ -2761,6 +2788,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!requested) {
       if (wasActive || wasRequested) {
         this.trackPressureExit(this.pendingPressureExitReason || 'navigation');
+        this.endPressureClock();
         this.clearPressureModeState(true);
       }
       this.pendingPressureExitReason = null;
@@ -2934,7 +2962,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.pressureCompleted.set(state.completed);
     this.pressureCompletionError.set(null);
     this.pressureLoading.set(false);
-    this.pressureStartedAt = Date.now();
+    if (state.completed) {
+      this.pressureStartedAt = Date.now();
+    } else {
+      this.pressureStartedAt = this.pressureAttemptStart(scenario.id, q.id);
+      this.startPressureClock(scenario.estimatedMinutes);
+    }
     this.expandPressureDescription();
     this.activePanel.set(state.completed ? 1 : 0);
     this.pressureProgress.start(scenario.id, q.id, state);
@@ -3035,6 +3068,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private clearPressureModeState(restoreLayout: boolean): void {
     this.pressureModeLoadSeq += 1;
+    this.stopPressureClock();
     this.pressureLoading.set(false);
     this.pressureScenario.set(null);
     this.pressureRoundIndex.set(0);
@@ -3060,6 +3094,63 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.pressurePreviousCollapsed = null;
     this.pressurePreviousAsideRatio = null;
+  }
+
+  private pressureClockKey(scenarioId: string, questionId: string): string {
+    return `fa:pressure:clock:v1:${this.pressureProgress.itemId(scenarioId, questionId)}`;
+  }
+
+  /** When this attempt started, kept for the tab's session: a reload keeps the clock, and Exit lets the next start over. */
+  private pressureAttemptStart(scenarioId: string, questionId: string): number {
+    const now = Date.now();
+    if (!this.isBrowser) return now;
+    try {
+      const key = this.pressureClockKey(scenarioId, questionId);
+      const stored = Number(sessionStorage.getItem(key));
+      if (Number.isFinite(stored) && stored > 0 && stored <= now) return stored;
+      sessionStorage.setItem(key, String(now));
+    } catch {
+      // Storage blocked: the clock starts with the page.
+    }
+    return now;
+  }
+
+  private startPressureClock(minutes: number): void {
+    this.stopPressureClock();
+    if (!this.isBrowser || !(minutes > 0)) return;
+    this.pressureNow.set(Date.now());
+    this.pressureDeadline.set(this.pressureStartedAt + minutes * 60_000);
+    if (this.pressureTimeUp()) return;
+    // Outside the zone, as the rehearsal's clock: the signals still schedule change detection, and an hour of
+    // countdown does not keep the app from turning stable.
+    this.pressureTicker = this.zone.runOutsideAngular(() => setInterval(() => {
+      this.pressureNow.set(Date.now());
+      if (this.pressureTimeUp()) this.stopPressureTicker();
+    }, 1000));
+  }
+
+  private stopPressureTicker(): void {
+    if (this.pressureTicker === null) return;
+    clearInterval(this.pressureTicker);
+    this.pressureTicker = null;
+  }
+
+  private stopPressureClock(): void {
+    this.stopPressureTicker();
+    this.pressureDeadline.set(null);
+  }
+
+  /** Exit, another task, or every round passed: the countdown stops, and the next attempt starts a clock of its own. */
+  private endPressureClock(): void {
+    const scenario = this.pressureScenario();
+    const q = this.question();
+    this.stopPressureClock();
+    if (!scenario || !q || !this.isBrowser) return;
+    try {
+      sessionStorage.removeItem(this.pressureClockKey(scenario.id, q.id));
+    } catch {
+      // Storage blocked: nothing was kept.
+    }
   }
 
   private expandPressureDescription(): void {

@@ -19,8 +19,10 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../../../environments/environment';
 import { FrameworkTest, Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { PreviewBuilderService } from '../../../../core/services/preview-builder.service';
@@ -28,6 +30,7 @@ import { computeFrameworkContentVersion } from '../../../../core/utils/content-v
 import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
+import { TimedPracticeClock } from '../../../../core/utils/timed-practice-clock';
 import { userVisibleFailures } from '../../../../core/utils/user-visible-failure-reporter';
 import {
   dismissUpdateBanner,
@@ -46,6 +49,7 @@ import { editorKeys } from '../../../../core/utils/editor-keys.util';
 import { angularPreviewLabel } from '../../../../core/utils/angular-preview-version';
 import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
+import { practiceMinutes, TIMED_PRACTICE_STEPS, timedPracticeStep, type TimedPracticeStep } from '../../../../shared/practice-minutes';
 import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
@@ -108,6 +112,9 @@ const SETUP_FILE = /(^|\/)(package\.json|tsconfig[^/]*\.json|index\.html)$|(^|\/
 /** The preview's share of its column, within which the splitter above the checks moves. */
 const PREVIEW_ROWS = { min: 0.2, max: 0.85 };
 
+/** The JavaScript workspace's switch for timed practice (`assist.interviewMode`), which this one follows. */
+const TIMED_PRACTICE_ENABLED = environment.assist?.interviewMode !== false;
+
 @Component({
     selector: 'app-coding-framework-panel',
     imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent, ConsoleLoggerComponent],
@@ -141,6 +148,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   /** The task's requirements, listed beside a passed smoke check to compare against before marking it solved. */
   @Input() requirements: readonly string[] = [];
   @Input() solved = false;
+  /** The Solution tab is open beside the workspace, so timed practice is not offered. */
+  @Input() solutionPanelOpen = false;
+  /** The page keeps its own clock, as a merge request review does, so timed practice is not offered beside it. */
+  @Input() timedPracticeHidden = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
   @Output() filesChanged = new EventEmitter<Record<string, string>>();
@@ -200,6 +211,16 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly analytics = inject(AnalyticsService, { optional: true });
+  /** Timed practice on the clock the JavaScript workspace keeps too: a countdown, then a summary of the check runs. */
+  readonly timedPractice = new TimedPracticeClock({
+    zone: inject(NgZone),
+    isBrowser: this.isBrowser,
+    store: this.attemptInsights,
+    onExpired: () => this.endTimedPractice('expired'),
+  });
+  readonly timedPracticeMinutes = signal<TimedPracticeStep>(30);
+  readonly timedPracticeSetupOpen = signal(false);
   useMonaco = signal(true);
   monacoLoadFailed = signal(false);
   editorReady = signal(false);
@@ -365,6 +386,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (workspaceIdentityChanged) {
       this.cancelFrameworkCheckRun();
       this.invalidatePreviewBuilds();
+      this.syncTimedPractice();
     }
     if (workspaceIdentityChanged && this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
@@ -388,6 +410,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.initSeq += 1;
     this.frameworkCheckRunSeq += 1;
     this.invalidatePreviewBuilds();
+    this.timedPractice.dispose();
     this.opaqueCheckRunner.destroy();
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
@@ -1064,6 +1087,70 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     else void this.rebuildFrameworkPreview().catch(() => undefined);
   }
 
+  /**
+   * Timed practice beside the task's own checks, as in the JavaScript workspace: not in Pressure Mode, a rehearsal or
+   * a review, which keep clocks of their own, and not while the solution is out.
+   */
+  showTimedPracticeSetup(): boolean {
+    return this.timedPracticeOffered()
+      && !this.timedPractice.active()
+      && !this.solutionPanelOpen
+      && !this.viewingSolution()
+      && !this.showingFrameworkSolutionPreview();
+  }
+
+  onTimedPracticeMinutes(value: string): void {
+    const minutes = TIMED_PRACTICE_STEPS.find((step) => step === Number(value));
+    if (minutes) this.timedPracticeMinutes.set(minutes);
+  }
+
+  startTimedPractice(): void {
+    const q = this.question;
+    if (!q || !this.showTimedPracticeSetup()) return;
+    this.timedPracticeSetupOpen.set(false);
+    this.timedPractice.start(q.id, this.timedPracticeMinutes());
+    this.analytics?.track('interview_mode_started', {
+      question_id: q.id,
+      duration_min: this.timedPracticeMinutes(),
+      tech: this.tech,
+    });
+  }
+
+  endTimedPractice(reason: 'manual' | 'expired' = 'manual'): void {
+    if (!this.timedPractice.active()) return;
+    const summary = this.timedPractice.end();
+    this.analytics?.track('interview_mode_completed', {
+      question_id: this.question?.id || 'unknown',
+      tech: this.tech,
+      reason,
+      runs: summary?.runs ?? 0,
+      best_pass_pct: summary?.bestPassPct ?? 0,
+      elapsed_sec: summary?.elapsedSec ?? 0,
+    });
+  }
+
+  private timedPracticeOffered(): boolean {
+    return TIMED_PRACTICE_ENABLED
+      && !this.timedPracticeHidden
+      && !this.interviewMode
+      && !this.clockLabel
+      && !this.locked
+      && !this.concealedNote;
+  }
+
+  /**
+   * Another task, or this one on other drafts: the clock starts over at the task's own minutes, and picks up a session
+   * this task had running before a reload.
+   */
+  private syncTimedPractice(): void {
+    this.timedPractice.reset();
+    this.timedPracticeSetupOpen.set(false);
+    this.timedPracticeMinutes.set(timedPracticeStep(practiceMinutes(this.question)));
+    if (!this.isBrowser || !this.question || !this.timedPracticeOffered()) return;
+    const minutes = this.timedPractice.restore(this.question.id);
+    if (minutes !== null) this.timedPracticeMinutes.set(minutes);
+  }
+
   async runFrameworkChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
     const q = this.question;
     const activeTech = this.tech;
@@ -1115,6 +1202,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkChecksRunning.set(false);
     this.frameworkCheckResults.set(results);
     this.recordFrameworkAttempt(q, results);
+    this.timedPractice.recordRun(results.filter((result) => result.passed).length, results.length);
     if (options?.emitCompletion !== false) {
       this.frameworkCheckRun.emit({
         questionId: q.id,
@@ -1191,7 +1279,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       signature,
       codeHash,
       codeChanged: prevHash ? prevHash !== codeHash : true,
-      interviewMode: this.interviewMode,
+      interviewMode: this.interviewMode || this.timedPractice.active(),
       errorCategory: category,
       tags: question.tags || [],
     });

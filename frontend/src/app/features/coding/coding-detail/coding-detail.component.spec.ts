@@ -1938,6 +1938,56 @@ describe('CodingDetailComponent', () => {
     expect(component.pressureAccessLabel()).toBe('Free');
   });
 
+  it('counts Pressure Mode down from its minutes, over a reload too, and leaves the rounds open at zero', async () => {
+    const question = {
+      id: 'react-counter',
+      access: 'free',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any;
+    const clockKey = 'fa:pressure:clock:v1:pressure:counter-pressure-v1:react-counter';
+    const open = async () => {
+      const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+      component.tech = 'react';
+      component.kind = 'coding';
+      component.question.set(question);
+      component.pressureRequested.set(true);
+      await (component as any).activatePressureMode(question);
+      return component;
+    };
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2026-11-24T12:00:00Z'));
+    try {
+      const first = await open();
+      expect(first.pressureClockLabel()).toBe('35:00 left');
+      jasmine.clock().tick(10 * 60_000);
+      expect(first.pressureClockLabel()).toBe('25:00 left');
+
+      // A reload starts the page over, not the attempt.
+      const reloaded = await open();
+      expect(reloaded.pressureClockLabel()).toBe('25:00 left');
+
+      jasmine.clock().tick(25 * 60_000);
+      expect(reloaded.pressureTimeUp()).toBeTrue();
+      expect(reloaded.pressureClockLabel()).toBe("Time's up");
+      // Nothing locks at zero: a passing run still clears the round.
+      await reloaded.onFrameworkCheckRun({
+        questionId: 'react-counter',
+        passed: true,
+        results: [{ name: 'Base', passed: true }],
+      });
+      expect(reloaded.pressureClearedRounds()).toBe(1);
+
+      // Exit forgets the attempt, so the next one starts with the full minutes.
+      spyOn((reloaded as any).route.snapshot.queryParamMap, 'get').and.returnValue(null);
+      (reloaded as any).syncRouteContextsFromRoute();
+      expect(reloaded.pressureClockLabel()).toBeNull();
+      expect(sessionStorage.getItem(clockKey)).toBeNull();
+      expect((await open()).pressureClockLabel()).toBe('35:00 left');
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
+
   it('clears an intermediate pressure round without completing the normal question', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

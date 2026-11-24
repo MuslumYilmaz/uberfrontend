@@ -60,7 +60,7 @@
   margin: 0;
 }
 
-/* A running rehearsal's clock, or why the editor is read-only. */
+/* A running clock, a rehearsal's or timed practice's, or why the editor is read-only. */
 .rehearsal-pill {
   display: inline-flex;
   align-items: center;
@@ -88,6 +88,96 @@
 .solution-loaded-label {
   color: var(--uf-accent);
   font-size: 11px;
+}
+
+/* Timed practice: its minutes on a compact toggle, which a 1280px header has room for, and Start in a panel under it. */
+.timed-setup {
+  position: relative;
+  display: inline-flex;
+}
+
+.timed-setup__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uf-space-1);
+  padding: 6px 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timed-setup__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  /* Over the file tabs and the editor under the header, and over the draft restore banner (z-index 20). */
+  z-index: 30;
+  display: grid;
+  gap: var(--uf-space-2);
+  min-width: 220px;
+  padding: var(--uf-space-2);
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-surface);
+  box-shadow: var(--uf-shadow-md);
+}
+
+.timed-setup__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uf-space-2);
+}
+
+.timed-setup__title {
+  color: var(--uf-text-primary);
+  font-size: 12px;
+}
+
+.timed-setup__close {
+  color: var(--uf-text-secondary);
+  font-size: 11px;
+}
+
+.timed-setup__close:hover {
+  color: var(--uf-text-primary);
+}
+
+.timed-setup__select {
+  flex: 1 1 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 6px;
+  background: var(--uf-surface-alt);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+}
+
+/* Start takes the accent, as Run checks does in the header. */
+.timed-setup__start {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: transparent;
+  color: var(--uf-text-primary);
+}
+
+.timed-setup__start:hover {
+  background: var(--uf-accent-soft);
+}
+
+/* A summary, not a verdict: it shows after a failed run too, so it takes the accent rather than the success color. */
+.timed-summary {
+  margin: 0 0 var(--uf-space-2);
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle));
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-accent) 6%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.timed-summary p {
+  margin: 2px 0 0;
+  color: var(--uf-text-secondary);
 }
 
 .solution-preview-banner {

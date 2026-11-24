@@ -39,9 +39,13 @@ describe('CodingFrameworkPanelComponent', () => {
     attemptInsights = jasmine.createSpyObj<AttemptInsightsService>('AttemptInsightsService', [
       'getRunsForQuestion',
       'recordRun',
+      'getInterviewSession',
+      'saveInterviewSession',
+      'clearInterviewSession',
     ]);
     attemptInsights.getRunsForQuestion.and.returnValue([]);
     attemptInsights.recordRun.and.returnValue({ runsForQuestion: [] });
+    attemptInsights.getInterviewSession.and.returnValue(null);
 
     TestBed.configureTestingModule({
       providers: [
@@ -659,6 +663,70 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(record.codeHash).toEqual(jasmine.any(String));
     expect(record.files).toBeUndefined();
     expect(record.code).toBeUndefined();
+  });
+
+  it('runs timed practice on the shared clock: each check run counts, and ending it sums the runs up', async () => {
+    const sessions = new Map<string, any>();
+    attemptInsights.getInterviewSession.and.callFake((id: string) => sessions.get(id) ?? null);
+    attemptInsights.saveInterviewSession.and.callFake((session: any) => { sessions.set(session.questionId, session); });
+    attemptInsights.clearInterviewSession.and.callFake((id: string) => { sessions.delete(id); });
+    const component = createComponent();
+    setCounterCheck(component);
+    previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+      { name: 'Reset clears the count', passed: false, error: '.value expected text "0" but found "1"' },
+    ]);
+
+    expect(component.showTimedPracticeSetup()).toBeTrue();
+    component.onTimedPracticeMinutes('45');
+    component.startTimedPractice();
+    expect(component.timedPractice.active()).toBeTrue();
+    expect(component.timedPractice.remainingLabel()).toBe('45:00 left');
+    expect(component.showTimedPracticeSetup()).toBeFalse();
+
+    await component.runFrameworkChecks();
+    expect(sessions.get('react-counter')).toEqual(jasmine.objectContaining({ durationMin: 45, runs: 1, bestPassPct: 0.5 }));
+    // Runs in timed practice are marked as such in the attempt history, as the JavaScript workspace marks them.
+    expect(attemptInsights.recordRun).toHaveBeenCalledWith(jasmine.objectContaining({ interviewMode: true }));
+
+    component.endTimedPractice();
+    expect(component.timedPractice.active()).toBeFalse();
+    expect(component.timedPractice.summary()).toEqual(jasmine.objectContaining({ runs: 1, bestPassPct: 50 }));
+    expect(sessions.has('react-counter')).toBeFalse();
+  });
+
+  it('offers timed practice only where no other clock runs and the solution is put away, and resumes one after a reload', async () => {
+    const component = createComponent();
+    expect(component.showTimedPracticeSetup()).toBeTrue();
+    const plain = { interviewMode: false, clockLabel: null, locked: false, timedPracticeHidden: false, solutionPanelOpen: false };
+    for (const mode of [
+      { interviewMode: true },
+      { clockLabel: '34:00 left' },
+      { locked: true },
+      { timedPracticeHidden: true },
+      { solutionPanelOpen: true },
+    ]) {
+      Object.assign(component, plain, mode);
+      expect(component.showTimedPracticeSetup()).withContext(JSON.stringify(mode)).toBeFalse();
+    }
+    Object.assign(component, plain);
+    component.viewingSolution.set(true);
+    expect(component.showTimedPracticeSetup()).toBeFalse();
+
+    const startedAt = Date.now() - 5 * 60_000;
+    attemptInsights.getInterviewSession.and.returnValue({
+      questionId: 'react-case', startedAt, durationMin: 15, runs: 2, bestPassPct: 0.5, updatedAt: startedAt,
+    });
+    const reloaded = createComponent();
+    reloaded.storageKeyOverride = 'react-case';
+    reloaded.ngOnChanges({ storageKeyOverride: new SimpleChange(null, 'react-case', true) });
+    await flushMicrotasks();
+
+    expect(reloaded.timedPractice.active()).toBeTrue();
+    expect(reloaded.timedPracticeMinutes()).toBe(15);
+    expect(reloaded.timedPractice.remainingLabel()).toBe('10:00 left');
+    reloaded.ngOnDestroy();
   });
 
   it('can run interview checks without recording normal attempt insights', async () => {

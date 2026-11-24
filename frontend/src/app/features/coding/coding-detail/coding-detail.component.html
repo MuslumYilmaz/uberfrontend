@@ -91,10 +91,16 @@
               </header>
 
               <div class="pressure-mode__meta">
-                <span>{{ scenario.estimatedMinutes }} min</span>
+                <span *ngIf="pressureClockLabel() as clock; else pressureMinutes" class="pressure-mode__clock"
+                  [class.is-over]="pressureTimeUp()" role="timer" data-testid="pressure-clock">{{ clock }}</span>
+                <ng-template #pressureMinutes><span>{{ scenario.estimatedMinutes }} min</span></ng-template>
                 <span>{{ pressureAccessLabel() }}</span>
                 <span>{{ pressureClearedRounds() }}/{{ scenario.rounds.length }} rounds cleared</span>
               </div>
+              <p *ngIf="pressureTimeUp()" class="pressure-mode__time-up" role="status" data-testid="pressure-time-up">
+                Time's up: the {{ scenario.estimatedMinutes }} minutes have passed. The rounds stay open, so you can
+                still finish them.
+              </p>
 
               <ol class="pressure-mode__timeline" aria-label="Pressure Mode rounds">
                 <li *ngFor="let round of scenario.rounds; let index = index"
@@ -852,7 +858,7 @@
         [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
         [checkCoverage]="pressureActive() ? 'full' : checkCoverage()" [requirements]="smokeRequirements()"
-        [solved]="uiSolved()"
+        [solved]="uiSolved()" [solutionPanelOpen]="activePanel()===1" [timedPracticeHidden]="demoMode || reviewOpen()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
         (filesChanged)="onFrameworkFilesChanged()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">

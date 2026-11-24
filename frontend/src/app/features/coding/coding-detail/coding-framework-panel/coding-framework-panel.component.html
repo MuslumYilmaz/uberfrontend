@@ -75,8 +75,9 @@
         <!-- LEFT: Editor -->
         <div class="min-w-0 min-h-0 flex flex-col" data-testid="framework-editor-column"
             [style.flex]="frameworkEditorFlex()">
-            <!-- editor header, tabs vs. -->
-            <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
+            <!-- The editor's header: its actions move under the file menu as a row of their own when they do not fit. -->
+            <div class="editor-header flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-white/10 px-2 py-1"
+                data-testid="framework-editor-header">
                 <div class="flex items-center gap-3 min-w-0">
                     <button type="button" class="icon-btn" title="File tree" (click)="toggleFiles()">
                         <app-fa-glyph class="icon-btn__glyph" icon="pi pi-bars"></app-fa-glyph>
@@ -86,8 +87,42 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="ml-auto flex flex-wrap items-center justify-end gap-2">
                     <span *ngIf="clockLabel || locked" class="rehearsal-pill" data-testid="framework-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
+                    <!-- Timed practice: its minutes until it starts, then the time left and the way to end it. -->
+                    <div *ngIf="showTimedPracticeSetup()" class="timed-setup"
+                        (keydown.escape)="timedPracticeSetupOpen.set(false); timedToggle.focus()">
+                        <button #timedToggle type="button" class="timed-setup__toggle text-xs rounded border border-white/20 hover:bg-white/5"
+                            data-testid="interview-mode-setup-toggle" title="Timed practice"
+                            [attr.aria-controls]="timedPracticeSetupOpen() ? 'framework-timed-setup' : null"
+                            [attr.aria-expanded]="timedPracticeSetupOpen()"
+                            (click)="timedPracticeSetupOpen.set(!timedPracticeSetupOpen())">
+                            <app-fa-glyph icon="pi pi-clock" aria-hidden="true"></app-fa-glyph>
+                            <span><span class="sr-only">Timed practice </span>{{ timedPracticeMinutes() }}m</span>
+                        </button>
+                        <div *ngIf="timedPracticeSetupOpen()" id="framework-timed-setup" class="timed-setup__panel"
+                            data-testid="interview-mode-setup-panel">
+                            <div class="timed-setup__row">
+                                <span class="timed-setup__title">Timed practice</span>
+                                <button type="button" class="timed-setup__close" (click)="timedPracticeSetupOpen.set(false)">Close</button>
+                            </div>
+                            <div class="timed-setup__row">
+                                <select #timedMinutes class="timed-setup__select" aria-label="Timed practice duration"
+                                    [value]="timedPracticeMinutes()" (change)="onTimedPracticeMinutes(timedMinutes.value)">
+                                    <option value="15">15 min</option>
+                                    <option value="30">30 min</option>
+                                    <option value="45">45 min</option>
+                                </select>
+                                <button type="button" class="timed-setup__start text-xs px-3 py-1.5 rounded"
+                                    data-testid="interview-mode-start" (click)="startTimedPractice()">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="timedPractice.active()">
+                        <span class="rehearsal-pill" role="timer" data-testid="framework-timed-practice-clock">{{ timedPractice.remainingLabel() }}</span>
+                        <button type="button" class="text-xs px-3 py-1.5 rounded border border-white/20 hover:bg-white/5"
+                            data-testid="interview-mode-end" (click)="endTimedPractice()">End</button>
+                    </ng-container>
                     <span *ngIf="viewingSolution()" class="solution-loaded-label">Solution loaded</span>
                     <button *ngIf="frameworkChecks().length" type="button"
                         class="run-checks-btn text-xs px-3 py-1.5 rounded disabled:opacity-60"
@@ -234,6 +269,10 @@
                     <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">
                         {{ frameworkCheckPassedCount() }}/{{ frameworkCheckResults().length }} passed
                     </span>
+                </div>
+                <div *ngIf="timedPractice.summary() as summary" class="timed-summary" data-testid="interview-summary">
+                    <strong>Timed practice summary</strong>
+                    <p>Runs: {{ summary.runs }} · Best pass: {{ summary.bestPassPct }}% · Elapsed: {{ summary.elapsedSec }}s</p>
                 </div>
                 <!-- The pass card heads the checks it reports on, inside their scroll area, so it covers none of them. -->
                 <ng-content select="[postPassCard]"></ng-content>

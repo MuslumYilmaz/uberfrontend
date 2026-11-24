@@ -1285,6 +1285,62 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect.poll(async () => (await results.boundingBox())!.height).toBeGreaterThan(before);
   });
 
+  test('Counter runs timed practice on a clock, closes the solution until it ends, and sums up its runs', async ({ page }) => {
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    // Offered at the task's own minutes, in a header that keeps to one row on a laptop.
+    const header = page.getByTestId('framework-editor-header');
+    const toggle = header.getByTestId('interview-mode-setup-toggle');
+    await expect(toggle).toHaveAccessibleName('Timed practice 15m');
+    await toggle.click();
+    await page.getByTestId('interview-mode-start').click();
+    const clock = header.getByTestId('framework-timed-practice-clock');
+    await expect(clock).toHaveText(/^(15:00|14:[0-5]\d) left$/);
+    expect((await header.boundingBox())!.height).toBeLessThan(40);
+    const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+    await expect(solutionTab).toBeDisabled();
+    await expect(solutionTab).toHaveAttribute('title', 'Solution locked until timed practice ends');
+
+    // A reload keeps the session and its clock.
+    await page.reload();
+    await waitForFrameworkPreview(page, '.value');
+    await expect(clock).toHaveText(/^14:[0-5]\d left$/);
+
+    await runChecks(page, 5);
+    await header.getByTestId('interview-mode-end').click();
+    await expect(page.getByTestId('interview-summary')).toContainText('Runs: 1 · Best pass: 20%');
+    await expect(solutionTab).toBeEnabled();
+    await expect(toggle).toBeVisible();
+  });
+
+  test('Pressure Mode counts its minutes down, and at zero says so and keeps the round open', async ({ page }) => {
+    await page.goto('/react/coding/react-counter?mode=pressure');
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible({ timeout: 30_000 });
+    const clock = page.getByTestId('pressure-clock');
+    await expect(clock).toHaveText(/^(35:00|34:[0-5]\d) left$/);
+    // Pressure Mode keeps its own clock, so timed practice is not offered beside it.
+    await expect(page.getByTestId('interview-mode-setup-toggle')).toHaveCount(0);
+
+    // The attempt's start is kept for the tab: an hour back, the reload finds the time over and the round still open.
+    await page.evaluate(() => {
+      const key = Object.keys(sessionStorage).find((name) => name.startsWith('fa:pressure:clock:v1:'))!;
+      sessionStorage.setItem(key, String(Date.now() - 60 * 60_000));
+    });
+    await page.reload();
+    await expect(clock).toHaveText("Time's up", { timeout: 30_000 });
+    await expect(page.getByTestId('pressure-time-up')).toContainText('The rounds stay open');
+    await waitForFrameworkPreview(page, '.value');
+    await expect(page.getByTestId('framework-run-checks')).toBeEnabled();
+
+    // Exit drops the attempt, so the next one starts with the full minutes.
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(clock).toHaveText(/^(35:00|34:[0-5]\d) left$/);
+  });
+
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });

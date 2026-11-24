@@ -146,6 +146,29 @@
   font-weight: 700;
 }
 
+/* The round's countdown: the time left, then "Time's up" in the warning colors. */
+.pressure-mode__meta .pressure-mode__clock {
+  color: var(--uf-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pressure-mode__meta .pressure-mode__clock.is-over {
+  border-color: var(--uf-status-warn-border);
+  color: var(--uf-status-warn-text);
+  background: var(--uf-status-warn-bg);
+}
+
+.pressure-mode__time-up {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--uf-status-warn-border);
+  border-radius: var(--uf-radius-8);
+  color: var(--uf-status-warn-text);
+  background: var(--uf-status-warn-bg);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .pressure-mode__timeline {
   display: grid;
   gap: 8px;
