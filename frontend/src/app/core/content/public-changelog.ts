@@ -16,7 +16,7 @@ export type PublicChangelogEntry = {
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
     id: 'checkout-moves-to-polar',
-    weekOf: '2026-11-23',
+    weekOf: '2026-11-24',
     title: 'Checkout moves to Polar',
     summary: 'Polar is the new merchant of record for Premium purchases: the same plans and prices, checkout on the pricing page, and receipts and invoices in the Polar billing portal.',
     category: 'Improved',

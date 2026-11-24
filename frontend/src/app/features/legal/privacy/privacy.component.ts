@@ -385,6 +385,6 @@ export class PrivacyComponent {
   readonly operatorLocation = 'Istanbul, Türkiye';
   readonly merchantOfRecord = 'Polar (Polar Software, Inc.)';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'November 23, 2026';
+  readonly effectiveDate = 'November 24, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }

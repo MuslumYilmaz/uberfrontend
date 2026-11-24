@@ -478,7 +478,7 @@ test.describe('production/SSR public remediation smoke', () => {
     );
     expect(bodyText).toContain('Your renewal date is shown in your profile and in the Polar billing portal; for the annual plan, Polar, our payment provider, also emails a reminder seven days before the renewal date.');
     expect(bodyText).toContain('This policy does not limit mandatory consumer rights');
-    expect(bodyText).toContain('Effective date: 2026-11-23');
+    expect(bodyText).toContain('Effective date: 2026-11-24');
   });
 
   test('Editorial Policy describes the actual independent maintenance workflow', async ({ page }) => {
