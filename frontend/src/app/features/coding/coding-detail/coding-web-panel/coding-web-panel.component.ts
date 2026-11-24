@@ -226,37 +226,29 @@ const WEB_CHECK_VIEWPORT = { width: 1024, height: 768 };
   .web-smoke-note__list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
   .web-smoke-note__list label { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
 
-  .preview-actions {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
   /* Secondary on purpose: it swaps the reader's own preview for the reference result. */
   .pill-btn {
+    flex-shrink: 0;
     padding: 6px 10px;
     border-radius: var(--uf-radius-pill);
     background: var(--uf-surface);
     border: 1px solid var(--uf-border-subtle);
     color: var(--uf-text-primary);
     font-weight: 600;
+    white-space: nowrap;
     transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   }
   .pill-btn:hover { border-color: var(--uf-accent); }
   .pill-btn:active { transform: translateY(1px); }
 
-  .solution-banner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    border-radius: var(--uf-radius-pill);
-    background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
-    border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
-    color: var(--uf-text-primary);
+  /* While the reference result shows, the hint says so and the preview is framed at its edge, over no content. */
+  .tab-hint.is-target { color: var(--uf-text-primary); font-weight: 600; }
+  .is-target-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--uf-accent);
+    pointer-events: none;
   }
 
   .empty-preview {
@@ -424,7 +416,9 @@ const WEB_CHECK_VIEWPORT = { width: 1024, height: 768 };
 	      <div class="min-w-0 flex-1 flex flex-col">
 	        <div class="panel-tabs">
 	          <button class="tab-btn active" type="button">Preview</button>
-	          <div class="tab-hint">Live preview updates as you type</div>
+	          <div class="tab-hint" [class.is-target]="showingSolutionPreview" role="status">
+	            {{ showingSolutionPreview ? 'Showing the result to build' : 'Live preview updates as you type' }}
+	          </div>
 	          <!-- A task about color schemes shows the preview in either, whatever the visitor's own setting is. -->
 	          <div *ngIf="schemeToggle()" class="scheme-toggle" role="group" aria-label="Preview color scheme"
 	               data-testid="web-preview-scheme">
@@ -433,6 +427,13 @@ const WEB_CHECK_VIEWPORT = { width: 1024, height: 768 };
 	              {{ scheme === 'system' ? 'System' : scheme === 'light' ? 'Light' : 'Dark' }}
 	            </button>
 	          </div>
+	          <!-- The reference result swaps in from the toolbar, so nothing sits on the preview itself. -->
+	          <button *ngIf="!showingSolutionPreview" class="pill-btn" type="button" (click)="openSolutionPreview()">
+	            Preview what you need to build
+	          </button>
+	          <button *ngIf="showingSolutionPreview" class="pill-btn" type="button" (click)="closeSolutionPreview()">
+	            Back to my preview
+	          </button>
 	          <button *ngIf="webChecks().length" type="button" class="run-checks-btn" data-testid="web-run-checks"
 	                  [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run checks (' + keys.run + ')'"
 	                  [disabled]="webChecksRunning()" (click)="runWebChecks()">
@@ -440,25 +441,10 @@ const WEB_CHECK_VIEWPORT = { width: 1024, height: 768 };
 	          </button>
 	        </div>
 
-	        <div #previewSplit class="flex-1 relative min-h-[160px] overflow-hidden">
+	        <div #previewSplit class="flex-1 relative min-h-[160px] overflow-hidden"
+	             [class.is-target-preview]="showingSolutionPreview">
 	          <div *ngIf="!previewUrl()" class="empty-preview" data-testid="web-preview-placeholder">
 	            Building preview…
-	          </div>
-
-	          <!-- WEB PREVIEW TOGGLE -->
-	          <div class="preview-actions">
-	            <button *ngIf="!showingSolutionPreview"
-	                    class="pill-btn"
-	                    type="button"
-	                    (click)="openSolutionPreview()">
-	              Preview what you need to build
-	            </button>
-
-	            <div *ngIf="showingSolutionPreview"
-	                 class="solution-banner">
-	              <span class="font-medium">Showing the result to build</span>
-	              <button class="text-xs underline" type="button" (click)="closeSolutionPreview()">Back to my preview</button>
-	            </div>
 	          </div>
 
 	          <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"

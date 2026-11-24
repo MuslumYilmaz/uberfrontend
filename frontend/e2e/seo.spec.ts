@@ -165,6 +165,10 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   expect(starterCss).toMatch(/box-shadow:\s*var\(--panel-shadow\)/i);
   await page.getByRole('button', { name: 'Preview what you need to build' }).click();
   await expect(page.getByText('Showing the result to build')).toBeVisible();
+  // The toggle sits in the toolbar above the preview, never over the page it shows.
+  const frameBox = await page.getByTestId('web-preview-iframe').boundingBox();
+  const backBox = await page.getByRole('button', { name: 'Back to my preview' }).boundingBox();
+  expect(backBox!.y + backBox!.height).toBeLessThanOrEqual(frameBox!.y);
 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');
