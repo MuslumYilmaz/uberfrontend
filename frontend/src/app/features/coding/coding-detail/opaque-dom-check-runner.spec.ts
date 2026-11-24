@@ -417,7 +417,7 @@ describe('OpaqueDomCheckRunner', () => {
       {
         name: 'Too few items',
         passed: false,
-        error: 'listitem did not reach 2 matches before timeout. Last count: 1',
+        error: 'listitem expected 2 matches but found 1',
         failureKind: 'assertion',
       },
       { name: 'Second item', passed: false, error: 'listitem #2 was not found', failureKind: 'assertion' },
@@ -451,6 +451,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'listitem expected its text to be struck through',
         failureKind: 'assertion',
+        step: 4,
+        steps: 7,
       }]);
   });
 
@@ -481,6 +483,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'button "Two" looks the same as 1 other element of its group',
         failureKind: 'assertion',
+        step: 3,
+        steps: 3,
       }]);
   });
 
@@ -514,6 +518,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'checkbox "Parent" expected checked but was mixed',
         failureKind: 'assertion',
+        step: 4,
+        steps: 4,
       }]);
   });
 
@@ -575,6 +581,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'option #2 expected an element\'s aria-activedescendant to name it',
         failureKind: 'assertion',
+        step: 3,
+        steps: 4,
       }]);
   });
 
@@ -1089,7 +1097,14 @@ describe('OpaqueDomCheckRunner', () => {
 
     expect(results).toEqual([
       { name: 'Saved', passed: true },
-      { name: 'Restored', passed: false, error: 'localStorage "theme" expected "light" but held "dark"', failureKind: 'assertion' },
+      {
+        name: 'Restored',
+        passed: false,
+        error: 'localStorage "theme" expected "light" but held "dark"',
+        failureKind: 'assertion',
+        step: 3,
+        steps: 3,
+      },
     ]);
   });
 
@@ -1234,7 +1249,7 @@ describe('OpaqueDomCheckRunner', () => {
 
     expect(starterResults[0].passed).toBeFalse();
     expect(starterResults[0].failureKind).toBe('assertion');
-    expect(starterResults[0].error).toContain('did not reach text "1"');
+    expect(starterResults[0].error).toBe('.value expected text "1" but found "0"');
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
   });

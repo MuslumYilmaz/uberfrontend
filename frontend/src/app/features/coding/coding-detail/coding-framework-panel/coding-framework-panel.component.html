@@ -250,7 +250,8 @@
                     <span class="sr-only">{{ result.passed ? 'Passed:' : 'Failed:' }}</span>
                     <div class="framework-check-result__body">
                         <div class="framework-check-result__name">{{ result.name }}</div>
-                        <div *ngIf="result.error" class="framework-check-result__error">{{ result.error }}</div>
+                        <div *ngIf="result.error" class="framework-check-result__error"><span *ngIf="result.step"
+                            class="framework-check-result__step">Step {{ result.step }} of {{ result.steps }}: </span>{{ result.error }}</div>
                     </div>
                 </div>
                 <!-- A passed smoke check says the core flow works; the requirements say whether the task is done. -->

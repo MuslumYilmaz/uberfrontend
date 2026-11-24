@@ -86,7 +86,7 @@ describe('failure-explain-rules', () => {
       {
         questionId: 'angular-pagination-table',
         name: 'Starts on Page 1 of 4 with the first 5 users and Previous disabled',
-        errorLine: 'text "Page 1 of 4" did not reach 1 match before timeout. Last count: 0',
+        errorLine: 'text "Page 1 of 4" expected 1 match but found 0',
         ruleId: 'angular-pagination-page-label',
         action: 'Page {{ currentPage() + 1 }} of {{ totalPages() }}',
       },

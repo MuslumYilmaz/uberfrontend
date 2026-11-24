@@ -373,6 +373,25 @@ test('js assist surfaces stuck nudge + explain card, and interview mode suppress
   await expect(solutionTab).toBeEnabled();
 });
 
+test('a failed boolean check names the test line it ran', async ({ page }) => {
+  const questionId = 'js-shallow-clone';
+  await page.goto(`/javascript/coding/${questionId}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel.getByTestId('js-run-tests')).toBeEnabled();
+  // Spreading an array fills its holes: the common first answer the task's hole check catches.
+  await setMonacoModelValue(page, `q-${questionId}-code`, [
+    'export default function shallowClone(value) {',
+    '  return Array.isArray(value) ? [...value] : { ...value };',
+    '}',
+    '',
+  ].join('\n'));
+  await jsPanel.getByTestId('js-run-tests').click();
+
+  const holes = jsPanel.getByTestId('test-result').filter({ hasText: 'Expected true to be false' }).first();
+  await expect(holes).toBeVisible();
+  await expect(holes.locator('.test-error')).toContainText(/Expected true to be false\s+expect\(.+\)\.toBe\(false\);/);
+});
+
 test('on a tablet the run bar and the results stay above the fixed footer', async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 900 });
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);

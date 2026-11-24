@@ -686,14 +686,14 @@ describe('CodingFrameworkPanelComponent', () => {
     spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
       name: 'Counter flow',
       passed: false,
-      error: '.value did not reach text "1" before timeout. Last text: "0"',
+      error: '.value expected text "1" but found "0"',
       failureKind: 'assertion',
     }]);
 
     const results = await component.runFrameworkChecks();
 
     expect(results[0].passed).toBeFalse();
-    expect(results[0].error).toContain('did not reach text "1"');
+    expect(results[0].error).toContain('expected text "1" but found "0"');
     const record = attemptInsights.recordRun.calls.mostRecent().args[0] as any;
     expect(record.lang).toBe('react');
     expect(record.passCount).toBe(0);

@@ -8,6 +8,7 @@ import { createSandboxExpect } from './user-code-sandbox-matchers';
 import { linkModules } from './user-code-sandbox-modules';
 import { runQueue, timedOutMessage, type QueuedResult, type QueuedTest } from './user-code-sandbox-runner';
 import { createTestSuite } from './user-code-sandbox-suite';
+import { withAssertionLine } from './user-code-sandbox-assertion-line';
 
 // ---------- message contracts ----------
 type RunMsg = {
@@ -338,7 +339,9 @@ async function runQueued(perTestMs: number, budgetMs: number): Promise<TestResul
                 return { name: t.name, passed: false, error: message, order: t.idx };
             }
             if (outcome.error !== undefined) {
-                return { name: t.name, passed: false, error: pushError(outcome.error), order: t.idx };
+                const stack = (outcome.error as { stack?: unknown })?.stack;
+                const message = withAssertionLine(pushError(outcome.error), stack, moduleSources);
+                return { name: t.name, passed: false, error: message, order: t.idx };
             }
             return { name: t.name, passed: true, order: t.idx };
         },
@@ -378,9 +381,13 @@ const codeGuard = (label: string, code: string): string | null => {
     return null;
 };
 
+// Each module's source by its URL, so a failed check can name the test line it ran (withAssertionLine).
+const moduleSources = new Map<string, string>();
+
 // Execute string as module (no importScripts of user code)
 const runAsModule = async (code: string) => {
     const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    moduleSources.set(url, code);
     try { await (0, eval)(`import("${url}")`); } finally { URL.revokeObjectURL(url); }
 };
 
@@ -459,6 +466,7 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
             const linkedTests = linkModules(files, stripFrameworkImports(testCode), (code) => {
                 const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
                 moduleUrls.push(url);
+                moduleSources.set(url, code);
                 return url;
             });
             await runAsModule(linkedTests);

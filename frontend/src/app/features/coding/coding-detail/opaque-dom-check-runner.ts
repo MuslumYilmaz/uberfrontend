@@ -314,6 +314,13 @@ export class OpaqueDomCheckRunner {
       if (!normalized.passed && this.isFailureKind(failureKind)) {
         normalized.failureKind = failureKind;
       }
+      const step = result['step'];
+      const steps = result['steps'];
+      if (!normalized.passed && Number.isInteger(step) && Number.isInteger(steps)
+        && (step as number) >= 1 && (step as number) <= (steps as number)) {
+        normalized.step = step as number;
+        normalized.steps = steps as number;
+      }
       return normalized;
     });
   }
@@ -673,6 +680,10 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       };
       if (result?.error != null) safeResult.error = String(result.error).slice(0, maxErrorLength);
       if (result?.failureKind) safeResult.failureKind = result.failureKind;
+      if (Number.isInteger(result?.step) && Number.isInteger(result?.steps)) {
+        safeResult.step = result.step;
+        safeResult.steps = result.steps;
+      }
       return safeResult;
     });
     parentPostMessage({
@@ -1033,7 +1044,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         try { assertText(element, step); return Promise.resolve(); } catch { }
       }
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${describeTarget(step)} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`));
+        return Promise.reject(new Error(`${describeTarget(step)} expected text "${String(step.text ?? '').trim()}" but found "${lastText}"`));
       }
       return delay(25).then(poll);
     };
@@ -1049,7 +1060,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       lastCount = findAll(step).length;
       if (lastCount === expected) return Promise.resolve();
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${describeTarget(step)} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`));
+        return Promise.reject(new Error(`${describeTarget(step)} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${lastCount}`));
       }
       return delay(25).then(poll);
     };
@@ -1482,15 +1493,21 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }).__FA_MARK_PREVIEW_TIMER_BASELINE;
       markBaseline?.();
     }
-    return runSequentially(steps, executeStep).then(
+    let reached = 0;
+    return runSequentially(steps, (step) => {
+      reached += 1;
+      return executeStep(step);
+    }).then(
       () => { send('framework', [{ name, passed: true }]); },
       (error) => {
-        send('framework', [{
-          name,
-          passed: false,
-          error: errorMessage(error, 'Check failed'),
-          failureKind: 'assertion',
-        }]);
+        const failure: TestResult = { name, passed: false, error: errorMessage(error, 'Check failed'), failureKind: 'assertion' };
+        // A check of several steps says which one failed: the order of what the check did to get there. No object
+        // spread here: this function runs in the preview as its source text, without the build's spread helper.
+        if (steps.length > 1) {
+          failure.step = reached;
+          failure.steps = steps.length;
+        }
+        send('framework', [failure]);
       },
     );
   };

@@ -21,6 +21,9 @@ export interface TestResult {
   name: string;
   passed: boolean;
   error?: string;
+  /** A failed check of several steps: the step it failed on, and how many it has. */
+  step?: number;
+  steps?: number;
   failureKind?:
     | 'assertion'
     | 'compilation'
