@@ -168,13 +168,19 @@ export class OnboardingQuickStartComponent implements OnInit {
     return [challenge, timelineAction, roleAction];
   }
 
-  /** A free drill in the chosen framework, never the task the visitor just passed or one solved before. */
+  /**
+   * A free drill in the chosen framework: never the task the visitor just passed or one solved before, and none
+   * easier than the task just passed.
+   */
   private frameworkChallenge(framework: OnboardingFramework): NextAction {
     const done = new Set(this.progress.solvedIds());
-    const justPassed = String(this.route.snapshot.queryParamMap.get('question_id') || '').trim();
+    const query = this.route.snapshot.queryParamMap;
+    const justPassed = String(query.get('question_id') || '').trim();
     if (justPassed) done.add(justPassed);
+    const passedDifficulty = query.get('difficulty');
+    const atLeast = passedDifficulty === 'intermediate' || passedDifficulty === 'hard' ? passedDifficulty : null;
     const name = frameworkLabel(framework);
-    const drill = nextFreeDrill(framework, done);
+    const drill = nextFreeDrill(framework, done, atLeast);
     if (!drill) {
       return {
         id: `framework_list_${framework}`,

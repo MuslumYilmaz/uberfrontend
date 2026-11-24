@@ -86,6 +86,7 @@ export type FaQuestionRowVariant = {
           class="fa-question-row__status"
           [class.is-solved]="solved"
           [class.is-todo]="isTodo()"
+          [class.is-in-progress]="isInProgress()"
           [class.fa-question-row__locked]="isLockedRow()"
           [attr.data-testid]="solved ? solvedTestId() : null"
           [attr.role]="statusLabel() ? 'img' : null"
@@ -195,6 +196,8 @@ export class FaQuestionRowComponent {
   @Input() state: { [k: string]: any } | undefined = undefined;
   @Input() disabled = false;
   @Input() solved = false;
+  /** The viewer has a draft of this item that differs from its starter code and has not solved it yet. */
+  @Input() inProgress = false;
   @Input() lockedLabel = '';
   /** A Premium item shown to a viewer without Premium: title and description stay in the page, under a blur. */
   @Input() concealed = false;
@@ -253,14 +256,20 @@ export class FaQuestionRowComponent {
     return !this.solved && !!this.lockedLabel;
   }
 
-  /** An open item not done yet: an empty ring in the status column, as a to-do mark. */
+  /** An open item with an unfinished draft: a half-filled ring. */
+  isInProgress(): boolean {
+    return this.inProgress && !this.solved && !this.lockedLabel;
+  }
+
+  /** An open item not started yet: an empty ring in the status column, as a to-do mark. */
   isTodo(): boolean {
-    return this.hasLink() && !this.solved && !this.lockedLabel;
+    return this.hasLink() && !this.solved && !this.lockedLabel && !this.inProgress;
   }
 
   statusLabel(): string {
     if (this.solved) return 'Solved';
-    return this.lockedLabel;
+    if (this.lockedLabel) return this.lockedLabel;
+    return this.isInProgress() ? 'In progress' : '';
   }
 
   /** Filled bars for a difficulty chip: 1 easy, 2 intermediate, 3 hard; null for any other chip. */

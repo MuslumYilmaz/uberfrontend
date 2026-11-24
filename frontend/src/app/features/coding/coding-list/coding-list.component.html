@@ -18,17 +18,39 @@
       </p>
     </div>
     <div class="fa-page-action" aria-label="Primary practice action">
-      <button
-        type="button"
-        faButton
-        variant="primary"
-        data-testid="coding-list-primary-action"
-        [disabled]="((filteredCount$ | async) || 0) === 0"
-        (click)="openFirstVisible()"
-      >
-        {{ primaryActionLabel() }}
-      </button>
-      <span class="fa-page-action__hint">{{ primaryActionHint() }}</span>
+      <!-- A draft in this browser comes first; it is read after the first render, so the server's HTML has none. -->
+      <div class="fa-continue" *ngIf="continueCard$ | async as card; else startAction" data-testid="coding-continue-card">
+        <p class="fa-continue__kicker fa-meta-label">Continue where you left off</p>
+        <p class="fa-continue__title">{{ card.title | stripInlineMarkup }}</p>
+        <p class="fa-continue__meta">
+          {{ card.lastRun ? 'Last run: ' + card.lastRun : 'Not run yet' }} · edited {{ card.editedAgo }}
+        </p>
+        <a faButton variant="primary" [routerLink]="card.route" data-testid="coding-continue-link"
+          (click)="trackContinue(card)">
+          Continue
+        </a>
+        <button *ngIf="auth.user()" type="button" faButton variant="ghost" class="fa-link-btn"
+          data-testid="coding-list-primary-action" [disabled]="((filteredCount$ | async) || 0) === 0"
+          (click)="openFirstVisible()">
+          {{ primaryActionLabel() }}
+        </button>
+      </div>
+      <ng-template #startAction>
+        <button
+          type="button"
+          faButton
+          variant="primary"
+          data-testid="coding-list-primary-action"
+          [disabled]="((filteredCount$ | async) || 0) === 0"
+          (click)="openFirstVisible()"
+        >
+          {{ primaryActionLabel() }}
+        </button>
+        <span class="fa-page-action__hint">{{ primaryActionHint() }}</span>
+      </ng-template>
+      <p class="fa-progress-stats fa-meta-text" *ngIf="progressStats() as stats" data-testid="coding-progress-stats">
+        {{ stats }}
+      </p>
     </div>
   </header>
 
@@ -61,6 +83,21 @@
               <i class="pi pi-times" aria-hidden="true"></i>
               <span>Close</span>
             </button>
+          </div>
+        </div>
+
+        <div class="fa-filter-section" *ngIf="progressFilterAvailable()" data-testid="filter-progress">
+          <div class="fa-filter-section__title fa-meta-label" [id]="'coding-progress-' + (drawer ? 'drawer' : 'panel')">
+            Progress
+          </div>
+          <div class="fa-filter-options" role="radiogroup"
+            [attr.aria-labelledby]="'coding-progress-' + (drawer ? 'drawer' : 'panel')">
+            <label *ngFor="let opt of progressOptions()" class="fa-filter-option"
+              [attr.data-testid]="'filter-progress-' + opt.value">
+              <input type="radio" [name]="'coding-progress-' + (drawer ? 'drawer' : 'panel')" [value]="opt.value"
+                [checked]="progressFilterShown() === opt.value" (change)="setProgressFilter(opt.value)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">{{ opt.label }}</span>
+            </label>
           </div>
         </div>
 
@@ -167,6 +204,12 @@
             (click)="toggleFreeOnly()">
             Free only
           </button>
+          <button *ngIf="hideSolvedAvailable()" type="button" faButton variant="ghost" class="fa-hide-solved"
+            [class.is-active]="progressFilterShown() === 'unsolved'"
+            [attr.aria-pressed]="progressFilterShown() === 'unsolved' ? 'true' : 'false'"
+            data-testid="coding-list-hide-solved" (click)="toggleHideSolved()">
+            Hide solved
+          </button>
           <ng-container *ngIf="sort$ | async as currentSort">
             <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
               <button type="button" faButton variant="ghost" class="fa-sort__trigger sort-btn"
@@ -227,6 +270,7 @@
             [description]="questionRowDescription(q)"
             [descriptionTooltip]="descriptionText(q)"
             [solved]="isSolved(q.id)"
+            [inProgress]="isInProgress(q.id)"
             [lockedLabel]="isLocked(q) ? 'Locked' : ''"
             [metaChips]="questionRowMetaChips(q)"
             [variants]="questionRowVariants(q)"

@@ -1,3 +1,4 @@
+import type { Difficulty } from '../models/question.model';
 import {
   OnboardingFramework,
   OnboardingProfile,
@@ -48,39 +49,81 @@ export function roleLabel(role: OnboardingTargetRole | null | undefined): string
   return 'frontend role';
 }
 
-export type FreeDrill = { id: string; label: string; route: any[] };
+export type FreeDrill = { id: string; label: string; route: any[]; difficulty: Difficulty };
 
-/** Free tasks to start a framework with, easiest first. */
+/** Free tasks to start a framework with, easiest first; `difficulty` is the task's difficulty in the catalog. */
 const FREE_DRILLS: Record<OnboardingFramework, readonly FreeDrill[]> = {
   javascript: [
-    { id: 'js-is-object-empty', label: 'Is Object Empty', route: ['/javascript', 'coding', 'js-is-object-empty'] },
-    { id: 'js-debounce', label: 'Debounce', route: ['/javascript', 'coding', 'js-debounce'] },
-    { id: 'js-once', label: 'Once', route: ['/javascript', 'coding', 'js-once'] },
+    {
+      id: 'js-is-object-empty',
+      label: 'Is Object Empty',
+      route: ['/javascript', 'coding', 'js-is-object-empty'],
+      difficulty: 'easy',
+    },
+    {
+      id: 'js-debounce',
+      label: 'Debounce',
+      route: ['/javascript', 'coding', 'js-debounce'],
+      difficulty: 'intermediate',
+    },
+    { id: 'js-once', label: 'Once', route: ['/javascript', 'coding', 'js-once'], difficulty: 'easy' },
   ],
   react: [
-    { id: 'react-counter', label: 'Counter', route: ['/react', 'coding', 'react-counter'] },
-    { id: 'react-todo-list', label: 'Todo List', route: ['/react', 'coding', 'react-todo-list'] },
-    { id: 'react-fetch-list-states', label: 'Fetch List States', route: ['/react', 'coding', 'react-fetch-list-states'] },
+    { id: 'react-counter', label: 'Counter', route: ['/react', 'coding', 'react-counter'], difficulty: 'easy' },
+    { id: 'react-todo-list', label: 'Todo List', route: ['/react', 'coding', 'react-todo-list'], difficulty: 'easy' },
+    {
+      id: 'react-fetch-list-states',
+      label: 'Fetch List States',
+      route: ['/react', 'coding', 'react-fetch-list-states'],
+      difficulty: 'intermediate',
+    },
   ],
   angular: [
-    { id: 'angular-counter-starter', label: 'Counter', route: ['/angular', 'coding', 'angular-counter-starter'] },
-    { id: 'angular-todo-list-starter', label: 'Todo List', route: ['/angular', 'coding', 'angular-todo-list-starter'] },
+    {
+      id: 'angular-counter-starter',
+      label: 'Counter',
+      route: ['/angular', 'coding', 'angular-counter-starter'],
+      difficulty: 'easy',
+    },
+    {
+      id: 'angular-todo-list-starter',
+      label: 'Todo List',
+      route: ['/angular', 'coding', 'angular-todo-list-starter'],
+      difficulty: 'easy',
+    },
     {
       id: 'angular-autocomplete-search-starter',
       label: 'Autocomplete Search',
       route: ['/angular', 'coding', 'angular-autocomplete-search-starter'],
+      difficulty: 'intermediate',
     },
   ],
   vue: [
-    { id: 'vue-counter', label: 'Counter', route: ['/vue', 'coding', 'vue-counter'] },
-    { id: 'vue-todo-list', label: 'Todo List', route: ['/vue', 'coding', 'vue-todo-list'] },
-    { id: 'vue-autocomplete-search', label: 'Autocomplete Search', route: ['/vue', 'coding', 'vue-autocomplete-search'] },
+    { id: 'vue-counter', label: 'Counter', route: ['/vue', 'coding', 'vue-counter'], difficulty: 'easy' },
+    { id: 'vue-todo-list', label: 'Todo List', route: ['/vue', 'coding', 'vue-todo-list'], difficulty: 'easy' },
+    {
+      id: 'vue-autocomplete-search',
+      label: 'Autocomplete Search',
+      route: ['/vue', 'coding', 'vue-autocomplete-search'],
+      difficulty: 'intermediate',
+    },
   ],
 };
 
-/** The first free drill for a framework that the visitor has not just passed or solved before; null once all are done. */
-export function nextFreeDrill(framework: OnboardingFramework, done: ReadonlySet<string>): FreeDrill | null {
-  return FREE_DRILLS[framework].find((drill) => !done.has(drill.id)) ?? null;
+const DIFFICULTY_RANK: Record<Difficulty, number> = { easy: 0, intermediate: 1, hard: 2 };
+
+/**
+ * The first free drill for a framework that the visitor has not just passed or solved before, and no easier than the
+ * task just passed (an Easy Counter after an Intermediate task reads as a step back); null once none is left.
+ */
+export function nextFreeDrill(
+  framework: OnboardingFramework,
+  done: ReadonlySet<string>,
+  atLeast?: Difficulty | null,
+): FreeDrill | null {
+  const floor = atLeast ? DIFFICULTY_RANK[atLeast] ?? 0 : 0;
+  return FREE_DRILLS[framework]
+    .find((drill) => !done.has(drill.id) && DIFFICULTY_RANK[drill.difficulty] >= floor) ?? null;
 }
 
 export function freeChallengeForFramework(framework: OnboardingFramework): ChallengeTarget {

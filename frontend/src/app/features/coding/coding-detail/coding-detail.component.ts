@@ -3402,6 +3402,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         trigger: 'first_pass',
         tech: this.tech,
         view: profile ? 'next' : undefined,
+        question_id: q?.id || undefined,
+        difficulty: q?.difficulty || undefined,
       },
     });
   }
@@ -3514,6 +3516,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         trigger: this.onboardingPromptReason,
         tech: this.tech,
         question_id: q?.id ?? '',
+        difficulty: q?.difficulty || undefined,
       },
     });
   }

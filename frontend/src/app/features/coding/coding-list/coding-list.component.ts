@@ -18,6 +18,19 @@ import { CodingListFilterState, CodingListStateService } from '../../../core/ser
 import { MixedQuestionListItem, QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { CodeStorageService } from '../../../core/services/code-storage.service';
+import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import {
+  LastRun,
+  ProgressFilter,
+  editedAgoLabel,
+  isProgressFilter,
+  lastRunLabel,
+  matchesProgressFilter,
+  pickContinueTarget,
+  practiceStatus,
+} from '../../../core/utils/practice-progress.util';
 import { CODING_HUB_DEBUG_DISCOVERY, CodingHubGeneratedDiscoveryItem } from '../../../generated/coding-hub-discovery';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -81,8 +94,25 @@ type SortKey =
 /** `.fa-sort__menu` min-width and the page gutter it must keep (coding-list.component.scss). */
 const SORT_MENU_MIN_WIDTH_PX = 260;
 const SORT_MENU_EDGE_PX = 16;
-/** The visitor's "Free only" choice, kept in this browser; it is not a filter in the address. */
+/** The visitor's "Free only" choice, kept in this browser as well as in the address (`access=free`). */
 const FREE_ONLY_STORAGE_KEY = 'fa:coding-list:free-only';
+/** The progress view (Not solved, In progress, Solved), kept in this browser: it is about this viewer, not the link. */
+const PROGRESS_FILTER_STORAGE_KEY = 'fa:coding-list:progress';
+const PROGRESS_FILTER_LABELS: Record<Exclude<ProgressFilter, 'all'>, string> = {
+  unsolved: 'Not solved',
+  'in-progress': 'In progress',
+  solved: 'Solved',
+};
+
+/** The hero's "Continue" card: the newest draft that is not solved yet. */
+type ContinueCard = {
+  questionId: string;
+  tech?: Tech;
+  title: string;
+  route: any[];
+  editedAgo: string;
+  lastRun: string | null;
+};
 
 type SupportedPrepTech = Extract<Tech, 'javascript' | 'react' | 'angular' | 'vue'>;
 
@@ -306,6 +336,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly questionHubViewReady = signal(!this.isBrowser);
+  private readonly codeStore = inject(CodeStorageService);
+  private readonly attemptInsights = inject(AttemptInsightsService);
+  private readonly analytics = inject(AnalyticsService);
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   mobileFiltersOpen = false;
@@ -848,9 +881,46 @@ export class CodingListComponent implements OnInit, OnDestroy {
   /** "Free only": a guest or a free account can hide the tasks they would meet a lock on (kept per browser). */
   readonly freeOnly$ = new BehaviorSubject<boolean>(this.readFreeOnlyPreference());
 
-  // Filtered again when the account arrives: a member who once chose "Free only" has no locks, so nothing is hidden.
-  filtered$ = combineLatest([this.baseFiltered$, this.freeOnly$, toObservable(this.auth.user)]).pipe(
-    map(([list, freeOnly, user]) => (list && freeOnly ? list.filter((q) => !isQuestionLockedForTier(q, user)) : list)),
+  /** This browser's drafts that differ from their starters, by task id: when each was last edited. */
+  readonly editedDrafts = signal<ReadonlyMap<string, number>>(new Map());
+  private readonly lastRuns = signal<ReadonlyMap<string, LastRun>>(new Map());
+  private readonly editedDrafts$ = toObservable(this.editedDrafts);
+  private readonly viewer$ = toObservable(this.auth.user);
+  readonly progressFilter$ = new BehaviorSubject<ProgressFilter>(this.readProgressFilterPreference());
+
+  // Filtered again when the account, its solved list or this browser's drafts change. A member who once chose
+  // "Free only" has no locks, so nothing is hidden; a visitor has no solved list, so only "In progress" applies.
+  filtered$ = combineLatest([
+    this.baseFiltered$,
+    this.freeOnly$,
+    this.viewer$,
+    this.progressFilter$,
+    this.solvedIds$,
+    this.editedDrafts$,
+  ]).pipe(
+    map(([list, freeOnly, user, progress, solvedIds, drafts]) => {
+      if (!list) return list;
+      const open = freeOnly ? list.filter((q) => !isQuestionLockedForTier(q, user)) : list;
+      const view = this.effectiveProgressFilter(progress);
+      if (view === 'all') return open;
+      const solved = new Set(solvedIds);
+      return open.filter((q) => matchesProgressFilter(practiceStatus(q.id, solved, drafts), view));
+    }),
+  );
+
+  /** /coding's newest unsolved draft, offered in the hero as "Continue"; none until this browser's drafts are read. */
+  readonly continueCard$: Observable<ContinueCard | null> = this.editedDrafts$.pipe(
+    switchMap((drafts) => {
+      if (drafts.size === 0 || this.source !== 'global-coding') return of(null);
+      return combineLatest([this.rawQuestions$, this.solvedIds$, this.viewer$]).pipe(
+        map(([rows, solvedIds, user]) => {
+          const target = pickContinueTarget(rows ?? [], new Set(solvedIds), drafts,
+            (row) => !isQuestionLockedForTier(row, user));
+          return target ? this.continueCard(target.row, target.editedAt) : null;
+        }),
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
@@ -1109,12 +1179,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     for (const tier of this.impTiers$.value) filters.push({ id: `imp:${tier}`, label: `${this.capitalize(tier)} priority` });
     for (const tag of this.selectedTags$.value) filters.push({ id: `tag:${tag}`, label: `#${tag}` });
     if (this.freeOnly$.value && this.freeOnlyAvailable()) filters.push({ id: 'free', label: 'Free only' });
+    const progress = this.progressFilterShown();
+    if (progress !== 'all') filters.push({ id: 'progress', label: PROGRESS_FILTER_LABELS[progress] });
     return filters;
   }
 
   removeActiveFilter(id: string): void {
     if (id === 'search') return this.onSearchTermChange('');
     if (id === 'free') return this.toggleFreeOnly();
+    if (id === 'progress') return this.setProgressFilter('all', 'chip');
     const separator = id.indexOf(':');
     const type = id.slice(0, separator);
     const value = id.slice(separator + 1);
@@ -1154,7 +1227,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return this.diffs$.value.length > 0
       || this.impTiers$.value.length > 0
       || this.selectedTags$.value.length > 0
-      || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value);
+      || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value)
+      || this.progressFilterShown() !== 'all';
   }
 
   // --- UI handlers for sorting ---
@@ -1235,6 +1309,107 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Signed in, every progress view applies; a visitor has no solved list, so only "In progress", with a draft. */
+  private effectiveProgressFilter(filter: ProgressFilter): ProgressFilter {
+    if (this.auth.user()) return filter;
+    return filter === 'in-progress' && this.editedDrafts().size > 0 ? filter : 'all';
+  }
+
+  /** The progress views exist once there is progress to show: an account, or a draft in this browser. */
+  progressFilterAvailable(): boolean {
+    return !!this.auth.user() || this.editedDrafts().size > 0;
+  }
+
+  progressOptions(): Array<{ value: ProgressFilter; label: string }> {
+    const inProgress = { value: 'in-progress' as const, label: PROGRESS_FILTER_LABELS['in-progress'] };
+    if (!this.auth.user()) return [{ value: 'all', label: 'All' }, inProgress];
+    return [
+      { value: 'all', label: 'All' },
+      { value: 'unsolved', label: PROGRESS_FILTER_LABELS.unsolved },
+      inProgress,
+      { value: 'solved', label: PROGRESS_FILTER_LABELS.solved },
+    ];
+  }
+
+  /** The view the Progress options show as chosen: the one that applies, so a visitor's stored "Solved" reads All. */
+  progressFilterShown(): ProgressFilter {
+    return this.effectiveProgressFilter(this.progressFilter$.value);
+  }
+
+  /** "Hide solved" is "Not solved" in one click, for an account that has solved something. */
+  hideSolvedAvailable(): boolean {
+    return !!this.auth.user() && this.solvedIds().length > 0;
+  }
+
+  toggleHideSolved(): void {
+    this.setProgressFilter(this.progressFilter$.value === 'unsolved' ? 'all' : 'unsolved', 'toolbar');
+  }
+
+  setProgressFilter(filter: ProgressFilter, control: 'panel' | 'toolbar' | 'chip' | 'reset' = 'panel'): void {
+    if (this.progressFilter$.value === filter) return;
+    this.progressFilter$.next(filter);
+    if (control !== 'reset') this.analytics.track('coding_progress_filter_changed', { filter, control });
+    if (!this.isBrowser) return;
+    try {
+      localStorage.setItem(PROGRESS_FILTER_STORAGE_KEY, filter);
+    } catch {
+      // Storage can be off (private mode); the view still applies for this visit.
+    }
+  }
+
+  private readProgressFilterPreference(): ProgressFilter {
+    if (!this.isBrowser) return 'all';
+    try {
+      const stored = localStorage.getItem(PROGRESS_FILTER_STORAGE_KEY);
+      return isProgressFilter(stored) ? stored : 'all';
+    } catch {
+      return 'all';
+    }
+  }
+
+  isInProgress(id: string): boolean {
+    return this.editedDrafts().has(id) && !this.solvedSet().has(id);
+  }
+
+  /** "12 solved · 3-day streak", for an account that has solved something. */
+  progressStats(): string | null {
+    const user = this.auth.user();
+    const solved = this.solvedIds().length;
+    if (!user || solved === 0) return null;
+    const streak = user.stats?.streak?.current ?? 0;
+    return streak > 0 ? `${solved} solved · ${streak}-day streak` : `${solved} solved`;
+  }
+
+  trackContinue(card: ContinueCard): void {
+    this.analytics.track('coding_continue_clicked', {
+      question_id: card.questionId,
+      tech: card.tech ?? null,
+      has_run: !!card.lastRun,
+    });
+  }
+
+  /** Drafts live in this browser's IndexedDB: read after the first render, so the server's HTML is what hydrates. */
+  private async loadPracticeProgress(): Promise<void> {
+    try {
+      const drafts = await this.codeStore.listEditedDraftsAsync();
+      this.lastRuns.set(this.attemptInsights.latestRunsByQuestion());
+      this.editedDrafts.set(new Map(drafts.map((draft) => [draft.questionId, draft.editedAt])));
+    } catch {
+      // Unreadable storage leaves the list as a first visit sees it.
+    }
+  }
+
+  private continueCard(row: Row, editedAt: number): ContinueCard {
+    return {
+      questionId: row.id,
+      tech: row.tech,
+      title: row.title,
+      route: this.linkTo(row),
+      editedAgo: editedAgoLabel(editedAt, Date.now()),
+      lastRun: lastRunLabel(this.lastRuns().get(row.id)),
+    };
+  }
+
   trackByQuestionId = (_: number, q: Row): string => q.id;
   trackByFrameworkOption = (_: number, option: FrameworkVariant): string =>
     `${option.kind}:${option.tech}:${option.id}`;
@@ -1271,7 +1446,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     private seo: SeoService
   ) {
-    afterNextRender(() => this.questionHubViewReady.set(true));
+    afterNextRender(() => {
+      this.questionHubViewReady.set(true);
+      void this.loadPracticeProgress();
+    });
     this.debug('ctor', {
       instance: this.instanceId,
       source: this.source,
@@ -2265,6 +2443,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedKind$.next('coding');
     this.selectedCategory$.next(null);
     this.setFreeOnly(false);
+    this.setProgressFilter('all', 'reset');
     this.closeSort();
 
     // URL state

@@ -58,6 +58,23 @@ describe('AttemptInsightsService', () => {
     service = new AttemptInsightsService();
   });
 
+  it('gives each task its newest run, whatever order the runs were stored in', () => {
+    const now = Date.now();
+    writeState(baseState({
+      runs: [
+        makeRun({ questionId: 'q1', ts: now - 3_000, passCount: 3, totalCount: 4 }),
+        makeRun({ questionId: 'q1', ts: now - 9_000, passCount: 1, totalCount: 4 }),
+        makeRun({ questionId: 'q2', ts: now - 5_000, passCount: 0, totalCount: 2 }),
+      ],
+    }));
+
+    const latest = service.latestRunsByQuestion();
+
+    expect(latest.get('q1')).toEqual({ passCount: 3, totalCount: 4, ts: now - 3_000 });
+    expect(latest.get('q2')).toEqual({ passCount: 0, totalCount: 2, ts: now - 5_000 });
+    expect(latest.has('q3')).toBeFalse();
+  });
+
   it('records runs and emits run-to-pass duration', () => {
     const fail = service.recordRun({
       questionId: 'q1',

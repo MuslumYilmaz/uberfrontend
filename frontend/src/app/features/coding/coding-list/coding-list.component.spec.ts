@@ -4,7 +4,10 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, UrlTree, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -23,6 +26,9 @@ describe('CodingListComponent', () => {
     companySlug?: string;
     user?: Record<string, unknown> | null;
     savedState?: Record<string, unknown>;
+    /** Drafts in this browser that differ from their starters, and each task's last run. */
+    drafts?: Array<{ questionId: string; editedAt: number }>;
+    runs?: Array<[string, { passCount: number; totalCount: number; ts: number }]>;
     /** Runs after the module is set up and before the component starts (to spy on the router, for example). */
     beforeCreate?: () => void;
   }) {
@@ -99,6 +105,18 @@ describe('CodingListComponent', () => {
             updateTags: jasmine.createSpy('updateTags'),
             buildCanonicalUrl: jasmine.createSpy('buildCanonicalUrl').and.callFake((value: string) => value),
           },
+        },
+        {
+          provide: CodeStorageService,
+          useValue: { listEditedDraftsAsync: () => Promise.resolve(options?.drafts ?? []) },
+        },
+        {
+          provide: AttemptInsightsService,
+          useValue: { latestRunsByQuestion: () => new Map(options?.runs ?? []) },
+        },
+        {
+          provide: AnalyticsService,
+          useValue: { track: jasmine.createSpy('track').and.returnValue(true) },
         },
         {
           provide: CodingListStateService,
@@ -493,6 +511,135 @@ describe('CodingListComponent', () => {
     fixture.detectChanges();
     expect(host.querySelector('[data-testid="coding-active-filters"]')).toBeNull();
     expect(fixture.componentInstance.freeOnly$.value).toBeFalse();
+  });
+
+  /** Reads the stubbed drafts as the browser does after the first render (the specs render as the server). */
+  async function loadDrafts(fixture: { componentInstance: CodingListComponent; detectChanges(): void; whenStable(): Promise<unknown> }) {
+    await (fixture.componentInstance as any).loadPracticeProgress();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  it('offers the newest unsolved draft the viewer can open as Continue, with its last run, and marks drafted rows', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-solved'],
+      items: [
+        question({ id: 'js-solved', title: 'Solved task' }),
+        question({ id: 'js-older-draft', title: 'Older draft' }),
+        question({ id: 'js-newer-draft', title: 'Newer draft' }),
+        question({ id: 'js-locked-draft', title: 'Locked draft', access: 'premium' }),
+      ],
+      drafts: [
+        { questionId: 'js-locked-draft', editedAt: 900 },
+        { questionId: 'js-solved', editedAt: 500 },
+        { questionId: 'js-newer-draft', editedAt: 300 },
+        { questionId: 'js-older-draft', editedAt: 100 },
+      ],
+      runs: [['js-newer-draft', { passCount: 2, totalCount: 4, ts: 400 }]],
+    });
+    await loadDrafts(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+
+    const card = host.querySelector('[data-testid="coding-continue-card"]') as HTMLElement;
+    expect(card.querySelector('.fa-continue__title')?.textContent?.trim()).toBe('Newer draft');
+    expect(card.textContent).toContain('Last run: 2 of 4 passed');
+    const link = card.querySelector('[data-testid="coding-continue-link"]') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('/javascript/coding/js-newer-draft');
+    const status = (id: string) => host.querySelector(`[data-testid="question-card-${id}"] .fa-question-row__status`)!;
+    expect(status('js-newer-draft').classList).toContain('is-in-progress');
+    expect(status('js-solved').classList).not.toContain('is-in-progress');
+
+    spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    link.click();
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_continue_clicked', {
+      question_id: 'js-newer-draft',
+      tech: 'javascript',
+      has_run: true,
+    });
+  });
+
+  it('narrows the list by progress, hides solved tasks in one click, and clears both ways', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-a'],
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' }), question({ id: 'js-c', title: 'C' })],
+      drafts: [{ questionId: 'js-b', editedAt: 100 }],
+    });
+    await loadDrafts(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+    const rows = () => Array.from(host.querySelectorAll('[data-testid^="question-card-js-"]')).map((row) => row.getAttribute('data-testid'));
+    const component = fixture.componentInstance;
+
+    const hideSolved = host.querySelector<HTMLButtonElement>('[data-testid="coding-list-hide-solved"]')!;
+    hideSolved.click();
+    fixture.detectChanges();
+    expect(hideSolved.getAttribute('aria-pressed')).toBe('true');
+    expect(rows()).toEqual(['question-card-js-b', 'question-card-js-c']);
+    expect(host.querySelector('[data-testid="coding-active-filter-progress"]')?.textContent).toContain('Not solved');
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_progress_filter_changed', {
+      filter: 'unsolved',
+      control: 'toolbar',
+    });
+
+    component.setProgressFilter('in-progress');
+    fixture.detectChanges();
+    expect(rows()).toEqual(['question-card-js-b']);
+    expect(hideSolved.getAttribute('aria-pressed')).toBe('false');
+
+    component.setProgressFilter('solved');
+    fixture.detectChanges();
+    expect(rows()).toEqual(['question-card-js-a']);
+
+    (host.querySelector('[data-testid="coding-active-filter-progress"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(rows().length).toBe(3);
+
+    component.setProgressFilter('unsolved');
+    component.resetAllFilters();
+    fixture.detectChanges();
+    expect(component.progressFilter$.value).toBe('all');
+    expect(rows().length).toBe(3);
+  });
+
+  it('gives a visitor the In progress view only, once a draft exists, and ignores a view kept from an account', async () => {
+    const drafts: Array<{ questionId: string; editedAt: number }> = [];
+    const fixture = await createComponent({
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' })],
+      drafts,
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const component = fixture.componentInstance;
+    const rows = () => host.querySelectorAll('[data-testid^="question-card-js-"]').length;
+    expect(host.querySelector('[data-testid="filter-progress"]')).toBeNull();
+
+    component.progressFilter$.next('solved');
+    fixture.detectChanges();
+    expect(rows()).toBe(2);
+    expect(host.querySelector('[data-testid="coding-active-filter-progress"]')).toBeNull();
+
+    drafts.push({ questionId: 'js-b', editedAt: 100 });
+    await loadDrafts(fixture);
+    const options = Array.from(host.querySelectorAll('[data-testid^="filter-progress-"]')).map((el) => el.textContent?.trim());
+    expect(options).toEqual(['All', 'In progress']);
+    expect(host.querySelector('[data-testid="coding-list-hide-solved"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-progress-stats"]')).toBeNull();
+
+    (host.querySelector('[data-testid="filter-progress-in-progress"] input') as HTMLInputElement).click();
+    fixture.detectChanges();
+    expect(rows()).toBe(1);
+  });
+
+  it('shows a signed-in user how many tasks they solved and their streak', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free', stats: { streak: { current: 3 } } },
+      solved: ['js-a', 'js-b'],
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' })],
+    });
+
+    const stats = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="coding-progress-stats"]');
+    expect(stats?.textContent?.trim()).toBe('2 solved · 3-day streak');
   });
 
   it('turns Free only on from a shared link', async () => {

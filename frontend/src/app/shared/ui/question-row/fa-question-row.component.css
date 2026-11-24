@@ -65,6 +65,13 @@
   color: var(--fa-accent);
 }
 
+/* Started, not solved: the to-do ring in the accent, half filled. */
+.fa-question-row__status.is-in-progress {
+  padding: 3px;
+  border: 1.5px solid var(--fa-accent);
+  background: linear-gradient(90deg, var(--fa-accent) 50%, transparent 50%) content-box;
+}
+
 .fa-question-row__status.fa-question-row__locked {
   background: color-mix(in srgb, var(--fa-surface-alt) 82%, transparent);
 }
