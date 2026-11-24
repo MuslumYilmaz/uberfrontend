@@ -4345,7 +4345,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
    * yield nothing because structuredSolution() is already empty for them.
    */
   solutionIdea = computed<string>(() => {
-    if (this.demoMode || this.pressureRequested()) return '';
+    // The prerendered page has no `mode`, so the first browser render keeps the idea the server drew and hydrates it;
+    // a pressure round removes it once the browser view is ready. Dropping it during hydration left the server's open
+    // <details> orphaned beside the pressure panel.
+    if (this.demoMode || (this.pressureRequested() && this.browserViewReady())) return '';
     const overview = String(this.structuredSolution()?.overview ?? '').trim();
     if (!overview) return '';
     return overview.split(/\n\s*\n/)[0].trim();

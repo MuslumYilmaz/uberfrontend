@@ -824,6 +824,9 @@ describe('CodingDetailComponent', () => {
 
     component.pressureRequested.set(true);
     expect(component.solutionIdea()).toBe('');
+    // Until the browser view is ready the idea stays, so hydration claims the server's copy instead of orphaning it.
+    component.browserViewReady.set(false);
+    expect(component.solutionIdea()).not.toBe('');
 
     const locked = await render({ ...question, access: 'premium' });
     expect(locked.host.querySelector('[data-testid="coding-solution-idea"]')).toBeNull();

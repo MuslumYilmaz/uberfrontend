@@ -1318,6 +1318,8 @@ test.describe('Framework checks against the production SSR build', () => {
   test('Pressure Mode counts its minutes down, and at zero says so and keeps the round open', async ({ page }) => {
     await page.goto('/react/coding/react-counter?mode=pressure');
     await expect(page.getByTestId('pressure-mode-panel')).toBeVisible({ timeout: 30_000 });
+    // The prerendered page draws the solution idea open; a pressure round must not keep it.
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
     const clock = page.getByTestId('pressure-clock');
     await expect(clock).toHaveText(/^(35:00|34:[0-5]\d) left$/);
     // Pressure Mode keeps its own clock, so timed practice is not offered beside it.
@@ -1513,6 +1515,7 @@ test.describe('Framework checks against the production SSR build', () => {
       /\/react\/coding\/react-counter$/,
     );
     await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
     await expect(page.getByTestId('coding-solution-tab').first()).toBeDisabled();
     await waitForFrameworkPreview(page, '.value');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
@@ -1549,6 +1552,8 @@ test.describe('Framework checks against the production SSR build', () => {
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      // The prerendered page draws the solution idea open; a pressure round must not keep it.
+      await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
       await waitForFrameworkPreview(page, '.value');
 
       await loadCanonicalBundle(page, COUNTER_PRESSURE_SOLUTIONS[framework]);
