@@ -291,6 +291,42 @@ test('reports legacy first completion credits without matching activity events f
   ]);
 });
 
+test('apply marks stale invalid polar pending entitlements ignored with a provider-specific reason', async () => {
+  const user = baseUser({
+    email: 'polar-buyer@example.com',
+    accessTier: 'free',
+    entitlements: {
+      pro: { status: 'none', validUntil: null },
+      projects: { status: 'none', validUntil: null },
+    },
+  });
+  await db.collection('users').insertOne(user);
+  await db.collection('pendingentitlements').insertOne({
+    provider: 'polar',
+    scope: 'pro',
+    eventId: 'evt_polar_bad_binding',
+    eventType: 'subscription.updated',
+    email: 'polar-buyer@example.com',
+    userId: 'fa_test_user_1',
+    entitlement: { status: 'active', validUntil: new Date('2099-01-01T00:00:00.000Z') },
+    appliedAt: null,
+    receivedAt: new Date('2026-03-01T00:00:00.000Z'),
+    createdAt: new Date('2026-03-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-03-01T00:00:00.000Z'),
+  });
+
+  const plan = await buildRepairPlan(db, { now: new Date('2026-06-22T00:00:00.000Z'), pendingMinAgeHours: 24 });
+  expect(plan.pending.ignored).toEqual([
+    expect.objectContaining({ eventId: 'evt_polar_bad_binding', reason: 'polar_user_binding_missing_user' }),
+  ]);
+
+  await applyRepairPlan(db, plan, { now: new Date('2026-06-22T00:01:00.000Z') });
+  const pending = await db.collection('pendingentitlements').findOne({ eventId: 'evt_polar_bad_binding' });
+  expect(pending.ignoredReason).toBe('polar_user_binding_missing_user');
+  const updatedUser = await db.collection('users').findOne({ _id: user._id });
+  expect(updatedUser.entitlements.pro.status).toBe('none');
+});
+
 test('apply marks stale invalid lemonsqueezy pending entitlements ignored without granting access', async () => {
   const user = baseUser({
     email: 'buyer@example.com',

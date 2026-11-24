@@ -363,7 +363,7 @@ type ProfileShelfBadge = DashboardAchievement & {
           <div class="account-card" *ngIf="showManageSubscription()">
             <h4>Manage subscription</h4>
             <p class="desc">
-              Manage your subscription and payment methods via {{ manageProviderLabel }}.
+              Manage your subscription and payment methods via {{ manageProviderLabel() }}.
             </p>
             <p class="desc" *ngIf="manageError()">{{ manageError() }}</p>
             <button
@@ -372,7 +372,7 @@ type ProfileShelfBadge = DashboardAchievement & {
               [disabled]="manageLoading()"
               (click)="openManageSubscription()"
             >
-              {{ manageLoading() ? 'Loading…' : 'Manage on ' + manageProviderLabel }}
+              {{ manageLoading() ? 'Loading…' : 'Manage on ' + manageProviderLabel() }}
             </button>
           </div>
         </section>
@@ -501,7 +501,13 @@ export class ProfileComponent implements OnInit {
   paymentsProvider = resolvePaymentsProvider(environment);
   manageLoading = signal(false);
   manageError = signal<string | null>(null);
-  manageProviderLabel = this.providerLabel(this.paymentsProvider);
+  /** The portal belongs to the provider holding this account's subscription, not to the one configured for new checkouts. */
+  manageProviderLabel(): string {
+    const providers = this.user()?.billing?.providers;
+    if (providers?.polar?.subscriptionId || providers?.polar?.customerId) return this.providerLabel('polar');
+    if (providers?.lemonsqueezy?.subscriptionId || providers?.lemonsqueezy?.customerId) return this.providerLabel('lemonsqueezy');
+    return this.providerLabel(this.paymentsProvider);
+  }
   activityDetails = signal<DashboardGamificationResponse | null>(null);
   activityDetailsLoading = signal(false);
   activityDetailsError = signal<string | null>(null);
@@ -616,8 +622,9 @@ export class ProfileComponent implements OnInit {
   }
 
   proStartDate(): Date | null {
-    const lsStartedAt = (this.billing() as any)?.providers?.lemonsqueezy?.startedAt;
-    if (lsStartedAt) return new Date(lsStartedAt);
+    const providers = (this.billing() as any)?.providers || {};
+    const startedAt = providers?.polar?.startedAt || providers?.lemonsqueezy?.startedAt;
+    if (startedAt) return new Date(startedAt);
     return null;
   }
 
@@ -729,10 +736,12 @@ export class ProfileComponent implements OnInit {
   }
 
   showManageSubscription(): boolean {
-    if (this.paymentsProvider !== 'lemonsqueezy') return false;
     if (this.isLifetimeEntitlement()) return false;
-    const lsMeta = this.user()?.billing?.providers?.lemonsqueezy;
-    return !!(lsMeta?.subscriptionId || lsMeta?.customerId);
+    // The portal belongs to the provider that holds this account's subscription,
+    // whichever provider is configured for new checkouts.
+    const providers = this.user()?.billing?.providers;
+    const candidates = [providers?.polar, providers?.lemonsqueezy];
+    return candidates.some((meta) => !!(meta?.subscriptionId || meta?.customerId));
   }
 
   openManageSubscription(): void {
@@ -803,6 +812,8 @@ export class ProfileComponent implements OnInit {
         return 'Gumroad';
       case 'lemonsqueezy':
         return 'LemonSqueezy';
+      case 'polar':
+        return 'Polar';
       case 'stripe':
         return 'Stripe';
       default:

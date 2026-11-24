@@ -476,9 +476,9 @@ test.describe('production/SSR public remediation smoke', () => {
     expect(bodyText).toContain(
       'Your first Premium purchase on any plan (monthly, quarterly, annual, or lifetime) can be refunded in full if you ask within 14 days of the order. You do not need to give a reason, and how much of the library you used does not matter.',
     );
-    expect(bodyText).toContain('Lemon Squeezy, our payment provider, emails a renewal reminder seven days before the renewal date.');
+    expect(bodyText).toContain('Your renewal date is shown in your profile and in the Polar billing portal; for the annual plan, Polar, our payment provider, also emails a reminder seven days before the renewal date.');
     expect(bodyText).toContain('This policy does not limit mandatory consumer rights');
-    expect(bodyText).toContain('Effective date: 2026-10-15');
+    expect(bodyText).toContain('Effective date: 2026-11-24');
   });
 
   test('Editorial Policy describes the actual independent maintenance workflow', async ({ page }) => {

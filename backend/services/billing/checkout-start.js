@@ -10,8 +10,16 @@ const {
   resolveLemonSqueezyStoreId,
   resolveLemonSqueezyVariantId,
 } = require('./providers/lemonsqueezy-checkouts');
+const {
+  canCreatePolarCheckout,
+  createPolarCheckout,
+  isPolarCheckoutUrl,
+} = require('./providers/polar-checkouts');
+const { resolvePolarAccessToken, resolvePolarProductId } = require('./providers/polar-config');
 
-const PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe']);
+const PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe', 'polar']);
+// Providers whose checkout can carry a per-session price (regional and student prices).
+const CUSTOM_PRICE_PROVIDERS = new Set(['lemonsqueezy', 'polar']);
 const PLAN_IDS = ['monthly', 'quarterly', 'annual', 'lifetime'];
 const PLANS = new Set(PLAN_IDS);
 const PROVIDER_UNAVAILABLE = new Set(['stripe']);
@@ -267,7 +275,27 @@ function resolveCheckoutUrl(provider, planId, mode) {
     return normalizeUrlCandidate(process.env[`GUMROAD_${planId.toUpperCase()}_URL`]);
   }
 
+  if (provider === 'polar') {
+    // Polar sessions are created per attempt through the API; there is no hosted URL.
+    return '';
+  }
+
   return normalizeUrlCandidate(process.env[`STRIPE_${planId.toUpperCase()}_URL`]);
+}
+
+// Whether a plan can be sold right now: a valid hosted URL for link providers,
+// the organization token plus the product id for Polar.
+function isPlanAvailable(provider, planId, mode) {
+  if (provider === 'polar') return canCreatePolarCheckout({ planId, mode });
+  return isValidHostedCheckoutUrl(provider, resolveCheckoutUrl(provider, planId, mode));
+}
+
+// Whether the price the page shows can be charged exactly: Polar prices every
+// session on the API, Lemon Squeezy needs the custom checkout configuration.
+function canChargeCustomPrice(provider, planId, mode) {
+  if (provider === 'polar') return canCreatePolarCheckout({ planId, mode });
+  if (provider === 'lemonsqueezy') return canCreateCustomCheckout({ planId, mode });
+  return false;
 }
 
 function resolveCheckoutConfig(rawProvider, { countryCode } = {}) {
@@ -278,7 +306,7 @@ function resolveCheckoutConfig(rawProvider, { countryCode } = {}) {
     : null;
   const unavailable = !provider;
   const plans = PLAN_IDS.reduce((acc, planId) => {
-    const available = !unavailable && isValidHostedCheckoutUrl(provider, resolveCheckoutUrl(provider, planId, mode));
+    const available = !unavailable && isPlanAvailable(provider, planId, mode);
     acc[planId] = available;
     return acc;
   }, {});
@@ -288,8 +316,8 @@ function resolveCheckoutConfig(rawProvider, { countryCode } = {}) {
   // Regional prices are published only when every available plan can be
   // charged at that price through a custom checkout.
   const customCheckoutAvailable = enabled
-    && provider === 'lemonsqueezy'
-    && PLAN_IDS.every((planId) => !plans[planId] || canCreateCustomCheckout({ planId, mode }));
+    && CUSTOM_PRICE_PROVIDERS.has(provider)
+    && PLAN_IDS.every((planId) => !plans[planId] || canChargeCustomPrice(provider, planId, mode));
 
   return {
     configuredProvider,
@@ -322,6 +350,9 @@ function isValidHostedCheckoutUrl(provider, url) {
     }
     if (provider === 'stripe') {
       return hostname === 'stripe.com' || hostname.endsWith('.stripe.com');
+    }
+    if (provider === 'polar') {
+      return isPolarCheckoutUrl(normalized);
     }
     return false;
   } catch {
@@ -460,6 +491,34 @@ function buildLemonSqueezyApiCustomData({
   };
 }
 
+// Polar session metadata: the same keys as the Lemon Squeezy custom data, copied
+// by Polar onto the order and the subscription. Empty values are dropped by the
+// provider module because Polar rejects them.
+function buildPolarMetadata({
+  user,
+  attemptId,
+  analyticsSessionId,
+  experimentId,
+  offerVersion,
+  checkoutSurface,
+  priceReason,
+  campaignId,
+  providerDiscountId,
+}) {
+  return {
+    fa_user_id: String(user._id),
+    fa_checkout_attempt_id: attemptId,
+    fa_analytics_session_id: analyticsSessionId,
+    fa_experiment_id: experimentId,
+    fa_offer_version: offerVersion,
+    fa_checkout_surface: checkoutSurface,
+    fa_price_reason: priceReason,
+    fa_campaign_id: campaignId,
+    fa_provider_discount_id: providerDiscountId,
+    fa_frontend_origin: resolveFrontendBase() || null,
+  };
+}
+
 function buildFinalCheckoutUrl(provider, baseUrl, user, attemptId, attribution = {}) {
   const successUrl = buildRedirectUrl('/billing/success', attemptId);
   const cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
@@ -555,6 +614,7 @@ async function createCheckoutAttempt(
     referrerHost: rawReferrerHost,
     countryCode: rawCountryCode,
     studentEligible: rawStudentEligible,
+    clientIp: rawClientIp,
   }
 ) {
   const provider = resolveProvider(rawProvider);
@@ -590,12 +650,18 @@ async function createCheckoutAttempt(
   }
 
   const mode = resolveMode();
-  const baseUrl = resolveCheckoutUrl(provider, planId, mode);
-  if (!baseUrl) {
-    throw new CheckoutStartError('CHECKOUT_UNAVAILABLE', 'Checkout unavailable', 409);
-  }
-  if (!isValidHostedCheckoutUrl(provider, baseUrl)) {
-    throw new CheckoutStartError('INVALID_CHECKOUT_URL', 'Checkout URL invalid', 409);
+  const baseUrl = provider === 'polar' ? '' : resolveCheckoutUrl(provider, planId, mode);
+  if (provider === 'polar') {
+    if (!canCreatePolarCheckout({ planId, mode })) {
+      throw new CheckoutStartError('CHECKOUT_UNAVAILABLE', 'Checkout unavailable', 409);
+    }
+  } else {
+    if (!baseUrl) {
+      throw new CheckoutStartError('CHECKOUT_UNAVAILABLE', 'Checkout unavailable', 409);
+    }
+    if (!isValidHostedCheckoutUrl(provider, baseUrl)) {
+      throw new CheckoutStartError('INVALID_CHECKOUT_URL', 'Checkout URL invalid', 409);
+    }
   }
   let campaign = resolveDiscountCampaign({
     rawCampaignId,
@@ -620,7 +686,7 @@ async function createCheckoutAttempt(
     countryCode: null,
   };
   let customCheckout = false;
-  if (!campaign && provider === 'lemonsqueezy') {
+  if (!campaign && CUSTOM_PRICE_PROVIDERS.has(provider)) {
     const studentEligible = rawStudentEligible === true;
     const firstPurchase = studentEligible && STUDENT_PRICE_PLAN_IDS.includes(planId)
       ? !(await hasPriorPurchase(CheckoutAttempt, user))
@@ -632,7 +698,7 @@ async function createCheckoutAttempt(
       studentEligible,
       firstPurchase,
     });
-    if (resolved.reason && canCreateCustomCheckout({ planId, mode })) {
+    if (resolved.reason && canChargeCustomPrice(provider, planId, mode)) {
       pricing = resolved;
       customCheckout = true;
     } else if (studentEligible && firstPurchase) {
@@ -694,7 +760,49 @@ async function createCheckoutAttempt(
   let successUrl;
   let cancelUrl;
   let providerCheckoutId = null;
-  if (customCheckout) {
+  if (provider === 'polar') {
+    successUrl = buildRedirectUrl('/billing/success', attemptId);
+    cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
+    const created = await createPolarCheckout({
+      accessToken: resolvePolarAccessToken(mode),
+      mode,
+      productId: resolvePolarProductId(planId, mode),
+      customPriceCents: customCheckout ? pricing.amountCents : null,
+      expectedAmountCents: listAmountCents,
+      currency: resolvePlanCatalog()[planId].currency,
+      email: user.email,
+      name: user.username,
+      externalCustomerId: String(user._id),
+      metadata: buildPolarMetadata({
+        user,
+        attemptId,
+        analyticsSessionId,
+        experimentId,
+        offerVersion,
+        checkoutSurface,
+        priceReason: pricing.reason,
+        campaignId,
+        providerDiscountId,
+      }),
+      successUrl,
+      returnUrl: cancelUrl,
+      embedOrigin: checkoutSurface === 'overlay' ? resolveFrontendBase() : null,
+      discountId: providerDiscountId,
+      customerIpAddress: rawClientIp,
+    });
+    if (!created.ok) {
+      // The page promised a price and a plan; a session that cannot be created
+      // fails closed and the customer retries instead of being sent elsewhere.
+      console.warn(`[billing] polar checkout unavailable (${created.reason}) plan=${planId} reason=${pricing.reason || 'list'}`);
+      throw new CheckoutStartError(
+        customCheckout ? 'CUSTOM_CHECKOUT_UNAVAILABLE' : 'CHECKOUT_CREATE_FAILED',
+        'Checkout is unavailable right now. Please try again in a moment.',
+        503
+      );
+    }
+    checkoutUrl = created.url;
+    providerCheckoutId = created.checkoutId || null;
+  } else if (customCheckout) {
     successUrl = buildRedirectUrl('/billing/success', attemptId);
     cancelUrl = buildRedirectUrl('/billing/cancel', attemptId);
     const created = await createLemonSqueezyCustomCheckout({
@@ -807,7 +915,9 @@ async function createCheckoutAttempt(
 
 module.exports = {
   CheckoutStartError,
+  buildPolarMetadata,
   createCheckoutAttempt,
+  isPlanAvailable,
   resolveCheckoutConfig,
   resolveProvider,
   resolveMode,

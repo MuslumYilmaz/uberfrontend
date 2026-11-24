@@ -220,7 +220,7 @@ describe('BillingSuccessComponent', () => {
     const primary = fixture.nativeElement.querySelector('[data-testid="billing-start-premium"]') as HTMLAnchorElement;
     expect(ready.textContent || '').toContain('Premium access has been applied');
     const receiptNote = ready.querySelector('[data-testid="billing-receipt-note"]') as HTMLElement;
-    expect(receiptNote.textContent || '').toContain('Lemon Squeezy emails a receipt for every order');
+    expect(receiptNote.textContent || '').toContain('Polar issues a receipt and a PDF invoice for every paid order');
     expect(receiptNote.textContent || '').toContain('learning budget');
     expect(primary.textContent || '').toContain('Start your first Premium challenge');
     expect(primary.getAttribute('href') || '').toContain('/react/coding/react-contact-form-starter');

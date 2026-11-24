@@ -3,6 +3,15 @@ const { isProEntitlementActive } = require('./entitlements');
 const DEFAULT_LOOKBACK_DAYS = 7;
 const DEFAULT_GRACE_MINUTES = 15;
 const TERMINAL_EVENT_PATTERN = /(refund|chargeback)/i;
+// Providers whose attempts carry a verified payment record.
+const DEFAULT_PROVIDERS = Object.freeze(['lemonsqueezy', 'polar']);
+
+function normalizeProviders(value) {
+  const list = (Array.isArray(value) ? value : [value])
+    .map((entry) => String(entry || '').trim().toLowerCase())
+    .filter((entry) => DEFAULT_PROVIDERS.includes(entry));
+  return list.length ? Array.from(new Set(list)) : [...DEFAULT_PROVIDERS];
+}
 
 function clampInteger(value, fallback, min, max) {
   const parsed = Number(value);
@@ -24,8 +33,10 @@ async function findVerifiedPurchaseEntitlementMismatches({
   lookbackDays = DEFAULT_LOOKBACK_DAYS,
   graceMinutes = DEFAULT_GRACE_MINUTES,
   limit = 200,
+  providers = DEFAULT_PROVIDERS,
 }) {
   const normalizedMode = mode === 'test' ? 'test' : 'live';
+  const normalizedProviders = normalizeProviders(providers);
   const safeLookbackDays = clampInteger(lookbackDays, DEFAULT_LOOKBACK_DAYS, 1, 90);
   const safeGraceMinutes = clampInteger(graceMinutes, DEFAULT_GRACE_MINUTES, 0, 1440);
   const safeLimit = clampInteger(limit, 200, 1, 1000);
@@ -35,7 +46,7 @@ async function findVerifiedPurchaseEntitlementMismatches({
   const verifiedBefore = new Date(nowMs - safeGraceMinutes * 60 * 1000);
 
   const attempts = await CheckoutAttempt.find({
-    provider: 'lemonsqueezy',
+    provider: { $in: normalizedProviders },
     mode: normalizedMode,
     paymentVerifiedAt: { $gte: verifiedAfter, $lte: verifiedBefore },
     paymentTotalCents: { $gt: 0 },
@@ -62,7 +73,7 @@ async function findVerifiedPurchaseEntitlementMismatches({
         .lean()
       : [],
     eventFilters.length
-      ? BillingEvent.find({ provider: 'lemonsqueezy', $or: eventFilters })
+      ? BillingEvent.find({ provider: { $in: normalizedProviders }, $or: eventFilters })
         .select('eventId eventType processingStatus userId receivedAt')
         .lean()
       : [],
@@ -175,6 +186,7 @@ async function findVerifiedPurchaseEntitlementMismatches({
 
   return {
     mode: normalizedMode,
+    providers: normalizedProviders,
     window: {
       verifiedAfter,
       verifiedBefore,
@@ -198,8 +210,10 @@ async function findProviderOrderMismatches({
   User,
   orders,
   mode = 'live',
+  provider = 'lemonsqueezy',
 }) {
   const normalizedMode = mode === 'test' ? 'test' : 'live';
+  const normalizedProvider = normalizeProviders(provider)[0];
   const safeOrders = Array.isArray(orders) ? orders : [];
   const orderIdentifiers = Array.from(new Set(
     safeOrders.flatMap((order) => Array.isArray(order.identifiers) ? order.identifiers : [])
@@ -208,7 +222,7 @@ async function findProviderOrderMismatches({
   ));
   const attempts = orderIdentifiers.length
     ? await CheckoutAttempt.find({
-      provider: 'lemonsqueezy',
+      provider: normalizedProvider,
       mode: normalizedMode,
       providerOrderId: { $in: orderIdentifiers },
     }).lean()
@@ -291,6 +305,7 @@ async function findProviderOrderMismatches({
 
   return {
     mode: normalizedMode,
+    provider: normalizedProvider,
     summary: {
       orders: safeOrders.length,
       matched: safeOrders.length - mismatches.filter((item) => item.reasons.includes('checkout_attempt_missing')).length,
@@ -301,6 +316,7 @@ async function findProviderOrderMismatches({
 }
 
 module.exports = {
+  DEFAULT_PROVIDERS,
   findVerifiedPurchaseEntitlementMismatches,
   findProviderOrderMismatches,
 };

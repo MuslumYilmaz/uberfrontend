@@ -1134,6 +1134,40 @@ function assertVercelCspAllowsLemonSqueezyOverlay() {
   });
 }
 
+// The Polar overlay is an iframe on polar.sh (sandbox.polar.sh in test mode)
+// opened by the bundled embed module, so only frame-src needs the hosts; its
+// Apple Pay / Google Pay buttons also need the payment permission delegated.
+function assertVercelCspAllowsPolarEmbed() {
+  const config = readVercelConfig();
+  const headerNames = ['Content-Security-Policy', 'Content-Security-Policy-Report-Only'];
+
+  headerNames.forEach((headerName) => {
+    const policy = getGlobalVercelHeader(config, headerName);
+    assertCspDirectiveSources({
+      headerName,
+      policy,
+      directiveName: 'frame-src',
+      requiredSources: ['https://polar.sh', 'https://sandbox.polar.sh'],
+    });
+  });
+}
+
+function assertVercelPermissionsPolicyAllowsPolarPayments() {
+  const config = readVercelConfig();
+  const policy = getGlobalVercelHeader(config, 'Permissions-Policy');
+  const paymentDirective = policy
+    .split(',')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('payment='));
+  if (!paymentDirective) {
+    throw new Error('Permissions-Policy missing payment directive.');
+  }
+  const missing = ['"https://polar.sh"', '"https://sandbox.polar.sh"'].filter((token) => !paymentDirective.includes(token));
+  if (missing.length) {
+    throw new Error(`Permissions-Policy payment directive missing Polar token(s): ${missing.join(', ')}`);
+  }
+}
+
 function assertVercelPermissionsPolicyAllowsLemonSqueezyPayments() {
   const config = readVercelConfig();
   const policy = getGlobalVercelHeader(config, 'Permissions-Policy');
@@ -1226,5 +1260,7 @@ assertVercelCspAllowsCodingSandboxRunner();
 assertVercelCspAllowsGoogleAnalyticsCollection();
 assertVercelCspAllowsLemonSqueezyOverlay();
 assertVercelPermissionsPolicyAllowsLemonSqueezyPayments();
+assertVercelCspAllowsPolarEmbed();
+assertVercelPermissionsPolicyAllowsPolarPayments();
 
 console.log('Sitemap size check passed.');

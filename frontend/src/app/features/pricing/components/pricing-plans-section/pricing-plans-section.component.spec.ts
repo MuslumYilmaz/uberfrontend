@@ -310,7 +310,7 @@ describe('PricingPlansSectionComponent', () => {
       'free-plan', 'which-plan', 'cancel-anytime', 'refunds', 'payment-methods', 'employer-reimbursement',
       'student-discount', 'payment-declined', 'solutions-and-explanations', 'run-tests',
     ]);
-    expect(answer('employer-reimbursement')).toContain('emails a receipt for every order');
+    expect(answer('employer-reimbursement')).toContain('issues a receipt and a PDF invoice for every paid order');
     expect(answer('student-discount')).toContain('40% off the annual plan on your first purchase');
     expect(answer('student-discount')).not.toContain('regional price');
 
@@ -700,7 +700,7 @@ describe('PricingPlansSectionComponent', () => {
 
     const employer = faqItems.find((item) => item.id === 'employer-reimbursement');
     const student = faqItems.find((item) => item.id === 'student-discount');
-    expect(employer?.a || '').toContain('emails a receipt for every order');
+    expect(employer?.a || '').toContain('issues a receipt and a PDF invoice for every paid order');
     expect(employer?.a || '').not.toMatch(/Google|Meta|Amazon|Microsoft/);
     expect(student?.a || '').toContain('40% off the annual plan');
     expect(student?.a || '').not.toContain('quarterly and annual');
@@ -921,7 +921,7 @@ describe('PricingPlansSectionComponent', () => {
       body: 'Checkout opens right after you sign in or create a free account.',
       kicker: 'Step 1 of 2 · Quarterly · $29 USD today',
       reason: 'Why an account first: your Premium access, saved plan and solved tasks attach to it.',
-      assurance: '14-day refund on your first purchase, no usage test. Secure checkout by Lemon Squeezy. Taxes included.',
+      assurance: '14-day refund on your first purchase, no usage test. Secure checkout by Polar. Taxes included.',
     });
     const squash = (selector: string) => (document.querySelector(selector)?.textContent || '').replace(/\s+/g, ' ').trim();
     expect(squash('[data-testid="login-required-kicker"]')).toBe('Step 1 of 2 · Quarterly · $29 USD today');

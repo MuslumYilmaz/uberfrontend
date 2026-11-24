@@ -15,6 +15,26 @@ export type PublicChangelogEntry = {
 
 export const PUBLIC_CHANGELOG_ENTRIES: PublicChangelogEntry[] = [
   {
+    id: 'checkout-moves-to-polar',
+    weekOf: '2026-11-24',
+    title: 'Checkout moves to Polar',
+    summary: 'Polar is the new merchant of record for Premium purchases: the same plans and prices, checkout on the pricing page, and receipts and invoices in the Polar billing portal.',
+    category: 'Improved',
+    area: 'Pricing and billing',
+    changes: [
+      'New purchases run through Polar, now named as the merchant of record in the terms and the privacy notice. Plans, prices, regional and student prices and the 14-day first-purchase refund stay as they were.',
+      'Checkout takes Visa, Mastercard, American Express and Discover cards. PayPal and Alipay are no longer available.',
+      'Every paid order has a receipt and a PDF invoice in the Polar billing portal, linked from your profile; a company name, VAT number or billing address can be added to the invoice there.',
+      'Polar emails a reminder seven days before an annual renewal; the renewal date of every plan is shown in your profile and in the billing portal.',
+      'Subscriptions bought earlier keep running and are managed from the profile page as before.',
+    ],
+    cta: {
+      label: 'Compare plans',
+      route: '/pricing',
+      queryParams: { src: 'changelog' },
+    },
+  },
+  {
     id: 'pricing-page-counts-what-premium-opens',
     weekOf: '2026-11-12',
     title: 'The pricing page counts what Premium opens',
