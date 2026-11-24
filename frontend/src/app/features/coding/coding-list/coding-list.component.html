@@ -114,7 +114,7 @@
           </div>
           <div class="fa-filter-options" role="radiogroup"
             [attr.aria-labelledby]="'coding-progress-' + (drawer ? 'drawer' : 'panel')">
-            <label *ngFor="let opt of progressOptions()" class="fa-filter-option"
+            <label *ngFor="let opt of progressOptions(); trackBy: trackByProgressOption" class="fa-filter-option"
               [attr.data-testid]="'filter-progress-' + opt.value">
               <input type="radio" [name]="'coding-progress-' + (drawer ? 'drawer' : 'panel')" [value]="opt.value"
                 [checked]="progressFilterShown() === opt.value" (change)="setProgressFilter(opt.value)">

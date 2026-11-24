@@ -651,6 +651,11 @@ describe('CodingListComponent', () => {
     (host.querySelector('[data-testid="filter-progress-in-progress"] input') as HTMLInputElement).click();
     fixture.detectChanges();
     expect(rows()).toBe(1);
+
+    const radio = host.querySelector('[data-testid="filter-progress-in-progress"] input');
+    fixture.detectChanges();
+    // A Progress radio survives a check: a rebuilt one is detached mid-click and never fires change.
+    expect(host.querySelector('[data-testid="filter-progress-in-progress"] input')).toBe(radio);
   });
 
   it('shows a signed-in user how many tasks they solved and their streak', async () => {

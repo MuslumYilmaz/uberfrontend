@@ -107,6 +107,20 @@ const PROGRESS_FILTER_LABELS: Record<Exclude<ProgressFilter, 'all'>, string> = {
   solved: 'Solved',
 };
 
+type ProgressOption = { value: ProgressFilter; label: string };
+
+/** The Progress options, one array per audience: a fresh array on each check would rebuild the radios mid-click. */
+const VISITOR_PROGRESS_OPTIONS: readonly ProgressOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'in-progress', label: PROGRESS_FILTER_LABELS['in-progress'] },
+];
+const ACCOUNT_PROGRESS_OPTIONS: readonly ProgressOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'unsolved', label: PROGRESS_FILTER_LABELS.unsolved },
+  { value: 'in-progress', label: PROGRESS_FILTER_LABELS['in-progress'] },
+  { value: 'solved', label: PROGRESS_FILTER_LABELS.solved },
+];
+
 /** The hero's "Continue" card: the newest draft that is not solved yet. */
 type ContinueCard = {
   questionId: string;
@@ -1333,16 +1347,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return !!this.auth.user() || this.editedDrafts().size > 0;
   }
 
-  progressOptions(): Array<{ value: ProgressFilter; label: string }> {
-    const inProgress = { value: 'in-progress' as const, label: PROGRESS_FILTER_LABELS['in-progress'] };
-    if (!this.auth.user()) return [{ value: 'all', label: 'All' }, inProgress];
-    return [
-      { value: 'all', label: 'All' },
-      { value: 'unsolved', label: PROGRESS_FILTER_LABELS.unsolved },
-      inProgress,
-      { value: 'solved', label: PROGRESS_FILTER_LABELS.solved },
-    ];
+  progressOptions(): readonly ProgressOption[] {
+    return this.auth.user() ? ACCOUNT_PROGRESS_OPTIONS : VISITOR_PROGRESS_OPTIONS;
   }
+
+  trackByProgressOption = (_: number, option: ProgressOption): ProgressFilter => option.value;
 
   /** The view the Progress options show as chosen: the one that applies, so a visitor's stored "Solved" reads All. */
   progressFilterShown(): ProgressFilter {

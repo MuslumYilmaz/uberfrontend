@@ -102,4 +102,13 @@ test('a signed-in visitor continues their newest draft and hides what they solve
   await page.getByTestId('coding-list-hide-solved').click();
   await expect(page.locator('[data-testid="question-card-js-debounce"]')).toHaveCount(0);
   await expect(page.getByTestId('coding-active-filter-progress')).toContainText('Not solved');
+
+  // Real clicks on the Progress radios: a radio rebuilt mid-click never fires change, so the view would stay put.
+  await page.getByTestId('filter-progress-in-progress').click();
+  await expect(page.getByTestId('filter-progress-in-progress').locator('input')).toBeChecked();
+  await expect(page.locator('[data-testid^="question-card-"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid="question-card-js-number-clamp"]')).toHaveCount(1);
+  await page.getByTestId('filter-progress-solved').click();
+  await expect(page.locator('[data-testid="question-card-js-debounce"]')).toHaveCount(1);
+  await expect(page.locator('[data-testid="question-card-js-number-clamp"]')).toHaveCount(0);
 });
