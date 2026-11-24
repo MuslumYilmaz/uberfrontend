@@ -136,6 +136,37 @@ app-coding-tech-kind-tabs {
   margin: 0;
 }
 
+/* The starts of a first visit and the primary action of a filtered list in one cell: the one not in use keeps its
+   room, hidden, so the header keeps its height when a filter applies. Hidden, it leaves the tab order and the
+   accessibility tree. */
+.fa-start-swap {
+  display: grid;
+  justify-items: end;
+}
+
+.fa-start-swap > * {
+  grid-area: 1 / 1;
+}
+
+.fa-start-swap > .is-swapped-out {
+  visibility: hidden;
+}
+
+/* Below 900px the filters open in a drawer over the page, so nothing waits under the pointer while the header
+   changes, and a kept room would leave a gap above the primary action: the start not in use takes none there. */
+@media (max-width: 900px) {
+  .fa-start-swap > .is-swapped-out {
+    display: none;
+  }
+}
+
+.fa-start-primary {
+  display: grid;
+  gap: 7px;
+  align-self: end;
+  justify-items: end;
+}
+
 .fa-start-path__title {
   color: var(--ink);
   font-size: 14px;
@@ -157,15 +188,19 @@ app-coding-tech-kind-tabs {
 }
 
 /* On a phone the header keeps the title, a two-line subtitle and the start action, so search reaches the first
-   screen; the fit pills and the action hint repeat what the page shows below. */
+   screen; the fit pills and the action hint repeat what the page shows below. Each start keeps its line, which says
+   what it opens. */
 @media (max-width: 640px) {
   .fa-page-fit-pills,
-  .fa-page-action__hint,
-  .fa-start-path__text {
+  .fa-page-action__hint {
     display: none;
   }
 
   /* The two starts side by side, so the search still reaches the first screen. */
+  .fa-start-swap {
+    width: 100%;
+  }
+
   .fa-start-paths {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
@@ -199,6 +234,8 @@ app-coding-tech-kind-tabs {
   }
 
   .fa-continue,
+  .fa-start-swap,
+  .fa-start-primary,
   .fa-start-paths,
   .fa-start-path {
     justify-items: start;

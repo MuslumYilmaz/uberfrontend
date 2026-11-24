@@ -67,6 +67,23 @@ test('a filtered coding list shows only its rows for a signed-in visitor whose p
   await expect(results.locator('a[href^="/javascript/"] .fa-question-row__variant')).toHaveCount(0);
 });
 
+// A visitor's first filter swaps the hero's two starts for its primary action. On a wide screen both keep one cell,
+// so the filters stay under the pointer; they moved up 32 px when the starts gave way.
+test('a visitor\'s first filter leaves the filters where they are on a wide screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/coding');
+  await expect(page.getByTestId('coding-list-loading')).toBeHidden();
+  await expect(page.getByTestId('coding-start-paths')).toBeVisible();
+  const hard = page.getByTestId('filter-difficulty-hard');
+  const before = (await hard.boundingBox())!.y;
+
+  await hard.click();
+  await expect(page).toHaveURL(/diff=hard/);
+  await expect(page.getByTestId('coding-start-paths')).toBeHidden();
+  await expect(page.getByTestId('coding-list-primary-action')).toBeVisible();
+  expect((await hard.boundingBox())!.y).toBe(before);
+});
+
 // A draft lives in this browser's IndexedDB only. The list reads it after the first render, so the prerendered HTML
 // hydrates unchanged (the fixture fails on a hydration error) and the Continue card and the In progress mark follow.
 test('a signed-in visitor continues their newest draft and hides what they solved', async ({ page, baseURL }) => {

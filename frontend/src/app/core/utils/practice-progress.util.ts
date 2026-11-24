@@ -49,6 +49,11 @@ export function pickContinueTarget<T extends { id: string }>(
   return best;
 }
 
+/** A run in which every test passed. */
+export function passedEveryTest(run: LastRun | null | undefined): boolean {
+  return !!run && run.totalCount > 0 && run.passCount === run.totalCount;
+}
+
 /** "2 of 4 passed" after a run; null before the first one. */
 export function lastRunLabel(run: LastRun | null | undefined): string | null {
   if (!run || run.totalCount <= 0) return null;

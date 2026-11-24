@@ -30,6 +30,7 @@ import {
   isProgressFilter,
   lastRunLabel,
   matchesProgressFilter,
+  passedEveryTest,
   pickContinueTarget,
   practiceStatus,
 } from '../../../core/utils/practice-progress.util';
@@ -943,7 +944,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (drafts.size === 0 || this.source !== 'global-coding') return of(null);
       return combineLatest([this.rawQuestions$, this.solvedIds$, this.viewer$]).pipe(
         map(([rows, solvedIds, user]) => {
-          const target = pickContinueTarget(rows ?? [], new Set(solvedIds), drafts,
+          // A visitor has no solved list, so a draft whose last run passed every test is a finished one; for an
+          // account the solved list decides, and a full pass never submitted is still worth continuing.
+          const finished = new Set(solvedIds);
+          if (!user) {
+            for (const [id, run] of this.lastRuns()) {
+              if (passedEveryTest(run)) finished.add(id);
+            }
+          }
+          const target = pickContinueTarget(rows ?? [], finished, drafts,
             (row) => !isQuestionLockedForTier(row, user));
           return target ? this.continueCard(target.row, target.editedAt) : null;
         }),
@@ -2061,6 +2070,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       });
     }
 
+    // A task the viewer cannot open says so in words. It leads the right-aligned group, so the difficulty and
+    // technology chips keep their places on every row.
+    if (this.isLocked(q)) chips.unshift({ label: 'Premium', ariaLabel: 'Premium', tone: 'access' });
+
     return chips;
   }
 
@@ -2514,11 +2527,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return String((q as any)?.access || '').toLowerCase() === 'premium';
   }
 
-  isGuestDefaultGlobalLibrary(): boolean {
+  /** A visitor in the whole coding library, filtered or not: its two starts and primary action share one footprint. */
+  isGuestGlobalCodingLibrary(): boolean {
     return this.source === 'global-coding'
       && !this.auth.user()
       && !this.isFormatsMode()
-      && this.selectedKind$.value === 'coding'
+      && this.selectedKind$.value === 'coding';
+  }
+
+  isGuestDefaultGlobalLibrary(): boolean {
+    return this.isGuestGlobalCodingLibrary()
       && !this.selectedTech$.value
       && !this.selectedCategory$.value
       && !(this.searchTerm || '').trim()

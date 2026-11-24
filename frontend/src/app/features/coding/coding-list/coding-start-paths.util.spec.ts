@@ -12,7 +12,7 @@ describe('coding start paths', () => {
     ...overrides,
   });
 
-  it('starts a newcomer on five free Easy tasks, the warm-ups first, then JavaScript by priority', () => {
+  it('starts a newcomer on five free Easy tasks, JavaScript by priority first with the warm-ups between', () => {
     const rows = [
       row('js-low', { importance: 1 }),
       row('js-high', { importance: 5 }),
@@ -26,7 +26,10 @@ describe('coding start paths', () => {
       row('js-mid-2', { importance: 3 }),
     ];
 
-    expect(warmupPath(rows).map((r) => r.id)).toEqual(['css-warmup', 'html-warmup', 'js-high', 'js-mid', 'js-mid-2']);
+    expect(warmupPath(rows).map((r) => r.id)).toEqual(['js-high', 'css-warmup', 'js-mid', 'html-warmup', 'js-mid-2']);
+    // Without the warm-ups the path is the JavaScript tasks alone.
+    expect(warmupPath(rows.filter((r) => !r.id.endsWith('warmup'))).map((r) => r.id))
+      .toEqual(['js-high', 'js-mid', 'js-mid-2', 'js-low']);
   });
 
   it('starts an interview candidate on Debounce, then the JavaScript tasks in Essential 60 order', () => {

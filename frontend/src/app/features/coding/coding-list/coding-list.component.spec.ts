@@ -348,7 +348,10 @@ describe('CodingListComponent', () => {
     expect(starts.textContent).toContain('New to coding interviews?');
     expect(starts.textContent).toContain('Interview coming up?');
     expect(host.querySelector('[data-testid="coding-start-interview"]')?.textContent?.trim()).toBe('Start with Debounce');
-    expect(host.querySelector('[data-testid="coding-list-primary-action"]')).toBeNull();
+    // The primary action keeps its room beside the starts, hidden, until a filter swaps the two.
+    expect(starts.classList).not.toContain('is-swapped-out');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.closest('.fa-start-primary')?.classList)
+      .toContain('is-swapped-out');
     expect(host.textContent).not.toContain('Essential 60 #1');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()
@@ -362,6 +365,20 @@ describe('CodingListComponent', () => {
     expect(results).not.toBeNull();
     expect(discovery).not.toBeNull();
     expect(results!.compareDocumentPosition(discovery!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('swaps a visitor\'s first-visit starts for the primary action in one cell when a filter applies', async () => {
+    const fixture = await createComponent({ queryParams: { reset: '1' } });
+    const host = fixture.nativeElement as HTMLElement;
+
+    fixture.componentInstance.toggleDiff('hard', true);
+    fixture.detectChanges();
+
+    // Both stay in the cell, so on a wide screen the header keeps its height (the prod e2e test measures it).
+    expect(host.querySelector('[data-testid="coding-start-paths"]')?.classList).toContain('is-swapped-out');
+    expect(host.querySelector('.fa-start-primary')?.classList).not.toContain('is-swapped-out');
+    expect(host.querySelector('.fa-start-primary [data-testid="coding-list-primary-action"]')?.textContent?.trim())
+      .toBe('Start first question');
   });
 
   it('keeps clean technology question links available with empty results and follows filter changes', async () => {
@@ -513,6 +530,28 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('[data-testid="coding-list-free-only"]')).toBeNull();
   });
 
+  it('names a task the viewer cannot open as Premium on its row, first among its chips, and not for a member', async () => {
+    const fixture = await createComponent({
+      items: [
+        question({ id: 'js-free-task', title: 'Free task' }),
+        question({ id: 'js-locked-task', title: 'Locked task', access: 'premium' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const chips = (id: string) => Array.from(
+      host.querySelectorAll(`[data-testid="question-card-${id}"] .fa-question-row__meta-chip`),
+    ).map((chip) => chip.textContent?.trim());
+    // First in a right-aligned group, so the difficulty and technology chips keep their places on every row.
+    expect(chips('js-locked-task')[0]).toBe('Premium');
+    expect(chips('js-free-task')).not.toContain('Premium');
+
+    (TestBed.inject(AuthService).user as any).set({ _id: 'premium-user', accessTier: 'premium' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(chips('js-locked-task')).not.toContain('Premium');
+  });
+
   it('shows every active filter above the list and removes each one on its own', async () => {
     const fixture = await createComponent({
       queryParams: { tech: 'javascript', diff: 'easy', q: 'clamp', access: 'free' },
@@ -580,6 +619,27 @@ describe('CodingListComponent', () => {
       tech: 'javascript',
       has_run: true,
     });
+  });
+
+  it('does not offer a visitor a draft whose last run passed every test, since a visitor has no solved list', async () => {
+    const items = [question({ id: 'js-passed', title: 'Passed draft' }), question({ id: 'js-open', title: 'Open draft' })];
+    const drafts = [{ questionId: 'js-passed', editedAt: 300 }, { questionId: 'js-open', editedAt: 100 }];
+    const runs: Array<[string, { passCount: number; totalCount: number; ts: number }]> = [
+      ['js-passed', { passCount: 7, totalCount: 7, ts: 350 }],
+      ['js-open', { passCount: 1, totalCount: 5, ts: 150 }],
+    ];
+    const title = (fixture: { nativeElement: unknown }) => (fixture.nativeElement as HTMLElement)
+      .querySelector('[data-testid="coding-continue-card"] .fa-continue__title')?.textContent?.trim();
+
+    const visitor = await createComponent({ items, drafts, runs });
+    await loadDrafts(visitor);
+    expect(title(visitor)).toBe('Open draft');
+
+    // An account's solved list says what is finished: a full pass that was never submitted is still offered.
+    TestBed.resetTestingModule();
+    const account = await createComponent({ user: { _id: 'returning-user', accessTier: 'free' }, items, drafts, runs });
+    await loadDrafts(account);
+    expect(title(account)).toBe('Passed draft');
   });
 
   it('narrows the list by progress, hides solved tasks in one click, and clears both ways', async () => {
@@ -689,7 +749,7 @@ describe('CodingListComponent', () => {
 
     (host.querySelector('[data-testid="coding-start-warmups"]') as HTMLButtonElement).click();
     await fixture.whenStable();
-    expect(opened()).toEqual({ commands: ['/', 'html', 'coding', 'html-warmup'], path: ['html-warmup', 'js-sum'] });
+    expect(opened()).toEqual({ commands: ['/', 'javascript', 'coding', 'js-sum'], path: ['js-sum', 'html-warmup'] });
     expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_start_entry_clicked', { entry: 'warmups' });
 
     (host.querySelector('[data-testid="coding-start-interview"]') as HTMLButtonElement).click();

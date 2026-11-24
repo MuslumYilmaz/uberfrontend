@@ -16,14 +16,19 @@ const byPriority = (a: PathRow, b: PathRow): number =>
   (b.importance ?? 0) - (a.importance ?? 0) || (a.title ?? '').localeCompare(b.title ?? '');
 
 /**
- * "New to coding interviews?": five free Easy tasks, the warm-ups first, then the JavaScript tasks with the highest
- * practice priority.
+ * "New to coding interviews?": five free Easy tasks, the JavaScript tasks with the highest practice priority with the
+ * warm-ups between them. It opens on JavaScript, as most first coding screens do, and a small UI task follows.
  */
 export function warmupPath<T extends PathRow>(rows: readonly T[]): T[] {
   const easyFree = rows.filter((row) => isCodingTask(row) && row.access !== 'premium' && row.difficulty === 'easy');
   const warmups = easyFree.filter((row) => isWarmup(row.title)).sort(byPriority);
   const javascript = easyFree.filter((row) => !isWarmup(row.title) && row.tech === 'javascript').sort(byPriority);
-  return [...warmups, ...javascript].slice(0, 5);
+  const path: T[] = [];
+  for (let i = 0; i < Math.max(javascript.length, warmups.length); i++) {
+    if (javascript[i]) path.push(javascript[i]);
+    if (warmups[i]) path.push(warmups[i]);
+  }
+  return path.slice(0, 5);
 }
 
 /**
