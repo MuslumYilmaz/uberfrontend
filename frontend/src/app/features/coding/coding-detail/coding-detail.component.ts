@@ -106,7 +106,7 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
-import { CodingPostPassComponent, type PostPassCard } from './coding-post-pass/coding-post-pass.component';
+import { CodingPostPassComponent, type PostPassCard, type PostPassReward } from './coding-post-pass/coding-post-pass.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
@@ -707,6 +707,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
    * the result, an account without a plan is offered one, and everyone gets the next task.
    */
   readonly postPass = signal<PostPassCard | null>(null);
+  /** What the last recorded solve earned (XP, current streak), shown beside "Saved as solved". */
+  readonly postPassReward = signal<PostPassReward | null>(null);
   lifecyclePromptOpen = false;
   lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
   lifecyclePromptSolvedTotal = 0;
@@ -3819,6 +3821,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.question();
     if (!q) return false;
     if (this.recorded) return true;
+    this.postPassReward.set(null);
 
     const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
     try {
@@ -3847,6 +3850,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       }
 
       this.recorded = true;
+      this.postPassReward.set({
+        xp: Math.max(0, Number(res?.xpAwarded || 0)),
+        streak: Math.max(0, Number(res?.stats?.streak?.current || 0)),
+      });
       const actionType: ChallengeActionType = reason === 'tests'
         ? (this.isFrameworkTech() ? 'run_checks' : 'run_tests')
         : (this.isFrameworkTech() || this.isWebTech() ? 'mark_complete' : 'run_tests');

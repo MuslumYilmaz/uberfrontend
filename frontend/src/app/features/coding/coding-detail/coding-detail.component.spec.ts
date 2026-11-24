@@ -1351,6 +1351,34 @@ describe('CodingDetailComponent', () => {
     expect(component.solved()).toBeTrue();
   });
 
+  it('keeps what a recorded solve earned for the post-pass card', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    activity.complete.and.returnValue(of({
+      solvedQuestionIds: ['react-counter'],
+      stats: { streak: { current: 3 } },
+      xpAwarded: 20,
+    } as any));
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      checkCoverage: 'full',
+    } as any);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([{ name: 'Counter flow', passed: true }]),
+    } as any;
+
+    await component.submitCode();
+
+    expect(component.postPassReward()).toEqual({ xp: 20, streak: 3 });
+  });
+
   it('completes from a framework panel Run checks event when all checks pass', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;

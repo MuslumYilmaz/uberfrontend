@@ -920,7 +920,7 @@
 <!-- After a pass: saved or not, and the next task, inside the results instead of a dialog over the work. -->
 <ng-template #postPassCard let-place>
   <app-coding-post-pass *ngIf="postPass() as card" [card]="card" [place]="place === 'framework' ? 'framework' : 'results'"
-    [nextLabel]="postPassNextLabel()" (signUp)="postPassAuth('sign_up')" (signIn)="postPassAuth('login')"
+    [nextLabel]="postPassNextLabel()" [reward]="postPassReward()" (signUp)="postPassAuth('sign_up')" (signIn)="postPassAuth('login')"
     (next)="next()" (personalize)="openOnboardingQuickStart()" (dismiss)="dismissPostPass()">
   </app-coding-post-pass>
 </ng-template>

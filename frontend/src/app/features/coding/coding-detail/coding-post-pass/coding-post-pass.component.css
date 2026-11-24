@@ -29,6 +29,11 @@
   font-weight: 600;
   line-height: 1.45;
 }
+.post-pass__reward{
+  color: var(--uf-badge-green-a);
+  font-weight: 600;
+  white-space: nowrap;
+}
 .post-pass__icon{
   flex: 0 0 auto;
   margin-top: 2px;
