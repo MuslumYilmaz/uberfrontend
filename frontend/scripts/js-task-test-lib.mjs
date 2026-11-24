@@ -11,6 +11,11 @@ const securityDir = path.join(scriptDir, '../src/app/core/security');
 const { createSandboxExpect } = loadTsModule(path.join(securityDir, 'user-code-sandbox-matchers.ts'));
 const { createSandboxFakeTimers } = loadTsModule(path.join(securityDir, 'user-code-sandbox-fake-timers.ts'));
 const { createTestSuite } = loadTsModule(path.join(securityDir, 'user-code-sandbox-suite.ts'));
+const { freezeHardenedPrototypes } = loadTsModule(path.join(securityDir, 'user-code-sandbox-hardening.ts'));
+
+// The worker freezes these built-in prototypes before it runs any code; this process does the same, so a solution
+// that only works on unfrozen built-ins fails here as it does on the site.
+freezeHardenedPrototypes();
 
 // Taken before any test can swap them for fake ones, like the worker's own timers.
 const realSetTimeout = globalThis.setTimeout;
