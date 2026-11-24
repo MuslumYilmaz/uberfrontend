@@ -33,7 +33,7 @@ describe('RefundComponent', () => {
     expect(copy).toContain('Renewal charges are generally non-refundable.');
     expect(copy).not.toContain('limited usage');
     expect(copy).toContain('This policy does not limit mandatory consumer rights');
-    expect(copy).toContain('Effective date: 2026-11-23');
+    expect(copy).toContain('Effective date: 2026-11-24');
     expect(supportLink).toBeTruthy();
 
     for (const forbidden of [
