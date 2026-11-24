@@ -8,6 +8,7 @@ import { TradeoffBattleProgressService } from '../../../core/services/tradeoff-b
 import { TradeoffDetailComponent } from './tradeoff-detail.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { computed, signal } from '@angular/core';
 
 describe('TradeoffDetailComponent', () => {
@@ -172,6 +173,8 @@ describe('TradeoffDetailComponent', () => {
       providers: [
         { provide: SeoService, useValue: seo },
         { provide: TradeoffBattleProgressService, useValue: progress },
+        // The locked preview's free related practice leaves out what the viewer solved.
+        { provide: UserProgressService, useValue: { solvedIds: signal<string[]>([]) } },
         {
           provide: AuthService,
           useValue: {
