@@ -52,7 +52,7 @@ type Row = Question & {
   __kind: QuestionKind;
   companies?: string[];
   __sd?: boolean;
-  /** A debugging task in a company's coding set: it opens on its own route, /<tech>/debug/<id>. */
+  /** A debugging task in a coding list (/coding or a company's set): it opens on its own route, /<tech>/debug/<id>. */
   __debug?: boolean;
 };
 
@@ -186,6 +186,7 @@ const TECHNOLOGY_QUESTION_HUBS = [
   { tech: 'html-css', label: 'HTML/CSS interview questions', route: '/html-css/interview-questions' },
 ] as const;
 const CODING_CHALLENGE_FIT_PILLS = ['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start'] as const;
+const CONCEPT_QUESTION_FIT_PILLS = ['Concept and output questions', 'Written answers', 'Nearly all free'] as const;
 const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
 const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
 const DEFAULT_START_QUESTION_ID = 'js-debounce';
@@ -426,7 +427,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     map(([a, sys]) => [...a, ...sys]),
                   );
                 }
-                return base$;
+                if (k !== 'coding') return base$;
+                return combineLatest<[Row[], Row[]]>([
+                  base$,
+                  this.debugRows$(this.resolvedList?.debugItems),
+                ]).pipe(
+                  map(([coding, debug]) => [...coding, ...debug]),
+                );
               })
             );
           }
@@ -474,7 +481,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
-                this.companyDebugRows$(),
+                this.debugRows$(),
                 this.qs.loadAllQuestionSummaries('trivia', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
@@ -495,7 +502,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
-                this.companyDebugRows$(),
+                this.debugRows$(),
               ]).pipe(
                 map(([coding, debug]) => [...coding, ...debug]),
                 startWith<Row[] | null>(null)
@@ -723,7 +730,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (isFormats && selectedCategory === 'system') {
         const sysBase = (questions ?? []).filter((q: any) => (q as any).__sd === true);
         const sysFiltered = sysBase.filter((q: any) =>
-          (q.title?.toLowerCase()?.includes(t) ?? false) &&
+          this.searchRank(q, t) >= 0 &&
           (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
           (selTags.length === 0
             ? true
@@ -747,6 +754,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
         });
         const deduped = this.dedupeFrameworkRows(sysFiltered);
         const warmupFirst = (a: any, b: any) => {
+          const byRelevance = this.searchRank(a, t) - this.searchRank(b, t);
+          if (byRelevance) return byRelevance;
+
           if (promoteDefaultStart) {
             return this.compareDefaultStartRows(a, b);
           }
@@ -767,7 +777,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }
 
       const filtered = (questions ?? []).filter((q: any) =>
-        (q.title?.toLowerCase()?.includes(t) ?? false) &&
+        this.searchRank(q, t) >= 0 &&
 
         (diffs.length === 0 || diffs.includes(q.difficulty)) &&
 
@@ -807,6 +817,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
       });
       const deduped = this.dedupeFrameworkRows(filtered);
       const warmupFirst = (a: any, b: any) => {
+        const byRelevance = this.searchRank(a, t) - this.searchRank(b, t);
+        if (byRelevance) return byRelevance;
+
         if (promoteDefaultStart) {
           return this.compareDefaultStartRows(a, b);
         }
@@ -851,7 +864,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   );
 
   difficultyOptions = [
-    { label: 'Beginner', value: 'easy' as Difficulty },
+    { label: 'Easy', value: 'easy' as Difficulty },
     { label: 'Intermediate', value: 'intermediate' as Difficulty },
     { label: 'Hard', value: 'hard' as Difficulty }
   ];
@@ -975,6 +988,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
+      if (this.isGlobalConceptsView()) return 'Concept Question Hub';
       return 'Coding Challenge Hub';
     }
 
@@ -988,6 +1002,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
+      if (this.isGlobalConceptsView()) return 'Frontend Concept Questions';
       return 'Frontend Coding Challenges';
     }
 
@@ -1002,6 +1017,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
       if (this.isFormatsMode()) {
         return 'Choose the format you want to rehearse, then filter the focused list without leaving the practice surface.';
+      }
+
+      if (this.isGlobalConceptsView()) {
+        return 'Questions an interviewer asks out loud about JavaScript, React, Angular, Vue, HTML and CSS, each with a written answer.';
       }
 
       if (this.isGuestDefaultGlobalLibrary()) {
@@ -1022,7 +1041,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source !== 'global-coding') return [];
     if (this.isSystemCategoryActive()) return SYSTEM_DESIGN_FIT_PILLS;
     if (this.isFormatsMode()) return PRACTICE_TYPES_FIT_PILLS;
+    if (this.isGlobalConceptsView()) return CONCEPT_QUESTION_FIT_PILLS;
     return CODING_CHALLENGE_FIT_PILLS;
+  }
+
+  pageAccessNote(): string {
+    if (this.isGlobalConceptsView()) {
+      return 'Nearly every concept question is free to read; a few belong to Premium.';
+    }
+    return 'Selected frontend coding challenges are free to start. Premium unlocks additional question sets and deeper solution context while locked items stay gated.';
   }
 
   primaryActionLabel(): string {
@@ -1030,7 +1057,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (this.isSystemCategoryActive()) return 'Start system design prompt';
       if (this.isFormatsMode()) return 'Start format practice';
       if (this.isGuestDefaultGlobalLibrary()) return 'Start with Debounce';
-      return 'Start first question';
+      if (this.isGlobalConceptsView()) {
+        return this.hasSolvedAny() ? 'Open next concept question' : 'Start first concept question';
+      }
+      return this.hasSolvedAny() ? 'Open next unsolved task' : 'Start first question';
     }
 
     if (this.source === 'company') return 'Start practice prompt';
@@ -1042,10 +1072,40 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
       if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
       if (this.isGuestDefaultGlobalLibrary()) return 'Opens Essential 60 #1: the high-signal debounce function drill.';
-      return 'Opens the first matching coding challenge from the current view.';
+      if (this.isGlobalConceptsView()) {
+        return this.hasSolvedAny()
+          ? 'Opens the first question in this view you have not marked complete.'
+          : 'Opens the first matching concept question from the current view.';
+      }
+      return this.hasSolvedAny()
+        ? 'Opens the first task in this view you have not solved yet.'
+        : 'Opens the first matching coding challenge from the current view.';
     }
 
     return 'Opens the first matching prompt from this filtered list.';
+  }
+
+  /** A search that finds no coding task may still name a concept ("closure"): the empty list offers that list. */
+  canSearchConcepts(): boolean {
+    return this.source === 'global-coding'
+      && !this.isFormatsMode()
+      && this.selectedKind$.value === 'coding'
+      && !!(this.searchTerm || '').trim();
+  }
+
+  /** "1 match", "12 matches": a count with the word that fits it. */
+  countLabel(count: number | null | undefined, one: string, many: string): string {
+    const n = count ?? 0;
+    return `${n} ${n === 1 ? one : many}`;
+  }
+
+  /** /coding with Concepts chosen: the same list surface, filled with concept questions. */
+  private isGlobalConceptsView(): boolean {
+    return this.source === 'global-coding' && !this.isFormatsMode() && this.selectedKind$.value === 'trivia';
+  }
+
+  private hasSolvedAny(): boolean {
+    return this.solvedSet().size > 0;
   }
 
   get hasAppliedFilters(): boolean {
@@ -1147,7 +1207,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((list) => {
         const rows = list ?? [];
-        const target = rows.find((row) => !this.isLocked(row)) ?? rows[0];
+        // A returning visitor goes on to the first open task they have not solved, not back to one they finished.
+        const target = rows.find((row) => !this.isLocked(row) && !this.isSolved(row.id))
+          ?? rows.find((row) => !this.isLocked(row))
+          ?? rows[0];
         if (!target) return;
         this.go(target, rows);
       });
@@ -1494,9 +1557,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedTech$.next(techFromUrl);
     }
 
+    // A URL names kind only for concepts (`?kind=trivia`), so a link that sets any other filter means the coding
+    // list, whichever kind this visitor last had open.
+    const linkNamesFilters = ['tech', 'q', 'diff', 'imp', 'focus', 'topic', 'category'].some((k) => qp.get(k) !== null);
     if (kindFromUrl) {
       this.selectedKind$.next(this.normalizeSelectedKind(kindFromUrl));
-    } else if (shouldReset) {
+    } else if (shouldReset || linkNamesFilters) {
       this.selectedKind$.next('coding');
     }
 
@@ -1760,6 +1826,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  /**
+   * How a row answers a lowercase search term: 0 when its title has the term, 1 when only a tag or its description
+   * has it, -1 when nothing does. Title matches sort first. An empty term matches every row.
+   */
+  private searchRank(q: Question, rawTerm: string): number {
+    const term = rawTerm.trim();
+    if (!term) return 0;
+    if ((q.title || '').toLowerCase().includes(term)) return 0;
+    if ((q.tags || []).some((tag) => String(tag || '').toLowerCase().includes(term))) return 1;
+    return this.descriptionText(q).toLowerCase().includes(term) ? 1 : -1;
+  }
+
   private decodeHtmlEntities(value: string): string {
     return (value || '')
       .replace(/&amp;(?=lt;|gt;|amp;|quot;|#39;)/g, '&')
@@ -2000,8 +2078,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   /** A company's debugging tasks, such as Stripe's bug squash: counted and listed with its coding tasks. */
-  private companyDebugRows$(): Observable<Row[]> {
-    return this.qs.loadAllDebugSummaries({ transferState: false }).pipe(
+  /** Debugging tasks are code to fix, so they list with the coding tasks; `preloaded` comes from the route resolver. */
+  private debugRows$(preloaded?: MixedQuestionListItem[]): Observable<Row[]> {
+    const items$ = preloaded ? of(preloaded) : this.qs.loadAllDebugSummaries({ transferState: false });
+    return items$.pipe(
       map((list) => list.map<Row>((q) => ({ ...q, __kind: 'coding', __debug: true, tech: q.tech }))),
     );
   }

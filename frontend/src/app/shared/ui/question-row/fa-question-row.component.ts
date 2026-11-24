@@ -122,6 +122,7 @@ export type FaQuestionRowVariant = {
             [attr.aria-hidden]="concealed ? 'true' : null"
             [pTooltip]="descriptionTooltip || description"
             tooltipPosition="bottom"
+            tooltipStyleClass="desc-tip"
             appendTo="body"
             [showDelay]="150"
             [hideDelay]="0"
@@ -129,7 +130,6 @@ export type FaQuestionRowVariant = {
             [life]="0"
             [escape]="false"
             [tooltipDisabled]="concealed || !(descriptionTooltip || description)"
-            [attr.tabindex]="concealed ? null : 0"
           >
             {{ description }}
           </div>

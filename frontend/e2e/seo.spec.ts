@@ -96,7 +96,7 @@ test('seo: coding query variants keep clean canonical, noindex, and filter state
       const itemLists = nodes.filter((node) => node['@type'] === 'ItemList');
       expect(itemLists).toHaveLength(empty ? 0 : 1);
       const countText = (await countBadge.textContent()) || '';
-      expect(countText).toMatch(/\d+\s+matches/);
+      expect(countText).toMatch(/\d+\s+match(?:es)?\b/);
       const total = Number(countText.match(/\d+/)![0]);
       if (empty) {
         expect(total).toBe(0);

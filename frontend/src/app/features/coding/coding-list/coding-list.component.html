@@ -14,7 +14,7 @@
         </span>
       </div>
       <p class="fa-page-access-note fa-meta-text" *ngIf="source === 'global-coding'">
-        Selected frontend coding challenges are free to start. Premium unlocks additional question sets and deeper solution context while locked items stay gated.
+        {{ pageAccessNote() }}
       </p>
     </div>
     <div class="fa-page-action" aria-label="Primary practice action">
@@ -57,7 +57,7 @@
           </div>
           <div class="fa-filter-panel__header-actions">
             <div class="fa-filter-panel__count">
-              <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+              <span class="pill fa-chip fa-chip--label">{{ countLabel(filteredCount$ | async, 'item', 'items') }}</span>
             </div>
             <button *ngIf="drawer" type="button" faButton variant="ghost" class="fa-filter-panel__close"
               data-testid="coding-list-mobile-filter-close" (click)="closeMobileFilters()">
@@ -174,7 +174,7 @@
             <span>Filters</span>
           </button>
           <div class="fa-count-badge">
-            {{ (filteredCount$ | async) || 0 }} matches
+            {{ countLabel(filteredCount$ | async, 'match', 'matches') }}
           </div>
           <button *ngIf="freeOnlyAvailable()" type="button" faButton variant="ghost" class="fa-free-only"
             [class.is-active]="freeOnly$ | async" [attr.aria-pressed]="(freeOnly$ | async) ? 'true' : 'false'"
@@ -210,6 +210,10 @@
         <ng-container *ngIf="visible$ | async as questions; else loading">
           <div *ngIf="questions.length === 0" class="py-6 text-center fa-subtle">
             <div class="italic" data-testid="coding-empty-state">No questions match your filters.</div>
+            <button *ngIf="canSearchConcepts()" type="button" faButton variant="ghost" class="fa-link-btn mt-3"
+              data-testid="coding-empty-search-concepts" (click)="selectKind('trivia')">
+              Search concept questions for “{{ searchTerm.trim() }}”
+            </button>
             <button type="button" faButton variant="ghost" class="fa-link-btn mt-3" data-testid="coding-empty-reset"
               (click)="resetAllFilters()">
               Reset filters

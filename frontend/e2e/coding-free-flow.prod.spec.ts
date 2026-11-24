@@ -2,15 +2,19 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test } from './fixtures';
 
-// The JavaScript coding tasks, all and free, from the catalog the list is built from. The prerendered list says
-// "159 matches" for every technology, so the JavaScript count shows the browser has taken over the page.
-const JAVASCRIPT_CODING = (
-  JSON.parse(readFileSync(join(process.cwd(), '../cdn/questions/javascript/coding.json'), 'utf8')) as Array<{
+// The JavaScript tasks /coding lists, all and free: the coding tasks and the debugging tasks, from the catalogs the
+// list is built from. The prerendered list counts every technology, so the JavaScript count shows the browser has
+// taken over the page. A task without `access` is free.
+const readJavascriptCatalog = (file: string) =>
+  JSON.parse(readFileSync(join(process.cwd(), '../cdn/questions/javascript', file), 'utf8')) as Array<{
     type?: string;
     access?: string;
-  }>
-).filter((question) => question.type === 'coding');
-const FREE_JAVASCRIPT_CODING_TASKS = JAVASCRIPT_CODING.filter((question) => question.access === 'free').length;
+  }>;
+const JAVASCRIPT_CODING = [
+  ...readJavascriptCatalog('coding.json').filter((question) => question.type === 'coding'),
+  ...readJavascriptCatalog('debug.json'),
+];
+const FREE_JAVASCRIPT_CODING_TASKS = JAVASCRIPT_CODING.filter((question) => question.access !== 'premium').length;
 
 // A guest's /api/auth/me answers 401, which the browser logs.
 test.use({ consoleErrorAllowlist: ['\\/api\\/auth\\/me'] });

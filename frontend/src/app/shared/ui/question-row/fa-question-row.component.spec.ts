@@ -104,6 +104,8 @@ describe('FaQuestionRowComponent', () => {
     fixture.componentRef.setInput('concealed', false);
     fixture.detectChanges();
     expect(host.querySelector('.fa-question-row__concealed, [data-nosnippet]')).toBeNull();
+    // The row's link is its one tab stop; a focusable description made every row two.
+    expect(host.querySelector('.fa-question-row__description')?.hasAttribute('tabindex')).toBeFalse();
   });
 
   it('renders read-only rows without a chevron when no route is provided', async () => {

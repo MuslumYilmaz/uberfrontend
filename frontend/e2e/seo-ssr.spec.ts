@@ -2314,7 +2314,7 @@ test.describe('seo-ssr', () => {
     );
     expect(itemLists).toHaveLength(1);
 
-    const matchCount = rawVisibleText(html).match(/\b(\d+)\s+matches\b/);
+    const matchCount = rawVisibleText(html).match(/\b(\d+)\s+match(?:es)?\b/);
     expect(matchCount, 'the rendered catalog exposes its total result count').not.toBeNull();
     const total = Number(matchCount![1]);
     expect(total).toBeGreaterThan(0);

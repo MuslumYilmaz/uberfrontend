@@ -4,11 +4,13 @@ import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 
-// The client's count, from the catalog: the prerendered page says "159 matches" for every technology until the
-// browser filters, so the badge alone cannot tell a hydrated list from a stale one.
-const JAVASCRIPT_CODING_TASKS = (
-  JSON.parse(readFileSync(join(process.cwd(), '../cdn/questions/javascript/coding.json'), 'utf8')) as Array<{ type?: string }>
-).filter((question) => question.type === 'coding').length;
+// The client's count, from the catalogs: the prerendered page counts every technology until the browser filters,
+// so the badge alone cannot tell a hydrated list from a stale one. /coding lists the debugging tasks with the coding
+// tasks.
+const readJavascriptCatalog = (file: string) =>
+  JSON.parse(readFileSync(join(process.cwd(), '../cdn/questions/javascript', file), 'utf8')) as Array<{ type?: string }>;
+const JAVASCRIPT_CODING_TASKS = readJavascriptCatalog('coding.json').filter((question) => question.type === 'coding').length
+  + readJavascriptCatalog('debug.json').length;
 
 // A signed-in visitor's background progress sync can fail (a 429 from its limiter, a 5xx, a dropped connection). Its
 // retry timer must wait outside the Angular zone: one pending inside it keeps the app from turning stable, and

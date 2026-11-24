@@ -21,6 +21,10 @@ describe('CodingListComponent', () => {
     source?: 'global-coding' | 'company';
     kind?: 'coding' | 'trivia' | 'all' | 'system-design';
     companySlug?: string;
+    user?: Record<string, unknown> | null;
+    savedState?: Record<string, unknown>;
+    /** Runs after the module is set up and before the component starts (to spy on the router, for example). */
+    beforeCreate?: () => void;
   }) {
     const routeData = {
       source: options?.source ?? 'global-coding',
@@ -86,7 +90,7 @@ describe('CodingListComponent', () => {
         {
           provide: AuthService,
           useValue: {
-            user: signal(null),
+            user: signal(options?.user ?? null),
           },
         },
         {
@@ -99,7 +103,7 @@ describe('CodingListComponent', () => {
         {
           provide: CodingListStateService,
           useValue: {
-            globalCodingState: {},
+            globalCodingState: options?.savedState ?? {},
           },
         },
         {
@@ -111,6 +115,7 @@ describe('CodingListComponent', () => {
       ],
     }).compileComponents();
 
+    options?.beforeCreate?.();
     const fixture = TestBed.createComponent(CodingListComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -443,7 +448,7 @@ describe('CodingListComponent', () => {
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
     expect(host.querySelector('[data-testid="question-card-js-free-task"]')).not.toBeNull();
-    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('1 matches');
+    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('1 match');
 
     fixture.componentInstance.resetAllFilters();
     fixture.detectChanges();
@@ -477,6 +482,113 @@ describe('CodingListComponent', () => {
 
     expect(navigate).not.toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
     expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'react', 'coding', 'react-counter']);
+  });
+
+  it('sends a returning visitor to the first open task they have not solved', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'javascript' },
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-first'],
+      items: [
+        question({ id: 'js-first', title: 'First task', importance: 5 }),
+        question({ id: 'js-locked', title: 'Locked task', access: 'premium', importance: 5 }),
+        question({ id: 'js-second', title: 'Second task', importance: 4 }),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+
+    expect(fixture.componentInstance.primaryActionLabel()).toBe('Open next unsolved task');
+    fixture.componentInstance.openFirstVisible();
+    await fixture.whenStable();
+
+    expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'javascript', 'coding', 'js-second']);
+  });
+
+  it('finds a task by a tag or its description and lists title matches first', async () => {
+    const fixture = await createComponent({
+      queryParams: { q: 'closure' },
+      items: [
+        question({ id: 'js-once', title: 'Once', tags: ['closure'], importance: 5 }),
+        question({ id: 'js-counter-fn', title: 'Create a Counter Function', description: 'Keep the count in a closure.', importance: 4 }),
+        question({ id: 'js-closure-basics', title: 'Closure Basics', importance: 1 }),
+        question({ id: 'js-flatten', title: 'Flatten', description: 'Flatten nested arrays.', importance: 5 }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const ids = Array.from(host.querySelectorAll('[data-testid^="question-card-"]'))
+      .map((card) => card.getAttribute('data-testid'));
+
+    expect(ids[0]).toBe('question-card-js-closure-basics');
+    expect(ids).toContain('question-card-js-once');
+    expect(ids).toContain('question-card-js-counter-fn');
+    expect(ids).not.toContain('question-card-js-flatten');
+  });
+
+  it('offers the concept list when a search finds no coding task', async () => {
+    const fixture = await createComponent({
+      queryParams: { q: 'event loop' },
+      items: [question({ id: 'js-flatten', title: 'Flatten', description: 'Flatten nested arrays.' })],
+    });
+    spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const host = fixture.nativeElement as HTMLElement;
+    const offer = host.querySelector<HTMLButtonElement>('[data-testid="coding-empty-search-concepts"]');
+
+    expect(offer?.textContent).toContain('event loop');
+    offer!.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedKind$.value).toBe('trivia');
+  });
+
+  it('opens a shared filter link on the coding list even when the visitor last browsed concepts', async () => {
+    const savedState = {
+      tech: {
+        searchTerm: '', sliderValue: 0, diffs: [], impTiers: [], selectedTags: [], sort: 'default',
+        tagMatchMode: 'all', selectedTech: null, selectedKind: 'trivia', selectedCategory: null,
+      },
+    };
+    const shared = await createComponent({ queryParams: { tech: 'javascript', diff: 'easy' }, savedState });
+    expect(shared.componentInstance.selectedKind$.value).toBe('coding');
+
+    // A bare /coding still brings the visitor back to the list they left (and writes it into the URL).
+    TestBed.resetTestingModule();
+    const plain = await createComponent({
+      queryParams: {},
+      savedState,
+      beforeCreate: () => spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true),
+    });
+    expect(plain.componentInstance.selectedKind$.value).toBe('trivia');
+  });
+
+  it('titles the hub for concept questions when Concepts is chosen', async () => {
+    const fixture = await createComponent({
+      queryParams: { kind: 'trivia' },
+      items: [question({ id: 'js-closures', title: 'What is a closure?', type: 'trivia' })],
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.pageTitle()).toBe('Frontend Concept Questions');
+    expect(component.pageFitPills()).not.toContain('Starter code');
+    expect(component.primaryActionLabel()).toBe('Start first concept question');
+    expect(component.pageAccessNote()).toContain('concept question');
+  });
+
+  it('lists the debugging tasks of the chosen technology with its coding tasks, on their own route', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'angular' },
+      items: [question({ id: 'angular-counter', title: 'Angular Counter', technology: 'angular', tech: 'angular' })],
+      debugItems: [
+        question({ id: 'ng-debug-zoneless-board', title: 'Fix a zoneless board', technology: 'angular', tech: 'angular' }),
+        question({ id: 'js-debug-off-by-one', title: 'Off by one', technology: 'javascript', tech: 'javascript' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const debugCard = host.querySelector('[data-testid="question-card-ng-debug-zoneless-board"]');
+
+    expect(debugCard?.textContent).toContain('Debugging');
+    expect(debugCard?.getAttribute('href')).toBe('/angular/debug/ng-debug-zoneless-board');
+    expect(host.querySelector('[data-testid="question-card-js-debug-off-by-one"]')).toBeNull();
+    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('2 matches');
   });
 
   it('opens formats UI as practice types with compact framework prep support', async () => {
