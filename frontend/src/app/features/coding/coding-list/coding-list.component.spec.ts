@@ -8,6 +8,8 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
+import { EssentialQuestionsService } from '../../../core/services/essential-questions.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -29,6 +31,9 @@ describe('CodingListComponent', () => {
     /** Drafts in this browser that differ from their starters, and each task's last run. */
     drafts?: Array<{ questionId: string; editedAt: number }>;
     runs?: Array<[string, { passCount: number; totalCount: number; ts: number }]>;
+    /** Essential 60 ranks by `<kind>:<id>`, and the role chosen in onboarding. */
+    ranks?: Map<string, number>;
+    onboardingRole?: string;
     /** Runs after the module is set up and before the component starts (to spy on the router, for example). */
     beforeCreate?: () => void;
   }) {
@@ -117,6 +122,18 @@ describe('CodingListComponent', () => {
         {
           provide: AnalyticsService,
           useValue: { track: jasmine.createSpy('track').and.returnValue(true) },
+        },
+        {
+          provide: EssentialQuestionsService,
+          useValue: { loadRanks: () => of(options?.ranks ?? new Map()) },
+        },
+        {
+          provide: OnboardingService,
+          useValue: {
+            getProfile: () => (options?.onboardingRole
+              ? { targetRole: options.onboardingRole, framework: 'javascript', timeline: 'ongoing' }
+              : null),
+          },
         },
         {
           provide: CodingListStateService,
@@ -327,7 +344,12 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Coding Challenge Hub');
     expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Coding Challenges');
     expect(host.textContent || '').toContain('Build and debug focused frontend prompts');
-    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start with Debounce');
+    const starts = host.querySelector('[data-testid="coding-start-paths"]') as HTMLElement;
+    expect(starts.textContent).toContain('New to coding interviews?');
+    expect(starts.textContent).toContain('Interview coming up?');
+    expect(host.querySelector('[data-testid="coding-start-interview"]')?.textContent?.trim()).toBe('Start with Debounce');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')).toBeNull();
+    expect(host.textContent).not.toContain('Essential 60 #1');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()
     )).toEqual(['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start']);
@@ -439,7 +461,7 @@ describe('CodingListComponent', () => {
     expect(discovery?.textContent || '').not.toContain('React Premium Grid');
   });
 
-  it('opens Debounce directly from the unfiltered guest global library start action', async () => {
+  it('opens Debounce from the interview start even with a warm-up listed above it', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },
       items: [
@@ -450,9 +472,9 @@ describe('CodingListComponent', () => {
     const router = TestBed.inject(Router);
     const navigate = spyOn(router, 'navigate').and.resolveTo(true);
 
-    fixture.componentInstance.openFirstVisible();
+    fixture.componentInstance.startPath('interview');
 
-    expect(navigate).toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
+    expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'javascript', 'coding', 'js-debounce']);
   });
 
   it('lets a guest hide the tasks behind a lock with Free only, and a filter reset shows them again', async () => {
@@ -640,6 +662,57 @@ describe('CodingListComponent', () => {
 
     const stats = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="coding-progress-stats"]');
     expect(stats?.textContent?.trim()).toBe('2 solved · 3-day streak');
+  });
+
+  it('opens each first-visit start on its first task, with the path as the task page\'s Prev and Next', async () => {
+    const fixture = await createComponent({
+      queryParams: { reset: '1' },
+      items: [
+        question({ id: 'js-debounce', title: 'Debounce', difficulty: 'intermediate', importance: 5 }),
+        question({ id: 'js-throttle', title: 'Throttle', difficulty: 'intermediate', access: 'premium' }),
+        question({ id: 'js-sum', title: 'Sum', importance: 4 }),
+        question({ id: 'html-warmup', title: 'Warm-Up: Basic Structure', tech: 'html', technology: 'html' }),
+      ],
+      ranks: new Map([['coding:js-debounce', 1], ['coding:js-throttle', 3]]),
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const opened = () => {
+      const [commands, extras] = navigate.calls.mostRecent().args as [unknown[], { state: any }];
+      return { commands, path: extras.state.session.items.map((item: { id: string }) => item.id) };
+    };
+
+    (host.querySelector('[data-testid="coding-start-warmups"]') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    expect(opened()).toEqual({ commands: ['/', 'html', 'coding', 'html-warmup'], path: ['html-warmup', 'js-sum'] });
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_start_entry_clicked', { entry: 'warmups' });
+
+    (host.querySelector('[data-testid="coding-start-interview"]') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    expect(opened()).toEqual({
+      commands: ['/', 'javascript', 'coding', 'js-debounce'],
+      path: ['js-debounce', 'js-throttle', 'js-sum'],
+    });
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_start_entry_clicked', { entry: 'interview' });
+  });
+
+  it('orders one technology by Essential 60 rank, or warm-ups first for a self-declared junior', async () => {
+    const items = [
+      question({ id: 'js-warmup', title: 'Warm-Up: Sum', importance: 2 }),
+      question({ id: 'js-easy', title: 'Easy one', importance: 4 }),
+      question({ id: 'js-promise-any', title: 'Promise.any', difficulty: 'intermediate', importance: 3 }),
+      question({ id: 'js-debounce', title: 'Debounce', difficulty: 'intermediate', importance: 5 }),
+    ];
+    const ranks = new Map([['coding:js-debounce', 1], ['coding:js-promise-any', 21]]);
+    const order = (fixture: { nativeElement: HTMLElement }) => Array.from(fixture.nativeElement
+      .querySelectorAll('[data-testid^="question-card-js-"]')).map((row) => row.getAttribute('data-testid')?.slice(14));
+
+    const mid = await createComponent({ queryParams: { tech: 'javascript' }, items, ranks });
+    expect(order(mid)).toEqual(['js-debounce', 'js-promise-any', 'js-easy', 'js-warmup']);
+
+    TestBed.resetTestingModule();
+    const junior = await createComponent({ queryParams: { tech: 'javascript' }, items, ranks, onboardingRole: 'junior_frontend' });
+    expect(order(junior)).toEqual(['js-warmup', 'js-easy', 'js-debounce', 'js-promise-any']);
   });
 
   it('turns Free only on from a shared link', async () => {

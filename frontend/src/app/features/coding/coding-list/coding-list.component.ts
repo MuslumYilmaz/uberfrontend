@@ -21,6 +21,8 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { EssentialQuestionsService } from '../../../core/services/essential-questions.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
   LastRun,
   ProgressFilter,
@@ -41,6 +43,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
+import { interviewPath, warmupPath } from './coding-start-paths.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
@@ -339,6 +342,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private readonly codeStore = inject(CodeStorageService);
   private readonly attemptInsights = inject(AttemptInsightsService);
   private readonly analytics = inject(AnalyticsService);
+  private readonly essentialQuestions = inject(EssentialQuestionsService);
+  /** A technology's default order: Essential 60 first, unless onboarding said "junior", who sees warm-ups first. */
+  private readonly prefersWarmupsFirst = inject(OnboardingService).getProfile()?.targetRole === 'junior_frontend';
+  /** Essential 60 ranks by `<kind>:<id>`, read in the browser after the first render; empty until then. */
+  private readonly essentialRanks$ = new BehaviorSubject<ReadonlyMap<string, number>>(new Map());
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   mobileFiltersOpen = false;
@@ -759,8 +767,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedCategory$,
     this.selectedTags$,
     this.sort$,
+    this.essentialRanks$,
   ]).pipe(
-    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey]) => {
+    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey, ranks]) => {
       if (questions === null) return null;
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
@@ -854,7 +863,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
         isFormats,
       });
       const deduped = this.dedupeFrameworkRows(filtered);
-      const warmupFirst = (a: any, b: any) => {
+      // One technology in the default order: the Essential 60 tasks first, by rank, for everyone but a self-declared
+      // junior, who keeps the warm-ups first.
+      const essentialFirst = this.source === 'global-coding' && !isFormats && !!selectedTech
+        && sortKey === 'default' && !this.prefersWarmupsFirst;
+      const defaultOrder = (a: any, b: any) => {
         const byRelevance = this.searchRank(a, t) - this.searchRank(b, t);
         if (byRelevance) return byRelevance;
 
@@ -868,13 +881,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
           if (aPremium !== bPremium) return aPremium ? 1 : -1;
         }
 
+        if (essentialFirst) return this.compareEssentialRows(a, b, ranks);
+
         const aw = this.isWarmupTitle(a?.title);
         const bw = this.isWarmupTitle(b?.title);
         if (aw !== bw) return aw ? -1 : 1;
         return cmp(a, b);
       };
 
-      return deduped.slice().sort(warmupFirst);
+      return deduped.slice().sort(defaultOrder);
     })
   );
 
@@ -1131,7 +1146,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Start system design prompt';
       if (this.isFormatsMode()) return 'Start format practice';
-      if (this.isGuestDefaultGlobalLibrary()) return 'Start with Debounce';
       if (this.isGlobalConceptsView()) {
         return this.hasSolvedAny() ? 'Open next concept question' : 'Start first concept question';
       }
@@ -1146,7 +1160,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
       if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
-      if (this.isGuestDefaultGlobalLibrary()) return 'Opens Essential 60 #1: the high-signal debounce function drill.';
       if (this.isGlobalConceptsView()) {
         return this.hasSolvedAny()
           ? 'Opens the first question in this view you have not marked complete.'
@@ -1417,12 +1430,23 @@ export class CodingListComponent implements OnInit, OnDestroy {
   trackByDiscoveryItem = (_: number, item: CodingHubDiscoveryItem): string =>
     `${item.kind}:${item.tech}:${item.id}`;
 
-  openFirstVisible(): void {
-    if (this.isGuestDefaultGlobalLibrary()) {
-      void this.router.navigate([...DEFAULT_START_ROUTE]);
-      return;
-    }
+  /**
+   * A first-time visitor's two ways in: five warm-ups, or the JavaScript utilities interviewers ask for most, from
+   * Debounce on. Each opens its first task with the path as the task page's Prev and Next.
+   */
+  startPath(entry: 'warmups' | 'interview'): void {
+    this.analytics.track('coding_start_entry_clicked', { entry });
+    this.visible$.pipe(take(1)).subscribe((list) => {
+      const rows = list ?? [];
+      const path = entry === 'warmups'
+        ? warmupPath(rows)
+        : interviewPath(rows, this.essentialRanks$.value, DEFAULT_START_QUESTION_ID);
+      if (path.length) this.go(path[0], path);
+      else if (entry === 'interview') void this.router.navigate([...DEFAULT_START_ROUTE]);
+    });
+  }
 
+  openFirstVisible(): void {
     this.visible$
       .pipe(take(1))
       .subscribe((list) => {
@@ -1449,6 +1473,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     afterNextRender(() => {
       this.questionHubViewReady.set(true);
       void this.loadPracticeProgress();
+      this.essentialQuestions.loadRanks().pipe(take(1)).subscribe((ranks) => this.essentialRanks$.next(ranks));
     });
     this.debug('ctor', {
       instance: this.instanceId,
@@ -2515,6 +2540,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
       && state.tiers.length === 0
       && state.selTags.length === 0
       && state.sortKey === 'default';
+  }
+
+  /** Essential 60 tasks first by rank, then practice priority, difficulty and title. */
+  private compareEssentialRows(a: Row, b: Row, ranks: ReadonlyMap<string, number>): number {
+    const rank = (row: Row): number => ranks.get(`${row.__kind}:${row.id}`) ?? Number.POSITIVE_INFINITY;
+    const byRank = rank(a) - rank(b);
+    if (byRank) return byRank;
+    const byImportance = (b.importance ?? 0) - (a.importance ?? 0);
+    if (byImportance) return byImportance;
+    return this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty)
+      || (a.title || '').localeCompare(b.title || '');
   }
 
   private compareDefaultStartRows(a: Row, b: Row): number {

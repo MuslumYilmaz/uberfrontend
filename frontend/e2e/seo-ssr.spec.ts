@@ -2299,6 +2299,20 @@ test.describe('seo-ssr', () => {
     await context.close();
   });
 
+  test('raw coding hub gives a first visit two starts in plain words and leaves progress to the browser', async ({ request }) => {
+    const html = await readRawHtml(request, '/coding');
+    const text = rawVisibleText(html);
+
+    expect(text).toContain('New to coding interviews?');
+    expect(text).toContain('Interview coming up?');
+    expect(text).toContain('Start with Debounce');
+    expect(text).not.toContain('Essential 60 #1');
+    expect(text).not.toContain('high-signal');
+    // Drafts and solved tasks live with the visitor: the server renders no Continue card and no progress view.
+    expect(html).not.toContain('data-testid="coding-continue-card"');
+    expect(html).not.toContain('data-testid="filter-progress"');
+  });
+
   test('raw coding hub schema keeps the total count only on ItemList', async ({ request }) => {
     const html = await readRawHtml(request, '/coding');
     const nodes = extractRawJsonLdNodes(html);

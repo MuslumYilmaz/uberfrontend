@@ -36,6 +36,28 @@
         </button>
       </div>
       <ng-template #startAction>
+        <!-- A first visit to /coding: one start for a newcomer, one for an interview that is close. -->
+        <div class="fa-start-paths" *ngIf="isGuestDefaultGlobalLibrary(); else primaryStart"
+          data-testid="coding-start-paths">
+          <div class="fa-start-path">
+            <p class="fa-start-path__title">New to coding interviews?</p>
+            <p class="fa-start-path__text">Five short warm-ups, all free and Easy.</p>
+            <button type="button" faButton data-testid="coding-start-warmups"
+              [disabled]="((filteredCount$ | async) || 0) === 0" (click)="startPath('warmups')">
+              Start the warm-ups
+            </button>
+          </div>
+          <div class="fa-start-path">
+            <p class="fa-start-path__title">Interview coming up?</p>
+            <p class="fa-start-path__text">The JavaScript utilities interviewers ask for most, starting with Debounce.</p>
+            <button type="button" faButton variant="primary" data-testid="coding-start-interview"
+              [disabled]="((filteredCount$ | async) || 0) === 0" (click)="startPath('interview')">
+              Start with Debounce
+            </button>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #primaryStart>
         <button
           type="button"
           faButton

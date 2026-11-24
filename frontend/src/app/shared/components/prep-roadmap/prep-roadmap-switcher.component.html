@@ -10,8 +10,9 @@
       [attr.aria-expanded]="open()"
       (click)="toggle()"
     >
-      <span class="prep-switcher__current">{{ current.title }}</span>
-      <span class="prep-switcher__count">{{ otherStepsLabel() }}</span>
+      <!-- A visitor's compact switcher names places to prepare, not a step number to be behind on. -->
+      <span class="prep-switcher__current">{{ compact ? current.shortTitle : current.title }}</span>
+      <span class="prep-switcher__count">{{ compact ? 'More ways to prep' : otherStepsLabel() }}</span>
       <app-fa-glyph
         class="prep-switcher__chevron"
         icon="chevron-down"
@@ -27,7 +28,7 @@
       data-testid="prep-roadmap-switcher-panel"
       role="menu"
     >
-      <p class="prep-switcher__panel-title">Recommended prep strategy</p>
+      <p class="prep-switcher__panel-title">{{ compact ? 'Ways to prepare' : 'Recommended prep strategy' }}</p>
       <ol class="prep-switcher__list">
         <li
           class="prep-switcher__item"
@@ -44,8 +45,8 @@
             [attr.data-testid]="'prep-roadmap-switcher-item-' + item.step"
             (click)="close()"
           >
-            <span class="prep-switcher__step" aria-hidden="true">{{ item.step }}</span>
-            <span class="prep-switcher__label">{{ item.title }}</span>
+            <span class="prep-switcher__step" aria-hidden="true" *ngIf="!compact">{{ item.step }}</span>
+            <span class="prep-switcher__label">{{ compact ? item.shortTitle : item.title }}</span>
             <app-fa-glyph
               class="prep-switcher__arrow"
               icon="arrow-right"
