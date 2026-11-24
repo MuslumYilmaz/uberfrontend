@@ -1,5 +1,5 @@
 {
-  "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+  "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
   "finalApproval": {
     "approvedAt": "2026-08-24",
     "approvedBy": "project-owner",
@@ -32,9 +32,10 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-14 source-pin maintenance: registryContentHash refreshed after react-debounced-search lost its Spotify company tag and its Spotify source in the company guide fixes of 2026-11-13 (step 9 of the redesign the project owner approved): that source says the Spotify round was framework-free, so the React task no longer counts as Spotify practice. Its requirements, expected behavior, starter, checks and solution are unchanged; this is not a new approval of the task.",
-      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-take-latest and js-fetch-json-timeout dropped a sandbox workaround from their official solutions and test helpers: `toAbortError` now sets `err.name = 'AbortError'` directly instead of wrapping it in try/catch with an Object.defineProperty fallback, because the code sandbox no longer turns inherited built-in properties read-only. Both questions also moved updatedAt to 2026-11-24. Requirements, expected behavior, starters, test names and assertions are unchanged; this is not a new approval of the tasks."
+      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-take-latest and js-fetch-json-timeout dropped a sandbox workaround from their official solutions and test helpers: `toAbortError` now sets `err.name = 'AbortError'` directly instead of wrapping it in try/catch with an Object.defineProperty fallback, because the code sandbox no longer turns inherited built-in properties read-only. Both questions also moved updatedAt to 2026-11-24. Requirements, expected behavior, starters, test names and assertions are unchanged; this is not a new approval of the tasks.",
+      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-fetch-json-timeout's description named the two rejections its tests already assert: a non-OK response rejects with `Error('HTTP <status>')` (the test expects `HTTP 404`) and a timeout rejects with an `AbortError` whose message is `Timeout`. The summary, the returns text and one new example changed; starters, tests, the official solution and the expected behavior are unchanged; this is not a new approval of the task."
     ],
-    "registryContentHash": "00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374",
+    "registryContentHash": "b4f4d28d7f25723010b1bc02d7ea012ed0cf312092cddb3a3e5fc3c7312760ff",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
@@ -55,7 +56,7 @@
       ],
       "review": {
         "contentHash": "5e27716aedeb7133cc473e7bd896ddddeebf3f6f55523eba9d9f0e09d5891174",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -109,7 +110,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -305,7 +307,7 @@
       ],
       "review": {
         "contentHash": "09547d65125f7970f60947811f9cdc3ea1d406434d486d45c238dec7c82f91fa",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -359,7 +361,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -503,7 +506,7 @@
       ],
       "review": {
         "contentHash": "ea778ac4634cba4f696a04b56b985cd60b30b9344a776167730b38bfb6eea3d6",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -557,7 +560,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -701,7 +705,7 @@
       ],
       "review": {
         "contentHash": "0c178c6c3b2390e6d3b4e5df3e2007ae019f874b4972fc7992e3aca51b8bd9dc",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -755,7 +759,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -911,7 +916,7 @@
       ],
       "review": {
         "contentHash": "711e65df4010e82e469b94453046e3d31c6ce091253128603a8004a40c3022fb",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -965,7 +970,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1334,7 +1340,7 @@
       ],
       "review": {
         "contentHash": "6b6ddfe1e55adfc9540056804b004ac71a0f0b3b247c99a5a5796fd2ccb4925b",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1388,7 +1394,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1602,7 +1609,7 @@
       ],
       "review": {
         "contentHash": "402d34231441ad60ce9498e0f98fa7640445816109941b1cc5dbab8766519f97",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1656,7 +1663,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -1828,7 +1836,7 @@
       ],
       "review": {
         "contentHash": "190be8d191c9d32978f8460435efa740412b5e4a386e894c6a321a89aff8433c",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -1882,7 +1890,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2393,7 +2402,7 @@
       ],
       "review": {
         "contentHash": "f2f969e2602cc42682f67110350e06924e86b28f4c5e795b26c7e29b5225a667",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -2447,7 +2456,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -2983,7 +2993,7 @@
       ],
       "review": {
         "contentHash": "9afbcc1c69e0f8787c23301c0dd6dcc4f11aec0e4c94b14c58e1e9ad7efc2b84",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3037,7 +3047,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -3230,7 +3241,7 @@
       ],
       "review": {
         "contentHash": "c5617bb01c6ef9ede077f55b7a26a279ab25a9232d917f1e764f287e18262aec",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -3284,7 +3295,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4080,7 +4092,7 @@
       ],
       "review": {
         "contentHash": "b7e21b989579ca9f8234e28caad0dc36cbaf32adeec3cb236a0329c36810e3d2",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4134,7 +4146,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4435,7 +4448,7 @@
       ],
       "review": {
         "contentHash": "2aa4e4092e2612e0e920f13d82ba460e5f3e30f3e02c4dcbdd156b3d95059bd3",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4489,7 +4502,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -4884,7 +4898,7 @@
       ],
       "review": {
         "contentHash": "0d20ad1a0360ee919cf5a3e206ce891db57e077325ca321150dcb519cf622880",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -4938,7 +4952,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5232,7 +5247,7 @@
       ],
       "review": {
         "contentHash": "42ece01188f1debda2182c60e99242bfc9e1a40f62a0490561ecd95452412cf5",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5286,7 +5301,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5552,7 +5568,7 @@
       ],
       "review": {
         "contentHash": "882884703e2bb0d404d314de45e382214cd3fb929b28cf21205a95f0acbefa17",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5606,7 +5622,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5681,7 +5698,7 @@
       ],
       "review": {
         "contentHash": "c7bd8c5cdb98b7759ad2574f615eafe7e4dcbfbd3c3eaca0fa656b4eb56ae11d",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5735,7 +5752,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5805,7 +5823,7 @@
       ],
       "review": {
         "contentHash": "94c747ce8a7b17df7f3150848390707fc46023e6a3a1bd2d8f1370f04270ec5d",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5859,7 +5877,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -5939,7 +5958,7 @@
       ],
       "review": {
         "contentHash": "db1aae580d6682ac9511fe1a29adb028c143764b6d42654e21d583820ab1954a",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -5993,7 +6012,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6079,7 +6099,7 @@
       ],
       "review": {
         "contentHash": "8ba4e2e62fd3ba91c8634fd77cfe5b7f86b25a3c995dcc390002a9b9f7c09ef9",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6133,7 +6153,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6219,7 +6240,7 @@
       ],
       "review": {
         "contentHash": "69cf71e522c782b02548680595fb8ac48cbc02e06bc945e455bf8ce8e843eb1c",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6273,7 +6294,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6353,7 +6375,7 @@
       ],
       "review": {
         "contentHash": "ae28b3fc61abfc1977f4113e38461493ab31695aebe2388a3be23f1777f7203b",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6407,7 +6429,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6478,7 +6501,7 @@
     },
     {
       "conceptId": "coding-fetch-timeout-signal-composition",
-      "contentHash": "34761f5354379e1cc1ac3c19d152de4526138e53a9cb2b0171492f0c539a0ca9",
+      "contentHash": "95c1b3d9363e87a7f9bac5e091c25936282414b04d543818764af0b1b9adc29b",
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "remediationTopics": [
         "Fetch error handling",
@@ -6486,8 +6509,8 @@
         "Timer and listener cleanup"
       ],
       "review": {
-        "contentHash": "34761f5354379e1cc1ac3c19d152de4526138e53a9cb2b0171492f0c539a0ca9",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "contentHash": "95c1b3d9363e87a7f9bac5e091c25936282414b04d543818764af0b1b9adc29b",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6541,7 +6564,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6623,7 +6647,7 @@
         "catalogAccess": "free",
         "catalogFile": "cdn/questions/javascript/coding.json",
         "checkContractHash": "2f1506d506b8f49639632f9625eb555e6f197ca0e786b7234920f014197806d9",
-        "sourceQuestionHash": "9369a3d894929e004021adf9da2dea4653ff09b6ea0168fb1b254b2ead51fdf7",
+        "sourceQuestionHash": "140b33c25be24bb52fef2821888393e75c7cb7af241a58c910abe00c08ccb988",
         "starterContentHash": "4501420ca6b96d6e3e95e21247525b367de51ee760853c5ca289af6a4c1f3592"
       }
     },
@@ -6638,7 +6662,7 @@
       ],
       "review": {
         "contentHash": "caf53fbd4e5424501c9302aefe7edb62e9b2ab7fa9005c5e1c7b89474736b615",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6692,7 +6716,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6772,7 +6797,7 @@
       ],
       "review": {
         "contentHash": "9710dd90c371e083943910be660520de82081c2a4eeee4db519ee5ad984d0bd5",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6826,7 +6851,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -6923,7 +6949,7 @@
       ],
       "review": {
         "contentHash": "f2076171a37a169991ed1c204cc805ae10711573207f18dad8b6e778307b0266",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -6977,7 +7003,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7079,7 +7106,7 @@
       ],
       "review": {
         "contentHash": "f6b60b1ad0b4af9ceddc5294a97543800bfc2ca9f822f4a416102345f8c1d2fb",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7133,7 +7160,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7242,7 +7270,7 @@
       ],
       "review": {
         "contentHash": "d42d808416a53c0aa108fb7cfa70d4faefef5b82e658e01a7c37f27d7754235a",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7296,7 +7324,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7397,7 +7426,7 @@
       ],
       "review": {
         "contentHash": "de4e25cffe68d74d9f5aea026e1570c4e0bbe9f21b005bab83154f2055747979",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7451,7 +7480,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7552,7 +7582,7 @@
       ],
       "review": {
         "contentHash": "20daae37965fdeb2f68367312c19b302064418d4f23195f500dacc7e6faaba87",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7606,7 +7636,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7687,7 +7718,7 @@
       ],
       "review": {
         "contentHash": "44d718ffd28cad9f097c737d3be9abe07e5d0a957926af9b43fa53e373a532b5",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7741,7 +7772,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -7937,7 +7969,7 @@
       ],
       "review": {
         "contentHash": "6acca21bc1fbe463685eb56a0a191a5df4dfcec3b0cc08463bc7eab82ce3a4cd",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -7991,7 +8023,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8135,7 +8168,7 @@
       ],
       "review": {
         "contentHash": "1547295f1cd60baa8e9242753aca443ca84b5fff19bc83594e1c80148c80b757",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8189,7 +8222,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8333,7 +8367,7 @@
       ],
       "review": {
         "contentHash": "8473f419fed03dce03f506507d81ecad1d29459888bf0d25bb02abe9cb7eb915",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8387,7 +8421,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8543,7 +8578,7 @@
       ],
       "review": {
         "contentHash": "d6817bc43609365647e02312e4e58eda189a4373c92b8df28fcabd3e4c2de82b",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -8597,7 +8632,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -8966,7 +9002,7 @@
       ],
       "review": {
         "contentHash": "a9a0f1679b841f91ef793c0ba0d21215fed4c32580a062b6e3d69e56246aeefb",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9020,7 +9056,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9234,7 +9271,7 @@
       ],
       "review": {
         "contentHash": "7ce775f9ab2ea9c33a5a47cd0ba8836b7a9185c67402ae5479416701f81db9cb",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9288,7 +9325,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -9460,7 +9498,7 @@
       ],
       "review": {
         "contentHash": "962910450ff9afbd747319232d5d07a1d07d5ba58006ea1ea72054385ee4115f",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -9514,7 +9552,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10025,7 +10064,7 @@
       ],
       "review": {
         "contentHash": "84e4d06e6f186516c5cee5cb87b88ba7b0040dff52db4adf6183ff54924f1b9c",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10079,7 +10118,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10615,7 +10655,7 @@
       ],
       "review": {
         "contentHash": "76e6c1a984ff3bbbfb33360b128d6c776dbf0564c6e3b0d89fe5f1570b341ff9",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10669,7 +10709,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -10862,7 +10903,7 @@
       ],
       "review": {
         "contentHash": "4cc51a1e8c3b4aa74bb7fec592b4c468bc7a6273214a6dada542b499698779aa",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -10916,7 +10957,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -11712,7 +11754,7 @@
       ],
       "review": {
         "contentHash": "fae1e1977f436f17eb249d6f1f0a0db2f36f668994939d24a4a2ff58c5c5e596",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -11766,7 +11808,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12067,7 +12110,7 @@
       ],
       "review": {
         "contentHash": "ccb4f94398a0d99e62ea6906bf52f650dd065daf32721e5c11243328795ac39a",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12121,7 +12164,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12516,7 +12560,7 @@
       ],
       "review": {
         "contentHash": "700cec128d37c209fb46bcc12b04a7cede8d743bb57df270d51cd7fb5b75062d",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12570,7 +12614,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -12864,7 +12909,7 @@
       ],
       "review": {
         "contentHash": "2480dc3957dfc1c3630434681143df39008c3335a2836e38b8e18f779ef72694",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -12918,7 +12963,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13184,7 +13230,7 @@
       ],
       "review": {
         "contentHash": "19fd7d57c2c72938598988e7592e6cdac14c4a3a476f38fe21e1389af7adbeb7",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13238,7 +13284,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13434,7 +13481,7 @@
       ],
       "review": {
         "contentHash": "834c344ec474f4da7a39973d79a79af86b84ab527a4b57bf627f5a91be12eb09",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13488,7 +13535,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13632,7 +13680,7 @@
       ],
       "review": {
         "contentHash": "6dabb50817df425dc92a71b6b4224ad384ec1e4df078c5a1ea937bfbfe13cb56",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13686,7 +13734,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -13830,7 +13879,7 @@
       ],
       "review": {
         "contentHash": "3e6fa042531060ab0a92bd26d3b41f2b25dc13693849330053208ca8aec17194",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -13884,7 +13933,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14040,7 +14090,7 @@
       ],
       "review": {
         "contentHash": "f5d0bdb61d52999fd78daa01f2f21d56b76639ee440781f90f14a8381f4a037f",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14094,7 +14144,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14463,7 +14514,7 @@
       ],
       "review": {
         "contentHash": "2e53cfd96c5296ebae7b48fe8790a7184b7607b439ac31d47b2dc021fdcfd5c8",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14517,7 +14568,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14731,7 +14783,7 @@
       ],
       "review": {
         "contentHash": "ce1501c079c2b7ff0990968b44af9f7ef25ee39b5334d439a7679164e7e7d497",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -14785,7 +14837,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -14957,7 +15010,7 @@
       ],
       "review": {
         "contentHash": "360211fe773d5faf319fa5ddd3b040204445c108a3ce1d618e51f831492ad65a",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15011,7 +15064,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -15522,7 +15576,7 @@
       ],
       "review": {
         "contentHash": "d64361bf34863ecb6981e4837bdb776080db76d4ad8deb2ae99a3356e02dfb16",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -15576,7 +15630,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16112,7 +16167,7 @@
       ],
       "review": {
         "contentHash": "522fbb03983e794fb59c1c3f0f74c85fc74447271e162343731692a7b602f877",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16166,7 +16221,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -16359,7 +16415,7 @@
       ],
       "review": {
         "contentHash": "d1be6ae6691a1fff1ebd5ebfb6be71d05f886da12d1c973ad3a0164906352fe3",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -16413,7 +16469,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17209,7 +17266,7 @@
       ],
       "review": {
         "contentHash": "d6680a93d4c9915be1095af7c42a405f7b873e004630a3110115701ea80f9617",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17263,7 +17320,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -17564,7 +17622,7 @@
       ],
       "review": {
         "contentHash": "9af970ce6351abfcfba8657718134a8b11d39a79f1e23c9d96c917c37198e442",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -17618,7 +17676,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -18013,7 +18072,7 @@
       ],
       "review": {
         "contentHash": "9472f612f4fc8f572ee5ad55abb577092c456411e77521f4eb81ab3e29244536",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -18067,7 +18126,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",
@@ -18361,7 +18421,7 @@
       ],
       "review": {
         "contentHash": "123fb469eb17483e52eda302bc3506f8d2f2069ea0032360debbf60bd7bdf8e4",
-        "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+        "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
         "editorial": {
           "notes": [
             "The selected tasks are realistic implementation exercises with explicit observable constraints.",
@@ -18415,7 +18475,8 @@
             "2026-11-12 source-pin maintenance review: react/vue shopping cart (starter comment and one check), vue transfer list (starter comment, implementation note, hint), and the todo and counter pressure scenarios (round locators, two todo constraints made explicit); see the finalApproval note of the same date. The official solutions pass, the starters fail, a cart mutant that keeps quantity 1 fails the new check, and the pressure reference solutions and renamed-markup variants pass every round.",
             "2026-11-12 source-pin maintenance review: react-todo-list changed only its summary, which lost its last sentence; see the finalApproval note of the same date. Its requirements, expected behavior, starter asset, frameworkTests and solution are byte-identical.",
             "2026-11-14 source-pin maintenance review: react-debounced-search changed only its companies (spotify removed), its sources (the Spotify source removed) and updatedAt; see the finalApproval note of the same date. Its requirements, expected behavior, starter, checks and solution are byte-identical.",
-            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does."
+            "2026-11-24 source-pin maintenance review: js-take-latest and js-fetch-json-timeout changed one line of `toAbortError` in the official solution and in the test helper (JavaScript and TypeScript each) plus updatedAt; see the finalApproval note of the same date. Every test name and assertion is byte-identical, and both official solutions pass their tests in the Node harness, which now hardens built-ins the way the sandbox worker does.",
+            "2026-11-24 source-pin maintenance review: js-fetch-json-timeout's summary, returns text and examples now state the rejections its tests assert (`HTTP 404`, and an `AbortError` with message `Timeout`); see the finalApproval note of the same date. starterCode, starterCodeTs, tests and testsTs are byte-identical."
           ],
           "reviewer": "codex-interview-coding-technical-v1",
           "reviewerType": "ai",

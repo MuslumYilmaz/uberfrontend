@@ -2,15 +2,15 @@
   "artifacts": {
     "private": {
       "file": "interview-coding-registry-v1.private.json",
-      "sha256": "cab228ce59ae9ef48c56775bc81fb27d01f935bc25ddd22ae27a196e4d24aa56"
+      "sha256": "1d8cbfd2b838b438a92522834be8a9cee1a65980ae999f43e068b903b52be3f0"
     },
     "public": {
       "file": "interview-coding-registry-v1.public.json",
-      "sha256": "3c6a929a551681cd8a789ef3880f32e2ca2009dc77696534c9d7831644aa0e93"
+      "sha256": "f5503d6e1dcb9e2ad228a666abbec6aaba1dcb868edc98fded512cdbc30ee238"
     }
   },
-  "contentHash": "00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374",
-  "definitionHash": "b282139cfc11885a9e0a613c41147af5d9c6c5208cadb1ad82c4d9c84292657e",
+  "contentHash": "b4f4d28d7f25723010b1bc02d7ea012ed0cf312092cddb3a3e5fc3c7312760ff",
+  "definitionHash": "0f6f8d0e7f18e411aa1371cee9c8351f67542a8df17e122fc7d46d41202ef70e",
   "enabledVariantCount": 60,
   "finalApproval": {
     "approvedAt": "2026-08-24",
@@ -44,13 +44,14 @@
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after follow-up fixes to coding-trust step 12, approved by the project owner. The React and Vue shopping cart starters now say, as their texts do, that an item whose quantity drops below 1 leaves the cart (they had offered clamping at 1), and the two tasks check it; the Angular text still allows either. The Vue transfer list starter, implementation note and hint no longer say a new Set is needed for reactivity: Vue tracks add and delete on a Set held in a ref, and building a new Set works too. The todo pressure rounds 2 to 4 and counter round 3 now find what their text names instead of ids, classes and exact labels: filters, Add, Edit, Remove and Undo by their labels, the count by the copy the round now states, task control names by the task text the round now asks for, relationships by reference, and live regions by how they announce. Starter, question and pressure hashes are re-pinned; the summaries, which are the variant prompts, graded fields, rubrics, time limits and revisions, are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-12 source-pin maintenance: registryContentHash refreshed after the React todo summary dropped its stock focus line, approved by the project owner. The line named hooks and a props flow the task does not use (useEffect, one-way props/state flow), and with Linux fonts it pushed the requirements below the first screen of a 1280x720 laptop. The requirements, expected behavior, starter, checks and official solution are unchanged. The question hash is re-pinned; the variant prompts, graded fields, rubrics, time limits and revisions are unchanged. Pin maintenance under registry version 1.1.0, not a new release.",
       "2026-11-14 source-pin maintenance: registryContentHash refreshed after react-debounced-search lost its Spotify company tag and its Spotify source in the company guide fixes of 2026-11-13 (step 9 of the redesign the project owner approved): that source says the Spotify round was framework-free, so the React task no longer counts as Spotify practice. Its requirements, expected behavior, starter, checks and solution are unchanged; this is not a new approval of the task.",
-      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-take-latest and js-fetch-json-timeout dropped a sandbox workaround from their official solutions and test helpers: `toAbortError` now sets `err.name = 'AbortError'` directly instead of wrapping it in try/catch with an Object.defineProperty fallback, because the code sandbox no longer turns inherited built-in properties read-only. Both questions also moved updatedAt to 2026-11-24. Requirements, expected behavior, starters, test names and assertions are unchanged; this is not a new approval of the tasks."
+      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-take-latest and js-fetch-json-timeout dropped a sandbox workaround from their official solutions and test helpers: `toAbortError` now sets `err.name = 'AbortError'` directly instead of wrapping it in try/catch with an Object.defineProperty fallback, because the code sandbox no longer turns inherited built-in properties read-only. Both questions also moved updatedAt to 2026-11-24. Requirements, expected behavior, starters, test names and assertions are unchanged; this is not a new approval of the tasks.",
+      "2026-11-24 source-pin maintenance: registryContentHash refreshed after js-fetch-json-timeout's description named the two rejections its tests already assert: a non-OK response rejects with `Error('HTTP <status>')` (the test expects `HTTP 404`) and a timeout rejects with an `AbortError` whose message is `Timeout`. The summary, the returns text and one new example changed; starters, tests, the official solution and the expected behavior are unchanged; this is not a new approval of the task."
     ],
-    "registryContentHash": "00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374",
+    "registryContentHash": "b4f4d28d7f25723010b1bc02d7ea012ed0cf312092cddb3a3e5fc3c7312760ff",
     "registryVersion": "1.1.0",
     "selectionDefinitionHash": "95ae46b01019649017306384cd4928315a33ccb8d77c50f48306b2ecb5bc4c3e"
   },
-  "registryContentHash": "00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374",
+  "registryContentHash": "b4f4d28d7f25723010b1bc02d7ea012ed0cf312092cddb3a3e5fc3c7312760ff",
   "registryId": "frontend-interview-coding-registry-v1",
   "registryVersion": "1.1.0",
   "schemaVersion": "1.0.0",
@@ -191,7 +192,7 @@
       "revision": 1
     },
     {
-      "contentHash": "34761f5354379e1cc1ac3c19d152de4526138e53a9cb2b0171492f0c539a0ca9",
+      "contentHash": "95c1b3d9363e87a7f9bac5e091c25936282414b04d543818764af0b1b9adc29b",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "revision": 1

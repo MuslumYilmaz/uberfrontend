@@ -7481,7 +7481,7 @@
       "cancellation"
     ],
     "description": {
-      "summary": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+      "summary": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. A non-OK response rejects with `Error('HTTP <status>')`, for example `HTTP 404`; a timeout rejects with an `AbortError` whose message is `Timeout`. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
       "arguments": [
         {
           "name": "url",
@@ -7496,11 +7496,12 @@
       ],
       "returns": {
         "type": "Promise<any>",
-        "desc": "Resolves with parsed JSON or rejects on timeout, abort, or non-OK response."
+        "desc": "Resolves with the parsed JSON. Rejects with `Error('HTTP <status>')` for a non-OK response, with an `AbortError` (message `Timeout`) when `timeoutMs` passes, and with an `AbortError` when the caller's signal aborts."
       },
       "examples": [
         "// Basic usage\nconst data = await fetchJson('/api/user/42', { timeoutMs: 2000 });\n",
-        "// With external cancellation\nconst ac = new AbortController();\nconst p = fetchJson('/api/search?q=js', { signal: ac.signal });\nac.abort();\nawait p; // rejects with AbortError\n"
+        "// With external cancellation\nconst ac = new AbortController();\nconst p = fetchJson('/api/search?q=js', { signal: ac.signal });\nac.abort();\nawait p; // rejects with AbortError\n",
+        "// Failures your code must produce\nawait fetchJson('/missing');                 // rejects: Error('HTTP 404')\nawait fetchJson('/slow', { timeoutMs: 10 }); // rejects: AbortError, message 'Timeout'\n"
       ]
     },
     "starterCode": "export default async function fetchJson(url, options = {}) {\n  // TODO: support timeoutMs + AbortSignal, throw on non-OK responses\n  throw new Error('Not implemented');\n}\n",

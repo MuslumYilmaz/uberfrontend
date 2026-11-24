@@ -159,7 +159,7 @@ describe('interview runtime artifact gate', () => {
     expect(artifacts.coding.status).toBe('editorial-gold');
     expect(artifacts.coding.version).toBe('1.1.0');
     expect(artifacts.coding.contentHash)
-      .toBe('00970e4555923f2a3a48e3825c66308ae55f67c57f10df6cee9af427a695b374');
+      .toBe('b4f4d28d7f25723010b1bc02d7ea012ed0cf312092cddb3a3e5fc3c7312760ff');
     expect(artifacts.coding.variants).toHaveLength(60);
     expect(artifacts.coding.variants.every((variant) => variant.enabled)).toBe(true);
   });
