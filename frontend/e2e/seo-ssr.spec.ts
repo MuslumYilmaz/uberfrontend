@@ -2301,7 +2301,7 @@ test.describe('seo-ssr', () => {
 
   test('raw coding hub gives a first visit two starts in plain words and leaves progress to the browser', async ({ request }) => {
     const html = await readRawHtml(request, '/coding');
-    const text = rawVisibleText(html);
+    const text = rawVisibleTextPreserveCase(html);
 
     expect(text).toContain('New to coding interviews?');
     expect(text).toContain('Interview coming up?');
