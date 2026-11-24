@@ -6723,6 +6723,34 @@ assert.match(reviewSolution, /<li v-for="issue in visibleIssues"/);
 assert.match(reviewSolution, /\} finally \{\n\s+loading\.value = false;/, 'the solution resets loading after a failed request');
 assert.doesNotMatch(reviewSolution, /console\.log/);
 
+// Every HTML/CSS task is checked on its preview: two checks or more, with ids of their own and steps the check runner
+// knows. e2e/web-catalog-checks.prod.spec.ts proves them: the official solution passes every check and the starter
+// fails one.
+const WEB_STEP_TYPES = new Set(['expectExists', 'expectText', 'expectNoText', 'expectDisabled', 'click', 'submit', 'hover',
+  'unhover', 'focus', 'key', 'wait', 'waitForText', 'setValue', 'expectValue', 'expectFocused', 'expectCount',
+  'waitForCount', 'expectAttribute', 'expectClass', 'expectChecked', 'expectStandsOut', 'expectColor', 'expectReferenced',
+  'expectIndented', 'expectPlaced', 'expectName', 'expectLiveRegion', 'scroll', 'expectStyle', 'expectDeclared',
+  'expectLayout', 'expectVisible', 'expectValidity', 'expectNoOverflow', 'addClass', 'removeClass', 'expectLabelled',
+  'expectDescription', 'expectCorner']);
+for (const tech of ['html', 'css']) {
+  for (const question of json(`cdn/questions/${tech}/coding.json`)) {
+    const label = `${tech}/${question.id}`;
+    const checks = question.frameworkTests;
+    assert.ok(Array.isArray(checks) && checks.length >= 2, `${label}: an HTML/CSS task needs two checks or more`);
+    assert.equal(new Set(checks.map((check) => check.id)).size, checks.length, `${label}: check ids must be unique`);
+    assert.ok(question.checkCoverage === undefined || ['smoke', 'full'].includes(question.checkCoverage), `${label}: checkCoverage`);
+    for (const check of checks) {
+      assert.ok(check.id && check.name && Array.isArray(check.steps) && check.steps.length, `${label}: ${check.id} needs a name and steps`);
+      if (check.viewport) {
+        assert.ok(check.viewport.width >= 320 && check.viewport.width <= 1920, `${label}: ${check.id} viewport width`);
+      }
+      for (const step of check.steps) {
+        assert.ok(WEB_STEP_TYPES.has(step.type), `${label}: ${check.id} uses an unknown step type ${step.type}`);
+      }
+    }
+  }
+}
+
 console.log('Framework content regressions: PASS');
 console.log('Legacy RIGHT -> UP -> LEFT reproduction: pending direction became LEFT');
 console.log(`Vue ${vueVersion} watcher semantics: watchEffect=1 run, bounded watch=4 runs`);

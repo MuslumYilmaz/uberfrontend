@@ -90,6 +90,43 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }",
+    "frameworkTests": [
+      {
+        "id": "head-title-charset",
+        "name": "The head gives the page a title and a character set",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "head > title",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "head > title:empty",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": "head > meta[charset=\"utf-8\" i]",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "body-heading-paragraph",
+        "name": "The body shows a main heading and a paragraph",
+        "steps": [
+          {
+            "type": "expectVisible",
+            "selector": "body h1"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "body p"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -194,6 +231,52 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
+    "checkCoverage": "smoke",
+    "frameworkTests": [
+      {
+        "id": "main-two-paragraphs",
+        "name": "The demo sits in main as two paragraphs",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "main",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "main p:not(#explanation p)",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "id": "inline-in-paragraph",
+        "name": "A strong word and an image with alt text sit inline in one paragraph",
+        "steps": [
+          {
+            "type": "expectExists",
+            "selector": "main p strong ~ img, main p img ~ strong"
+          },
+          {
+            "type": "expectStyle",
+            "selector": "main p strong",
+            "property": "display",
+            "value": "inline"
+          },
+          {
+            "type": "expectStyle",
+            "selector": "main p img",
+            "property": "display",
+            "value": "inline"
+          },
+          {
+            "type": "expectCount",
+            "selector": "main p img:not([alt]), main p img[alt=\"\"]",
+            "count": 0
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -296,6 +379,50 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }",
+    "frameworkTests": [
+      {
+        "id": "image-link",
+        "name": "The image is a link to another site",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "a[href*=\"//\"] img",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "safe-new-tab",
+        "name": "The link opens a new tab without handing it this page",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "a[href*=\"//\"][target=\"_blank\"] img",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "a[target=\"_blank\"]:not([rel~=\"noopener\"])",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "image-alt",
+        "name": "The image says what it shows",
+        "steps": [
+          {
+            "type": "expectExists",
+            "selector": "a img"
+          },
+          {
+            "type": "expectCount",
+            "selector": "a img:not([alt]), a img[alt=\"\"]",
+            "count": 0
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-07-14",
     "seo": {
@@ -392,6 +519,69 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
+    "frameworkTests": [
+      {
+        "id": "labelled-nav",
+        "name": "The navigation is a labelled list of links to the three sections",
+        "steps": [
+          {
+            "type": "expectName",
+            "selector": "nav"
+          },
+          {
+            "type": "expectExists",
+            "selector": "nav ul li a[href=\"#home\"]"
+          },
+          {
+            "type": "expectExists",
+            "selector": "nav ul li a[href=\"#about\"]"
+          },
+          {
+            "type": "expectExists",
+            "selector": "nav ul li a[href=\"#contact\"]"
+          }
+        ]
+      },
+      {
+        "id": "home-first",
+        "name": "Home shows when the page opens and the other sections wait",
+        "steps": [
+          {
+            "type": "expectVisible",
+            "selector": "#home"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#about",
+            "expected": false
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#contact",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "link-shows-section",
+        "name": "A link shows its section in place of Home",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "nav a[href=\"#about\"]"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#about"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#home",
+            "expected": false
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -505,6 +695,48 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n    <style>\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\n      main { margin-top: 1.5rem; }\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\n      article h2 { margin-top: 0; }\n    </style>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
+    "frameworkTests": [
+      {
+        "id": "landmarks",
+        "name": "The page has a header and a footer outside its one main",
+        "steps": [
+          {
+            "type": "expectExists",
+            "selector": "header:not(main header)"
+          },
+          {
+            "type": "expectCount",
+            "selector": "main",
+            "count": 1
+          },
+          {
+            "type": "expectExists",
+            "selector": "footer:not(main footer)"
+          }
+        ]
+      },
+      {
+        "id": "two-posts",
+        "name": "Main holds two posts, each with a heading and a section",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "main article",
+            "count": 2
+          },
+          {
+            "type": "expectCount",
+            "selector": "main article > :is(h1, h2, h3, h4, h5, h6), main article > header > :is(h1, h2, h3, h4, h5, h6)",
+            "count": 2
+          },
+          {
+            "type": "expectCount",
+            "selector": "main article section",
+            "count": 2
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -619,6 +851,71 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }",
+    "frameworkTests": [
+      {
+        "id": "caption-head-body",
+        "name": "The table has a caption, a header row and a body",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "table > caption",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "table > caption:empty",
+            "count": 0
+          },
+          {
+            "type": "expectCount",
+            "selector": "table > thead",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "table > tbody",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "column-headers",
+        "name": "Three headers each head a column",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "thead th",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": "thead th:not([scope=\"col\"])",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "three-rows",
+        "name": "Three employees fill the body, a cell for each column",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "tbody tr",
+            "count": 3
+          },
+          {
+            "type": "expectCount",
+            "selector": "tbody tr > :is(td, th)",
+            "count": 9
+          },
+          {
+            "type": "expectCount",
+            "selector": "tbody tr > :is(td, th):empty, thead th:empty",
+            "count": 0
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -707,6 +1004,150 @@
     },
     "webSolutionHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
     "webSolutionCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
+    "frameworkTests": [
+      {
+        "id": "labelled-fields",
+        "name": "Name, Email and Message each have a label",
+        "steps": [
+          {
+            "type": "expectCount",
+            "by": {
+              "role": "textbox"
+            },
+            "count": 3
+          },
+          {
+            "type": "expectLabelled",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 0
+          },
+          {
+            "type": "expectLabelled",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 1
+          },
+          {
+            "type": "expectLabelled",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 2
+          }
+        ]
+      },
+      {
+        "id": "native-validation",
+        "name": "The browser checks the fields before the form sends",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": "form",
+            "attribute": "action",
+            "expected": "#thanks"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "form",
+            "attribute": "novalidate",
+            "expected": false
+          },
+          {
+            "type": "expectExists",
+            "selector": "form input[type=\"email\"]"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 0,
+            "attribute": "required"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 1,
+            "attribute": "required"
+          },
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 2,
+            "attribute": "required"
+          },
+          {
+            "type": "expectValidity",
+            "selector": "form",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "thanks-after-valid",
+        "name": "Only a valid message reaches the thanks note",
+        "steps": [
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 0,
+            "value": "Ada Lovelace, writing about the course schedule"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 1,
+            "value": "Ada Lovelace, writing about the course schedule"
+          },
+          {
+            "type": "setValue",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 2,
+            "value": "Ada Lovelace, writing about the course schedule"
+          },
+          {
+            "type": "setValue",
+            "selector": "form input[type=\"email\"]",
+            "value": "ada@"
+          },
+          {
+            "type": "click",
+            "selector": "form [type=\"submit\"], form button:not([type])"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#thanks",
+            "expected": false
+          },
+          {
+            "type": "setValue",
+            "selector": "form input[type=\"email\"]",
+            "value": "ada@example.com"
+          },
+          {
+            "type": "click",
+            "selector": "form [type=\"submit\"], form button:not([type])"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "#thanks"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -840,6 +1281,84 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
+    "frameworkTests": [
+      {
+        "id": "field-rules",
+        "name": "Each field states its rules",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "by": {
+              "role": "textbox"
+            },
+            "index": 0,
+            "attribute": "required"
+          },
+          {
+            "type": "expectExists",
+            "selector": "form input[type=\"email\"][required]"
+          },
+          {
+            "type": "expectExists",
+            "selector": "form input[type=\"password\"][required]"
+          },
+          {
+            "type": "expectExists",
+            "selector": "form input[type=\"password\"][minlength]"
+          },
+          {
+            "type": "expectExists",
+            "selector": "form input[type=\"password\"][pattern]"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "form",
+            "attribute": "novalidate",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "blocks-bad-signup",
+        "name": "The browser rejects an empty form, a bad email and a weak password",
+        "steps": [
+          {
+            "type": "expectValidity",
+            "selector": "form",
+            "expected": false
+          },
+          {
+            "type": "setValue",
+            "selector": "form input[type=\"email\"]",
+            "value": "ada@"
+          },
+          {
+            "type": "expectValidity",
+            "selector": "form input[type=\"email\"]",
+            "expected": false
+          },
+          {
+            "type": "setValue",
+            "selector": "form input[type=\"email\"]",
+            "value": "ada@example.com"
+          },
+          {
+            "type": "expectValidity",
+            "selector": "form input[type=\"email\"]"
+          },
+          {
+            "type": "setValue",
+            "selector": "form input[type=\"password\"]",
+            "value": "short"
+          },
+          {
+            "type": "expectValidity",
+            "selector": "form input[type=\"password\"]",
+            "expected": false
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -946,6 +1465,74 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
+    "frameworkTests": [
+      {
+        "id": "encoding-viewport",
+        "name": "The head sets UTF-8 and the mobile viewport",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "head > meta[charset=\"utf-8\" i]",
+            "count": 1
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "head > meta[name=\"viewport\"]",
+            "attribute": "content",
+            "expected": "width=device-width",
+            "match": "contains"
+          },
+          {
+            "type": "expectAttribute",
+            "selector": "head > meta[name=\"viewport\"]",
+            "attribute": "content",
+            "expected": "initial-scale=1",
+            "match": "contains"
+          }
+        ]
+      },
+      {
+        "id": "title-description",
+        "name": "The head has a title other than just Home, and a meta description",
+        "steps": [
+          {
+            "type": "expectCount",
+            "selector": "head > title",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "head > title:empty",
+            "count": 0
+          },
+          {
+            "type": "expectNoText",
+            "selector": "head > title",
+            "text": "Home"
+          },
+          {
+            "type": "expectCount",
+            "selector": "head > meta[name=\"description\"]",
+            "count": 1
+          },
+          {
+            "type": "expectCount",
+            "selector": "head > meta[name=\"description\"]:not([content]), head > meta[name=\"description\"][content=\"\"]",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "id": "stylesheet-link",
+        "name": "styles.css stays linked from the head",
+        "steps": [
+          {
+            "type": "expectExists",
+            "selector": "head > link[rel=\"stylesheet\"][href=\"styles.css\"]"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "companies": [
       "gitlab"
@@ -1060,6 +1647,90 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n      <h2 id=\"dlg-title\">Delete project?</h2>\\n      <p id=\"dlg-desc\">This action cannot be undone. All project data will be removed.</p>\\n\\n      <form method=\"dialog\">\\n        <div class=\"row\">\\n          <button value=\"cancel\">Cancel</button>\\n          <button value=\"confirm\">Delete</button>\\n        </div>\\n      </form>\\n    </dialog>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}",
+    "frameworkTests": [
+      {
+        "id": "open-dialog",
+        "name": "The dialog shows without any script",
+        "steps": [
+          {
+            "type": "expectVisible",
+            "selector": "dialog"
+          }
+        ]
+      },
+      {
+        "id": "named-described",
+        "name": "Its own title names it and its own text describes it",
+        "steps": [
+          {
+            "type": "expectReferenced",
+            "selector": "dialog :is(h1, h2, h3, h4, h5, h6)",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "expectReferenced",
+            "selector": "dialog p",
+            "attribute": "aria-describedby"
+          },
+          {
+            "type": "expectName",
+            "selector": "dialog"
+          },
+          {
+            "type": "expectDescription",
+            "selector": "dialog"
+          }
+        ]
+      },
+      {
+        "id": "dialog-form",
+        "name": "A dialog form holds Cancel and Delete, and Delete closes it",
+        "steps": [
+          {
+            "type": "expectAttribute",
+            "selector": "dialog form",
+            "attribute": "method",
+            "expected": "dialog"
+          },
+          {
+            "type": "expectText",
+            "selector": "dialog form button[value=\"cancel\"]",
+            "text": "Cancel",
+            "match": "contains"
+          },
+          {
+            "type": "expectText",
+            "selector": "dialog form button[value=\"confirm\"]",
+            "text": "Delete",
+            "match": "contains"
+          },
+          {
+            "type": "click",
+            "selector": "dialog form button[value=\"confirm\"]"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "dialog",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "cancel-closes",
+        "name": "Cancel closes it too",
+        "steps": [
+          {
+            "type": "click",
+            "selector": "dialog form button[value=\"cancel\"]"
+          },
+          {
+            "type": "expectVisible",
+            "selector": "dialog",
+            "expected": false
+          }
+        ]
+      }
+    ],
     "access": "premium",
     "updatedAt": "2026-01-31",
     "companies": [
