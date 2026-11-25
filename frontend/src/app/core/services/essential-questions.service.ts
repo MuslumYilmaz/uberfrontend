@@ -72,6 +72,22 @@ export class EssentialQuestionsService {
     return this.resolved$;
   }
 
+  /** Each Essential 60 task's rank by `<kind>:<id>`, other frameworks' versions (alternates) included. */
+  loadRanks(): Observable<ReadonlyMap<string, number>> {
+    return this.loadCollection().pipe(
+      map((collection) => {
+        const ranks = new Map<string, number>();
+        for (const item of collection.items) {
+          for (const ref of [item.primary, ...(item.alternates ?? [])]) {
+            const key = `${ref.kind}:${ref.id}`;
+            if (!ranks.has(key)) ranks.set(key, item.rank);
+          }
+        }
+        return ranks;
+      }),
+    );
+  }
+
   private loadCollection(): Observable<EssentialQuestionsCollection> {
     if (!this.collection$) {
       if (this.isServer) {

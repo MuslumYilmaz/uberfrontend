@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { LockedPreviewData, LockedPreviewLink } from '../../../core/utils/locked-preview.util';
 import { StripInlineMarkupPipe } from '../../ui/inline-code/strip-inline-markup.pipe';
 
@@ -57,7 +58,13 @@ export class LockedPreviewComponent {
     return (this.data?.learningGoals || []).slice(0, 5);
   }
 
+  private readonly progress = inject(UserProgressService);
+
+  /** Up to four free items the viewer has not solved, as related practice is new practice; a route ends in the id. */
   freeRelated(): LockedPreviewLink[] {
-    return (this.data?.related || []).filter((item) => !item.premium).slice(0, 4);
+    const solved = new Set(this.progress.solvedIds());
+    return (this.data?.related || [])
+      .filter((item) => !item.premium && !solved.has(String(item.to[item.to.length - 1] ?? '')))
+      .slice(0, 4);
   }
 }

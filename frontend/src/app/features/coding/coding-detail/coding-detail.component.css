@@ -146,6 +146,29 @@
   font-weight: 700;
 }
 
+/* The round's countdown: the time left, then "Time's up" in the warning colors. */
+.pressure-mode__meta .pressure-mode__clock {
+  color: var(--uf-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pressure-mode__meta .pressure-mode__clock.is-over {
+  border-color: var(--uf-status-warn-border);
+  color: var(--uf-status-warn-text);
+  background: var(--uf-status-warn-bg);
+}
+
+.pressure-mode__time-up {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--uf-status-warn-border);
+  border-radius: var(--uf-radius-8);
+  color: var(--uf-status-warn-text);
+  background: var(--uf-status-warn-bg);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .pressure-mode__timeline {
   display: grid;
   gap: 8px;
@@ -900,6 +923,9 @@
 .demo-cta-btn:hover{ filter: brightness(1.05); }
 
 /* ---------- Tabs / header micro-polish ---------- */
+/* The selected Description or Solution tab, the labels in Solution and every hover or focus mark use the one accent. */
+.panel-tab--active { color: var(--uf-accent); border-bottom-color: var(--uf-accent); }
+.detail-accent { color: var(--uf-accent); }
 .coding-detail .flex.items-center.border-b .px-4.py-2 { padding:.5rem .75rem; }
 .coding-detail select { 
   appearance: none;
@@ -911,14 +937,14 @@
   font-size:.75rem; 
   line-height:1rem;
 }
-.coding-detail select:focus { outline: none; border-color:#60a5fa; box-shadow:0 0 0 2px rgba(96,165,250,.25); }
+.coding-detail select:focus { outline: none; border-color: var(--uf-accent); box-shadow: 0 0 0 2px var(--uf-accent-soft); }
 
 /* ---------- Splitters ---------- */
 .splitter{ flex:0 0 5px; width:5px; background:transparent; border-radius:25px; cursor:col-resize; touch-action:none; user-select:none; transition:background-color .15s; }
-.splitter:hover, .splitter.dragging{ background-color:#3b82f6; }
+.splitter:hover, .splitter.dragging{ background-color: var(--uf-accent); }
 .splitter:focus-visible{ outline:2px solid var(--uf-accent); outline-offset:1px; }
 .horizontal-splitter{ height:5px; z-index:2; background:transparent; border-radius:25px; cursor:row-resize; user-select:none; transition:background-color .15s; }
-.horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color:#3b82f6; }
+.horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color: var(--uf-accent); }
 
 @media (max-width: 980px) {
   .coding-detail {
@@ -950,6 +976,14 @@
 
   .coding-description-rail__actions {
     flex-direction: row;
+  }
+}
+
+/* Stacked on a tablet, the workspace ends where the fixed footer starts. Its height: 100% would win over bottom: 56px
+   and carry the run bar and the results under the footer; the desktop layout pads its panes for that instead. */
+@media (min-width: 768px) and (max-width: 980px) {
+  .coding-detail.fixed-under-header {
+    height: auto;
   }
 }
 
@@ -1020,8 +1054,8 @@
 /* ---------- Warning + banners ---------- */
 .solution-warning { font-size:13px; padding:1rem; }
 .icon-warning { display:grid; place-items:center; width:32px; height:32px; border-radius:9999px;
-  background:rgba(250,204,21,.08); border:1px solid rgba(250,204,21,.25); }
-.icon-warning app-fa-glyph { font-size:16px; color:#facc15; }
+  background: color-mix(in srgb, var(--uf-accent) 8%, transparent); border: 1px solid color-mix(in srgb, var(--uf-accent) 25%, transparent); }
+.icon-warning app-fa-glyph { font-size:16px; color: var(--uf-accent); }
 
 .fa-chip{ display:inline-flex; align-items:center; padding:2px 6px; border-radius:6px; font-size:10px; line-height:1; opacity:.8; border:1px solid rgba(255,255,255,.12); }
 

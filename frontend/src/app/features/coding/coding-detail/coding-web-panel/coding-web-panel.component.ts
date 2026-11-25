@@ -18,13 +18,17 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ButtonModule } from 'primeng/button';
-import type { Question } from '../../../../core/models/question.model';
+import type { FrameworkTest, FrameworkTestMedia, Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { computeWebQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import { editorKeys } from '../../../../core/utils/editor-keys.util';
 import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
+import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
+import { afterOpeningTag } from '../../../../core/utils/html-tags.util';
+import { rewritePreferenceMedia } from '../../../../core/utils/preference-media.util';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -37,14 +41,23 @@ import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
+import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
+import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
+import type { FrameworkCheckRunEvent } from '../coding-framework-panel/coding-framework-panel';
 import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
 
 type WebEditorLang = 'html' | 'css';
 
+/** The preview's color scheme: the visitor's own, or light or dark whatever it is. */
+type PreviewScheme = 'system' | 'light' | 'dark';
+
+/** An HTML/CSS task's checks lay the page out at a laptop's width unless a check names its own. */
+const WEB_CHECK_VIEWPORT = { width: 1024, height: 768 };
+
 @Component({
     selector: 'app-coding-web-panel',
-    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent],
+    imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent, CodeSnapshotComponent, FaGlyphComponent, InlineCodeComponent],
     styles: [`
   :host {
     color: var(--uf-text-primary);
@@ -95,10 +108,12 @@ type WebEditorLang = 'html' | 'css';
   }
   .panel-label.muted { color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent); }
 
+  /* Its controls wrap as a group on a narrow preview instead of squeezing the hint word by word. */
   .panel-tabs {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 6px 10px;
     padding: 10px 12px;
     border-bottom: 1px solid var(--uf-border-subtle);
     background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
@@ -124,37 +139,116 @@ type WebEditorLang = 'html' | 'css';
   }
   .tab-hint { margin-left: auto; color: var(--uf-text-tertiary); font-size: 11px; }
 
-  .preview-actions {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    z-index: 20;
+  /* The toolbar's one emphasised action takes the accent, as Run checks does in a framework task. */
+  .run-checks-btn {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+    border-radius: 6px;
+    background: transparent;
+    color: var(--uf-text-primary);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .run-checks-btn:hover:not(:disabled) { background: var(--uf-accent-soft); }
+  .run-checks-btn:disabled { opacity: .6; }
+
+  .scheme-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    border: 1px solid var(--uf-border-subtle);
+    border-radius: var(--uf-radius-pill);
+    overflow: hidden;
+  }
+  .scheme-toggle__btn {
+    padding: 4px 10px;
+    background: transparent;
+    color: var(--uf-text-secondary);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .scheme-toggle__btn + .scheme-toggle__btn { border-left: 1px solid var(--uf-border-subtle); }
+  .scheme-toggle__btn[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+    color: var(--uf-text-primary);
+  }
+  .scheme-toggle__btn:focus-visible { outline: 2px solid var(--uf-accent); outline-offset: -2px; }
+
+  /* Checks under the preview: a few lines while they pass, up to 45% of the screen when failures or a pass card need
+     the room. */
+  .web-check-results {
+    flex: 0 0 auto;
+    max-height: 190px;
+    overflow: auto;
+    border-top: 1px solid var(--uf-border-subtle);
+    background: color-mix(in srgb, var(--uf-surface) 92%, transparent);
+    padding: 10px 12px;
+  }
+  .web-check-results.has-failures,
+  .web-check-results:has(app-coding-post-pass) { max-height: min(45vh, 360px); }
+  .web-check-results__head {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
   }
+  .web-check-results__summary,
+  .web-check-results__scope { color: var(--uf-text-secondary); font-weight: 600; }
+  .web-check-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 28px;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .web-check-dot {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    margin-top: 4px;
+    border-radius: 999px;
+    background: var(--uf-accent);
+  }
+  /* A result shows a check mark or a cross as well as the color. */
+  .web-check-icon { flex: 0 0 auto; margin-top: 2px; font-size: 13px; }
+  .web-check-icon.is-pass { color: var(--uf-status-success); }
+  .web-check-icon.is-fail { color: var(--uf-status-danger); }
+  .web-check-result__body { min-width: 0; }
+  .web-check-result__name { font-weight: 650; }
+  .web-check-result__error { margin-top: 2px; color: var(--uf-status-danger-text); word-break: break-word; }
+  .web-smoke-note { margin-top: 8px; color: var(--uf-text-secondary); font-size: 12px; }
+  .web-smoke-note p { margin: 0 0 6px; }
+  .web-smoke-note__list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+  .web-smoke-note__list label { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+
+  /* Secondary on purpose: it swaps the reader's own preview for the reference result. */
   .pill-btn {
+    flex-shrink: 0;
     padding: 6px 10px;
     border-radius: var(--uf-radius-pill);
-    background: var(--uf-accent);
-    border: 1px solid var(--uf-accent);
-    color: var(--uf-bg);
-    font-weight: 700;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--uf-accent) 38%, transparent);
+    background: var(--uf-surface);
+    border: 1px solid var(--uf-border-subtle);
+    color: var(--uf-text-primary);
+    font-weight: 600;
+    white-space: nowrap;
     transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
   }
-  .pill-btn:hover { background: var(--uf-accent-strong); }
+  .pill-btn:hover { border-color: var(--uf-accent); }
   .pill-btn:active { transform: translateY(1px); }
 
-  .solution-banner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    border-radius: var(--uf-radius-pill);
-    background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
-    border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
-    color: var(--uf-text-primary);
+  /* While the reference result shows, the hint says so and the preview is framed at its edge, over no content. */
+  .tab-hint.is-target { color: var(--uf-text-primary); font-weight: 600; }
+  .is-target-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--uf-accent);
+    pointer-events: none;
   }
 
   .empty-preview {
@@ -235,6 +329,7 @@ type WebEditorLang = 'html' | 'css';
                                  [options]="editorOptions"
                                  (codeChange)="onHtmlChange($event)"
                                  (ready)="onHtmlEditorReady()"
+                                 (runShortcut)="onRunShortcut()"
                                  (loadFailed)="onEditorLoadFailed()">
               </app-monaco-editor>
               <app-code-snapshot
@@ -279,6 +374,7 @@ type WebEditorLang = 'html' | 'css';
                                  [options]="editorOptions"
                                  (codeChange)="onCssChange($event)"
                                  (ready)="onCssEditorReady()"
+                                 (runShortcut)="onRunShortcut()"
                                  (loadFailed)="onEditorLoadFailed()">
               </app-monaco-editor>
               <app-code-snapshot
@@ -320,28 +416,35 @@ type WebEditorLang = 'html' | 'css';
 	      <div class="min-w-0 flex-1 flex flex-col">
 	        <div class="panel-tabs">
 	          <button class="tab-btn active" type="button">Preview</button>
-	          <div class="tab-hint">Live preview updates as you type</div>
+	          <div class="tab-hint" [class.is-target]="showingSolutionPreview" role="status">
+	            {{ showingSolutionPreview ? 'Showing the result to build' : 'Live preview updates as you type' }}
+	          </div>
+	          <!-- A task about color schemes shows the preview in either, whatever the visitor's own setting is. -->
+	          <div *ngIf="schemeToggle()" class="scheme-toggle" role="group" aria-label="Preview color scheme"
+	               data-testid="web-preview-scheme">
+	            <button *ngFor="let scheme of previewSchemes" type="button" class="scheme-toggle__btn"
+	                    [attr.aria-pressed]="previewScheme() === scheme" (click)="setPreviewScheme(scheme)">
+	              {{ scheme === 'system' ? 'System' : scheme === 'light' ? 'Light' : 'Dark' }}
+	            </button>
+	          </div>
+	          <!-- The reference result swaps in from the toolbar, so nothing sits on the preview itself. -->
+	          <button *ngIf="!showingSolutionPreview" class="pill-btn" type="button" (click)="openSolutionPreview()">
+	            Preview what you need to build
+	          </button>
+	          <button *ngIf="showingSolutionPreview" class="pill-btn" type="button" (click)="closeSolutionPreview()">
+	            Back to my preview
+	          </button>
+	          <button *ngIf="webChecks().length" type="button" class="run-checks-btn" data-testid="web-run-checks"
+	                  [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run checks (' + keys.run + ')'"
+	                  [disabled]="webChecksRunning()" (click)="runWebChecks()">
+	            {{ webChecksRunning() ? 'Running checks' : 'Run checks' }}
+	          </button>
 	        </div>
 
-	        <div #previewSplit class="flex-1 relative min-h-[160px] overflow-hidden">
+	        <div #previewSplit class="flex-1 relative min-h-[160px] overflow-hidden"
+	             [class.is-target-preview]="showingSolutionPreview">
 	          <div *ngIf="!previewUrl()" class="empty-preview" data-testid="web-preview-placeholder">
 	            Building preview…
-	          </div>
-
-	          <!-- WEB PREVIEW TOGGLE -->
-	          <div class="preview-actions">
-	            <button *ngIf="!showingSolutionPreview"
-	                    class="pill-btn"
-	                    type="button"
-	                    (click)="openSolutionPreview()">
-	              Show preview
-	            </button>
-
-	            <div *ngIf="showingSolutionPreview"
-	                 class="solution-banner">
-	              <span class="font-medium">Showing solution preview</span>
-	              <button class="text-xs underline" type="button" (click)="closeSolutionPreview()">Close preview</button>
-	            </div>
 	          </div>
 
 	          <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"
@@ -350,6 +453,46 @@ type WebEditorLang = 'html' | 'css';
 	                  sandbox="allow-scripts">
 	          </iframe>
 	        </div>
+
+	        <!-- The checks run on the page as the editors hold it; the pass card heads them, covering none. -->
+	        <section *ngIf="webChecksShown()" class="web-check-results" data-testid="web-results-panel" aria-live="polite"
+	                 [class.has-failures]="webCheckPassedCount() < webCheckResults().length">
+	          <div class="web-check-results__head">
+	            <span>Checks<span *ngIf="checkCoverage === 'smoke'" class="web-check-results__scope"> · the core only</span></span>
+	            <span *ngIf="webCheckResults().length" class="web-check-results__summary">
+	              {{ webCheckPassedCount() }}/{{ webCheckResults().length }} passed
+	            </span>
+	          </div>
+	          <ng-content select="[postPassCard]"></ng-content>
+	          <div *ngIf="webChecksRunning()" class="web-check-result">
+	            <span class="web-check-dot" aria-hidden="true"></span>
+	            <span>Running checks…</span>
+	          </div>
+	          <div *ngFor="let result of webCheckResults()" class="web-check-result" data-testid="web-check-result"
+	               [attr.data-failure-kind]="result.failureKind || (!result.passed ? 'assertion' : null)">
+	            <app-fa-glyph class="web-check-icon" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"
+	                          [icon]="result.passed ? 'check-circle' : 'times-circle'"></app-fa-glyph>
+	            <span class="sr-only">{{ result.passed ? 'Passed:' : 'Failed:' }}</span>
+	            <div class="web-check-result__body">
+	              <div class="web-check-result__name">{{ result.name }}</div>
+	              <div *ngIf="result.error" class="web-check-result__error"><span *ngIf="result.step">Step {{ result.step }} of {{ result.steps }}: </span>{{ result.error }}</div>
+	            </div>
+	          </div>
+	          <!-- Passed checks that cover the core only lead to the requirements, which say whether the task is done. -->
+	          <div *ngIf="checkCoverage === 'smoke' && !solved && !webChecksRunning() && webCheckResults().length
+	                      && webCheckPassedCount() === webCheckResults().length"
+	               class="web-smoke-note" data-testid="web-smoke-note">
+	            <p>
+	              These checks cover the core of the task only. Compare your work with the requirements, then press
+	              <strong>Mark as solved</strong>.
+	            </p>
+	            <ul *ngIf="requirements.length" class="web-smoke-note__list">
+	              <li *ngFor="let requirement of requirements">
+	                <label><input type="checkbox" /><fa-inline-code [text]="requirement"></fa-inline-code></label>
+	              </li>
+	            </ul>
+	          </div>
+	        </section>
 	      </div>
     </div>
   </div>`
@@ -363,8 +506,34 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() hideRestoreBanner = false;
   @Input() liteMode = false;
   @Input() deferPreview = false;
+  /** 'smoke': the checks cover the core of the task only, so a pass leads to the requirements, not to "Solved". */
+  @Input() checkCoverage: FrameworkCheckCoverage = 'none';
+  /** The task's requirements, listed beside passed smoke checks to compare against before marking it solved. */
+  @Input() requirements: readonly string[] = [];
+  @Input() solved = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
+  /** A finished run of the task's checks, which solves a fully checked task when every check passes. */
+  @Output() checkRun = new EventEmitter<FrameworkCheckRunEvent>();
+  /** The HTML or the CSS changed, so an earlier pass no longer describes the code. */
+  @Output() filesChanged = new EventEmitter<void>();
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  readonly keys = editorKeys();
+
+  /** The task's checks (frameworkTests), run on the preview page as it stands, as a framework task's run on its app. */
+  readonly webChecks = signal<FrameworkTest[]>([]);
+  readonly webChecksRunning = signal(false);
+  readonly webCheckResults = signal<TestResult[]>([]);
+  readonly webCheckPassedCount = computed(() => this.webCheckResults().filter((result) => result.passed).length);
+  readonly webChecksShown = computed(() => this.webChecksRunning() || this.webCheckResults().length > 0);
+  private webCheckRunSeq = 0;
+
+  /**
+   * A task about light and dark color schemes (its CSS reads prefers-color-scheme) lets the preview show either,
+   * whatever the visitor's own setting is.
+   */
+  readonly schemeToggle = signal(false);
+  readonly previewScheme = signal<PreviewScheme>('system');
+  readonly previewSchemes: readonly PreviewScheme[] = ['system', 'light', 'dark'];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -495,6 +664,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.destroyed = true;
     this.initSeq += 1;
     this.webTestRunSeq += 1;
+    this.webCheckRunSeq += 1;
     this.opaqueCheckRunner.destroy();
     void this.flushPendingWebSaves();
     if (this.isBrowser) {
@@ -591,6 +761,12 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const initToken = ++this.initSeq;
     const q = this.question;
     if (!q) return;
+    this.cancelWebCheckRun();
+    this.webChecks.set(this.normalizeWebChecks(q));
+    this.webCheckResults.set([]);
+    const solutionCss = String(this.getWebSolutions(q).css || '');
+    this.schemeToggle.set(/prefers-color-scheme/i.test(`${solutionCss}\n${this.getWebStarters(q).css}`));
+    this.previewScheme.set('system');
     await this.flushPendingWebSaves();
     if (!this.isActiveInit(initToken, q)) return;
 
@@ -708,6 +884,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const q = this.question; if (!q) return;
     this.htmlCode.set(code);
     this.scheduleWebSave('html', code);
+    this.filesChanged.emit();
 
     if (this.viewingSolution()) {
       this.viewingSolution.set(false);
@@ -723,6 +900,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const q = this.question; if (!q) return;
     this.cssCode.set(code);
     this.scheduleWebSave('css', code);
+    this.filesChanged.emit();
 
     if (this.viewingSolution()) {
       this.viewingSolution.set(false);
@@ -741,7 +919,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    this.webPreviewTimer = setTimeout(() => {
 	      try {
 	        if (this.showingSolutionPreview) return;
-	        const htmlDoc = this.previewDocRaw();
+	        const htmlDoc = this.withPreviewScheme(this.previewDocRaw());
 	        this.setPreviewHtml(htmlDoc);
       } catch {
         this.setPreviewHtml(null);
@@ -755,7 +933,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    const sol = this.getWebSolutions(q);
 	    const html = this.unescapeJsLiterals(sol.html || '');
 	    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-	    const full = this.buildWebPreviewDoc(html, css);
+	    const full = this.withPreviewScheme(this.buildWebPreviewDoc(html, css));
 	    this.setPreviewHtml(full);
 	    this.showingSolutionPreview = true;
 	  }
@@ -807,6 +985,91 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     }, 500);
   }
 
+
+  // ---------- checks ----------
+  /** The task's checks with their own frame size and preferences kept, each with an id and at least one step. */
+  private normalizeWebChecks(q: Question): FrameworkTest[] {
+    const raw = Array.isArray(q.frameworkTests) ? q.frameworkTests : [];
+    return raw
+      .filter((check) => !!check && Array.isArray(check.steps) && check.steps.length > 0)
+      .map((check, index) => {
+        const id = String(check.id || `web-check-${index + 1}`).trim();
+        const normalized: FrameworkTest = { id, name: String(check.name || id).trim(), steps: check.steps };
+        if (check.viewport) normalized.viewport = check.viewport;
+        if (check.media) normalized.media = check.media;
+        return normalized;
+      });
+  }
+
+  /** Ctrl/Cmd+Enter in either editor runs the checks, as it does in a framework task's editor. */
+  onRunShortcut(): void {
+    if (this.webChecks().length && !this.webChecksRunning()) void this.runWebChecks();
+  }
+
+  /**
+   * Runs the task's checks on the page the editors make, each in a fresh frame at its own size, with :hover and
+   * :focus styles set by the hover and focus steps. The panel shows the results; `emitCompletion: false` leaves the
+   * completion to the caller (the footer's Run checks).
+   */
+  async runWebChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
+    const q = this.question;
+    const checks = this.webChecks();
+    if (!q || !this.isBrowser || !checks.length) return [];
+    const runSeq = ++this.webCheckRunSeq;
+    this.webChecksRunning.set(true);
+    this.webCheckResults.set([]);
+
+    let results: TestResult[];
+    try {
+      results = await this.opaqueCheckRunner.runFramework(this.previewDocRaw(), checks, {
+        startOn: 'load',
+        states: true,
+        viewport: WEB_CHECK_VIEWPORT,
+      });
+    } catch (error) {
+      if (error instanceof OpaqueCheckCancelledError) return [];
+      const message = error instanceof Error ? error.message : String(error || 'Checks failed');
+      results = [{ name: 'Checks', passed: false, error: message.slice(0, 4000), failureKind: 'preview-boot' }];
+    }
+
+    if (runSeq !== this.webCheckRunSeq || this.destroyed || this.question?.id !== q.id) return results;
+    this.webChecksRunning.set(false);
+    this.webCheckResults.set(results);
+    this.recordWebAttempt(q, results);
+    if (options?.emitCompletion !== false) {
+      this.checkRun.emit({
+        questionId: q.id,
+        passed: results.length > 0 && results.every((result) => result.passed),
+        results,
+      });
+    }
+    return results;
+  }
+
+  private cancelWebCheckRun(): void {
+    this.webCheckRunSeq += 1;
+    this.opaqueCheckRunner.cancel();
+    this.webChecksRunning.set(false);
+  }
+
+  /** Shows the preview in the visitor's own color scheme, or in light or dark whatever it is. */
+  setPreviewScheme(scheme: PreviewScheme): void {
+    if (this.previewScheme() === scheme) return;
+    this.previewScheme.set(scheme);
+    if (this.showingSolutionPreview) {
+      this.showingSolutionPreview = false;
+      this.openSolutionPreview();
+    } else {
+      this.scheduleWebPreview();
+    }
+  }
+
+  private withPreviewScheme(doc: string): string {
+    const scheme = this.previewScheme();
+    if (scheme === 'system') return doc;
+    const media: FrameworkTestMedia = { 'prefers-color-scheme': scheme };
+    return rewritePreferenceMedia(doc, media);
+  }
 
   // ---------- tests ----------
   async runWebTests(): Promise<TestResult[]> {
@@ -1036,12 +1299,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     if (isFullDoc) {
       if (!cssBlock) return this.injectPreviewBridge(html);
-      if (/<head[\s>]/i.test(html)) {
-        return this.injectPreviewBridge(html.replace(/<head([^>]*)>/i, (_m, attrs) => `<head${attrs}>\n<style>\n${cssBlock}\n</style>`));
-      }
-      if (/<html[^>]*>/i.test(html)) {
-        return this.injectPreviewBridge(html.replace(/<html([^>]*)>/i, (_m, attrs) => `<html${attrs}>\n<head><style>\n${cssBlock}\n</style></head>`));
-      }
+      // Into the real head, past comments: a starter's "Edit only the <head>" comment must not swallow the styles.
+      const withStyles = afterOpeningTag(html, 'head', `\n<style>\n${cssBlock}\n</style>`)
+        ?? afterOpeningTag(html, 'html', `\n<head><style>\n${cssBlock}\n</style></head>`);
+      if (withStyles !== null) return this.injectPreviewBridge(withStyles);
       return this.injectPreviewBridge(`<!doctype html><html><head><style>${cssBlock}</style></head><body>${html}</body></html>`);
     }
 

@@ -14,21 +14,72 @@
         </span>
       </div>
       <p class="fa-page-access-note fa-meta-text" *ngIf="source === 'global-coding'">
-        Selected frontend coding challenges are free to start. Premium unlocks additional question sets and deeper solution context while locked items stay gated.
+        {{ pageAccessNote() }}
       </p>
     </div>
     <div class="fa-page-action" aria-label="Primary practice action">
-      <button
-        type="button"
-        faButton
-        variant="primary"
-        data-testid="coding-list-primary-action"
-        [disabled]="((filteredCount$ | async) || 0) === 0"
-        (click)="openFirstVisible()"
-      >
-        {{ primaryActionLabel() }}
-      </button>
-      <span class="fa-page-action__hint">{{ primaryActionHint() }}</span>
+      <!-- A draft in this browser comes first; it is read after the first render, so the server's HTML has none. -->
+      <div class="fa-continue" *ngIf="continueCard$ | async as card; else startAction" data-testid="coding-continue-card">
+        <p class="fa-continue__kicker fa-meta-label">Continue where you left off</p>
+        <p class="fa-continue__title">{{ card.title | stripInlineMarkup }}</p>
+        <p class="fa-continue__meta">
+          {{ card.lastRun ? 'Last run: ' + card.lastRun : 'Not run yet' }} · edited {{ card.editedAgo }}
+        </p>
+        <a faButton variant="primary" [routerLink]="card.route" data-testid="coding-continue-link"
+          (click)="trackContinue(card)">
+          Continue
+        </a>
+        <button *ngIf="auth.user()" type="button" faButton variant="ghost" class="fa-link-btn"
+          data-testid="coding-list-primary-action" [disabled]="((filteredCount$ | async) || 0) === 0"
+          (click)="openFirstVisible()">
+          {{ primaryActionLabel() }}
+        </button>
+      </div>
+      <ng-template #startAction>
+        <!-- A visitor in the whole coding library: the two starts of a first visit and the primary action of a
+             filtered list share one footprint, so choosing a filter moves nothing under the pointer. -->
+        <div class="fa-start-swap" *ngIf="isGuestGlobalCodingLibrary(); else primaryStart">
+          <!-- A first visit to /coding: one start for a newcomer, one for an interview that is close. -->
+          <div class="fa-start-paths" [class.is-swapped-out]="!isGuestDefaultGlobalLibrary()"
+            data-testid="coding-start-paths">
+            <div class="fa-start-path">
+              <p class="fa-start-path__title">New to coding interviews?</p>
+              <p class="fa-start-path__text">Five short warm-ups, all free and Easy.</p>
+              <button type="button" faButton data-testid="coding-start-warmups"
+                [disabled]="((filteredCount$ | async) || 0) === 0" (click)="startPath('warmups')">
+                Start the warm-ups
+              </button>
+            </div>
+            <div class="fa-start-path">
+              <p class="fa-start-path__title">Interview coming up?</p>
+              <p class="fa-start-path__text">The JavaScript utilities interviewers ask for most, starting with Debounce.</p>
+              <button type="button" faButton variant="primary" data-testid="coding-start-interview"
+                [disabled]="((filteredCount$ | async) || 0) === 0" (click)="startPath('interview')">
+                Start with Debounce
+              </button>
+            </div>
+          </div>
+          <div class="fa-start-primary" [class.is-swapped-out]="isGuestDefaultGlobalLibrary()">
+            <ng-container *ngTemplateOutlet="primaryStart"></ng-container>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #primaryStart>
+        <button
+          type="button"
+          faButton
+          variant="primary"
+          data-testid="coding-list-primary-action"
+          [disabled]="((filteredCount$ | async) || 0) === 0"
+          (click)="openFirstVisible()"
+        >
+          {{ primaryActionLabel() }}
+        </button>
+        <span class="fa-page-action__hint">{{ primaryActionHint() }}</span>
+      </ng-template>
+      <p class="fa-progress-stats fa-meta-text" *ngIf="progressStats() as stats" data-testid="coding-progress-stats">
+        {{ stats }}
+      </p>
     </div>
   </header>
 
@@ -44,7 +95,7 @@
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
     [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
     [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
-    [filteredCount]="(filteredCount$ | async) || 0" [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
+    [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
@@ -56,14 +107,26 @@
             <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
           </div>
           <div class="fa-filter-panel__header-actions">
-            <div class="fa-filter-panel__count">
-              <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
-            </div>
             <button *ngIf="drawer" type="button" faButton variant="ghost" class="fa-filter-panel__close"
               data-testid="coding-list-mobile-filter-close" (click)="closeMobileFilters()">
               <i class="pi pi-times" aria-hidden="true"></i>
               <span>Close</span>
             </button>
+          </div>
+        </div>
+
+        <div class="fa-filter-section" *ngIf="progressFilterAvailable()" data-testid="filter-progress">
+          <div class="fa-filter-section__title fa-meta-label" [id]="'coding-progress-' + (drawer ? 'drawer' : 'panel')">
+            Progress
+          </div>
+          <div class="fa-filter-options" role="radiogroup"
+            [attr.aria-labelledby]="'coding-progress-' + (drawer ? 'drawer' : 'panel')">
+            <label *ngFor="let opt of progressOptions(); trackBy: trackByProgressOption" class="fa-filter-option"
+              [attr.data-testid]="'filter-progress-' + opt.value">
+              <input type="radio" [name]="'coding-progress-' + (drawer ? 'drawer' : 'panel')" [value]="opt.value"
+                [checked]="progressFilterShown() === opt.value" (change)="setProgressFilter(opt.value)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">{{ opt.label }}</span>
+            </label>
           </div>
         </div>
 
@@ -115,18 +178,6 @@
           </div>
         </div>
 
-        <div class="fa-filter-section" *ngIf="source === 'global-coding'">
-          <div class="fa-filter-section__title fa-meta-label">Technologies</div>
-          <div class="fa-filter-options fa-filter-options--pills">
-            <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
-              [attr.data-testid]="'filter-tech-' + tab.key"
-              [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
-              <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
-              <span class="fa-tech-pill__label">{{ tab.label }}</span>
-            </button>
-          </div>
-        </div>
-
         <div class="fa-filter-section" *ngIf="(popularTags$ | async) as tagList">
           <div class="fa-filter-section__header">
             <div class="fa-filter-section__title fa-meta-label">Tags</div>
@@ -174,13 +225,19 @@
             <span>Filters</span>
           </button>
           <div class="fa-count-badge">
-            {{ (filteredCount$ | async) || 0 }} matches
+            {{ countLabel(filteredCount$ | async, 'match', 'matches') }}
           </div>
           <button *ngIf="freeOnlyAvailable()" type="button" faButton variant="ghost" class="fa-free-only"
             [class.is-active]="freeOnly$ | async" [attr.aria-pressed]="(freeOnly$ | async) ? 'true' : 'false'"
             [title]="freeOnlyTitle()" data-testid="coding-list-free-only"
             (click)="toggleFreeOnly()">
             Free only
+          </button>
+          <button *ngIf="hideSolvedAvailable()" type="button" faButton variant="ghost" class="fa-hide-solved"
+            [class.is-active]="progressFilterShown() === 'unsolved'"
+            [attr.aria-pressed]="progressFilterShown() === 'unsolved' ? 'true' : 'false'"
+            data-testid="coding-list-hide-solved" (click)="toggleHideSolved()">
+            Hide solved
           </button>
           <ng-container *ngIf="sort$ | async as currentSort">
             <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
@@ -206,10 +263,27 @@
         </div>
       </div>
 
+      <div class="fa-active-filters" *ngIf="activeFilters().length" data-testid="coding-active-filters">
+        <span class="fa-active-filters__label fa-meta-label">Active filters</span>
+        <fa-chip *ngFor="let filter of activeFilters(); trackBy: trackByActiveFilter" class="fa-active-filters__chip" size="sm"
+          [toggle]="false" [testId]="'coding-active-filter-' + filter.id" (chipClick)="removeActiveFilter(filter.id)">
+          <span class="fa-active-filters__sr">Remove filter: </span>{{ filter.label }}
+          <app-fa-glyph class="fa-active-filters__x" icon="xmark" size="12"></app-fa-glyph>
+        </fa-chip>
+        <button type="button" faButton variant="ghost" class="fa-link-btn" data-testid="coding-active-filters-clear"
+          (click)="resetAllFilters()">
+          Clear all
+        </button>
+      </div>
+
       <div class="list">
         <ng-container *ngIf="visible$ | async as questions; else loading">
           <div *ngIf="questions.length === 0" class="py-6 text-center fa-subtle">
             <div class="italic" data-testid="coding-empty-state">No questions match your filters.</div>
+            <button *ngIf="canSearchConcepts()" type="button" faButton variant="ghost" class="fa-link-btn mt-3"
+              data-testid="coding-empty-search-concepts" (click)="selectKind('trivia')">
+              Search concept questions for “{{ searchTerm.trim() }}”
+            </button>
             <button type="button" faButton variant="ghost" class="fa-link-btn mt-3" data-testid="coding-empty-reset"
               (click)="resetAllFilters()">
               Reset filters
@@ -225,6 +299,7 @@
             [description]="questionRowDescription(q)"
             [descriptionTooltip]="descriptionText(q)"
             [solved]="isSolved(q.id)"
+            [inProgress]="isInProgress(q.id)"
             [lockedLabel]="isLocked(q) ? 'Locked' : ''"
             [metaChips]="questionRowMetaChips(q)"
             [variants]="questionRowVariants(q)"

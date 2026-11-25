@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   normalizeSystemDesignQuestion,
@@ -15,6 +16,8 @@ export type QuestionListResolved = {
   source: 'global-coding';
   kind: QuestionListKind;
   items: MixedQuestionListItem[];
+  /** The debugging tasks, listed with the coding tasks; each opens on /<tech>/debug/<id>. */
+  debugItems?: MixedQuestionListItem[];
 };
 
 export type SystemDesignListResolved = {
@@ -25,12 +28,13 @@ export type SystemDesignListResolved = {
 export const globalCodingListResolver: ResolveFn<QuestionListResolved> = (route) => {
   const qs = inject(QuestionService);
   const kind = (route.data?.['kind'] as QuestionListKind | undefined) ?? 'coding';
-  return qs.loadAllQuestionSummaries(kind, { transferState: false }).pipe(
-    map((items) => ({
-      source: 'global-coding',
-      kind,
-      items,
-    })),
+  const items$ = qs.loadAllQuestionSummaries(kind, { transferState: false });
+  if (kind !== 'coding') {
+    return items$.pipe(map((items): QuestionListResolved => ({ source: 'global-coding', kind, items })));
+  }
+  // Loaded with the coding tasks, so the server-rendered list and the browser's first list count the same rows.
+  return forkJoin([items$, qs.loadAllDebugSummaries({ transferState: false })]).pipe(
+    map(([items, debugItems]): QuestionListResolved => ({ source: 'global-coding', kind, items, debugItems })),
   );
 };
 

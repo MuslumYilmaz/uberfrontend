@@ -590,6 +590,78 @@ describe('CodingDetailComponent', () => {
     expect(record).toHaveBeenCalledOnceWith('tests');
   });
 
+  it('runs an HTML/CSS task\'s checks in the web panel, and solves it on a full pass or leads a smoke pass to "Mark as solved"', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    authUser.set({ _id: 'free-user', accessTier: 'free' });
+    auth.isLoggedIn.and.returnValue(true);
+    component.tech = 'css';
+    component.kind = 'coding';
+    const checks = [
+      { id: 'grid', name: 'Grid', steps: [{ type: 'expectStyle', selector: '.gallery', property: 'display', value: 'grid' }] },
+      { id: 'cols', name: 'Columns', steps: [{ type: 'expectLayout', selector: '.card', columns: 4 }] },
+    ];
+    const task = { id: 'css-grid-card-gallery', technology: 'css', access: 'free', difficulty: 'intermediate', frameworkTests: checks } as any;
+    component.question.set(task);
+    const record = spyOn(component as any, 'recordCompletion').and.resolveTo(true);
+    const runWebChecks = jasmine.createSpy('runWebChecks').and.resolveTo([
+      { name: 'Grid', passed: true },
+      { name: 'Columns', passed: true },
+    ]);
+    component.webPanel = { runWebChecks } as any;
+
+    expect(component.hasFrameworkStructuredChecks()).toBeTrue();
+    expect(component.checkCoverage()).toBe('full');
+    expect(component.checkSelectorList()).toEqual(['.gallery', '.card']);
+    expect(component.submitLabel()).toBe('Run checks');
+
+    await component.submitCode();
+    expect(runWebChecks).toHaveBeenCalledOnceWith({ emitCompletion: false });
+    expect(record).toHaveBeenCalledOnceWith('tests');
+    expect(component.solved()).toBeTrue();
+
+    // Checks that cover the core only: a pass offers "Mark as solved", which the visitor presses after comparing.
+    component.solved.set(false);
+    record.calls.reset();
+    component.question.set({ ...task, id: 'css-forms-pseudoclasses', checkCoverage: 'smoke' });
+    await component.submitCode();
+    expect(record).not.toHaveBeenCalled();
+    expect(component.submitLabel()).toBe('Mark as solved');
+    component.onFrameworkFilesChanged();
+    expect(component.submitLabel()).toBe('Run checks');
+  });
+
+  it('collapses a framework task\'s description on a laptop once the visitor comes back to it, never on a first visit', () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance as any;
+    const width = spyOnProperty(window, 'innerWidth', 'get').and.returnValue(1280);
+    const question = { id: 'react-spec-collapse-default' } as any;
+    const key = `fa:coding:descCollapsed:react:${question.id}`;
+    localStorage.removeItem(key);
+    component.browserViewReady.set(true);
+    component.tech = 'react';
+    const collapsedWith = (openedBefore: boolean) => {
+      component.openedBefore = openedBefore;
+      component.loadCollapsePref(question);
+      return component.descCollapsed();
+    };
+
+    try {
+      expect(collapsedWith(false)).withContext('first visit').toBeFalse();
+      expect(collapsedWith(true)).withContext('back to the task at 1280').toBeTrue();
+      width.and.returnValue(1440);
+      expect(collapsedWith(true)).withContext('a wider screen keeps it open').toBeFalse();
+      width.and.returnValue(1366);
+      component.tech = 'javascript';
+      expect(collapsedWith(true)).withContext('a JavaScript task keeps it open').toBeFalse();
+      component.tech = 'react';
+      localStorage.setItem(key, 'false');
+      expect(collapsedWith(true)).withContext('the toggle wins').toBeFalse();
+    } finally {
+      localStorage.removeItem(key);
+    }
+  });
+
   it('uses mobile reading below 768px and compact workspace layout through 980px', () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -744,13 +816,17 @@ describe('CodingDetailComponent', () => {
     const idea = host.querySelector('[data-testid="coding-solution-idea"]') as HTMLDetailsElement;
     expect(idea).not.toBeNull();
     expect(description.contains(idea)).toBeTrue();
-    expect(idea.open).toBeTrue();
+    // Closed on a phone too, so it does not spoil a first attempt; its text stays in the page.
+    expect(idea.open).toBeFalse();
     expect(idea.textContent).toContain('Keep one pending promise per key and resolve it from the outside.');
     expect(idea.textContent).not.toContain('second paragraph');
     expect(host.querySelector('[data-testid="coding-solution-panel"]')?.textContent).toContain('second paragraph');
 
     component.pressureRequested.set(true);
     expect(component.solutionIdea()).toBe('');
+    // Until the browser view is ready the idea stays, so hydration claims the server's copy instead of orphaning it.
+    component.browserViewReady.set(false);
+    expect(component.solutionIdea()).not.toBe('');
 
     const locked = await render({ ...question, access: 'premium' });
     expect(locked.host.querySelector('[data-testid="coding-solution-idea"]')).toBeNull();
@@ -1350,6 +1426,34 @@ describe('CodingDetailComponent', () => {
     expect(component.solved()).toBeTrue();
   });
 
+  it('keeps what a recorded solve earned for the post-pass card', async () => {
+    const fixture = TestBed.createComponent(CodingDetailComponent);
+    const component = fixture.componentInstance;
+    activity.complete.and.returnValue(of({
+      solvedQuestionIds: ['react-counter'],
+      stats: { streak: { current: 3 } },
+      xpAwarded: 20,
+    } as any));
+    auth.isLoggedIn.and.returnValue(true);
+    auth.user.and.returnValue({ _id: 'user-1' } as any);
+    component.tech = 'react';
+    component.kind = 'coding';
+    component.question.set({
+      id: 'react-counter',
+      access: 'free',
+      difficulty: 'easy',
+      frameworkTests: [{ id: 'counter', name: 'Counter', steps: [{ type: 'expectExists', selector: '.value' }] }],
+      checkCoverage: 'full',
+    } as any);
+    component.frameworkPanel = {
+      runFrameworkChecks: jasmine.createSpy('runFrameworkChecks').and.resolveTo([{ name: 'Counter flow', passed: true }]),
+    } as any;
+
+    await component.submitCode();
+
+    expect(component.postPassReward()).toEqual({ xp: 20, streak: 3 });
+  });
+
   it('completes from a framework panel Run checks event when all checks pass', async () => {
     const fixture = TestBed.createComponent(CodingDetailComponent);
     const component = fixture.componentInstance;
@@ -1876,6 +1980,56 @@ describe('CodingDetailComponent', () => {
 
     component.question.set({ ...question, access: 'free' });
     expect(component.pressureAccessLabel()).toBe('Free');
+  });
+
+  it('counts Pressure Mode down from its minutes, over a reload too, and leaves the rounds open at zero', async () => {
+    const question = {
+      id: 'react-counter',
+      access: 'free',
+      pressureModeAsset: 'assets/questions/pressure-modes/counter.v1.json',
+    } as any;
+    const clockKey = 'fa:pressure:clock:v1:pressure:counter-pressure-v1:react-counter';
+    const open = async () => {
+      const component = TestBed.createComponent(CodingDetailComponent).componentInstance;
+      component.tech = 'react';
+      component.kind = 'coding';
+      component.question.set(question);
+      component.pressureRequested.set(true);
+      await (component as any).activatePressureMode(question);
+      return component;
+    };
+    jasmine.clock().install();
+    jasmine.clock().mockDate(new Date('2026-11-24T12:00:00Z'));
+    try {
+      const first = await open();
+      expect(first.pressureClockLabel()).toBe('35:00 left');
+      jasmine.clock().tick(10 * 60_000);
+      expect(first.pressureClockLabel()).toBe('25:00 left');
+
+      // A reload starts the page over, not the attempt.
+      const reloaded = await open();
+      expect(reloaded.pressureClockLabel()).toBe('25:00 left');
+
+      jasmine.clock().tick(25 * 60_000);
+      expect(reloaded.pressureTimeUp()).toBeTrue();
+      expect(reloaded.pressureClockLabel()).toBe("Time's up");
+      // Nothing locks at zero: a passing run still clears the round.
+      await reloaded.onFrameworkCheckRun({
+        questionId: 'react-counter',
+        passed: true,
+        results: [{ name: 'Base', passed: true }],
+      });
+      expect(reloaded.pressureClearedRounds()).toBe(1);
+
+      // Exit forgets the attempt, so the next one starts with the full minutes.
+      spyOn((reloaded as any).route.snapshot.queryParamMap, 'get').and.returnValue(null);
+      (reloaded as any).syncRouteContextsFromRoute();
+      expect(reloaded.pressureClockLabel()).toBeNull();
+      expect(sessionStorage.getItem(clockKey)).toBeNull();
+      expect((await open()).pressureClockLabel()).toBe('35:00 left');
+    } finally {
+      jasmine.clock().uninstall();
+    }
   });
 
   it('clears an intermediate pressure round without completing the normal question', async () => {
@@ -4125,6 +4279,8 @@ describe('CodingDetailComponent', () => {
       const footerLinks = () => ['footer-prev', 'footer-next'].filter((id) => find(id)?.tagName === 'A');
       for (const line of coaching) expect(description()).withContext(line).toContain(line);
       expect(find('coding-interview-hero')?.textContent).toContain('30 min');
+      // The explanation follows a failed run and sits with its results.
+      jsPanel().hasRunTests.set(true);
       jsPanel().explainHint.set({ ruleId: 'off-by-one', title: 'Off by one', why: 'The loop stops one step early.', actions: ['Check the bound'], confidence: 0.9 });
       fixture.detectChanges();
       expect(find('assist-explain-card')?.textContent).toContain('Explain failure');
@@ -4140,7 +4296,7 @@ describe('CodingDetailComponent', () => {
 
       for (const line of coaching) expect(description()).withContext(line).not.toContain(line);
       expect(find('coding-interview-hero')).toBeNull();
-      expect(find('editor-assist-dock')).toBeNull();
+      expect(find('results-assist')).toBeNull();
       // The task's own statement, requirements and notes stay: the round would give them too.
       expect(description()).toContain('Return the node of tree B');
       expect(description()).toContain('Return null when the node is not in tree A');

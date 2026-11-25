@@ -172,13 +172,20 @@ function compileTS(src, filename){
       var urls = [];
       var re = /['"](.+?)['"]/g, mm;
       while ((mm = re.exec(inner))) urls.push(mm[1]);
-      var cssArr = urls.map(function(u){
-        var resolved = u.startsWith('.') || !/^\\//.test(u) ? join(fromPath, u) : norm(u);
-        return JSON.stringify(String(readFile(resolved) || ''));
-      });
-      return 'styles: [' + cssArr.join(',') + ']';
+      return inlineStyles(urls, fromPath);
+    });
+    // styleUrl (one file, Angular 17+) -> inline styles
+    src = src.replace(/styleUrl\\s*:\\s*(['"])(.+?)\\1/g, function(_m, _q, url){
+      return inlineStyles([url], fromPath);
     });
     return src;
+  }
+  function inlineStyles(urls, fromPath){
+    var cssArr = urls.map(function(u){
+      var resolved = u.startsWith('.') || !/^\\//.test(u) ? join(fromPath, u) : norm(u);
+      return JSON.stringify(String(readFile(resolved) || ''));
+    });
+    return 'styles: [' + cssArr.join(',') + ']';
   }
 
   // ---------- Module emitter (TS->JS + import rewrites) ----------

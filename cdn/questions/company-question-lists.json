@@ -269,8 +269,11 @@
           "latest": "2026-07",
           "newUntil": "2026-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-unique-array",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -359,8 +362,11 @@
           "latest": "2024-07",
           "newUntil": "2024-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/trivia/js-array-sort-pitfalls",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {
@@ -468,8 +474,11 @@
           "latest": "2024-10",
           "newUntil": "2024-12-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-valid-anagram",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -513,8 +522,11 @@
           "latest": "2025-06",
           "newUntil": "2025-08-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/component-design-system-architecture",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -526,8 +538,11 @@
           "latest": "2025-04",
           "newUntil": "2025-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-webhook-deliveries-four-tasks",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -587,8 +602,11 @@
           "latest": "2024-09",
           "newUntil": "2024-11-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/flashcard-language-trainer",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -613,8 +631,11 @@
           "latest": "2024-09",
           "newUntil": "2024-11-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-maze-path",
+            "access": "premium"
+          },
           "answerGuide": null
         }
       ]
@@ -1494,8 +1515,11 @@
           "latest": "2024-04",
           "newUntil": "2024-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-fetch-json-timeout",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {
@@ -1546,8 +1570,11 @@
           "latest": "2023-04",
           "newUntil": "2023-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-dom-find-node",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -1559,8 +1586,11 @@
           "latest": "2025-10",
           "newUntil": "2025-12-30",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-maze-path",
+            "access": "premium"
+          },
           "answerGuide": null
         }
       ]
@@ -3232,8 +3262,11 @@
           "latest": "2021-09",
           "newUntil": "2021-11-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-modal-tooltip-portal",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -3261,8 +3294,11 @@
           "latest": "2022-06",
           "newUntil": "2022-08-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/coding/react-webhook-deliveries-four-tasks",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -9817,8 +9853,11 @@
           "latest": "2025-04",
           "newUntil": "2025-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/system-design/ai-agent-run-inspector",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {
@@ -9843,8 +9882,11 @@
           "latest": "2024-04",
           "newUntil": "2024-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-create-lru-cache",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {
@@ -9872,8 +9914,11 @@
           "latest": "2025-04",
           "newUntil": "2025-06-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/debug/js-debug-spoken-prefix-review",
+            "access": "premium"
+          },
           "answerGuide": null
         },
         {
@@ -9885,8 +9930,11 @@
           "latest": "2026-07",
           "newUntil": "2026-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-update-at-index",
+            "access": "free"
+          },
           "answerGuide": null
         }
       ]
@@ -15559,8 +15607,11 @@
           "latest": "2022-02",
           "newUntil": "2022-04-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/javascript/coding/js-capitalize-words",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {
@@ -15588,8 +15639,11 @@
           "latest": "2024-07",
           "newUntil": "2024-09-29",
           "open": false,
-          "unlockable": false,
-          "practice": null,
+          "unlockable": true,
+          "practice": {
+            "route": "/react/trivia/react-jsx-transform-and-why-not-required",
+            "access": "free"
+          },
           "answerGuide": null
         },
         {

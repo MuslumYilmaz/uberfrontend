@@ -19,8 +19,10 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../../../environments/environment';
 import { FrameworkTest, Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { PreviewBuilderService } from '../../../../core/services/preview-builder.service';
@@ -28,6 +30,7 @@ import { computeFrameworkContentVersion } from '../../../../core/utils/content-v
 import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.util';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
+import { TimedPracticeClock } from '../../../../core/utils/timed-practice-clock';
 import { userVisibleFailures } from '../../../../core/utils/user-visible-failure-reporter';
 import {
   dismissUpdateBanner,
@@ -43,9 +46,10 @@ import { RestoreBannerComponent } from '../../../../shared/components/restore-ba
 import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-snapshot.component';
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { editorKeys } from '../../../../core/utils/editor-keys.util';
-import { ANGULAR_PREVIEW_LABEL } from '../../../../core/utils/angular-preview-version';
+import { angularPreviewLabel } from '../../../../core/utils/angular-preview-version';
 import { splitterKeyRatio } from '../../../../core/utils/splitter-keys.util';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
+import { practiceMinutes, TIMED_PRACTICE_STEPS, timedPracticeStep, type TimedPracticeStep } from '../../../../shared/practice-minutes';
 import type { FrameworkCheckCoverage } from '../../../../core/utils/framework-check-coverage.util';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 import { OpaqueCheckCancelledError, OpaqueDomCheckRunner } from '../opaque-dom-check-runner';
@@ -75,6 +79,15 @@ function scriptStringLiteral(value: string): string {
   return JSON.stringify(value).replace(/[<>\/\u2028\u2029]/g, (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
 }
 
+/** The sandboxed preview has no storage (localStorage throws), so it gets empty in-memory stores per build, as checks do. */
+export const PREVIEW_MEMORY_STORAGE = `(function(){function memory(){var items=new Map();return{get length(){return items.size;},`
+  + `key:function(i){var k=Array.from(items.keys())[i];return k===undefined?null:k;},`
+  + `getItem:function(k){k=String(k);return items.has(k)?items.get(k):null;},`
+  + `setItem:function(k,v){items.set(String(k),String(v));},removeItem:function(k){items.delete(String(k));},`
+  + `clear:function(){items.clear();}};}`
+  + `['localStorage','sessionStorage'].forEach(function(name){var store=memory();`
+  + `try{Object.defineProperty(window,name,{configurable:true,get:function(){return store;}});}catch(_e){}});})();`;
+
 /**
  * Injected first into the preview document: console.log/info/warn/error/debug and uncaught errors are posted to this
  * panel with the preview's token, then go on to the browser console as before. Values are written as a console writes
@@ -101,6 +114,15 @@ export function previewConsoleBridge(token: string): string {
     + `window.addEventListener('error',function(e){var err=e&&e.error;post('error',err&&err.message?(err.name||'Error')+': '+err.message:String((e&&e.message)||'Script error'));});`
     + `window.addEventListener('unhandledrejection',function(e){post('error','Unhandled promise rejection: '+fmt(e&&e.reason));});})();`;
 }
+
+/** Set-up files a task is not solved in; the file tree lists them, the editor's tabs leave them out. */
+const SETUP_FILE = /(^|\/)(package\.json|tsconfig[^/]*\.json|index\.html)$|(^|\/)src\/(main|index)\.(ts|tsx|js|jsx)$/i;
+
+/** The preview's share of its column, within which the splitter above the checks moves. */
+const PREVIEW_ROWS = { min: 0.2, max: 0.85 };
+
+/** The JavaScript workspace's switch for timed practice (`assist.interviewMode`), which this one follows. */
+const TIMED_PRACTICE_ENABLED = environment.assist?.interviewMode !== false;
 
 @Component({
     selector: 'app-coding-framework-panel',
@@ -135,11 +157,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   /** The task's requirements, listed beside a passed smoke check to compare against before marking it solved. */
   @Input() requirements: readonly string[] = [];
   @Input() solved = false;
+  /** The Solution tab is open beside the workspace, so timed practice is not offered. */
+  @Input() solutionPanelOpen = false;
+  /** The page keeps its own clock, as a merge request review does, so timed practice is not offered beside it. */
+  @Input() timedPracticeHidden = false;
   @Output() requestEditorUpgrade = new EventEmitter<void>();
   @Output() frameworkCheckRun = new EventEmitter<FrameworkCheckRunEvent>();
   @Output() filesChanged = new EventEmitter<Record<string, string>>();
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
+  @ViewChild('previewColumn', { read: ElementRef }) previewColumn?: ElementRef<HTMLElement>;
+  @ViewChild('previewStage', { read: ElementRef }) previewStage?: ElementRef<HTMLElement>;
   @ViewChild('frameworkEditor') frameworkEditor?: MonacoEditorComponent;
 
   // Workspace state
@@ -192,6 +220,16 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private previewReadyFallbackTimer?: number;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly attemptInsights = inject(AttemptInsightsService, { optional: true });
+  private readonly analytics = inject(AnalyticsService, { optional: true });
+  /** Timed practice on the clock the JavaScript workspace keeps too: a countdown, then a summary of the check runs. */
+  readonly timedPractice = new TimedPracticeClock({
+    zone: inject(NgZone),
+    isBrowser: this.isBrowser,
+    store: this.attemptInsights,
+    onExpired: () => this.endTimedPractice('expired'),
+  });
+  readonly timedPracticeMinutes = signal<TimedPracticeStep>(30);
+  readonly timedPracticeSetupOpen = signal(false);
   useMonaco = signal(true);
   monacoLoadFailed = signal(false);
   editorReady = signal(false);
@@ -239,11 +277,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const open = this.currentPath();
     return Object.fromEntries(Object.entries(this.filesMap()).filter(([path]) => path !== open));
   });
-  currentFileLabel = computed(() => {
-    const p = this.currentPath();
-    if (!p) return 'Select a file';
-    const i = p.lastIndexOf('/');
-    return i >= 0 ? p.slice(i + 1) : p;
+  /**
+   * The files a task is solved in, as tabs over the editor, the open file always among them: code, then template,
+   * then styles, a component's own files before shared ones (app.component.ts, .html, .css, then styles.css).
+   */
+  tabFiles = computed(() => {
+    const open = this.currentPath();
+    const kind = (path: string) => (/\.(tsx?|jsx?|vue)$/i.test(path) ? 0 : /\.html$/i.test(path) ? 1 : /\.s?css$/i.test(path) ? 2 : 3);
+    const depth = (path: string) => path.split('/').length;
+    return this.fileList()
+      .filter((path) => path === open || !SETUP_FILE.test(path))
+      .sort((a, b) => kind(a) - kind(b) || depth(b) - depth(a) || a.localeCompare(b));
   });
 
   // editor | preview oranı (0–1)
@@ -254,6 +298,23 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   );
 
   isDraggingFrameworkCols = signal(false);
+
+  /**
+   * The preview's share of its column once the visitor takes hold of the splitter above the checks; until then null,
+   * and the checks take what they need up to their cap.
+   */
+  previewRowsRatio = signal<number | null>(null);
+  previewRowsPercent = computed(() => {
+    const ratio = this.previewRowsRatio();
+    return ratio === null ? null : Math.round(ratio * 100);
+  });
+  checksShown = computed(() => this.frameworkChecksRunning() || this.frameworkCheckResults().length > 0);
+  previewStageFlex = computed(() => {
+    const ratio = this.previewRowsRatio();
+    return ratio !== null && this.checksShown() ? `0 0 ${ratio * 100}%` : null;
+  });
+  isDraggingPreviewRows = signal(false);
+  private draggingPreviewRows = false;
 
   private draggingFrameworkCols = false;
   private startXFrameworkCols = 0;
@@ -316,6 +377,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.addEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.addEventListener('pointermove', this.onPointerMovePreviewRows);
+      window.addEventListener('pointerup', this.onPointerUpPreviewRows);
       window.addEventListener('message', this.onPreviewMessage);
     });
   }
@@ -332,6 +395,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (workspaceIdentityChanged) {
       this.cancelFrameworkCheckRun();
       this.invalidatePreviewBuilds();
+      this.syncTimedPractice();
     }
     if (workspaceIdentityChanged && this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
@@ -355,6 +419,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.initSeq += 1;
     this.frameworkCheckRunSeq += 1;
     this.invalidatePreviewBuilds();
+    this.timedPractice.dispose();
     this.opaqueCheckRunner.destroy();
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
@@ -379,6 +444,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
+      window.removeEventListener('pointermove', this.onPointerMovePreviewRows);
+      window.removeEventListener('pointerup', this.onPointerUpPreviewRows);
       window.removeEventListener('message', this.onPreviewMessage);
     }
   }
@@ -862,6 +929,33 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   toggleFiles() { this.showFileDrawer.set(!this.showFileDrawer()); }
   closeFiles() { this.showFileDrawer.set(false); }
 
+  fileName(path: string): string {
+    const i = path.lastIndexOf('/');
+    return i >= 0 ? path.slice(i + 1) : path;
+  }
+
+  fileTabId(path: string): string {
+    return `fw-file-tab-${path.replace(/[^a-z0-9]+/gi, '-')}`;
+  }
+
+  trackByPath = (_: number, path: string): string => path;
+
+  /** The tabs pattern: the arrow keys, Home and End open the next file and move focus to its tab. */
+  onFileTabsKey(ev: KeyboardEvent): void {
+    const tabs = this.tabFiles();
+    const at = tabs.indexOf(this.currentPath());
+    if (at < 0) return;
+    let next: number;
+    if (ev.key === 'ArrowRight') next = (at + 1) % tabs.length;
+    else if (ev.key === 'ArrowLeft') next = (at - 1 + tabs.length) % tabs.length;
+    else if (ev.key === 'Home') next = 0;
+    else if (ev.key === 'End') next = tabs.length - 1;
+    else return;
+    ev.preventDefault();
+    this.openFile(tabs[next]);
+    if (this.isBrowser) document.getElementById(this.fileTabId(tabs[next]))?.focus();
+  }
+
   openFile(path: string) {
     const files = this.filesMap();
     if (!path || !(path in files)) return;
@@ -992,14 +1086,78 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   readonly keys = editorKeys();
-  /** Which Angular the preview runs, so a reader knows what the starter and the checks expect. */
-  readonly angularRuntimeLabel = ANGULAR_PREVIEW_LABEL;
+  /** Which Angular the preview runs, and whether this app runs zoneless, so a reader knows what the checks expect. */
+  readonly angularRuntimeLabel = computed(() => angularPreviewLabel(Object.values(this.filesMap())));
 
   /** Ctrl/Cmd+Enter in the editor: the checks when the task has them and they can run, else a fresh preview. */
   onRunShortcut(): void {
     if (this.locked || this.frameworkChecksRunning()) return;
     if (this.frameworkChecks().length) void this.runFrameworkChecks();
     else void this.rebuildFrameworkPreview().catch(() => undefined);
+  }
+
+  /**
+   * Timed practice beside the task's own checks, as in the JavaScript workspace: not in Pressure Mode, a rehearsal or
+   * a review, which keep clocks of their own, and not while the solution is out.
+   */
+  showTimedPracticeSetup(): boolean {
+    return this.timedPracticeOffered()
+      && !this.timedPractice.active()
+      && !this.solutionPanelOpen
+      && !this.viewingSolution()
+      && !this.showingFrameworkSolutionPreview();
+  }
+
+  onTimedPracticeMinutes(value: string): void {
+    const minutes = TIMED_PRACTICE_STEPS.find((step) => step === Number(value));
+    if (minutes) this.timedPracticeMinutes.set(minutes);
+  }
+
+  startTimedPractice(): void {
+    const q = this.question;
+    if (!q || !this.showTimedPracticeSetup()) return;
+    this.timedPracticeSetupOpen.set(false);
+    this.timedPractice.start(q.id, this.timedPracticeMinutes());
+    this.analytics?.track('interview_mode_started', {
+      question_id: q.id,
+      duration_min: this.timedPracticeMinutes(),
+      tech: this.tech,
+    });
+  }
+
+  endTimedPractice(reason: 'manual' | 'expired' = 'manual'): void {
+    if (!this.timedPractice.active()) return;
+    const summary = this.timedPractice.end();
+    this.analytics?.track('interview_mode_completed', {
+      question_id: this.question?.id || 'unknown',
+      tech: this.tech,
+      reason,
+      runs: summary?.runs ?? 0,
+      best_pass_pct: summary?.bestPassPct ?? 0,
+      elapsed_sec: summary?.elapsedSec ?? 0,
+    });
+  }
+
+  private timedPracticeOffered(): boolean {
+    return TIMED_PRACTICE_ENABLED
+      && !this.timedPracticeHidden
+      && !this.interviewMode
+      && !this.clockLabel
+      && !this.locked
+      && !this.concealedNote;
+  }
+
+  /**
+   * Another task, or this one on other drafts: the clock starts over at the task's own minutes, and picks up a session
+   * this task had running before a reload.
+   */
+  private syncTimedPractice(): void {
+    this.timedPractice.reset();
+    this.timedPracticeSetupOpen.set(false);
+    this.timedPracticeMinutes.set(timedPracticeStep(practiceMinutes(this.question)));
+    if (!this.isBrowser || !this.question || !this.timedPracticeOffered()) return;
+    const minutes = this.timedPractice.restore(this.question.id);
+    if (minutes !== null) this.timedPracticeMinutes.set(minutes);
   }
 
   async runFrameworkChecks(options?: { emitCompletion?: boolean }): Promise<TestResult[]> {
@@ -1053,6 +1211,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkChecksRunning.set(false);
     this.frameworkCheckResults.set(results);
     this.recordFrameworkAttempt(q, results);
+    this.timedPractice.recordRun(results.filter((result) => result.passed).length, results.length);
     if (options?.emitCompletion !== false) {
       this.frameworkCheckRun.emit({
         questionId: q.id,
@@ -1129,7 +1288,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       signature,
       codeHash,
       codeChanged: prevHash ? prevHash !== codeHash : true,
-      interviewMode: this.interviewMode,
+      interviewMode: this.interviewMode || this.timedPractice.active(),
       errorCategory: category,
       tags: question.tags || [],
     });
@@ -1285,7 +1444,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   private injectPreviewReadyBridge(html: string, navId: number): { html: string; token: string } {
     const token = `fa-preview-${navId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const bridge = `<script>${previewConsoleBridge(token)}(function(){var token=${scriptStringLiteral(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
+    const bridge = `<script>${PREVIEW_MEMORY_STORAGE}${previewConsoleBridge(token)}(function(){var token=${scriptStringLiteral(token)};var last=null;window.__FA_PREVIEW_READY_TOKEN=token;function normalize(reason){if(reason==='error')return'runtime-error';if(reason==='compile-error'||reason==='boot-error'||reason==='runtime-error')return reason;return'render-ready';}function publish(){if(!last)return;try{if(window.parent){window.parent.postMessage({type:'FA_PREVIEW_LIFECYCLE',version:2,token:token,state:last.state,error:last.error},'*');}}catch(_e){}}window.__FA_NOTIFY_PREVIEW_READY=function(reason,detail){last={state:normalize(reason),error:String(detail||'').split(/\\r?\\n/,1)[0].slice(0,500)};publish();};window.addEventListener('message',function(event){var data=event&&event.data;if(!data||data.type!=='FA_PREVIEW_STATUS_REQUEST'||data.version!==2||data.token!==token)return;publish();});})();</script>`;
 
     if (/<head[^>]*>/i.test(html)) {
       return { html: html.replace(/<head[^>]*>/i, `$&\n${bridge}`), token };
@@ -1562,5 +1721,49 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!this.draggingFrameworkCols) return;
     this.draggingFrameworkCols = false;
     this.isDraggingFrameworkCols.set(false);
+  };
+
+  // --- HORIZONTAL SPLITTER (preview | console and checks) ---
+
+  /** Takes hold of the split on screen, so focusing or grabbing the splitter moves nothing. */
+  holdPreviewRows(): number {
+    const held = this.previewRowsRatio();
+    if (held !== null) return held;
+    const column = this.previewColumn?.nativeElement.getBoundingClientRect();
+    const stage = this.previewStage?.nativeElement.getBoundingClientRect();
+    const measured = column && stage && column.height > 0 ? stage.height / column.height : 0.6;
+    const ratio = Math.max(PREVIEW_ROWS.min, Math.min(PREVIEW_ROWS.max, measured));
+    this.previewRowsRatio.set(ratio);
+    return ratio;
+  }
+
+  /** ArrowUp gives the checks more room, ArrowDown the preview, as dragging the splitter does. */
+  onPreviewRowsKey(ev: KeyboardEvent): void {
+    const next = splitterKeyRatio(ev.key, this.holdPreviewRows(), PREVIEW_ROWS, 'y');
+    if (next === null) return;
+    ev.preventDefault();
+    this.previewRowsRatio.set(next);
+  }
+
+  startPreviewRowsDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.holdPreviewRows();
+    this.draggingPreviewRows = true;
+    this.isDraggingPreviewRows.set(true);
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  private onPointerMovePreviewRows = (ev: PointerEvent) => {
+    if (!this.draggingPreviewRows) return;
+    const column = this.previewColumn?.nativeElement.getBoundingClientRect();
+    if (!column || column.height <= 0) return;
+    const next = Math.max(PREVIEW_ROWS.min, Math.min(PREVIEW_ROWS.max, (ev.clientY - column.top) / column.height));
+    this.zone.run(() => this.previewRowsRatio.set(next));
+  };
+
+  private onPointerUpPreviewRows = () => {
+    if (!this.draggingPreviewRows) return;
+    this.draggingPreviewRows = false;
+    this.zone.run(() => this.isDraggingPreviewRows.set(false));
   };
 }

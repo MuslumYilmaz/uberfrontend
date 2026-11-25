@@ -575,6 +575,24 @@ describe('DashboardComponent', () => {
     )).toBeFalse();
   });
 
+  it('invites a signed-in reader with no solves to a first practice', () => {
+    solvedIds = [];
+    currentDashboardPayload = buildPayload({
+      progress: {
+        ...buildPayload().progress,
+        practice: { completedCount: 0, totalCount: 66, completedPercent: 0 },
+      },
+    });
+
+    fixture = createComponent();
+    const pageText = (fixture.nativeElement as HTMLElement).textContent || '';
+
+    expect(pageText).toContain('Start your first focused practice');
+    expect(pageText).toContain(
+      'Start with one Essential 60 question. After a few completed items, the dashboard will show badges, streaks, and recommendations.',
+    );
+  });
+
   it('keeps novice logged-in users in the launch-first layout', () => {
     solvedIds = ['react-counter', 'react-closures'];
     currentDashboardPayload = buildPayload({
@@ -594,9 +612,11 @@ describe('DashboardComponent', () => {
     const primaryCta = page.querySelector('[data-testid="dashboard-primary-cta"]') as HTMLAnchorElement | null;
     const pageText = page.textContent || '';
 
-    expect(pageText).toContain('Start your first focused practice');
+    // Two solves in: the copy counts them and says how many more turn on the progress layout.
+    expect(pageText).toContain('Keep your practice going');
+    expect(pageText).not.toContain('Start your first focused practice');
     expect(pageText).toContain(
-      'Start with one Essential 60 question. After a few completed items, the dashboard will show badges, streaks, and recommendations.',
+      'You have solved 2 questions. Solve 1 more and the dashboard starts showing your streak, badges, and recommendations.',
     );
     expect(primaryCta?.textContent?.trim()).toBe('Open Essential 60');
     expect(primaryCta?.getAttribute('href') || '').toContain('/interview-questions/essential');

@@ -3,7 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestro
 import { environment } from '../../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 import type { DecisionGraphBranch, DecisionGraphDocument, DecisionGraphNode } from '../../../../core/models/decision-graph.model';
-import type { FailureCategory, FailureHint, InterviewModeSession, StuckLevel, StuckState } from '../../../../core/models/editor-assist.model';
+import type { FailureCategory, FailureHint, StuckLevel, StuckState } from '../../../../core/models/editor-assist.model';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AttemptInsightsService } from '../../../../core/services/attempt-insights.service';
 import { DecisionGraphService } from '../../../../core/services/decision-graph.service';
@@ -15,7 +15,7 @@ import { classifyFailureCategory } from '../../../../core/utils/error-taxonomy.u
 import { buildFailureHint } from '../../../../core/utils/failure-explain-rules';
 import { createFailureSignature, normalizeErrorLine, stableHash } from '../../../../core/utils/failure-signature.util';
 import { buildRubberDuckPrompts } from '../../../../core/utils/rubber-duck-prompts.util';
-import { deriveStuckState, isStuckNudgeVisible, stuckLevelLabel } from '../../../../core/utils/stuck-detector.util';
+import { deriveStuckState, isStuckNudgeVisible } from '../../../../core/utils/stuck-detector.util';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import { parseFileBundle, replaceBundleFile, type BundleFile } from '../../../../core/utils/file-bundle.util';
 import { practiceMinutes, timedPracticeStep } from '../../../../shared/practice-minutes';
@@ -42,6 +42,7 @@ import { CodeSnapshotComponent } from '../../../../shared/ui/code-snapshot/code-
 import { FaGlyphComponent } from '../../../../shared/ui/icon/fa-glyph.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
+import { TimedPracticeClock } from '../../../../core/utils/timed-practice-clock';
 
 declare const monaco: any;
 
@@ -230,8 +231,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   testsEditorReady = signal(false);
   private runnerInstance?: Runner;
   private runnerPromise?: Promise<Runner>;
-  private interviewTicker: number | null = null;
-  private interviewSession: InterviewModeSession | null = null;
   private lastTrackedStuckLevel: StuckLevel = 0;
 
   stuckState = signal<StuckState | null>(null);
@@ -246,10 +245,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   duckDoneStepIndexes = signal<number[]>([]);
   duckNote = signal('');
 
-  interviewModeEnabled = signal(false);
+  /** Timed practice, on the clock the framework workspace shares; the names below are the clock's own signals. */
+  readonly timedPractice = new TimedPracticeClock({
+    zone: this.zone,
+    isBrowser: this.isBrowser,
+    store: this.attemptInsights,
+    onExpired: () => this.endInterviewMode('expired'),
+  });
+  interviewModeEnabled = this.timedPractice.active;
   interviewDurationMin = signal<15 | 30 | 45>(30);
-  interviewRemainingSec = signal(0);
-  interviewSummary = signal<{ runs: number; bestPassPct: number; elapsedSec: number } | null>(null);
+  interviewRemainingSec = this.timedPractice.remainingSec;
+  interviewSummary = this.timedPractice.summary;
   interviewSetupOpen = signal(false);
 
   showStuckNudge = computed(() => {
@@ -285,7 +291,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this._runSeq += 1;
     this.isRunningTests.set(false);
     this.flushPendingPersist();
-    this.stopInterviewTicker();
+    this.timedPractice.dispose();
     if (this.isBrowser) {
       window.removeEventListener('beforeunload', this._persistLangOnUnload);
       if (this.resizeRaf != null) {
@@ -1237,15 +1243,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.duckSteps.set([]);
     this.duckDoneStepIndexes.set([]);
     this.duckNote.set('');
-    this.interviewSummary.set(null);
     this.lastTrackedStuckLevel = 0;
-    this.interviewModeEnabled.set(false);
-    this.interviewRemainingSec.set(0);
+    this.timedPractice.reset();
     this.interviewSetupOpen.set(false);
-    this.interviewSession = null;
     // Timed practice starts at the task's own minutes, the number its plan row shows; a running session keeps its own.
     this.interviewDurationMin.set(timedPracticeStep(practiceMinutes(this.question)));
-    this.stopInterviewTicker();
     this.subTab.set('tests');
     this.testResultsChange.emit([]);
     this.consoleEntriesChange.emit([]);
@@ -1298,8 +1300,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   assistNudgeBody(): string {
     const state = this.stuckState();
     if (!state || state.level < 1) return '';
-    const label = stuckLevelLabel(state.level).toLowerCase();
-    return `${label}: ${state.consecutiveCount} similar run${state.consecutiveCount === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
+    const runs = state.consecutiveCount;
+    return `The same failure came back ${runs} run${runs === 1 ? '' : 's'} in a row. Focus on the first failed test only.`;
   }
 
   toggleHintExpanded(): void {
@@ -1391,27 +1393,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const q = this.question;
     if (!q) return;
 
-    const now = Date.now();
-    this.interviewSummary.set(null);
-    this.interviewModeEnabled.set(true);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hintExpanded.set(false);
     this.explainExpanded.set(false);
     this.explainDismissed.set(false);
     this.interviewSetupOpen.set(false);
-
-    this.interviewSession = {
-      questionId: q.id,
-      startedAt: now,
-      durationMin: this.interviewDurationMin(),
-      runs: 0,
-      bestPassPct: 0,
-      updatedAt: now,
-    };
-    this.attemptInsights?.saveInterviewSession(this.interviewSession);
-    this.syncInterviewRemaining();
-    this.startInterviewTicker();
+    this.timedPractice.start(q.id, this.interviewDurationMin());
 
     this.analytics?.track('interview_mode_started', {
       question_id: q.id,
@@ -1421,41 +1409,18 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   endInterviewMode(reason: 'manual' | 'expired' = 'manual'): void {
     if (!this.interviewModeEnabled()) return;
-    const q = this.question;
-    const session = this.interviewSession;
-    const now = Date.now();
-    const elapsedSec = session ? Math.max(0, Math.round((now - session.startedAt) / 1000)) : 0;
-    const bestPassPct = session ? Math.round(session.bestPassPct * 100) : 0;
-
-    this.interviewModeEnabled.set(false);
-    this.interviewRemainingSec.set(0);
-    this.stopInterviewTicker();
-    if (q) this.attemptInsights?.clearInterviewSession(q.id);
-
-    if (session) {
-      this.interviewSummary.set({
-        runs: session.runs,
-        bestPassPct,
-        elapsedSec,
-      });
-    }
-
+    const summary = this.timedPractice.end();
     this.analytics?.track('interview_mode_completed', {
-      question_id: q?.id || 'unknown',
+      question_id: this.question?.id || 'unknown',
       reason,
-      runs: session?.runs ?? 0,
-      best_pass_pct: bestPassPct,
-      elapsed_sec: elapsedSec,
+      runs: summary?.runs ?? 0,
+      best_pass_pct: summary?.bestPassPct ?? 0,
+      elapsed_sec: summary?.elapsedSec ?? 0,
     });
-
-    this.interviewSession = null;
   }
 
   interviewRemainingLabel(): string {
-    const total = Math.max(0, this.interviewRemainingSec());
-    const mins = Math.floor(total / 60);
-    const secs = total % 60;
-    return `${mins}:${String(secs).padStart(2, '0')} left`;
+    return this.timedPractice.remainingLabel();
   }
 
   private loadAssistStateForQuestion(question: Question): void {
@@ -1472,50 +1437,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private restoreInterviewSession(questionId: string): void {
-    if (!this.assistFlags.interviewMode || !this.attemptInsights) return;
-    const session = this.attemptInsights.getInterviewSession(questionId);
-    if (!session) return;
-    const expiresAt = session.startedAt + session.durationMin * 60_000;
-    if (Date.now() >= expiresAt) {
-      this.attemptInsights.clearInterviewSession(questionId);
-      return;
-    }
-
-    this.interviewDurationMin.set(session.durationMin);
-    this.interviewModeEnabled.set(true);
-    this.interviewSession = session;
+    if (!this.assistFlags.interviewMode) return;
+    const minutes = this.timedPractice.restore(questionId);
+    if (minutes === null) return;
+    this.interviewDurationMin.set(minutes);
     this.topTab.set('code');
-    this.syncInterviewRemaining();
-    this.startInterviewTicker();
-  }
-
-  private syncInterviewRemaining(): void {
-    if (!this.interviewSession) {
-      this.interviewRemainingSec.set(0);
-      return;
-    }
-    const expiresAt = this.interviewSession.startedAt + this.interviewSession.durationMin * 60_000;
-    const remainingMs = Math.max(0, expiresAt - Date.now());
-    this.interviewRemainingSec.set(Math.ceil(remainingMs / 1000));
-    if (remainingMs <= 0) {
-      this.endInterviewMode('expired');
-    }
-  }
-
-  private startInterviewTicker(): void {
-    this.stopInterviewTicker();
-    if (!this.isBrowser || !this.interviewModeEnabled()) return;
-    // Outside the zone, as AttemptInsightsService's sync timer: a session restored while the page loads would
-    // otherwise keep the app from turning stable, and hydration would leave the prerendered markup in place.
-    this.interviewTicker = this.zone.runOutsideAngular(() =>
-      window.setInterval(() => this.zone.run(() => this.syncInterviewRemaining()), 1000));
-  }
-
-  private stopInterviewTicker(): void {
-    if (this.interviewTicker != null) {
-      clearInterval(this.interviewTicker);
-      this.interviewTicker = null;
-    }
   }
 
   private persistDuckState(signature?: string): void {
@@ -2106,17 +2032,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       this.duckNote.set('');
     }
 
-    if (this.interviewModeEnabled() && this.interviewSession) {
-      const passPct = totalCount > 0 ? passCount / totalCount : 0;
-      this.interviewSession = {
-        ...this.interviewSession,
-        runs: this.interviewSession.runs + 1,
-        bestPassPct: Math.max(this.interviewSession.bestPassPct, passPct),
-        updatedAt: Date.now(),
-      };
-      this.attemptInsights.saveInterviewSession(this.interviewSession);
-      this.syncInterviewRemaining();
-    }
+    this.timedPractice.recordRun(passCount, totalCount);
   }
 
   private async loadRunner(): Promise<Runner> {

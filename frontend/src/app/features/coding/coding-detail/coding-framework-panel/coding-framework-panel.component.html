@@ -75,27 +75,57 @@
         <!-- LEFT: Editor -->
         <div class="min-w-0 min-h-0 flex flex-col" data-testid="framework-editor-column"
             [style.flex]="frameworkEditorFlex()">
-            <!-- editor header, tabs vs. -->
-            <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
+            <!-- The editor's header: its actions move under the file menu as a row of their own when they do not fit. -->
+            <div class="editor-header flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-white/10 px-2 py-1"
+                data-testid="framework-editor-header">
                 <div class="flex items-center gap-3 min-w-0">
                     <button type="button" class="icon-btn" title="File tree" (click)="toggleFiles()">
                         <app-fa-glyph class="icon-btn__glyph" icon="pi pi-bars"></app-fa-glyph>
                     </button>
-                    <div class="min-w-0 leading-tight">
-                        <div class="text-xs text-white truncate" [title]="currentPath() || 'Select a file'">
-                            {{ currentFileLabel() }}
-                        </div>
-                        <div *ngIf="tech === 'angular'" class="runtime-label" data-testid="framework-runtime-label">
-                            {{ angularRuntimeLabel }}
-                        </div>
+                    <div *ngIf="tech === 'angular'" class="runtime-label" data-testid="framework-runtime-label">
+                        {{ angularRuntimeLabel() }}
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="ml-auto flex flex-wrap items-center justify-end gap-2">
                     <span *ngIf="clockLabel || locked" class="rehearsal-pill" data-testid="framework-rehearsal-clock">{{ locked ? (lockedLabel || 'Rehearsal over: read-only') : clockLabel }}</span>
-                    <span *ngIf="viewingSolution()" class="text-[11px] text-yellow-300">Solution loaded</span>
+                    <!-- Timed practice: its minutes until it starts, then the time left and the way to end it. -->
+                    <div *ngIf="showTimedPracticeSetup()" class="timed-setup"
+                        (keydown.escape)="timedPracticeSetupOpen.set(false); timedToggle.focus()">
+                        <button #timedToggle type="button" class="timed-setup__toggle text-xs rounded border border-white/20 hover:bg-white/5"
+                            data-testid="interview-mode-setup-toggle" title="Timed practice"
+                            [attr.aria-controls]="timedPracticeSetupOpen() ? 'framework-timed-setup' : null"
+                            [attr.aria-expanded]="timedPracticeSetupOpen()"
+                            (click)="timedPracticeSetupOpen.set(!timedPracticeSetupOpen())">
+                            <app-fa-glyph icon="pi pi-clock" aria-hidden="true"></app-fa-glyph>
+                            <span><span class="sr-only">Timed practice </span>{{ timedPracticeMinutes() }}m</span>
+                        </button>
+                        <div *ngIf="timedPracticeSetupOpen()" id="framework-timed-setup" class="timed-setup__panel"
+                            data-testid="interview-mode-setup-panel">
+                            <div class="timed-setup__row">
+                                <span class="timed-setup__title">Timed practice</span>
+                                <button type="button" class="timed-setup__close" (click)="timedPracticeSetupOpen.set(false)">Close</button>
+                            </div>
+                            <div class="timed-setup__row">
+                                <select #timedMinutes class="timed-setup__select" aria-label="Timed practice duration"
+                                    [value]="timedPracticeMinutes()" (change)="onTimedPracticeMinutes(timedMinutes.value)">
+                                    <option value="15">15 min</option>
+                                    <option value="30">30 min</option>
+                                    <option value="45">45 min</option>
+                                </select>
+                                <button type="button" class="timed-setup__start text-xs px-3 py-1.5 rounded"
+                                    data-testid="interview-mode-start" (click)="startTimedPractice()">Start</button>
+                            </div>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="timedPractice.active()">
+                        <span class="rehearsal-pill" role="timer" data-testid="framework-timed-practice-clock">{{ timedPractice.remainingLabel() }}</span>
+                        <button type="button" class="text-xs px-3 py-1.5 rounded border border-white/20 hover:bg-white/5"
+                            data-testid="interview-mode-end" (click)="endTimedPractice()">End</button>
+                    </ng-container>
+                    <span *ngIf="viewingSolution()" class="solution-loaded-label">Solution loaded</span>
                     <button *ngIf="frameworkChecks().length" type="button"
-                        class="text-xs px-3 py-1.5 rounded border border-emerald-300/40 text-emerald-100 hover:bg-emerald-300/10 disabled:opacity-60"
+                        class="run-checks-btn text-xs px-3 py-1.5 rounded disabled:opacity-60"
                         data-testid="framework-run-checks"
                         [attr.aria-keyshortcuts]="keys.runAria" [title]="'Run checks (' + keys.run + ')'"
                         [disabled]="frameworkChecksRunning() || locked"
@@ -110,7 +140,17 @@
                 </div>
             </div>
 
-            <section class="min-w-0 min-h-0 flex-1 flex editor-shell">
+            <!-- The files the task is solved in; the file tree (the menu button) lists the set-up files too. -->
+            <div class="file-tabs" role="tablist" aria-label="Files" data-testid="framework-file-tabs"
+                (keydown)="onFileTabsKey($event)">
+                <button *ngFor="let path of tabFiles(); trackBy: trackByPath" type="button" role="tab" class="file-tab"
+                    [id]="fileTabId(path)" [attr.aria-selected]="path === currentPath()"
+                    [attr.tabindex]="path === currentPath() ? 0 : -1" aria-controls="framework-editor-panel"
+                    [title]="path" (click)="openFile(path)">{{ fileName(path) }}</button>
+            </div>
+
+            <section class="min-w-0 min-h-0 flex-1 flex editor-shell" id="framework-editor-panel" role="tabpanel"
+                [attr.aria-labelledby]="fileTabId(currentPath())">
                 <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
                     <app-monaco-editor #frameworkEditor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
                         [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [siblingFiles]="siblingFiles()"
@@ -163,11 +203,11 @@
         </div>
 
         <!-- RIGHT: Preview iframe -->
-        <div class="framework-preview-column flex-1 min-w-0 min-h-0"
+        <div #previewColumn class="framework-preview-column flex-1 min-w-0 min-h-0"
             data-testid="framework-preview-column">
-            <div class="framework-preview-stage">
+            <div #previewStage class="framework-preview-stage" [style.flex]="previewStageFlex()">
                 <div *ngIf="showingFrameworkSolutionPreview()"
-                    class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+                    class="solution-preview-banner absolute top-2 right-3 z-20 text-xs px-3 py-1.5 rounded flex items-center gap-3">
                     <span class="font-medium">Showing solution preview</span>
                     <button class="text-xs underline" (click)="closeSolutionPreview()">
                         Close preview
@@ -197,6 +237,14 @@
                 </iframe>
             </div>
 
+            <!-- Between the preview and its console and checks, once there are checks to make room for. -->
+            <div *ngIf="checksShown()" class="rows-splitter" [class.dragging]="isDraggingPreviewRows()"
+                data-testid="framework-rows-splitter" role="separator" tabindex="0" aria-orientation="horizontal"
+                aria-label="Resize the preview and the checks" [attr.aria-valuenow]="previewRowsPercent()"
+                aria-valuemin="20" aria-valuemax="85" (focus)="holdPreviewRows()"
+                (pointerdown)="startPreviewRowsDrag($event)" (keydown)="onPreviewRowsKey($event)">
+            </div>
+
             <!-- The preview's console: what the code logs, and its uncaught errors, since the last build. -->
             <section class="framework-console" [class.is-open]="consoleOpen()">
                 <button type="button" class="framework-console__toggle" data-testid="framework-console-toggle"
@@ -212,15 +260,22 @@
                 </div>
             </section>
 
-            <section *ngIf="frameworkChecksRunning() || frameworkCheckResults().length"
+            <section *ngIf="checksShown()"
                 class="framework-check-results" data-testid="framework-results-panel" aria-live="polite"
-                [class.has-failures]="frameworkCheckPassedCount() < frameworkCheckResults().length">
+                [class.has-failures]="frameworkCheckPassedCount() < frameworkCheckResults().length"
+                [class.is-sized]="previewRowsRatio() !== null">
                 <div class="framework-check-results__head">
                     <span>Checks<span *ngIf="checkCoverage === 'smoke'" class="framework-check-results__scope"> · core flow only</span></span>
                     <span *ngIf="frameworkCheckResults().length" class="framework-check-results__summary">
                         {{ frameworkCheckPassedCount() }}/{{ frameworkCheckResults().length }} passed
                     </span>
                 </div>
+                <div *ngIf="timedPractice.summary() as summary" class="timed-summary" data-testid="interview-summary">
+                    <strong>Timed practice summary</strong>
+                    <p>Runs: {{ summary.runs }} · Best pass: {{ summary.bestPassPct }}% · Elapsed: {{ summary.elapsedSec }}s</p>
+                </div>
+                <!-- The pass card heads the checks it reports on, inside their scroll area, so it covers none of them. -->
+                <ng-content select="[postPassCard]"></ng-content>
                 <div *ngIf="frameworkChecksRunning()" class="framework-check-result">
                     <span class="framework-check-dot is-running"></span>
                     <span>Running structured checks…</span>
@@ -229,10 +284,13 @@
                     data-testid="framework-check-result"
                     [attr.data-failure-kind]="result.failureKind || (!result.passed ? 'assertion' : null)"
                     [class.is-pass]="result.passed" [class.is-fail]="!result.passed">
-                    <span class="framework-check-dot" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"></span>
+                    <app-fa-glyph class="framework-check-icon" [class.is-pass]="result.passed" [class.is-fail]="!result.passed"
+                        [icon]="result.passed ? 'check-circle' : 'times-circle'"></app-fa-glyph>
+                    <span class="sr-only">{{ result.passed ? 'Passed:' : 'Failed:' }}</span>
                     <div class="framework-check-result__body">
                         <div class="framework-check-result__name">{{ result.name }}</div>
-                        <div *ngIf="result.error" class="framework-check-result__error">{{ result.error }}</div>
+                        <div *ngIf="result.error" class="framework-check-result__error"><span *ngIf="result.step"
+                            class="framework-check-result__step">Step {{ result.step }} of {{ result.steps }}: </span>{{ result.error }}</div>
                     </div>
                 </div>
                 <!-- A passed smoke check says the core flow works; the requirements say whether the task is done. -->
@@ -253,7 +311,6 @@
                     </ul>
                 </div>
             </section>
-            <ng-content select="[postPassCard]"></ng-content>
         </div>
     </div>
 

@@ -1517,27 +1517,27 @@
       "track": "core-web"
     },
     {
-      "contentHash": "ce7f36307cc9fc594a85955b538cb3dcea5eab2cdf55b8bfe398d38390e3ef74",
+      "contentHash": "95c1b3d9363e87a7f9bac5e091c25936282414b04d543818764af0b1b9adc29b",
       "enabled": true,
       "id": "int-code-core-web-mid-fetch-timeout-v1",
       "level": "mid",
-      "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+      "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. A non-OK response rejects with `Error('HTTP <status>')`, for example `HTTP 404`; a timeout rejects with an `AbortError` whose message is `Timeout`. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
       "publicRequirements": [
         {
           "constraints": [
             "Input url (string): The request URL.",
             "Input options ({ timeoutMs?: number, signal?: AbortSignal, fetchFn?: Function, ...init }): Optional timeout, AbortSignal, and a fetch function override for testing. Any extra fields are passed to fetch.",
-            "Return Promise<any>: Resolves with parsed JSON or rejects on timeout, abort, or non-OK response."
+            "Return Promise<any>: Resolves with the parsed JSON. Rejects with `Error('HTTP <status>')` for a non-OK response, with an `AbortError` (message `Timeout`) when `timeoutMs` passes, and with an `AbortError` when the caller's signal aborts."
           ],
           "id": "implementation-contract",
-          "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+          "prompt": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. A non-OK response rejects with `Error('HTTP <status>')`, for example `HTTP 404`; a timeout rejects with an `AbortError` whose message is `Timeout`. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
           "title": "Fetch JSON with Timeout + Abort"
         }
       ],
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-24",
       "sourceQuestionId": "js-fetch-json-timeout",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-fetch-json-timeout.starterCode",
       "starterFiles": [
@@ -1585,7 +1585,7 @@
       "track": "core-web"
     },
     {
-      "contentHash": "20a2623018ce44bf0fb4eb009744f32fc7ee71326c89a54a37e69bd626c8b4cc",
+      "contentHash": "9710dd90c371e083943910be660520de82081c2a4eeee4db519ee5ad984d0bd5",
       "enabled": true,
       "id": "int-code-core-web-mid-take-latest-v1",
       "level": "mid",
@@ -1604,7 +1604,7 @@
       "revision": 1,
       "roundLimit": 1,
       "runner": "javascript",
-      "sourceContentVersion": "2026-07-14",
+      "sourceContentVersion": "2026-11-24",
       "sourceQuestionId": "js-take-latest",
       "starterAsset": "catalog://cdn/questions/javascript/coding.json#js-take-latest.starterCode",
       "starterFiles": [

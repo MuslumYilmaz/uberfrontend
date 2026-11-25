@@ -4363,7 +4363,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-24",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-fetch-json-timeout"
   },
@@ -6182,7 +6182,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-24",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-stream-to-text"
   },
@@ -6271,7 +6271,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 18,
-    "updatedAt": "2026-07-14",
+    "updatedAt": "2026-11-24",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/coding.json#js-take-latest"
   },

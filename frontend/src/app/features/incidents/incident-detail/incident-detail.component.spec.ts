@@ -11,6 +11,7 @@ import { IncidentDetailComponent } from './incident-detail.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivityService } from '../../../core/services/activity.service';
 import { BugReportService } from '../../../core/services/bug-report.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 
 describe('IncidentDetailComponent', () => {
   const PRACTICE_PROGRESS_KEY = 'fa:practice:progress:v3:guest';
@@ -178,6 +179,8 @@ describe('IncidentDetailComponent', () => {
     providers: [
         IncidentProgressService,
         { provide: ActivityService, useValue: activity },
+        // The locked preview's free related practice leaves out what the viewer solved.
+        { provide: UserProgressService, useValue: { solvedIds: signal<string[]>([]) } },
         {
             provide: AuthService,
             useValue: {

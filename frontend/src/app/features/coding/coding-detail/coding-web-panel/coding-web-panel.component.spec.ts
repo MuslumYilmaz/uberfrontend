@@ -292,6 +292,77 @@ describe('CodingWebPanelComponent attempt feedback', () => {
     expect(payload.errorCategory).toEqual(jasmine.any(String));
   });
 
+  it('runs the task\'s checks on the preview page at a laptop size, with hover and focus states, and reports the run', async () => {
+    const checks: any[] = [
+      { id: 'cta', name: 'The button reads Save', steps: [{ type: 'expectText', selector: '.cta', text: 'Save' }] },
+      {
+        id: 'dark',
+        name: 'Dark',
+        viewport: { width: 375 },
+        media: { 'prefers-color-scheme': 'dark' },
+        steps: [{ type: 'expectExists', selector: '.cta' }],
+      },
+      { id: 'empty', name: 'No steps', steps: [] },
+    ];
+    component.question = { ...question, frameworkTests: checks };
+    await component.initFromQuestion();
+    (component as any).htmlCode.set('<button class="cta">Save</button>');
+    const runFramework = spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'The button reads Save', passed: true },
+      { name: 'Dark', passed: false, error: '.cta was not found', failureKind: 'assertion' },
+    ]);
+    const emitted: any[] = [];
+    component.checkRun.subscribe((event) => emitted.push(event));
+
+    const results = await component.runWebChecks();
+
+    expect(component.webChecks().map((check) => check.id)).toEqual(['cta', 'dark']);
+    const [doc, ranChecks, options] = runFramework.calls.mostRecent().args as any[];
+    expect(doc).toContain('<button class="cta">Save</button>');
+    expect(ranChecks[1]).toEqual(jasmine.objectContaining({ viewport: { width: 375 }, media: { 'prefers-color-scheme': 'dark' } }));
+    expect(options).toEqual({ startOn: 'load', states: true, viewport: { width: 1024, height: 768 } });
+    expect(results.length).toBe(2);
+    expect(component.webCheckResults()).toEqual(results);
+    expect(component.webCheckPassedCount()).toBe(1);
+    expect(emitted).toEqual([{ questionId: 'html-card', passed: false, results }]);
+    expect(attemptInsights.recordRun).toHaveBeenCalledWith(jasmine.objectContaining({ lang: 'web', passCount: 1, totalCount: 2 }));
+
+    // The footer's Run checks completes the task itself, so the panel only shows the results.
+    await component.runWebChecks({ emitCompletion: false });
+    expect(emitted.length).toBe(1);
+  });
+
+  it('offers light and dark previews only for a task about color schemes, settling its media queries', async () => {
+    component.question = { ...question, webSolutionCss: '@media (prefers-color-scheme: dark) { :root { --bg: #000; } }' };
+    await component.initFromQuestion();
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+
+    expect(component.schemeToggle()).toBeTrue();
+    expect(component.previewScheme()).toBe('system');
+    const doc = '<style>@media (prefers-color-scheme: dark) { body { color: white; } }</style>';
+    expect((component as any).withPreviewScheme(doc)).toBe(doc);
+    component.setPreviewScheme('dark');
+    expect((component as any).withPreviewScheme(doc)).toBe('<style>@media (min-width: 0px) { body { color: white; } }</style>');
+    component.setPreviewScheme('light');
+    expect((component as any).withPreviewScheme(doc)).toBe('<style>@media (max-width: 0px) { body { color: white; } }</style>');
+
+    component.question = { ...question };
+    await component.initFromQuestion();
+    expect(component.schemeToggle()).toBeFalse();
+    expect(component.previewScheme()).toBe('system');
+  });
+
+  it('says an edit leaves an earlier pass behind', () => {
+    spyOn(component as any, 'scheduleWebPreview').and.stub();
+    let changes = 0;
+    component.filesChanged.subscribe(() => { changes += 1; });
+
+    component.onHtmlChange('<main>Edited</main>');
+    component.onCssChange('main { color: red; }');
+
+    expect(changes).toBe(2);
+  });
+
   it('does not record an attempt when no tests run', async () => {
     (component as any).htmlCode.set('<button>Save</button>');
     (component as any).cssCode.set('');

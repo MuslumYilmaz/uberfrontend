@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { LockedPreviewComponent } from './locked-preview.component';
 
@@ -106,10 +107,34 @@ class LockedPreviewCtaHostComponent {
 }
 
 describe('LockedPreviewComponent', () => {
+  const solvedIds = signal<string[]>([]);
+
   beforeEach(async () => {
+    solvedIds.set([]);
     await TestBed.configureTestingModule({
       imports: [LockedPreviewComponent, RouterTestingModule, LockedPreviewCtaHostComponent],
+      providers: [{ provide: UserProgressService, useValue: { solvedIds } }],
     }).compileComponents();
+  });
+
+  it('leaves solved tasks out of the free related practice and fills the four places with unsolved ones', () => {
+    const fixture = TestBed.createComponent(LockedPreviewComponent);
+    fixture.componentInstance.data = {
+      ...new LockedPreviewCtaHostComponent().data,
+      related: ['js-once', 'js-clamp', 'js-chunk', 'js-flatten', 'js-curry'].map((id) => ({
+        title: id,
+        to: ['/', 'javascript', 'coding', id],
+        premium: false,
+      })),
+    };
+    fixture.detectChanges();
+    const titles = () => Array.from((fixture.nativeElement as HTMLElement)
+      .querySelectorAll('.locked-preview-rich__links a span:first-child')).map((el) => el.textContent?.trim());
+    expect(titles()).toEqual(['js-once', 'js-clamp', 'js-chunk', 'js-flatten']);
+
+    solvedIds.set(['js-clamp']);
+    fixture.detectChanges();
+    expect(titles()).toEqual(['js-once', 'js-chunk', 'js-flatten', 'js-curry']);
   });
 
   it('places the page pricing action inside "What Premium unlocks", ahead of the free links', () => {

@@ -2,6 +2,8 @@ import type { PrepRoadmapItem } from './prep-roadmap.component';
 
 export type PrepRoadmapSwitcherItem = PrepRoadmapItem & {
   id: 'interview_blueprint' | 'essential_60' | 'question_library' | 'study_plans' | 'final_rounds';
+  /** The name a first-time visitor sees in the compact switcher, where the steps are places rather than an order. */
+  shortTitle: string;
   match: RegExp[];
   matchesUrl?: (url: string) => boolean;
 };
@@ -58,6 +60,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'interview_blueprint',
+        shortTitle: 'Interview guide',
         match: [
           /^\/guides\/?$/,
           /^\/guides\/interview-blueprint(?:\/.*)?$/,
@@ -67,6 +70,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'essential_60',
+        shortTitle: 'Essential 60',
         match: [
           /^\/interview-questions\/?$/,
           /^\/interview-questions\/essential\/?$/,
@@ -76,6 +80,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'question_library',
+        shortTitle: 'Question Library',
         match: [
           /^\/coding\/?$/,
           new RegExp(`^/${TECH_SEGMENT}/?$`),
@@ -86,6 +91,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'study_plans',
+        shortTitle: 'Study plans',
         match: [
           /^\/tracks(?:\/.*)?$/,
           /^\/guides\/framework-prep(?:\/.*)?$/,
@@ -95,6 +101,7 @@ export const INTERVIEW_PREP_SWITCHER_ITEMS: PrepRoadmapSwitcherItem[] = INTERVIE
       return {
         ...item,
         id: 'final_rounds',
+        shortTitle: 'Final rounds',
         matchesUrl: isSystemFormatsCodingUrl,
         match: [
           /^\/system-design(?:\/.*)?$/,
