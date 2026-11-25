@@ -1727,6 +1727,32 @@ export default function App() {
       ]);
     });
 
+    it('waits for the frame to get its size when the page parses before the runner lays the frame out', async () => {
+      const page = `<!doctype html><html><head><style>
+          :root { --surface: #ffffff; }
+          @media (prefers-color-scheme: dark) { :root { --surface: #16181a; } }
+          .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--surface); }
+          @media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+          .card { height: 80px; }
+        </style></head><body><div class="gallery">${'<div class="card"></div>'.repeat(8)}</div></body></html>`;
+      const run = runner.runFramework(page, [
+        {
+          id: 'light',
+          name: 'Light',
+          media: { 'prefers-color-scheme': 'light' },
+          steps: [
+            { type: 'expectColor', selector: '.gallery', tone: 'light' },
+            { type: 'expectLayout', selector: '.card', columns: 4, rows: 2 },
+          ],
+        },
+      ] as any, staticRun);
+      // A busy page, as the runner's page often is when checks start: the frame parses while it is still 0x0.
+      const until = performance.now() + 150;
+      while (performance.now() < until) { }
+
+      expect(await run).toEqual([{ name: 'Light', passed: true }]);
+    });
+
     it('sets :hover, :focus-visible and :focus-within styles through the hover and focus steps', async () => {
       const page = `<!doctype html><html><head><style>
           .lift { transition: transform 200ms; }
