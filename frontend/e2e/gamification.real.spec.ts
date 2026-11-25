@@ -1,4 +1,5 @@
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
+import { setMonacoModelValue } from './helpers';
 
 // Real-backend contract for the progress loop: completing a question through the
 // UI must be reflected by the activity summary, the dashboard payload and the
@@ -82,9 +83,16 @@ test.describe('gamification real smoke', () => {
 
     await page.goto(`/${QUESTION.tech}/coding/${QUESTION.id}`);
     await expect(page.getByTestId('coding-detail-page')).toBeVisible();
+    await expect(page.getByTestId('web-preview-placeholder')).toBeHidden();
+    // The task has checks, so a full pass solves it; the footer runs them.
+    await setMonacoModelValue(page, `q-${QUESTION.id}-html`, [
+      '<a href="https://example.com" target="_blank" rel="noopener noreferrer">',
+      '  <img src="https://example.com/logo.png" alt="Example logo">',
+      '</a>',
+    ].join('\n'));
     const completionResponse = page.waitForResponse((response) =>
       response.url().includes('/api/activity/complete') && response.request().method() === 'POST');
-    await page.getByRole('button', { name: 'Mark as complete' }).click();
+    await page.locator('app-footer').getByRole('button', { name: 'Run checks', exact: true }).click();
     const completion = await completionResponse;
     expect(completion.status()).toBe(200);
     const completionBody = await completion.json();
