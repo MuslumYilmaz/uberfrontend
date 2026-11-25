@@ -25,6 +25,8 @@ type ChildConfig = {
   startOn?: 'notify' | 'load';
   /** Hover and focus steps also set the page's :hover and :focus styles, which no script can trigger. */
   states?: boolean;
+  /** The frame has a size of its own, not 1x1: checks start once the page has it, not while it is still 0x0. */
+  sized?: boolean;
 };
 
 /** Options for checks run against a static page, as an HTML/CSS task's preview is. */
@@ -320,7 +322,7 @@ export class OpaqueDomCheckRunner {
       document.body.appendChild(frame);
       // Start srcdoc navigation only after the frame is connected. Chromium can
       // defer a detached, non-rendered frame under load and never run its boot script.
-      frame.srcdoc = this.injectBootstrap(html, config);
+      frame.srcdoc = this.injectBootstrap(html, width > 1 ? { ...config, sized: true } : config);
     });
   }
 
@@ -1919,6 +1921,13 @@ function opaqueChildBootstrap(config: ChildConfig): void {
 
   const start = () => {
     if (started || lifecycleFailed) return;
+    // The page can parse before the runner lays this frame out, most often while the runner's page is busy, and
+    // until then it is 0x0: media queries, layout and the (max-width: 0px) emulateMedia writes would all read that.
+    // A 1x1 frame does not wait: at a low browser zoom it stays 0x0.
+    if (config.sized && !window.innerWidth) {
+      nativeSetTimeout(start, 16);
+      return;
+    }
     started = true;
     sendLifecycle('render-ready');
     void (config.kind === 'framework' ? runFramework() : runWeb());
