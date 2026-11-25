@@ -305,9 +305,41 @@ const ANGULAR_SIGNAL_READ_HINT_RULES = ANGULAR_MODERN_TEMPLATE_QUESTION_IDS.map(
   }),
 );
 
+// These helpers settle a cancellation with an error named AbortError, and their tests check the rejection by name. A
+// plain `new Error('Timeout')` keeps the name "Error", which the matcher reports as
+// `Expected Error: Timeout to match {"name":"AbortError"}`.
+const ABORT_ERROR_NAME_QUESTION_IDS = ['js-take-latest', 'js-fetch-json-timeout', 'js-stream-to-text'] as const;
+
+const ABORT_ERROR_NAME_HINT_RULES = ABORT_ERROR_NAME_QUESTION_IDS.map(
+  (questionId): QuestionHintRule => ({
+    ruleId: 'abort-rejection-is-not-abort-error',
+    questionId,
+    priority: 120,
+    matches: (snapshot) =>
+      snapshot.failedTests.some(
+        (item) => includesAny(item.errorLine, ['to match']) && includesAny(item.errorLine, ['"name":"AbortError"']),
+      ),
+    buildHint: (snapshot) => ({
+      ruleId: 'abort-rejection-is-not-abort-error',
+      title: 'Reject with an error named AbortError',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The tests check the rejection by its name. A plain `new Error(...)` keeps the name "Error", so it fails even when the timing is right.',
+      ),
+      actions: [
+        'When the signal already carries an AbortError as its reason, reject with that reason.',
+        "Otherwise create the error and rename it: `const err = new Error('Timeout'); err.name = 'AbortError';`.",
+        "Use the same kind of error on every cancellation path the task has (a timeout, the caller's signal, a newer call), so callers can tell a cancellation from a real failure.",
+      ],
+      confidence: 0.9,
+    }),
+  }),
+);
+
 const QUESTION_HINT_RULES: QuestionHintRule[] = [
   ...ANGULAR_MODERN_TEMPLATE_HINT_RULES,
   ...ANGULAR_SIGNAL_READ_HINT_RULES,
+  ...ABORT_ERROR_NAME_HINT_RULES,
   {
     ruleId: 'angular-cva-writes-reach-view',
     questionId: 'angular-control-value-accessor-stepper',
@@ -2436,7 +2468,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
         'Return a regular function wrapper (not arrow) if `this` must be preserved.',
         'Inside timeout use `fn.apply(this, args)`.',
         'Keep the `this` and the whole `args` array of every call, so the call that fires is the last one, with all of its arguments.',
-        'Confirm context-based examples like `search-box:react` still pass after the delay.',
+        "The test calls the wrapper as `debounced.call({ tag: 'search-box' }, 'react')` and expects `'search-box:react'` after the delay: the object it was called on, then its argument.",
       ],
       confidence: 0.9,
     }),

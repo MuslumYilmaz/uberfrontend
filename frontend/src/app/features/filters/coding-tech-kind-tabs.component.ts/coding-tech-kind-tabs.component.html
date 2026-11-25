@@ -19,6 +19,7 @@
           <fa-chip *ngFor="let t of techTabs"
                    class="filter-chip filter-chip--primary"
                    size="md"
+                   [testId]="'filter-tech-' + t.key"
                    [selected]="selectedTech === t.key"
                    (selectedChange)="techSelected.emit(t.key)">
             <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
@@ -81,11 +82,5 @@
         {{ k.label }}
       </fa-chip>
     </ng-template>
-  </div>
-
-  <div class="tabs-right">
-    <fa-chip class="count-chip filter-chip filter-chip--count" size="sm" [toggle]="false">
-      {{ filteredCount }} questions
-    </fa-chip>
   </div>
 </div>

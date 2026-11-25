@@ -257,8 +257,9 @@ describe('AppComponent', () => {
     expect(switcher).toBeTruthy();
     expect(switcher.classList.contains('prep-switcher--compact')).toBeTrue();
     expect(switcher.textContent || '').toContain('Prep path');
-    expect(switcher.textContent || '').toContain('FrontendAtlas Essential 60');
-    expect(switcher.textContent || '').toContain('4 other steps');
+    expect(switcher.textContent || '').toContain('Essential 60');
+    expect(switcher.textContent || '').toContain('More ways to prep');
+    expect(switcher.textContent || '').not.toContain('other steps');
   });
 
   it('starts guest starter routes with a collapsed sidebar rail', async () => {

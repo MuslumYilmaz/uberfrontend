@@ -36,6 +36,7 @@ import { PUBLIC_EDITORIAL_FACTS, publicEditorialAuthorSchema } from '../../../co
 import { premiumPreviewForQuestion } from '../../../core/content/premium-preview-catalog';
 import { AccessLevel, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { checkSelectors, frameworkCheckCoverage } from '../../../core/utils/framework-check-coverage.util';
+import { readDraftIndex } from '../../../core/utils/versioned-drafts.util';
 import { BillingCheckoutService, type RegionalPricing } from '../../../core/services/billing-checkout.service';
 import type { PlanId } from '../../../core/utils/payments-provider.util';
 import { premiumPriceLine } from '../../../core/utils/plan-price.util';
@@ -106,7 +107,7 @@ import {
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
 import { FaDialogComponent } from '../../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
-import { CodingPostPassComponent, type PostPassCard } from './coding-post-pass/coding-post-pass.component';
+import { CodingPostPassComponent, type PostPassCard, type PostPassReward } from './coding-post-pass/coding-post-pass.component';
 import { InlineCodeComponent, stripInlineMarkup } from '../../../shared/ui/inline-code/inline-code.component';
 import { StripInlineMarkupPipe } from '../../../shared/ui/inline-code/strip-inline-markup.pipe';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
@@ -279,6 +280,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
   descCollapsed = signal(false);
+  /** This task had been opened in this browser before the current visit (see collapsedByDefault). */
+  private openedBefore = false;
   descriptionCollapsed = computed(() => this.descCollapsed() && !this.showMobileDesktopGuard());
   private lastAsideRatio = 0.3;
   asideFlex = computed(() => {
@@ -435,6 +438,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   });
   private pressureModeLoadSeq = 0;
   private pressureStartedAt = Date.now();
+  /** The countdown from the scenario's minutes: its deadline while the rounds run in the browser, else null. */
+  private readonly pressureDeadline = signal<number | null>(null);
+  private readonly pressureNow = signal(Date.now());
+  private pressureTicker: ReturnType<typeof setInterval> | null = null;
+  private readonly pressureRemainingMs = computed(() => {
+    const deadline = this.pressureDeadline();
+    return deadline === null ? null : Math.max(0, deadline - this.pressureNow());
+  });
+  /** At zero the rounds stay open: the clock says the time is over, and nothing locks. */
+  pressureTimeUp = computed(() => this.pressureRemainingMs() === 0);
+  pressureClockLabel = computed(() => {
+    const remaining = this.pressureRemainingMs();
+    if (remaining === null) return null;
+    return remaining > 0 ? `${formatRehearsalClock(remaining)} left` : "Time's up";
+  });
   private pressureStartTrackedKey: string | null = null;
   private pressurePreviousCollapsed: boolean | null = null;
   private pressurePreviousAsideRatio: number | null = null;
@@ -517,9 +535,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.rehearsalPhase()) return this.rehearsals.draftKey(q?.id);
     return this.storageKeyOverride || (this.demoMode ? this.demoStorageKey(q?.id) : null);
   });
-  /** The JavaScript workspace's timed practice, read from the panel so the Solution tab can close while it runs. */
+  /** The workspace's timed practice, read from its panel so the Solution tab can close while it runs. */
   private readonly jsPanelQuery = viewChild(CodingJsPanelComponent);
-  timedPracticeActive = computed(() => this.jsPanelQuery()?.interviewModeEnabled() ?? false);
+  private readonly frameworkPanelQuery = viewChild(CodingFrameworkPanelComponent);
+  timedPracticeActive = computed(() =>
+    (this.jsPanelQuery()?.interviewModeEnabled() ?? false)
+    || (this.frameworkPanelQuery()?.timedPractice.active() ?? false));
   /** Why the Solution tab is closed right now, as its label says it; null while it is open. */
   solutionLockReason = computed<string | null>(() => {
     if (this.pressureActive() && !this.pressureCompleted()) return 'Solution locked until all rounds pass';
@@ -605,12 +626,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
 
-  /** How much of this framework task its checks cover; only 'full' marks it solved on a passing run. */
-  checkCoverage = computed(() => (this.isFrameworkTech() ? frameworkCheckCoverage(this.question()) : 'none'));
+  /** How much of this framework or HTML/CSS task its checks cover; only 'full' marks it solved on a passing run. */
+  checkCoverage = computed(() => (this.isFrameworkTech() || this.isWebTech() ? frameworkCheckCoverage(this.question()) : 'none'));
   /** A smoke check passed on the code as it stands, so the footer offers to mark the task solved. */
   smokeChecksPassed = signal(false);
   /** What the checks find elements by, shown with the task so the markup can match them. */
-  checkSelectorList = computed(() => (this.isFrameworkTech() ? checkSelectors(this.question()?.frameworkTests) : []));
+  checkSelectorList = computed(() => (
+    this.isFrameworkTech() || this.isWebTech() ? checkSelectors(this.question()?.frameworkTests) : []
+  ));
   pressureRoundSelectors = computed(() => checkSelectors(this.pressureCurrentRound()?.frameworkTests));
   /** The requirements as the description shows them, for the list beside a passed smoke check. */
   smokeRequirements = computed(() => (this.descSpecs()?.requirements ?? []).map((item) => this.displayText(item)));
@@ -707,6 +730,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
    * the result, an account without a plan is offered one, and everyone gets the next task.
    */
   readonly postPass = signal<PostPassCard | null>(null);
+  /** What the last recorded solve earned (XP, current streak), shown beside "Saved as solved". */
+  readonly postPassReward = signal<PostPassReward | null>(null);
   lifecyclePromptOpen = false;
   lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
   lifecyclePromptSolvedTotal = 0;
@@ -1229,8 +1254,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       this.descCollapsed.set(false);
       return;
     }
-    try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
-    catch { this.descCollapsed.set(false); }
+    try {
+      const stored = localStorage.getItem(this.collapseKey(q));
+      this.descCollapsed.set(stored === null ? this.collapsedByDefault() : !!JSON.parse(stored));
+    } catch { this.descCollapsed.set(false); }
+  }
+
+  /**
+   * On a laptop (768 to 1366 px wide) a framework task's editor and preview get the width once the visitor comes back
+   * to it: a task opened before in this browser starts with its description collapsed. A first visit keeps it open,
+   * since it says what to build; a choice made with the toggle wins either way.
+   */
+  private collapsedByDefault(): boolean {
+    const width = window.innerWidth;
+    return this.isFrameworkTech() && width >= 768 && width <= 1366 && this.openedBefore;
   }
   private saveCollapsePref(q: Question, v: boolean) {
     if (!this.isBrowser) return;
@@ -1422,7 +1459,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.workspaceEpoch += 1;
     this.loadQuestionSeq += 1;
     this.pressureModeLoadSeq += 1;
-    if (this.pressureActive()) this.trackPressureExit('navigation');
+    if (this.pressureActive()) {
+      this.trackPressureExit('navigation');
+      this.endPressureClock();
+    }
+    this.stopPressureTicker();
     this.routeParamSub?.unsubscribe();
     this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
@@ -1989,7 +2030,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.allQuestions[idx];
     const routeRequestsPressure = !this.questionId
       && String(this.route.snapshot.queryParamMap.get('mode') || '').trim().toLowerCase() === 'pressure';
-    if (this.pressureActive()) this.trackPressureExit('navigation');
+    if (this.pressureActive()) {
+      this.trackPressureExit('navigation');
+      this.endPressureClock();
+    }
     this.clearPressureModeState(true);
     this.pressureRequested.set(routeRequestsPressure);
     this.pressureLoading.set(routeRequestsPressure && !!q.pressureModeAsset);
@@ -2038,6 +2082,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!this.isBrowser) return;
 
     this.solved.set(this.progress.isSolved(q.id));
+    // Read before the workspace records this visit in the draft index.
+    this.openedBefore = !!readDraftIndex(q.id);
     this.loadCollapsePref(q);
 
     await Promise.all([
@@ -2366,7 +2412,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     if (this.hasFrameworkStructuredChecks(q)) {
-      const results = await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false }) || [];
+      const results = (this.isWebTech()
+        ? await this.webPanel?.runWebChecks({ emitCompletion: false })
+        : await this.frameworkPanel?.runFrameworkChecks({ emitCompletion: false })) || [];
       if (!this.isCurrentWorkspaceRun(epoch, q)) return;
       this.recordRehearsalChecks(q.id, results);
       const event = {
@@ -2419,8 +2467,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     await this.celebrate('submit');
   }
 
+  /** A framework or an HTML/CSS task with checks: they run on its preview, and complete it when they all pass. */
   hasFrameworkStructuredChecks(q: Question | null = this.question()): boolean {
-    return this.isFrameworkTech()
+    return (this.isFrameworkTech() || this.isWebTech())
       && Array.isArray((q as any)?.frameworkTests)
       && (q as any).frameworkTests.length > 0;
   }
@@ -2518,6 +2567,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       );
       this.activePanel.set(1);
       this.trackPressureCompleted(false);
+      this.endPressureClock();
       this.ensureAuthenticated('coding_pressure');
       return;
     }
@@ -2548,6 +2598,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.solved.set(true);
     this.activePanel.set(1);
     this.trackPressureCompleted(true);
+    this.endPressureClock();
     this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     await this.celebrate('tests');
@@ -2742,6 +2793,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!requested) {
       if (wasActive || wasRequested) {
         this.trackPressureExit(this.pendingPressureExitReason || 'navigation');
+        this.endPressureClock();
         this.clearPressureModeState(true);
       }
       this.pendingPressureExitReason = null;
@@ -2915,7 +2967,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.pressureCompleted.set(state.completed);
     this.pressureCompletionError.set(null);
     this.pressureLoading.set(false);
-    this.pressureStartedAt = Date.now();
+    if (state.completed) {
+      this.pressureStartedAt = Date.now();
+    } else {
+      this.pressureStartedAt = this.pressureAttemptStart(scenario.id, q.id);
+      this.startPressureClock(scenario.estimatedMinutes);
+    }
     this.expandPressureDescription();
     this.activePanel.set(state.completed ? 1 : 0);
     this.pressureProgress.start(scenario.id, q.id, state);
@@ -3016,6 +3073,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   private clearPressureModeState(restoreLayout: boolean): void {
     this.pressureModeLoadSeq += 1;
+    this.stopPressureClock();
     this.pressureLoading.set(false);
     this.pressureScenario.set(null);
     this.pressureRoundIndex.set(0);
@@ -3041,6 +3099,63 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.pressurePreviousCollapsed = null;
     this.pressurePreviousAsideRatio = null;
+  }
+
+  private pressureClockKey(scenarioId: string, questionId: string): string {
+    return `fa:pressure:clock:v1:${this.pressureProgress.itemId(scenarioId, questionId)}`;
+  }
+
+  /** When this attempt started, kept for the tab's session: a reload keeps the clock, and Exit lets the next start over. */
+  private pressureAttemptStart(scenarioId: string, questionId: string): number {
+    const now = Date.now();
+    if (!this.isBrowser) return now;
+    try {
+      const key = this.pressureClockKey(scenarioId, questionId);
+      const stored = Number(sessionStorage.getItem(key));
+      if (Number.isFinite(stored) && stored > 0 && stored <= now) return stored;
+      sessionStorage.setItem(key, String(now));
+    } catch {
+      // Storage blocked: the clock starts with the page.
+    }
+    return now;
+  }
+
+  private startPressureClock(minutes: number): void {
+    this.stopPressureClock();
+    if (!this.isBrowser || !(minutes > 0)) return;
+    this.pressureNow.set(Date.now());
+    this.pressureDeadline.set(this.pressureStartedAt + minutes * 60_000);
+    if (this.pressureTimeUp()) return;
+    // Outside the zone, as the rehearsal's clock: the signals still schedule change detection, and an hour of
+    // countdown does not keep the app from turning stable.
+    this.pressureTicker = this.zone.runOutsideAngular(() => setInterval(() => {
+      this.pressureNow.set(Date.now());
+      if (this.pressureTimeUp()) this.stopPressureTicker();
+    }, 1000));
+  }
+
+  private stopPressureTicker(): void {
+    if (this.pressureTicker === null) return;
+    clearInterval(this.pressureTicker);
+    this.pressureTicker = null;
+  }
+
+  private stopPressureClock(): void {
+    this.stopPressureTicker();
+    this.pressureDeadline.set(null);
+  }
+
+  /** Exit, another task, or every round passed: the countdown stops, and the next attempt starts a clock of its own. */
+  private endPressureClock(): void {
+    const scenario = this.pressureScenario();
+    const q = this.question();
+    this.stopPressureClock();
+    if (!scenario || !q || !this.isBrowser) return;
+    try {
+      sessionStorage.removeItem(this.pressureClockKey(scenario.id, q.id));
+    } catch {
+      // Storage blocked: nothing was kept.
+    }
   }
 
   private expandPressureDescription(): void {
@@ -3400,6 +3515,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         trigger: 'first_pass',
         tech: this.tech,
         view: profile ? 'next' : undefined,
+        question_id: q?.id || undefined,
+        difficulty: q?.difficulty || undefined,
       },
     });
   }
@@ -3512,6 +3629,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         trigger: this.onboardingPromptReason,
         tech: this.tech,
         question_id: q?.id ?? '',
+        difficulty: q?.difficulty || undefined,
       },
     });
   }
@@ -3819,6 +3937,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.question();
     if (!q) return false;
     if (this.recorded) return true;
+    this.postPassReward.set(null);
 
     const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
     try {
@@ -3847,8 +3966,12 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       }
 
       this.recorded = true;
+      this.postPassReward.set({
+        xp: Math.max(0, Number(res?.xpAwarded || 0)),
+        streak: Math.max(0, Number(res?.stats?.streak?.current || 0)),
+      });
       const actionType: ChallengeActionType = reason === 'tests'
-        ? (this.isFrameworkTech() ? 'run_checks' : 'run_tests')
+        ? (this.isFrameworkTech() || this.isWebTech() ? 'run_checks' : 'run_tests')
         : (this.isFrameworkTech() || this.isWebTech() ? 'mark_complete' : 'run_tests');
       this.analytics.track('challenge_completion_saved', {
         ...this.challengeEventParams(q),
@@ -4222,14 +4345,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
    * yield nothing because structuredSolution() is already empty for them.
    */
   solutionIdea = computed<string>(() => {
-    if (this.demoMode || this.pressureRequested()) return '';
+    // The prerendered page has no `mode`, so the first browser render keeps the idea the server drew and hydrates it;
+    // a pressure round removes it once the browser view is ready. Dropping it during hydration left the server's open
+    // <details> orphaned beside the pressure panel.
+    if (this.demoMode || (this.pressureRequested() && this.browserViewReady())) return '';
     const overview = String(this.structuredSolution()?.overview ?? '').trim();
     if (!overview) return '';
     return overview.split(/\n\s*\n/)[0].trim();
   });
 
-  /** Open in the initial HTML and in mobile reading mode; collapsed beside a desktop workspace so the prompt is not spoiled. */
-  solutionIdeaOpen = computed<boolean>(() => !this.isBrowser || this.showMobileDesktopGuard());
+  /**
+   * Open in the initial HTML, so crawlers and readers without scripts see it; collapsed in the browser, on phones as
+   * on desktops, so the idea does not spoil a reader's own first attempt. It opens with one tap.
+   */
+  solutionIdeaOpen = computed<boolean>(() => !this.isBrowser);
 
   curatedNextStepsOnly = computed<boolean>(() => this.structuredSolution()?.curatedNextStepsOnly === true);
 

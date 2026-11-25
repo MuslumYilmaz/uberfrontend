@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import {
+  boxesOverlap,
   getMonacoModelValue,
   setMonacoModelValue,
   waitForIndexedDbKeyPrefixContains,
@@ -115,6 +116,81 @@ const THROWING_HANDLER_CASES = [
     '',
   ].join('\n')],
 ] as const;
+
+// The preview's sandbox has no storage of its own; these read and write it with no try/catch.
+const STORAGE_PREVIEW_CASES = [
+  ['react', 'react-counter', 'src/App.tsx'],
+  ['angular', 'angular-counter-starter', 'src/app/app.component.ts'],
+  ['vue', 'vue-counter', 'src/App.vue'],
+] as const;
+
+const STORAGE_PREVIEW_CODE = {
+  react: [
+    "import React, { useState } from 'react';",
+    '',
+    'export default function App() {',
+    "  const [count, setCount] = useState(() => Number(localStorage.getItem('count')));",
+    '  const increment = () => {',
+    "    localStorage.setItem('count', String(count + 1));",
+    "    sessionStorage.setItem('count', String(count + 1));",
+    '    setCount(count + 1);',
+    '  };',
+    "  const stored = localStorage.getItem('count');",
+    '  return (',
+    '    <>',
+    '      <div className="value">{count}</div>',
+    "      <div className=\"stored\">{stored === null ? 'none' : `${stored} / ${sessionStorage.getItem('count')}`}</div>",
+    '      <button className="stored-increment" onClick={increment}>+</button>',
+    '    </>',
+    '  );',
+    '}',
+    '',
+  ].join('\n'),
+  angular: [
+    "import { Component } from '@angular/core';",
+    '',
+    '@Component({',
+    "  selector: 'app-root',",
+    '  standalone: true,',
+    "  template: '<div class=\"value\">{{ count }}</div><div class=\"stored\">{{ stored }}</div>'",
+    "    + '<button class=\"stored-increment\" (click)=\"increment()\">+</button>',",
+    '})',
+    'export class AppComponent {',
+    "  count = Number(localStorage.getItem('count'));",
+    "  stored = localStorage.getItem('count') ?? 'none';",
+    '',
+    '  increment(): void {',
+    "    localStorage.setItem('count', String(this.count + 1));",
+    "    sessionStorage.setItem('count', String(this.count + 1));",
+    '    this.count += 1;',
+    "    this.stored = `${localStorage.getItem('count')} / ${sessionStorage.getItem('count')}`;",
+    '  }',
+    '}',
+    '',
+  ].join('\n'),
+  vue: [
+    '<script setup>',
+    "import { ref } from 'vue';",
+    '',
+    "const count = ref(Number(localStorage.getItem('count')));",
+    "const stored = ref(localStorage.getItem('count') ?? 'none');",
+    '',
+    'function increment() {',
+    "  localStorage.setItem('count', String(count.value + 1));",
+    "  sessionStorage.setItem('count', String(count.value + 1));",
+    '  count.value += 1;',
+    "  stored.value = `${localStorage.getItem('count')} / ${sessionStorage.getItem('count')}`;",
+    '}',
+    '</script>',
+    '',
+    '<template>',
+    '  <div class="value">{{ count }}</div>',
+    '  <div class="stored">{{ stored }}</div>',
+    '  <button class="stored-increment" @click="increment">+</button>',
+    '</template>',
+    '',
+  ].join('\n'),
+} as const;
 
 const REVIEW_SOLUTION = readCanonicalFiles(
   '../cdn/sb/vue/solution/vue-issue-list-merge-request-review-solution.v1.json',
@@ -1256,6 +1332,92 @@ test.describe('Framework checks against the production SSR build', () => {
     });
   });
 
+  test('Counter\'s file tabs and the splitter above its checks work from the keyboard', async ({ page }) => {
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    // The files the task is solved in, code first; the set-up files stay in the file tree.
+    const tabs = page.getByTestId('framework-file-tabs').getByRole('tab');
+    await expect(tabs).toHaveText(['App.tsx', 'App.css']);
+    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+    await tabs.first().focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tabs.nth(1)).toBeFocused();
+    await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#framework-editor-panel')).toHaveAttribute('aria-labelledby', await tabs.nth(1).getAttribute('id') ?? '');
+    await page.keyboard.press('Home');
+    await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
+
+    const results = await runChecks(page, 5);
+    const before = (await results.boundingBox())!.height;
+    const splitter = page.getByTestId('framework-rows-splitter');
+    await splitter.focus();
+    const held = Number(await splitter.getAttribute('aria-valuenow'));
+    expect(held).toBeGreaterThanOrEqual(20);
+    for (let press = 0; press < 5; press += 1) await page.keyboard.press('ArrowUp');
+    await expect.poll(async () => Number(await splitter.getAttribute('aria-valuenow'))).toBeLessThan(held);
+    await expect.poll(async () => (await results.boundingBox())!.height).toBeGreaterThan(before);
+  });
+
+  test('Counter runs timed practice on a clock, closes the solution until it ends, and sums up its runs', async ({ page }) => {
+    await page.goto('/react/coding/react-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    // Offered at the task's own minutes, in a header that keeps to one row on a laptop.
+    const header = page.getByTestId('framework-editor-header');
+    const toggle = header.getByTestId('interview-mode-setup-toggle');
+    await expect(toggle).toHaveAccessibleName('Timed practice 15m');
+    await toggle.click();
+    await page.getByTestId('interview-mode-start').click();
+    const clock = header.getByTestId('framework-timed-practice-clock');
+    await expect(clock).toHaveText(/^(15:00|14:[0-5]\d) left$/);
+    expect((await header.boundingBox())!.height).toBeLessThan(40);
+    const solutionTab = page.getByTestId('coding-solution-tab').filter({ visible: true });
+    await expect(solutionTab).toBeDisabled();
+    await expect(solutionTab).toHaveAttribute('title', 'Solution locked until timed practice ends');
+
+    // A reload keeps the session and its clock.
+    await page.reload();
+    await waitForFrameworkPreview(page, '.value');
+    await expect(clock).toHaveText(/^14:[0-5]\d left$/);
+
+    await runChecks(page, 5);
+    await header.getByTestId('interview-mode-end').click();
+    await expect(page.getByTestId('interview-summary')).toContainText('Runs: 1 · Best pass: 20%');
+    await expect(solutionTab).toBeEnabled();
+    await expect(toggle).toBeVisible();
+  });
+
+  test('Pressure Mode counts its minutes down, and at zero says so and keeps the round open', async ({ page }) => {
+    await page.goto('/react/coding/react-counter?mode=pressure');
+    await expect(page.getByTestId('pressure-mode-panel')).toBeVisible({ timeout: 30_000 });
+    // The prerendered page draws the solution idea open; a pressure round must not keep it.
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
+    const clock = page.getByTestId('pressure-clock');
+    await expect(clock).toHaveText(/^(35:00|34:[0-5]\d) left$/);
+    // Pressure Mode keeps its own clock, so timed practice is not offered beside it.
+    await expect(page.getByTestId('interview-mode-setup-toggle')).toHaveCount(0);
+
+    // The attempt's start is kept for the tab: an hour back, the reload finds the time over and the round still open.
+    await page.evaluate(() => {
+      const key = Object.keys(sessionStorage).find((name) => name.startsWith('fa:pressure:clock:v1:'))!;
+      sessionStorage.setItem(key, String(Date.now() - 60 * 60_000));
+    });
+    await page.reload();
+    await expect(clock).toHaveText("Time's up", { timeout: 30_000 });
+    await expect(page.getByTestId('pressure-time-up')).toContainText('The rounds stay open');
+    await waitForFrameworkPreview(page, '.value');
+    await expect(page.getByTestId('framework-run-checks')).toBeEnabled();
+
+    // Exit drops the attempt, so the next one starts with the full minutes.
+    await page.getByTestId('pressure-mode-exit').click();
+    await expect(page.getByTestId('pressure-mode-panel')).toHaveCount(0);
+    await page.getByTestId('pressure-mode-start').click();
+    await expect(clock).toHaveText(/^(35:00|34:[0-5]\d) left$/);
+  });
+
   test('Counter reaches assertions, passes its canonical solution, rebuilds, and repeats cleanly', async ({ page }) => {
     await page.goto('/react/coding/react-counter');
     await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
@@ -1268,6 +1430,9 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(checkResults(page)).toHaveText(COUNTER_CHECKS);
     expect(await failureKinds(page)).toEqual([null, 'assertion', 'assertion', 'assertion', 'assertion']);
     await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(4);
+    // Each row says passed or failed in words and with a check or a cross, not only in color.
+    await expect(checkRows(page).locator('.sr-only')).toHaveText(['Passed:', 'Failed:', 'Failed:', 'Failed:', 'Failed:']);
+    await expect(checkRows(page).locator('app-fa-glyph.framework-check-icon.is-fail')).toHaveCount(4);
     await expectAssertionLayer(starterResults);
 
     await loadCanonicalFile(page, 'src/App.tsx', COUNTER_SOLUTION);
@@ -1283,6 +1448,17 @@ test.describe('Framework checks against the production SSR build', () => {
     await expect(firstPassingRun.locator('.framework-check-results__summary')).toHaveText('5/5 passed');
     await expect(firstPassingRun.locator('.framework-check-result__error')).toHaveCount(0);
     expect(await failureKinds(page)).toEqual([null, null, null, null, null]);
+    // The pass card heads the checks inside their panel and covers none of them, on a laptop or a desktop.
+    const passCard = firstPassingRun.getByTestId('coding-post-pass');
+    await expect(passCard).toBeVisible();
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 1440, height: 900 }]) {
+      await page.setViewportSize(viewport);
+      for (const row of await checkRows(page).all()) {
+        expect(boxesOverlap(await passCard.boundingBox(), await row.boundingBox()), `at ${viewport.width}x${viewport.height}`)
+          .toBe(false);
+      }
+    }
+    await page.setViewportSize({ width: 1280, height: 720 });
     await dismissPostPassPrompt(page);
 
     await rebuildPreview(page, '.value');
@@ -1414,6 +1590,7 @@ test.describe('Framework checks against the production SSR build', () => {
       /\/react\/coding\/react-counter$/,
     );
     await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+    await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
     await expect(page.getByTestId('coding-solution-tab').first()).toBeDisabled();
     await waitForFrameworkPreview(page, '.value');
     await expect.poll(() => getMonacoModelValue(page, 'src/App.tsx')).not.toContain(normalMarker);
@@ -1450,6 +1627,8 @@ test.describe('Framework checks against the production SSR build', () => {
       await page.goto(`/${framework}/coding/${questionId}?mode=pressure`);
       await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
       await expect(page.getByTestId('pressure-mode-panel')).toBeVisible();
+      // The prerendered page draws the solution idea open; a pressure round must not keep it.
+      await expect(page.getByTestId('coding-solution-idea')).toHaveCount(0);
       await waitForFrameworkPreview(page, '.value');
 
       await loadCanonicalBundle(page, COUNTER_PRESSURE_SOLUTIONS[framework]);
@@ -1519,6 +1698,49 @@ test.describe('Framework checks against the production SSR build', () => {
         await expect(livePreview(page).locator('#_fa_overlay')).toBeVisible();
         await expect(livePreview(page).locator('#_fa_overlay_msg')).toContainText('Increment handler broke');
       });
+    }
+  });
+
+  for (const [framework, questionId, path] of STORAGE_PREVIEW_CASES) {
+    test(`${framework} live preview runs code that uses localStorage and sessionStorage without try/catch`, async ({ page }) => {
+      await page.goto(`/${framework}/coding/${questionId}`);
+      await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+      await waitForFrameworkPreview(page, '.value');
+
+      await loadCanonicalBundle(page, { [path]: STORAGE_PREVIEW_CODE[framework] });
+      await rebuildPreview(page, '.stored');
+      const preview = livePreview(page);
+      await expect(preview.locator('.value')).toHaveText('0');
+      await expect(preview.locator('.stored')).toHaveText('none');
+
+      await preview.locator('.stored-increment').click();
+      await expect(preview.locator('.value')).toHaveText('1');
+      await expect(preview.locator('.stored')).toHaveText('1 / 1');
+
+      // Each build starts with empty storage, as each check does.
+      await rebuildPreview(page, '.stored');
+      await expect(preview.locator('.stored')).toHaveText('none');
+    });
+  }
+
+  test('Vue names a compile error and the line it is on, in the preview and in the checks', async ({ page }) => {
+    await page.goto('/vue/coding/vue-counter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+
+    await loadCanonicalBundle(page, {
+      'src/App.vue': ['<template>', '  <p v-if>missing</p>', '</template>', ''].join('\n'),
+    });
+    await page.getByTestId('framework-rebuild-preview').click();
+    const where = /Preview compilation failed: \S.* \(src\/App\.vue:2:\d+\)/;
+    const previewError = page.getByTestId('framework-preview-error');
+    await expect(previewError).toHaveAttribute('data-failure-kind', 'compilation');
+    await expect(previewError).toContainText(where);
+
+    await runChecks(page, COUNTER_CHECKS.length);
+    await expect(checkRows(page).locator('.framework-check-result__error')).toHaveCount(COUNTER_CHECKS.length);
+    for (const error of await checkRows(page).locator('.framework-check-result__error').all()) {
+      await expect(error).toContainText(where);
     }
   });
 
@@ -3078,6 +3300,35 @@ test.describe('Framework checks against the production SSR build', () => {
     expect(statuses.length).toBeGreaterThan(0);
     expect(statuses.every((status) => /PASS|FAIL/.test(status))).toBe(true);
     expect(normalizeRunnerText(await jsResults.innerText())).not.toMatch(RUNNER_FAILURE);
+  });
+
+  test('an Angular component with a single styleUrl gets its stylesheet in the preview', async ({ page }) => {
+    await page.goto('/angular/coding/angular-counter-starter');
+    await expect(page.getByTestId('coding-detail-page')).toBeVisible({ timeout: 30_000 });
+    await waitForFrameworkPreview(page, '.value');
+    await loadCanonicalBundle(page, {
+      'src/app/app.component.ts': [
+        "import { Component } from '@angular/core';",
+        '',
+        '@Component({',
+        "  selector: 'app-root',",
+        '  standalone: true,',
+        "  template: '<p class=\"value\">0</p>',",
+        "  styleUrl: './app.component.css',",
+        '})',
+        'export class AppComponent {}',
+        '',
+      ].join('\n'),
+      'src/app/app.component.css': '.value { color: rgb(200, 30, 40); }\n',
+    });
+    await rebuildPreview(page, '.value');
+
+    await expect(livePreview(page).locator('.value')).toHaveCSS('color', 'rgb(200, 30, 40)');
+  });
+
+  test('a zoneless Angular app is named zoneless in the workspace', async ({ page }) => {
+    await page.goto('/angular/debug/ng-debug-zoneless-shipment-board');
+    await expect(page.getByTestId('framework-runtime-label')).toHaveText('Angular 21 · zoneless', { timeout: 30_000 });
   });
 
   test('Angular 21 runs signal inputs, outputs and models under zone.js, and names its runtime', async ({ page }) => {

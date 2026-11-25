@@ -134,7 +134,18 @@ export type FrameworkTestStepType =
   | 'expectStorage'
   | 'expectName'
   | 'expectLiveRegion'
-  | 'scroll';
+  | 'scroll'
+  | 'expectStyle'
+  | 'expectDeclared'
+  | 'expectLayout'
+  | 'expectVisible'
+  | 'expectValidity'
+  | 'expectNoOverflow'
+  | 'addClass'
+  | 'removeClass'
+  | 'expectLabelled'
+  | 'expectDescription'
+  | 'expectCorner';
 
 /**
  * Finds elements the way a user or a screen reader does instead of by CSS selector: by role and accessible name
@@ -185,8 +196,24 @@ export type FrameworkTestStep = {
   among?: { selector?: string; by?: FrameworkTestLocator };
   /** expectColor: the color family the target shows, named as a person would. */
   hue?: 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'grey' | 'transparent';
-  /** expectColor: the CSS color property read, background-color unless set. */
+  /** expectColor: whether the color reads light or dark, as a light or a dark theme shows. */
+  tone?: 'light' | 'dark';
+  /**
+   * expectColor and expectStyle: the CSS property read, background-color unless set for a color. expectDeclared: the
+   * properties, comma-separated, any of which may carry the declaration.
+   */
   property?: string;
+  /**
+   * expectStyle: the lowest and highest a numeric value may be, lengths in CSS pixels. expectPlaced: the range the
+   * space may fall in, in place of an exact `gap`.
+   */
+  atLeast?: number;
+  atMost?: number;
+  /** expectStyle: values any of which passes, in place of `value`, as transform, translate or scale. */
+  anyOf?: string[];
+  /** expectLayout: how many columns and rows the matches form once laid out. */
+  columns?: number;
+  rows?: number;
   /** expectIndented: the element the target must start further right than. */
   than?: { selector?: string; by?: FrameworkTestLocator };
   /** drag: the element the press is released over. fileDrag: the element the pointer moves to (relatedTarget). */
@@ -212,15 +239,30 @@ export type FrameworkTestStep = {
    */
   top?: number;
   left?: number;
-  /** expectPlaced: the side of `than` the target must sit on, and the space between them in CSS pixels. */
-  side?: 'below' | 'above';
+  /**
+   * expectPlaced: the side of `than` the target must sit on, and the space between them in CSS pixels. expectCorner:
+   * the most the target may sit from the corner, in or out.
+   */
+  side?: 'below' | 'above' | 'right' | 'left';
   gap?: number;
+  /** expectCorner: the corner of `than` the target must sit at. */
+  corner?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+};
+
+/** The user preferences a check can emulate, as media features name them. */
+export type FrameworkTestMedia = {
+  'prefers-color-scheme'?: 'light' | 'dark';
+  'prefers-reduced-motion'?: 'reduce' | 'no-preference';
 };
 
 export type FrameworkTest = {
   id: string;
   name: string;
   steps: FrameworkTestStep[];
+  /** The width and height the check lays the page out at, in CSS pixels; an HTML/CSS task's media queries read it. */
+  viewport?: { width: number; height?: number };
+  /** The preferences the check runs under, whatever the visitor's own settings are. */
+  media?: FrameworkTestMedia;
 };
 
 export type TriviaIncidentOption = {

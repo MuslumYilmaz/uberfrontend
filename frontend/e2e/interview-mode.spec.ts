@@ -518,7 +518,7 @@ test('renders the bounded framework interview shell without normal solution/prog
   await expect(page.getByRole('button', { name: 'Run checks', exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Rebuild preview', exact: true })).toBeVisible();
   await expect(page.getByText('Interview coding awards 0 XP.')).toBeVisible();
-  await expect(page.getByText(/Solution loaded|Showing solution preview/)).toHaveCount(0);
+  await expect(page.getByText(/Solution loaded|Showing the result to build/)).toHaveCount(0);
   await expect.poll(() => api.draftRequests.length).toBeGreaterThanOrEqual(1);
 });
 

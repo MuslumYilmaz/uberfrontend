@@ -93,6 +93,8 @@
 
 /* styles.scss — GLOBAL */
 .p-tooltip.desc-tip {
+  /* PrimeNG caps every tooltip at 12.5rem, which wrapped a row's description word by word. */
+  max-width: min(32rem, calc(100vw - 2rem));
   pointer-events: none;
   filter: drop-shadow(0 8px 24px rgba(0,0,0,.55));
   z-index: 9999;

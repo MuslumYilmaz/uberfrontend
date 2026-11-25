@@ -7,10 +7,9 @@
   --framework-preview-bg: color-mix(in srgb, var(--uf-surface-alt) 78%, var(--uf-bg) 22%);
   --framework-preview-border: color-mix(in srgb, var(--fa-text) 10%, transparent);
   --framework-preview-muted: color-mix(in srgb, var(--fa-text) 72%, transparent);
-  --framework-check-neutral: color-mix(in srgb, var(--fa-text-subtle) 80%, transparent);
-  --framework-check-pass: var(--uf-badge-green-a);
-  --framework-check-fail: var(--uf-status-danger-text);
-  --framework-check-running: var(--uf-badge-blue-a);
+  --framework-check-pass: var(--uf-status-success);
+  --framework-check-fail: var(--uf-status-danger);
+  --framework-check-running: var(--uf-accent);
 }
 
 .editor-shell {
@@ -61,7 +60,7 @@
   margin: 0;
 }
 
-/* A running rehearsal's clock, or why the editor is read-only. */
+/* A running clock, a rehearsal's or timed practice's, or why the editor is read-only. */
 .rehearsal-pill {
   display: inline-flex;
   align-items: center;
@@ -73,6 +72,118 @@
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* The toolbar's one emphasised action takes the accent; Rebuild preview stays neutral beside it. */
+.run-checks-btn {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: transparent;
+  color: var(--uf-text-primary);
+}
+
+.run-checks-btn:hover:not(:disabled) {
+  background: var(--uf-accent-soft);
+}
+
+.solution-loaded-label {
+  color: var(--uf-accent);
+  font-size: 11px;
+}
+
+/* Timed practice: its minutes on a compact toggle, which a 1280px header has room for, and Start in a panel under it. */
+.timed-setup {
+  position: relative;
+  display: inline-flex;
+}
+
+.timed-setup__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uf-space-1);
+  padding: 6px 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.timed-setup__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  /* Over the file tabs and the editor under the header, and over the draft restore banner (z-index 20). */
+  z-index: 30;
+  display: grid;
+  gap: var(--uf-space-2);
+  min-width: 220px;
+  padding: var(--uf-space-2);
+  border: 1px solid var(--uf-border-strong);
+  border-radius: var(--uf-radius-8);
+  background: var(--uf-surface);
+  box-shadow: var(--uf-shadow-md);
+}
+
+.timed-setup__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uf-space-2);
+}
+
+.timed-setup__title {
+  color: var(--uf-text-primary);
+  font-size: 12px;
+}
+
+.timed-setup__close {
+  color: var(--uf-text-secondary);
+  font-size: 11px;
+}
+
+.timed-setup__close:hover {
+  color: var(--uf-text-primary);
+}
+
+.timed-setup__select {
+  flex: 1 1 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 6px;
+  background: var(--uf-surface-alt);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+}
+
+/* Start takes the accent, as Run checks does in the header. */
+.timed-setup__start {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: transparent;
+  color: var(--uf-text-primary);
+}
+
+.timed-setup__start:hover {
+  background: var(--uf-accent-soft);
+}
+
+/* A summary, not a verdict: it shows after a failed run too, so it takes the accent rather than the success color. */
+.timed-summary {
+  margin: 0 0 var(--uf-space-2);
+  padding: var(--uf-space-2) var(--uf-space-3);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle));
+  border-radius: var(--uf-radius-8);
+  background: color-mix(in srgb, var(--uf-accent) 6%, transparent);
+  color: var(--uf-text-primary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.timed-summary p {
+  margin: 2px 0 0;
+  color: var(--uf-text-secondary);
+}
+
+.solution-preview-banner {
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  color: var(--uf-text-primary);
 }
 
 /* Drawer overlay lives inside the panel container (which is relative) */
@@ -162,9 +273,9 @@
   opacity: .7;
 }
 .file-row.active {
-  background: rgba(59,130,246,.12);
-  color: #93c5fd;
-  border-left: 2px solid #3b82f6;
+  background: var(--uf-accent-soft);
+  color: var(--uf-text-primary);
+  border-left: 2px solid var(--uf-accent);
 }
 .file-row .name {
   white-space: nowrap;
@@ -255,18 +366,18 @@
 /* Drag sırasında da görünür */
 .splitter.dragging::before {
   opacity: 1;
-  background: rgba(59,130,246,0.9);
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
+  background: var(--uf-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 40%, transparent);
 }
 
 
-/* Hover / drag state – parlak mavi */
+/* Hover / drag state: the accent */
 .splitter:hover::before,
 .splitter:focus-visible::before,
 .splitter.dragging::before {
   opacity: 1;
-  background: rgba(59, 130, 246, 0.9);
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+  background: var(--uf-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 40%, transparent);
 }
 
 .preview-loading {
@@ -332,6 +443,96 @@
   min-height: 0;
 }
 
+/* Above the console and the checks: drag it or use the arrow keys. Until then the checks take what they need up to
+   their cap; once held, the preview keeps its share and the checks fill the rest. */
+.rows-splitter {
+  position: relative;
+  flex: 0 0 6px;
+  cursor: row-resize;
+  touch-action: none;
+}
+
+.rows-splitter::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 2px;
+  background: color-mix(in srgb, var(--uf-text-tertiary) 35%, transparent);
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.rows-splitter:hover::before,
+.rows-splitter:focus-visible::before,
+.rows-splitter.dragging::before {
+  opacity: 1;
+  background: var(--uf-accent);
+}
+
+/* A grip in the middle shows the splitter at rest; without one, people did not find it and read the checks under a
+   preview cut to a strip. */
+.rows-splitter::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 1px;
+  width: 32px;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
+  transform: translateX(-50%);
+  transition: background 0.15s ease;
+}
+
+.rows-splitter:hover::after,
+.rows-splitter:focus-visible::after,
+.rows-splitter.dragging::after {
+  background: var(--uf-accent);
+}
+
+.rows-splitter:focus-visible {
+  outline: none;
+}
+
+/* The editor's file tabs. */
+.file-tabs {
+  display: flex;
+  gap: 2px;
+  min-height: 32px;
+  padding: 0 6px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--framework-preview-border);
+  scrollbar-width: thin;
+}
+
+.file-tab {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--uf-text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.file-tab:hover {
+  color: var(--uf-text-primary);
+}
+
+.file-tab[aria-selected='true'] {
+  border-bottom-color: var(--uf-accent);
+  color: var(--uf-text-primary);
+}
+
+.file-tab:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: -2px;
+}
+
 .framework-check-results {
   flex: 0 0 auto;
   max-height: 190px;
@@ -342,9 +543,18 @@
   color: var(--fa-text);
 }
 
-/* Failures need room for their messages: up to 45% of the screen height, the preview keeps the rest. */
-.framework-check-results.has-failures {
+/* Failures need room for their messages, and a pass card for its actions: up to 45% of the screen height, the
+   preview keeps the rest. */
+.framework-check-results.has-failures,
+.framework-check-results:has(app-coding-post-pass) {
   max-height: min(45vh, 360px);
+}
+
+/* Held by the splitter above them, the checks fill what the preview leaves. */
+.framework-check-results.is-sized {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
 }
 
 .framework-check-results__head {
@@ -378,20 +588,26 @@
   height: 9px;
   margin-top: 4px;
   border-radius: 999px;
-  background: var(--framework-check-neutral);
-}
-
-.framework-check-dot.is-pass {
-  background: var(--framework-check-pass);
-}
-
-.framework-check-dot.is-fail {
-  background: var(--framework-check-fail);
 }
 
 .framework-check-dot.is-running {
   background: var(--framework-check-running);
   animation: pulseCheck 1s ease-in-out infinite;
+}
+
+/* A result shows a check mark or a cross as well as the color, as the JavaScript results do. */
+.framework-check-icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.framework-check-icon.is-pass {
+  color: var(--framework-check-pass);
+}
+
+.framework-check-icon.is-fail {
+  color: var(--framework-check-fail);
 }
 
 .framework-check-result__body {
@@ -404,7 +620,7 @@
 
 .framework-check-result__error {
   margin-top: 2px;
-  color: var(--framework-check-fail);
+  color: var(--uf-status-danger-text);
   word-break: break-word;
 }
 

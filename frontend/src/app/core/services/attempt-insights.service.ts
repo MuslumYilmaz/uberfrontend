@@ -148,6 +148,18 @@ export class AttemptInsightsService {
     }
   }
 
+  /** Each task's most recent run, read in one pass: what "Continue" shows as "2 of 4 tests passed". */
+  latestRunsByQuestion(): Map<string, Pick<AttemptRunRecord, 'passCount' | 'totalCount' | 'ts'>> {
+    const latest = new Map<string, Pick<AttemptRunRecord, 'passCount' | 'totalCount' | 'ts'>>();
+    for (const run of this.readState().runs) {
+      const seen = latest.get(run.questionId);
+      if (!seen || run.ts >= seen.ts) {
+        latest.set(run.questionId, { passCount: run.passCount, totalCount: run.totalCount, ts: run.ts });
+      }
+    }
+    return latest;
+  }
+
   getRunsForQuestion(questionId: string): AttemptRunRecord[] {
     const safeId = String(questionId || '').trim();
     if (!safeId) return [];

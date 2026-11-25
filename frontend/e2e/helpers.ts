@@ -12,6 +12,14 @@ export const WEB_QUESTION = {
   title: 'Warm-Up: Basic Structure',
 } as const;
 
+type Box = { x: number; y: number; width: number; height: number } | null;
+
+/** Whether two on-page boxes share any area; an element that is not rendered overlaps nothing. */
+export function boxesOverlap(a: Box, b: Box): boolean {
+  if (!a || !b) return false;
+  return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+}
+
 export async function waitForMonacoModel(page: Page, modelKeyPart: string) {
   await page.waitForFunction((needle: string) => {
     const monaco = (window as any).monaco;

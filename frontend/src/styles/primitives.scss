@@ -60,6 +60,13 @@
   color: var(--uf-text-secondary);
   font-size: var(--fa-runner-font);
 }
+/* The run button, the tabs and the count keep one line each; the shortcut hint between them gives way first. */
+.fa-runner-run-btn,
+.fa-runner-tab-btn,
+.fa-runner-summary {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
 .fa-results, .fa-results * {
   font-size: var(--fa-runner-font);
@@ -73,20 +80,21 @@
   background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
   transition: border-color .15s, background .15s;
 }
+/* The same success and danger colors as the React, Angular and Vue checks; the icon carries the state too. */
 .fa-results .test-card.test-pass {
-  border-color: color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
-  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+  border-color: var(--uf-status-success-border);
+  background: var(--uf-status-success-bg);
 }
 .fa-results .test-card.test-fail {
-  border-color: color-mix(in srgb, var(--uf-text-tertiary) 60%, var(--uf-border-subtle));
-  background: color-mix(in srgb, var(--uf-text-tertiary) 14%, var(--uf-surface));
+  border-color: var(--uf-status-danger-border);
+  background: color-mix(in srgb, var(--uf-status-danger-bg) 60%, var(--uf-surface));
 }
 .fa-results .test-name { color: var(--uf-text-primary); font-weight: 600; }
-.fa-results .test-card.test-pass .test-name i { color: color-mix(in srgb, var(--uf-accent) 70%, var(--uf-text-primary)); }
-.fa-results .test-card.test-fail .test-name i { color: color-mix(in srgb, var(--uf-text-tertiary) 80%, var(--uf-text-primary)); }
-.fa-results .test-error { color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent); font-size: var(--fa-runner-font-sm); margin-top: 6px; }
-.fa-results .summary-pass { color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
-.fa-results .summary-fail { color: color-mix(in srgb, var(--uf-text-tertiary) 85%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
+.fa-results .test-card.test-pass .test-status-icon { color: var(--uf-status-success); }
+.fa-results .test-card.test-fail .test-status-icon { color: var(--uf-status-danger); }
+.fa-results .test-error { color: var(--uf-status-danger-text); font-size: var(--fa-runner-font-sm); margin-top: 6px; }
+.fa-results .summary-pass { color: var(--uf-status-success); margin-left: 8px; font-weight: 700; }
+.fa-results .summary-fail { color: var(--uf-status-danger); margin-left: 8px; font-weight: 700; }
 .fa-results .empty-state { color: var(--uf-text-tertiary); }
 .fa-results .console-panel { border-top: 1px solid var(--uf-border-subtle); }
 

@@ -27,6 +27,9 @@ import { FaDialogComponent } from '../../shared/ui/dialog/fa-dialog.component';
 import { FaGlyphComponent } from '../../shared/ui/icon/fa-glyph.component';
 import { StripInlineMarkupPipe } from '../../shared/ui/inline-code/strip-inline-markup.pipe';
 
+/** A signed-in reader moves from the launch-first layout to progress and recommendations after this many solves. */
+const ESTABLISHED_AFTER_SOLVES = 3;
+
 type DailyChallengeTech = 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 type DashboardMode = 'guest' | 'novice' | 'established';
 
@@ -286,11 +289,11 @@ export class DashboardComponent {
   readonly dashboardMode = computed<DashboardMode>(() => {
     if (!this.authService.isLoggedIn()) return 'guest';
 
-    const completedPractice = Number(this.progressSummary()?.practice?.completedCount ?? 0);
-    if (completedPractice >= 3) return 'established';
-    if (this.solvedTotal() >= 3) return 'established';
-    return 'novice';
+    return this.completedSoFar() >= ESTABLISHED_AFTER_SOLVES ? 'established' : 'novice';
   });
+  /** Completed practice so far, from the progress summary or the solved list, whichever counts more. */
+  private readonly completedSoFar = computed(() =>
+    Math.max(Number(this.progressSummary()?.practice?.completedCount ?? 0), this.solvedTotal()));
   readonly heroPrimaryCta = computed<HeroCta>(() => {
     if (this.dashboardMode() === 'established') {
       const action = this.nextBestAction();
@@ -317,15 +320,23 @@ export class DashboardComponent {
     };
   });
   readonly heroHeading = computed(() => {
-    if (this.dashboardMode() === 'novice') return 'Start your first focused practice';
+    if (this.dashboardMode() === 'novice') {
+      return this.completedSoFar() > 0 ? 'Keep your practice going' : 'Start your first focused practice';
+    }
     return 'Choose one clear next move';
   });
   readonly heroCopy = computed(() => {
     switch (this.dashboardMode()) {
       case 'established':
         return 'Your next practice item is ready. Use the library only when you need a different format.';
-      case 'novice':
-        return 'Start with one Essential 60 question. After a few completed items, the dashboard will show badges, streaks, and recommendations.';
+      case 'novice': {
+        const done = this.completedSoFar();
+        if (done === 0) {
+          return 'Start with one Essential 60 question. After a few completed items, the dashboard will show badges, streaks, and recommendations.';
+        }
+        const left = ESTABLISHED_AFTER_SOLVES - done;
+        return `You have solved ${done} question${done === 1 ? '' : 's'}. Solve ${left} more and the dashboard starts showing your streak, badges, and recommendations.`;
+      }
       default:
         return 'Start with one question. Sign in when you want to save streaks, weekly goals, badges, and history.';
     }

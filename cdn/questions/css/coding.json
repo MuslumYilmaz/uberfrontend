@@ -83,6 +83,53 @@
     },
     "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { font-size: 2rem; margin: 0; color: #111; }\np { margin: 0.5rem 0 0; line-height: 1.6; color: #333; }\n.tagline { color: #555; }\n.highlight { color: #3b82f6; font-weight: 600; }",
+    "checkCoverage": "smoke",
+    "frameworkTests": [
+      {
+        "id": "headline-margin",
+        "name": "The headline drops its default margin",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": "h1",
+            "property": "margin-top",
+            "atMost": 0
+          }
+        ]
+      },
+      {
+        "id": "tagline-color",
+        "name": "The tagline gets a color of its own",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".tagline",
+            "property": "color",
+            "value": "rgb(17, 17, 17)",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "highlight",
+        "name": "The highlighted word stands out in color and weight",
+        "steps": [
+          {
+            "type": "expectStandsOut",
+            "selector": ".highlight",
+            "among": {
+              "selector": ".tagline, .highlight"
+            }
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".highlight",
+            "property": "font-weight",
+            "atLeast": 600
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -170,6 +217,83 @@
     },
     "webSolutionHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; line-height: 1.6; }\n.card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }",
+    "frameworkTests": [
+      {
+        "id": "padding-border",
+        "name": "Each card has padding inside a rounded border",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "property": "padding-top",
+            "atLeast": 4
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "property": "padding-left",
+            "atLeast": 4
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "property": "border-top-width",
+            "atLeast": 1
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "property": "border-top-style",
+            "value": "none",
+            "expected": false
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "property": "border-top-left-radius",
+            "atLeast": 2
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "index": 2,
+            "property": "padding-bottom",
+            "atLeast": 4
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".card",
+            "index": 2,
+            "property": "border-bottom-width",
+            "atLeast": 1
+          }
+        ]
+      },
+      {
+        "id": "spacing",
+        "name": "A margin keeps the cards apart",
+        "steps": [
+          {
+            "type": "expectPlaced",
+            "selector": ".card:nth-child(2)",
+            "than": {
+              "selector": ".card:nth-child(1)"
+            },
+            "side": "below",
+            "atLeast": 4
+          },
+          {
+            "type": "expectPlaced",
+            "selector": ".card:nth-child(3)",
+            "than": {
+              "selector": ".card:nth-child(2)"
+            },
+            "side": "below",
+            "atLeast": 4
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -268,6 +392,85 @@
     },
     "webSolutionHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; }\\n.box { background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto; }\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }",
+    "frameworkTests": [
+      {
+        "id": "centered-group",
+        "name": "Text-align centers the tags as a group, on a block rather than flex",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".chips",
+            "property": "text-align",
+            "value": "center"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".chips",
+            "property": "display",
+            "value": "block"
+          }
+        ]
+      },
+      {
+        "id": "chip-box",
+        "name": "Each tag is an inline-block chip with 8px by 12px padding and 6px corners",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".tag",
+            "property": "display",
+            "value": "inline-block"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".tag",
+            "property": "padding-top",
+            "atLeast": 8,
+            "atMost": 8
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".tag",
+            "property": "padding-left",
+            "atLeast": 12,
+            "atMost": 12
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".tag",
+            "property": "border-top-left-radius",
+            "atLeast": 6,
+            "atMost": 6
+          }
+        ]
+      },
+      {
+        "id": "chip-gap",
+        "name": "Neighbor tags keep 8px to 16px apart",
+        "steps": [
+          {
+            "type": "expectPlaced",
+            "selector": ".tag:nth-child(2)",
+            "than": {
+              "selector": ".tag:nth-child(1)"
+            },
+            "side": "right",
+            "atLeast": 8,
+            "atMost": 16
+          },
+          {
+            "type": "expectPlaced",
+            "selector": ".tag:nth-child(3)",
+            "than": {
+              "selector": ".tag:nth-child(2)"
+            },
+            "side": "right",
+            "atLeast": 8,
+            "atMost": 16
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -376,6 +579,59 @@
     },
     "webSolutionHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
     "webSolutionCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }",
+    "frameworkTests": [
+      {
+        "id": "positioned",
+        "name": "The product anchors the badge, which is positioned absolutely",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".product",
+            "property": "position",
+            "value": "relative"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".badge",
+            "property": "position",
+            "value": "absolute"
+          }
+        ]
+      },
+      {
+        "id": "corner",
+        "name": "The badge sits within 32px of the product's top-right corner",
+        "steps": [
+          {
+            "type": "expectCorner",
+            "selector": ".badge",
+            "than": {
+              "selector": ".product"
+            },
+            "corner": "top-right",
+            "gap": 32
+          }
+        ]
+      },
+      {
+        "id": "badge-style",
+        "name": "The badge has padding and rounded corners",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".badge",
+            "property": "padding-left",
+            "atLeast": 2
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".badge",
+            "property": "border-top-left-radius",
+            "atLeast": 2
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -623,6 +879,103 @@
     },
     "webSolutionHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
     "webSolutionCss": ".nav {\\n  display: flex;\\n  align-items: center;\\n  gap: 1rem;\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  display: flex;\\n  flex: 1;\\n  justify-content: center;\\n  gap: 1rem;\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.links a:focus-visible,\\n.cta:focus-visible {\\n  outline: 3px solid #93c5fd;\\n  outline-offset: 3px;\\n}\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  .nav {\\n    flex-direction: column;\\n    align-items: stretch;\\n  }\\n\\n  .links {\\n    flex-wrap: wrap;\\n    justify-content: center;\\n  }\\n\\n  .cta {\\n    text-align: center;\\n  }\\n}",
+    "frameworkTests": [
+      {
+        "id": "one-row",
+        "name": "At 1024px the logo, the links and Sign up share one row, centered vertically, Sign up at the right end",
+        "viewport": {
+          "width": 1024
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".nav",
+            "property": "display",
+            "value": "flex"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".nav",
+            "property": "align-items",
+            "value": "center"
+          },
+          {
+            "type": "expectLayout",
+            "selector": ".logo, .links, .cta",
+            "rows": 1
+          },
+          {
+            "type": "expectLayout",
+            "selector": ".links li",
+            "rows": 1
+          },
+          {
+            "type": "expectCorner",
+            "selector": ".cta",
+            "than": {
+              "selector": ".nav"
+            },
+            "corner": "top-right",
+            "gap": 32
+          }
+        ]
+      },
+      {
+        "id": "link-gap",
+        "name": "The links are a flex row with a gap",
+        "viewport": {
+          "width": 1024
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".links",
+            "property": "display",
+            "value": "flex"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".links",
+            "property": "column-gap",
+            "atLeast": 4
+          }
+        ]
+      },
+      {
+        "id": "phone",
+        "name": "On a 320px phone the bar stacks or wraps, every link shows and nothing scrolls sideways",
+        "viewport": {
+          "width": 320
+        },
+        "steps": [
+          {
+            "type": "expectLayout",
+            "selector": ".logo, .links, .cta",
+            "rows": 1,
+            "expected": false
+          },
+          {
+            "type": "expectVisible",
+            "selector": ".links a",
+            "index": 0
+          },
+          {
+            "type": "expectVisible",
+            "selector": ".links a",
+            "index": 1
+          },
+          {
+            "type": "expectVisible",
+            "selector": ".links a",
+            "index": 2
+          },
+          {
+            "type": "expectNoOverflow",
+            "selector": "html"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-07-09",
     "seo": {
@@ -873,6 +1226,66 @@
     },
     "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>\\n    <h2>Analytics dashboard</h2>\\n    <p>Overview card with key product metrics.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Checkout recovery campaign with a longer title</h2>\\n    <p>Long copy should wrap without forcing horizontal scroll.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Team activity</h2>\\n    <p>Recent collaboration updates and notes.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Release checklist</h2>\\n    <p>Tasks that need review before launch.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Empty state plan</h2>\\n    <p>Fallback messaging for missing images or data.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Customer feedback</h2>\\n    <p>Signals from support and interviews.</p>\\n  </article>\\n  <article class='card'>\\n    <h2>Extra card</h2>\\n    <p>This should flow into the next row automatically.</p>\\n  </article>\\n</section>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111827;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  display: grid;\\n  gap: 1rem;\\n  grid-template-columns: repeat(2, minmax(0, 1fr));\\n}\\n\\n@media (min-width: 1024px) {\\n  .gallery {\\n    grid-template-columns: repeat(4, minmax(0, 1fr));\\n  }\\n}\\n\\n.card {\\n  min-width: 0;\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 1rem;\\n}\\n\\n.card h2 {\\n  margin: 0 0 0.5rem;\\n  font-size: 1rem;\\n  overflow-wrap: anywhere;\\n}\\n\\n.card p {\\n  margin: 0;\\n  opacity: 0.85;\\n}",
+    "frameworkTests": [
+      {
+        "id": "two-columns",
+        "name": "At 1000px the gallery is a grid of two columns with a gap",
+        "viewport": {
+          "width": 1000
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".gallery",
+            "property": "display",
+            "value": "grid"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".gallery",
+            "property": "column-gap",
+            "atLeast": 4
+          },
+          {
+            "type": "expectLayout",
+            "selector": ".card",
+            "columns": 2
+          }
+        ]
+      },
+      {
+        "id": "four-columns",
+        "name": "At 1024px it shows four columns",
+        "viewport": {
+          "width": 1024
+        },
+        "steps": [
+          {
+            "type": "expectLayout",
+            "selector": ".card",
+            "columns": 4
+          }
+        ]
+      },
+      {
+        "id": "no-overflow",
+        "name": "On a 375px phone the two columns fit without sideways scrolling",
+        "viewport": {
+          "width": 375
+        },
+        "steps": [
+          {
+            "type": "expectLayout",
+            "selector": ".card",
+            "columns": 2
+          },
+          {
+            "type": "expectNoOverflow",
+            "selector": "html"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-07-09",
     "seo": {
@@ -961,6 +1374,64 @@
     },
     "webSolutionHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: #fafafa; color: #111; }\\n.hero { background: #222; color: #fff; padding-inline: clamp(1rem, 4vw, 3rem); padding-block: 2rem; border-bottom: 1px solid #444; }\\n.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }\\n.hero p { margin: 0; opacity: 0.9; }",
+    "frameworkTests": [
+      {
+        "id": "fluid-type",
+        "name": "The headline size is set with clamp()",
+        "steps": [
+          {
+            "type": "expectDeclared",
+            "selector": ".hero h1",
+            "property": "font-size",
+            "value": "clamp("
+          }
+        ]
+      },
+      {
+        "id": "fluid-padding",
+        "name": "The side padding is set with clamp()",
+        "steps": [
+          {
+            "type": "expectDeclared",
+            "selector": ".hero",
+            "property": "padding-inline, padding-left, padding-right, padding, padding-inline-start, padding-inline-end",
+            "value": "clamp("
+          }
+        ]
+      },
+      {
+        "id": "phone-size",
+        "name": "On a 360px phone the headline stays readable",
+        "viewport": {
+          "width": 360
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".hero h1",
+            "property": "font-size",
+            "atLeast": 16,
+            "atMost": 44
+          }
+        ]
+      },
+      {
+        "id": "desktop-size",
+        "name": "On a 1440px screen the headline stays within bounds",
+        "viewport": {
+          "width": 1440
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".hero h1",
+            "property": "font-size",
+            "atLeast": 28,
+            "atMost": 96
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1029,6 +1500,57 @@
     },
     "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
+    "checkCoverage": "smoke",
+    "frameworkTests": [
+      {
+        "id": "focus-outline",
+        "name": "Keyboard focus shows an outline on the field",
+        "steps": [
+          {
+            "type": "focus",
+            "selector": "input"
+          },
+          {
+            "type": "expectStyle",
+            "selector": "input",
+            "property": "outline-style",
+            "value": "none",
+            "expected": false
+          },
+          {
+            "type": "expectStyle",
+            "selector": "input",
+            "property": "outline-style",
+            "value": "auto",
+            "expected": false
+          },
+          {
+            "type": "expectStyle",
+            "selector": "input",
+            "property": "outline-width",
+            "atLeast": 1
+          }
+        ]
+      },
+      {
+        "id": "invalid-border",
+        "name": "An invalid email changes the field border",
+        "steps": [
+          {
+            "type": "setValue",
+            "selector": "input",
+            "value": "not-an-email"
+          },
+          {
+            "type": "expectStyle",
+            "selector": "input",
+            "property": "border-bottom-color",
+            "value": "rgb(207, 207, 207)",
+            "expected": false
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1125,6 +1647,77 @@
     },
     "webSolutionHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; color: #111; }\\n.lift { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: transform 200ms ease, box-shadow 200ms ease; }\\n.lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }\\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }",
+    "frameworkTests": [
+      {
+        "id": "transition",
+        "name": "The card transitions its transform and its shadow",
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "transition-property",
+            "anyOf": [
+              "transform",
+              "translate",
+              "scale"
+            ],
+            "match": "contains"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "transition-property",
+            "value": "box-shadow",
+            "match": "contains"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "transition-duration",
+            "atLeast": 0.05
+          }
+        ]
+      },
+      {
+        "id": "hover-lift",
+        "name": "Hovering lifts the card and deepens its shadow",
+        "steps": [
+          {
+            "type": "hover",
+            "selector": ".lift"
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "transform, translate, scale",
+            "value": "none",
+            "expected": false
+          },
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "box-shadow",
+            "value": "rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+            "expected": false
+          }
+        ]
+      },
+      {
+        "id": "reduced-motion",
+        "name": "With reduced motion the card does not animate",
+        "media": {
+          "prefers-reduced-motion": "reduce"
+        },
+        "steps": [
+          {
+            "type": "expectStyle",
+            "selector": ".lift",
+            "property": "transition-duration",
+            "atMost": 0.01
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-01-30",
     "seo": {
@@ -1315,6 +1908,92 @@
     },
     "webSolutionHtml": "<!doctype html>\n<html class=\"theme-dark\" lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Theme Demo</title>\n</head>\n<body>\n  <div class=\"panel\">\n    <h2>Theme Demo</h2>\n    <p>This panel and button read colors from CSS variables.</p>\n    <button class=\"btn\" type=\"button\" aria-label=\"Static themed button sample\">Tokenized button</button>\n  </div>\n</body>\n</html>",
     "webSolutionCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.06);\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n  }\n}\n\n:root:where(.theme-dark) {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n  --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.4);\n}\n\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: var(--panel-shadow);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}",
+    "frameworkTests": [
+      {
+        "id": "light-default",
+        "name": "Under a light system theme the page and the panel are light",
+        "media": {
+          "prefers-color-scheme": "light"
+        },
+        "steps": [
+          {
+            "type": "removeClass",
+            "selector": "html",
+            "className": "theme-dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": "body",
+            "tone": "light"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".panel",
+            "tone": "light"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".panel",
+            "property": "color",
+            "tone": "dark"
+          }
+        ]
+      },
+      {
+        "id": "os-dark",
+        "name": "Under a dark system theme they turn dark",
+        "media": {
+          "prefers-color-scheme": "dark"
+        },
+        "steps": [
+          {
+            "type": "removeClass",
+            "selector": "html",
+            "className": "theme-dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": "body",
+            "tone": "dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".panel",
+            "tone": "dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".panel",
+            "property": "color",
+            "tone": "light"
+          }
+        ]
+      },
+      {
+        "id": "class-wins",
+        "name": "The theme-dark class on the root turns them dark under a light system theme",
+        "media": {
+          "prefers-color-scheme": "light"
+        },
+        "steps": [
+          {
+            "type": "addClass",
+            "selector": "html",
+            "className": "theme-dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": "body",
+            "tone": "dark"
+          },
+          {
+            "type": "expectColor",
+            "selector": ".panel",
+            "tone": "dark"
+          }
+        ]
+      }
+    ],
     "access": "free",
     "updatedAt": "2026-07-14",
     "seo": {

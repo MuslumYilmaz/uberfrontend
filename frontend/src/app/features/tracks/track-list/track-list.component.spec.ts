@@ -1,13 +1,20 @@
+import { WritableSignal, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TrackListComponent } from './track-list.component';
+import { AuthService } from '../../../core/services/auth.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
+import { TRACKS } from '../track.data';
 
 const TRACKS_TITLE = 'Frontend Interview Study Plans: 7-Day & 30-Day Tracks';
 
 describe('TrackListComponent', () => {
   let seo: jasmine.SpyObj<SeoService>;
+  let user: WritableSignal<{ _id: string } | null>;
+  let solved: WritableSignal<string[]>;
+  const firstMetric = (card: HTMLElement) => card.querySelector('.hero-plan__metric strong')?.textContent?.trim();
 
   beforeEach(async () => {
     seo = jasmine.createSpyObj<SeoService>('SeoService', ['updateTags', 'buildCanonicalUrl']);
@@ -20,9 +27,15 @@ describe('TrackListComponent', () => {
         : `https://frontendatlas.com/${raw}`;
     });
 
+    user = signal(null);
+    solved = signal([]);
     await TestBed.configureTestingModule({
       imports: [TrackListComponent, RouterTestingModule],
-      providers: [{ provide: SeoService, useValue: seo }],
+      providers: [
+        { provide: SeoService, useValue: seo },
+        { provide: AuthService, useValue: { isLoggedIn: computed(() => !!user()) } },
+        { provide: UserProgressService, useValue: { solvedIds: computed(() => solved()) } },
+      ],
     }).compileComponents();
   });
 
@@ -85,18 +98,38 @@ describe('TrackListComponent', () => {
       'foundations-30d',
       'javascript-prep-path',
     ]);
-    expect(cards[0].textContent).toContain('0/30');
+    // A visitor sees each plan's size, not a made-up "0/30".
+    expect(firstMetric(cards[0])).toBe('30');
     expect(cards[0].textContent).toContain('Day 1');
     expect(cards[0].textContent).toContain('2');
     expect(cards[0].textContent).toContain('45 min');
-    expect(cards[1].textContent).toContain('0/113');
+    expect(firstMetric(cards[1])).toBe('113');
     expect(cards[1].textContent).toContain('5');
     expect(cards[1].textContent).toContain('30-45 min');
-    expect(cards[2].textContent).toContain('0/46');
+    expect(firstMetric(cards[2])).toBe('46');
     expect(cards[2].textContent).toContain('6');
     expect(text).toContain('3 guided plans to start today');
     expect(text).not.toContain('FAANG Track');
     expect(text).not.toContain('Senior Engineer Track');
+  });
+
+  it('shows a signed-in reader how many questions of each plan they solved', async () => {
+    const crash = TRACKS.find((track) => track.slug === 'crash-7d')!;
+    const foundations = TRACKS.find((track) => track.slug === 'foundations-30d')!;
+    const solvedIds = crash.featured.slice(0, 2).map((ref) => ref.id);
+    user.set({ _id: 'reader' });
+    solved.set(solvedIds);
+
+    const fixture = TestBed.createComponent(TrackListComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const cards = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('[data-testid="tracks-hero-plan-card"]'));
+    const inFoundations = foundations.featured.filter((ref) => solvedIds.includes(ref.id)).length;
+    expect(firstMetric(cards[0])).toBe('2/30');
+    expect(firstMetric(cards[1])).toBe(`${inFoundations}/113`);
+    expect(firstMetric(cards[2])).toBe('46');
   });
 
   it('renders trust metrics and the 30-day Day 1-3 preview', async () => {

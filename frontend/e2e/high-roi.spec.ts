@@ -378,6 +378,25 @@ test('editor reset clears persisted override and survives refresh', async ({ pag
   }).toContain(marker);
   await expect(page.getByTestId('restore-banner')).toBeVisible();
 
+  // Timed practice opens its popover where the banner sits: the popover covers the banner, not the other way round.
+  const setupToggle = page.getByTestId('interview-mode-setup-toggle');
+  await setupToggle.click();
+  await expect(page.getByTestId('interview-mode-setup-panel')).toBeVisible();
+  expect(await page.evaluate(() => {
+    const panel = document.querySelector('[data-testid="interview-mode-setup-panel"]')!;
+    const a = panel.getBoundingClientRect();
+    const b = document.querySelector('[data-testid="restore-banner"]')!.getBoundingClientRect();
+    const left = Math.max(a.left, b.left);
+    const right = Math.min(a.right, b.right);
+    const top = Math.max(a.top, b.top);
+    const bottom = Math.min(a.bottom, b.bottom);
+    if (left >= right || top >= bottom) return 'no overlap';
+    const hit = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
+    return hit && panel.contains(hit) ? 'popover on top' : 'banner on top';
+  })).toBe('popover on top');
+  await setupToggle.click();
+  await expect(page.getByTestId('interview-mode-setup-panel')).toBeHidden();
+
   await page.getByTestId('restore-banner-reset').click();
 
   await expect.poll(() => getMonacoModelValue(page, codeModelKey)).toBe(starter);

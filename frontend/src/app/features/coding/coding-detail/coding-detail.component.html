@@ -42,11 +42,11 @@
       <div class="flex items-center border-b border-white/10 text-white">
         <div class="flex-1 flex">
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
-            [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
+            [class.panel-tab--active]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
             (click)="activePanel.set(0)">{{ pressureActive() ? 'Interview' : 'Description' }}</button>
 
           <button class="px-4 py-2 flex-1 text-left font-medium" data-testid="coding-solution-tab" [class.border-b-2]="activePanel()===1"
-            [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
+            [class.panel-tab--active]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
             [disabled]="solutionLocked()" [attr.title]="solutionLockReason()"
             (click)="onSolutionTabClick()">
             {{ pressureActive() ? (pressureCompleted() ? 'Debrief' : 'Solution locked') : solutionLocked() ? 'Solution locked' : 'Solution' }}
@@ -91,10 +91,16 @@
               </header>
 
               <div class="pressure-mode__meta">
-                <span>{{ scenario.estimatedMinutes }} min</span>
+                <span *ngIf="pressureClockLabel() as clock; else pressureMinutes" class="pressure-mode__clock"
+                  [class.is-over]="pressureTimeUp()" role="timer" data-testid="pressure-clock">{{ clock }}</span>
+                <ng-template #pressureMinutes><span>{{ scenario.estimatedMinutes }} min</span></ng-template>
                 <span>{{ pressureAccessLabel() }}</span>
                 <span>{{ pressureClearedRounds() }}/{{ scenario.rounds.length }} rounds cleared</span>
               </div>
+              <p *ngIf="pressureTimeUp()" class="pressure-mode__time-up" role="status" data-testid="pressure-time-up">
+                Time's up: the {{ scenario.estimatedMinutes }} minutes have passed. The rounds stay open, so you can
+                still finish them.
+              </p>
 
               <ol class="pressure-mode__timeline" aria-label="Pressure Mode rounds">
                 <li *ngFor="let round of scenario.rounds; let index = index"
@@ -260,13 +266,11 @@
             <!-- Prompt specs -->
             <ng-container *ngIf="descSpecs() as specs">
 
-              <!-- Framework preview button styled like the yellow banner -->
+              <!-- Secondary on purpose, as in the HTML and CSS workspace: it swaps the preview for the reference result. -->
               <div *ngIf="isFrameworkTech() && workspaceAvailable()" class="mt-6">
-                <button
-                  class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
-                  (click)="openFrameworkSolutionPreview()">
-                  <app-fa-glyph class="text-sm" icon="pi pi-eye"></app-fa-glyph>
-                  <span class="font-medium">Preview what you need to build</span>
+                <button faButton size="sm" type="button" (click)="openFrameworkSolutionPreview()">
+                  <app-fa-glyph class="fa-btn__icon" icon="pi pi-eye"></app-fa-glyph>
+                  <span>Preview what you need to build</span>
                 </button>
               </div>
 
@@ -721,7 +725,7 @@
                 <h3 class="text-sm font-semibold opacity-90">Resources</h3>
                 <ul class="text-sm space-y-1">
                   <li class="font-sm" *ngFor="let r of structuredSolution()?.resources">
-                    <a class="underline text-yellow-300" [href]="r.url" target="_blank" rel="noopener noreferrer">
+                    <a class="underline detail-accent" [href]="r.url" target="_blank" rel="noopener noreferrer">
                       {{ r.title }}
                     </a>
                   </li>
@@ -743,7 +747,7 @@
                       <span class="truncate">{{ f.title | stripInlineMarkup }}</span>
                       <span class="flex items-center gap-2 ml-4 shrink-0">
                         <span *ngIf="f.locked" class="fa-chip fa-chip--accent" data-testid="coding-similar-premium">Premium</span>
-                        <span class="text-yellow-300 text-sm capitalize">{{ f.label || f.difficulty || '—' }}</span>
+                        <span class="detail-accent text-sm capitalize">{{ f.label || f.difficulty || '—' }}</span>
                       </span>
                     </a>
                   </div>
@@ -758,29 +762,29 @@
                     <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                       [routerLink]="['/guides/interview-blueprint/intro']">
                       <span class="truncate">Frontend interview preparation guide</span>
-                      <span class="text-yellow-300 text-sm ml-4">Guide</span>
+                      <span class="detail-accent text-sm ml-4">Guide</span>
                     </a>
                     <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                       [routerLink]="['/guides/interview-blueprint/coding-interviews']">
                       <span class="truncate">Frontend coding interview questions and prep guide</span>
-                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                      <span class="detail-accent text-sm ml-4">Blueprint</span>
                     </a>
                     <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                       [routerLink]="['/guides/interview-blueprint/javascript-interviews']">
                       <span class="truncate">JavaScript Problems That Actually Show Up</span>
-                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                      <span class="detail-accent text-sm ml-4">Blueprint</span>
                     </a>
                     <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
                       [routerLink]="['/guides/interview-blueprint/ui-interviews']">
                       <span class="truncate">Build Great UI in 60 Minutes</span>
-                      <span class="text-yellow-300 text-sm ml-4">Blueprint</span>
+                      <span class="detail-accent text-sm ml-4">Blueprint</span>
                     </a>
                     <!-- The incidents hub kept its link from every task when the footer's left button became the way
                          back to the task list. -->
                     <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5" data-testid="coding-incidents-link"
                       [routerLink]="['/incidents']">
                       <span class="truncate">Frontend debugging scenarios</span>
-                      <span class="text-yellow-300 text-sm ml-4">Practice</span>
+                      <span class="detail-accent text-sm ml-4">Practice</span>
                     </a>
                   </div>
               </section>
@@ -854,7 +858,7 @@
         [clockLabel]="rehearsalClockLabel()" [concealedNote]="rehearsalConcealedNote()"
         [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="activeSolutionFilesMap()"
         [checkCoverage]="pressureActive() ? 'full' : checkCoverage()" [requirements]="smokeRequirements()"
-        [solved]="uiSolved()"
+        [solved]="uiSolved()" [solutionPanelOpen]="activePanel()===1" [timedPracticeHidden]="demoMode || reviewOpen()"
         (requestEditorUpgrade)="requestLiteUpgrade()"
         (filesChanged)="onFrameworkFilesChanged()"
         (frameworkCheckRun)="onFrameworkCheckRun($event)">
@@ -878,7 +882,13 @@
         [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
         [hideRestoreBanner]="demoMode || hideRestoreBanner"
         [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex"
-        (requestEditorUpgrade)="requestLiteUpgrade()">
+        [checkCoverage]="checkCoverage()" [requirements]="smokeRequirements()" [solved]="uiSolved()"
+        (requestEditorUpgrade)="requestLiteUpgrade()"
+        (filesChanged)="onFrameworkFilesChanged()"
+        (checkRun)="onFrameworkCheckRun($event)">
+        <ng-container ngProjectAs="[postPassCard]">
+          <ng-container *ngTemplateOutlet="postPassCard; context: { $implicit: 'framework' }"></ng-container>
+        </ng-container>
       </app-coding-web-panel>
 
       <!-- JS / TS EDITOR stays the same -->
@@ -920,7 +930,7 @@
 <!-- After a pass: saved or not, and the next task, inside the results instead of a dialog over the work. -->
 <ng-template #postPassCard let-place>
   <app-coding-post-pass *ngIf="postPass() as card" [card]="card" [place]="place === 'framework' ? 'framework' : 'results'"
-    [nextLabel]="postPassNextLabel()" (signUp)="postPassAuth('sign_up')" (signIn)="postPassAuth('login')"
+    [nextLabel]="postPassNextLabel()" [reward]="postPassReward()" (signUp)="postPassAuth('sign_up')" (signIn)="postPassAuth('login')"
     (next)="next()" (personalize)="openOnboardingQuickStart()" (dismiss)="dismissPostPass()">
   </app-coding-post-pass>
 </ng-template>

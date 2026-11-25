@@ -48,6 +48,26 @@ describe('PrepRoadmapSwitcherComponent', () => {
     expect(switcher.textContent || '').toContain('4 other steps');
   });
 
+  it('gives a visitor short names without step numbers, so /coding is not "step 3 of 5"', async () => {
+    const fixture = await createAt('/coding');
+    fixture.componentRef.setInput('compact', true);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const trigger = host.querySelector('[data-testid="prep-roadmap-switcher-trigger"]') as HTMLButtonElement;
+
+    expect(trigger.textContent).toContain('Question Library');
+    expect(trigger.textContent).toContain('More ways to prep');
+    expect(trigger.textContent).not.toContain('Broaden');
+    expect(trigger.textContent).not.toContain('other steps');
+
+    trigger.click();
+    fixture.detectChanges();
+    const labels = Array.from(host.querySelectorAll('.prep-switcher__label')).map((label) => label.textContent?.trim());
+    expect(labels).toEqual(['Interview guide', 'Essential 60', 'Question Library', 'Study plans', 'Final rounds']);
+    expect(host.querySelectorAll('.prep-switcher__step').length).toBe(0);
+    expect(host.querySelector('[aria-current="page"]')?.getAttribute('href')).toBe('/coding');
+  });
+
   it('opens the dropdown with all steps, active state, and inactive links', async () => {
     const fixture = await createAt('/interview-questions/essential');
     const host = fixture.nativeElement as HTMLElement;

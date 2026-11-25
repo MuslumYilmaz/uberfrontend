@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
-import { WEB_QUESTION } from './helpers';
+import { setMonacoModelValue, WEB_QUESTION } from './helpers';
 
 async function login(page: any, email: string, password = 'secret123') {
   await page.goto('/auth/login');
@@ -218,13 +218,23 @@ test('offline solve replays on reconnect exactly once and the dashboard loads', 
   await login(page, user.email);
   await page.goto(`/${WEB_QUESTION.tech}/coding/${WEB_QUESTION.id}`);
   await expect(page.getByTestId('coding-detail-page')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Mark as complete' })).toBeVisible();
+  await expect(page.getByTestId('web-preview-placeholder')).toBeHidden();
+  // The task has checks, so a full pass solves it; the footer runs them.
+  await setMonacoModelValue(page, `q-${WEB_QUESTION.id}-html`, [
+    '<!DOCTYPE html>',
+    "<html lang='en'>",
+    "  <head><meta charset='UTF-8'><title>Offline solve</title></head>",
+    '  <body><h1>Hello</h1><p>Solved offline.</p></body>',
+    '</html>',
+  ].join('\n'));
+  const runChecks = page.locator('app-footer').getByRole('button', { name: 'Run checks', exact: true });
+  await expect(runChecks).toBeVisible();
 
   await page.evaluate(() => window.dispatchEvent(new Event('offline')));
   // The offline banner is fixed to the bottom edge and covers the button on the
   // 720px CI viewport, so a pointer click never reaches it there. The subject of
   // this test is the queued completion, not pointer geometry.
-  await page.getByRole('button', { name: 'Mark as complete' }).dispatchEvent('click');
+  await runChecks.dispatchEvent('click');
 
   await expect(page.getByRole('button', { name: 'Syncing completion...' })).toBeVisible();
   await expect.poll(() => state.completionCalls).toBe(0);

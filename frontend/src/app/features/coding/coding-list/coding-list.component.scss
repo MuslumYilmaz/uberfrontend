@@ -76,10 +76,144 @@ app-coding-tech-kind-tabs {
   text-align: right;
 }
 
+/* A draft in this browser that is not solved yet: the start action gives way to it. */
+.fa-continue {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  text-align: right;
+}
+
+.fa-continue__kicker,
+.fa-continue__title,
+.fa-continue__meta,
+.fa-progress-stats {
+  margin: 0;
+}
+
+.fa-continue__title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.fa-continue__meta {
+  margin-bottom: 4px;
+  color: var(--ink-dim);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.fa-progress-stats {
+  color: var(--ink-dim);
+  font-size: 12px;
+  font-weight: 650;
+  text-align: right;
+}
+
+/* A first visit: two starts, one under the other, each a question, one line and its button. */
+.fa-start-paths {
+  display: grid;
+  gap: 14px;
+  justify-items: end;
+}
+
+.fa-start-path {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  text-align: right;
+}
+
+.fa-start-path__title,
+.fa-start-path__text {
+  margin: 0;
+}
+
+/* The starts of a first visit and the primary action of a filtered list in one cell: the one not in use keeps its
+   room, hidden, so the header keeps its height when a filter applies. Hidden, it leaves the tab order and the
+   accessibility tree. */
+.fa-start-swap {
+  display: grid;
+  justify-items: end;
+}
+
+.fa-start-swap > * {
+  grid-area: 1 / 1;
+}
+
+.fa-start-swap > .is-swapped-out {
+  visibility: hidden;
+}
+
+/* Below 900px the filters open in a drawer over the page, so nothing waits under the pointer while the header
+   changes, and a kept room would leave a gap above the primary action: the start not in use takes none there. */
+@media (max-width: 900px) {
+  .fa-start-swap > .is-swapped-out {
+    display: none;
+  }
+}
+
+.fa-start-primary {
+  display: grid;
+  gap: 7px;
+  align-self: end;
+  justify-items: end;
+}
+
+.fa-start-path__title {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.fa-start-path__text {
+  margin-bottom: 4px;
+  color: var(--ink-dim);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .fa-page-access-note {
   max-width: 780px;
   margin: 9px 0 0;
   color: color-mix(in srgb, var(--ink-dim) 86%, var(--ink) 14%);
+}
+
+/* On a phone the header keeps the title, a two-line subtitle and the start action, so search reaches the first
+   screen; the fit pills and the action hint repeat what the page shows below. Each start keeps its line, which says
+   what it opens. */
+@media (max-width: 640px) {
+  .fa-page-fit-pills,
+  .fa-page-action__hint {
+    display: none;
+  }
+
+  /* The two starts side by side, so the search still reaches the first screen. */
+  .fa-start-swap {
+    width: 100%;
+  }
+
+  .fa-start-paths {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+  }
+
+  .fa-page-subtitle {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 }
 
 @media (max-width: 760px) {
@@ -93,7 +227,21 @@ app-coding-tech-kind-tabs {
     max-width: none;
   }
 
-  .fa-page-action__hint {
+  .fa-page-action__hint,
+  .fa-continue,
+  .fa-progress-stats {
+    text-align: left;
+  }
+
+  .fa-continue,
+  .fa-start-swap,
+  .fa-start-primary,
+  .fa-start-paths,
+  .fa-start-path {
+    justify-items: start;
+  }
+
+  .fa-start-path {
     text-align: left;
   }
 }
@@ -142,6 +290,7 @@ app-coding-tech-kind-tabs {
 .fa-discovery-section__links a:focus-visible,
 .fa-mobile-filter-trigger:focus-visible,
 .fa-free-only:focus-visible,
+.fa-hide-solved:focus-visible,
 .fa-sort__trigger:focus-visible,
 .fa-filter-panel__close:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--fa-accent) 72%, var(--ink));
@@ -354,12 +503,6 @@ app-coding-tech-kind-tabs {
   gap: 10px;
 }
 
-.fa-filter-panel__count .pill {
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
 .fa-filter-panel__close {
   display: inline-flex;
   align-items: center;
@@ -395,11 +538,6 @@ app-coding-tech-kind-tabs {
   margin-top: 10px;
 }
 
-.fa-filter-options--pills {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
 .fa-filter-option {
   display: block;
   position: relative;
@@ -428,43 +566,12 @@ app-coding-tech-kind-tabs {
   box-shadow: var(--fa-focus-ring);
 }
 
-.fa-filter-option input:focus-visible + .fa-chip,
-.fa-tech-pill:focus-visible {
+.fa-filter-option input:focus-visible + .fa-chip {
   outline: 2px solid color-mix(in srgb, var(--fa-accent) 72%, var(--ink));
   outline-offset: 2px;
 }
 
 .fa-filter-option:hover .fa-chip {
-  border-color: var(--fa-accent);
-  color: var(--ink);
-}
-
-.fa-tech-pill {
-  padding: 10px 12px;
-  border-radius: var(--fa-radius-12);
-  box-shadow: inset 0 1px 0 rgba(var(--fa-text-rgb), 0.04);
-}
-
-.fa-tech-pill__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: rgba(var(--fa-text-rgb), 0.06);
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.fa-tech-pill__label {
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-
-.fa-tech-pill.is-active {
-  box-shadow: var(--fa-focus-ring);
-  background: var(--fa-accent-soft);
   border-color: var(--fa-accent);
   color: var(--ink);
 }
@@ -511,6 +618,7 @@ app-coding-tech-kind-tabs {
 
 .fa-question-list__controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   justify-content: space-between;
@@ -521,30 +629,41 @@ app-coding-tech-kind-tabs {
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 768px) {
-  .fa-question-list__controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .fa-question-list__actions {
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-}
-
 .fa-question-list__search {
-  flex: 1;
+  flex: 1 1 240px;
+  min-width: 0;
 }
 
 .fa-question-list__search i {
   color: var(--ink-dim);
 }
 
+/* The actions keep their labels on one line; where the row is too narrow they move under the search as a group. */
 .fa-question-list__actions {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .fa-question-list__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* In a column the flex basis would set the search's height, and an auto margin would stop the actions stretching. */
+  .fa-question-list__search {
+    flex: 0 0 auto;
+  }
+
+  .fa-question-list__actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
 }
 
 .fa-mobile-filter-trigger {
@@ -554,12 +673,14 @@ app-coding-tech-kind-tabs {
   white-space: nowrap;
 }
 
-.fa-free-only {
+.fa-free-only,
+.fa-hide-solved {
   white-space: nowrap;
 }
 
 .fa-mobile-filter-trigger.is-active,
-.fa-free-only.is-active {
+.fa-free-only.is-active,
+.fa-hide-solved.is-active {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--fa-accent) 68%, var(--border));
   background: color-mix(in srgb, var(--surface-2) 84%, rgba(var(--fa-accent-rgb), 0.18));
@@ -575,6 +696,34 @@ app-coding-tech-kind-tabs {
   border: 1px dashed var(--border);
   color: var(--ink-sub);
   font-weight: 700;
+  white-space: nowrap;
+}
+
+/* The filters narrowing the list, restored ones included, each removable; shown only while one is on. */
+.fa-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+.fa-active-filters__label {
+  color: var(--ink-dim);
+}
+
+.fa-active-filters__x {
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+.fa-active-filters__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .fa-sort {
@@ -587,6 +736,7 @@ app-coding-tech-kind-tabs {
 
 .fa-sort__label {
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .fa-sort i {

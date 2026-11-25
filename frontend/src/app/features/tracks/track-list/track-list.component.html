@@ -42,7 +42,7 @@
 
             <div class="hero-plan__metrics">
               <span class="hero-plan__metric" *ngFor="let metric of plan.metrics">
-                <strong>{{ metric.value }}</strong>
+                <strong>{{ metricValue(metric) }}</strong>
                 <span>{{ metric.label }}</span>
               </span>
             </div>

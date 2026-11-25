@@ -53,6 +53,30 @@ describe('FaQuestionRowComponent', () => {
     expect(row.querySelector('[aria-label="Technology: JavaScript"]')?.textContent || '').toContain('JavaScript');
   });
 
+  it('marks a started item as in progress until it is solved, and a lock wins over both', async () => {
+    const fixture = await createComponent();
+    const status = () => (fixture.nativeElement as HTMLElement).querySelector('.fa-question-row__status') as HTMLElement;
+    fixture.componentRef.setInput('solved', false);
+    fixture.componentRef.setInput('inProgress', true);
+    fixture.detectChanges();
+
+    expect(status().classList).toContain('is-in-progress');
+    expect(status().classList).not.toContain('is-todo');
+    expect(status().getAttribute('role')).toBe('img');
+    expect(status().getAttribute('aria-label')).toBe('In progress');
+
+    fixture.componentRef.setInput('solved', true);
+    fixture.detectChanges();
+    expect(status().classList).not.toContain('is-in-progress');
+    expect(status().getAttribute('aria-label')).toBe('Solved');
+
+    fixture.componentRef.setInput('solved', false);
+    fixture.componentRef.setInput('lockedLabel', 'Locked');
+    fixture.detectChanges();
+    expect(status().classList).not.toContain('is-in-progress');
+    expect(status().getAttribute('aria-label')).toBe('Locked');
+  });
+
   it('emits variant selections without emitting a row click', async () => {
     const fixture = await createComponent();
     const component = fixture.componentInstance;
@@ -104,6 +128,8 @@ describe('FaQuestionRowComponent', () => {
     fixture.componentRef.setInput('concealed', false);
     fixture.detectChanges();
     expect(host.querySelector('.fa-question-row__concealed, [data-nosnippet]')).toBeNull();
+    // The row's link is its one tab stop; a focusable description made every row two.
+    expect(host.querySelector('.fa-question-row__description')?.hasAttribute('tabindex')).toBeFalse();
   });
 
   it('renders read-only rows without a chevron when no route is provided', async () => {
@@ -194,7 +220,8 @@ describe('FaQuestionRowComponent', () => {
     const title = host.querySelector('.fa-question-row__title') as HTMLElement;
     const meta = host.querySelector('.fa-question-row__meta') as HTMLElement;
 
-    expect(getComputedStyle(row).minHeight).toBe('108px');
+    // Rows take the height of their content: a fixed minimum left an empty band under short rows.
+    expect(getComputedStyle(row).minHeight).toBe('0px');
     expect(getComputedStyle(title).whiteSpace).toBe('normal');
     expect(getComputedStyle(title).getPropertyValue('-webkit-line-clamp')).toBe('2');
     expect(getComputedStyle(meta).minWidth).toBe('0px');
