@@ -417,7 +417,7 @@ describe('OpaqueDomCheckRunner', () => {
       {
         name: 'Too few items',
         passed: false,
-        error: 'listitem did not reach 2 matches before timeout. Last count: 1',
+        error: 'listitem expected 2 matches but found 1',
         failureKind: 'assertion',
       },
       { name: 'Second item', passed: false, error: 'listitem #2 was not found', failureKind: 'assertion' },
@@ -451,6 +451,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'listitem expected its text to be struck through',
         failureKind: 'assertion',
+        step: 4,
+        steps: 7,
       }]);
   });
 
@@ -481,6 +483,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'button "Two" looks the same as 1 other element of its group',
         failureKind: 'assertion',
+        step: 3,
+        steps: 3,
       }]);
   });
 
@@ -514,6 +518,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'checkbox "Parent" expected checked but was mixed',
         failureKind: 'assertion',
+        step: 4,
+        steps: 4,
       }]);
   });
 
@@ -575,6 +581,8 @@ describe('OpaqueDomCheckRunner', () => {
         passed: false,
         error: 'option #2 expected an element\'s aria-activedescendant to name it',
         failureKind: 'assertion',
+        step: 3,
+        steps: 4,
       }]);
   });
 
@@ -1089,7 +1097,14 @@ describe('OpaqueDomCheckRunner', () => {
 
     expect(results).toEqual([
       { name: 'Saved', passed: true },
-      { name: 'Restored', passed: false, error: 'localStorage "theme" expected "light" but held "dark"', failureKind: 'assertion' },
+      {
+        name: 'Restored',
+        passed: false,
+        error: 'localStorage "theme" expected "light" but held "dark"',
+        failureKind: 'assertion',
+        step: 3,
+        steps: 3,
+      },
     ]);
   });
 
@@ -1234,7 +1249,7 @@ describe('OpaqueDomCheckRunner', () => {
 
     expect(starterResults[0].passed).toBeFalse();
     expect(starterResults[0].failureKind).toBe('assertion');
-    expect(starterResults[0].error).toContain('did not reach text "1"');
+    expect(starterResults[0].error).toBe('.value expected text "1" but found "0"');
     expect(solutionResults).toEqual([{ name: 'Counter increments', passed: true }]);
     expect(document.querySelectorAll('iframe[aria-hidden="true"]').length).toBe(0);
   });
@@ -1640,6 +1655,232 @@ export default function App() {
       'src/show.ts': 'export const show = (value: number): string => String(value);',
     }, window.location.origin);
     expect(await runner.runFramework(html, countingCheck)).toEqual(passedCountingCheck);
+  });
+
+  describe('on a static page, as an HTML/CSS task checks it', () => {
+    const staticRun = { startOn: 'load' as const, states: true, viewport: { width: 1024, height: 768 } };
+
+    it('starts once the page is parsed and lays it out at the size each check names', async () => {
+      const page = `<!doctype html><html><head><style>
+          body { margin: 0; }
+          .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+          @media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+          .card { height: 80px; }
+        </style></head><body><div class="gallery">${'<div class="card"></div>'.repeat(8)}</div></body></html>`;
+      const results = await runner.runFramework(page, [
+        { id: 'wide', name: 'Wide', viewport: { width: 1280 }, steps: [{ type: 'expectLayout', selector: '.card', columns: 4, rows: 2 }] },
+        { id: 'narrow', name: 'Narrow', viewport: { width: 600 }, steps: [{ type: 'expectLayout', selector: '.card', columns: 2, rows: 4 }] },
+        { id: 'default', name: 'Default size', steps: [{ type: 'expectLayout', selector: '.card', columns: 4 }] },
+        { id: 'wrong', name: 'Wrong', viewport: { width: 600 }, steps: [{ type: 'expectLayout', selector: '.card', columns: 4 }] },
+      ] as any, staticRun);
+
+      expect(results).toEqual([
+        { name: 'Wide', passed: true },
+        { name: 'Narrow', passed: true },
+        { name: 'Default size', passed: true },
+        { name: 'Wrong', passed: false, error: '.card sit in 2 columns; expected 4', failureKind: 'assertion' },
+      ]);
+    });
+
+    it('runs each check under the color scheme and motion setting it names, whatever the visitor uses', async () => {
+      const page = `<!doctype html><html><head><style>
+          :root { --surface: #ffffff; }
+          @media (prefers-color-scheme: dark) { :root { --surface: #16181a; } }
+          :root:where(.theme-dark) { --surface: #16181a; }
+          .panel { background: var(--surface); transition: transform 200ms ease; }
+          @media (prefers-reduced-motion: reduce) { .panel { transition: none; } }
+        </style></head><body><div class="panel">Panel</div></body></html>`;
+      const results = await runner.runFramework(page, [
+        { id: 'light', name: 'Light', media: { 'prefers-color-scheme': 'light' }, steps: [{ type: 'expectColor', selector: '.panel', tone: 'light' }] },
+        { id: 'dark', name: 'Dark', media: { 'prefers-color-scheme': 'dark' }, steps: [{ type: 'expectColor', selector: '.panel', tone: 'dark' }] },
+        {
+          id: 'class',
+          name: 'Class',
+          media: { 'prefers-color-scheme': 'light' },
+          steps: [
+            { type: 'addClass', selector: 'html', className: 'theme-dark' },
+            { type: 'expectColor', selector: '.panel', tone: 'dark' },
+            { type: 'removeClass', selector: 'html', className: 'theme-dark' },
+            { type: 'expectColor', selector: '.panel', tone: 'light' },
+          ],
+        },
+        {
+          id: 'still',
+          name: 'Still',
+          media: { 'prefers-reduced-motion': 'reduce' },
+          steps: [{ type: 'expectStyle', selector: '.panel', property: 'transition-duration', atMost: 0 }],
+        },
+        {
+          id: 'moving',
+          name: 'Moving',
+          media: { 'prefers-reduced-motion': 'no-preference' },
+          steps: [{ type: 'expectStyle', selector: '.panel', property: 'transition-duration', atMost: 0 }],
+        },
+      ] as any, staticRun);
+
+      expect(results).toEqual([
+        { name: 'Light', passed: true },
+        { name: 'Dark', passed: true },
+        { name: 'Class', passed: true },
+        { name: 'Still', passed: true },
+        { name: 'Moving', passed: false, error: '.panel expected transition-duration to be at most 0 but it was 0.2s', failureKind: 'assertion' },
+      ]);
+    });
+
+    it('sets :hover, :focus-visible and :focus-within styles through the hover and focus steps', async () => {
+      const page = `<!doctype html><html><head><style>
+          .lift { transition: transform 200ms; }
+          .lift:hover { transform: translateY(-4px); }
+          input:focus-visible { outline: 2px solid rgb(37 99 235); }
+          .field:focus-within { background-color: #93c5fd; }
+        </style></head><body>
+          <div class="lift">Card</div>
+          <div class="field"><label for="email">Email</label><input id="email"></div>
+        </body></html>`;
+      const results = await runner.runFramework(page, [
+        {
+          id: 'hover',
+          name: 'Hover',
+          steps: [
+            { type: 'expectStyle', selector: '.lift', property: 'transform', value: 'none' },
+            { type: 'hover', selector: '.lift' },
+            { type: 'expectStyle', selector: '.lift', property: 'transform', value: 'none', expected: false },
+            { type: 'unhover', selector: '.lift' },
+            { type: 'expectStyle', selector: '.lift', property: 'transform', value: 'none' },
+          ],
+        },
+        {
+          id: 'focus',
+          name: 'Focus',
+          steps: [
+            { type: 'expectStyle', selector: 'input', property: 'outline-style', value: 'none' },
+            { type: 'focus', selector: 'input' },
+            { type: 'expectStyle', selector: 'input', property: 'outline-style', value: 'solid' },
+            { type: 'expectColor', selector: '.field', hue: 'blue' },
+          ],
+        },
+      ] as any, staticRun);
+
+      expect(results).toEqual([
+        { name: 'Hover', passed: true },
+        { name: 'Focus', passed: true },
+      ]);
+    });
+
+    it('reads computed styles, declarations, visibility, validity and sideways overflow', async () => {
+      const page = `<!doctype html><html><head><style>
+          body { margin: 0; }
+          h1 { margin: 0; font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 700; }
+          .tag { display: inline-block; padding: 8px 12px; }
+          #about { display: none; }
+          .wide { width: 500px; }
+        </style></head><body>
+          <h1>Title</h1><span class="tag">css</span>
+          <section id="home">Home</section><section id="about">About</section>
+          <form><input id="name" required></form>
+          <div class="wide">Wide</div>
+        </body></html>`;
+      const results = await runner.runFramework(page, [
+        {
+          id: 'styles',
+          name: 'Styles',
+          steps: [
+            { type: 'expectStyle', selector: 'h1', property: 'margin-top', atMost: 0 },
+            { type: 'expectStyle', selector: 'h1', property: 'font-weight', atLeast: 600 },
+            { type: 'expectStyle', selector: '.tag', property: 'display', value: 'inline-block' },
+            { type: 'expectStyle', selector: '.tag', property: 'padding-left', atLeast: 12, atMost: 12 },
+            { type: 'expectDeclared', selector: 'h1', property: 'font-size', value: 'clamp(' },
+            { type: 'expectVisible', selector: '#home' },
+            { type: 'expectVisible', selector: '#about', expected: false },
+            { type: 'expectValidity', selector: 'form', expected: false },
+            { type: 'setValue', selector: '#name', value: 'Ada' },
+            { type: 'expectValidity', selector: 'form' },
+          ],
+        },
+        { id: 'declared', name: 'Declared', steps: [{ type: 'expectDeclared', selector: '.tag', property: 'padding-left,padding', value: 'clamp(' }] },
+        { id: 'shown', name: 'Shown', steps: [{ type: 'expectVisible', selector: '#about' }] },
+        { id: 'fits', name: 'Fits', viewport: { width: 375 }, steps: [{ type: 'expectNoOverflow', selector: 'html' }] },
+        { id: 'display', name: 'Display', steps: [{ type: 'expectStyle', selector: '.tag', property: 'display', value: 'inline-block', expected: false }] },
+      ] as any, staticRun);
+
+      expect(results).toEqual([
+        { name: 'Styles', passed: true },
+        {
+          name: 'Declared',
+          passed: false,
+          error: '.tag expected padding-left or padding declared with "clamp(" but its CSS declares "12px", "8px 12px"',
+          failureKind: 'assertion',
+        },
+        { name: 'Shown', passed: false, error: '#about expected to be shown but it was hidden', failureKind: 'assertion' },
+        { name: 'Fits', passed: false, error: 'html is 500px wide inside 375px, so it scrolls sideways', failureKind: 'assertion' },
+        { name: 'Display', passed: false, error: '.tag expected display not to be "inline-block" but it was "inline-block"', failureKind: 'assertion' },
+      ]);
+    });
+
+    it('tells labels from placeholders, reads a description, and measures corners, side gaps and rows that must break', async () => {
+      const page = `<!doctype html><html><head><style>
+          body { margin: 0; }
+          .product { position: relative; width: 320px; height: 180px; }
+          .badge { position: absolute; top: 8px; right: 8px; width: 40px; height: 20px; }
+          .loose { position: absolute; top: 90px; left: 10px; width: 40px; height: 20px; }
+          .tag { display: inline-block; width: 50px; margin-right: 8px; }
+          .bar { display: flex; flex-wrap: wrap; }
+          .bar > span { width: 300px; }
+        </style></head><body>
+          <label for="name">Name</label><input id="name"><input id="email" placeholder="Email">
+          <dialog open aria-labelledby="t" aria-describedby="d"><h2 id="t">Delete?</h2><p id="d">This cannot be undone.</p></dialog>
+          <div class="product"><span class="badge">NEW</span><span class="loose">OLD</span></div>
+          <p><span class="tag">a</span><span class="tag">b</span></p>
+          <div class="bar"><span>One</span><span>Two</span></div>
+        </body></html>`;
+      const results = await runner.runFramework(page, [
+        {
+          id: 'right',
+          name: 'Right',
+          viewport: { width: 1024 },
+          steps: [
+            { type: 'expectLabelled', selector: '#name' },
+            { type: 'expectDescription', selector: 'dialog', text: 'cannot be undone' },
+            { type: 'expectCorner', selector: '.badge', than: { selector: '.product' }, corner: 'top-right', gap: 24 },
+            { type: 'expectPlaced', selector: '.tag:nth-child(2)', than: { selector: '.tag' }, side: 'right', gap: 8 },
+            { type: 'expectLayout', selector: '.bar > span', rows: 1 },
+          ],
+        },
+        { id: 'placeholder', name: 'Placeholder', steps: [{ type: 'expectLabelled', selector: '#email' }] },
+        { id: 'corner', name: 'Corner', steps: [{ type: 'expectCorner', selector: '.loose', than: { selector: '.product' }, gap: 24 }] },
+        { id: 'phone', name: 'Phone', viewport: { width: 375 }, steps: [{ type: 'expectLayout', selector: '.bar > span', rows: 1, expected: false }] },
+        { id: 'desktop', name: 'Desktop', viewport: { width: 1024 }, steps: [{ type: 'expectLayout', selector: '.bar > span', rows: 1, expected: false }] },
+      ] as any, staticRun);
+
+      expect(results).toEqual([
+        { name: 'Right', passed: true },
+        { name: 'Placeholder', passed: false, error: '#email has no label', failureKind: 'assertion' },
+        {
+          name: 'Corner',
+          passed: false,
+          error: '.loose sits 270px across and 90px down from the top-right corner of .product; expected within 24px',
+          failureKind: 'assertion',
+        },
+        { name: 'Phone', passed: true },
+        { name: 'Desktop', passed: false, error: '.bar > span sit in 1 row; expected another number', failureKind: 'assertion' },
+      ]);
+    });
+  });
+
+  it('names a Vue compile error and the file and line it is in, in every check', async () => {
+    const html = makeVuePreviewHtml({
+      'src/App.vue': '<template><p class="out">{{ label }}</p></template>\n<script setup lang="ts">\nimport { label } from \'./labels\';\n</script>',
+      'src/labels.ts': ['// labels', "export const label = 'x' +;"].join('\n'),
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      { id: 'first', name: 'First', steps: [{ type: 'expectExists', selector: '.out' }] },
+      { id: 'second', name: 'Second', steps: [{ type: 'expectExists', selector: '.out' }] },
+    ] as any);
+
+    expect(results.map((result) => result.failureKind)).toEqual(['compilation', 'compilation']);
+    for (const result of results) {
+      expect(result.error).toMatch(/^Preview compilation failed: \S.* \(src\/labels\.ts:2:\d+\)$/);
+    }
   });
 
   it('removes the frame and rejects promptly when a run is cancelled', async () => {

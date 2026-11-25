@@ -196,16 +196,19 @@ export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: st
     const overlay = document.getElementById('_fa_overlay');
     const overlayMsg = document.getElementById('_fa_overlay_msg');
     const overlayMeta = document.getElementById('_fa_overlay_meta');
-    function notifyReady(reason){
+    function lifecycleDetail(msg){
+      try { return String(msg || '').split(/\r?\n/, 1)[0].slice(0, 500); } catch { return ''; }
+    }
+    function notifyReady(reason, detail){
       try{
         if (typeof window.__FA_NOTIFY_PREVIEW_READY === 'function') {
-          window.__FA_NOTIFY_PREVIEW_READY(reason || 'render');
+          window.__FA_NOTIFY_PREVIEW_READY(reason || 'render', detail || '');
           return;
         }
       } catch {}
       try{
         if (window.parent) {
-          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render') }, '*');
+          window.parent.postMessage({ type: 'FA_PREVIEW_READY', reason: String(reason || 'render'), detail: String(detail || '') }, '*');
         }
       } catch {}
     }
@@ -234,7 +237,10 @@ export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: st
         overlayMeta.textContent = meta || '';
         overlay.style.display = 'block';
       } catch {}
-      notifyReady(lifecycleState || 'runtime-error');
+      const state = lifecycleState || 'runtime-error';
+      // A workspace has several files, so a compile error names the one it is in.
+      const where = state === 'compile-error' && meta ? ' (' + meta + ')' : '';
+      notifyReady(state, lifecycleDetail(msg).slice(0, 500 - where.length) + where);
     }
 
     function hideOverlay(){

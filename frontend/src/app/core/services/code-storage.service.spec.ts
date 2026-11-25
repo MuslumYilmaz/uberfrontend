@@ -1,4 +1,5 @@
 import localForage from 'localforage';
+import { draftIndexKey, upsertDraftIndexVersion } from '../utils/versioned-drafts.util';
 import { CodeStorageService } from './code-storage.service';
 
 describe('CodeStorageService JS save guards', () => {
@@ -318,5 +319,89 @@ describe('CodeStorageService blank draft archives', () => {
     expect((await restoredService.initJsAsync(archived, 'js', 'const starter = true;')).initial).toBe('');
     expect((await restoredService.initWebAsync(archived, { html: '<main>Starter</main>', css: 'main {}' })).html).toBe('');
     expect((await restoredService.initFrameworkAsync(archived, 'react', { 'src/App.tsx': 'export default function App() {}' })).files['src/App.tsx']).toBe('');
+  });
+});
+
+describe('CodeStorageService edited drafts', () => {
+  const ids = ['spec-progress-js', 'spec-progress-web', 'spec-progress-react', 'spec-progress-untouched', 'spec-progress-back'];
+  const rehearsal = 'rehearsal:spec:spec-progress-js@v1';
+  let service: CodeStorageService;
+
+  async function clearDrafts() {
+    for (const id of ids) {
+      for (const version of ['v1', 'v2']) {
+        await service.clearJsAsync(`${id}@${version}`);
+        await service.clearWebAsync(`${id}@${version}`);
+        await service.clearFrameworkAsync('react', `${id}@${version}`);
+      }
+      localStorage.removeItem(draftIndexKey(id));
+    }
+    await service.clearJsAsync(rehearsal);
+  }
+
+  const listed = async () => (await service.listEditedDraftsAsync())
+    .filter((draft) => draft.questionId.startsWith('spec-progress-'));
+
+  beforeEach(async () => {
+    service = new CodeStorageService();
+    await clearDrafts();
+  });
+  afterEach(clearDrafts);
+
+  it('lists each task whose draft differs from its starter, newest edit first, and no rehearsal or untouched draft', async () => {
+    await service.setJsBaselineAsync('spec-progress-js@v1', 'js', 'export default function f() {}');
+    await service.saveJsAsync('spec-progress-js@v1', 'export default function f() { return 1; }', 'js');
+    await service.setJsBaselineAsync('spec-progress-untouched@v1', 'js', 'starter');
+    await service.setJsBaselineAsync('spec-progress-back@v1', 'js', 'starter');
+    await service.saveJsAsync('spec-progress-back@v1', 'starter\n', 'js');
+    await service.initWebAsync('spec-progress-web@v1', { html: '<main></main>', css: '' });
+    await service.saveWebAsync('spec-progress-web@v1', 'css', 'main { color: red; }');
+    await service.initFrameworkAsync('spec-progress-react@v1', 'react', { 'src/App.tsx': 'starter' });
+    await service.saveFrameworkFileAsync('spec-progress-react@v1', 'react', 'src/App.tsx', 'edited');
+    await service.setJsBaselineAsync(rehearsal, 'js', 'starter');
+    await service.saveJsAsync(rehearsal, 'edited', 'js');
+
+    const drafts = await listed();
+
+    expect(drafts.map((draft) => draft.questionId).sort()).toEqual(['spec-progress-js', 'spec-progress-react', 'spec-progress-web']);
+    expect(drafts.every((draft, i) => i === 0 || drafts[i - 1].editedAt >= draft.editedAt)).toBeTrue();
+  });
+
+  it('counts the content version the task last opened on, not an older edited one', async () => {
+    await service.setJsBaselineAsync('spec-progress-js@v1', 'js', 'starter');
+    await service.saveJsAsync('spec-progress-js@v1', 'edited', 'js');
+    await service.setJsBaselineAsync('spec-progress-js@v2', 'js', 'starter');
+    upsertDraftIndexVersion('spec-progress-js', { version: 'v2', updatedAt: new Date().toISOString() }, { latestVersion: 'v2' });
+
+    expect(await listed()).toEqual([]);
+
+    upsertDraftIndexVersion('spec-progress-js', { version: 'v1', updatedAt: new Date().toISOString() }, { latestVersion: 'v1' });
+    expect((await listed()).map((draft) => draft.questionId)).toEqual(['spec-progress-js']);
+  });
+
+  it('reads 170 drafts in one pass in under a second', async () => {
+    const store = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_js' });
+    const keys = Array.from({ length: 170 }, (_, i) => `v2:code:js2:spec-progress-bulk-${i}@v1`);
+    const now = new Date().toISOString();
+    const code = 'export default function solve(input) {\n'.padEnd(2_000, '  // work\n') + '}\n';
+    await Promise.all(keys.map((key, i) => store.setItem(key, JSON.stringify({
+      js: { code: i % 2 ? code : '', baseline: 'starter', updatedAt: now },
+      ts: { code: '', baseline: 'starter', updatedAt: now },
+      lastLang: 'js',
+      version: 'v2',
+      updatedAt: now,
+    }))));
+
+    try {
+      const started = performance.now();
+      const drafts = await service.listEditedDraftsAsync();
+      const elapsed = performance.now() - started;
+      console.log(`[listEditedDraftsAsync] 170 drafts read in ${elapsed.toFixed(1)} ms`);
+
+      expect(drafts.filter((draft) => draft.questionId.startsWith('spec-progress-bulk-')).length).toBe(85);
+      expect(elapsed).toBeLessThan(1_000);
+    } finally {
+      await Promise.all(keys.map((key) => store.removeItem(key)));
+    }
   });
 });

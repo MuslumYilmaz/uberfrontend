@@ -115,7 +115,7 @@ app-monaco-editor {
   user-select:none; transition:background-color .15s; z-index:2;
 }
 .horizontal-splitter:hover,
-.horizontal-splitter.dragging{ background-color:#3b82f6; }
+.horizontal-splitter.dragging{ background-color:var(--uf-accent); }
 .horizontal-splitter:focus-visible{ outline:2px solid var(--uf-accent); outline-offset:1px; }
 
 /* ===== Smaller Results typography ===== */
@@ -156,8 +156,8 @@ app-monaco-editor {
 /* focus ring */
 .lang-select:focus{
   outline:none;
-  border-color:#3b82f6;
-  box-shadow:0 0 0 2px rgba(59,130,246,.25);
+  border-color:var(--uf-accent);
+  box-shadow:0 0 0 2px var(--uf-accent-soft);
 }
 
 /* dropdown items (where supported) */
@@ -221,7 +221,8 @@ app-monaco-editor {
   position:absolute;
   top:calc(100% + 8px);
   right:0;
-  z-index:7;
+  /* Above the draft restore banner (z-index 20), which sits right under the header where this opens. */
+  z-index:30;
   min-width:220px;
   border:1px solid rgba(255,255,255,.18);
   border-radius:10px;
@@ -250,13 +251,19 @@ app-monaco-editor {
   gap:.45rem;
 }
 
+.older-draft-badge{
+  border:1px solid color-mix(in srgb, var(--uf-accent) 35%, transparent);
+  background:color-mix(in srgb, var(--uf-accent) 14%, transparent);
+  color:var(--uf-text-primary);
+}
+
 .interview-status-badge{
   display:inline-flex;
   align-items:center;
-  border:1px solid rgba(59,130,246,.35);
+  border:1px solid color-mix(in srgb, var(--uf-accent) 35%, transparent);
   border-radius:999px;
-  background:rgba(59,130,246,.14);
-  color:#bfdbfe;
+  background:color-mix(in srgb, var(--uf-accent) 14%, transparent);
+  color:var(--uf-text-primary);
   font-size:.7rem;
   line-height:1rem;
   padding:.2rem .52rem;
@@ -283,8 +290,8 @@ app-monaco-editor {
   align-items:center;
   border:1px solid rgba(255,255,255,.22);
   border-radius:999px;
-  color:#bfdbfe;
-  background:rgba(59,130,246,.18);
+  color:var(--uf-text-primary);
+  background:color-mix(in srgb, var(--uf-accent) 14%, transparent);
   font-size:.72rem;
   line-height:1rem;
   padding:.2rem .55rem;
@@ -520,7 +527,7 @@ app-monaco-editor {
   position: absolute;
   width: min(360px, calc(100% - 8px));
   pointer-events: auto;
-  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 62%, #60a5fa 38%);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 62%, var(--uf-accent) 38%);
   border-radius: 12px;
   background: color-mix(in srgb, #030a17 88%, #111827 12%);
   box-shadow: 0 18px 38px rgba(2, 6, 23, .52);
@@ -562,8 +569,8 @@ app-monaco-editor {
 }
 
 .editor-branch.expanded {
-  border-color: color-mix(in srgb, #60a5fa 58%, rgba(148, 163, 184, .42));
-  background: color-mix(in srgb, #1e3a5f 20%, #0b1326 80%);
+  border-color: color-mix(in srgb, var(--uf-accent) 58%, rgba(148, 163, 184, .42));
+  background: color-mix(in srgb, var(--uf-accent) 6%, #0b1326);
 }
 
 .editor-branch__toggle {
@@ -590,7 +597,7 @@ app-monaco-editor {
 
 .editor-branch.expanded .editor-branch__caret {
   transform: rotate(0deg);
-  color: #93c5fd;
+  color: var(--uf-accent);
 }
 
 .editor-branch__copy {
@@ -626,20 +633,14 @@ app-monaco-editor {
   }
 }
 
-.editor-assist-dock{
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:12px;
+.results-assist{
   display:flex;
   flex-wrap:wrap;
+  align-items:flex-start;
   gap:8px;
-  z-index:4;
-  pointer-events:none;
 }
 
 .assist-chip{
-  pointer-events:auto;
   max-width:min(540px, 100%);
 }
 
@@ -654,21 +655,17 @@ app-monaco-editor {
   font-size:.73rem;
   line-height:1rem;
   padding:.34rem .72rem;
-  box-shadow:0 10px 24px rgba(2,6,23,.35);
 }
 
 .assist-chip__trigger.active{
   background:rgba(12,28,52,.96);
 }
 
-.assist-chip--hint .assist-chip__trigger{
-  border-color:rgba(251,191,36,.45);
-  color:#fde68a;
-}
-
+/* The hint and the failure explanation share the accent; the icon and the label tell them apart. */
+.assist-chip--hint .assist-chip__trigger,
 .assist-chip--explain .assist-chip__trigger{
-  border-color:rgba(108,194,255,.45);
-  color:#bfdbfe;
+  border-color:color-mix(in srgb, var(--uf-accent) 45%, transparent);
+  color:color-mix(in srgb, var(--uf-accent) 60%, var(--uf-text-primary));
 }
 
 .assist-chip__panel{
@@ -687,7 +684,8 @@ app-monaco-editor {
 }
 
 .assist-chip.expanded .assist-chip__panel{
-  max-height:250px;
+  /* In the results, an open panel pushes the tests down instead of covering code: no need to cut a long one short. */
+  max-height:480px;
   opacity:1;
   visibility:visible;
   transition-delay:0s;
@@ -695,14 +693,10 @@ app-monaco-editor {
   padding:10px;
 }
 
-.assist-chip--hint.expanded .assist-chip__panel{
-  border-color:rgba(251,191,36,.35);
-  background:rgba(37,28,10,.96);
-}
-
+.assist-chip--hint.expanded .assist-chip__panel,
 .assist-chip--explain.expanded .assist-chip__panel{
-  border-color:rgba(108,194,255,.32);
-  background:rgba(8,27,46,.96);
+  border-color:color-mix(in srgb, var(--uf-accent) 35%, transparent);
+  background:color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface));
 }
 
 .assist-chip__panel-head{
@@ -837,7 +831,8 @@ app-monaco-editor {
   resize:vertical;
 }
 
+/* A summary, not a verdict: it shows after a failed run too, so it takes the accent rather than the success color. */
 .interview-summary{
-  border-color:rgba(74,222,128,.35);
-  background:rgba(34,197,94,.08);
+  border-color:color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle));
+  background:color-mix(in srgb, var(--uf-accent) 6%, transparent);
 }

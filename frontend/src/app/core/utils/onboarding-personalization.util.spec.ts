@@ -8,6 +8,13 @@ describe('nextFreeDrill', () => {
       .toEqual(['/react', 'coding', 'react-fetch-list-states']);
   });
 
+  it('offers nothing easier than the task just passed', () => {
+    // After Debounce (Intermediate), Is Object Empty and Once (both Easy) would be a step back.
+    expect(nextFreeDrill('javascript', new Set(['js-debounce']), 'intermediate')).toBeNull();
+    expect(nextFreeDrill('react', new Set(['react-todo-list']), 'intermediate')?.id).toBe('react-fetch-list-states');
+    expect(nextFreeDrill('react', new Set(), 'easy')?.id).toBe('react-counter');
+  });
+
   it('runs out instead of offering a drill again', () => {
     expect(nextFreeDrill('vue', new Set(['vue-counter', 'vue-todo-list', 'vue-autocomplete-search']))).toBeNull();
   });

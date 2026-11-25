@@ -1,4 +1,5 @@
 import type { FrameworkTest, FrameworkTestLocator, FrameworkTestStep } from '../../../core/models/question.model';
+import { afterOpeningTag } from '../../../core/utils/html-tags.util';
 import type { TestResult } from '../console-logger/console-logger.component';
 
 const OPAQUE_CHECK_CHANNEL = 'FA_OPAQUE_CHECK';
@@ -20,6 +21,20 @@ type ChildConfig = {
   kind: OpaqueCheckKind;
   check?: FrameworkTest;
   testCode?: string;
+  /** 'load': a page with no framework to say it rendered (an HTML/CSS task), checked once its document is parsed. */
+  startOn?: 'notify' | 'load';
+  /** Hover and focus steps also set the page's :hover and :focus styles, which no script can trigger. */
+  states?: boolean;
+};
+
+/** Options for checks run against a static page, as an HTML/CSS task's preview is. */
+export type FrameworkRunOptions = {
+  readyTimeoutMs?: number;
+  checkTimeoutMs?: number;
+  startOn?: 'notify' | 'load';
+  /** The frame size for checks that name none; checks of a framework task run at 1x1 unless they do. */
+  viewport?: { width: number; height?: number };
+  states?: boolean;
 };
 
 type ActiveRun = {
@@ -72,7 +87,7 @@ export class OpaqueDomCheckRunner {
   async runFramework(
     html: string,
     checks: FrameworkTest[],
-    options: { readyTimeoutMs?: number; checkTimeoutMs?: number } = {},
+    options: FrameworkRunOptions = {},
   ): Promise<TestResult[]> {
     const active = this.beginRun();
     const results: TestResult[] = [];
@@ -81,17 +96,21 @@ export class OpaqueDomCheckRunner {
       for (const [checkIndex, check] of checks.entries()) {
         if (active.controller.signal.aborted) throw new OpaqueCheckCancelledError();
         try {
+          const config: ChildConfig = {
+            invocationId: active.invocationId,
+            frameId: this.createId(),
+            kind: 'framework',
+            check,
+          };
+          if (options.startOn === 'load') config.startOn = 'load';
+          if (options.states) config.states = true;
           const checkResults = await this.runFrame({
             html,
-            config: {
-              invocationId: active.invocationId,
-              frameId: this.createId(),
-              kind: 'framework',
-              check,
-            },
+            config,
             signal: active.controller.signal,
             readyTimeoutMs: options.readyTimeoutMs ?? DEFAULT_FRAMEWORK_READY_TIMEOUT_MS,
             checkTimeoutMs: options.checkTimeoutMs ?? DEFAULT_CHECK_TIMEOUT_MS,
+            viewport: check.viewport ?? options.viewport,
           });
           results.push(checkResults[0] || {
             name: check.name || check.id || 'Framework check',
@@ -206,12 +225,17 @@ export class OpaqueDomCheckRunner {
     signal: AbortSignal;
     readyTimeoutMs: number;
     checkTimeoutMs: number;
+    viewport?: { width: number; height?: number };
   }): Promise<TestResult[]> {
     const { html, config, signal } = options;
     const frame = document.createElement('iframe');
     frame.setAttribute('sandbox', 'allow-scripts');
     frame.setAttribute('aria-hidden', 'true');
-    frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
+    // Off screen and 1px square, unless the check lays a page out at a size of its own, as an HTML/CSS task's
+    // media queries and grid tracks need.
+    const width = Math.round(Number(options.viewport?.width)) || 1;
+    const height = Math.round(Number(options.viewport?.height)) || (width > 1 ? 768 : 1);
+    frame.style.cssText = `position:fixed;left:-10000px;top:0;width:${width}px;height:${height}px;border:0;opacity:0;pointer-events:none;`;
 
     return new Promise<TestResult[]>((resolve, reject) => {
       let settled = false;
@@ -314,6 +338,13 @@ export class OpaqueDomCheckRunner {
       if (!normalized.passed && this.isFailureKind(failureKind)) {
         normalized.failureKind = failureKind;
       }
+      const step = result['step'];
+      const steps = result['steps'];
+      if (!normalized.passed && Number.isInteger(step) && Number.isInteger(steps)
+        && (step as number) >= 1 && (step as number) <= (steps as number)) {
+        normalized.step = step as number;
+        normalized.steps = steps as number;
+      }
       return normalized;
     });
   }
@@ -327,13 +358,10 @@ export class OpaqueDomCheckRunner {
       .replace(/\u2029/g, '\\u2029');
     const bootstrap = `<script>(${opaqueChildBootstrap.toString()})(${serialized});<\/script>`;
     const source = String(html || '');
-    if (/<head[^>]*>/i.test(source)) {
-      return source.replace(/<head[^>]*>/i, `$&\n${bootstrap}`);
-    }
-    if (/<html[^>]*>/i.test(source)) {
-      return source.replace(/<html[^>]*>/i, `$&\n<head>${bootstrap}</head>`);
-    }
-    return `${bootstrap}\n${source}`;
+    // Past comments, which a starter's instructions can fill with tag names: a script inside one never runs.
+    return afterOpeningTag(source, 'head', `\n${bootstrap}`)
+      ?? afterOpeningTag(source, 'html', `\n<head>${bootstrap}</head>`)
+      ?? `${bootstrap}\n${source}`;
   }
 
   private createId(): string {
@@ -673,6 +701,10 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       };
       if (result?.error != null) safeResult.error = String(result.error).slice(0, maxErrorLength);
       if (result?.failureKind) safeResult.failureKind = result.failureKind;
+      if (Number.isInteger(result?.step) && Number.isInteger(result?.steps)) {
+        safeResult.step = result.step;
+        safeResult.steps = result.steps;
+      }
       return safeResult;
     });
     parentPostMessage({
@@ -774,11 +806,12 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     .filter((child) => child.nodeType === Node.TEXT_NODE)
     .map((child) => child.textContent || '')
     .join(''));
+  // A label aria-labelledby points to names the element even when hidden itself, as the accessible name rules say.
   const labelledByText = (element: Element) => normalizeName((element.getAttribute('aria-labelledby') || '')
     .split(/\s+/)
     .map((id) => {
       const target = id ? document.getElementById(id) : null;
-      return target ? visibleText(target) : '';
+      return target ? visibleText(target) || target.textContent || '' : '';
     })
     .join(' '));
   const labelsText = (element: Element) => {
@@ -878,14 +911,29 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   // Names a CSS color the way a person would (red, orange, yellow, green, blue, purple), whatever syntax produced
   // it: a canvas turns any color the browser understands into sRGB pixels.
   let colorProbe: CanvasRenderingContext2D | null | undefined;
-  const colorName = (cssColor: string) => {
+  const colorChannels = (cssColor: string): number[] | null => {
     colorProbe ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    if (!colorProbe) return 'unreadable';
+    if (!colorProbe) return null;
     colorProbe.clearRect(0, 0, 1, 1);
     colorProbe.fillStyle = '#000';
     colorProbe.fillStyle = cssColor;
     colorProbe.fillRect(0, 0, 1, 1);
-    const [r, g, b, a] = Array.from(colorProbe.getImageData(0, 0, 1, 1).data).map((channel) => channel / 255);
+    return Array.from(colorProbe.getImageData(0, 0, 1, 1).data).map((channel) => channel / 255);
+  };
+  // Whether a color reads light or dark, by its relative luminance against middle grey (L* 50): a light theme's
+  // surfaces read light and a dark theme's dark, whatever their hue.
+  const colorTone = (cssColor: string) => {
+    const channels = colorChannels(cssColor);
+    if (!channels) return 'unreadable';
+    const [r, g, b, a] = channels;
+    if (!cssColor.trim() || a < 0.1) return 'transparent';
+    const linear = (value: number) => (value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
+    return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b) >= 0.18 ? 'light' : 'dark';
+  };
+  const colorName = (cssColor: string) => {
+    const channels = colorChannels(cssColor);
+    if (!channels) return 'unreadable';
+    const [r, g, b, a] = channels;
     if (!cssColor.trim() || a < 0.1) return 'transparent';
     const max = Math.max(r, g, b);
     const chroma = max - Math.min(r, g, b);
@@ -897,6 +945,76 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (hue < 70) return 'yellow';
     if (hue < 170) return 'green';
     return hue < 255 ? 'blue' : 'purple';
+  };
+  // The preferences a check names, emulated by rewriting the page's media conditions: no script can set them, and a
+  // check must not depend on the visitor's own settings. A feature that holds becomes (min-width: 0px), one that
+  // does not (max-width: 0px), so `not` and `and` around it keep their meaning.
+  const emulateMedia = (media: Record<string, string>) => {
+    const rewrite = (text: string) => text.replace(
+      /\(\s*(prefers-color-scheme|prefers-reduced-motion)\s*(?::\s*([a-z-]+)\s*)?\)/gi,
+      (whole: string, feature: string, value?: string) => {
+        const name = feature.toLowerCase();
+        const wanted = media[name];
+        if (!wanted) return whole;
+        // A bare (prefers-reduced-motion) holds for any value but no-preference.
+        const holds = value ? value.toLowerCase() === wanted : name !== 'prefers-reduced-motion' || wanted !== 'no-preference';
+        return holds ? '(min-width: 0px)' : '(max-width: 0px)';
+      },
+    );
+    const rewriteList = (list: MediaList | undefined) => {
+      if (!list) return;
+      const after = rewrite(list.mediaText);
+      if (after !== list.mediaText) list.mediaText = after;
+    };
+    const visit = (rules: CSSRuleList) => {
+      for (const rule of Array.from(rules)) {
+        const conditional = rule as CSSRule & { media?: MediaList; cssRules?: CSSRuleList };
+        rewriteList(conditional.media);
+        if (conditional.cssRules) visit(conditional.cssRules);
+      }
+    };
+    for (const sheet of Array.from(document.styleSheets)) {
+      try {
+        rewriteList(sheet.media);
+        visit(sheet.cssRules);
+      } catch { }
+    }
+  };
+  // Hover and focus styles, which no script can trigger: a synthetic event does not make :hover or :focus match. Each
+  // rule that uses them is copied right after itself with attributes in their place, at the same specificity, and
+  // the hover and focus steps set those attributes.
+  const STATE_SELECTORS: Array<[RegExp, string]> = [
+    [/:focus-visible(?![\w-])/g, '[data-fa-focus-visible]'],
+    [/:focus-within(?![\w-])/g, '[data-fa-focus-within]'],
+    [/:focus(?![\w-])/g, '[data-fa-focus]'],
+    [/:hover(?![\w-])/g, '[data-fa-hover]'],
+  ];
+  type RuleOwner = { cssRules: CSSRuleList; insertRule: (rule: string, index?: number) => number };
+  const emulateStates = () => {
+    const visit = (owner: RuleOwner) => {
+      for (let index = owner.cssRules.length - 1; index >= 0; index -= 1) {
+        const rule = owner.cssRules[index] as CSSRule & { selectorText?: string; style?: CSSStyleDeclaration } & Partial<RuleOwner>;
+        if (typeof rule.selectorText === 'string' && rule.style) {
+          let selector = rule.selectorText;
+          for (const [pattern, attribute] of STATE_SELECTORS) selector = selector.replace(pattern, attribute);
+          if (selector !== rule.selectorText) {
+            try { owner.insertRule(`${selector}{${rule.style.cssText}}`, index + 1); } catch { }
+          }
+        } else if (rule.cssRules && typeof rule.insertRule === 'function') {
+          visit(rule as RuleOwner);
+        }
+      }
+    };
+    for (const sheet of Array.from(document.styleSheets)) {
+      try { visit(sheet); } catch { }
+    }
+  };
+  /** Moves an emulated state to `element`, and with `upward` to its ancestors too, as :hover and :focus-within go. */
+  const setState = (name: string, element: Element | null, upward: boolean) => {
+    if (!config.states) return;
+    const attribute = `data-fa-${name}`;
+    for (const node of Array.from(document.querySelectorAll(`[${attribute}]`))) node.removeAttribute(attribute);
+    for (let node = element; node; node = upward ? node.parentElement : null) node.setAttribute(attribute, '');
   };
   const isTextField = (element: Element) => {
     if (element instanceof HTMLTextAreaElement) return !element.readOnly && !element.disabled;
@@ -1033,7 +1151,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         try { assertText(element, step); return Promise.resolve(); } catch { }
       }
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${describeTarget(step)} did not reach text "${String(step.text ?? '').trim()}" before timeout. Last text: "${lastText}"`));
+        return Promise.reject(new Error(`${describeTarget(step)} expected text "${String(step.text ?? '').trim()}" but found "${lastText}"`));
       }
       return delay(25).then(poll);
     };
@@ -1049,7 +1167,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       lastCount = findAll(step).length;
       if (lastCount === expected) return Promise.resolve();
       if (nativeNow() - startedAt > timeoutMs) {
-        return Promise.reject(new Error(`${describeTarget(step)} did not reach ${expected} match${expected === 1 ? '' : 'es'} before timeout. Last count: ${lastCount}`));
+        return Promise.reject(new Error(`${describeTarget(step)} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${lastCount}`));
       }
       return delay(25).then(poll);
     };
@@ -1137,6 +1255,39 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       if (actual !== expected) throw new Error(`${target} expected ${expected} match${expected === 1 ? '' : 'es'} but found ${actual}`);
       return Promise.resolve();
     }
+    if (type === 'expectLayout') {
+      // How the matches are laid out: in how many columns and rows. Boxes that overlap side by side count as one
+      // column, and boxes that overlap one above another as one row, so links of different heights on a line make
+      // one row and a grid's cards one column per track.
+      const nodes = findAll(step).filter((node) => !isHidden(node));
+      if (!nodes.length) return Promise.reject(new Error(`${target} was not found`));
+      return laidOutRects(nodes).then((rects) => {
+        const bands = (spans: number[][]) => {
+          let count = 0;
+          let end = -Infinity;
+          for (const [from, to] of spans.sort((a, b) => a[0] - b[0])) {
+            if (from >= end - 1) {
+              count += 1;
+              end = to;
+            } else {
+              end = Math.max(end, to);
+            }
+          }
+          return count;
+        };
+        const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+        const columns = bands(rects.map((rect) => [rect.left, rect.right]));
+        const rows = bands(rects.map((rect) => [rect.top, rect.bottom]));
+        // With expected: false the layout must be any other, as a bar that has to leave its single row on a phone.
+        const other = step.expected === false;
+        if (step.columns !== undefined && (columns === Number(step.columns)) === other) {
+          throw new Error(`${target} sit in ${plural(columns, 'column')}; expected ${other ? 'another number' : step.columns}`);
+        }
+        if (step.rows !== undefined && (rows === Number(step.rows)) === other) {
+          throw new Error(`${target} sit in ${plural(rows, 'row')}; expected ${other ? 'another number' : step.rows}`);
+        }
+      });
+    }
 
     const element = queryElement(step);
     if (!element) throw new Error(`${target} was not found`);
@@ -1203,6 +1354,161 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       };
       return poll();
     }
+    if (type === 'expectStyle') {
+      // A computed style: `value` (or any of `anyOf`), a part of it with match 'contains'; not `value` with expected:
+      // false; or a number from `atLeast` to `atMost`, lengths in CSS pixels. `property` may list several,
+      // comma-separated, and one that holds is enough, as a lift made with transform, translate or scale.
+      const properties = String(step.property || '').split(',').map((name) => name.trim()).filter(Boolean);
+      if (!properties.length) throw new Error(`${target} is missing a CSS property`);
+      finishAnimations([element]);
+      const style = getComputedStyle(element);
+      const wanted = (Array.isArray(step.anyOf) ? step.anyOf : step.value === undefined ? [] : [step.value])
+        .map((item) => normalizeName(item));
+      const contains = step.match === 'contains';
+      const check = (property: string): string | null => {
+        const actual = normalizeName(style.getPropertyValue(property));
+        if (step.atLeast !== undefined || step.atMost !== undefined) {
+          const amount = parseFloat(actual);
+          if (!Number.isFinite(amount)) return `${property} to be a number but it was "${actual}"`;
+          if (step.atLeast !== undefined && amount < Number(step.atLeast)) return `${property} to be at least ${step.atLeast} but it was ${actual}`;
+          if (step.atMost !== undefined && amount > Number(step.atMost)) return `${property} to be at most ${step.atMost} but it was ${actual}`;
+        }
+        if (wanted.length) {
+          const found = wanted.some((item) => (contains ? actual.includes(item) : actual === item));
+          if (found === (step.expected === false)) {
+            const shown = wanted.length === 1 ? `"${wanted[0]}"` : `one of ${wanted.map((item) => `"${item}"`).join(', ')}`;
+            return `${property} ${step.expected === false ? 'not ' : ''}to ${contains ? 'contain' : 'be'} ${shown} but it was "${actual}"`;
+          }
+        }
+        return null;
+      };
+      const failures = properties.map(check);
+      if (failures.every((failure) => failure !== null)) throw new Error(`${target} expected ${failures.join(', or ')}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectDeclared') {
+      // A declaration the page's own CSS makes for the target, as when a task asks for clamp(): the computed value is a
+      // plain length, so this reads the rules that match the target, and its style attribute. `property` may list
+      // several, comma-separated, as padding-inline and padding-left both set the left padding.
+      const properties = String(step.property || '').split(',').map((name) => name.trim()).filter(Boolean);
+      const wanted = String(step.value ?? step.text ?? '').trim().toLowerCase();
+      if (!properties.length || !wanted) throw new Error(`${target} is missing a property or the text to look for`);
+      const declared: string[] = [];
+      // A value held in a custom property counts as declared where it is used: `font-size: var(--fs)` with
+      // `--fs: clamp(...)` uses clamp().
+      const tokens = getComputedStyle(element);
+      const read = (style: CSSStyleDeclaration | undefined) => {
+        if (!style) return;
+        for (const name of properties) {
+          const value = style.getPropertyValue(name).trim();
+          if (!value) continue;
+          declared.push(value);
+          for (const reference of value.match(/var\(\s*--[\w-]+/g) || []) {
+            const token = tokens.getPropertyValue(reference.replace(/^var\(\s*/, '')).trim();
+            if (token) declared.push(token);
+          }
+        }
+      };
+      const visit = (rules: CSSRuleList) => {
+        for (const rule of Array.from(rules)) {
+          const styled = rule as CSSRule & { selectorText?: string; style?: CSSStyleDeclaration; cssRules?: CSSRuleList };
+          if (typeof styled.selectorText === 'string') {
+            let matches = false;
+            try { matches = element.matches(styled.selectorText); } catch { }
+            if (matches) read(styled.style);
+          } else if (styled.cssRules) {
+            visit(styled.cssRules);
+          }
+        }
+      };
+      for (const sheet of Array.from(document.styleSheets)) {
+        try { visit(sheet.cssRules); } catch { }
+      }
+      read((element as HTMLElement).style);
+      if (!declared.some((value) => value.toLowerCase().includes(wanted))) {
+        const seen = declared.length ? declared.map((value) => `"${value}"`).join(', ') : 'nothing';
+        throw new Error(`${target} expected ${properties.join(' or ')} declared with "${wanted}" but its CSS declares ${seen}`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectVisible') {
+      // Shown or hidden as a person sees the page: hidden by display or visibility, its own or an ancestor's, or by
+      // having no size. aria-hidden hides from screen readers only, so it does not count here.
+      const expected = step.expected !== false;
+      return laidOutRects([element]).then(([rect]) => {
+        const visibility = getComputedStyle(element).visibility;
+        const shown = rect.width > 0 && rect.height > 0 && visibility !== 'hidden' && visibility !== 'collapse';
+        if (shown !== expected) {
+          throw new Error(`${target} expected to be ${expected ? 'shown' : 'hidden'} but it was ${shown ? 'shown' : 'hidden'}`);
+        }
+      });
+    }
+    if (type === 'expectValidity') {
+      // Whether the browser's own constraint validation accepts the form or the field as it stands.
+      const control = element as Element & { checkValidity?: () => boolean };
+      if (typeof control.checkValidity !== 'function') throw new Error(`${target} is not a form or a form field`);
+      const expected = step.expected !== false;
+      const valid = control.checkValidity();
+      if (valid !== expected) throw new Error(`${target} expected to be ${expected ? 'valid' : 'invalid'} but it was ${valid ? 'valid' : 'invalid'}`);
+      return Promise.resolve();
+    }
+    if (type === 'expectNoOverflow') {
+      // The target fits its width: nothing in it reaches past its edge. On html, the page fits the frame and needs
+      // no sideways scrolling.
+      return laidOutRects([element]).then(() => {
+        const box = element as HTMLElement;
+        if (box.scrollWidth - box.clientWidth > 1) {
+          throw new Error(`${target} is ${box.scrollWidth}px wide inside ${box.clientWidth}px, so it scrolls sideways`);
+        }
+      });
+    }
+    if (type === 'expectLabelled') {
+      // The field has a label of its own: a <label> for it or around it, or aria-labelledby. A placeholder or a title
+      // names a field too, but is not a label.
+      const labels = (element as HTMLInputElement).labels;
+      if (!((labels && labels.length > 0) || labelledByText(element))) throw new Error(`${target} has no label`);
+      return Promise.resolve();
+    }
+    if (type === 'expectDescription') {
+      // The accessible description a screen reader reads after the name: the text aria-describedby points to, holding
+      // `text` when the step gives one.
+      const actual = normalizeName((element.getAttribute('aria-describedby') || '')
+        .split(/\s+/)
+        .map((id) => {
+          const node = id ? document.getElementById(id) : null;
+          return node ? visibleText(node) : '';
+        })
+        .join(' '));
+      const expected = normalizeName(step.text);
+      if (!actual) throw new Error(`${target} has no accessible description`);
+      if (expected && !actual.includes(expected)) {
+        throw new Error(`${target} expected a description with "${expected}" but it was "${actual}"`);
+      }
+      return Promise.resolve();
+    }
+    if (type === 'expectCorner') {
+      // The target sits at a corner of another element, within `gap` CSS pixels of it inside or out, as a badge on a
+      // product photo.
+      const reference = { selector: step.than?.selector, by: step.than?.by } as FrameworkTestStep;
+      const other = queryElement(reference);
+      if (!other) throw new Error(`${describeTarget(reference)} was not found`);
+      const corner = String(step.corner || 'top-right');
+      const limit = Number(step.gap ?? 24);
+      return laidOutRects([element, other]).then(([own, theirs]) => {
+        const across = corner.endsWith('right') ? theirs.right - own.right : own.left - theirs.left;
+        const down = corner.startsWith('top') ? own.top - theirs.top : theirs.bottom - own.bottom;
+        if (Math.abs(across) > limit || Math.abs(down) > limit) {
+          throw new Error(`${target} sits ${Math.round(Math.abs(across))}px across and ${Math.round(Math.abs(down))}px down from the ${corner} corner of ${describeTarget(reference)}; expected within ${limit}px`);
+        }
+      });
+    }
+    if (type === 'addClass' || type === 'removeClass') {
+      // Sets or clears a class the task's styles key off, as a theme class on the root element.
+      const className = String(step.className || '').trim();
+      if (!className) throw new Error(`${target} is missing a className`);
+      element.classList.toggle(className, type === 'addClass');
+      return Promise.resolve();
+    }
     if (type === 'click') {
       const clickable = element as HTMLElement;
       if (typeof clickable.click !== 'function') throw new Error(`${target} is not clickable`);
@@ -1250,6 +1556,10 @@ function opaqueChildBootstrap(config: ChildConfig): void {
         || !!focusable.closest('[inert]');
       if (unfocusable) throw new Error(`${target} cannot take focus`);
       moveFocus(focusable);
+      // Focus as a keyboard brings it, so :focus-visible styles match as well as :focus ones.
+      setState('focus', focusable, false);
+      setState('focus-visible', focusable, false);
+      setState('focus-within', focusable, true);
       return delay(50);
     }
     if (type === 'fileDrag' || type === 'chooseFiles') {
@@ -1325,6 +1635,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       element.dispatchEvent(new PointerCtor(entering ? 'pointerenter' : 'pointerleave', direct));
       element.dispatchEvent(new MouseEvent(entering ? 'mouseover' : 'mouseout', { bubbles: true, cancelable: true }));
       element.dispatchEvent(new MouseEvent(entering ? 'mouseenter' : 'mouseleave'));
+      setState('hover', entering ? element : null, true);
       return delay(50);
     }
     if (type === 'key') return pressKey(element, step, true);
@@ -1345,11 +1656,19 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       return Promise.resolve();
     }
     if (type === 'expectColor') {
+      // The color's family (`hue`), how light or dark it reads (`tone`), or both.
       const property = String(step.property || 'background-color');
-      const expected = String(step.hue || '').trim().toLowerCase();
       finishAnimations([element]);
-      const actual = colorName(getComputedStyle(element).getPropertyValue(property));
-      if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
+      const value = getComputedStyle(element).getPropertyValue(property);
+      if (step.hue !== undefined || step.tone === undefined) {
+        const expected = String(step.hue || '').trim().toLowerCase();
+        const actual = colorName(value);
+        if (actual !== expected) throw new Error(`${target} expected ${property} to be ${expected} but it was ${actual}`);
+      }
+      if (step.tone !== undefined) {
+        const actual = colorTone(value);
+        if (actual !== step.tone) throw new Error(`${target} expected ${property} to be ${step.tone} but it was ${actual}`);
+      }
       return Promise.resolve();
     }
     if (type === 'expectName') {
@@ -1393,10 +1712,23 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       if (side && !other) throw new Error(`${describeTarget(reference)} was not found`);
       return laidOutRects(other ? [element, other] : [element]).then(([own, theirs]) => {
         if (side && theirs) {
+          // Side by side too: `right` is the space from the other's right edge to the target's left one.
           const gap = Number(step.gap ?? 0);
-          const actual = side === 'below' ? own.top - theirs.bottom : theirs.top - own.bottom;
-          if (Math.abs(actual - gap) > 1) {
-            throw new Error(`${target} sits ${Math.round(actual)}px ${side} ${describeTarget(reference)}; expected ${gap}px`);
+          const actual = side === 'below' ? own.top - theirs.bottom
+            : side === 'above' ? theirs.top - own.bottom
+              : side === 'right' ? own.left - theirs.right
+                : theirs.left - own.right;
+          const where = side === 'right' || side === 'left' ? `${side} of` : side;
+          // A range, `atLeast` to `atMost`, for a task that leaves the exact space open.
+          if (step.atLeast !== undefined || step.atMost !== undefined) {
+            const low = step.atLeast === undefined ? -Infinity : Number(step.atLeast);
+            const high = step.atMost === undefined ? Infinity : Number(step.atMost);
+            if (actual < low - 1 || actual > high + 1) {
+              const range = step.atMost === undefined ? `at least ${low}px` : step.atLeast === undefined ? `at most ${high}px` : `${low} to ${high}px`;
+              throw new Error(`${target} sits ${Math.round(actual)}px ${where} ${describeTarget(reference)}; expected ${range}`);
+            }
+          } else if (Math.abs(actual - gap) > 1) {
+            throw new Error(`${target} sits ${Math.round(actual)}px ${where} ${describeTarget(reference)}; expected ${gap}px`);
           }
         }
         if (step.left !== undefined && Math.abs(own.left - Number(step.left)) > 1) {
@@ -1482,15 +1814,23 @@ function opaqueChildBootstrap(config: ChildConfig): void {
       }).__FA_MARK_PREVIEW_TIMER_BASELINE;
       markBaseline?.();
     }
-    return runSequentially(steps, executeStep).then(
+    if (check?.media && typeof check.media === 'object') emulateMedia(check.media as Record<string, string>);
+    if (config.states) emulateStates();
+    let reached = 0;
+    return runSequentially(steps, (step) => {
+      reached += 1;
+      return executeStep(step);
+    }).then(
       () => { send('framework', [{ name, passed: true }]); },
       (error) => {
-        send('framework', [{
-          name,
-          passed: false,
-          error: errorMessage(error, 'Check failed'),
-          failureKind: 'assertion',
-        }]);
+        const failure: TestResult = { name, passed: false, error: errorMessage(error, 'Check failed'), failureKind: 'assertion' };
+        // A check of several steps says which one failed: the order of what the check did to get there. No object
+        // spread here: this function runs in the preview as its source text, without the build's spread helper.
+        if (steps.length > 1) {
+          failure.step = reached;
+          failure.steps = steps.length;
+        }
+        send('framework', [failure]);
       },
     );
   };
@@ -1584,7 +1924,8 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     void (config.kind === 'framework' ? runFramework() : runWeb());
   };
 
-  if (config.kind === 'framework') {
+  // A framework preview says when it has rendered; a static page (startOn 'load') is ready once parsed.
+  if (config.kind === 'framework' && config.startOn !== 'load') {
     (window as Window & {
       __FA_NOTIFY_PREVIEW_READY?: (reason?: string, detail?: string) => void;
     }).__FA_NOTIFY_PREVIEW_READY = (reason = 'render-ready', detail = '') => {

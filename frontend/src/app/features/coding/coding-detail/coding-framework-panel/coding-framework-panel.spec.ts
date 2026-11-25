@@ -39,9 +39,13 @@ describe('CodingFrameworkPanelComponent', () => {
     attemptInsights = jasmine.createSpyObj<AttemptInsightsService>('AttemptInsightsService', [
       'getRunsForQuestion',
       'recordRun',
+      'getInterviewSession',
+      'saveInterviewSession',
+      'clearInterviewSession',
     ]);
     attemptInsights.getRunsForQuestion.and.returnValue([]);
     attemptInsights.recordRun.and.returnValue({ runsForQuestion: [] });
+    attemptInsights.getInterviewSession.and.returnValue(null);
 
     TestBed.configureTestingModule({
       providers: [
@@ -229,6 +233,60 @@ describe('CodingFrameworkPanelComponent', () => {
     component.initFromQuestion();
 
     expect(component.frameworkChecks()).toEqual([]);
+  });
+
+  it('tabs the files a task is solved in, code before template before styles, and walks them with the arrow keys', () => {
+    const component = createComponent();
+    component.filesMap.set({
+      '/package.json': '{}',
+      '/tsconfig.json': '{}',
+      '/src/index.html': '<app-root></app-root>',
+      '/src/main.ts': 'bootstrapApplication(AppComponent);',
+      '/src/styles.css': 'body {}',
+      '/src/app/app.component.css': ':host {}',
+      '/src/app/app.component.html': '<p>Hi</p>',
+      '/src/app/app.component.ts': 'export class AppComponent {}',
+    });
+    component.openFile('/src/app/app.component.ts');
+
+    expect(component.tabFiles()).toEqual([
+      '/src/app/app.component.ts',
+      '/src/app/app.component.html',
+      '/src/app/app.component.css',
+      '/src/styles.css',
+    ]);
+
+    const press = (key: string) => {
+      const event = new KeyboardEvent('keydown', { key, cancelable: true });
+      component.onFileTabsKey(event);
+      return event.defaultPrevented;
+    };
+    expect(press('ArrowRight')).toBeTrue();
+    expect(component.currentPath()).toBe('/src/app/app.component.html');
+    press('ArrowLeft');
+    press('ArrowLeft');
+    expect(component.currentPath()).toBe('/src/styles.css');
+    press('Home');
+    expect(component.currentPath()).toBe('/src/app/app.component.ts');
+    expect(press('Enter')).toBeFalse();
+
+    // A set-up file opened from the file tree joins the tabs while it is open.
+    component.openFile('/src/main.ts');
+    expect(component.tabFiles()).toContain('/src/main.ts');
+  });
+
+  it('moves the splitter above the checks from the keyboard, starting from the split on screen', () => {
+    const component = createComponent();
+    expect(component.previewRowsPercent()).toBeNull();
+
+    const press = (key: string) => component.onPreviewRowsKey(new KeyboardEvent('keydown', { key, cancelable: true }));
+    press('ArrowUp');
+    // Unrendered, the split on screen reads as the default 60%; one step gives the checks 2% more.
+    expect(component.previewRowsPercent()).toBe(58);
+    press('End');
+    expect(component.previewRowsPercent()).toBe(85);
+    press('Home');
+    expect(component.previewRowsPercent()).toBe(20);
   });
 
   it('keeps every configured framework check instead of truncating after six', () => {
@@ -607,6 +665,70 @@ describe('CodingFrameworkPanelComponent', () => {
     expect(record.code).toBeUndefined();
   });
 
+  it('runs timed practice on the shared clock: each check run counts, and ending it sums the runs up', async () => {
+    const sessions = new Map<string, any>();
+    attemptInsights.getInterviewSession.and.callFake((id: string) => sessions.get(id) ?? null);
+    attemptInsights.saveInterviewSession.and.callFake((session: any) => { sessions.set(session.questionId, session); });
+    attemptInsights.clearInterviewSession.and.callFake((id: string) => { sessions.delete(id); });
+    const component = createComponent();
+    setCounterCheck(component);
+    previewBuilder.build.and.resolveTo(counterHtml());
+    spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([
+      { name: 'Counter flow', passed: true },
+      { name: 'Reset clears the count', passed: false, error: '.value expected text "0" but found "1"' },
+    ]);
+
+    expect(component.showTimedPracticeSetup()).toBeTrue();
+    component.onTimedPracticeMinutes('45');
+    component.startTimedPractice();
+    expect(component.timedPractice.active()).toBeTrue();
+    expect(component.timedPractice.remainingLabel()).toBe('45:00 left');
+    expect(component.showTimedPracticeSetup()).toBeFalse();
+
+    await component.runFrameworkChecks();
+    expect(sessions.get('react-counter')).toEqual(jasmine.objectContaining({ durationMin: 45, runs: 1, bestPassPct: 0.5 }));
+    // Runs in timed practice are marked as such in the attempt history, as the JavaScript workspace marks them.
+    expect(attemptInsights.recordRun).toHaveBeenCalledWith(jasmine.objectContaining({ interviewMode: true }));
+
+    component.endTimedPractice();
+    expect(component.timedPractice.active()).toBeFalse();
+    expect(component.timedPractice.summary()).toEqual(jasmine.objectContaining({ runs: 1, bestPassPct: 50 }));
+    expect(sessions.has('react-counter')).toBeFalse();
+  });
+
+  it('offers timed practice only where no other clock runs and the solution is put away, and resumes one after a reload', async () => {
+    const component = createComponent();
+    expect(component.showTimedPracticeSetup()).toBeTrue();
+    const plain = { interviewMode: false, clockLabel: null, locked: false, timedPracticeHidden: false, solutionPanelOpen: false };
+    for (const mode of [
+      { interviewMode: true },
+      { clockLabel: '34:00 left' },
+      { locked: true },
+      { timedPracticeHidden: true },
+      { solutionPanelOpen: true },
+    ]) {
+      Object.assign(component, plain, mode);
+      expect(component.showTimedPracticeSetup()).withContext(JSON.stringify(mode)).toBeFalse();
+    }
+    Object.assign(component, plain);
+    component.viewingSolution.set(true);
+    expect(component.showTimedPracticeSetup()).toBeFalse();
+
+    const startedAt = Date.now() - 5 * 60_000;
+    attemptInsights.getInterviewSession.and.returnValue({
+      questionId: 'react-case', startedAt, durationMin: 15, runs: 2, bestPassPct: 0.5, updatedAt: startedAt,
+    });
+    const reloaded = createComponent();
+    reloaded.storageKeyOverride = 'react-case';
+    reloaded.ngOnChanges({ storageKeyOverride: new SimpleChange(null, 'react-case', true) });
+    await flushMicrotasks();
+
+    expect(reloaded.timedPractice.active()).toBeTrue();
+    expect(reloaded.timedPracticeMinutes()).toBe(15);
+    expect(reloaded.timedPractice.remainingLabel()).toBe('10:00 left');
+    reloaded.ngOnDestroy();
+  });
+
   it('can run interview checks without recording normal attempt insights', async () => {
     const component = createComponent();
     component.interviewMode = true;
@@ -632,14 +754,14 @@ describe('CodingFrameworkPanelComponent', () => {
     spyOn<any>((component as any).opaqueCheckRunner, 'runFramework').and.resolveTo([{
       name: 'Counter flow',
       passed: false,
-      error: '.value did not reach text "1" before timeout. Last text: "0"',
+      error: '.value expected text "1" but found "0"',
       failureKind: 'assertion',
     }]);
 
     const results = await component.runFrameworkChecks();
 
     expect(results[0].passed).toBeFalse();
-    expect(results[0].error).toContain('did not reach text "1"');
+    expect(results[0].error).toContain('expected text "1" but found "0"');
     const record = attemptInsights.recordRun.calls.mostRecent().args[0] as any;
     expect(record.lang).toBe('react');
     expect(record.passCount).toBe(0);

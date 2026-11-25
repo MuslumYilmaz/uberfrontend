@@ -3,6 +3,7 @@
   <p class="post-pass__status" role="status">
     <app-fa-glyph class="post-pass__icon" icon="pi pi-check-circle"></app-fa-glyph>
     <span>{{ card === 'guest' ? 'Passed. Create a free account to save it as solved.' : 'Saved as solved.' }}</span>
+    <span *ngIf="rewardText() as reward" class="post-pass__reward" data-testid="coding-post-pass-reward">{{ reward }}</span>
   </p>
   <div class="post-pass__actions">
     <ng-container *ngIf="card === 'guest'">

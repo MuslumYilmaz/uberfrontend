@@ -4,7 +4,12 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, UrlTree, convertToParamMap, provideRouter } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
 import { CODING_PRIORITY_LINK_GROUPS } from '../../../core/content/priority-links';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { CodeStorageService } from '../../../core/services/code-storage.service';
+import { EssentialQuestionsService } from '../../../core/services/essential-questions.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -21,6 +26,16 @@ describe('CodingListComponent', () => {
     source?: 'global-coding' | 'company';
     kind?: 'coding' | 'trivia' | 'all' | 'system-design';
     companySlug?: string;
+    user?: Record<string, unknown> | null;
+    savedState?: Record<string, unknown>;
+    /** Drafts in this browser that differ from their starters, and each task's last run. */
+    drafts?: Array<{ questionId: string; editedAt: number }>;
+    runs?: Array<[string, { passCount: number; totalCount: number; ts: number }]>;
+    /** Essential 60 ranks by `<kind>:<id>`, and the role chosen in onboarding. */
+    ranks?: Map<string, number>;
+    onboardingRole?: string;
+    /** Runs after the module is set up and before the component starts (to spy on the router, for example). */
+    beforeCreate?: () => void;
   }) {
     const routeData = {
       source: options?.source ?? 'global-coding',
@@ -86,7 +101,7 @@ describe('CodingListComponent', () => {
         {
           provide: AuthService,
           useValue: {
-            user: signal(null),
+            user: signal(options?.user ?? null),
           },
         },
         {
@@ -97,9 +112,33 @@ describe('CodingListComponent', () => {
           },
         },
         {
+          provide: CodeStorageService,
+          useValue: { listEditedDraftsAsync: () => Promise.resolve(options?.drafts ?? []) },
+        },
+        {
+          provide: AttemptInsightsService,
+          useValue: { latestRunsByQuestion: () => new Map(options?.runs ?? []) },
+        },
+        {
+          provide: AnalyticsService,
+          useValue: { track: jasmine.createSpy('track').and.returnValue(true) },
+        },
+        {
+          provide: EssentialQuestionsService,
+          useValue: { loadRanks: () => of(options?.ranks ?? new Map()) },
+        },
+        {
+          provide: OnboardingService,
+          useValue: {
+            getProfile: () => (options?.onboardingRole
+              ? { targetRole: options.onboardingRole, framework: 'javascript', timeline: 'ongoing' }
+              : null),
+          },
+        },
+        {
           provide: CodingListStateService,
           useValue: {
-            globalCodingState: {},
+            globalCodingState: options?.savedState ?? {},
           },
         },
         {
@@ -111,6 +150,7 @@ describe('CodingListComponent', () => {
       ],
     }).compileComponents();
 
+    options?.beforeCreate?.();
     const fixture = TestBed.createComponent(CodingListComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -153,7 +193,9 @@ describe('CodingListComponent', () => {
       type: 'trivia',
       questionFormat: 'output',
     }) as any)).toBe('Output');
-    expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('Coding');
+    // A coding row in the coding list says nothing: every row there is coding.
+    expect(component.questionRowKindLabel(question({ __kind: 'coding' }) as any)).toBe('');
+    expect(component.questionRowKindLabel(question({ __kind: 'coding', __debug: true }) as any)).toBe('Debugging');
   });
 
   it('gives the question catalog search control an accessible name', async () => {
@@ -263,6 +305,11 @@ describe('CodingListComponent', () => {
     expect(text).toContain(
       'Practice priority is relative FrontendAtlas editorial ordering—not measured interview frequency.',
     );
+    // The recommended order ranks by priority, so each row reads it out instead of drawing it.
+    expect(host.querySelector('[aria-label="Practice priority: High"]')).toBeNull();
+    expect(host.querySelector('.fa-question-row__sr-meta')?.textContent).toContain('Practice priority: High');
+    fixture.componentInstance.setSort('title-asc');
+    fixture.detectChanges();
     expect(host.querySelector('[aria-label="Practice priority: High"]')?.textContent).toContain('Priority: High');
     expect(text).not.toContain('Importance: High to Low');
   });
@@ -297,7 +344,15 @@ describe('CodingListComponent', () => {
     expect(host.querySelector('.fa-page-kicker')?.textContent?.trim()).toBe('Coding Challenge Hub');
     expect(host.querySelector('.fa-page-title')?.textContent?.trim()).toBe('Frontend Coding Challenges');
     expect(host.textContent || '').toContain('Build and debug focused frontend prompts');
-    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.textContent || '').toContain('Start with Debounce');
+    const starts = host.querySelector('[data-testid="coding-start-paths"]') as HTMLElement;
+    expect(starts.textContent).toContain('New to coding interviews?');
+    expect(starts.textContent).toContain('Interview coming up?');
+    expect(host.querySelector('[data-testid="coding-start-interview"]')?.textContent?.trim()).toBe('Start with Debounce');
+    // The primary action keeps its room beside the starts, hidden, until a filter swaps the two.
+    expect(starts.classList).not.toContain('is-swapped-out');
+    expect(host.querySelector('[data-testid="coding-list-primary-action"]')?.closest('.fa-start-primary')?.classList)
+      .toContain('is-swapped-out');
+    expect(host.textContent).not.toContain('Essential 60 #1');
     expect(Array.from(host.querySelectorAll('[data-testid="coding-list-fit-pill"]')).map((pill) =>
       pill.textContent?.trim()
     )).toEqual(['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start']);
@@ -310,6 +365,20 @@ describe('CodingListComponent', () => {
     expect(results).not.toBeNull();
     expect(discovery).not.toBeNull();
     expect(results!.compareDocumentPosition(discovery!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('swaps a visitor\'s first-visit starts for the primary action in one cell when a filter applies', async () => {
+    const fixture = await createComponent({ queryParams: { reset: '1' } });
+    const host = fixture.nativeElement as HTMLElement;
+
+    fixture.componentInstance.toggleDiff('hard', true);
+    fixture.detectChanges();
+
+    // Both stay in the cell, so on a wide screen the header keeps its height (the prod e2e test measures it).
+    expect(host.querySelector('[data-testid="coding-start-paths"]')?.classList).toContain('is-swapped-out');
+    expect(host.querySelector('.fa-start-primary')?.classList).not.toContain('is-swapped-out');
+    expect(host.querySelector('.fa-start-primary [data-testid="coding-list-primary-action"]')?.textContent?.trim())
+      .toBe('Start first question');
   });
 
   it('keeps clean technology question links available with empty results and follows filter changes', async () => {
@@ -409,7 +478,7 @@ describe('CodingListComponent', () => {
     expect(discovery?.textContent || '').not.toContain('React Premium Grid');
   });
 
-  it('opens Debounce directly from the unfiltered guest global library start action', async () => {
+  it('opens Debounce from the interview start even with a warm-up listed above it', async () => {
     const fixture = await createComponent({
       queryParams: { reset: '1' },
       items: [
@@ -420,9 +489,9 @@ describe('CodingListComponent', () => {
     const router = TestBed.inject(Router);
     const navigate = spyOn(router, 'navigate').and.resolveTo(true);
 
-    fixture.componentInstance.openFirstVisible();
+    fixture.componentInstance.startPath('interview');
 
-    expect(navigate).toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
+    expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'javascript', 'coding', 'js-debounce']);
   });
 
   it('lets a guest hide the tasks behind a lock with Free only, and a filter reset shows them again', async () => {
@@ -443,7 +512,7 @@ describe('CodingListComponent', () => {
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
     expect(host.querySelector('[data-testid="question-card-js-free-task"]')).not.toBeNull();
-    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('1 matches');
+    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('1 match');
 
     fixture.componentInstance.resetAllFilters();
     fixture.detectChanges();
@@ -459,6 +528,271 @@ describe('CodingListComponent', () => {
     fixture.detectChanges();
     expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).not.toBeNull();
     expect(host.querySelector('[data-testid="coding-list-free-only"]')).toBeNull();
+  });
+
+  it('names a task the viewer cannot open as Premium on its row, first among its chips, and not for a member', async () => {
+    const fixture = await createComponent({
+      items: [
+        question({ id: 'js-free-task', title: 'Free task' }),
+        question({ id: 'js-locked-task', title: 'Locked task', access: 'premium' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const chips = (id: string) => Array.from(
+      host.querySelectorAll(`[data-testid="question-card-${id}"] .fa-question-row__meta-chip`),
+    ).map((chip) => chip.textContent?.trim());
+    // First in a right-aligned group, so the difficulty and technology chips keep their places on every row.
+    expect(chips('js-locked-task')[0]).toBe('Premium');
+    expect(chips('js-free-task')).not.toContain('Premium');
+
+    (TestBed.inject(AuthService).user as any).set({ _id: 'premium-user', accessTier: 'premium' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(chips('js-locked-task')).not.toContain('Premium');
+  });
+
+  it('shows every active filter above the list and removes each one on its own', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'javascript', diff: 'easy', q: 'clamp', access: 'free' },
+      items: [question({ id: 'js-number-clamp', title: 'Clamp', difficulty: 'easy' })],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const labels = () => Array.from(host.querySelectorAll('[data-testid^="coding-active-filter-"]'))
+      .map((chip) => (chip.textContent || '').replace('Remove filter:', '').trim());
+
+    expect(labels()).toEqual(['“clamp”', 'JavaScript', 'Easy', 'Free only']);
+
+    (host.querySelector('[data-testid="coding-active-filter-diff:easy"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.diffs$.value).toEqual([]);
+    expect(labels()).toEqual(['“clamp”', 'JavaScript', 'Free only']);
+
+    (host.querySelector('[data-testid="coding-active-filters-clear"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(host.querySelector('[data-testid="coding-active-filters"]')).toBeNull();
+    expect(fixture.componentInstance.freeOnly$.value).toBeFalse();
+  });
+
+  /** Reads the stubbed drafts as the browser does after the first render (the specs render as the server). */
+  async function loadDrafts(fixture: { componentInstance: CodingListComponent; detectChanges(): void; whenStable(): Promise<unknown> }) {
+    await (fixture.componentInstance as any).loadPracticeProgress();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  it('offers the newest unsolved draft the viewer can open as Continue, with its last run, and marks drafted rows', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-solved'],
+      items: [
+        question({ id: 'js-solved', title: 'Solved task' }),
+        question({ id: 'js-older-draft', title: 'Older draft' }),
+        question({ id: 'js-newer-draft', title: 'Newer draft' }),
+        question({ id: 'js-locked-draft', title: 'Locked draft', access: 'premium' }),
+      ],
+      drafts: [
+        { questionId: 'js-locked-draft', editedAt: 900 },
+        { questionId: 'js-solved', editedAt: 500 },
+        { questionId: 'js-newer-draft', editedAt: 300 },
+        { questionId: 'js-older-draft', editedAt: 100 },
+      ],
+      runs: [['js-newer-draft', { passCount: 2, totalCount: 4, ts: 400 }]],
+    });
+    await loadDrafts(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+
+    const card = host.querySelector('[data-testid="coding-continue-card"]') as HTMLElement;
+    expect(card.querySelector('.fa-continue__title')?.textContent?.trim()).toBe('Newer draft');
+    expect(card.textContent).toContain('Last run: 2 of 4 passed');
+    const link = card.querySelector('[data-testid="coding-continue-link"]') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe('/javascript/coding/js-newer-draft');
+    const status = (id: string) => host.querySelector(`[data-testid="question-card-${id}"] .fa-question-row__status`)!;
+    expect(status('js-newer-draft').classList).toContain('is-in-progress');
+    expect(status('js-solved').classList).not.toContain('is-in-progress');
+
+    spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
+    link.click();
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_continue_clicked', {
+      question_id: 'js-newer-draft',
+      tech: 'javascript',
+      has_run: true,
+    });
+  });
+
+  it('does not offer a visitor a draft whose last run passed every test, since a visitor has no solved list', async () => {
+    const items = [question({ id: 'js-passed', title: 'Passed draft' }), question({ id: 'js-open', title: 'Open draft' })];
+    const drafts = [{ questionId: 'js-passed', editedAt: 300 }, { questionId: 'js-open', editedAt: 100 }];
+    const runs: Array<[string, { passCount: number; totalCount: number; ts: number }]> = [
+      ['js-passed', { passCount: 7, totalCount: 7, ts: 350 }],
+      ['js-open', { passCount: 1, totalCount: 5, ts: 150 }],
+    ];
+    const title = (fixture: { nativeElement: unknown }) => (fixture.nativeElement as HTMLElement)
+      .querySelector('[data-testid="coding-continue-card"] .fa-continue__title')?.textContent?.trim();
+
+    const visitor = await createComponent({ items, drafts, runs });
+    await loadDrafts(visitor);
+    expect(title(visitor)).toBe('Open draft');
+
+    // An account's solved list says what is finished: a full pass that was never submitted is still offered.
+    TestBed.resetTestingModule();
+    const account = await createComponent({ user: { _id: 'returning-user', accessTier: 'free' }, items, drafts, runs });
+    await loadDrafts(account);
+    expect(title(account)).toBe('Passed draft');
+  });
+
+  it('narrows the list by progress, hides solved tasks in one click, and clears both ways', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-a'],
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' }), question({ id: 'js-c', title: 'C' })],
+      drafts: [{ questionId: 'js-b', editedAt: 100 }],
+    });
+    await loadDrafts(fixture);
+    const host = fixture.nativeElement as HTMLElement;
+    const rows = () => Array.from(host.querySelectorAll('[data-testid^="question-card-js-"]')).map((row) => row.getAttribute('data-testid'));
+    const component = fixture.componentInstance;
+
+    const hideSolved = host.querySelector<HTMLButtonElement>('[data-testid="coding-list-hide-solved"]')!;
+    hideSolved.click();
+    fixture.detectChanges();
+    expect(hideSolved.getAttribute('aria-pressed')).toBe('true');
+    expect(rows()).toEqual(['question-card-js-b', 'question-card-js-c']);
+    expect(host.querySelector('[data-testid="coding-active-filter-progress"]')?.textContent).toContain('Not solved');
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_progress_filter_changed', {
+      filter: 'unsolved',
+      control: 'toolbar',
+    });
+
+    component.setProgressFilter('in-progress');
+    fixture.detectChanges();
+    expect(rows()).toEqual(['question-card-js-b']);
+    expect(hideSolved.getAttribute('aria-pressed')).toBe('false');
+
+    component.setProgressFilter('solved');
+    fixture.detectChanges();
+    expect(rows()).toEqual(['question-card-js-a']);
+
+    (host.querySelector('[data-testid="coding-active-filter-progress"]') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(rows().length).toBe(3);
+
+    component.setProgressFilter('unsolved');
+    component.resetAllFilters();
+    fixture.detectChanges();
+    expect(component.progressFilter$.value).toBe('all');
+    expect(rows().length).toBe(3);
+  });
+
+  it('gives a visitor the In progress view only, once a draft exists, and ignores a view kept from an account', async () => {
+    const drafts: Array<{ questionId: string; editedAt: number }> = [];
+    const fixture = await createComponent({
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' })],
+      drafts,
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const component = fixture.componentInstance;
+    const rows = () => host.querySelectorAll('[data-testid^="question-card-js-"]').length;
+    expect(host.querySelector('[data-testid="filter-progress"]')).toBeNull();
+
+    component.progressFilter$.next('solved');
+    fixture.detectChanges();
+    expect(rows()).toBe(2);
+    expect(host.querySelector('[data-testid="coding-active-filter-progress"]')).toBeNull();
+
+    drafts.push({ questionId: 'js-b', editedAt: 100 });
+    await loadDrafts(fixture);
+    const options = Array.from(host.querySelectorAll('[data-testid^="filter-progress-"]')).map((el) => el.textContent?.trim());
+    expect(options).toEqual(['All', 'In progress']);
+    expect(host.querySelector('[data-testid="coding-list-hide-solved"]')).toBeNull();
+    expect(host.querySelector('[data-testid="coding-progress-stats"]')).toBeNull();
+
+    (host.querySelector('[data-testid="filter-progress-in-progress"] input') as HTMLInputElement).click();
+    fixture.detectChanges();
+    expect(rows()).toBe(1);
+
+    const radio = host.querySelector('[data-testid="filter-progress-in-progress"] input');
+    fixture.detectChanges();
+    // A Progress radio survives a check: a rebuilt one is detached mid-click and never fires change.
+    expect(host.querySelector('[data-testid="filter-progress-in-progress"] input')).toBe(radio);
+  });
+
+  it('shows a signed-in user how many tasks they solved and their streak', async () => {
+    const fixture = await createComponent({
+      user: { _id: 'returning-user', accessTier: 'free', stats: { streak: { current: 3 } } },
+      solved: ['js-a', 'js-b'],
+      items: [question({ id: 'js-a', title: 'A' }), question({ id: 'js-b', title: 'B' })],
+    });
+
+    const stats = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="coding-progress-stats"]');
+    expect(stats?.textContent?.trim()).toBe('2 solved · 3-day streak');
+  });
+
+  it('opens each first-visit start on its first task, with the path as the task page\'s Prev and Next', async () => {
+    const fixture = await createComponent({
+      queryParams: { reset: '1' },
+      items: [
+        question({ id: 'js-debounce', title: 'Debounce', difficulty: 'intermediate', importance: 5 }),
+        question({ id: 'js-throttle', title: 'Throttle', difficulty: 'intermediate', access: 'premium' }),
+        question({ id: 'js-sum', title: 'Sum', importance: 4 }),
+        question({ id: 'html-warmup', title: 'Warm-Up: Basic Structure', tech: 'html', technology: 'html' }),
+      ],
+      ranks: new Map([['coding:js-debounce', 1], ['coding:js-throttle', 3]]),
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const opened = () => {
+      const [commands, extras] = navigate.calls.mostRecent().args as [unknown[], { state: any }];
+      return { commands, path: extras.state.session.items.map((item: { id: string }) => item.id) };
+    };
+
+    (host.querySelector('[data-testid="coding-start-warmups"]') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    expect(opened()).toEqual({ commands: ['/', 'javascript', 'coding', 'js-sum'], path: ['js-sum', 'html-warmup'] });
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_start_entry_clicked', { entry: 'warmups' });
+
+    (host.querySelector('[data-testid="coding-start-interview"]') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    expect(opened()).toEqual({
+      commands: ['/', 'javascript', 'coding', 'js-debounce'],
+      path: ['js-debounce', 'js-throttle', 'js-sum'],
+    });
+    expect(TestBed.inject(AnalyticsService).track).toHaveBeenCalledWith('coding_start_entry_clicked', { entry: 'interview' });
+  });
+
+  it('orders one technology by Essential 60 rank, or warm-ups first for a self-declared junior', async () => {
+    const items = [
+      question({ id: 'js-warmup', title: 'Warm-Up: Sum', importance: 2 }),
+      question({ id: 'js-easy', title: 'Easy one', importance: 4 }),
+      question({ id: 'js-promise-any', title: 'Promise.any', difficulty: 'intermediate', importance: 3 }),
+      question({ id: 'js-debounce', title: 'Debounce', difficulty: 'intermediate', importance: 5 }),
+    ];
+    const ranks = new Map([['coding:js-debounce', 1], ['coding:js-promise-any', 21]]);
+    const order = (fixture: { nativeElement: HTMLElement }) => Array.from(fixture.nativeElement
+      .querySelectorAll('[data-testid^="question-card-js-"]')).map((row) => row.getAttribute('data-testid')?.slice(14));
+
+    const mid = await createComponent({ queryParams: { tech: 'javascript' }, items, ranks });
+    expect(order(mid)).toEqual(['js-debounce', 'js-promise-any', 'js-easy', 'js-warmup']);
+
+    TestBed.resetTestingModule();
+    const junior = await createComponent({ queryParams: { tech: 'javascript' }, items, ranks, onboardingRole: 'junior_frontend' });
+    expect(order(junior)).toEqual(['js-warmup', 'js-easy', 'js-debounce', 'js-promise-any']);
+  });
+
+  it('turns Free only on from a shared link', async () => {
+    const fixture = await createComponent({
+      queryParams: { access: 'free' },
+      items: [
+        question({ id: 'js-free-task', title: 'Free task' }),
+        question({ id: 'js-locked-task', title: 'Locked task', access: 'premium' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+
+    expect(fixture.componentInstance.freeOnly$.value).toBeTrue();
+    expect(host.querySelector('[data-testid="question-card-js-locked-task"]')).toBeNull();
+    expect(host.querySelector('[data-testid="question-card-js-free-task"]')).not.toBeNull();
   });
 
   it('keeps filtered library start actions tied to the first visible unlocked row', async () => {
@@ -477,6 +811,113 @@ describe('CodingListComponent', () => {
 
     expect(navigate).not.toHaveBeenCalledWith(['/', 'javascript', 'coding', 'js-debounce']);
     expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'react', 'coding', 'react-counter']);
+  });
+
+  it('sends a returning visitor to the first open task they have not solved', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'javascript' },
+      user: { _id: 'returning-user', accessTier: 'free' },
+      solved: ['js-first'],
+      items: [
+        question({ id: 'js-first', title: 'First task', importance: 5 }),
+        question({ id: 'js-locked', title: 'Locked task', access: 'premium', importance: 5 }),
+        question({ id: 'js-second', title: 'Second task', importance: 4 }),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const navigate = spyOn(router, 'navigate').and.resolveTo(true);
+
+    expect(fixture.componentInstance.primaryActionLabel()).toBe('Open next unsolved task');
+    fixture.componentInstance.openFirstVisible();
+    await fixture.whenStable();
+
+    expect(navigate.calls.mostRecent().args[0]).toEqual(['/', 'javascript', 'coding', 'js-second']);
+  });
+
+  it('finds a task by a tag or its description and lists title matches first', async () => {
+    const fixture = await createComponent({
+      queryParams: { q: 'closure' },
+      items: [
+        question({ id: 'js-once', title: 'Once', tags: ['closure'], importance: 5 }),
+        question({ id: 'js-counter-fn', title: 'Create a Counter Function', description: 'Keep the count in a closure.', importance: 4 }),
+        question({ id: 'js-closure-basics', title: 'Closure Basics', importance: 1 }),
+        question({ id: 'js-flatten', title: 'Flatten', description: 'Flatten nested arrays.', importance: 5 }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const ids = Array.from(host.querySelectorAll('[data-testid^="question-card-"]'))
+      .map((card) => card.getAttribute('data-testid'));
+
+    expect(ids[0]).toBe('question-card-js-closure-basics');
+    expect(ids).toContain('question-card-js-once');
+    expect(ids).toContain('question-card-js-counter-fn');
+    expect(ids).not.toContain('question-card-js-flatten');
+  });
+
+  it('offers the concept list when a search finds no coding task', async () => {
+    const fixture = await createComponent({
+      queryParams: { q: 'event loop' },
+      items: [question({ id: 'js-flatten', title: 'Flatten', description: 'Flatten nested arrays.' })],
+    });
+    spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const host = fixture.nativeElement as HTMLElement;
+    const offer = host.querySelector<HTMLButtonElement>('[data-testid="coding-empty-search-concepts"]');
+
+    expect(offer?.textContent).toContain('event loop');
+    offer!.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedKind$.value).toBe('trivia');
+  });
+
+  it('opens a shared filter link on the coding list even when the visitor last browsed concepts', async () => {
+    const savedState = {
+      tech: {
+        searchTerm: '', sliderValue: 0, diffs: [], impTiers: [], selectedTags: [], sort: 'default',
+        tagMatchMode: 'all', selectedTech: null, selectedKind: 'trivia', selectedCategory: null,
+      },
+    };
+    const shared = await createComponent({ queryParams: { tech: 'javascript', diff: 'easy' }, savedState });
+    expect(shared.componentInstance.selectedKind$.value).toBe('coding');
+
+    // A bare /coding still brings the visitor back to the list they left (and writes it into the URL).
+    TestBed.resetTestingModule();
+    const plain = await createComponent({
+      queryParams: {},
+      savedState,
+      beforeCreate: () => spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true),
+    });
+    expect(plain.componentInstance.selectedKind$.value).toBe('trivia');
+  });
+
+  it('titles the hub for concept questions when Concepts is chosen', async () => {
+    const fixture = await createComponent({
+      queryParams: { kind: 'trivia' },
+      items: [question({ id: 'js-closures', title: 'What is a closure?', type: 'trivia' })],
+    });
+    const component = fixture.componentInstance;
+
+    expect(component.pageTitle()).toBe('Frontend Concept Questions');
+    expect(component.pageFitPills()).not.toContain('Starter code');
+    expect(component.primaryActionLabel()).toBe('Start first concept question');
+    expect(component.pageAccessNote()).toContain('concept question');
+  });
+
+  it('lists the debugging tasks of the chosen technology with its coding tasks, on their own route', async () => {
+    const fixture = await createComponent({
+      queryParams: { tech: 'angular' },
+      items: [question({ id: 'angular-counter', title: 'Angular Counter', technology: 'angular', tech: 'angular' })],
+      debugItems: [
+        question({ id: 'ng-debug-zoneless-board', title: 'Fix a zoneless board', technology: 'angular', tech: 'angular' }),
+        question({ id: 'js-debug-off-by-one', title: 'Off by one', technology: 'javascript', tech: 'javascript' }),
+      ],
+    });
+    const host = fixture.nativeElement as HTMLElement;
+    const debugCard = host.querySelector('[data-testid="question-card-ng-debug-zoneless-board"]');
+
+    expect(debugCard?.textContent).toContain('Debugging');
+    expect(debugCard?.getAttribute('href')).toBe('/angular/debug/ng-debug-zoneless-board');
+    expect(host.querySelector('[data-testid="question-card-js-debug-off-by-one"]')).toBeNull();
+    expect(host.querySelector('.fa-count-badge')?.textContent?.trim()).toBe('2 matches');
   });
 
   it('opens formats UI as practice types with compact framework prep support', async () => {

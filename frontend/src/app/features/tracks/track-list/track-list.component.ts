@@ -3,7 +3,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TRACKS, TrackConfig } from '../track.data';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
+import { AuthService } from '../../../core/services/auth.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SHOWCASE_STATS } from '../../../generated/content-metadata';
 import { JAVASCRIPT_MASTERY_PATH } from '../../../shared/mastery/paths/javascript-mastery.path';
 
@@ -26,6 +28,8 @@ type MasteryTrackCard = {
 type PlanMetric = {
   label: string;
   value: string;
+  /** Question ids whose solved count a signed-in reader sees before the total, as "4/30". */
+  progressOf?: readonly string[];
 };
 
 type PlanPreviewStep = {
@@ -88,6 +92,8 @@ type TrackFaqEntry = {
 })
 export class TrackListComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly auth = inject(AuthService);
+  private readonly progress = inject(UserProgressService);
 
   tracks = TRACKS.filter((t) => !t.hidden);
   private readonly crashTrack = this.requireVisibleTrack('crash-7d');
@@ -158,7 +164,7 @@ export class TrackListComponent implements OnInit {
       ctaLabel: 'Open 7-day preview',
       toneClass: 'hero-plan--crash',
       metrics: [
-        { value: `0/${this.crashTrack.featured.length}`, label: 'questions' },
+        { value: String(this.crashTrack.featured.length), label: 'questions', progressOf: this.crashTrack.featured.map((ref) => ref.id) },
         { value: 'Day 1', label: 'ready' },
         { value: String(this.systemDesignCount(this.crashTrack)), label: 'system design' },
         { value: '45 min', label: 'per day' },
@@ -190,7 +196,7 @@ export class TrackListComponent implements OnInit {
       ctaLabel: 'Open 30-day preview',
       toneClass: 'hero-plan--foundations',
       metrics: [
-        { value: `0/${this.foundationsTrack.featured.length}`, label: 'questions' },
+        { value: String(this.foundationsTrack.featured.length), label: 'questions', progressOf: this.foundationsTrack.featured.map((ref) => ref.id) },
         { value: 'Day 1', label: 'ready' },
         { value: String(this.systemDesignCount(this.foundationsTrack)), label: 'system design' },
         { value: '30-45 min', label: 'per day' },
@@ -222,7 +228,7 @@ export class TrackListComponent implements OnInit {
       ctaLabel: 'Open mastery board',
       toneClass: 'hero-plan--mastery',
       metrics: [
-        { value: `0/${JAVASCRIPT_MASTERY_PATH.items.length}`, label: 'drills' },
+        { value: String(JAVASCRIPT_MASTERY_PATH.items.length), label: 'drills' },
         { value: String(JAVASCRIPT_MASTERY_PATH.modules.length), label: 'modules' },
         { value: String(this.masteryCheckpointCount), label: 'checkpoints' },
         { value: '45-60 min', label: 'per module' },
@@ -487,6 +493,14 @@ export class TrackListComponent implements OnInit {
         'Use the 7-day frontend interview prep plan for short deadlines and repeated high-yield review. Use the 30-day frontend interview preparation roadmap when you need a full month to rebuild fundamentals, framework depth, system design, and final company practice.',
     },
   ];
+
+  /** A plan's total, or "solved/total" for a signed-in reader; visitors never see a made-up "0/30". */
+  metricValue(metric: PlanMetric): string {
+    if (!metric.progressOf || !this.auth.isLoggedIn()) return metric.value;
+    const solved = new Set(this.progress.solvedIds());
+    const done = metric.progressOf.filter((id) => solved.has(id)).length;
+    return `${done}/${metric.progressOf.length}`;
+  }
 
   ngOnInit(): void {
     this.publishSeo();

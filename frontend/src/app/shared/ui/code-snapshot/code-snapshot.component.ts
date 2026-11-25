@@ -50,7 +50,7 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
     }
 
     .code-snapshot:focus-visible {
-      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.8);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--uf-accent) 80%, transparent);
     }
 
     .code-snapshot__meta {

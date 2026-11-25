@@ -18,6 +18,22 @@ import { CodingListFilterState, CodingListStateService } from '../../../core/ser
 import { MixedQuestionListItem, QuestionListItem, QuestionService } from '../../../core/services/question.service';
 import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { CodeStorageService } from '../../../core/services/code-storage.service';
+import { AttemptInsightsService } from '../../../core/services/attempt-insights.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { EssentialQuestionsService } from '../../../core/services/essential-questions.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
+import {
+  LastRun,
+  ProgressFilter,
+  editedAgoLabel,
+  isProgressFilter,
+  lastRunLabel,
+  matchesProgressFilter,
+  passedEveryTest,
+  pickContinueTarget,
+  practiceStatus,
+} from '../../../core/utils/practice-progress.util';
 import { CODING_HUB_DEBUG_DISCOVERY, CodingHubGeneratedDiscoveryItem } from '../../../generated/coding-hub-discovery';
 import { FaChipComponent } from '../../../shared/ui/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -28,7 +44,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
+import { interviewPath, warmupPath } from './coding-start-paths.util';
 import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component';
+import { FaGlyphComponent } from '../../../shared/ui/icon/fa-glyph.component';
 import { FaCardComponent } from '../../../shared/ui/card/fa-card.component';
 import {
   FaQuestionRowComponent,
@@ -52,9 +70,12 @@ type Row = Question & {
   __kind: QuestionKind;
   companies?: string[];
   __sd?: boolean;
-  /** A debugging task in a company's coding set: it opens on its own route, /<tech>/debug/<id>. */
+  /** A debugging task in a coding list (/coding or a company's set): it opens on its own route, /<tech>/debug/<id>. */
   __debug?: boolean;
 };
+
+/** A filter shown above the list: "Angular", "Easy", "#async", a search term. `id` says how to remove it. */
+type ActiveFilter = { id: string; label: string };
 
 /** `access` lets the task page's Next step over Premium tasks for a visitor who cannot open them. */
 type PracticeItem = { tech: Tech; kind: QuestionKind | 'debug'; id: string; access?: Row['access'] };
@@ -77,8 +98,39 @@ type SortKey =
 /** `.fa-sort__menu` min-width and the page gutter it must keep (coding-list.component.scss). */
 const SORT_MENU_MIN_WIDTH_PX = 260;
 const SORT_MENU_EDGE_PX = 16;
-/** The visitor's "Free only" choice, kept in this browser; it is not a filter in the address. */
+/** The visitor's "Free only" choice, kept in this browser as well as in the address (`access=free`). */
 const FREE_ONLY_STORAGE_KEY = 'fa:coding-list:free-only';
+/** The progress view (Not solved, In progress, Solved), kept in this browser: it is about this viewer, not the link. */
+const PROGRESS_FILTER_STORAGE_KEY = 'fa:coding-list:progress';
+const PROGRESS_FILTER_LABELS: Record<Exclude<ProgressFilter, 'all'>, string> = {
+  unsolved: 'Not solved',
+  'in-progress': 'In progress',
+  solved: 'Solved',
+};
+
+type ProgressOption = { value: ProgressFilter; label: string };
+
+/** The Progress options, one array per audience: a fresh array on each check would rebuild the radios mid-click. */
+const VISITOR_PROGRESS_OPTIONS: readonly ProgressOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'in-progress', label: PROGRESS_FILTER_LABELS['in-progress'] },
+];
+const ACCOUNT_PROGRESS_OPTIONS: readonly ProgressOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'unsolved', label: PROGRESS_FILTER_LABELS.unsolved },
+  { value: 'in-progress', label: PROGRESS_FILTER_LABELS['in-progress'] },
+  { value: 'solved', label: PROGRESS_FILTER_LABELS.solved },
+];
+
+/** The hero's "Continue" card: the newest draft that is not solved yet. */
+type ContinueCard = {
+  questionId: string;
+  tech?: Tech;
+  title: string;
+  route: any[];
+  editedAgo: string;
+  lastRun: string | null;
+};
 
 type SupportedPrepTech = Extract<Tech, 'javascript' | 'react' | 'angular' | 'vue'>;
 
@@ -186,6 +238,7 @@ const TECHNOLOGY_QUESTION_HUBS = [
   { tech: 'html-css', label: 'HTML/CSS interview questions', route: '/html-css/interview-questions' },
 ] as const;
 const CODING_CHALLENGE_FIT_PILLS = ['Real prompts', 'Starter code', 'Tests', 'Solutions + follow-ups', 'Free to start'] as const;
+const CONCEPT_QUESTION_FIT_PILLS = ['Concept and output questions', 'Written answers', 'Nearly all free'] as const;
 const PRACTICE_TYPES_FIT_PILLS = ['Format-first', 'Good after basics'] as const;
 const SYSTEM_DESIGN_FIT_PILLS = ['Senior signal', 'Architecture + tradeoffs'] as const;
 const DEFAULT_START_QUESTION_ID = 'js-debounce';
@@ -288,6 +341,7 @@ function inferCategory(q: any): CategoryKey {
         FaChipComponent,
         FaButtonComponent,
         FaCardComponent,
+        FaGlyphComponent,
         FaSpinnerComponent,
         FaQuestionRowComponent,
         StripInlineMarkupPipe,
@@ -300,6 +354,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
   readonly companyPracticeDisclaimer = COMPANY_PRACTICE_DISCLAIMER;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly questionHubViewReady = signal(!this.isBrowser);
+  private readonly codeStore = inject(CodeStorageService);
+  private readonly attemptInsights = inject(AttemptInsightsService);
+  private readonly analytics = inject(AnalyticsService);
+  private readonly essentialQuestions = inject(EssentialQuestionsService);
+  /** A technology's default order: Essential 60 first, unless onboarding said "junior", who sees warm-ups first. */
+  private readonly prefersWarmupsFirst = inject(OnboardingService).getProfile()?.targetRole === 'junior_frontend';
+  /** Essential 60 ranks by `<kind>:<id>`, read in the browser after the first render; empty until then. */
+  private readonly essentialRanks$ = new BehaviorSubject<ReadonlyMap<string, number>>(new Map());
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   mobileFiltersOpen = false;
@@ -426,7 +488,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     map(([a, sys]) => [...a, ...sys]),
                   );
                 }
-                return base$;
+                if (k !== 'coding') return base$;
+                return combineLatest<[Row[], Row[]]>([
+                  base$,
+                  this.debugRows$(this.resolvedList?.debugItems),
+                ]).pipe(
+                  map(([coding, debug]) => [...coding, ...debug]),
+                );
               })
             );
           }
@@ -474,7 +542,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
-                this.companyDebugRows$(),
+                this.debugRows$(),
                 this.qs.loadAllQuestionSummaries('trivia', { transferState: false }).pipe(
                   map(list =>
                     list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
@@ -495,7 +563,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                     list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                   )
                 ),
-                this.companyDebugRows$(),
+                this.debugRows$(),
               ]).pipe(
                 map(([coding, debug]) => [...coding, ...debug]),
                 startWith<Row[] | null>(null)
@@ -714,8 +782,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedCategory$,
     this.selectedTags$,
     this.sort$,
+    this.essentialRanks$,
   ]).pipe(
-    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey]) => {
+    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey, ranks]) => {
       if (questions === null) return null;
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
@@ -723,7 +792,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (isFormats && selectedCategory === 'system') {
         const sysBase = (questions ?? []).filter((q: any) => (q as any).__sd === true);
         const sysFiltered = sysBase.filter((q: any) =>
-          (q.title?.toLowerCase()?.includes(t) ?? false) &&
+          this.searchRank(q, t) >= 0 &&
           (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
           (selTags.length === 0
             ? true
@@ -747,6 +816,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
         });
         const deduped = this.dedupeFrameworkRows(sysFiltered);
         const warmupFirst = (a: any, b: any) => {
+          const byRelevance = this.searchRank(a, t) - this.searchRank(b, t);
+          if (byRelevance) return byRelevance;
+
           if (promoteDefaultStart) {
             return this.compareDefaultStartRows(a, b);
           }
@@ -767,7 +839,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }
 
       const filtered = (questions ?? []).filter((q: any) =>
-        (q.title?.toLowerCase()?.includes(t) ?? false) &&
+        this.searchRank(q, t) >= 0 &&
 
         (diffs.length === 0 || diffs.includes(q.difficulty)) &&
 
@@ -806,7 +878,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
         isFormats,
       });
       const deduped = this.dedupeFrameworkRows(filtered);
-      const warmupFirst = (a: any, b: any) => {
+      // One technology in the default order: the Essential 60 tasks first, by rank, for everyone but a self-declared
+      // junior, who keeps the warm-ups first.
+      const essentialFirst = this.source === 'global-coding' && !isFormats && !!selectedTech
+        && sortKey === 'default' && !this.prefersWarmupsFirst;
+      const defaultOrder = (a: any, b: any) => {
+        const byRelevance = this.searchRank(a, t) - this.searchRank(b, t);
+        if (byRelevance) return byRelevance;
+
         if (promoteDefaultStart) {
           return this.compareDefaultStartRows(a, b);
         }
@@ -817,22 +896,69 @@ export class CodingListComponent implements OnInit, OnDestroy {
           if (aPremium !== bPremium) return aPremium ? 1 : -1;
         }
 
+        if (essentialFirst) return this.compareEssentialRows(a, b, ranks);
+
         const aw = this.isWarmupTitle(a?.title);
         const bw = this.isWarmupTitle(b?.title);
         if (aw !== bw) return aw ? -1 : 1;
         return cmp(a, b);
       };
 
-      return deduped.slice().sort(warmupFirst);
+      return deduped.slice().sort(defaultOrder);
     })
   );
 
   /** "Free only": a guest or a free account can hide the tasks they would meet a lock on (kept per browser). */
   readonly freeOnly$ = new BehaviorSubject<boolean>(this.readFreeOnlyPreference());
 
-  // Filtered again when the account arrives: a member who once chose "Free only" has no locks, so nothing is hidden.
-  filtered$ = combineLatest([this.baseFiltered$, this.freeOnly$, toObservable(this.auth.user)]).pipe(
-    map(([list, freeOnly, user]) => (list && freeOnly ? list.filter((q) => !isQuestionLockedForTier(q, user)) : list)),
+  /** This browser's drafts that differ from their starters, by task id: when each was last edited. */
+  readonly editedDrafts = signal<ReadonlyMap<string, number>>(new Map());
+  private readonly lastRuns = signal<ReadonlyMap<string, LastRun>>(new Map());
+  private readonly editedDrafts$ = toObservable(this.editedDrafts);
+  private readonly viewer$ = toObservable(this.auth.user);
+  readonly progressFilter$ = new BehaviorSubject<ProgressFilter>(this.readProgressFilterPreference());
+
+  // Filtered again when the account, its solved list or this browser's drafts change. A member who once chose
+  // "Free only" has no locks, so nothing is hidden; a visitor has no solved list, so only "In progress" applies.
+  filtered$ = combineLatest([
+    this.baseFiltered$,
+    this.freeOnly$,
+    this.viewer$,
+    this.progressFilter$,
+    this.solvedIds$,
+    this.editedDrafts$,
+  ]).pipe(
+    map(([list, freeOnly, user, progress, solvedIds, drafts]) => {
+      if (!list) return list;
+      const open = freeOnly ? list.filter((q) => !isQuestionLockedForTier(q, user)) : list;
+      const view = this.effectiveProgressFilter(progress);
+      if (view === 'all') return open;
+      const solved = new Set(solvedIds);
+      return open.filter((q) => matchesProgressFilter(practiceStatus(q.id, solved, drafts), view));
+    }),
+  );
+
+  /** /coding's newest unsolved draft, offered in the hero as "Continue"; none until this browser's drafts are read. */
+  readonly continueCard$: Observable<ContinueCard | null> = this.editedDrafts$.pipe(
+    switchMap((drafts) => {
+      if (drafts.size === 0 || this.source !== 'global-coding') return of(null);
+      return combineLatest([this.rawQuestions$, this.solvedIds$, this.viewer$]).pipe(
+        map(([rows, solvedIds, user]) => {
+          // A visitor has no solved list, so a draft whose last run passed every test is a finished one; for an
+          // account the solved list decides, and a full pass never submitted is still worth continuing.
+          const finished = new Set(solvedIds);
+          if (!user) {
+            for (const [id, run] of this.lastRuns()) {
+              if (passedEveryTest(run)) finished.add(id);
+            }
+          }
+          const target = pickContinueTarget(rows ?? [], finished, drafts,
+            (row) => !isQuestionLockedForTier(row, user));
+          return target ? this.continueCard(target.row, target.editedAt) : null;
+        }),
+      );
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
@@ -851,7 +977,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   );
 
   difficultyOptions = [
-    { label: 'Beginner', value: 'easy' as Difficulty },
+    { label: 'Easy', value: 'easy' as Difficulty },
     { label: 'Intermediate', value: 'intermediate' as Difficulty },
     { label: 'Hard', value: 'hard' as Difficulty }
   ];
@@ -975,6 +1101,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
+      if (this.isGlobalConceptsView()) return 'Concept Question Hub';
       return 'Coding Challenge Hub';
     }
 
@@ -988,6 +1115,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'System Design Practice';
       if (this.isFormatsMode()) return 'Practice Types';
+      if (this.isGlobalConceptsView()) return 'Frontend Concept Questions';
       return 'Frontend Coding Challenges';
     }
 
@@ -1002,6 +1130,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
       if (this.isFormatsMode()) {
         return 'Choose the format you want to rehearse, then filter the focused list without leaving the practice surface.';
+      }
+
+      if (this.isGlobalConceptsView()) {
+        return 'Questions an interviewer asks out loud about JavaScript, React, Angular, Vue, HTML and CSS, each with a written answer.';
       }
 
       if (this.isGuestDefaultGlobalLibrary()) {
@@ -1022,15 +1154,25 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source !== 'global-coding') return [];
     if (this.isSystemCategoryActive()) return SYSTEM_DESIGN_FIT_PILLS;
     if (this.isFormatsMode()) return PRACTICE_TYPES_FIT_PILLS;
+    if (this.isGlobalConceptsView()) return CONCEPT_QUESTION_FIT_PILLS;
     return CODING_CHALLENGE_FIT_PILLS;
+  }
+
+  pageAccessNote(): string {
+    if (this.isGlobalConceptsView()) {
+      return 'Nearly every concept question is free to read; a few belong to Premium.';
+    }
+    return 'Selected frontend coding challenges are free to start. Premium unlocks additional question sets and deeper solution context while locked items stay gated.';
   }
 
   primaryActionLabel(): string {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Start system design prompt';
       if (this.isFormatsMode()) return 'Start format practice';
-      if (this.isGuestDefaultGlobalLibrary()) return 'Start with Debounce';
-      return 'Start first question';
+      if (this.isGlobalConceptsView()) {
+        return this.hasSolvedAny() ? 'Open next concept question' : 'Start first concept question';
+      }
+      return this.hasSolvedAny() ? 'Open next unsolved task' : 'Start first question';
     }
 
     if (this.source === 'company') return 'Start practice prompt';
@@ -1041,18 +1183,88 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       if (this.isSystemCategoryActive()) return 'Opens the first matching system design scenario.';
       if (this.isFormatsMode()) return 'Opens the first matching prompt in this format.';
-      if (this.isGuestDefaultGlobalLibrary()) return 'Opens Essential 60 #1: the high-signal debounce function drill.';
-      return 'Opens the first matching coding challenge from the current view.';
+      if (this.isGlobalConceptsView()) {
+        return this.hasSolvedAny()
+          ? 'Opens the first question in this view you have not marked complete.'
+          : 'Opens the first matching concept question from the current view.';
+      }
+      return this.hasSolvedAny()
+        ? 'Opens the first task in this view you have not solved yet.'
+        : 'Opens the first matching coding challenge from the current view.';
     }
 
     return 'Opens the first matching prompt from this filtered list.';
+  }
+
+  /** Every filter narrowing the list now, the restored ones included, so none hides out of view; each one removable. */
+  activeFilters(): ActiveFilter[] {
+    const filters: ActiveFilter[] = [];
+    const term = (this.searchTerm || '').trim();
+    if (term) filters.push({ id: 'search', label: `“${term}”` });
+    if (this.source === 'global-coding' && !this.isFormatsMode() && this.selectedTech$.value) {
+      const tech = this.selectedTech$.value;
+      filters.push({ id: `tech:${tech}`, label: this.techTabs.find((tab) => tab.key === tech)?.label ?? tech });
+    }
+    if (this.source === 'global-coding' && this.isFormatsMode() && this.selectedCategory$.value) {
+      const category = this.selectedCategory$.value;
+      filters.push({ id: `category:${category}`, label: this.categoryTabs.find((tab) => tab.key === category)?.label ?? category });
+    }
+    for (const diff of this.diffs$.value) {
+      filters.push({ id: `diff:${diff}`, label: this.difficultyOptions.find((option) => option.value === diff)?.label ?? diff });
+    }
+    for (const tier of this.impTiers$.value) filters.push({ id: `imp:${tier}`, label: `${this.capitalize(tier)} priority` });
+    for (const tag of this.selectedTags$.value) filters.push({ id: `tag:${tag}`, label: `#${tag}` });
+    if (this.freeOnly$.value && this.freeOnlyAvailable()) filters.push({ id: 'free', label: 'Free only' });
+    const progress = this.progressFilterShown();
+    if (progress !== 'all') filters.push({ id: 'progress', label: PROGRESS_FILTER_LABELS[progress] });
+    return filters;
+  }
+
+  removeActiveFilter(id: string): void {
+    if (id === 'search') return this.onSearchTermChange('');
+    if (id === 'free') return this.toggleFreeOnly();
+    if (id === 'progress') return this.setProgressFilter('all', 'chip');
+    const separator = id.indexOf(':');
+    const type = id.slice(0, separator);
+    const value = id.slice(separator + 1);
+    if (type === 'tech') this.toggleTech(value as Tech);
+    else if (type === 'category') this.toggleCategory(value as CategoryKey);
+    else if (type === 'diff') this.toggleDiff(value as Difficulty, false);
+    else if (type === 'imp') this.toggleImp(value as ImportanceTier, false);
+    else if (type === 'tag') this.clearTag(value);
+  }
+
+  trackByActiveFilter = (_: number, filter: ActiveFilter): string => filter.id;
+
+  /** A search that finds no coding task may still name a concept ("closure"): the empty list offers that list. */
+  canSearchConcepts(): boolean {
+    return this.source === 'global-coding'
+      && !this.isFormatsMode()
+      && this.selectedKind$.value === 'coding'
+      && !!(this.searchTerm || '').trim();
+  }
+
+  /** "1 match", "12 matches": a count with the word that fits it. */
+  countLabel(count: number | null | undefined, one: string, many: string): string {
+    const n = count ?? 0;
+    return `${n} ${n === 1 ? one : many}`;
+  }
+
+  /** /coding with Concepts chosen: the same list surface, filled with concept questions. */
+  private isGlobalConceptsView(): boolean {
+    return this.source === 'global-coding' && !this.isFormatsMode() && this.selectedKind$.value === 'trivia';
+  }
+
+  private hasSolvedAny(): boolean {
+    return this.solvedSet().size > 0;
   }
 
   get hasAppliedFilters(): boolean {
     return this.diffs$.value.length > 0
       || this.impTiers$.value.length > 0
       || this.selectedTags$.value.length > 0
-      || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value);
+      || (this.source === 'global-coding' && !this.isFormatsMode() && !!this.selectedTech$.value)
+      || this.progressFilterShown() !== 'all';
   }
 
   // --- UI handlers for sorting ---
@@ -1107,8 +1319,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
       : 'Hides the Premium tasks.';
   }
 
+  /** "Free only" lives in the URL (`access=free`) as well as in this browser, so a shared link keeps it. */
   toggleFreeOnly(): void {
-    this.setFreeOnly(!this.freeOnly$.value);
+    const on = !this.freeOnly$.value;
+    this.setFreeOnly(on);
+    this.replaceQueryParams({ access: on ? 'free' : null });
   }
 
   private setFreeOnly(on: boolean): void {
@@ -1130,6 +1345,102 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Signed in, every progress view applies; a visitor has no solved list, so only "In progress", with a draft. */
+  private effectiveProgressFilter(filter: ProgressFilter): ProgressFilter {
+    if (this.auth.user()) return filter;
+    return filter === 'in-progress' && this.editedDrafts().size > 0 ? filter : 'all';
+  }
+
+  /** The progress views exist once there is progress to show: an account, or a draft in this browser. */
+  progressFilterAvailable(): boolean {
+    return !!this.auth.user() || this.editedDrafts().size > 0;
+  }
+
+  progressOptions(): readonly ProgressOption[] {
+    return this.auth.user() ? ACCOUNT_PROGRESS_OPTIONS : VISITOR_PROGRESS_OPTIONS;
+  }
+
+  trackByProgressOption = (_: number, option: ProgressOption): ProgressFilter => option.value;
+
+  /** The view the Progress options show as chosen: the one that applies, so a visitor's stored "Solved" reads All. */
+  progressFilterShown(): ProgressFilter {
+    return this.effectiveProgressFilter(this.progressFilter$.value);
+  }
+
+  /** "Hide solved" is "Not solved" in one click, for an account that has solved something. */
+  hideSolvedAvailable(): boolean {
+    return !!this.auth.user() && this.solvedIds().length > 0;
+  }
+
+  toggleHideSolved(): void {
+    this.setProgressFilter(this.progressFilter$.value === 'unsolved' ? 'all' : 'unsolved', 'toolbar');
+  }
+
+  setProgressFilter(filter: ProgressFilter, control: 'panel' | 'toolbar' | 'chip' | 'reset' = 'panel'): void {
+    if (this.progressFilter$.value === filter) return;
+    this.progressFilter$.next(filter);
+    if (control !== 'reset') this.analytics.track('coding_progress_filter_changed', { filter, control });
+    if (!this.isBrowser) return;
+    try {
+      localStorage.setItem(PROGRESS_FILTER_STORAGE_KEY, filter);
+    } catch {
+      // Storage can be off (private mode); the view still applies for this visit.
+    }
+  }
+
+  private readProgressFilterPreference(): ProgressFilter {
+    if (!this.isBrowser) return 'all';
+    try {
+      const stored = localStorage.getItem(PROGRESS_FILTER_STORAGE_KEY);
+      return isProgressFilter(stored) ? stored : 'all';
+    } catch {
+      return 'all';
+    }
+  }
+
+  isInProgress(id: string): boolean {
+    return this.editedDrafts().has(id) && !this.solvedSet().has(id);
+  }
+
+  /** "12 solved · 3-day streak", for an account that has solved something. */
+  progressStats(): string | null {
+    const user = this.auth.user();
+    const solved = this.solvedIds().length;
+    if (!user || solved === 0) return null;
+    const streak = user.stats?.streak?.current ?? 0;
+    return streak > 0 ? `${solved} solved · ${streak}-day streak` : `${solved} solved`;
+  }
+
+  trackContinue(card: ContinueCard): void {
+    this.analytics.track('coding_continue_clicked', {
+      question_id: card.questionId,
+      tech: card.tech ?? null,
+      has_run: !!card.lastRun,
+    });
+  }
+
+  /** Drafts live in this browser's IndexedDB: read after the first render, so the server's HTML is what hydrates. */
+  private async loadPracticeProgress(): Promise<void> {
+    try {
+      const drafts = await this.codeStore.listEditedDraftsAsync();
+      this.lastRuns.set(this.attemptInsights.latestRunsByQuestion());
+      this.editedDrafts.set(new Map(drafts.map((draft) => [draft.questionId, draft.editedAt])));
+    } catch {
+      // Unreadable storage leaves the list as a first visit sees it.
+    }
+  }
+
+  private continueCard(row: Row, editedAt: number): ContinueCard {
+    return {
+      questionId: row.id,
+      tech: row.tech,
+      title: row.title,
+      route: this.linkTo(row),
+      editedAgo: editedAgoLabel(editedAt, Date.now()),
+      lastRun: lastRunLabel(this.lastRuns().get(row.id)),
+    };
+  }
+
   trackByQuestionId = (_: number, q: Row): string => q.id;
   trackByFrameworkOption = (_: number, option: FrameworkVariant): string =>
     `${option.kind}:${option.tech}:${option.id}`;
@@ -1137,17 +1448,31 @@ export class CodingListComponent implements OnInit, OnDestroy {
   trackByDiscoveryItem = (_: number, item: CodingHubDiscoveryItem): string =>
     `${item.kind}:${item.tech}:${item.id}`;
 
-  openFirstVisible(): void {
-    if (this.isGuestDefaultGlobalLibrary()) {
-      void this.router.navigate([...DEFAULT_START_ROUTE]);
-      return;
-    }
+  /**
+   * A first-time visitor's two ways in: five warm-ups, or the JavaScript utilities interviewers ask for most, from
+   * Debounce on. Each opens its first task with the path as the task page's Prev and Next.
+   */
+  startPath(entry: 'warmups' | 'interview'): void {
+    this.analytics.track('coding_start_entry_clicked', { entry });
+    this.visible$.pipe(take(1)).subscribe((list) => {
+      const rows = list ?? [];
+      const path = entry === 'warmups'
+        ? warmupPath(rows)
+        : interviewPath(rows, this.essentialRanks$.value, DEFAULT_START_QUESTION_ID);
+      if (path.length) this.go(path[0], path);
+      else if (entry === 'interview') void this.router.navigate([...DEFAULT_START_ROUTE]);
+    });
+  }
 
+  openFirstVisible(): void {
     this.visible$
       .pipe(take(1))
       .subscribe((list) => {
         const rows = list ?? [];
-        const target = rows.find((row) => !this.isLocked(row)) ?? rows[0];
+        // A returning visitor goes on to the first open task they have not solved, not back to one they finished.
+        const target = rows.find((row) => !this.isLocked(row) && !this.isSolved(row.id))
+          ?? rows.find((row) => !this.isLocked(row))
+          ?? rows[0];
         if (!target) return;
         this.go(target, rows);
       });
@@ -1163,7 +1488,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     private seo: SeoService
   ) {
-    afterNextRender(() => this.questionHubViewReady.set(true));
+    afterNextRender(() => {
+      this.questionHubViewReady.set(true);
+      void this.loadPracticeProgress();
+      this.essentialQuestions.loadRanks().pipe(take(1)).subscribe((ranks) => this.essentialRanks$.next(ranks));
+    });
     this.debug('ctor', {
       instance: this.instanceId,
       source: this.source,
@@ -1494,11 +1823,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedTech$.next(techFromUrl);
     }
 
+    // A URL names kind only for concepts (`?kind=trivia`), so a link that sets any other filter means the coding
+    // list, whichever kind this visitor last had open.
+    const linkNamesFilters = ['tech', 'q', 'diff', 'imp', 'focus', 'topic', 'category', 'access'].some((k) => qp.get(k) !== null);
     if (kindFromUrl) {
       this.selectedKind$.next(this.normalizeSelectedKind(kindFromUrl));
-    } else if (shouldReset) {
+    } else if (shouldReset || linkNamesFilters) {
       this.selectedKind$.next('coding');
     }
+    if (qp.get('access') === 'free') this.setFreeOnly(true);
 
     const focus = qp.get('focus') as FocusSlug | null;
     const topic = qp.get('topic');
@@ -1525,7 +1858,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     // If we restored from persisted state and the URL is "plain /coding",
     // sync the full filter set into the URL once (replaceUrl) so refresh/share works.
     if (this.source === 'global-coding' && viewKey === 'tech' && restoredFromState) {
-      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'topic', 'category']
+      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'topic', 'category', 'access']
         .some((k) => qp.get(k) !== null);
 
       const tech = this.selectedTech$.value;
@@ -1541,6 +1874,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
           q: q || null,
           diff: diffs.length ? diffs.join(',') : null,
           imp: imps.length ? imps.join(',') : null,
+          access: this.freeOnly$.value ? 'free' : null,
         };
         this.router.navigate([], {
           relativeTo: this.route,
@@ -1698,10 +2032,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   // ---------- helpers used by template ----------
+  /** A row names its kind only where it differs from the list's own kind: no "Coding" on every row of a coding list. */
   questionRowKindLabel(q: Row): string {
     if (q.__sd) return 'System design';
     if (q.__debug) return 'Debugging';
     if (q.questionFormat === 'output') return 'Output';
+    const listKind = this.source === 'global-coding' ? this.selectedKind$.value : this.kind;
+    if (q.__kind === listKind) return '';
     return q.__kind === 'trivia' ? 'Concept' : 'Coding';
   }
 
@@ -1720,6 +2057,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
         label: `Priority: ${this.capitalize(this.impLabel(q))}`,
         ariaLabel: `Practice priority: ${this.capitalize(this.impLabel(q))}`,
         tone: 'importance',
+        // The recommended and priority orders already rank by it; there it is read out, not drawn on every row.
+        priority: this.priorityChipShown() ? 'primary' : 'secondary',
       },
     ];
 
@@ -1731,7 +2070,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
       });
     }
 
+    // A task the viewer cannot open says so in words. It leads the right-aligned group, so the difficulty and
+    // technology chips keep their places on every row.
+    if (this.isLocked(q)) chips.unshift({ label: 'Premium', ariaLabel: 'Premium', tone: 'access' });
+
     return chips;
+  }
+
+  private priorityChipShown(): boolean {
+    const sort = this.sort$.value;
+    return sort !== 'default' && sort !== 'importance-desc' && sort !== 'importance-asc';
   }
 
   questionRowVariants(q: Row): FaQuestionRowVariant[] {
@@ -1758,6 +2106,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
       return normalizeEditorialPlainText((d.summary || d.text || '') as string);
     }
     return '';
+  }
+
+  /**
+   * How a row answers a lowercase search term: 0 when its title has the term, 1 when only a tag or its description
+   * has it, -1 when nothing does. Title matches sort first. An empty term matches every row.
+   */
+  private searchRank(q: Question, rawTerm: string): number {
+    const term = rawTerm.trim();
+    if (!term) return 0;
+    if ((q.title || '').toLowerCase().includes(term)) return 0;
+    if ((q.tags || []).some((tag) => String(tag || '').toLowerCase().includes(term))) return 1;
+    return this.descriptionText(q).toLowerCase().includes(term) ? 1 : -1;
   }
 
   private decodeHtmlEntities(value: string): string {
@@ -2000,8 +2360,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   /** A company's debugging tasks, such as Stripe's bug squash: counted and listed with its coding tasks. */
-  private companyDebugRows$(): Observable<Row[]> {
-    return this.qs.loadAllDebugSummaries({ transferState: false }).pipe(
+  /** Debugging tasks are code to fix, so they list with the coding tasks; `preloaded` comes from the route resolver. */
+  private debugRows$(preloaded?: MixedQuestionListItem[]): Observable<Row[]> {
+    const items$ = preloaded ? of(preloaded) : this.qs.loadAllDebugSummaries({ transferState: false });
+    return items$.pipe(
       map((list) => list.map<Row>((q) => ({ ...q, __kind: 'coding', __debug: true, tech: q.tech }))),
     );
   }
@@ -2072,7 +2434,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   onImpChange(tier: ImportanceTier, ev: Event) {
-    const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
+    this.toggleImp(tier, (ev.target as HTMLInputElement | null)?.checked ?? false);
+  }
+
+  toggleImp(tier: ImportanceTier, checked: boolean) {
     const curr = new Set(this.impTiers$.value);
     checked ? curr.add(tier) : curr.delete(tier);
     const next = Array.from(curr);
@@ -2125,6 +2490,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedKind$.next('coding');
     this.selectedCategory$.next(null);
     this.setFreeOnly(false);
+    this.setProgressFilter('all', 'reset');
     this.closeSort();
 
     // URL state
@@ -2137,6 +2503,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       category: null,
       focus: null,
       topic: null,
+      access: null,
       reset: null,
     });
   }
@@ -2160,11 +2527,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return String((q as any)?.access || '').toLowerCase() === 'premium';
   }
 
-  isGuestDefaultGlobalLibrary(): boolean {
+  /** A visitor in the whole coding library, filtered or not: its two starts and primary action share one footprint. */
+  isGuestGlobalCodingLibrary(): boolean {
     return this.source === 'global-coding'
       && !this.auth.user()
       && !this.isFormatsMode()
-      && this.selectedKind$.value === 'coding'
+      && this.selectedKind$.value === 'coding';
+  }
+
+  isGuestDefaultGlobalLibrary(): boolean {
+    return this.isGuestGlobalCodingLibrary()
       && !this.selectedTech$.value
       && !this.selectedCategory$.value
       && !(this.searchTerm || '').trim()
@@ -2195,6 +2567,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
       && state.tiers.length === 0
       && state.selTags.length === 0
       && state.sortKey === 'default';
+  }
+
+  /** Essential 60 tasks first by rank, then practice priority, difficulty and title. */
+  private compareEssentialRows(a: Row, b: Row, ranks: ReadonlyMap<string, number>): number {
+    const rank = (row: Row): number => ranks.get(`${row.__kind}:${row.id}`) ?? Number.POSITIVE_INFINITY;
+    const byRank = rank(a) - rank(b);
+    if (byRank) return byRank;
+    const byImportance = (b.importance ?? 0) - (a.importance ?? 0);
+    if (byImportance) return byImportance;
+    return this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty)
+      || (a.title || '').localeCompare(b.title || '');
   }
 
   private compareDefaultStartRows(a: Row, b: Row): number {

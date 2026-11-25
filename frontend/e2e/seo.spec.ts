@@ -96,7 +96,7 @@ test('seo: coding query variants keep clean canonical, noindex, and filter state
       const itemLists = nodes.filter((node) => node['@type'] === 'ItemList');
       expect(itemLists).toHaveLength(empty ? 0 : 1);
       const countText = (await countBadge.textContent()) || '';
-      expect(countText).toMatch(/\d+\s+matches/);
+      expect(countText).toMatch(/\d+\s+match(?:es)?\b/);
       const total = Number(countText.match(/\d+/)![0]);
       if (empty) {
         expect(total).toBe(0);
@@ -163,8 +163,12 @@ test('seo: css theme variables challenge is indexable with self canonical and cr
   await expect(page.locator('[data-testid="coding-breadcrumb"] a[href="/css/interview-questions"]')).toHaveCount(1);
   const starterCss = await getMonacoModelValue(page, 'q-css-theme-variables-dark-mode-css');
   expect(starterCss).toMatch(/box-shadow:\s*var\(--panel-shadow\)/i);
-  await page.getByRole('button', { name: 'Show preview' }).click();
-  await expect(page.getByText('Showing solution preview')).toBeVisible();
+  await page.getByRole('button', { name: 'Preview what you need to build' }).click();
+  await expect(page.getByText('Showing the result to build')).toBeVisible();
+  // The toggle sits in the toolbar above the preview, never over the page it shows.
+  const frameBox = await page.getByTestId('web-preview-iframe').boundingBox();
+  const backBox = await page.getByRole('button', { name: 'Back to my preview' }).boundingBox();
+  expect(backBox!.y + backBox!.height).toBeLessThanOrEqual(frameBox!.y);
 
   const jsonLd = page.locator('script#seo-jsonld');
   await expect.poll(async () => (await jsonLd.textContent()) || '').toContain('BreadcrumbList');

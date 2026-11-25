@@ -95,6 +95,16 @@
   font-size: 12px;
 }
 
+/* A visitor's list names places to prepare: no step numbers, no rail joining them into an order. */
+.prep-switcher--compact .prep-switcher__list::before {
+  display: none;
+}
+
+.prep-switcher--compact .prep-switcher__link {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 48px;
+}
+
 .prep-switcher__panel {
   --prep-switcher-marker-column: 44px;
   --prep-switcher-step-size: 34px;

@@ -104,11 +104,6 @@
   transform: translateX(100%);
 }
 
-.tabs-right {
-  display: inline-flex;
-  align-items: center;
-}
-
 fa-chip.filter-chip--primary {
   --fa-chip-min-h: var(--filter-chip-h);
   --fa-chip-pad-y: 0;
@@ -154,23 +149,6 @@ fa-chip.filter-chip--secondary {
   transition: color var(--uf-motion-fast) ease;
 }
 
-fa-chip.filter-chip--count {
-  --fa-chip-min-h: 34px;
-  --fa-chip-pad-y: 0;
-  --fa-chip-pad-x: 12px;
-  --fa-chip-radius: 10px;
-  --fa-chip-font-size: 12px;
-  --fa-chip-bg: color-mix(in srgb, var(--uf-text-primary) 5%, var(--uf-surface));
-  --fa-chip-border: color-mix(in srgb, var(--uf-border-subtle) 86%, var(--uf-text-secondary) 14%);
-  --fa-chip-hover: color-mix(in srgb, var(--uf-text-primary) 8%, var(--uf-surface));
-  --fa-chip-active: color-mix(in srgb, var(--uf-text-primary) 10%, var(--uf-surface));
-  --fa-chip-selected-bg: var(--fa-chip-bg);
-  --fa-chip-selected-border: var(--fa-chip-border);
-  --fa-chip-selected-ring: none;
-  --fa-chip-focus-ring: var(--filter-focus-ring);
-  --fa-chip-ink: color-mix(in srgb, var(--uf-text-tertiary) 86%, transparent);
-}
-
 .tech-badge {
   width: 26px;
   height: 26px;
@@ -182,10 +160,6 @@ fa-chip.filter-chip--count {
   border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 66%, var(--uf-text-secondary) 34%);
   line-height: 1;
   filter: saturate(0.88) brightness(0.96);
-}
-
-.count-chip {
-  font-weight: 600;
 }
 
 .tabs-left--segmented.has-tabs fa-chip.filter-chip--secondary.fa-chip--selected {
@@ -215,10 +189,6 @@ fa-chip.filter-chip--count {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-  }
-
-  .tabs-right {
-    width: 100%;
   }
 
   .tabs-left--segmented {

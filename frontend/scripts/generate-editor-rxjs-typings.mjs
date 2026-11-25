@@ -22,7 +22,8 @@ const PRECISE = {
   Observable: [
     'export class Observable<T = any> {',
     '  constructor(subscribe?: (subscriber: Subscriber<T>) => any);',
-    '  subscribe(observerOrNext?: any, error?: (error: any) => void, complete?: () => void): Subscription;',
+    // Typed like rxjs 7, so `valueChanges.subscribe((value) => ...)` gives `value` the stream's type.
+    '  subscribe(observerOrNext?: Partial<{ next: (value: T) => void; error: (error: any) => void; complete: () => void }> | ((value: T) => void) | null, error?: ((error: any) => void) | null, complete?: (() => void) | null): Subscription;',
     '  pipe(...operations: any[]): Observable<any>;',
     '  forEach(next: (value: T) => void): Promise<void>;',
     '}',

@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import localForage from 'localforage';
+import { DRAFT_KEY_SEPARATOR, readDraftIndex } from '../utils/versioned-drafts.util';
 
 type JsLang = 'js' | 'ts';
+
+/** A task whose saved draft differs from its starter code. */
+export interface EditedDraft {
+  /** The task id: the draft key without its content version. */
+  questionId: string;
+  /** When the draft last changed, in ms since the epoch. */
+  editedAt: number;
+}
 type CodeFormat = 'javascript' | 'typescript';
 
 /** A JS draft as getJsAsync() returns it. */
@@ -45,6 +54,24 @@ interface FrameworkFileState {
 // distinguish a deliberately blank draft from a workspace that was never edited.
 function hasSavedCode(state?: { code?: string; userCleared?: boolean }): boolean {
   return state?.userCleared === true || !!state?.code?.trim();
+}
+
+type DraftPart = { code?: string; baseline?: string; updatedAt?: string; userCleared?: boolean };
+
+function sameCode(a: string, b: string): boolean {
+  return a.replace(/\r\n?/g, '\n').trim() === b.replace(/\r\n?/g, '\n').trim();
+}
+
+/** The latest edit among a draft's languages or files, or null when every one still matches its starter. */
+function lastEditOf(parts: readonly (DraftPart | undefined)[], fallbackIso: string | undefined): number | null {
+  let latest: number | null = null;
+  for (const part of parts) {
+    if (!part || !hasSavedCode(part) || sameCode(String(part.code ?? ''), String(part.baseline ?? ''))) continue;
+    // A part's own updatedAt only moves on an edit; the bundle's moves whenever the task opens.
+    const at = Date.parse(part.updatedAt ?? '') || Date.parse(fallbackIso ?? '') || 0;
+    latest = Math.max(latest ?? 0, at);
+  }
+  return latest;
 }
 
 interface FrameworkBundleV2 {
@@ -972,6 +999,60 @@ export class CodeStorageService {
       await this.saveFrameworkBundlePrimary(tech, toQid, cloned, { silent: true });
       return true;
     });
+  }
+
+  /**
+   * Every task with a draft that differs from its starter, newest edit first, in one pass over the three draft
+   * stores. Rehearsal, Pressure Mode and showcase drafts (their keys hold a colon) are left out. A task counts the
+   * content version it last opened on (the draft index); without an index entry, its most recently saved version.
+   */
+  async listEditedDraftsAsync(): Promise<EditedDraft[]> {
+    type Candidate = { version: string; savedAt: number; editedAt: number | null };
+    const byQuestion = new Map<string, Candidate[]>();
+    const sources = [
+      { store: getJsStore(), prefix: `${PREFIX}js2:`, parts: (b: any) => [b?.js, b?.ts] },
+      { store: getWebStore(), prefix: `${PREFIX}web2:`, parts: (b: any) => [b?.html, b?.css] },
+      { store: getNgStore(), prefix: `${PREFIX}fw2:`, parts: (b: any) => Object.values(b?.files ?? {}) as DraftPart[] },
+    ];
+
+    for (const { store, prefix, parts } of sources) {
+      if (!store) continue;
+      try {
+        await store.iterate((raw: unknown, key: string) => {
+          if (!key.startsWith(prefix)) return;
+          let qid = key.slice(prefix.length);
+          if (prefix.endsWith('fw2:')) qid = qid.slice(qid.indexOf(':') + 1);
+          const at = qid.indexOf(DRAFT_KEY_SEPARATOR);
+          const questionId = at >= 0 ? qid.slice(0, at) : qid;
+          if (!questionId || questionId.includes(':')) return;
+          let bundle: any;
+          try {
+            // Bundles are written as JSON strings (save*Primary).
+            bundle = typeof raw === 'string' ? JSON.parse(raw) : raw;
+          } catch {
+            return;
+          }
+          const list = byQuestion.get(questionId) ?? [];
+          list.push({
+            version: at >= 0 ? qid.slice(at + 1) : '',
+            savedAt: Date.parse(bundle?.updatedAt ?? '') || 0,
+            editedAt: lastEditOf(parts(bundle), bundle?.updatedAt),
+          });
+          byQuestion.set(questionId, list);
+        });
+      } catch {
+        // A store that cannot be read (storage blocked, private mode) adds nothing.
+      }
+    }
+
+    const drafts: EditedDraft[] = [];
+    for (const [questionId, candidates] of byQuestion) {
+      const latestVersion = readDraftIndex(questionId)?.latestVersion;
+      const current = candidates.find((candidate) => candidate.version === latestVersion)
+        ?? candidates.reduce((newest, candidate) => (candidate.savedAt > newest.savedAt ? candidate : newest));
+      if (current.editedAt !== null) drafts.push({ questionId, editedAt: current.editedAt });
+    }
+    return drafts.sort((a, b) => b.editedAt - a.editedAt);
   }
 
   async getWebDraftSnapshotAsync(qidRaw: string | number): Promise<{

@@ -60,6 +60,13 @@ const noWrite = process.argv.includes('--no-write');
 // HTML carried them inline (the page shrank by 88 KB); stylesheets count toward
 // initialBytes, which moves from 1,400,000 to 1,475,000 for that reason alone.
 //
+// 2026-11-24, coding page round wave 1: /coding lists the 14 debugging tasks
+// (11 JavaScript, 3 Angular) with the coding tasks of their technology. The page
+// went from 626,741 bytes (main) to 667,194, about 2.9 KB per row, past the
+// 660,000 that left room for about fifteen rows on 2026-10-19. The threshold
+// moves to 700,000, room for about ten more rows. The next wave's row redesign
+// should shrink every row; lower the threshold with it.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -69,7 +76,7 @@ const noWrite = process.argv.includes('--no-write');
 const THRESHOLDS = {
   initialBytes: 1_475_000,
   eagerJsBytes: 1_260_000,
-  codingHtmlBytes: 660_000,
+  codingHtmlBytes: 700_000,
   totalHtmlBytes: 75_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,
