@@ -4278,7 +4278,7 @@ function onInput(value) {
           refs: [
             {
               id: 'angular-observables-rxjs',
-              title: 'Observables in Angular: what they are, why RxJS matters, and how to use them correctly (async pipe, cancellation, operators)',
+              title: 'Observables in Angular: what they are and how to use them (async pipe, cancellation)',
               filePath: 'cdn/questions/angular/trivia.json',
               route: ['/', 'angular', 'trivia', 'angular-observables-rxjs'],
               routeUrl: '/angular/trivia/angular-observables-rxjs',

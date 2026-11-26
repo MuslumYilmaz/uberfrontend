@@ -27,10 +27,10 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "avoid visual flicker."
+          "Use it only for layout reads and visible corrections; everything else belongs in <code>useEffect</code>."
         ],
         "actionableExamples": [
-          "useLayoutEffect runs synchronously after DOM mutations but before the browser paints"
+          "<strong>useLayoutEffect runs and completes before repaint</strong>"
         ],
         "followUpConfusion": [
           "Passive effects generally run after paint for non-interaction updates, but interaction-caused effects may run before paint."
@@ -72,13 +72,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "The difference matters when you need to read or write layout and avoid visual flicker."
+          "A tooltip renders at the wrong spot for one frame, then jumps into place."
         ],
         "actionableExamples": [
-          "Because useEffect offers no pre-paint guarantee, the browser may show the initial layout before a later correction."
+          "Because <code>useEffect</code> provides no pre-paint guarantee, the browser may paint the initial layout before the effect measures and corrects it."
         ],
         "followUpConfusion": [
-          "useEffect is the default when synchronization does not require a pre-paint guarantee"
+          "<code>useEffect</code> is the default for synchronization that does not require that guarantee, such as subscriptions, logging, timers, or network coordination."
         ]
       },
       "theirEvidence": {
@@ -117,13 +117,13 @@
       ],
       "ourEvidence": {
         "realWorldUseCases": [
-          "prevent visual flicker"
+          "Start with <code>useEffect</code>. Only switch to <code>useLayoutEffect</code> if you see a visual flicker, layout jump, or need to measure/mutate layout before paint."
         ],
         "actionableExamples": [
-          "useLayoutEffect runs here (before paint)"
+          "// ✅ User never sees the wrong position"
         ],
         "followUpConfusion": [
-          "useLayoutEffect exists for code that must synchronously read or modify the DOM before the user sees anything"
+          "<code>useLayoutEffect</code> exists for code that must synchronously read or modify layout before repaint."
         ]
       },
       "theirEvidence": {

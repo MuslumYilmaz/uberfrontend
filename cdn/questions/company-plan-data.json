@@ -750,7 +750,7 @@
     },
     "css-position-relative-absolute-fixed": {
       "id": "css-position-relative-absolute-fixed",
-      "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
+      "title": "position: fixed vs absolute vs relative, and why absolute ignores the parent",
       "route": "/css/trivia/css-position-relative-absolute-fixed",
       "kind": "trivia",
       "tech": "css",
@@ -3066,7 +3066,7 @@
     },
     "react-usememo-vs-usecallback": {
       "id": "react-usememo-vs-usecallback",
-      "title": "useMemo vs useCallback: when does memoizing make it slower?",
+      "title": "useMemo vs useCallback: the difference, and when memoizing makes it slower",
       "route": "/react/trivia/react-usememo-vs-usecallback",
       "kind": "trivia",
       "tech": "react",
@@ -3079,7 +3079,7 @@
     },
     "react-useref-vs-usestate": {
       "id": "react-useref-vs-usestate",
-      "title": "Why doesn't changing a ref re-render? useRef vs useState",
+      "title": "useRef vs useState: why a ref change doesn't re-render",
       "route": "/react/trivia/react-useref-vs-usestate",
       "kind": "trivia",
       "tech": "react",

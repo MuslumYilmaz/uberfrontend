@@ -225,13 +225,13 @@
   },
   {
     "id": "css-font-family",
-    "title": "What is the purpose of the font-family property?",
+    "title": "CSS font stacks: how font-family fallbacks work and fail",
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
     "description": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
     "seo": {
-      "title": "CSS font-family: font stacks, fallback pitfalls, and readability",
+      "title": "CSS Font Stack: font-family Fallbacks That Work",
       "description": "font-family is really about fallback strategy, glyph coverage, and avoiding production typography bugs when preferred fonts fail."
     },
     "answer": {
@@ -1075,7 +1075,7 @@
   },
   {
     "id": "css-position-relative-absolute-fixed",
-    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
+    "title": "position: fixed vs absolute vs relative, and why absolute ignores the parent",
     "technology": "css",
     "companies": [
       "amazon",
@@ -1182,7 +1182,7 @@
     ],
     "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Why Absolute Positioning Ignores the Parent: Fix",
+      "title": "position: fixed vs absolute vs relative in CSS",
       "description": "Fix an absolute element escaping its parent: containing blocks, position: relative anchors, fixed and transform traps, stacking, and when each value fits."
     },
     "incidentCard": {

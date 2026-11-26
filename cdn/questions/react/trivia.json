@@ -2476,7 +2476,7 @@
     ],
     "updatedAt": "2026-01-30",
     "seo": {
-      "title": "How do you do conditional rendering in React?",
+      "title": "Conditional Rendering in React: Patterns and Pitfalls",
       "description": "React conditional rendering uses if statements, ternaries, or && to show different UI based on state and props."
     }
   },
@@ -3336,7 +3336,7 @@
   },
   {
     "id": "react-usememo-vs-usecallback",
-    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "title": "useMemo vs useCallback: the difference, and when memoizing makes it slower",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
@@ -3348,11 +3348,15 @@
     ],
     "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
-      "title": "useMemo vs useCallback: When Memoizing Hurts",
+      "title": "useMemo vs useCallback: Difference, When to Use Each",
       "description": "useMemo caches a value, useCallback a function reference. See when they prevent re-renders, when the comparison cost exceeds the win, and the dependency pitfalls."
     },
     "answer": {
       "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>The difference in one line</strong><br><br><code>useMemo</code> caches a computed <em>value</em> and recomputes it only when a dependency changes. <code>useCallback</code> caches a <em>function reference</em>, so a memoized child or an effect that lists it as a dependency does not see a new function on every render. Use <code>useMemo</code> for expensive derived data and <code>useCallback</code> for handlers passed to <code>React.memo</code> children or listed in dependency arrays."
+        },
         {
           "type": "text",
           "text": "<strong>The follow-up to explain</strong><br><br>Memoizing can make a render slower. <code>useMemo</code> and <code>useCallback</code> both pay for a dependency comparison on every render and keep the cached value alive. They win only when the thing they cache is expensive to recompute or when the stable reference lets a <code>React.memo</code> child or an effect skip work. A <code>useCallback</code> passed to a child that is not memoized saves nothing, and a <code>useMemo</code> around cheap arithmetic costs more than it protects."
@@ -4245,7 +4249,7 @@
   },
   {
     "id": "react-useref-vs-usestate",
-    "title": "Why doesn't changing a ref re-render? useRef vs useState",
+    "title": "useRef vs useState: why a ref change doesn't re-render",
     "technology": "react",
     "companies": [
       "jpmorgan",
@@ -4411,7 +4415,7 @@
     ],
     "updatedAt": "2026-10-12",
     "seo": {
-      "title": "Why a Ref Change Doesn't Re-render: useRef vs useState",
+      "title": "useRef vs useState in React: Which One Re-renders?",
       "description": "useState re-renders on change, useRef persists a value silently. Learn why ref updates never show on screen, when that is the right tool, and the stale-closure fix."
     },
     "incidentCard": {
@@ -5302,7 +5306,7 @@
   },
   {
     "id": "react-useeffect-vs-uselayouteffect",
-    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
+    "title": "useEffect vs useLayoutEffect: why the UI flickers on first paint",
     "technology": "react",
     "companies": [
       "bytedance"
@@ -5448,7 +5452,7 @@
     ],
     "updatedAt": "2026-10-12",
     "seo": {
-      "title": "First-Paint Flicker: useEffect vs useLayoutEffect",
+      "title": "useEffect vs useLayoutEffect: When Each Runs",
       "description": "Explain the flicker: useEffect gives no pre-paint guarantee, useLayoutEffect blocks paint until layout reads and synchronous state updates finish. When each is right."
     },
     "incidentCard": {

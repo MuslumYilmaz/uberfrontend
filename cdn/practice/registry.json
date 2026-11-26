@@ -1198,7 +1198,7 @@
   {
     "id": "angular-observables-rxjs",
     "family": "question",
-    "title": "Observables in Angular: what they are, why RxJS matters, and how to use them correctly (async pipe, cancellation, operators)",
+    "title": "Observables in Angular: what they are and how to use them (async pipe, cancellation)",
     "route": "/angular/trivia/angular-observables-rxjs",
     "tech": "angular",
     "difficulty": "intermediate",
@@ -1766,6 +1766,27 @@
     "assetRef": "questions/css/coding.json#css-box-model-margin-padding-border"
   },
   {
+    "id": "css-font-family",
+    "family": "question",
+    "title": "CSS font stacks: how font-family fallbacks work and fail",
+    "route": "/css/trivia/css-font-family",
+    "tech": "css",
+    "difficulty": "easy",
+    "summary": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
+    "tags": [
+      "css",
+      "typography",
+      "fonts",
+      "properties",
+      "basics"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-04-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-font-family"
+  },
+  {
     "id": "css-inline-centering",
     "family": "question",
     "title": "Display & Centering: Center Inline Content",
@@ -1955,6 +1976,30 @@
     "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-z-index"
+  },
+  {
+    "id": "css-position-relative-absolute-fixed",
+    "family": "question",
+    "title": "position: fixed vs absolute vs relative, and why absolute ignores the parent",
+    "route": "/css/trivia/css-position-relative-absolute-fixed",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix.",
+    "tags": [
+      "css",
+      "position",
+      "layout",
+      "relative",
+      "absolute",
+      "fixed",
+      "stacking",
+      "offsets"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
   },
   {
     "id": "css-positioning-badge",
@@ -2273,51 +2318,6 @@
     "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-float-clear"
-  },
-  {
-    "id": "css-font-family",
-    "family": "question",
-    "title": "What is the purpose of the font-family property?",
-    "route": "/css/trivia/css-font-family",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
-    "tags": [
-      "css",
-      "typography",
-      "fonts",
-      "properties",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-font-family"
-  },
-  {
-    "id": "css-position-relative-absolute-fixed",
-    "family": "question",
-    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
-    "route": "/css/trivia/css-position-relative-absolute-fixed",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix.",
-    "tags": [
-      "css",
-      "position",
-      "layout",
-      "relative",
-      "absolute",
-      "fixed",
-      "stacking",
-      "offsets"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
   },
   {
     "id": "css-cascade-order",
@@ -8379,6 +8379,27 @@
     "assetRef": "questions/react/coding.json#react-living-room-home"
   },
   {
+    "id": "react-useeffect-vs-uselayouteffect",
+    "family": "question",
+    "title": "useEffect vs useLayoutEffect: why the UI flickers on first paint",
+    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish.",
+    "tags": [
+      "react",
+      "hooks",
+      "effects",
+      "performance",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
+  },
+  {
     "id": "react-useeffect-purpose",
     "family": "question",
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
@@ -8402,7 +8423,7 @@
   {
     "id": "react-usememo-vs-usecallback",
     "family": "question",
-    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "title": "useMemo vs useCallback: the difference, and when memoizing makes it slower",
     "route": "/react/trivia/react-usememo-vs-usecallback",
     "tech": "react",
     "difficulty": "intermediate",
@@ -8419,6 +8440,26 @@
     "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
+  },
+  {
+    "id": "react-useref-vs-usestate",
+    "family": "question",
+    "title": "useRef vs useState: why a ref change doesn't re-render",
+    "route": "/react/trivia/react-useref-vs-usestate",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "current, while setState schedules a render.",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
   },
   {
     "id": "react-virtualized-list-recycling",
@@ -8849,27 +8890,6 @@
     "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
   },
   {
-    "id": "react-useeffect-vs-uselayouteffect",
-    "family": "question",
-    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
-    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish.",
-    "tags": [
-      "react",
-      "hooks",
-      "effects",
-      "performance",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
-  },
-  {
     "id": "react-why-batching-state-updates",
     "family": "question",
     "title": "Why does React batch state updates? When does it not batch?",
@@ -8996,26 +9016,6 @@
     "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
-  },
-  {
-    "id": "react-useref-vs-usestate",
-    "family": "question",
-    "title": "Why doesn't changing a ref re-render? useRef vs useState",
-    "route": "/react/trivia/react-useref-vs-usestate",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "current, while setState schedules a render.",
-    "tags": [
-      "react",
-      "hooks",
-      "state",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
   },
   {
     "id": "react-derived-state-anti-pattern",
