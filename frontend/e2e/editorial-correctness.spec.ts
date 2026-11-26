@@ -111,6 +111,18 @@ const publicCopyCases = [
     expected: 'Prepare for a stream of questions, not one long problem',
   },
   {
+    path: '/companies/verkada/preview',
+    expected: 'Make the frame player dull, then style a screen from a design',
+  },
+  {
+    path: '/companies/notion/preview',
+    expected: 'Build product pieces in React, then rehearse with an AI assistant',
+  },
+  {
+    path: '/companies/airwallex/preview',
+    expected: 'Expect live React with follow-ups, and a take-home you defend in detail',
+  },
+  {
     path: '/system-design',
     expected: 'Follow this four-step path when you are new to the bank',
   },

@@ -11650,7 +11650,9 @@
       "tesla",
       "jpmorgan",
       "agoda",
-      "xai"
+      "xai",
+      "verkada",
+      "airwallex"
     ],
     "sources": [
       {
@@ -14712,7 +14714,8 @@
     "solutionAsset": "assets/sb/react/solution/react-vanilla-dropdown-port-solution.v1.json",
     "decisionGraphAsset": "assets/questions/react/decision-graphs/react-vanilla-dropdown-port.v1.json",
     "companies": [
-      "anduril"
+      "anduril",
+      "notion"
     ],
     "sources": [
       {
@@ -17462,7 +17465,8 @@
       "accessibility"
     ],
     "companies": [
-      "binance"
+      "binance",
+      "airwallex"
     ],
     "sources": [
       {
@@ -26701,6 +26705,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["verkada"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React Frame Player: Timers, a Timeline and Keyboard in One Hour",
@@ -27559,6 +27564,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["verkada"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React and CSS Design-to-UI Task: Event Log with Style Checks",
@@ -28376,6 +28382,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["verkada"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React Grid Selection: Click, Drag, Shift and Arrow Keys",
@@ -29155,6 +29162,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["notion"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React JSON Viewer: Recursive Tree with Collapsible Nodes",
@@ -30042,6 +30050,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["notion"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React Nested To-Do Outliner: Insert, Indent and Outdent",
@@ -31048,6 +31057,7 @@
       ]
     },
     "access": "premium",
+    "companies": ["notion"],
     "updatedAt": "2026-11-25",
     "seo": {
       "title": "React Command Palette: Debounce, Stale Requests and a Combobox",

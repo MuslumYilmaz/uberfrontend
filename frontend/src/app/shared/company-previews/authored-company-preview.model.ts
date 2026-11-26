@@ -38,6 +38,8 @@ export type AuthoredPrepDay = {
   readonly day: string;
   readonly focus: string;
   readonly artifact: string;
+  /** The tasks for the day. Only a member sees them, so a plan day may name the practice of a locked row. */
+  readonly practice?: readonly { readonly label: string; readonly path: string }[];
 };
 
 export type AuthoredFaq = {

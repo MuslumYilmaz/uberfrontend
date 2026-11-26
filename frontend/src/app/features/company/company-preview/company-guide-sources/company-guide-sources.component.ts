@@ -19,7 +19,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 /**
  * Every source behind a guide, once, at the end of the page: closed, small and quiet, so a reader is not led off the
  * page mid-read, yet the attribution and the notes stay in the HTML for anyone who looks. The links open with a free
- * account. A guide that names no source shows how its questions were collected in the same place instead, open.
+ * account. A guide that names no source shows how its questions were collected in the same place instead, open, with its
+ * source boundary.
  */
 @Component({
   selector: 'app-company-guide-sources',

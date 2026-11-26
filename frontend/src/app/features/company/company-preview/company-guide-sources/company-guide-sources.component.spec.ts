@@ -62,4 +62,18 @@ describe('CompanyGuideSourcesComponent', () => {
     expect(host.querySelector('[data-testid="company-guide-sources"]')).toBeNull();
     expect(host.querySelectorAll('a').length).toBe(0);
   });
+
+  it('keeps the source boundary under the method note, open, on a guide that names no source', () => {
+    TestBed.configureTestingModule({ imports: [CompanyGuideSourcesComponent], providers: [provideRouter([])] });
+    fixture = TestBed.createComponent(CompanyGuideSourcesComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('sources', []);
+    fixture.componentRef.setInput('method', { kicker: 'Method', title: 'How these questions were collected', paragraphs: ['We read public candidate accounts.'] });
+    fixture.componentRef.setInput('boundary', { kicker: 'Source boundary', title: 'Where the evidence stops', paragraphs: ['Ask your recruiter how many rounds there are.'] });
+    fixture.detectChanges();
+    const note = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="company-guide-method"]') as HTMLElement;
+    expect(note.querySelector('details')).toBeNull();
+    expect(note.querySelector('.guide-sources__boundary-title')?.textContent?.trim()).toBe('Where the evidence stops');
+    expect(note.textContent).toContain('Ask your recruiter how many rounds there are.');
+  });
 });

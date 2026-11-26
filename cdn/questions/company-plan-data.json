@@ -45,7 +45,7 @@
       "react": 46,
       "angular": 23,
       "vue": 22,
-      "javascript": 54,
+      "javascript": 57,
       "systemDesign": 21
     },
     "familyMembers": {
@@ -227,11 +227,31 @@
       "access": "free",
       "minutes": 15
     },
+    "/companies/notion/preview#notion-round-career-history": {
+      "id": "/companies/notion/preview#notion-round-career-history",
+      "title": "Career history questions and story drill",
+      "route": "/companies/notion/preview",
+      "fragment": "notion-round-career-history",
+      "drill": true,
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
     "/companies/revolut/preview#revolut-round-bar-raiser": {
       "id": "/companies/revolut/preview#revolut-round-bar-raiser",
       "title": "What the Bar Raiser covers",
       "route": "/companies/revolut/preview",
       "fragment": "revolut-round-bar-raiser",
+      "kind": "guide",
+      "access": "free",
+      "minutes": 15
+    },
+    "/companies/verkada/preview#verkada-round-onsite": {
+      "id": "/companies/verkada/preview#verkada-round-onsite",
+      "title": "Onsite questions and story drill",
+      "route": "/companies/verkada/preview",
+      "fragment": "verkada-round-onsite",
+      "drill": true,
       "kind": "guide",
       "access": "free",
       "minutes": 15
@@ -821,6 +841,14 @@
         "js"
       ]
     },
+    "endless-short-video-feed": {
+      "id": "endless-short-video-feed",
+      "title": "Endless Short-Video Feed (TikTok-Style)",
+      "route": "/system-design/endless-short-video-feed",
+      "kind": "system-design",
+      "access": "premium",
+      "minutes": 45
+    },
     "hotel-search-page-frontend": {
       "id": "hotel-search-page-frontend",
       "title": "Design a Hotel Search Page Frontend for Several Teams",
@@ -1391,6 +1419,19 @@
         "js"
       ]
     },
+    "js-debug-notes-app-repo": {
+      "id": "js-debug-notes-app-repo",
+      "title": "Bug Squash: Failing Tests, a Slow Path and Messy Code in a Notes App",
+      "route": "/javascript/debug/js-debug-notes-app-repo",
+      "kind": "debug",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "debug",
+        "js"
+      ]
+    },
     "js-debug-nullish-defaults": {
       "id": "js-debug-nullish-defaults",
       "title": "Fix wrong defaults in `normalizeSettings`",
@@ -1703,6 +1744,19 @@
         "js"
       ]
     },
+    "js-frame-player-controller": {
+      "id": "js-frame-player-controller",
+      "title": "Frame Player Controller: Play, Seek and Change Speed on a Clock",
+      "route": "/javascript/coding/js-frame-player-controller",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "js",
+        "algo"
+      ]
+    },
     "js-get-by-path-1": {
       "id": "js-get-by-path-1",
       "title": "Data Helper 1: Get Value by Path",
@@ -1896,6 +1950,19 @@
       "focus": [
         "concepts",
         "js"
+      ]
+    },
+    "js-named-task-scheduler": {
+      "id": "js-named-task-scheduler",
+      "title": "Name-Keyed Task Scheduler: One Lane per Name, with Cancel and Clear",
+      "route": "/javascript/coding/js-named-task-scheduler",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "js",
+        "algo"
       ]
     },
     "js-null-coalescing-operator": {
@@ -2236,6 +2303,19 @@
         "js"
       ]
     },
+    "js-text-editor-undo-redo": {
+      "id": "js-text-editor-undo-redo",
+      "title": "Text Editor with Undo and Redo: Edits, a Cursor and a History",
+      "route": "/javascript/coding/js-text-editor-undo-redo",
+      "kind": "coding",
+      "tech": "javascript",
+      "access": "premium",
+      "minutes": 30,
+      "focus": [
+        "algo",
+        "js"
+      ]
+    },
     "js-three-sum": {
       "id": "js-three-sum",
       "title": "3Sum (find unique triplets that sum to zero)",
@@ -2563,6 +2643,18 @@
       ],
       "family": "chips-input-autocomplete"
     },
+    "react-command-palette-sources": {
+      "id": "react-command-palette-sources",
+      "title": "Command Palette with Three Sources",
+      "route": "/react/coding/react-command-palette-sources",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 75,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-contact-form-starter": {
       "id": "react-contact-form-starter",
       "title": "Contact Form (Component + HTTP)",
@@ -2684,6 +2776,18 @@
       ],
       "family": "dynamic-table"
     },
+    "react-event-log-design-spec": {
+      "id": "react-event-log-design-spec",
+      "title": "Event Log from a Design Spec",
+      "route": "/react/coding/react-event-log-design-spec",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 50,
+      "focus": [
+        "ui"
+      ]
+    },
     "react-fetch-list-states": {
       "id": "react-fetch-list-states",
       "title": "React Fetch and Render a List with Loading, Error and Empty States",
@@ -2748,6 +2852,43 @@
         "ui"
       ]
     },
+    "react-frame-sequence-player": {
+      "id": "react-frame-sequence-player",
+      "title": "Frame Sequence Player: Four Tasks in One Hour",
+      "route": "/react/coding/react-frame-sequence-player",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 50,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-grid-rectangle-selection": {
+      "id": "react-grid-rectangle-selection",
+      "title": "Grid Rectangle Selection",
+      "route": "/react/coding/react-grid-rectangle-selection",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 45,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-hooks-youve-used": {
+      "id": "react-hooks-youve-used",
+      "title": "Which React Hooks have you used, and when would you choose each?",
+      "route": "/react/trivia/react-hooks-youve-used",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
     "react-image-slider": {
       "id": "react-image-slider",
       "title": "Image Slider (Dots + Previous/Next)",
@@ -2770,6 +2911,18 @@
       "tech": "react",
       "access": "premium",
       "minutes": 30,
+      "focus": [
+        "ui"
+      ]
+    },
+    "react-json-tree-viewer": {
+      "id": "react-json-tree-viewer",
+      "title": "JSON Viewer in Stages",
+      "route": "/react/coding/react-json-tree-viewer",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 50,
       "focus": [
         "ui"
       ]
@@ -2839,6 +2992,18 @@
         "ui"
       ],
       "family": "nested-comments"
+    },
+    "react-nested-todo-outliner": {
+      "id": "react-nested-todo-outliner",
+      "title": "Nested To-Do Outliner",
+      "route": "/react/coding/react-nested-todo-outliner",
+      "kind": "coding",
+      "tech": "react",
+      "access": "premium",
+      "minutes": 50,
+      "focus": [
+        "ui"
+      ]
     },
     "react-order-book-socket-feed": {
       "id": "react-order-book-socket-feed",
@@ -2943,6 +3108,19 @@
         "ui"
       ],
       "family": "snake-game"
+    },
+    "react-stale-state-closures": {
+      "id": "react-stale-state-closures",
+      "title": "Why does React sometimes show stale state in closures? How do you fix it?",
+      "route": "/react/trivia/react-stale-state-closures",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
     },
     "react-star-rating": {
       "id": "react-star-rating",
@@ -3081,6 +3259,19 @@
       "id": "react-useref-vs-usestate",
       "title": "useRef vs useState: why a ref change doesn't re-render",
       "route": "/react/trivia/react-useref-vs-usestate",
+      "kind": "trivia",
+      "tech": "react",
+      "access": "free",
+      "minutes": 10,
+      "focus": [
+        "concepts",
+        "js"
+      ]
+    },
+    "react-usestate-purpose": {
+      "id": "react-usestate-purpose",
+      "title": "Why useState() exists in React (and what it actually guarantees)",
+      "route": "/react/trivia/react-usestate-purpose",
       "kind": "trivia",
       "tech": "react",
       "access": "free",
@@ -4405,6 +4596,562 @@
             },
             {
               "id": "js-event-loop"
+            }
+          ]
+        }
+      ]
+    },
+    "airwallex": {
+      "name": "Airwallex",
+      "signature": "Live React task",
+      "framework": "react",
+      "checkedAt": "2026-11-25",
+      "sourceCount": 25,
+      "promptCount": 6,
+      "questionCount": 9,
+      "variants": [
+        {
+          "id": "singapore",
+          "title": "Frontend engineers, Singapore, 2025",
+          "from": "three frontend loops in 2025, two of them in Singapore",
+          "ask": "Interviewing for a frontend role in Singapore?",
+          "default": true,
+          "sourceCount": 3,
+          "newestReport": "2025-10",
+          "rounds": [
+            {
+              "id": "hr-screen",
+              "name": "Recruiter or HR screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A phone screen with HR about your background and experience.",
+              "sources": [],
+              "years": [
+                "2025"
+              ]
+            },
+            {
+              "id": "technical-round-1",
+              "name": "Technical round 1",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Live coding: a React task or coding problems explained on a shared screen.",
+              "focus": [
+                "algo",
+                "ui",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2025"
+              ]
+            },
+            {
+              "id": "technical-round-2",
+              "name": "Technical round 2",
+              "kinds": [
+                "coding",
+                "people"
+              ],
+              "note": "Your previous projects and one more algorithm.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [],
+              "years": [
+                "2025"
+              ]
+            },
+            {
+              "id": "third-round",
+              "name": "Third round",
+              "kinds": [
+                "other"
+              ],
+              "note": "Not described in the account that reports it.",
+              "sources": [],
+              "years": [
+                "2025"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "js-named-task-scheduler",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "prompt": true,
+              "rounds": [
+                "technical-round-1"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-build-tree-from-flat-list"
+            },
+            {
+              "id": "react-usememo-vs-usecallback"
+            }
+          ]
+        },
+        {
+          "id": "australia",
+          "title": "Frontend engineers, Australia, 2023 and 2025",
+          "from": "frontend loops in Sydney and Melbourne in 2023 and 2025",
+          "ask": "Interviewing for a frontend role in Australia?",
+          "sourceCount": 2,
+          "newestReport": "2025-08",
+          "rounds": [
+            {
+              "id": "recruiter-screen",
+              "name": "Recruiter screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "30 minutes.",
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            },
+            {
+              "id": "project-interview",
+              "name": "Project and behaviour interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "An hour with an engineering manager and a lead engineer on a recent project and its decisions.",
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            },
+            {
+              "id": "coding-exercise",
+              "name": "Coding exercise",
+              "kinds": [
+                "coding"
+              ],
+              "note": "In Sydney in 2023, a take-home that builds a simple application.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2023",
+                "2025"
+              ]
+            },
+            {
+              "id": "take-home-review",
+              "name": "Take-home review panel",
+              "kinds": [
+                "coding"
+              ],
+              "note": "1.5 hours with two senior members working through your code, your approach and your stack.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            },
+            {
+              "id": "final",
+              "name": "Final",
+              "kinds": [
+                "people",
+                "coding"
+              ],
+              "note": "An hour with a director and a senior engineer: a project deep dive, architecture and brain teasers.",
+              "focus": [
+                "ui",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2023",
+                "2025"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-fetch-list-states",
+              "lead": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "js-named-task-scheduler",
+              "prompt": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "prompt": true,
+              "rounds": [
+                "coding-exercise"
+              ]
+            },
+            {
+              "id": "js-build-tree-from-flat-list"
+            },
+            {
+              "id": "react-usememo-vs-usecallback"
+            }
+          ]
+        },
+        {
+          "id": "official-2022",
+          "title": "The engineering process Airwallex published in 2022",
+          "from": "Airwallex's own 2022 post on getting hired",
+          "ask": "Interviewing for a general engineering role?",
+          "sourceCount": 1,
+          "rounds": [
+            {
+              "id": "recruiter-call",
+              "name": "Recruiter call",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "The role and the process.",
+              "sources": []
+            },
+            {
+              "id": "tech-screen",
+              "name": "Tech screen",
+              "kinds": [
+                "coding"
+              ],
+              "note": "60 minutes: your background and a coding challenge at the level of easy and medium LeetCode problems.",
+              "focus": [
+                "algo"
+              ],
+              "sources": []
+            },
+            {
+              "id": "take-home-or-live",
+              "name": "Take-home or live coding",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A take-home of about 3 to 4 hours, or a harder problem coded live in 60 minutes.",
+              "focus": [
+                "algo",
+                "ui"
+              ],
+              "sources": []
+            },
+            {
+              "id": "design-and-problem-solving",
+              "name": "System design and problem solving",
+              "kinds": [
+                "design",
+                "coding"
+              ],
+              "note": "60 to 90 minutes.",
+              "focus": [
+                "algo",
+                "ui"
+              ],
+              "sources": []
+            },
+            {
+              "id": "final-senior-leader",
+              "name": "Final with a senior leader",
+              "kinds": [
+                "people"
+              ],
+              "note": "60 minutes, usually with the CEO, the CTO or a VP of Engineering: culture fit and company values.",
+              "sources": []
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "tech-screen"
+              ]
+            },
+            {
+              "id": "js-named-task-scheduler",
+              "prompt": true,
+              "rounds": [
+                "tech-screen"
+              ]
+            },
+            {
+              "id": "realtime-search-debounce-cache",
+              "prompt": true,
+              "rounds": [
+                "design-and-problem-solving"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "tech-screen"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "tech-screen"
+              ]
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "prompt": true,
+              "rounds": [
+                "tech-screen"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-build-tree-from-flat-list"
+            },
+            {
+              "id": "react-usememo-vs-usecallback"
+            }
+          ]
+        },
+        {
+          "id": "london-2026",
+          "title": "Engineering roles in London, 2026",
+          "from": "Airwallex's own 2026 post on London",
+          "ask": "Interviewing for an engineering role in London?",
+          "sourceCount": 2,
+          "rounds": [
+            {
+              "id": "coding-interview",
+              "name": "Coding interview",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Not described further.",
+              "sources": []
+            },
+            {
+              "id": "system-design-interview",
+              "name": "System design interview",
+              "kinds": [
+                "design"
+              ],
+              "note": "Not described further.",
+              "sources": []
+            },
+            {
+              "id": "hiring-manager-interview",
+              "name": "Hiring manager interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "Your career background and project experience.",
+              "sources": []
+            },
+            {
+              "id": "bar-raiser",
+              "name": "Bar raiser",
+              "kinds": [
+                "people"
+              ],
+              "note": "Motivations, behaviours, fit with the values and operating principles, and how you use AI.",
+              "sources": []
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
+              "id": "js-named-task-scheduler",
+              "prompt": true,
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
+              "id": "realtime-search-debounce-cache",
+              "prompt": true,
+              "rounds": [
+                "system-design-interview"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "prompt": true,
+              "rounds": [
+                "coding-interview"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-build-tree-from-flat-list"
+            },
+            {
+              "id": "react-usememo-vs-usecallback"
+            }
+          ]
+        },
+        {
+          "id": "early-careers",
+          "title": "Early careers, 2026",
+          "from": "Airwallex's early-careers page and a 2026 intern account",
+          "ask": "Interviewing as an intern or graduate?",
+          "students": true,
+          "sourceCount": 2,
+          "newestReport": "2026-05",
+          "rounds": [
+            {
+              "id": "early-careers-recruiter-screen",
+              "name": "Early-careers recruiter screen",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A recruiter screen; a 2026 intern had 15 minutes on why Airwallex and their learning priorities.",
+              "sources": [],
+              "years": [
+                "2026"
+              ]
+            },
+            {
+              "id": "working-sessions",
+              "name": "Technical or working sessions",
+              "kinds": [
+                "coding"
+              ],
+              "note": "One or two technical or working sessions.",
+              "sources": [],
+              "years": [
+                "2026"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-take-home-table-review-questions",
+              "prompt": true,
+              "rounds": [
+                "working-sessions"
+              ]
+            },
+            {
+              "id": "js-named-task-scheduler",
+              "prompt": true,
+              "rounds": [
+                "working-sessions"
+              ]
+            },
+            {
+              "id": "react-contact-form-starter",
+              "prompt": true,
+              "rounds": [
+                "working-sessions"
+              ]
+            },
+            {
+              "id": "react-todo-list",
+              "prompt": true,
+              "rounds": [
+                "working-sessions"
+              ]
+            },
+            {
+              "id": "react-virtualized-list-recycling",
+              "prompt": true,
+              "rounds": [
+                "working-sessions"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-build-tree-from-flat-list"
+            },
+            {
+              "id": "react-usememo-vs-usecallback"
             }
           ]
         }
@@ -12035,6 +12782,573 @@
         }
       ]
     },
+    "notion": {
+      "name": "Notion",
+      "signature": "AI-enabled coding",
+      "framework": "react",
+      "checkedAt": "2026-11-25",
+      "sourceCount": 48,
+      "promptCount": 10,
+      "questionCount": 12,
+      "variants": [
+        {
+          "id": "frontend",
+          "title": "Front End track and frontend-leaning loops, experienced, 2022 to 2026",
+          "from": "the Front End guide and frontend and software loops from 2022 to 2026",
+          "ask": "Interviewing for the Front End track or a software role?",
+          "default": true,
+          "sourceCount": 29,
+          "newestReport": "2026-09",
+          "rounds": [
+            {
+              "id": "recruiter-call",
+              "name": "Recruiter call",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "30 minutes with the talent team on the highlights of your experience and what you are looking for next.",
+              "sources": [],
+              "years": [
+                "2024",
+                "2026"
+              ]
+            },
+            {
+              "id": "technical-screen",
+              "name": "Technical screen",
+              "kinds": [
+                "coding"
+              ],
+              "note": "60 minutes of live React coding on CodeSignal: a practical build in parts, with AI tools restricted.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2022",
+                "2024",
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "ai-enabled-coding",
+              "name": "Onsite: AI-enabled coding",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A small TypeScript codebase that may have failing tests, slow code or messy code, with AI tools encouraged.",
+              "focus": [
+                "debug",
+                "algo",
+                "js"
+              ],
+              "sources": [],
+              "years": [
+                "2026"
+              ]
+            },
+            {
+              "id": "code-review",
+              "name": "Onsite: code review",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Listed in the 2026 Front End guide; no candidate describes it.",
+              "sources": []
+            },
+            {
+              "id": "software-design",
+              "name": "Onsite: software design",
+              "kinds": [
+                "design"
+              ],
+              "note": "An open-ended design on a diagramming tool; a calendar UI and data modelling are reported.",
+              "focus": [
+                "algo",
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "career-history",
+              "name": "Onsite: career history",
+              "kinds": [
+                "people"
+              ],
+              "note": "An hour with an engineering leader on your past teams, successes, challenges and transitions, and why Notion.",
+              "sources": [],
+              "years": [
+                "2022",
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "second-coding-round",
+              "name": "Before 2026: a second coding round",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Onsites from 2022 to 2025 had a second coding round, an algorithm or backend one, beside frontend coding.",
+              "focus": [
+                "algo",
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2022",
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "hiring-manager-call",
+              "name": "Hiring manager or executive call, and team match",
+              "kinds": [
+                "people",
+                "outcome"
+              ],
+              "note": "A talk about past projects; 2026 staff posts say it probed team conflicts. Then a team search.",
+              "sources": [],
+              "years": [
+                "2024",
+                "2026"
+              ]
+            },
+            {
+              "id": "final-interview",
+              "name": "Final interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "With a leader; two 2026 accounts name the CEO: your experience, values and motivations.",
+              "sources": [],
+              "years": [
+                "2026"
+              ]
+            },
+            {
+              "id": "references",
+              "name": "References and background check",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "Reference checks, sometimes before the level and offer are discussed, and a background check.",
+              "sources": [],
+              "years": [
+                "2022",
+                "2024",
+                "2026"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-todo-list",
+              "lead": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-debug-notes-app-repo",
+              "lead": true,
+              "rounds": [
+                "ai-enabled-coding"
+              ],
+              "prompt": true
+            },
+            {
+              "id": "/companies/notion/preview#notion-round-career-history",
+              "lead": true,
+              "rounds": [
+                "career-history"
+              ]
+            },
+            {
+              "id": "react-json-tree-viewer",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-nested-todo-outliner",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-text-editor-undo-redo",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-vanilla-dropdown-port",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-command-palette-sources",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-rerender-decision-and-render"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            }
+          ]
+        },
+        {
+          "id": "early-career",
+          "title": "Interns and new grads, 2024 to 2026",
+          "from": "the intern and new-grad guides and loops from 2024 to 2026",
+          "ask": "Interviewing as an intern or new grad?",
+          "students": true,
+          "sourceCount": 10,
+          "newestReport": "2026-10",
+          "rounds": [
+            {
+              "id": "initial-call",
+              "name": "Initial call",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "15 minutes.",
+              "sources": [],
+              "years": [
+                "2024",
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "online-assessment",
+              "name": "Online assessment",
+              "kinds": [
+                "coding"
+              ],
+              "note": "An online assessment before the take-home, in some 2025 and 2026 intern loops.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "take-home",
+              "name": "Take-home",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Three hours.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "debugging",
+              "name": "Onsite: debugging",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A 10-minute review of your take-home, then 40 minutes of debugging a codebase.",
+              "focus": [
+                "debug",
+                "ui",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2024",
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "practical-coding",
+              "name": "Onsite: practical coding",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A practical coding interview that accounts call not LeetCode-style, such as a class for storing documents.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [],
+              "years": [
+                "2024",
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "final-conversation",
+              "name": "Final conversation",
+              "kinds": [
+                "people"
+              ],
+              "note": "45 minutes on your career so far; intern accounts describe it as a conversation with a hiring manager.",
+              "sources": [],
+              "years": [
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "values-capstone",
+              "name": "New grads: values capstone and references",
+              "kinds": [
+                "people"
+              ],
+              "note": "A 30-minute values interview, then reference checks.",
+              "sources": [],
+              "years": [
+                "2026"
+              ]
+            },
+            {
+              "id": "background-check",
+              "name": "Background check",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "With employment verification, as the final step.",
+              "sources": []
+            }
+          ],
+          "tasks": [
+            {
+              "id": "js-debug-notes-app-repo",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-json-tree-viewer",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-nested-todo-outliner",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "js-text-editor-undo-redo",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-vanilla-dropdown-port",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-command-palette-sources",
+              "prompt": true,
+              "rounds": [
+                "online-assessment"
+              ]
+            },
+            {
+              "id": "react-rerender-decision-and-render"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            },
+            {
+              "id": "react-usestate-purpose"
+            },
+            {
+              "id": "react-hooks-youve-used"
+            }
+          ]
+        },
+        {
+          "id": "india",
+          "title": "India, 2023 to 2025",
+          "from": "three loops in India from 2023 to 2025",
+          "ask": "Interviewing in India?",
+          "sourceCount": 3,
+          "newestReport": "2025-06",
+          "rounds": [
+            {
+              "id": "assignment",
+              "name": "Assignment",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A frontend engineer in Pune was asked to rebuild Notion's homepage before the technical round (2023).",
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            },
+            {
+              "id": "technical-rounds",
+              "name": "Technical rounds",
+              "kinds": [
+                "coding"
+              ],
+              "note": "React and JavaScript questions, text-editor functions, or code quality and pair programming, by account.",
+              "focus": [
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2023",
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "hr-round",
+              "name": "HR round",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A closing HR round in the 2023 loop.",
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "js-debug-notes-app-repo",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-json-tree-viewer",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-nested-todo-outliner",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "js-text-editor-undo-redo",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-vanilla-dropdown-port",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-debug-api-misuse",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-command-palette-sources",
+              "prompt": true,
+              "rounds": [
+                "assignment"
+              ]
+            },
+            {
+              "id": "react-rerender-decision-and-render"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            },
+            {
+              "id": "react-usestate-purpose"
+            },
+            {
+              "id": "react-hooks-youve-used"
+            }
+          ]
+        }
+      ]
+    },
     "openai": {
       "name": "OpenAI",
       "signature": "Agentic coding option",
@@ -14666,6 +15980,390 @@
             },
             {
               "id": "css-visibility-vs-display"
+            }
+          ]
+        }
+      ]
+    },
+    "verkada": {
+      "name": "Verkada",
+      "signature": "Video player from still frames",
+      "framework": "react",
+      "checkedAt": "2026-11-25",
+      "sourceCount": 29,
+      "promptCount": 6,
+      "questionCount": 10,
+      "variants": [
+        {
+          "id": "frontend",
+          "title": "Frontend engineers, mid level to senior, United States, 2023 to 2026",
+          "from": "frontend loops from 2023 to 2026, in the United States where a place is given",
+          "ask": "Interviewing for a frontend role in the United States?",
+          "default": true,
+          "reported": {
+            "levels": [
+              "mid",
+              "senior"
+            ],
+            "who": "mid-level and senior frontend engineers"
+          },
+          "sourceCount": 16,
+          "newestReport": "2026-03",
+          "rounds": [
+            {
+              "id": "recruiter-call",
+              "name": "Recruiter call",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A short call about the role; officially the recruiter also asks about your background and career goals.",
+              "sources": [],
+              "years": [
+                "2023",
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "hiring-manager-screen",
+              "name": "Hiring-manager screen",
+              "kinds": [
+                "people"
+              ],
+              "note": "Officially, behavioural and role-specific questions with the hiring manager; in 2023 it was the technical screen.",
+              "focus": [
+                "ui",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2023"
+              ]
+            },
+            {
+              "id": "technical-screen",
+              "name": "Technical screen",
+              "kinds": [
+                "coding"
+              ],
+              "note": "Live coding on video; most screens reported in 2025 that name a task asked for a video player built from still frames.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2023",
+                "2024",
+                "2025",
+                "2026"
+              ]
+            },
+            {
+              "id": "onsite",
+              "name": "Onsite at the San Mateo office",
+              "kinds": [
+                "coding",
+                "design",
+                "people"
+              ],
+              "note": "Several technical interviews and a manager interview: selection in a grid, broken JavaScript, a camera grid design.",
+              "focus": [
+                "debug",
+                "algo",
+                "ui",
+                "js",
+                "concepts"
+              ],
+              "sources": [],
+              "years": [
+                "2023",
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "offer-and-checks",
+              "name": "Offer and checks",
+              "kinds": [
+                "outcome"
+              ],
+              "note": "An offer just under a month after the application in a 2025 loop.",
+              "sources": [],
+              "years": [
+                "2025"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-fetch-list-states",
+              "lead": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "/companies/verkada/preview#verkada-round-onsite",
+              "lead": true,
+              "rounds": [
+                "onsite"
+              ]
+            },
+            {
+              "id": "react-frame-sequence-player",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-frame-player-controller",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "endless-short-video-feed",
+              "prompt": true,
+              "rounds": [
+                "onsite"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "react-grid-rectangle-selection",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-promise-all",
+              "prompt": true,
+              "rounds": [
+                "technical-screen"
+              ]
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-stale-state-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            }
+          ]
+        },
+        {
+          "id": "canada",
+          "title": "Software roles with a frontend round, Canada, 2024 to 2025",
+          "from": "two software loops in Canada in 2024 and 2025",
+          "ask": "Interviewing for a software role in Canada?",
+          "sourceCount": 2,
+          "newestReport": "2025-02",
+          "rounds": [
+            {
+              "id": "screening",
+              "name": "Recruiter call or screening",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A call with a recruiter in 2025, and a screening in 2024.",
+              "sources": [],
+              "years": [
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "frontend-technical-interview",
+              "name": "Frontend technical interview",
+              "kinds": [
+                "coding"
+              ],
+              "note": "For example a UI built in a timed session (2025), or a mockup built from a design in JavaScript, React and CSS (2024).",
+              "focus": [
+                "css",
+                "ui",
+                "js"
+              ],
+              "sources": [],
+              "years": [
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "second-technical-interview",
+              "name": "Second technical interview",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A LeetCode-style interview in 2025, and another technical interview in 2024.",
+              "focus": [
+                "algo"
+              ],
+              "sources": [],
+              "years": [
+                "2024",
+                "2025"
+              ]
+            },
+            {
+              "id": "behavioural-interview",
+              "name": "Behavioural interview",
+              "kinds": [
+                "people"
+              ],
+              "note": "With the engineering manager in 2025; the one question listed is why the candidate wanted to work at Verkada.",
+              "sources": [],
+              "years": [
+                "2024",
+                "2025"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-frame-sequence-player",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-interview"
+              ]
+            },
+            {
+              "id": "js-frame-player-controller",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-interview"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-interview"
+              ]
+            },
+            {
+              "id": "react-grid-rectangle-selection",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-interview"
+              ]
+            },
+            {
+              "id": "js-promise-all",
+              "prompt": true,
+              "rounds": [
+                "frontend-technical-interview"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-stale-state-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
+            }
+          ]
+        },
+        {
+          "id": "take-home-2019",
+          "title": "A frontend loop with a take-home, United States, 2019",
+          "from": "a 2019 frontend loop with a take-home",
+          "ask": "Interviewing through a staffing agency?",
+          "sourceCount": 1,
+          "newestReport": "2019-08",
+          "rounds": [
+            {
+              "id": "agency-and-recruiter-call",
+              "name": "Agency and recruiter call",
+              "kinds": [
+                "recruiter"
+              ],
+              "note": "A first talk with the staffing agency, then a call in which the recruiter explained the company and its work.",
+              "sources": [],
+              "years": [
+                "2019"
+              ]
+            },
+            {
+              "id": "take-home",
+              "name": "Take-home",
+              "kinds": [
+                "coding"
+              ],
+              "note": "A React take-home with one week to work on it.",
+              "focus": [
+                "ui"
+              ],
+              "sources": [],
+              "years": [
+                "2019"
+              ]
+            }
+          ],
+          "tasks": [
+            {
+              "id": "react-frame-sequence-player",
+              "prompt": true,
+              "rounds": [
+                "take-home"
+              ]
+            },
+            {
+              "id": "js-frame-player-controller",
+              "prompt": true,
+              "rounds": [
+                "take-home"
+              ]
+            },
+            {
+              "id": "react-event-log-design-spec",
+              "prompt": true,
+              "rounds": [
+                "take-home"
+              ]
+            },
+            {
+              "id": "react-grid-rectangle-selection",
+              "prompt": true,
+              "rounds": [
+                "take-home"
+              ]
+            },
+            {
+              "id": "js-promise-all",
+              "prompt": true,
+              "rounds": [
+                "take-home"
+              ]
+            },
+            {
+              "id": "react-fetch-list-states"
+            },
+            {
+              "id": "js-closures"
+            },
+            {
+              "id": "react-stale-state-closures"
+            },
+            {
+              "id": "react-useeffect-purpose"
             }
           ]
         }

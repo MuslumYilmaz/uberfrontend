@@ -29,6 +29,7 @@ describe('company branding helpers', () => {
     const currentCompanySlugs = [
       'agoda',
       'airbnb',
+      'airwallex',
       'anduril',
       'amazon',
       'apple',
@@ -48,6 +49,7 @@ describe('company branding helpers', () => {
       'meta',
       'microsoft',
       'netflix',
+      'notion',
       'openai',
       'revolut',
       'servicenow',
@@ -56,6 +58,7 @@ describe('company branding helpers', () => {
       'stripe',
       'tesla',
       'uber',
+      'verkada',
       'walmart',
       'waymo',
       'xai',

@@ -306,6 +306,18 @@ describe('CompanyQuestionListComponent', () => {
       expect(choose(host, 1).textContent).not.toContain('its answer guide where it has one');
     });
 
+    it('names the practice task in a member\'s answer guide with what it comes with, and keeps it from a visitor', () => {
+      const label = 'Solve the bare puzzle on a clock (Premium; checks and a reference solution)';
+      let host = create('member', { edit: withGuide, guides: { 'g-bare': { ...guide, resourceLabel: label } } });
+      const practice = rows(host)[2].querySelector('.cq-guide--details .cq-guide__practice a') as HTMLAnchorElement;
+      expect(practice.textContent?.trim()).toBe(label);
+      expect(practice.getAttribute('href')).toBe('/react/coding/react-x');
+      TestBed.resetTestingModule();
+      host = create('guest', { edit: withGuide, guides: { 'g-bare': { ...guide, resourceLabel: label } } });
+      expect(host.querySelector('.cq-guide__practice')).toBeNull();
+      expect(host.textContent).not.toContain(label);
+    });
+
     it('drops the line from a row the reader opened, and from every row for a member', () => {
       let host = create('account', { freeUnlock: { company: 'acme', questionId: 'with-task', practiceId: 'react-x', unlockedAt: '2026-11-13T00:00:00.000Z' } });
       expect(contents(host)).toEqual([null, null, 'Behind the lock: the question only.', 'Behind the lock: the question only.']);

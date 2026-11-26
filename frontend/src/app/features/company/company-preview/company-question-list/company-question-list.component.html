@@ -279,6 +279,10 @@
               @if (guide.commonMiss) {
                 <p class="cq-guide__miss"><strong>Common miss: </strong><fa-inline-code [text]="guide.commonMiss"></fa-inline-code></p>
               }
+              <!-- The label says what the task comes with, such as checks and a reference solution. -->
+              @if (guide.resourcePath && guide.resourceLabel) {
+                <p class="cq-guide__practice"><strong>Practise it: </strong><a [routerLink]="guide.resourcePath" [state]="returnState()">{{ guide.resourceLabel }}</a></p>
+              }
             </details>
           }
         }

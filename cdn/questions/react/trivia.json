@@ -1083,7 +1083,8 @@
       "rereadPrompt": "Close. Re-read render vs commit: render computes next UI, commit mutates the DOM only when there are actual differences."
     },
     "companies": [
-      "netflix"
+      "netflix",
+      "notion"
     ]
   },
   {
@@ -1638,6 +1639,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
+    "companies": ["notion"],
     "description": "Explain what useState is for through the lens of render snapshots, immutable updates, functional setters, and the production bugs caused by stale reads or direct mutation.",
     "answer": {
       "blocks": [
@@ -2487,7 +2489,9 @@
     "companies": [
       "bytedance",
       "walmart",
-      "disney"
+      "disney",
+      "verkada",
+      "notion"
     ],
     "difficulty": "intermediate",
     "importance": 5,
@@ -3344,7 +3348,8 @@
       "walmart",
       "jpmorgan",
       "xai",
-      "binance"
+      "binance",
+      "airwallex"
     ],
     "description": "useMemo caches a computed value, useCallback a function reference. Explain when they prevent real work, when the dependency comparison and retained memory cost more than they save, and the pitfalls (stale closures, non-memoized children) that make memoization a no-op.",
     "seo": {
@@ -4120,6 +4125,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
+    "companies": ["verkada"],
     "description": "A stale closure is a bug only when a callback's contract requires a newer render value. Use a functional updater for previous-state changes, complete dependencies for re-synchronization, and a ref or Effect Event for a justified latest read in long-lived logic. Preserve an intentional action-time snapshot. If the closure captured the right query but results arrive out of order, diagnose an async race instead.",
     "answer": {
       "blocks": [
@@ -5483,7 +5489,8 @@
     "companies": [
       "bytedance",
       "apple",
-      "walmart"
+      "walmart",
+      "notion"
     ],
     "difficulty": "intermediate",
     "importance": 3,

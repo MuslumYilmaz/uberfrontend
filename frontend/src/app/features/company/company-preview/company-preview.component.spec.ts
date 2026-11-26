@@ -664,6 +664,24 @@ describe('CompanyPreviewComponent', () => {
       ]);
     });
 
+    it('lands every in-page round link on an element of the page, an answer guide on the row that holds it', async () => {
+      // The answer guides live in the list rows, so a link to one by its prompt id would point at nothing.
+      const slugs = Object.values(AUTHORED_COMPANY_PREVIEWS)
+        .filter((preview) => preview.roundSpotlights?.some((round) => round.practiceLink?.fragment))
+        .map((preview) => preview.slug);
+      expect(slugs.length).toBeGreaterThan(0);
+      for (const slug of slugs) {
+        await createComponent(slug);
+        const host: HTMLElement = fixture.nativeElement;
+        const links = Array.from(host.querySelectorAll<HTMLAnchorElement>('.company-round-links a[href^="#"]'));
+        expect(links.length).withContext(slug).toBeGreaterThan(0);
+        for (const link of links) {
+          const id = link.getAttribute('href')!.slice(1);
+          expect(host.querySelector(`[id="${id}"]`)).withContext(`${slug}: "${link.textContent?.trim()}" → #${id}`).not.toBeNull();
+        }
+      }
+    });
+
     const card = () => {
       const entry = fixture.nativeElement.querySelector('[data-testid="company-plan-entry"]') as HTMLElement;
       return {
@@ -1012,6 +1030,22 @@ describe('CompanyPreviewComponent', () => {
       await createComponent('elevenlabs', undefined, AUTHORED_COMPANY_PREVIEWS, {}, { firstRenderOnly: true });
       expect(host().querySelectorAll('.cq-row--locked').length).toBe(summary.locked);
       expect(host().querySelectorAll('[data-testid="company-guide-sources"] a[href^="http"]').length).toBe(0);
+    });
+
+    it('links a plan day to its practice only for a member, since a day may name a locked row\'s task', async () => {
+      const days = AUTHORED_COMPANY_PREVIEWS['verkada'].prepPlan.days;
+      const tasks = days.flatMap((day) => day.practice ?? []);
+      expect(tasks.length).toBeGreaterThan(0);
+      const links = () => Array.from(host().querySelectorAll<HTMLAnchorElement>('[data-testid="company-prep-plan-days"] .company-prep-sequence__practice a'));
+      user.set(FREE);
+      await createComponent('verkada');
+      expect(links()).toEqual([]);
+      user.set(MEMBER);
+      await createComponent('verkada');
+      expect(links().map((link) => link.getAttribute('href'))).toEqual(tasks.map((task) => task.path));
+      // The words stay apart once the template's spaces are gone.
+      const lines = Array.from(host().querySelectorAll('.company-prep-sequence__practice')).map((line) => line.textContent!.replace(/\s+/g, ' ').trim());
+      expect(lines).toEqual(days.filter((day) => day.practice?.length).map((day) => `Practice: ${day.practice!.map((task) => task.label).join('; ')}`));
     });
 
     it('opens the answer outline, the plan and the source links for a free account, but not the locked questions', async () => {

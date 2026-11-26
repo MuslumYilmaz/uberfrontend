@@ -90,7 +90,7 @@ describe('ShowcaseInterviewPanelComponent', () => {
     expect(options[9].getAttribute('href')).toBe('/companies?company=stripe&from=home');
 
     const all = menu.querySelector<HTMLAnchorElement>('.interview-menu__all') as HTMLAnchorElement;
-    expect(all.textContent?.trim()).toBe('See all 33 companies');
+    expect(all.textContent?.trim()).toBe('See all 36 companies');
     expect(all.getAttribute('href')).toBe('/companies');
     follow(all);
     expect(analytics.track).toHaveBeenCalledOnceWith('lp_conversion_link_clicked', {

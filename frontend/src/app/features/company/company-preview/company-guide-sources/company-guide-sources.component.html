@@ -4,6 +4,15 @@
     @for (paragraph of note.paragraphs; track $index) {
       <p class="guide-sources__method-text">{{ paragraph }}</p>
     }
+    <!-- With no list to close it in, the source boundary follows the method, open. -->
+    @if (boundary(); as copy) {
+      <div class="guide-sources__boundary">
+        <p class="guide-sources__boundary-title">{{ copy.title }}</p>
+        @for (paragraph of copy.paragraphs; track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+    }
   </section>
 } @else {
   <section class="guide-sources company-source-list" [attr.aria-labelledby]="headingId()" data-testid="company-guide-sources">

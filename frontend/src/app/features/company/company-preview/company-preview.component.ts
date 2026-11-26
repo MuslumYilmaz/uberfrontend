@@ -373,6 +373,15 @@ export class CompanyPreviewComponent implements OnInit {
     return `Premium opens ${reported}every question in the ${this.label} set and all ${PREMIUM_QUESTION_COUNT} Premium questions in the library.`;
   }
 
+  /**
+   * A round's link to an answer guide. A guide with a question list keeps each answer guide in the row it answers, so
+   * the link opens that row, locked or not, as the process table's question counts do.
+   */
+  roundGuideHref(fragment: string): string {
+    const question = this.interviewProcess?.questions?.find((candidate) => candidate.answerGuide === fragment);
+    return `#${question ? `${this.slug}-question-${question.id}` : fragment}`;
+  }
+
   /** A link to a Premium practice page keeps its name under a blur for a visitor without an account. */
   linkLocked(path: string | readonly string[] | null | undefined): boolean {
     return this.tier() === 'guest' && isPremiumRoute(path);
