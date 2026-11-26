@@ -1,0 +1,19 @@
+<section class="research-hub" aria-labelledby="research-hub-title">
+  <header class="research-hub__header">
+    <h1 id="research-hub-title" class="research-hub__title">{{ title }}</h1>
+    <p class="research-hub__lead">{{ description }}</p>
+  </header>
+
+  <ul class="research-hub__list">
+    @for (report of reports; track report.slug) {
+      <li class="research-hub__item">
+        <a faCard padding="lg" class="research-hub__card" [routerLink]="report.route">
+          <span class="research-hub__meta">{{ report.publishedLabel }} · {{ report.author.name }} · {{ report.minutes }} min read</span>
+          <h2 class="research-hub__card-title">{{ report.title }}</h2>
+          <p class="research-hub__summary">{{ report.summary }}</p>
+          <span class="research-hub__cta">Read the report</span>
+        </a>
+      </li>
+    }
+  </ul>
+</section>

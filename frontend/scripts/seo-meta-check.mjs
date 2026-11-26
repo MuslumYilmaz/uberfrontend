@@ -492,6 +492,34 @@ const criticalRouteContracts = [
     h1: 'Company Frontend Interview Questions',
     descriptionTerms: ['coding', 'concept', 'system design'],
   },
+  {
+    route: '/research',
+    title: 'Research: data studies of real frontend code',
+    h1: 'Research',
+    canonical: 'https://frontendatlas.com/research',
+    robotsMustNotInclude: ['noindex'],
+    googlebotMustNotInclude: ['noindex'],
+    schemaTypes: ['CollectionPage', 'BreadcrumbList'],
+    descriptionTerms: ['method', 'data'],
+    bodyTerms: ['OnPush by default: how much real Angular code is ready?', 'Read the report'],
+  },
+  {
+    route: '/research/angular-onpush-readiness',
+    title: 'OnPush by default: how much real Angular code is ready?',
+    h1: 'OnPush by default: how much real Angular code is ready?',
+    canonical: 'https://frontendatlas.com/research/angular-onpush-readiness',
+    robotsMustNotInclude: ['noindex'],
+    googlebotMustNotInclude: ['noindex'],
+    schemaTypes: ['Article', 'BreadcrumbList'],
+    descriptionTerms: ['31,531 components', 'Eager stamp', 'OnPush by default'],
+    bodyTerms: [
+      'In the 56 Angular 22 apps found without searching for the stamp',
+      'Results: what breaks',
+      'How much to trust these numbers',
+      'Appendix F: the other populations',
+      'Verdicts by the strategy a component declares',
+    ],
+  },
 ];
 
 const PUBLISH_COPY_CONTRACTS = [

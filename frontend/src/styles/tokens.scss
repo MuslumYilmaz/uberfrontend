@@ -28,6 +28,14 @@
   --uf-bg: #050607;
   --uf-surface: #0b0d14;
   --uf-surface-alt: #11141c;
+
+  /* Data visualization: categorical series, in fixed order; checked against --uf-surface and --uf-bg for lightness, chroma, colour-blind separation and 3:1 contrast */
+  --uf-chart-1: #3987e5;
+  --uf-chart-2: #d95926;
+  --uf-chart-3: #199e70;
+  /* Labels drawn inside a series fill: page ink reads at 5:1 or more on all three series */
+  --uf-chart-on-fill: var(--uf-bg);
+
   --uf-border-subtle: #1d2230;
   --uf-accent: #f4c15d;
   --uf-text-primary: #f5f6fa;

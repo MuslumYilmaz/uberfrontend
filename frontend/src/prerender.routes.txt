@@ -531,6 +531,8 @@
 /react/trivia/react-why-event-delegation
 /react/trivia/react-why-hooks-have-rules
 /react/trivia/react-why-props-immutable
+/research
+/research/angular-onpush-readiness
 /system-design
 /system-design/ai-agent-run-inspector
 /system-design/ai-chat-textarea-design

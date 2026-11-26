@@ -415,6 +415,7 @@ const STATIC_ROUTES = [
   '/tracks', '/focus-areas', '/companies', '/system-design', '/tools/cv',
   '/guides/framework-prep', '/guides/interview-blueprint', '/guides/system-design-blueprint', '/guides/behavioral',
   '/legal', '/legal/editorial-policy', '/legal/terms', '/legal/privacy', '/legal/refund', '/legal/cookies',
+  '/research', '/research/angular-onpush-readiness',
 ];
 
 function card(item, route) {
