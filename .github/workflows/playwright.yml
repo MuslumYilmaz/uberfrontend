@@ -144,8 +144,8 @@ jobs:
     name: Playwright Framework Catalog
     runs-on: ubuntu-24.04  # Playwright 1.57 cannot install browsers on ubuntu-26.04, which ubuntu-latest became on 2026-10-22
     # Moved out of Playwright Critical: every framework task's official solution and known wrong solutions against its
-    # checks is about 180 cases and 25 minutes, so the suite runs beside Critical instead of after it.
-    timeout-minutes: 45
+    # checks is about 470 cases and 35 minutes, so the suite runs beside Critical instead of after it.
+    timeout-minutes: 60  # 474 catalog tests take about 35 minutes after a 4-5 minute build; 45 was cancelled on slow runners (2026-11-26)
     defaults:
       run:
         working-directory: frontend
