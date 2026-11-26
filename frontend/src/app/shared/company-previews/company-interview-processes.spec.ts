@@ -25,9 +25,9 @@ describe('company interview processes', () => {
 
   it('covers the companies with enough sourced evidence, using known company slugs', () => {
     expect(entries.map(([slug]) => slug).sort()).toEqual([
-      'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'binance', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
-      'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
-      'walmart', 'waymo', 'xai', 'zalando',
+      'agoda', 'airbnb', 'airwallex', 'amazon', 'anduril', 'apple', 'binance', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit', 'jpmorgan',
+      'meta', 'microsoft', 'netflix', 'notion', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
+      'verkada', 'walmart', 'waymo', 'xai', 'zalando',
     ]);
     for (const [slug] of entries) {
       expect(COMPANY_BRANDS[slug]).withContext(slug).toBeDefined();

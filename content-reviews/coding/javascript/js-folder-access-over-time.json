@@ -1,0 +1,30 @@
+{
+  "id": "js-folder-access-over-time",
+  "tech": "javascript",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "d4da8af85cd33da701eaafd1920abdb0d7c319d23f462e0d29e02f82c6157b39",
+  "pageHash": "95385b1d9775e06b704477185aef16273392eb729d89b9e2dac8b2248349d7de",
+  "checksHash": "0670f0c800b4e1e25b82a2ce9d5a0836bb79e0eb1a87086b6c718697a13eaf7f",
+  "reviewedAt": "2026-11-25",
+  "mode": "skip",
+  "skipReason": "Adds the -Infinity check that the 2026-11-25 seeded review found missing (A4). The reference passes in JS and TS, and coding-negative-fixtures/js-folder-access-over-time/wrong-accepts-minus-infinity.js passed the old tests and fails the new one.",
+  "result": "skipped",
+  "rules": {
+    "A1": "not-run",
+    "A2": "not-run",
+    "A3": "not-run",
+    "A4": "not-run",
+    "A5": "not-run",
+    "B1": "not-run",
+    "B2": "not-run",
+    "B3": "not-run",
+    "B4": "not-run",
+    "B5": "not-run",
+    "C1": "not-run",
+    "C2": "not-run",
+    "C3": "not-run",
+    "C4": "not-run",
+    "C5": "not-run"
+  }
+}

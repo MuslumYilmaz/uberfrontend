@@ -1198,7 +1198,7 @@
   {
     "id": "angular-observables-rxjs",
     "family": "question",
-    "title": "Observables in Angular: what they are, why RxJS matters, and how to use them correctly (async pipe, cancellation, operators)",
+    "title": "Observables in Angular: what they are and how to use them (async pipe, cancellation)",
     "route": "/angular/trivia/angular-observables-rxjs",
     "tech": "angular",
     "difficulty": "intermediate",
@@ -1766,6 +1766,27 @@
     "assetRef": "questions/css/coding.json#css-box-model-margin-padding-border"
   },
   {
+    "id": "css-font-family",
+    "family": "question",
+    "title": "CSS font stacks: how font-family fallbacks work and fail",
+    "route": "/css/trivia/css-font-family",
+    "tech": "css",
+    "difficulty": "easy",
+    "summary": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
+    "tags": [
+      "css",
+      "typography",
+      "fonts",
+      "properties",
+      "basics"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-04-05",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-font-family"
+  },
+  {
     "id": "css-inline-centering",
     "family": "question",
     "title": "Display & Centering: Center Inline Content",
@@ -1955,6 +1976,30 @@
     "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-z-index"
+  },
+  {
+    "id": "css-position-relative-absolute-fixed",
+    "family": "question",
+    "title": "position: fixed vs absolute vs relative, and why absolute ignores the parent",
+    "route": "/css/trivia/css-position-relative-absolute-fixed",
+    "tech": "css",
+    "difficulty": "intermediate",
+    "summary": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix.",
+    "tags": [
+      "css",
+      "position",
+      "layout",
+      "relative",
+      "absolute",
+      "fixed",
+      "stacking",
+      "offsets"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
   },
   {
     "id": "css-positioning-badge",
@@ -2273,51 +2318,6 @@
     "updatedAt": "2026-04-05",
     "schemaVersion": "question.v1",
     "assetRef": "questions/css/trivia.json#css-float-clear"
-  },
-  {
-    "id": "css-font-family",
-    "family": "question",
-    "title": "What is the purpose of the font-family property?",
-    "route": "/css/trivia/css-font-family",
-    "tech": "css",
-    "difficulty": "easy",
-    "summary": "font-family picks a prioritized font stack, but the production angle is fallback behavior, missing glyph coverage, and when bad stacks create layout shifts, readability problems, or branding drift.",
-    "tags": [
-      "css",
-      "typography",
-      "fonts",
-      "properties",
-      "basics"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-04-05",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-font-family"
-  },
-  {
-    "id": "css-position-relative-absolute-fixed",
-    "family": "question",
-    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
-    "route": "/css/trivia/css-position-relative-absolute-fixed",
-    "tech": "css",
-    "difficulty": "intermediate",
-    "summary": "Fix an absolutely positioned element that escapes its parent: absolute uses the nearest ancestor that establishes a containing block, so a position: relative anchor is the fix.",
-    "tags": [
-      "css",
-      "position",
-      "layout",
-      "relative",
-      "absolute",
-      "fixed",
-      "stacking",
-      "offsets"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/css/trivia.json#css-position-relative-absolute-fixed"
   },
   {
     "id": "css-cascade-order",
@@ -3364,6 +3364,28 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-big-o-notation"
+  },
+  {
+    "id": "js-debug-notes-app-repo",
+    "family": "question",
+    "title": "Bug Squash: Failing Tests, a Slow Path and Messy Code in a Notes App",
+    "route": "/javascript/debug/js-debug-notes-app-repo",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Five files you have not seen and four failing tests: find the cause of each in a small notes app, fix a slow render path, tidy a tangled module and keep every passing test green.",
+    "tags": [
+      "debugging",
+      "modules",
+      "performance",
+      "caching",
+      "testing",
+      "strings"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-notes-app-repo"
   },
   {
     "id": "js-debug-bug-squash-invoices",
@@ -4667,6 +4689,26 @@
     "assetRef": "questions/javascript/coding.json#js-format-date-timezone"
   },
   {
+    "id": "js-frame-player-controller",
+    "family": "question",
+    "title": "Frame Player Controller: Play, Seek and Change Speed on a Clock",
+    "route": "/javascript/coding/js-frame-player-controller",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build the controller of a frame-by-frame player with no UI: play at a frame rate, pause, jump to any frame and change speed while playing, all on timers that never pile up.",
+    "tags": [
+      "timers",
+      "closure",
+      "state",
+      "validation"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-frame-player-controller"
+  },
+  {
     "id": "js-garbage-collection-and-gc-pauses",
     "family": "question",
     "title": "Garbage Collection (GC) in JavaScript: Memory Pressure and Jank",
@@ -5449,6 +5491,27 @@
     "updatedAt": "2026-11-22",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-mock-vs-stub-vs-spy"
+  },
+  {
+    "id": "js-named-task-scheduler",
+    "family": "question",
+    "title": "Name-Keyed Task Scheduler: One Lane per Name, with Cancel and Clear",
+    "route": "/javascript/coding/js-named-task-scheduler",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "Build a scheduler that runs async tasks one at a time per name and side by side across names, with cancel, clear and events, the kind of control a dashboard needs for background saves and uploads.",
+    "tags": [
+      "async",
+      "promises",
+      "concurrency",
+      "cancellation",
+      "events"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-named-task-scheduler"
   },
   {
     "id": "js-object-create-vs-new",
@@ -6296,6 +6359,27 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-testing-edge-cases-strategy"
+  },
+  {
+    "id": "js-text-editor-undo-redo",
+    "family": "question",
+    "title": "Text Editor with Undo and Redo: Edits, a Cursor and a History",
+    "route": "/javascript/coding/js-text-editor-undo-redo",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build a text buffer with a cursor, then give it undo and redo: record each edit so the text and the cursor can go back and forth, drop the redo history on a new edit and ignore edits that change nothing.",
+    "tags": [
+      "data-structures",
+      "state",
+      "oop",
+      "strings",
+      "design-patterns"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-text-editor-undo-redo"
   },
   {
     "id": "js-throttle",
@@ -7204,6 +7288,29 @@
     "assetRef": "questions/react/coding.json#react-chat-streaming-ui"
   },
   {
+    "id": "react-command-palette-sources",
+    "family": "question",
+    "title": "Command Palette with Three Sources",
+    "route": "/react/coding/react-command-palette-sources",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build a command palette in React that merges instant command matches, a parsed relative date and debounced document search in which only the latest query may answer, then drive it from the keyboard as an accessible combobox.",
+    "tags": [
+      "react",
+      "typescript",
+      "debounce",
+      "async",
+      "api-calls",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 75,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-command-palette-sources"
+  },
+  {
     "id": "react-conditional-rendering",
     "family": "question",
     "title": "Conditional rendering in React: patterns, trade-offs, and gotchas",
@@ -7355,6 +7462,28 @@
     "assetRef": "questions/react/coding.json#react-files-table-select-all"
   },
   {
+    "id": "react-event-log-design-spec",
+    "family": "question",
+    "title": "Event Log from a Design Spec",
+    "route": "/react/coding/react-event-log-design-spec",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build an event log from a written design spec in React and CSS, then make its rows selectable and filterable.",
+    "tags": [
+      "react",
+      "typescript",
+      "css",
+      "layout",
+      "responsive",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-event-log-design-spec"
+  },
+  {
     "id": "react-file-explorer",
     "family": "question",
     "title": "File Explorer Tree with Keyboard Navigation",
@@ -7377,6 +7506,30 @@
     "assetRef": "questions/react/coding.json#react-file-explorer"
   },
   {
+    "id": "react-frame-sequence-player",
+    "family": "question",
+    "title": "Frame Sequence Player: Four Tasks in One Hour",
+    "route": "/react/coding/react-frame-sequence-player",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a player for a camera's still images in four timed tasks: request states with Retry, play and pause on a timer, a timeline with markers and a range input, then keyboard control and cleanup.",
+    "tags": [
+      "react",
+      "typescript",
+      "timers",
+      "effects",
+      "state-management",
+      "loading-states",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-frame-sequence-player"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",
@@ -7396,6 +7549,28 @@
     "updatedAt": "2026-01-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-functional-vs-class-components"
+  },
+  {
+    "id": "react-grid-rectangle-selection",
+    "family": "question",
+    "title": "Grid Rectangle Selection",
+    "route": "/react/coding/react-grid-rectangle-selection",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Make a sheet of cells selectable like a spreadsheet in React: one cell on a click, a rectangle on a drag or a Shift-click in any direction, arrow keys that move and extend the selection, and Escape to clear it.",
+    "tags": [
+      "react",
+      "typescript",
+      "grid",
+      "state-management",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 45,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-grid-rectangle-selection"
   },
   {
     "id": "react-higher-order-components",
@@ -7681,6 +7856,28 @@
     "assetRef": "questions/react/coding.json#react-chips-input-autocomplete"
   },
   {
+    "id": "react-json-tree-viewer",
+    "family": "question",
+    "title": "JSON Viewer in Stages",
+    "route": "/react/coding/react-json-tree-viewer",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a read-only JSON tree in React in four stages, from an object of primitives to arrays at any depth and text that does not parse, with a toggle and a summary on every container.",
+    "tags": [
+      "react",
+      "typescript",
+      "recursion",
+      "tree",
+      "state-management",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-json-tree-viewer"
+  },
+  {
     "id": "react-listing-booking-widget",
     "family": "question",
     "title": "Listing Booking Widget: Dates, Guests and Total Price",
@@ -7725,6 +7922,28 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-multi-step-signup"
+  },
+  {
+    "id": "react-nested-todo-outliner",
+    "family": "question",
+    "title": "Nested To-Do Outliner",
+    "route": "/react/coding/react-nested-todo-outliner",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a nested to-do outliner in React: insert anywhere with Enter, nest and un-nest with Tab and Shift+Tab, remove empty items with Backspace, and keep focus on the item that moved.",
+    "tags": [
+      "react",
+      "typescript",
+      "tree",
+      "recursion",
+      "keyboard",
+      "state-management"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-nested-todo-outliner"
   },
   {
     "id": "react-order-book-socket-feed",
@@ -8379,6 +8598,27 @@
     "assetRef": "questions/react/coding.json#react-living-room-home"
   },
   {
+    "id": "react-useeffect-vs-uselayouteffect",
+    "family": "question",
+    "title": "useEffect vs useLayoutEffect: why the UI flickers on first paint",
+    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish.",
+    "tags": [
+      "react",
+      "hooks",
+      "effects",
+      "performance",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
+  },
+  {
     "id": "react-useeffect-purpose",
     "family": "question",
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
@@ -8402,7 +8642,7 @@
   {
     "id": "react-usememo-vs-usecallback",
     "family": "question",
-    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "title": "useMemo vs useCallback: the difference, and when memoizing makes it slower",
     "route": "/react/trivia/react-usememo-vs-usecallback",
     "tech": "react",
     "difficulty": "intermediate",
@@ -8419,6 +8659,26 @@
     "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-usememo-vs-usecallback"
+  },
+  {
+    "id": "react-useref-vs-usestate",
+    "family": "question",
+    "title": "useRef vs useState: why a ref change doesn't re-render",
+    "route": "/react/trivia/react-useref-vs-usestate",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "current, while setState schedules a render.",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "dom"
+    ],
+    "access": "free",
+    "estimatedMinutes": 7,
+    "updatedAt": "2026-10-12",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
   },
   {
     "id": "react-virtualized-list-recycling",
@@ -8849,27 +9109,6 @@
     "assetRef": "questions/react/trivia.json#react-rerender-decision-and-render"
   },
   {
-    "id": "react-useeffect-vs-uselayouteffect",
-    "family": "question",
-    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
-    "route": "/react/trivia/react-useeffect-vs-uselayouteffect",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "Explain the one-frame flicker: useEffect gives no pre-paint guarantee (it generally runs after paint for non-interaction updates), so a layout correction made there can be visible for a frame, while useLayoutEffect runs after DOM mutations and blocks paint until synchronous updates finish.",
-    "tags": [
-      "react",
-      "hooks",
-      "effects",
-      "performance",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useeffect-vs-uselayouteffect"
-  },
-  {
     "id": "react-why-batching-state-updates",
     "family": "question",
     "title": "Why does React batch state updates? When does it not batch?",
@@ -8996,26 +9235,6 @@
     "updatedAt": "2026-10-12",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-strictmode-double-invoke-effects"
-  },
-  {
-    "id": "react-useref-vs-usestate",
-    "family": "question",
-    "title": "Why doesn't changing a ref re-render? useRef vs useState",
-    "route": "/react/trivia/react-useref-vs-usestate",
-    "tech": "react",
-    "difficulty": "intermediate",
-    "summary": "current, while setState schedules a render.",
-    "tags": [
-      "react",
-      "hooks",
-      "state",
-      "dom"
-    ],
-    "access": "free",
-    "estimatedMinutes": 7,
-    "updatedAt": "2026-10-12",
-    "schemaVersion": "question.v1",
-    "assetRef": "questions/react/trivia.json#react-useref-vs-usestate"
   },
   {
     "id": "react-derived-state-anti-pattern",

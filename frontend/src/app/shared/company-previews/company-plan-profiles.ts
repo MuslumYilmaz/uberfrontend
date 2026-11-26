@@ -25,6 +25,10 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
     framework: 'react',
     evidence: 'Accounts build UI in React or with the DOM, and React is the only framework they name.',
   },
+  airwallex: {
+    framework: 'react',
+    evidence: 'Every frontend posting and every frontend account that names a framework names React; one billing posting also asks for Vue or Angular.',
+  },
   amazon: {
     framework: 'javascript',
     mixed: true,
@@ -114,6 +118,10 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
     mixed: true,
     evidence: 'The one detailed screen is plain JavaScript and the table names no framework. One 2024 report and the guide prompts use React.',
   },
+  notion: {
+    framework: 'react',
+    evidence: "Notion's Front End guide says its frontend coding interviews are designed for React on CodeSignal, and its frontend postings ask for React and TypeScript.",
+  },
   openai: {
     framework: 'react',
     mixed: true,
@@ -150,6 +158,10 @@ export const COMPANY_PLAN_PROFILES: Readonly<Record<string, CompanyPlanProfile>>
     framework: 'javascript',
     mixed: true,
     evidence: 'The specialization round was plain JavaScript in two accounts. The phone screen sometimes builds a React component.',
+  },
+  verkada: {
+    framework: 'react',
+    evidence: 'Frontend accounts build in React, and six of the seven web postings name it; two accounts could use a framework of their choice.',
   },
   walmart: {
     framework: 'react',

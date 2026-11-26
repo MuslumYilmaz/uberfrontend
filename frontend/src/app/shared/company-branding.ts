@@ -217,6 +217,24 @@ export const COMPANY_BRANDS: Record<string, CompanyBrand> = {
     logoUrl: `${COMPANY_LOGO_BASE}/binance.svg`,
     monogram: 'B',
   },
+  notion: {
+    slug: 'notion',
+    label: 'Notion',
+    logoUrl: `${COMPANY_LOGO_BASE}/notion.svg`,
+    monogram: 'N',
+  },
+  // Simple Icons 16.36.0 has no Airwallex mark, so Airwallex keeps its monogram.
+  airwallex: {
+    slug: 'airwallex',
+    label: 'Airwallex',
+    monogram: 'A',
+  },
+  // Simple Icons 16.36.0 has no Verkada mark, so Verkada keeps its monogram.
+  verkada: {
+    slug: 'verkada',
+    label: 'Verkada',
+    monogram: 'V',
+  },
 };
 
 const COMPANY_ALIASES: Record<string, string> = {

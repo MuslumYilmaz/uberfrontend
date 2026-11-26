@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * Generates cdn/questions/company-question-lists.json: for every company whose process lists reported questions, the
- * counts a guide shows (per stage, round not stated, newest account) and each row's id, round, kind, frequency, the
- * last day it shows as new, its practice task and whether the one free unlock can open it. The question text stays out:
+ * counts a guide shows (per stage, round not stated, newest account; lead rows only when the list has groups) and each
+ * row's id, round, kind, frequency, the last day it shows as new, its group, its practice task and whether the one free
+ * unlock can open it. The question text stays out:
  * the backend checks an unlock against this file and needs only ids. Run with --check in the lint chain to fail on drift.
  */
 import fs from 'node:fs';
@@ -15,6 +16,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
 const previewsRoot = path.resolve(here, '..', 'src', 'app', 'shared', 'company-previews');
 const inlineRoot = path.resolve(here, '..', 'src', 'app', 'features', 'company', 'company-preview');
+/** The grouped summary the guide renders, so the file counts what the page counts. */
+const QUESTION_GROUPS_MODULE = path.join(inlineRoot, 'company-question-groups.ts');
 /** The guides the preview renders from its own branch, with the export that holds their prompts. */
 const INLINE_PROMPTS = { google: 'GOOGLE_PRACTICE_PROMPTS', netflix: 'NETFLIX_PRACTICE_PROMPTS', openai: 'OPENAI_PRACTICE_PROMPTS' };
 export const COMPANY_QUESTION_LISTS_RELATIVE_PATH = path.join('questions', 'company-question-lists.json');
@@ -62,14 +65,14 @@ export function readAnswerGuides(slugs = REGISTRY_AUTHORED_COMPANIES, inline = I
   return guides;
 }
 
-export function buildCompanyQuestionLists({ processes, questionList, catalogAccess, answerGuides }) {
+export function buildCompanyQuestionLists({ processes, questionList, catalogAccess, answerGuides, questionGroups = loadTsModule(QUESTION_GROUPS_MODULE) }) {
   const problems = [];
   const companies = {};
   for (const slug of Object.keys(processes).sort()) {
     const process = processes[slug];
     if (!process.questions?.length) continue;
-    for (const problem of questionList.questionListProblems(process)) problems.push(`${slug}: ${problem}`);
-    const summary = questionList.summariseQuestionList(process);
+    for (const problem of [...questionList.questionListProblems(process), ...questionGroups.questionGroupProblems(process)]) problems.push(`${slug}: ${problem}`);
+    const summary = questionGroups.withQuestionGroups(questionList.summariseQuestionList(process), process);
     const questions = process.questions.map((question, index) => {
       const row = summary.rows[index];
       if (question.practice && !catalogAccess.has(question.practice.path)) {

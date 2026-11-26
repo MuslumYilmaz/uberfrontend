@@ -4,6 +4,7 @@ import { Router, provideRouter } from '@angular/router';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import type { CompanyInterviewProcess, InterviewProcessSource } from '../../../../shared/company-previews/company-interview-processes';
 import { summariseQuestionList } from '../../../../shared/company-previews/company-question-list';
+import { withQuestionGroups } from '../company-question-groups';
 import { COMPANY_GUIDE_FEATURES, type CompanyGuideFeatures } from '../company-guide-features';
 import type { FreeUnlock } from '../../../../core/models/free-unlock.model';
 import type { AuthoredPracticePrompt } from '../../../../shared/company-previews/authored-company-preview.model';
@@ -56,7 +57,7 @@ describe('CompanyQuestionListComponent', () => {
     fixture.componentRef.setInput('slug', 'acme');
     fixture.componentRef.setInput('companyLabel', 'Acme');
     fixture.componentRef.setInput('process', process);
-    fixture.componentRef.setInput('summary', summariseQuestionList(process));
+    fixture.componentRef.setInput('summary', withQuestionGroups(summariseQuestionList(process), process));
     if (options.guides) fixture.componentRef.setInput('guides', options.guides);
     fixture.componentRef.setInput('viewer', viewer);
     fixture.componentRef.setInput('features', { ...COMPANY_GUIDE_FEATURES, ...options.features });
@@ -152,6 +153,57 @@ describe('CompanyQuestionListComponent', () => {
     expect(group.textContent).toContain('Reported in 1 account · Jun 2025');
     // One account behind the group reads as one source, not as "the same reports".
     expect(group.querySelector('.cq-behavioural__intro')?.textContent?.trim()).toBe('Open to everyone: 1 question from one public source.');
+  });
+
+  describe('rows from other loops', () => {
+    const grouped = (process: CompanyInterviewProcess): CompanyInterviewProcess => ({
+      ...process,
+      questions: [
+        ...process.questions!,
+        { id: 'intern-task', round: 'Coding round', kind: 'React build', topic: 'Intern widget', question: 'Build the intern widget.', audience: 'early-career', sources: [account('0000000e', '2026-09')], practice: { label: 'Intern task', path: '/react/coding/react-y' } },
+        { id: 'swe-puzzle', kind: 'Algorithm', topic: 'General puzzle', question: 'Solve the general puzzle.', audience: 'general', sources: [account('0000000f', '2025-02')] },
+      ],
+    });
+    const groups = (host: HTMLElement) => Array.from(host.querySelectorAll<HTMLDetailsElement>('[data-testid="company-question-group"]'));
+
+    it('follow the list in closed groups and stay out of its heading, its locks and its offer', () => {
+      const host = create('guest', { rows: 3, edit: grouped });
+      expect(host.querySelector('h2')?.textContent?.trim()).toBe('3 questions candidates reported');
+      expect(host.querySelector('.cq__rows')!.querySelectorAll('[data-testid="company-question-row"]').length).toBe(3);
+      expect(groups(host).map((group) => [group.open, group.querySelector('summary')?.textContent?.replace(/\s+/g, ' ').trim()])).toEqual([
+        [false, 'Early-career loops 1 question'],
+        [false, 'General engineering loops 1 question'],
+      ]);
+      expect(groups(host).map((group) => group.querySelector('.cq-row__number')?.textContent?.trim())).toEqual(['4', '5']);
+      // The intern row stays locked inside its group, and the lock counts name the list's own two.
+      expect(groups(host)[0].querySelector('.cq-row--locked')).not.toBeNull();
+      expect(host.querySelector('.cq-offer__title')?.textContent?.trim()).toBe('Unlock all 2 Acme questions');
+      expect(host.querySelector('.cq__intro')?.textContent).toContain('Premium opens all 2 still locked');
+    });
+
+    it('open where a link points at one of their rows', async () => {
+      const host = create('guest', { rows: 3, edit: grouped });
+      await TestBed.inject(Router).navigateByUrl('/#acme-question-swe-puzzle');
+      fixture.detectChanges();
+      expect(groups(host).map((group) => group.open)).toEqual([false, true]);
+      expect(fixture.componentInstance.expanded()).toBeFalse();
+    });
+
+    it('leave a list without them exactly as it was', () => {
+      const plain = acme(4);
+      const summary = summariseQuestionList(plain);
+      expect(withQuestionGroups(summary, plain)).toBe(summary);
+      expect(groups(create('guest')).length).toBe(0);
+    });
+  });
+
+  it('says only the years a question was reported on a guide that names no source', () => {
+    const host = create('guest', { edit: (process) => ({ ...process, sourceDisplay: 'year' }) });
+    const meta = rows(host).map((row) => row.querySelector('.cq-row__who')?.textContent?.trim());
+    expect(meta).toEqual(['Reported once, in 2026', 'Reported once, in 2024', 'Reported once, in 2025', 'Reported once, in 2023']);
+    expect(host.querySelector('.cq-behavioural__frequency')?.textContent?.trim()).toBe('Reported once, in 2025');
+    // No reporter, site or month reaches the rows.
+    expect(host.querySelector('.cq__rows')?.textContent).not.toMatch(/Taro|United States|Frontend engineer|account/);
   });
 
   describe('the Premium trailer in the offer', () => {
@@ -252,6 +304,18 @@ describe('CompanyQuestionListComponent', () => {
       expect(host.textContent).not.toContain('Fix it');
       // The choice no longer repeats a promise the row does not keep.
       expect(choose(host, 1).textContent).not.toContain('its answer guide where it has one');
+    });
+
+    it('names the practice task in a member\'s answer guide with what it comes with, and keeps it from a visitor', () => {
+      const label = 'Solve the bare puzzle on a clock (Premium; checks and a reference solution)';
+      let host = create('member', { edit: withGuide, guides: { 'g-bare': { ...guide, resourceLabel: label } } });
+      const practice = rows(host)[2].querySelector('.cq-guide--details .cq-guide__practice a') as HTMLAnchorElement;
+      expect(practice.textContent?.trim()).toBe(label);
+      expect(practice.getAttribute('href')).toBe('/react/coding/react-x');
+      TestBed.resetTestingModule();
+      host = create('guest', { edit: withGuide, guides: { 'g-bare': { ...guide, resourceLabel: label } } });
+      expect(host.querySelector('.cq-guide__practice')).toBeNull();
+      expect(host.textContent).not.toContain(label);
     });
 
     it('drops the line from a row the reader opened, and from every row for a member', () => {

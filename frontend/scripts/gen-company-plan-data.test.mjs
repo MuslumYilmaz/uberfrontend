@@ -151,6 +151,33 @@ test('a guide with a question list counts the sources its page counts and says h
   assert.equal(catalog(withQuestions()).sourceCount, catalog(baseProcess()).sourceCount + 3);
 });
 
+test('a guide that names no source gives its rounds years, not sources, and its tasks no report lines', () => {
+  const quiet = { ...baseProcess(), sourceDisplay: 'year' };
+  assert.throws(() => build({ processes: { acme: quiet } }), /acme names no source, but catalog tasks cite sources for it \(.*\/javascript\/coding\/js-new.*\); drop those sources/);
+  const unsourced = Object.fromEntries(Object.entries(baseCatalog).map(([file, value]) => [
+    file,
+    Array.isArray(value) ? value.map(({ sources: _sources, ...entry }) => entry) : (({ sources: _sources, ...entry }) => entry)(value),
+  ]));
+  const [recruiter, coding, design] = build({ processes: { acme: quiet } }, unsourced).companies.acme.variants[0].rounds;
+  assert.deepEqual([recruiter.sources, recruiter.years], [[], undefined]);
+  assert.deepEqual([coding.sources, coding.years, coding.moreSources], [[], ['2021', '2023', '2024', '2025', '2026'], undefined]);
+  assert.deepEqual(design.years, ['2024']);
+  const tasks = build({ processes: { acme: quiet } }, unsourced).companies.acme.variants[0].tasks;
+  assert.ok(tasks.every((task) => task.why?.kind !== 'report'));
+});
+
+test('the question count leaves out the rows of early-career and general loops', () => {
+  const grouped = {
+    ...baseProcess(),
+    questions: [
+      { id: 'lead', kind: 'JavaScript', question: 'Lead.', sources: [tableSource('new', '2026-04')] },
+      { id: 'intern', kind: 'JavaScript', question: 'Intern.', audience: 'early-career', sources: [tableSource('old', '2020-01')] },
+      { id: 'swe', kind: 'Algorithm', question: 'General.', audience: 'general', sources: [tableSource('old', '2020-01')] },
+    ],
+  };
+  assert.equal(build({ processes: { acme: grouped } }).companies.acme.questionCount, 1);
+});
+
 test('a round shows official pages first, then the three newest, and counts the rest', () => {
   const coding = build().companies.acme.variants[0].rounds[1];
   assert.deepEqual(coding.sources.map((source) => source.date), ['2026-04', '2025-01', '2024-01']);

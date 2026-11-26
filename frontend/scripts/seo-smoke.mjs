@@ -637,6 +637,90 @@ const AUTHORED_GUIDE_SMOKE = [
     reportUrl:
       'https://interview.tw/c/CmbI',
   },
+  {
+    label: 'Verkada',
+    route: '/companies/verkada/preview',
+    title: 'Verkada Frontend Interview Questions: 10 Reported + Prep Guide',
+    description:
+      'Verkada frontend interview: a video player built from still frames, a UI from a design file, a grid to select from and 10 reported questions.',
+    h1: 'Verkada Frontend Interview Questions',
+    kicker: 'Public Verkada prep guide',
+    headings: [
+      'Make the frame player dull, then style a screen from a design',
+      'Short posts, one round each: how far the Verkada evidence goes',
+      'questions candidates reported',
+      'A 7-day Verkada frontend interview preparation plan',
+      'Common Verkada frontend interview preparation questions',
+      'Free practice for the Verkada rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Verkada has confirmed nothing',
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/react/trivia/react-stale-state-closures',
+      '/javascript/debug/js-debug-stale-closure-autosave',
+      '/react/coding/react-virtualized-list-recycling',
+    ],
+    // A source the process cites; the guide names no source, so it must not link one.
+    reportUrl:
+      'https://frontendlead.com/discuss/t/verkada-senior-fe-phone/2916',
+  },
+  {
+    label: 'Notion',
+    route: '/companies/notion/preview',
+    title: 'Notion Frontend Interview Questions: 12 Reported + Prep Guide',
+    description:
+      'Notion frontend interview: a React screen on CodeSignal, an AI-enabled coding round, the intern take-home and 12 reported questions.',
+    h1: 'Notion Frontend Interview Questions',
+    kicker: 'Public Notion prep guide',
+    headings: [
+      'Build product pieces in React, then rehearse with an AI assistant',
+      "Notion's guides against Software Engineer accounts: what each can tell you",
+      'questions candidates reported',
+      'A 7-day Notion frontend interview preparation plan',
+      'Common Notion frontend interview preparation questions',
+      'Free practice for the Notion rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Notion has not confirmed any candidate',
+    resources: [
+      '/react/trivia/react-rerender-decision-and-render',
+      '/react/trivia/react-hooks-youve-used',
+      '/react/coding/react-todo-list',
+      '/html/coding/html-semantic-layout',
+    ],
+    // A source the process cites; the guide names no source, so it must not link one.
+    reportUrl:
+      'https://frontendlead.com/discuss/t/notion-swe2-phone-screen/3477',
+  },
+  {
+    label: 'Airwallex',
+    route: '/companies/airwallex/preview',
+    title: 'Airwallex Frontend Interview Questions: 9 Reported + Prep Guide',
+    description:
+      'Airwallex frontend interview: live React tasks, a take-home with a review panel, AI in its 2026 interviews and 9 reported questions.',
+    h1: 'Airwallex Frontend Interview Questions',
+    kicker: 'Public Airwallex prep guide',
+    headings: [
+      'Expect live React with follow-ups, and a take-home you defend in detail',
+      "Frontend accounts from three cities, and Airwallex's own posts: what each covers",
+      'questions candidates reported',
+      'A 7-day Airwallex frontend interview preparation plan',
+      'Common Airwallex frontend interview preparation questions',
+      'Free practice for the Airwallex rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Airwallex has confirmed none of the candidate accounts',
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/javascript/coding/js-build-tree-from-flat-list',
+      '/react/trivia/react-usememo-vs-usecallback',
+      '/react/trivia/react-code-splitting-module-federation',
+    ],
+    // A source the process cites; the guide names no source, so it must not link one.
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-engineer-singapore-february-27-2025-no-offer-neutral-55fafb14/',
+  },
 ];
 // Catalog-driven company previews with an editorial notes entry (COMPANY_EDITORIAL_NOTES).
 const EDITORIAL_NOTE_SMOKE = [

@@ -19,7 +19,7 @@ export type CompanyEvidenceCounts = {
   readonly sources: number;
   /** Practice prompts on the page. */
   readonly prompts: number;
-  /** Reported questions in the guide's question list; the behavioural group is not counted. */
+  /** Reported questions in the guide's question list; the behavioural, early-career and general groups are not counted. */
   readonly questions: number;
 };
 
@@ -106,7 +106,7 @@ function citedSource(source: InterviewProcessSource, citation: Citation): Author
 }
 
 export function companyEvidence(preview: AuthoredCompanyPreview, process: CompanyInterviewProcess | null): CompanyEvidence {
-  return evidenceFrom(preview.sources.items, preview.prompts.items.length, process);
+  return evidenceFrom(preview.sources?.items ?? [], preview.prompts.items.length, process);
 }
 
 /**
@@ -149,7 +149,13 @@ export function evidenceFrom(curated: readonly AuthoredSource[], prompts: number
   const sources = [...curated, ...extra];
   const reports = sources.filter((source) => source.kind === 'report').length;
   return {
-    counts: { reports, official: sources.length - reports, sources: sources.length, prompts, questions: process?.questions?.length ?? 0 },
+    counts: {
+      reports,
+      official: sources.length - reports,
+      sources: sources.length,
+      prompts,
+      questions: process?.questions?.filter((question) => !question.audience).length ?? 0,
+    },
     sources,
   };
 }
@@ -177,7 +183,8 @@ export function authoredCountFields(preview: AuthoredCompanyPreview): readonly {
     ...preview.studyPriorities.paragraphs.map((text, index) => ({ field: `studyPriorities.paragraphs[${index}]`, text })),
     ...preview.sourceBoundary.paragraphs.map((text, index) => ({ field: `sourceBoundary.paragraphs[${index}]`, text })),
     { field: 'prompts.intro', text: preview.prompts.intro },
-    { field: 'sources.intro', text: preview.sources.intro },
+    ...(preview.sources ? [{ field: 'sources.intro', text: preview.sources.intro }] : []),
+    ...(preview.methodNote?.paragraphs ?? []).map((text, index) => ({ field: `methodNote.paragraphs[${index}]`, text })),
   ];
 }
 
@@ -193,6 +200,7 @@ export function fillAuthoredPreview(preview: AuthoredCompanyPreview, counts: Com
     studyPriorities: { ...preview.studyPriorities, paragraphs: preview.studyPriorities.paragraphs.map(fill) },
     sourceBoundary: { ...preview.sourceBoundary, paragraphs: preview.sourceBoundary.paragraphs.map(fill) },
     prompts: { ...preview.prompts, intro: fill(preview.prompts.intro) },
-    sources: { ...preview.sources, intro: fill(preview.sources.intro) },
+    ...(preview.sources ? { sources: { ...preview.sources, intro: fill(preview.sources.intro) } } : {}),
+    ...(preview.methodNote ? { methodNote: { ...preview.methodNote, paragraphs: preview.methodNote.paragraphs.map(fill) } } : {}),
   };
 }

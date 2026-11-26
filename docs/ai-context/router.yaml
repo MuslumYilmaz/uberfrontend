@@ -104,6 +104,41 @@ topic_rules:
       - docs/ai-context/trivia-review.md
     max_docs: 1
 
+  - id: coding_item_checks
+    priority: 97
+    role: primary
+    keywords:
+      - coding question
+      - coding item
+      - new coding
+      - debug item
+      - frameworktests
+      - reference solution
+      - starter code
+      - wrong solution
+      - negative fixture
+      - blind solve
+      - check runner
+      - pressure mode
+      - review record
+    paths:
+      - content-reviews/coding/**
+      - cdn/questions/*/coding.json
+      - cdn/questions/*/debug.json
+      - cdn/questions/pressure-modes/**
+      - cdn/sb/**
+      - frontend/scripts/coding-negative-fixtures/**
+      - frontend/e2e/framework-wrong-solutions/**
+      - frontend/e2e/framework-checks-negative.prod.spec.ts
+      - frontend/src/app/features/coding/coding-detail/opaque-dom-check-runner.ts
+      - frontend/src/app/core/utils/failure-explain-rules.ts
+    load:
+      - docs/ai-context/coding-item-checks.md
+    avoid:
+      - docs/ai-context/frontend-ui.md
+      - docs/ai-context/content-authoring.md
+    max_docs: 1
+
   - id: question_content
     priority: 95
     role: primary

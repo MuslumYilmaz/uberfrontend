@@ -21,6 +21,8 @@ const CHECKED_NOV_11 = '2026-11-11';
 const CHECKED_NOV_14 = '2026-11-14';
 const CHECKED_NOV_16 = '2026-11-16';
 const CHECKED_NOV_21 = '2026-11-21';
+const CHECKED_NOV_24 = '2026-11-24';
+const CHECKED_NOV_25 = '2026-11-25';
 
 export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOfficialGuide[]>> = {
   apple: [
@@ -30,6 +32,34 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         'General advice before, during and after an interview, and a note that some roles include a presentation, case study, technical assessment or coding exercises; no stages and no frontend content.',
       checkedAt: CHECKED_OCT_22,
+    },
+  ],
+  airwallex: [
+    {
+      label: 'Getting Hired (Airwallex Engineering)',
+      url: 'https://medium.com/airwallex-engineering/getting-hired-cb59018b26e9',
+      covers:
+        'The 2022 process for engineering roles: a recruiter call, a 60-minute tech screen, a choice between a take-home of about 3 to 4 hours and a 60-minute live coding problem, a 60 to 90 minute design and problem-solving interview that opens with a review of your take-home if you chose one, and a 60-minute final with a senior engineering leader.',
+      checkedAt: CHECKED_NOV_24,
+    },
+    {
+      label: 'Building an AI-first culture',
+      url: 'https://careers.airwallex.com/blog/airwallex-ai-first/',
+      covers: 'A 2026 post on AI at Airwallex; one sentence says its engineering interviews now test how well candidates work with AI rather than banning it.',
+      checkedAt: CHECKED_NOV_24,
+    },
+    {
+      label: 'Engineering in London',
+      url: 'https://careers.airwallex.com/blog/why-engineer-returned-to-airwallex-london/',
+      covers:
+        'A 2026 post with the stages for engineering roles in London: a coding interview, a system design interview, a hiring manager interview, and a bar raiser on motivations, values and how you use AI in your work.',
+      checkedAt: CHECKED_NOV_25,
+    },
+    {
+      label: 'Early careers',
+      url: 'https://careers.airwallex.com/early-careers/',
+      covers: 'Two to three rounds for early-career candidates: a recruiter screen plus one or two technical or working sessions.',
+      checkedAt: CHECKED_NOV_25,
     },
   ],
   amazon: [
@@ -515,6 +545,58 @@ export const COMPANY_OFFICIAL_GUIDES: Readonly<Record<string, readonly CompanyOf
       covers:
         "The recruitment process for Binance's early-career programs, which depending on the program may include an online or take-home assessment and interviews with talent acquisition or HR, the hiring manager, a business unit lead and cross-functional interviews.",
       checkedAt: CHECKED_NOV_16,
+    },
+  ],
+  notion: [
+    {
+      label: 'Front End Interview Prep',
+      url: 'https://notion.notion.site/Front-End-Interview-Prep-04fe1776e31f46ad960a6877a6d0ad72',
+      covers:
+        'The Front End track: a 30-minute initial interview, a 60-minute coding screen in React on CodeSignal by default, a 4-hour virtual onsite of an AI-enabled coding interview, code review, software design and career history, then final interviews, references and a background check. AI coding tools are encouraged in the AI-enabled round and restricted in the other coding rounds.',
+      checkedAt: CHECKED_NOV_25,
+    },
+    {
+      label: 'Software Engineering Interviews',
+      url: 'https://notion.notion.site/Software-Engineering-Interviews-63876cbf0aa9455fa0f0ffc854b40f6a',
+      covers:
+        'The general engineering stages, which each track follows in a similar structure: an initial interview with the talent team, live coding on a real-world problem with a Notion engineer, panel interviews of two coding interviews, a design to a rough spec and a career history, then a final interview with a leader, reference checks and a background check.',
+      checkedAt: CHECKED_NOV_25,
+    },
+    {
+      label: 'Intern Interview Prep',
+      url: 'https://notion.notion.site/Intern-Interview-Prep-3c9efdeead05802594d2ef9d5dded673',
+      covers:
+        'The intern loop: a 15-minute initial interview, a 3-hour take-home, a 2-hour virtual onsite of debugging and coding that includes a 10-minute review of the take-home after 5 minutes of introductions, and a 45-minute career history.',
+      checkedAt: CHECKED_NOV_25,
+    },
+    {
+      label: 'New Grad Interview Prep',
+      url: 'https://notion.notion.site/New-Grad-Interview-Prep-3c9efdeead0580b4adeedbcd96f78893',
+      covers: 'The new-grad loop: the intern stages, then a 30-minute values capstone, reference checks and a background check.',
+      checkedAt: CHECKED_NOV_25,
+    },
+    {
+      label: 'How Notion hires',
+      url: 'https://www.notion.com/blog/how-notion-hires',
+      covers:
+        "A 2023 post by Notion's Chief People Officer: references as a strong predictor of success, the CEO's part in hiring for almost every role, and the company's values.",
+      checkedAt: CHECKED_NOV_25,
+    },
+  ],
+  verkada: [
+    {
+      label: 'Careers: Interviewing at Verkada',
+      url: 'https://www.verkada.com/careers/',
+      covers:
+        'Four stages: a phone or video call with a recruiter, a conversation with the hiring manager or a potential team member with behavioural and role-specific questions, technical assessments that candidates may be asked to complete depending on the role, and on-site interviews at an office that often include team members and technical exercises. No round count, durations or frontend content.',
+      checkedAt: CHECKED_NOV_24,
+    },
+    {
+      label: 'Candidate privacy policy',
+      url: 'https://www.verkada.com/candidate-privacy-policy/',
+      covers:
+        'That Verkada may record and analyse interviews with AI tools that support human decision-making and make no hiring decisions, that it hosts video interviews on Zoom, and that it takes up reference, employment background and other checks before employment starts. Nothing on candidates using AI.',
+      checkedAt: CHECKED_NOV_24,
     },
   ],
 };

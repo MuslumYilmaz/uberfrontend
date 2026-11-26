@@ -87,6 +87,7 @@
 /companies
 /companies/agoda/preview
 /companies/airbnb/preview
+/companies/airwallex/preview
 /companies/amazon/preview
 /companies/anduril/preview
 /companies/apple/preview
@@ -106,6 +107,7 @@
 /companies/meta/preview
 /companies/microsoft/preview
 /companies/netflix/preview
+/companies/notion/preview
 /companies/openai/preview
 /companies/revolut/preview
 /companies/servicenow/preview
@@ -114,6 +116,7 @@
 /companies/stripe/preview
 /companies/tesla/preview
 /companies/uber/preview
+/companies/verkada/preview
 /companies/walmart/preview
 /companies/waymo/preview
 /companies/xai/preview
@@ -287,6 +290,7 @@
 /javascript/coding/js-flatten-once
 /javascript/coding/js-folder-access-over-time
 /javascript/coding/js-format-date-timezone
+/javascript/coding/js-frame-player-controller
 /javascript/coding/js-get-by-path-1
 /javascript/coding/js-group-by
 /javascript/coding/js-implement-bind
@@ -302,6 +306,7 @@
 /javascript/coding/js-median-of-array
 /javascript/coding/js-memoize-function
 /javascript/coding/js-merge-sorted-arrays
+/javascript/coding/js-named-task-scheduler
 /javascript/coding/js-number-clamp
 /javascript/coding/js-object-create
 /javascript/coding/js-once
@@ -331,6 +336,7 @@
 /javascript/coding/js-streaming-ndjson-parser
 /javascript/coding/js-sum-numbers
 /javascript/coding/js-take-latest
+/javascript/coding/js-text-editor-undo-redo
 /javascript/coding/js-three-sum
 /javascript/coding/js-throttle
 /javascript/coding/js-timer-manager
@@ -346,6 +352,7 @@
 /javascript/debug/js-debug-lost-this-binding
 /javascript/debug/js-debug-missing-return-map-filter
 /javascript/debug/js-debug-mutating-input
+/javascript/debug/js-debug-notes-app-repo
 /javascript/debug/js-debug-nullish-defaults
 /javascript/debug/js-debug-numeric-sort
 /javascript/debug/js-debug-off-by-one
@@ -446,6 +453,7 @@
 /react/coding/react-chat-streaming-ui
 /react/coding/react-chessboard-click-highlight
 /react/coding/react-chips-input-autocomplete
+/react/coding/react-command-palette-sources
 /react/coding/react-contact-form-starter
 /react/coding/react-countdown-timer
 /react/coding/react-counter
@@ -455,13 +463,17 @@
 /react/coding/react-debug-transcript-sync
 /react/coding/react-dynamic-counter-buttons
 /react/coding/react-dynamic-table
+/react/coding/react-event-log-design-spec
 /react/coding/react-fetch-list-states
 /react/coding/react-file-explorer
 /react/coding/react-file-upload-dropzone-progress
 /react/coding/react-files-table-select-all
 /react/coding/react-filterable-user-list
+/react/coding/react-frame-sequence-player
+/react/coding/react-grid-rectangle-selection
 /react/coding/react-image-slider
 /react/coding/react-implement-usememo-context
+/react/coding/react-json-tree-viewer
 /react/coding/react-like-button
 /react/coding/react-listing-booking-widget
 /react/coding/react-living-room-home
@@ -469,6 +481,7 @@
 /react/coding/react-multi-step-signup
 /react/coding/react-nested-checkboxes
 /react/coding/react-nested-comments
+/react/coding/react-nested-todo-outliner
 /react/coding/react-order-book-socket-feed
 /react/coding/react-pagination-table
 /react/coding/react-progress-bar-thresholds

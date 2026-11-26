@@ -465,6 +465,55 @@
   background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-text-primary) 10%);
 }
 
+/* Rows from other loops wait behind one line per group, after the list's own rows and outside its counts. */
+.cq-group {
+  display: grid;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+.cq-group__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  min-height: 44px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.cq-group__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The same turning arrow as the guide's other closed notes. */
+.cq-group__summary::before {
+  content: '▸';
+  align-self: center;
+  color: var(--uf-accent);
+  transition: transform 160ms ease;
+}
+
+.cq-group[open] > .cq-group__summary::before {
+  transform: rotate(90deg);
+}
+
+.cq-group__title {
+  display: inline;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.cq-group__count,
+.cq-group__intro {
+  font-size: 14px;
+  color: var(--uf-text-secondary);
+}
+
+.cq-group__intro {
+  max-width: 72ch;
+}
+
 .cq-offer {
   display: grid;
   gap: 18px;

@@ -11,6 +11,16 @@ import { resolve as resolvePath } from 'node:path';
 const QUESTION_LIST_GUIDES: ReadonlySet<string> = new Set(
   Object.keys(JSON.parse(readFileSync(resolvePath(__dirname, '../../cdn/questions/company-question-lists.json'), 'utf8')).companies),
 );
+// Guides whose process names no source (sourceDisplay: 'year'): rows and rounds show the years their accounts give, and
+// no reporter, site or source link reaches the page.
+// The year line of each guide's open first row.
+const YEAR_ONLY_FIRST_ROW_LINES: Readonly<Record<string, string>> = {
+  verkada: 'Reported once, in 2026',
+  notion: 'Reported once, in 2023',
+  airwallex: 'Reported once, in 2025',
+};
+const YEAR_ONLY_GUIDES: ReadonlySet<string> = new Set(Object.keys(YEAR_ONLY_FIRST_ROW_LINES));
+const SOURCE_SITE_NAMES = /FrontendLead|frontendlead\.com|jointaro|\bTaro\b|teamblind|PracHub|prachub/;
 
 const WEB_HOST = process.env.PLAYWRIGHT_HOST || '127.0.0.1';
 const WEB_PORT = process.env.PLAYWRIGHT_PORT || '4200';
@@ -1420,6 +1430,88 @@ const AUTHORED_GUIDE_CASES = [
     ],
     reportUrl:
       'https://interview.tw/c/CmbI',
+  },
+  {
+    label: 'Verkada',
+    path: '/companies/verkada/preview',
+    title: 'Verkada Frontend Interview Questions: 10 Reported + Prep Guide',
+    description:
+      'Verkada frontend interview: a video player built from still frames, a UI from a design file, a grid to select from and 10 reported questions.',
+    h1: 'Verkada Frontend Interview Questions',
+    kicker: 'Public Verkada prep guide',
+    headings: [
+      'Make the frame player dull, then style a screen from a design',
+      'Short posts, one round each: how far the Verkada evidence goes',
+      'questions candidates reported',
+      'A 7-day Verkada frontend interview preparation plan',
+      'Common Verkada frontend interview preparation questions',
+      'Free practice for the Verkada rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Verkada has confirmed nothing',
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/react/trivia/react-stale-state-closures',
+      '/javascript/debug/js-debug-stale-closure-autosave',
+      '/react/coding/react-virtualized-list-recycling',
+    ],
+    // A source the guide's process cites: a guide that names no source must not link it.
+    reportUrl:
+      'https://frontendlead.com/discuss/t/verkada-senior-fe-phone/2916',
+  },
+  {
+    label: 'Notion',
+    path: '/companies/notion/preview',
+    title: 'Notion Frontend Interview Questions: 12 Reported + Prep Guide',
+    description:
+      'Notion frontend interview: a React screen on CodeSignal, an AI-enabled coding round, the intern take-home and 12 reported questions.',
+    h1: 'Notion Frontend Interview Questions',
+    kicker: 'Public Notion prep guide',
+    headings: [
+      'Build product pieces in React, then rehearse with an AI assistant',
+      "Notion's guides against Software Engineer accounts: what each can tell you",
+      'questions candidates reported',
+      'A 7-day Notion frontend interview preparation plan',
+      'Common Notion frontend interview preparation questions',
+      'Free practice for the Notion rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Notion has not confirmed any candidate',
+    resources: [
+      '/react/trivia/react-rerender-decision-and-render',
+      '/react/trivia/react-hooks-youve-used',
+      '/react/coding/react-todo-list',
+      '/html/coding/html-semantic-layout',
+    ],
+    reportUrl:
+      'https://frontendlead.com/discuss/t/notion-swe2-phone-screen/3477',
+  },
+  {
+    label: 'Airwallex',
+    path: '/companies/airwallex/preview',
+    title: 'Airwallex Frontend Interview Questions: 9 Reported + Prep Guide',
+    description:
+      'Airwallex frontend interview: live React tasks, a take-home with a review panel, AI in its 2026 interviews and 9 reported questions.',
+    h1: 'Airwallex Frontend Interview Questions',
+    kicker: 'Public Airwallex prep guide',
+    headings: [
+      'Expect live React with follow-ups, and a take-home you defend in detail',
+      "Frontend accounts from three cities, and Airwallex's own posts: what each covers",
+      'questions candidates reported',
+      'A 7-day Airwallex frontend interview preparation plan',
+      'Common Airwallex frontend interview preparation questions',
+      'Free practice for the Airwallex rounds',
+      'How we collected these questions',
+    ],
+    trustFragment: 'Airwallex has confirmed none of the candidate accounts',
+    resources: [
+      '/react/coding/react-fetch-list-states',
+      '/javascript/coding/js-build-tree-from-flat-list',
+      '/react/trivia/react-usememo-vs-usecallback',
+      '/react/trivia/react-code-splitting-module-federation',
+    ],
+    reportUrl:
+      'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-engineer-singapore-february-27-2025-no-offer-neutral-55fafb14/',
   },
 ] as const;
 
@@ -4072,6 +4164,36 @@ test.describe('seo-ssr', () => {
       practicePath: '/guides/interview-blueprint/quiz',
     },
     {
+      path: '/companies/verkada/preview',
+      heading: 'Verkada frontend interview process',
+      tables: 3,
+      after: '<h1',
+      before: 'id="verkada-role-lenses"',
+      reportUrl:
+        'https://frontendlead.com/discuss/t/verkada-senior-fe-phone/2916',
+      practicePath: '/react/coding/react-fetch-list-states',
+    },
+    {
+      path: '/companies/notion/preview',
+      heading: 'Notion frontend interview process',
+      tables: 3,
+      after: '<h1',
+      before: 'id="notion-role-lenses"',
+      reportUrl:
+        'https://frontendlead.com/discuss/t/notion-swe2-phone-screen/3477',
+      practicePath: '/react/coding/react-todo-list',
+    },
+    {
+      path: '/companies/airwallex/preview',
+      heading: 'Airwallex frontend interview process',
+      tables: 5,
+      after: '<h1',
+      before: 'id="airwallex-role-lenses"',
+      reportUrl:
+        'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-engineer-singapore-february-27-2025-no-offer-neutral-55fafb14/',
+      practicePath: '/react/coding/react-fetch-list-states',
+    },
+    {
       path: '/companies/airbnb/preview',
       heading: 'Airbnb frontend interview process',
       tables: 1,
@@ -4084,9 +4206,9 @@ test.describe('seo-ssr', () => {
 
   // Every company with a sourced table.
   const COMPANIES_WITH_PROCESS_TABLES = [
-    'agoda', 'airbnb', 'amazon', 'anduril', 'apple', 'binance', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit',
-    'jpmorgan', 'meta', 'microsoft', 'netflix', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
-    'walmart', 'waymo', 'xai', 'zalando',
+    'agoda', 'airbnb', 'airwallex', 'amazon', 'anduril', 'apple', 'binance', 'booking-com', 'bytedance', 'capital-one', 'cloudflare', 'crowdstrike', 'datadog', 'disney', 'elevenlabs', 'gitlab', 'google', 'intuit',
+    'jpmorgan', 'meta', 'microsoft', 'netflix', 'notion', 'openai', 'revolut', 'servicenow', 'shopee', 'spotify', 'stripe', 'tesla', 'uber',
+    'verkada', 'walmart', 'waymo', 'xai', 'zalando',
   ];
 
   test('raw company previews render a sourced process table for every company', async ({ request }) => {
@@ -4098,7 +4220,12 @@ test.describe('seo-ssr', () => {
       const section = html.slice(sectionAt, html.indexOf('</section>', sectionAt));
       expect(section.match(/<table\b/g)?.length ?? 0, `${slug} tables`).toBeGreaterThan(0);
       const reportAnchors = section.match(/<a[^>]*rel="noopener noreferrer nofollow"[^>]*>/g) ?? [];
-      if (QUESTION_LIST_GUIDES.has(slug)) {
+      if (YEAR_ONLY_GUIDES.has(slug)) {
+        // A guide that names no source gives each round its evidence and years, with no reporter and no link.
+        expect(reportAnchors.length, `${slug} report links in the table`).toBe(0);
+        expect(section, `${slug} reporters`).not.toContain('interview-process__reporter');
+        expect(rawVisibleTextPreserveCase(section), `${slug} source names`).not.toMatch(SOURCE_SITE_NAMES);
+      } else if (QUESTION_LIST_GUIDES.has(slug)) {
         // With the question list the table says who reported each round, and the links wait at the end of the page.
         expect(reportAnchors.length, `${slug} report links in the table`).toBe(0);
         expect(section, `${slug} reporters`).toContain('interview-process__reporter');
@@ -4124,7 +4251,10 @@ test.describe('seo-ssr', () => {
       expect(html.indexOf(item.after)).toBeLessThan(sectionAt);
       expect(html.indexOf(item.before), `${item.path} content after the table`).toBeGreaterThan(sectionAt);
 
-      if (QUESTION_LIST_GUIDES.has(item.path.split('/')[2])) {
+      if (YEAR_ONLY_GUIDES.has(item.path.split('/')[2])) {
+        expect(section, `${item.path} report link in the table`).not.toContain(`href="${item.reportUrl}"`);
+        expect(section).not.toContain('interview-process__reporter');
+      } else if (QUESTION_LIST_GUIDES.has(item.path.split('/')[2])) {
         expect(section, `${item.path} report link in the table`).not.toContain(`href="${item.reportUrl}"`);
         expect(section).toContain('interview-process__reporter');
       } else {
@@ -4217,6 +4347,12 @@ test.describe('seo-ssr', () => {
       expect(html).not.toContain(`href="${guide.reportUrl}"`);
       expect(html).toMatch(/<span\b(?=[^>]*\bcq-row__question\b)(?=[^>]*\bpremium-locked\b)(?=[^>]*\bdata-nosnippet\b)[^>]*>/);
       expect(schemaTypes).not.toContain('ItemList');
+      if (YEAR_ONLY_GUIDES.has(guide.path.split('/')[2])) {
+        // Rows say when they were reported and nothing about who or where; the guide ends with its method note.
+        expect(caseText).toContain(YEAR_ONLY_FIRST_ROW_LINES[guide.path.split('/')[2]]);
+        expect(caseText).not.toMatch(SOURCE_SITE_NAMES);
+        expect(caseText).not.toContain('Sources (');
+      }
     });
 
     test(`${guide.label} company preview reflows without horizontal overflow at target widths`, async ({ page }) => {

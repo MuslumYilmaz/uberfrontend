@@ -10,6 +10,8 @@ Marks added on 2026-11-20, each as one black mark on a 24 by 24 viewBox with pat
 - `binance.svg` and `shopee.svg`, from Simple Icons 16.36.0 (CC0 1.0). Simple Icons leaves out brands that do not allow it, so it is the first source.
 - `xai.svg`, from Boxicons Brands (`bxl:xai`, MIT), and `disney.svg`, from Tabler Icons (`brand-disney`, an outline, MIT). Simple Icons 16.36.0 has neither. The MIT licence covers the drawing, not the trademark.
 
+Added on 2026-11-26: `notion.svg`, from Simple Icons 16.36.0 (CC0 1.0). Simple Icons 16.36.0 has no Verkada or Airwallex mark, so both keep a monogram.
+
 Waymo, JPMorgan Chase, Agoda, Anduril, Capital One and CrowdStrike have no mark in these sets and keep a monogram. Walmart (its brand center forbids use without written consent) and ServiceNow (Simple Icons lists it as permission required) keep a monogram on purpose.
 
 Licence notices for the two MIT marks:

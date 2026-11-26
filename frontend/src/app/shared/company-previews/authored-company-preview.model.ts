@@ -38,6 +38,8 @@ export type AuthoredPrepDay = {
   readonly day: string;
   readonly focus: string;
   readonly artifact: string;
+  /** The tasks for the day. Only a member sees them, so a plan day may name the practice of a locked row. */
+  readonly practice?: readonly { readonly label: string; readonly path: string }[];
 };
 
 export type AuthoredFaq = {
@@ -167,12 +169,15 @@ export type AuthoredCompanyPreview = {
     readonly intro: string;
     readonly items: readonly AuthoredResourceLink[];
   };
-  readonly sources: {
+  /** Absent on a guide whose process names no source (`sourceDisplay: 'year'`); `methodNote` takes its place. */
+  readonly sources?: {
     readonly kicker: string;
     readonly title: string;
     readonly intro: string;
     readonly items: readonly AuthoredSource[];
   };
+  /** How the questions were collected, in a few sentences that name no site: the end of a guide that lists no sources. */
+  readonly methodNote?: AuthoredSectionCopy;
   readonly cta: {
     readonly kicker: string;
     readonly title: string;

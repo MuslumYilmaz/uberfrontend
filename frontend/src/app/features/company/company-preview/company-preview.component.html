@@ -525,7 +525,7 @@
           [class.company-link--premium]="linkLocked(path)"
           [routerLink]="path"
           [state]="returnState"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
-        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="roundGuideHref(round.practiceLink.fragment)">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>
@@ -626,14 +626,14 @@
       </div>
     </section>
 
-    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-source-notes'" *ngIf="!features.sourcesAtEnd">
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-source-notes'" *ngIf="!features.sourcesAtEnd && preview.sources as sources">
       <div class="company-guide-section__head">
-        <p class="preview-kicker">{{ preview.sources.kicker }}</p>
-        <h2 [attr.id]="preview.slug + '-source-notes'">{{ preview.sources.title }}</h2>
-        <p>{{ preview.sources.intro }}</p>
+        <p class="preview-kicker">{{ sources.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-source-notes'">{{ sources.title }}</h2>
+        <p>{{ sources.intro }}</p>
       </div>
       <div class="company-source-list">
-        <article *ngFor="let source of preview.sources.items">
+        <article *ngFor="let source of sources.items">
           <h3>
             <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
           </h3>
@@ -752,7 +752,7 @@
           [class.company-link--premium]="linkLocked(path)"
           [routerLink]="path"
           [state]="returnState"><ng-container *ngIf="linkLocked(path); else openRoundLink"><span class="company-link__label">Premium task for this round</span><span class="premium-locked company-link__name" data-nosnippet>{{ round.practiceLink!.label }}</span></ng-container><ng-template #openRoundLink>{{ round.practiceLink!.label }}</ng-template></a>
-        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="'#' + round.practiceLink.fragment">{{ round.practiceLink.label }}</a>
+        <a *ngIf="round.practiceLink && !round.practiceLink.path && round.practiceLink.fragment" class="company-round-links__link" [attr.href]="roundGuideHref(round.practiceLink.fragment)">{{ round.practiceLink.label }}</a>
         <a *ngIf="round.processLink as row" class="company-round-links__link" [attr.href]="'#' + row.fragment">{{ row.label }}</a>
       </p>
     </section>
@@ -894,6 +894,9 @@
   <!-- A guide's sources move here, closed and quiet, after everything a reader came for. -->
   <app-company-guide-sources *ngIf="features.sourcesAtEnd && guideSourceRows.length"
     [slug]="slug" [sources]="guideSourceRows" [boundary]="sourceBoundary" [viewer]="tier()"></app-company-guide-sources>
+  <!-- A guide that names no source ends with how its questions were collected, in the same place. -->
+  <app-company-guide-sources *ngIf="authoredPreview?.methodNote as note"
+    [slug]="slug" [sources]="[]" [method]="note" [boundary]="sourceBoundary" [viewer]="tier()"></app-company-guide-sources>
 
   <!-- Each day's title stays open; what the day holds opens with a free account. -->
   <ng-template #lockedPrepDays let-days>
@@ -905,6 +908,11 @@
             <div class="company-prep-sequence__body" [class.company-locked]="planLocked()" [class.premium-locked]="planLocked()" [attr.data-nosnippet]="planLocked() ? '' : null" [attr.aria-hidden]="planLocked() || null" [attr.inert]="planLocked() ? '' : null">
               <p *ngIf="dayDetail(item.focus) as detail">{{ detail }}</p>
               <p class="company-prep-sequence__artifact" *ngIf="item.artifact"><strong>Deliverable:</strong> {{ item.artifact }}</p>
+              <!-- A day's tasks may include a locked row's practice, so only a member sees them. -->
+              <p class="company-prep-sequence__practice" *ngIf="!prepLocked() && item.practice?.length">
+                <strong>Practice: </strong>
+                <ng-container *ngFor="let task of item.practice; let last = last"><a [routerLink]="task.path" [state]="returnState">{{ task.label }}</a>{{ last ? '' : '; ' }}</ng-container>
+              </p>
             </div>
           </div>
         </li>

@@ -178,7 +178,7 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "angular",
     "kind": "trivia",
-    "title": "Observables in Angular: what they are, why RxJS matters, and how to use them correctly (async pipe, cancellation, operators)",
+    "title": "Observables in Angular: what they are and how to use them (async pipe, cancellation)",
     "route": "/angular/trivia/angular-observables-rxjs"
   },
   {
@@ -364,6 +364,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "css",
     "kind": "trivia",
+    "title": "CSS font stacks: how font-family fallbacks work and fail",
+    "route": "/css/trivia/css-font-family"
+  },
+  {
+    "tech": "css",
+    "kind": "trivia",
     "title": "Explain the difference between em, rem, %, and px units.",
     "route": "/css/trivia/css-units-em-rem-percent-px"
   },
@@ -384,6 +390,12 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "How does z-index work in CSS?",
     "route": "/css/trivia/css-z-index"
+  },
+  {
+    "tech": "css",
+    "kind": "trivia",
+    "title": "position: fixed vs absolute vs relative, and why absolute ignores the parent",
+    "route": "/css/trivia/css-position-relative-absolute-fixed"
   },
   {
     "tech": "css",
@@ -450,18 +462,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "What is the purpose of the float and clear properties?",
     "route": "/css/trivia/css-float-clear"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "What is the purpose of the font-family property?",
-    "route": "/css/trivia/css-font-family"
-  },
-  {
-    "tech": "css",
-    "kind": "trivia",
-    "title": "Why does position: absolute ignore my parent? relative vs absolute vs fixed",
-    "route": "/css/trivia/css-position-relative-absolute-fixed"
   },
   {
     "tech": "css",
@@ -1576,14 +1576,26 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
+    "title": "useEffect vs useLayoutEffect: why the UI flickers on first paint",
+    "route": "/react/trivia/react-useeffect-vs-uselayouteffect"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
     "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
     "route": "/react/trivia/react-useeffect-purpose"
   },
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "useMemo vs useCallback: when does memoizing make it slower?",
+    "title": "useMemo vs useCallback: the difference, and when memoizing makes it slower",
     "route": "/react/trivia/react-usememo-vs-usecallback"
+  },
+  {
+    "tech": "react",
+    "kind": "trivia",
+    "title": "useRef vs useState: why a ref change doesn't re-render",
+    "route": "/react/trivia/react-useref-vs-usestate"
   },
   {
     "tech": "react",
@@ -1696,12 +1708,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "react",
     "kind": "trivia",
-    "title": "Why does my UI flicker on first paint? useEffect vs useLayoutEffect",
-    "route": "/react/trivia/react-useeffect-vs-uselayouteffect"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
     "title": "Why does React batch state updates? When does it not batch?",
     "route": "/react/trivia/react-why-batching-state-updates"
   },
@@ -1734,12 +1740,6 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
     "kind": "trivia",
     "title": "Why does useEffect run twice in React StrictMode?",
     "route": "/react/trivia/react-strictmode-double-invoke-effects"
-  },
-  {
-    "tech": "react",
-    "kind": "trivia",
-    "title": "Why doesn't changing a ref re-render? useRef vs useState",
-    "route": "/react/trivia/react-useref-vs-usestate"
   },
   {
     "tech": "react",

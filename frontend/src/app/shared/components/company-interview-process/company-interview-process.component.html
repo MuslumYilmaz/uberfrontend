@@ -19,7 +19,7 @@
               <th scope="col">Stage</th>
               <th scope="col">What happens</th>
               <th scope="col">Who</th>
-              <th scope="col">{{ reportedBy ? 'Reported by' : 'Evidence' }}</th>
+              <th scope="col">{{ evidenceHeading() }}</th>
             </tr>
           </thead>
           <tbody>
@@ -65,20 +65,23 @@
                   }
                 </td>
                 <td data-label="Who">{{ stage.appliesTo }}</td>
-                <td [attr.data-label]="reportedBy ? 'Reported by' : 'Evidence'">
+                <td [attr.data-label]="evidenceHeading()">
                   <span class="interview-process__strength">{{ evidenceLabel(stage) }}</span>
-                  @if (reportedBy) {
-                    <span class="interview-process__reporter" data-testid="company-interview-process-reporter">{{ newestReporter(stage) }}</span>
-                  } @else {
-                    <!-- On a phone the list waits behind its count; wider screens show it in full. -->
-                    <button type="button" class="interview-process__toggle" [attr.aria-expanded]="expanded(i, stage)" (click)="toggleSources(i, stage)">{{ expanded(i, stage) ? 'Hide the sources' : 'Show the sources' }}</button>
-                    <ul class="interview-process__sources" [class.interview-process__sources--collapsed]="!expanded(i, stage)">
-                      @for (source of stage.sources; track source.url) {
-                        <li>
-                          <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
-                        </li>
-                      }
-                    </ul>
+                  <!-- A guide that names no source keeps the evidence line alone: no reporter, no link. -->
+                  @if (!yearOnly) {
+                    @if (reportedBy) {
+                      <span class="interview-process__reporter" data-testid="company-interview-process-reporter">{{ newestReporter(stage) }}</span>
+                    } @else {
+                      <!-- On a phone the list waits behind its count; wider screens show it in full. -->
+                      <button type="button" class="interview-process__toggle" [attr.aria-expanded]="expanded(i, stage)" (click)="toggleSources(i, stage)">{{ expanded(i, stage) ? 'Hide the sources' : 'Show the sources' }}</button>
+                      <ul class="interview-process__sources" [class.interview-process__sources--collapsed]="!expanded(i, stage)">
+                        @for (source of stage.sources; track source.url) {
+                          <li>
+                            <a [href]="source.url" target="_blank" [attr.rel]="rel(source)">{{ sourceText(source) }}</a>
+                          </li>
+                        }
+                      </ul>
+                    }
                   }
                 </td>
               </tr>

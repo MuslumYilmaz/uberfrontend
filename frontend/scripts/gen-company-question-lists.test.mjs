@@ -134,6 +134,48 @@ test('a row marked open leaves the lock count and cannot carry what a lock sells
   assert.doesNotThrow(() => buildCompanyQuestionLists({ processes: { acme: acme(rows) }, questionList, catalogAccess, answerGuides: new Map() }));
 });
 
+test('rows from early-career and general loops follow the lead rows and stay out of every count', () => {
+  const groups = loadTsModule(path.resolve(here, '..', 'src', 'app', 'features', 'company', 'company-preview', 'company-question-groups.ts'));
+  const row = (id, round, extra = {}) => ({ id, ...(round ? { round } : {}), kind: 'JavaScript', topic: `Topic ${id}`, question: 'Q', sources: [account(id, '2025-03')], ...extra });
+  const rows = [
+    row('lead-open', 'Coding round'),
+    row('lead-locked', 'Coding round', { sources: [account('x', '2026-02')], practice: { label: 'X', path: '/react/coding/react-x' } }),
+    row('intern', 'Design round', { audience: 'early-career', sources: [account('y', '2026-05')], practice: { label: 'X', path: '/react/coding/react-x' } }),
+    row('swe', undefined, { audience: 'general' }),
+  ];
+  const summary = groups.withQuestionGroups(questionList.summariseQuestionList(acme(rows)), acme(rows));
+  assert.deepEqual([summary.total, summary.locked, summary.rounds, summary.roundNotStated, summary.newestAccount], [2, 1, [{ stage: 'Coding round', count: 2 }], 0, '2026-02']);
+  assert.deepEqual(summary.rows.map((entry) => [entry.id, entry.audience ?? null, entry.open, entry.unlockable]), [
+    ['lead-open', null, true, false], ['lead-locked', null, false, true], ['intern', 'early-career', false, true], ['swe', 'general', false, false],
+  ]);
+  // A list without groups is summarised exactly as before.
+  const plain = acme([row('a', 'Coding round'), row('b', undefined)]);
+  assert.deepEqual(groups.withQuestionGroups(questionList.summariseQuestionList(plain), plain), questionList.summariseQuestionList(plain));
+
+  const payload = buildCompanyQuestionLists({ processes: { acme: acme(rows) }, questionList, catalogAccess: new Map([['/react/coding/react-x', 'premium']]), answerGuides: new Map() });
+  assert.equal(payload.companies.acme.total, 2);
+  assert.deepEqual(payload.companies.acme.questions.map((entry) => entry.audience ?? null), [null, null, 'early-career', 'general']);
+
+  const unordered = [rows[0], rows[2], rows[1]];
+  assert.deepEqual(groups.questionGroupProblems(acme(unordered)), ['question lead-locked: a lead row follows a later group; lead rows come first, then early-career, then general']);
+  assert.deepEqual(groups.questionGroupProblems(acme([rows[3], rows[0]])), [
+    'question lead-open: a lead row follows a later group; lead rows come first, then early-career, then general',
+    'question swe: the first row is open to everyone, so it must come from an experienced frontend loop',
+  ]);
+  assert.throws(
+    () => buildCompanyQuestionLists({ processes: { acme: acme(unordered) }, questionList, catalogAccess: new Map([['/react/coding/react-x', 'premium']]), answerGuides: new Map() }),
+    /acme: question lead-locked: a lead row follows a later group/,
+  );
+});
+
+test('a guide that names no source gives a question its years, or says one account is all that backs it', () => {
+  const groups = loadTsModule(path.resolve(here, '..', 'src', 'app', 'features', 'company', 'company-preview', 'company-question-groups.ts'));
+  assert.equal(groups.reportedYearsLine([account('a', '2026-01'), account('b', '2024-07'), account('c', '2026-03'), BANK]), 'Reported in 2024 and 2026');
+  assert.equal(groups.reportedYearsLine([account('a', '2025-11')]), 'Reported once, in 2025');
+  assert.equal(groups.reportedYearsLine([account('a', '2025-11'), OFFICIAL]), 'Reported in 2025');
+  assert.equal(groups.reportedYearsLine([BANK]), 'Listed in a candidate question bank');
+});
+
 test('the committed question lists match the process data', () => {
   const committed = fs.readFileSync(path.resolve(here, '..', '..', 'cdn', COMPANY_QUESTION_LISTS_RELATIVE_PATH), 'utf8');
   assert.equal(committed, renderCompanyQuestionLists(buildFromRepo()));

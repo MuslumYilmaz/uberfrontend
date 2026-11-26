@@ -205,6 +205,11 @@ export class PressureModeService {
     if (than) step.than = than;
     const to = this.normalizeTarget(source['to']);
     if (to) step.to = to;
+    if (Array.isArray(source['through'])) {
+      step.through = source['through']
+        .map((stop) => this.normalizeTarget(stop))
+        .filter((stop): stop is NonNullable<FrameworkTestStep['through']>[number] => stop !== null);
+    }
     const entries = source['entries'];
     if (entries && typeof entries === 'object' && !Array.isArray(entries)) {
       const kept = Object.entries(entries).filter((entry): entry is [string, string] => typeof entry[1] === 'string');
@@ -216,7 +221,9 @@ export class PressureModeService {
     }
     if (typeof source['disabled'] === 'boolean') step.disabled = source['disabled'];
     if (typeof source['atomic'] === 'boolean') step.atomic = source['atomic'];
-    if (typeof source['shift'] === 'boolean') step.shift = source['shift'];
+    for (const key of ['shift', 'ctrl', 'meta', 'alt'] as const) {
+      if (typeof source[key] === 'boolean') step[key] = source[key];
+    }
     if (source['side'] === 'below' || source['side'] === 'above') step.side = source['side'];
     if (['dragenter', 'dragover', 'dragleave', 'drop'].includes(source['event'] as string)) {
       step.event = source['event'] as FrameworkTestStep['event'];

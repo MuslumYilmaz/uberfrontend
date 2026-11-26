@@ -1,0 +1,60 @@
+{
+  "id": "react-event-log-design-spec",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "b51f346a78da0429da6d838c71f4de0ba209ab149facba209fb884eeaf6dc898",
+  "pageHash": "4ff7e304f948c17fa9507347421889566a8ec1661720d71a23ce6cf7580f03c0",
+  "checksHash": "34ccd44b860ab82bd5d36f829432a36f17b46455590b69e984c04b7e5c665819",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "review",
+    "A4": "review",
+    "A5": "review",
+    "B1": "review",
+    "B2": "review",
+    "B3": "pass",
+    "B4": "review",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 3,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 8,
+      "passedAllChecks": 8
+    },
+    "A4": {
+      "count": 11,
+      "passedAllChecks": 5
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet",
+      "haiku"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A3": "Checked: the runner folds every whitespace run, U+202F included, to one space before it compares text, and expectNoOverflow reads horizontal overflow only. Every A3 variant passed 10/10, a3-1 and a3-16 among them (toLocaleTimeString lowercased with no whitespace step).",
+    "A4": "The remaining gaps are sampling choices. The spec sets borders and radii with shorthands, so the checks read one side and one corner; sideways overflow is read at the breakpoint edges (900 and 899 px) and at 375 px; times are covered under A5. The reviewer's filter, row and selection variants each fail a check.",
+    "A5": "EVENTS and TIME_ZONE are given and the runner cannot vary them. The four events cover EDT, EST, the 12 am hour and a day boundary, so a fixed offset fails; a lookup table or a month rule is plain to see in review.",
+    "B1": "Both Sonnet solvers passed 10/10. Haiku wrote 9:05 AM, while the page asks for h:mm am in lower case.",
+    "B2": "The winter sentence lets a solver verify the expected times and names no API; the button note says which defaults the spec's tokens replace. Neither gives the code.",
+    "B4": "Sideways scrolling is read at 900, 899 and 375 px, the breakpoint edges and the phone width, and the item's E2 run also checked 320 px; a check at every width is not possible."
+  }
+}

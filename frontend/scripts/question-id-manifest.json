@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-22T06:20:03.255Z",
+  "generatedAt": "2026-11-26T07:46:16.806Z",
   "entries": [
     {
       "tech": "angular",
@@ -1109,6 +1109,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-frame-player-controller",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-get-by-path-1",
       "file": "javascript/coding.json"
     },
@@ -1194,6 +1200,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-merge-sorted-arrays",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-named-task-scheduler",
       "file": "javascript/coding.json"
     },
     {
@@ -1373,6 +1385,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-text-editor-undo-redo",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-three-sum",
       "file": "javascript/coding.json"
     },
@@ -1458,6 +1476,12 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-mutating-input",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-notes-app-repo",
       "file": "javascript/debug.json"
     },
     {
@@ -1997,6 +2021,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-command-palette-sources",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-contact-form-starter",
       "file": "react/coding.json"
     },
@@ -2051,6 +2081,12 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-event-log-design-spec",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-fetch-list-states",
       "file": "react/coding.json"
     },
@@ -2081,6 +2117,18 @@
     {
       "tech": "react",
       "kind": "coding",
+      "id": "react-frame-sequence-player",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-grid-rectangle-selection",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
       "id": "react-image-slider",
       "file": "react/coding.json"
     },
@@ -2088,6 +2136,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-implement-usememo-context",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-json-tree-viewer",
       "file": "react/coding.json"
     },
     {
@@ -2130,6 +2184,12 @@
       "tech": "react",
       "kind": "coding",
       "id": "react-nested-comments",
+      "file": "react/coding.json"
+    },
+    {
+      "tech": "react",
+      "kind": "coding",
+      "id": "react-nested-todo-outliner",
       "file": "react/coding.json"
     },
     {

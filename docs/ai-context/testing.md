@@ -42,6 +42,7 @@ Load this for verification strategy, CI, regression risk, or test-quality work, 
 
 ### Pre-push (files in the pushed commits)
 `.githooks/pre-push`, in order:
+- Coding item changes (`cdn/questions/*/coding.json` or `debug.json`, `cdn/questions/pressure-modes/`, `cdn/sb/`): `check-coding-review-records.mjs`. Every item whose content hash changed needs a matching committed review record; see `coding-item-checks.md`. The check reads git only and never calls a model.
 - Backend changes: `node --check`, `jest --findRelatedTests` for changed sources (2 workers), changed test files by path. Not the full suite.
 - Interview content changes (`backend/content/interview/`, `content-drafts/interview-mcq/generated/`, `cdn/questions/system-design/`, any `cdn/questions/*/coding.json`, `cdn/questions/pressure-modes/`, `cdn/sb/`): `generate:interview-content:check` and `validate:interview-content`.
 - Frontend changes (`frontend/`, `content-drafts/interview-mcq/`, `cdn/questions|incidents|tradeoff-battles|practice/`, `cdn/data-version.json`): coding assist sync; `lint:tags`, `lint:topics`, `lint:tracks`; `verify:unit-and-content:prepush` (text/spelling/draft/interview-bank/guide/trivia/indexability lints, `lint:questions:hook`, prerender-sitemap and design-budget checks, Karma, content regressions); `verify:seo-prerender-guard` (`gen:data`, production build, meta/link/link-equity/prep-menu/footer audits, `seo:smoke`, non-strict `perf:contract`); `verify:e2e-critical` on port 4310 with server reuse off, in WebKit too when local WebKit is healthy.

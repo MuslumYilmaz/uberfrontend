@@ -1,0 +1,73 @@
+{
+  "questionId": "react-json-tree-viewer",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useState } from 'react';\nimport './App.css';\n\nexport type Json = string | number | boolean | null | Json[] | { [key: string]: Json };\n\n/** Three samples to load into the input: an object of primitives, a nested playlist and a deep library. */\nexport const SAMPLES: Record<string, string> = {\n  track: JSON.stringify({ title: 'Night Drive', seconds: 214, explicit: false, album: null }, null, 2),\n  playlist: JSON.stringify({\n    name: 'Focus',\n    owner: { id: 7, name: 'Ada' },\n    tracks: [\n      { title: 'Night Drive', seconds: 214 },\n      { title: 'Low Tide', seconds: 187 },\n      { title: 'Signal', seconds: 241 },\n    ],\n    tags: [],\n    meta: {},\n  }, null, 2),\n  library: JSON.stringify({\n    shelves: [{ label: 'Jazz', albums: [{ title: 'Blue', tracks: [{ n: 1, title: 'So What', credits: { bass: 'Paul' } }] }] }],\n    count: 1,\n  }, null, 2),\n};\n\ntype Parsed = { ok: true; value: Json } | { ok: false; message: string };\n\nfunction parse(text: string): Parsed {\n  try {\n    return { ok: true, value: JSON.parse(text) as Json };\n  } catch (error) {\n    return { ok: false, message: error instanceof Error ? error.message : String(error) };\n  }\n}\n\ntype Container = Json[] | { [key: string]: Json };\n\nfunction isContainer(value: Json): value is Container {\n  return typeof value === 'object' && value !== null;\n}\n\n/** How a primitive reads: strings in quotes, the rest as JSON writes them. */\nfunction show(value: string | number | boolean | null): string {\n  return JSON.stringify(value);\n}\n\nfunction summary(value: Container): string {\n  if (Array.isArray(value)) return `[…] ${value.length} ${value.length === 1 ? 'item' : 'items'}`;\n  const keys = Object.keys(value).length;\n  return `{…} ${keys} ${keys === 1 ? 'key' : 'keys'}`;\n}\n\ninterface NodeProps {\n  name?: string;\n  value: Json;\n  path: string;\n  collapsed: ReadonlySet<string>;\n  onToggle: (path: string) => void;\n}\n\n/** One key or index with its value; a container renders its entries by calling itself. */\nfunction JsonNode({ name, value, path, collapsed, onToggle }: NodeProps) {\n  const key = name === undefined ? null : <span className=\"json-key\">{name}</span>;\n  if (!isContainer(value)) {\n    return (\n      <li className=\"json-entry\" data-path={path}>\n        {key}\n        <span className=\"json-value\">{show(value)}</span>\n      </li>\n    );\n  }\n  const entries: [string, Json, string][] = Array.isArray(value)\n    ? value.map((item, index) => [String(index), item, `${path}[${index}]`])\n    : Object.entries(value).map(([child, item]) => [child, item, `${path}.${child}`]);\n  if (entries.length === 0) {\n    return (\n      <li className=\"json-entry\" data-path={path}>\n        {key}\n        <span className=\"json-value\">{Array.isArray(value) ? '[]' : '{}'}</span>\n      </li>\n    );\n  }\n  const open = !collapsed.has(path);\n  return (\n    <li className=\"json-entry\" data-path={path}>\n      <button type=\"button\" className=\"json-toggle\" aria-expanded={open} aria-label={name ?? 'root'} onClick={() => onToggle(path)}>\n        {open ? '▾' : '▸'}\n      </button>\n      {key}\n      {open ? (\n        <ul className=\"json-children\">\n          {entries.map(([child, item, childPath]) => (\n            <JsonNode key={child} name={child} value={item} path={childPath} collapsed={collapsed} onToggle={onToggle} />\n          ))}\n        </ul>\n      ) : (\n        <span className=\"json-summary\">{summary(value)}</span>\n      )}\n    </li>\n  );\n}\n\nexport default function App() {\n  const [text, setText] = useState(SAMPLES.track);\n  // Collapsed nodes by path, so a node keeps its state while the JSON around it changes.\n  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());\n\n  const toggle = (path: string) => {\n    setCollapsed((current) => {\n      const next = new Set(current);\n      if (next.has(path)) next.delete(path);\n      else next.add(path);\n      return next;\n    });\n  };\n\n  const parsed = parse(text);\n\n  return (\n    <main className=\"json-page\">\n      <label className=\"field\">\n        Sample\n        <select className=\"sample\" defaultValue=\"track\" onChange={(event) => setText(SAMPLES[event.target.value])}>\n          <option value=\"track\">Track</option>\n          <option value=\"playlist\">Playlist</option>\n          <option value=\"library\">Library</option>\n        </select>\n      </label>\n      <label className=\"field\">\n        JSON\n        <textarea className=\"json-input\" rows={10} value={text} onChange={(event) => setText(event.target.value)} />\n      </label>\n      {'message' in parsed ? (\n        <p className=\"json-error\" role=\"alert\">Invalid JSON: {parsed.message}</p>\n      ) : (\n        <ul className=\"json-viewer\" aria-label=\"JSON tree\">\n          <JsonNode value={parsed.value} path=\"$\" collapsed={collapsed} onToggle={toggle} />\n        </ul>\n      )}\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-parse-state",
+          "title": "A parse result, not an exception",
+          "anchor": {
+            "lineStart": 28,
+            "lineEnd": 28,
+            "snippet": "function parse(text: string): Parsed {"
+          },
+          "why": "Typing produces invalid JSON on most keystrokes. Catching the error and returning it as a value lets the screen show a message instead of crashing the tree.",
+          "alternative": "Call `JSON.parse` in render without a try.",
+          "tradeoff": "An uncaught error unmounts the whole component tree on the first stray comma."
+        },
+        {
+          "id": "a2-recursive-node",
+          "title": "One component that calls itself",
+          "anchor": {
+            "lineStart": 62,
+            "lineEnd": 62,
+            "snippet": "function JsonNode({ name, value, path, collapsed, onToggle }: NodeProps) {"
+          },
+          "why": "A JSON value is a tree of the same shape at every level, so one component that renders an entry and then its children handles any depth.",
+          "alternative": "Flatten the tree into rows with a depth and render a list.",
+          "tradeoff": "Flat rows make virtualising large values easy, but collapsing has to skip a node's descendants by hand."
+        },
+        {
+          "id": "a3-show-primitives",
+          "title": "Let JSON write the primitives",
+          "anchor": {
+            "lineStart": 44,
+            "lineEnd": 44,
+            "snippet": "return JSON.stringify(value);"
+          },
+          "why": "`JSON.stringify` quotes and escapes strings and writes numbers, booleans and `null` exactly as the input did, so the tree reads like the text it came from.",
+          "alternative": "Wrap strings in quotes with a template literal.",
+          "tradeoff": "A hand-made quote misses escapes: a string with a quote or a newline would read differently from its JSON."
+        },
+        {
+          "id": "a4-paths-as-keys",
+          "title": "State keyed by path",
+          "anchor": {
+            "lineStart": 106,
+            "lineEnd": 106,
+            "snippet": "const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());"
+          },
+          "why": "A path names the same node however the text around it changes, so a collapsed `$.owner` stays collapsed when a sibling key is added.",
+          "alternative": "Keep an `open` state inside each node component.",
+          "tradeoff": "Local state works while React keeps the component, but a parse error unmounts the tree and every node opens again when the text is fixed."
+        },
+        {
+          "id": "a5-empty-containers",
+          "title": "Empty containers have nothing to toggle",
+          "anchor": {
+            "lineStart": 79,
+            "lineEnd": 79,
+            "snippet": "<span className=\"json-value\">{Array.isArray(value) ? '[]' : '{}'}</span>"
+          },
+          "why": "A toggle that opens nothing is noise for sighted and screen reader users alike, so an empty container renders as its value.",
+          "alternative": "Render every container the same way, with a toggle.",
+          "tradeoff": "Uniform code, but `[…] 0 items` behind a button reads as content that is not there."
+        }
+      ]
+    }
+  }
+}

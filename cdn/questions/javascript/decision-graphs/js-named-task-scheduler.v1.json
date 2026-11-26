@@ -1,0 +1,121 @@
+{
+  "questionId": "js-named-task-scheduler",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function createScheduler() {\n  // One lane per name: the task running now and the ones waiting behind it, first in, first out.\n  const lanes = new Map();\n  const listeners = new Map();\n\n  const emit = (event) => {\n    for (const listener of [...(listeners.get(event.type) ?? [])]) listener(event);\n  };\n\n  const start = (name) => {\n    const lane = lanes.get(name);\n    if (!lane || lane.running) return;\n    const job = lane.queue.shift();\n    if (!job) {\n      lanes.delete(name);\n      return;\n    }\n    lane.running = job;\n    emit({ type: 'start', name });\n    let outcome;\n    try {\n      outcome = Promise.resolve(job.task(job.controller.signal));\n    } catch (error) {\n      outcome = Promise.reject(error);\n    }\n    outcome.then(\n      (value) => finish(name, job, () => {\n        job.resolve(value);\n        emit({ type: 'done', name, value });\n      }),\n      (error) => finish(name, job, () => {\n        job.reject(error);\n        emit({ type: 'error', name, error });\n      }),\n    );\n  };\n\n  // A job settles once: an answer that arrives after a cancel changes nothing.\n  const finish = (name, job, settle) => {\n    if (job.settled) return;\n    job.settled = true;\n    settle();\n    lanes.get(name).running = null;\n    start(name);\n  };\n\n  const cancelJob = (name, job) => {\n    job.settled = true;\n    job.controller.abort();\n    job.reject(job.controller.signal.reason);\n    emit({ type: 'cancel', name });\n  };\n\n  return {\n    schedule(name, task) {\n      if (typeof name !== 'string' || name === '') throw new TypeError('name must be a non-empty string');\n      if (typeof task !== 'function') throw new TypeError('task must be a function');\n      return new Promise((resolve, reject) => {\n        if (!lanes.has(name)) lanes.set(name, { running: null, queue: [] });\n        lanes.get(name).queue.push({ task, resolve, reject, controller: new AbortController(), settled: false });\n        start(name);\n      });\n    },\n    cancel(name) {\n      const lane = lanes.get(name);\n      if (!lane?.running) return;\n      const job = lane.running;\n      lane.running = null;\n      cancelJob(name, job);\n      start(name);\n    },\n    clear(name) {\n      const lane = lanes.get(name);\n      if (!lane) return;\n      lanes.delete(name);\n      for (const job of [lane.running, ...lane.queue]) {\n        if (job) cancelJob(name, job);\n      }\n    },\n    on(type, listener) {\n      if (!listeners.has(type)) listeners.set(type, new Set());\n      listeners.get(type).add(listener);\n      return () => listeners.get(type).delete(listener);\n    },\n  };\n}\n",
+      "nodes": [
+        {
+          "id": "n1-one-lane-per-name",
+          "title": "Keep one lane per name",
+          "anchor": {
+            "lineStart": 3,
+            "lineEnd": 3,
+            "snippet": "const lanes = new Map();"
+          },
+          "why": "Each name needs its own running task and its own queue, and names are added and removed as work comes and goes. A map from name to `{ running, queue }` answers \"is this name busy?\" in one lookup and keeps the lanes out of each other's way.",
+          "alternative": "One shared queue that skips tasks whose name is busy.",
+          "tradeoff": "A shared queue keeps one list, but every start has to scan past the busy names, and the order across names gets harder to reason about."
+        },
+        {
+          "id": "n2-start-only-when-free",
+          "title": "Start a task only when its lane is free",
+          "anchor": {
+            "lineStart": 12,
+            "lineEnd": 12,
+            "snippet": "if (!lane || lane.running) return;"
+          },
+          "why": "start is called from schedule, from a finished task and from cancel. Returning while a task runs makes all three safe: whichever call comes when the lane is free starts the next job, and only one does.",
+          "alternative": "Chain each new task onto the promise of the one before it.",
+          "tradeoff": "A promise chain keeps the order for free, but cancel then has to break the chain and start the next task early, which a chain does not offer."
+        },
+        {
+          "id": "n3-catch-a-throw-at-once",
+          "title": "Treat a throw and a rejection the same",
+          "anchor": {
+            "lineStart": 22,
+            "lineEnd": 22,
+            "snippet": "outcome = Promise.resolve(job.task(job.controller.signal));"
+          },
+          "why": "A task may throw before it returns a promise. Calling it inside try and turning the throw into a rejected promise gives one path for every failure, so the lane always moves on.",
+          "alternative": "Make every task async, or call it inside `new Promise((resolve) => resolve(task(signal)))`.",
+          "tradeoff": "Both catch the throw as well. The try block keeps the start synchronous, so the task begins before schedule returns."
+        },
+        {
+          "id": "n4-settle-exactly-once",
+          "title": "Let every job settle exactly once",
+          "anchor": {
+            "lineStart": 40,
+            "lineEnd": 40,
+            "snippet": "if (job.settled) return;"
+          },
+          "why": "A cancelled task that ignores its signal still resolves or rejects later. The flag makes that late answer a no-op: no second settle, no done event and no second start of the next task.",
+          "alternative": "Compare the job with the lane's running job before acting.",
+          "tradeoff": "The comparison works until clear removes the lane and a new task runs under the same name; the flag belongs to the job and needs no lookup."
+        },
+        {
+          "id": "n5-free-the-lane-then-start",
+          "title": "Free the lane, then start the next task",
+          "anchor": {
+            "lineStart": 43,
+            "lineEnd": 43,
+            "snippet": "lanes.get(name).running = null;"
+          },
+          "why": "The finished task reports first, so its done or error event comes before the next task's start. Then the lane is freed and start picks the next queued job, or removes the lane when nothing waits.",
+          "alternative": "Start the next task first and report afterwards.",
+          "tradeoff": "The order of events then says a task started before the previous one finished, which a progress UI would show wrongly."
+        },
+        {
+          "id": "n6-cancel-rejects-and-moves-on",
+          "title": "Reject a cancelled task at once and move on",
+          "anchor": {
+            "lineStart": 50,
+            "lineEnd": 50,
+            "snippet": "job.reject(job.controller.signal.reason);"
+          },
+          "why": "Aborting the controller tells the task to stop, and its reason is a DOMException named AbortError. Rejecting with it right away, instead of waiting for the task to give up, lets the next task start now.",
+          "alternative": "Abort the signal and wait for the task to reject on its own.",
+          "tradeoff": "Waiting is simpler, but a task that ignores its signal then holds its lane until it finishes, and the caller never hears about the cancel."
+        },
+        {
+          "id": "n7-clear-drops-the-whole-lane",
+          "title": "Clear drops the running task and the queue together",
+          "anchor": {
+            "lineStart": 76,
+            "lineEnd": 76,
+            "snippet": "for (const job of [lane.running, ...lane.queue]) {"
+          },
+          "why": "Removing the lane first means nothing from it can start again, then each job is cancelled in queue order. A task scheduled under the name later finds no lane and starts a fresh one.",
+          "alternative": "Cancel the running task and empty the queue in place.",
+          "tradeoff": "Also correct, as long as the queue is emptied before the cancel starts the next task."
+        },
+        {
+          "id": "n8-emit-from-a-copy",
+          "title": "Emit from a copy of the listeners",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "for (const listener of [...(listeners.get(event.type) ?? [])]) listener(event);"
+          },
+          "why": "A listener may remove itself, or add another, while an event is being delivered. Iterating over a copy delivers the event to exactly the listeners present when it fired.",
+          "alternative": "Iterate the live set.",
+          "tradeoff": "A Set handles deletion during iteration, but a listener added during an event would then receive it too."
+        },
+        {
+          "id": "n9-refuse-bad-arguments",
+          "title": "Refuse a bad name or task up front",
+          "anchor": {
+            "lineStart": 56,
+            "lineEnd": 56,
+            "snippet": "if (typeof name !== 'string' || name === '') throw new TypeError('name must be a non-empty string');"
+          },
+          "why": "An empty or numeric name would become a lane that no cancel finds, and a task that is not a function would fail inside the lane. Checking first keeps both mistakes at the call that made them.",
+          "alternative": "Return a rejected promise instead of throwing.",
+          "tradeoff": "Callers who only use the promise then see the error where they handle the result, which some prefer; the task accepts either."
+        }
+      ]
+    }
+  }
+}

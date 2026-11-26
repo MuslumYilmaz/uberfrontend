@@ -26,7 +26,7 @@ export const ONPUSH_READINESS_REPORT: ResearchReport = {
     'In the 56 Angular 22 apps found without searching for the Eager stamp, 55% of components already declare OnPush. Of the components that still carry the stamp, 54% have no path around the OnPush triggers and 40% have at least one. In 93% of the components blocked by their own code, the only blocking finding is an asynchronous write of rendered state.',
   publishedAt: '2026-11-25',
   publishedLabel: 'November 2026',
-  minutes: 37,
+  minutes: 38,
   keywords: [
     'Angular OnPush',
     'Angular 22',

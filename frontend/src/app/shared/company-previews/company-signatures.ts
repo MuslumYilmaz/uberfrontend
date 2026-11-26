@@ -5,6 +5,7 @@
 export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
   agoda: 'Frontend Platform interview',
   airbnb: 'UI coding round',
+  airwallex: 'Live React task',
   amazon: 'Leadership Principles',
   anduril: 'Onsite',
   apple: 'Team loop',
@@ -24,6 +25,7 @@ export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
   meta: 'UI architecture and design',
   microsoft: 'Machine coding',
   netflix: 'Take-home',
+  notion: 'AI-enabled coding',
   openai: 'Agentic coding option',
   revolut: 'Bar Raiser',
   servicenow: 'Design or machine coding',
@@ -32,6 +34,7 @@ export const COMPANY_SIGNATURES: Readonly<Record<string, string>> = {
   stripe: 'Bug squash',
   tesla: 'Frontend system design',
   uber: 'Frontend specialization',
+  verkada: 'Video player from still frames',
   walmart: 'JavaScript and React round',
   waymo: 'Virtual onsite',
   xai: 'React coding interview',

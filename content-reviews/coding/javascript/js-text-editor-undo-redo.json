@@ -1,0 +1,56 @@
+{
+  "id": "js-text-editor-undo-redo",
+  "tech": "javascript",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "6f8cf1ca4b9b98b474de5c09f1c57ab4b949cc61956cf14cb3debbfd2fa44339",
+  "pageHash": "9137a2d5d64e48c97a88d8a765428426c27f9bb55e3a4ba3094f788ead7a1967",
+  "checksHash": "a26ed8f1a60182ce2ce89c1208c806794b71433131d57338cae5ed6c491039ad",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "pass",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "review",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 3,
+    "passedAllChecks": 3,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 4,
+      "passedAllChecks": 4
+    },
+    "A4": {
+      "count": 5,
+      "passedAllChecks": 2
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet",
+      "haiku"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Second and last round under the agreed two-round stop rule. delete() with no argument, insert(undefined) and moveCursor(undefined or null) fall under the page's TypeError and RangeError rules but are not in the check loops yet, and no check undoes more than three edits in a row. Follow-up: add those values and a long undo run.",
+    "B4": "Round 1 asked to drop the 1400-edit check because the page sets no history size; round 2 reads 'record every edit' as no limit. The solution lists capping the history as a follow-up question. Follow-up: state 'no size limit' on the page together with a long undo check, or leave the depth open."
+  }
+}

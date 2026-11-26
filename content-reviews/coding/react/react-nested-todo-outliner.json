@@ -1,0 +1,56 @@
+{
+  "id": "react-nested-todo-outliner",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "ca8156293ad37114e00b5b5f82371045894124db32819aa769f239069dee7b0d",
+  "pageHash": "bd1c146b0152f697e66a6e070ee01a3db1e5d7249581fbe45643bc00bcbabf70",
+  "checksHash": "01c2f7dbdf344b1fa7c6175d8b3fbde1c271de4288177d3719c31fd08685801d",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "review",
+    "A4": "review",
+    "A5": "review",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "pass",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 2,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 2,
+      "passedAllChecks": 2
+    },
+    "A4": {
+      "count": 4,
+      "passedAllChecks": 2
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A3": "The page fixes the element order inside each li and the notes say the checks find items by their position, so a wrapper around the inputs is outside the stated markup. Key steps wait 50 ms before the next read: variant a3-4, which focuses in a timeout, passed 7/7, as did a3-1.",
+    "A4": "Closed under the stop rule agreed after five review rounds. (1) Backspace after a sibling whose last descendant sits deeper than one level is a follow-up. (2) A parent checkbox that also checks its children is a follow-up. (3) In-place mutation cannot be seen from the DOM. Each mistake named on the page (Enter level, Tab and Shift+Tab with children and done state, Backspace focus, focus stealing) fails its check.",
+    "A5": "Follow-ups: Escape from a nested item, a reading-order predecessor two levels down, and a done click on a parent. The other rules run on two or more inputs."
+  }
+}

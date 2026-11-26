@@ -16,7 +16,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { NgTemplateOutlet, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
@@ -36,6 +36,7 @@ import { companyBrandFor } from '../../../../shared/company-branding';
 import { FaButtonComponent } from '../../../../shared/ui/button/fa-button.component';
 import { InlineCodeComponent } from '../../../../shared/ui/inline-code/inline-code.component';
 import type { CompanyGuideFeatures } from '../company-guide-features';
+import { QUESTION_GROUPS, reportedYearsLine, type QuestionAudience } from '../company-question-groups';
 
 export type CompanyGuideViewer = 'guest' | 'account' | 'member';
 
@@ -56,8 +57,15 @@ type Row = {
   readonly summary: QuestionListRow;
   readonly number: number;
   readonly guide: AuthoredPracticePrompt | null;
-  readonly who: string;
-  readonly frequency: string;
+  /** Who reported it and how often, or only the years on a guide that names no source. */
+  readonly meta: string;
+};
+
+type RowGroup = {
+  readonly audience: QuestionAudience;
+  readonly title: string;
+  readonly intro: string;
+  readonly rows: readonly Row[];
 };
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -107,12 +115,13 @@ function whoLine(sources: readonly InterviewProcessSource[]): string {
  * A guide's reported questions: the first, and any marked open, open to everyone, the rest with their round, kind,
  * reporter and frequency in view and the question itself under a Premium lock, which stays in the page for search under
  * `.premium-locked`.
- * Clicking a locked row offers the reader's one free unlock beside Premium. Behavioural questions follow, open.
+ * Clicking a locked row offers the reader's one free unlock beside Premium. Rows from early-career and general loops
+ * follow in closed groups of their own, and behavioural questions follow, open.
  */
 @Component({
   selector: 'app-company-question-list',
   standalone: true,
-  imports: [RouterLink, FaButtonComponent, InlineCodeComponent],
+  imports: [NgTemplateOutlet, RouterLink, FaButtonComponent, InlineCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './company-question-list.component.html',
   styleUrl: './company-question-list.component.css',
@@ -152,6 +161,8 @@ export class CompanyQuestionListComponent {
   })();
 
   readonly expanded = signal(false);
+  /** The groups of other loops a reader opened, or a link to one of their rows did. */
+  readonly openGroups = signal<ReadonlySet<QuestionAudience>>(new Set());
   /** The locked row whose choice is open. */
   readonly choosing = signal<string | null>(null);
   private readonly injector = inject(Injector);
@@ -220,12 +231,19 @@ export class CompanyQuestionListComponent {
       });
     });
 
-    // A link to a row behind "Show all" (a round's count in the process table, a shared address) opens the list there.
+    // A link to a row behind "Show all" or in a closed group (a round's count in the process table, a shared address)
+    // opens the list there.
     effect(() => {
       const fragment = this.fragment();
       const row = fragment ? this.rows().find((candidate) => this.rowId(candidate) === fragment) : undefined;
-      if (!row || !this.extra(row) || untracked(this.expanded)) return;
-      this.expanded.set(true);
+      const audience = row?.summary.audience;
+      if (audience) {
+        if (untracked(this.openGroups).has(audience)) return;
+        this.openGroups.update((open) => new Set([...open, audience]));
+      } else {
+        if (!row || !this.extra(row) || untracked(this.expanded)) return;
+        this.expanded.set(true);
+      }
       afterNextRender(() => document.getElementById(fragment!)?.scrollIntoView({ block: 'start' }), { injector: this.injector });
     });
   }
@@ -247,24 +265,36 @@ export class CompanyQuestionListComponent {
     return unlock && unlock.company !== this.slug() ? companyBrandFor(unlock.company)?.label ?? unlock.company : null;
   });
 
+  /** The guide names no source: rows and behavioural questions say only the years their accounts give. */
+  readonly yearOnly = computed(() => this.process().sourceDisplay === 'year');
+
   readonly rows = computed<readonly Row[]>(() => {
     const guides = this.guides();
     const summaries = this.summary().rows;
+    const yearOnly = this.yearOnly();
     return this.process().questions!.map((question, index) => ({
       question,
       summary: summaries[index],
       number: index + 1,
       guide: question.answerGuide ? guides[question.answerGuide] ?? null : null,
-      who: whoLine(question.sources),
-      frequency: frequencyLine(summaries[index]),
+      meta: yearOnly ? reportedYearsLine(question.sources) : `${whoLine(question.sources)} · ${frequencyLine(summaries[index])}`,
     }));
   });
 
+  /** The rows from experienced frontend loops: the list's own rows, which its counts count. */
+  readonly leadRows = computed(() => this.rows().filter((row) => !row.summary.audience));
+
+  /** The rows from other loops, a closed group each after the list's own rows; empty for a list without groups. */
+  readonly groups = computed<readonly RowGroup[]>(() => QUESTION_GROUPS
+    .map((group) => ({ ...group, rows: this.rows().filter((row) => row.summary.audience === group.audience) }))
+    .filter((group) => group.rows.length > 0));
+
   readonly behavioural = computed(() => {
     const rows = this.summary().behavioural;
+    const yearOnly = this.yearOnly();
     return (this.process().behaviouralQuestions ?? []).map((question: ReportedBehaviouralQuestion, index) => ({
       question,
-      frequency: frequencyLine(rows[index]),
+      frequency: yearOnly ? reportedYearsLine(question.sources) : frequencyLine(rows[index]),
     }));
   });
 
@@ -276,7 +306,7 @@ export class CompanyQuestionListComponent {
     return `Open to everyone: ${asked} from ${sources === 1 ? 'one public source' : `${sources} public sources`}.`;
   });
 
-  readonly newCount = computed(() => this.summary().rows.filter((row) => isNewQuestion(row, this.today)).length);
+  readonly newCount = computed(() => this.summary().rows.filter((row) => !row.audience && isNewQuestion(row, this.today)).length);
 
   readonly intro = computed(() => {
     const total = this.summary().total;
@@ -396,8 +426,29 @@ export class CompanyQuestionListComponent {
     return this.features().lockedQuestions && this.viewer() === 'guest';
   }
 
+  /** Past the first rows of the list's own rows, behind "Show all"; a group's rows wait behind their group instead. */
   extra(row: Row): boolean {
-    return row.number > VISIBLE_ROWS;
+    return !row.summary.audience && row.number > VISIBLE_ROWS;
+  }
+
+  groupId(group: RowGroup): string {
+    return `${this.slug()}-questions-${group.audience}`;
+  }
+
+  groupOpen(group: RowGroup): boolean {
+    return this.openGroups().has(group.audience);
+  }
+
+  /** Keeps the open groups in step with the reader's own clicks on a group's summary. */
+  onGroupToggle(group: RowGroup, event: Event): void {
+    const open = (event.target as HTMLDetailsElement).open;
+    if (open === this.groupOpen(group)) return;
+    this.openGroups.update((current) => {
+      const next = new Set(current);
+      if (open) next.add(group.audience);
+      else next.delete(group.audience);
+      return next;
+    });
   }
 
   hiddenCount(): number {

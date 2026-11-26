@@ -1,0 +1,85 @@
+{
+  "questionId": "react-grid-rectangle-selection",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\n/** The sheet's columns, A to N, and its ten rows. */\nexport const COLUMNS = 'ABCDEFGHIJKLMN'.split('');\nexport const ROW_COUNT = 10;\n\n/** A cell by its 0-based column and row. */\nexport interface Cell {\n  col: number;\n  row: number;\n}\n\n/** \"B2\": the name a cell shows and carries in `data-cell`. */\nexport function cellName(cell: Cell): string {\n  return `${COLUMNS[cell.col]}${cell.row + 1}`;\n}\n\ntype Selection = { anchor: Cell; focus: Cell };\n\nconst clamp = (value: number, max: number) => Math.max(0, Math.min(value, max));\n\n/** The selected rectangle's corners, top left first, whichever way it was drawn. */\nfunction bounds({ anchor, focus }: Selection) {\n  return {\n    top: Math.min(anchor.row, focus.row),\n    bottom: Math.max(anchor.row, focus.row),\n    left: Math.min(anchor.col, focus.col),\n    right: Math.max(anchor.col, focus.col),\n  };\n}\n\nfunction summary(selection: Selection | null): string {\n  if (!selection) return 'No cells selected';\n  const { top, bottom, left, right } = bounds(selection);\n  const count = (bottom - top + 1) * (right - left + 1);\n  const first = cellName({ col: left, row: top });\n  if (count === 1) return `${first} · 1 cell`;\n  return `${first}:${cellName({ col: right, row: bottom })} · ${count} cells`;\n}\n\nconst MOVES: Record<string, Cell> = {\n  ArrowUp: { col: 0, row: -1 },\n  ArrowDown: { col: 0, row: 1 },\n  ArrowLeft: { col: -1, row: 0 },\n  ArrowRight: { col: 1, row: 0 },\n};\n\nexport default function App() {\n  const [selection, setSelection] = useState<Selection | null>(null);\n  const [active, setActive] = useState<Cell>({ col: 0, row: 0 });\n  const dragging = useRef(false);\n  const cells = useRef(new Map<string, HTMLDivElement>());\n\n  // A drag ends wherever the button comes up, inside the sheet or not.\n  useEffect(() => {\n    const stop = () => {\n      dragging.current = false;\n    };\n    window.addEventListener('mouseup', stop);\n    return () => window.removeEventListener('mouseup', stop);\n  }, []);\n\n  const select = (anchor: Cell, focus: Cell) => {\n    setSelection({ anchor, focus });\n    setActive(focus);\n  };\n\n  const onMouseDown = (cell: Cell, event: React.MouseEvent) => {\n    event.preventDefault();\n    // Shift keeps where the selection started; a plain press starts a new one there.\n    if (event.shiftKey && selection) select(selection.anchor, cell);\n    else select(cell, cell);\n    dragging.current = true;\n  };\n\n  const onMouseEnter = (cell: Cell) => {\n    if (!dragging.current) return;\n    setSelection((current) => (current ? { anchor: current.anchor, focus: cell } : current));\n    setActive(cell);\n  };\n\n  const onKeyDown = (event: React.KeyboardEvent) => {\n    if (event.key === 'Escape') {\n      setSelection(null);\n      return;\n    }\n    const move = MOVES[event.key];\n    if (!move) return;\n    event.preventDefault();\n    const next = { col: clamp(active.col + move.col, COLUMNS.length - 1), row: clamp(active.row + move.row, ROW_COUNT - 1) };\n    if (event.shiftKey) select(selection?.anchor ?? active, next);\n    else select(next, next);\n    cells.current.get(cellName(next))?.focus();\n  };\n\n  const box = selection ? bounds(selection) : null;\n  const isSelected = (cell: Cell) =>\n    !!box && cell.row >= box.top && cell.row <= box.bottom && cell.col >= box.left && cell.col <= box.right;\n\n  return (\n    <main className=\"sheet-page\">\n      <p className=\"selection-summary\" role=\"status\">{summary(selection)}</p>\n      <div className=\"sheet\" role=\"grid\" aria-label=\"Seats\" aria-multiselectable=\"true\" onKeyDown={onKeyDown}>\n        {Array.from({ length: ROW_COUNT }, (_, row) => (\n          <div className=\"sheet-row\" role=\"row\" key={row}>\n            {COLUMNS.map((_, col) => {\n              const cell = { col, row };\n              const name = cellName(cell);\n              return (\n                <div\n                  key={name}\n                  ref={(node) => {\n                    if (node) cells.current.set(name, node);\n                    else cells.current.delete(name);\n                  }}\n                  className=\"cell\"\n                  role=\"gridcell\"\n                  data-cell={name}\n                  aria-selected={isSelected(cell)}\n                  tabIndex={col === active.col && row === active.row ? 0 : -1}\n                  onMouseDown={(event) => onMouseDown(cell, event)}\n                  onMouseEnter={() => onMouseEnter(cell)}\n                >\n                  {name}\n                </div>\n              );\n            })}\n          </div>\n        ))}\n      </div>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-anchor-focus",
+          "title": "Hold an anchor and a focus",
+          "anchor": {
+            "lineStart": 19,
+            "lineEnd": 19,
+            "snippet": "type Selection = { anchor: Cell; focus: Cell };"
+          },
+          "why": "A drag, a Shift-click and Shift with an arrow all keep where the selection started and move where it ends. Two cells describe every rectangle, in any direction.",
+          "alternative": "Keep a set of selected cell names.",
+          "tradeoff": "A set has to be rebuilt on every move and loses where the selection started, which Shift needs."
+        },
+        {
+          "id": "a2-bounds",
+          "title": "Derive the rectangle with min and max",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 24,
+            "snippet": "function bounds({ anchor, focus }: Selection) {"
+          },
+          "why": "Taking the smaller and larger row and column makes a drag from D6 to B2 the same rectangle as one from B2 to D6, and gives the summary its top-left and bottom-right corners.",
+          "alternative": "Store the rectangle as it was drawn and swap the corners when the drag runs backwards.",
+          "tradeoff": "Swapping on the fly has a case for each of the four directions and is easy to get wrong for one of them."
+        },
+        {
+          "id": "a3-dragging-ref",
+          "title": "A ref says whether a drag is running",
+          "anchor": {
+            "lineStart": 52,
+            "lineEnd": 52,
+            "snippet": "const dragging = useRef(false);"
+          },
+          "why": "Mouse enter fires on every cell the pointer crosses; only a pressed button should extend the selection. A ref changes without a re-render and is read fresh in every handler.",
+          "alternative": "Read `event.buttons` in the enter handler.",
+          "tradeoff": "`buttons` works for a real mouse, but a drag that leaves the sheet and comes back still needs to know it ended outside."
+        },
+        {
+          "id": "a4-window-mouseup",
+          "title": "End the drag on window",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "window.addEventListener('mouseup', stop);"
+          },
+          "why": "The button can come up anywhere. Listening on `window` ends the drag even when the release happens outside the sheet.",
+          "alternative": "Listen for `mouseup` on each cell.",
+          "tradeoff": "A release outside every cell would leave the drag running, so the next hover would change the selection."
+        },
+        {
+          "id": "a5-shift-anchor",
+          "title": "Shift keeps the anchor",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "if (event.shiftKey && selection) select(selection.anchor, cell);"
+          },
+          "why": "Shift and a click extend from where the selection started, so only the focus moves. Without Shift, the press becomes the new anchor.",
+          "alternative": "Extend from the last cell clicked.",
+          "tradeoff": "Extending from the last click makes a second Shift-click grow the wrong rectangle, as A1 after D4 would show."
+        },
+        {
+          "id": "a6-roving-focus",
+          "title": "Move real focus with the active cell",
+          "anchor": {
+            "lineStart": 94,
+            "lineEnd": 94,
+            "snippet": "cells.current.get(cellName(next))?.focus();"
+          },
+          "why": "The active cell has `tabindex=\"0\"`; focusing it too keeps the keyboard, the screen reader and the next key press on the same cell.",
+          "alternative": "Keep focus on the sheet and point at the active cell with `aria-activedescendant`.",
+          "tradeoff": "Active descendant is valid too, but this task asks for a roving tabindex, so the checks read focus on the cell."
+        }
+      ]
+    }
+  }
+}

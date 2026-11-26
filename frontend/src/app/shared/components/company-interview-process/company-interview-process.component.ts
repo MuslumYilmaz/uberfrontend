@@ -90,6 +90,15 @@ export class CompanyInterviewProcessComponent {
     return this.freeAccount() && isPremiumRoute(path);
   }
 
+  /** The guide names no source (`sourceDisplay: 'year'`): a stage shows how strong its evidence is and when, nothing more. */
+  get yearOnly(): boolean {
+    return this.process?.sourceDisplay === 'year';
+  }
+
+  evidenceHeading(): string {
+    return this.reportedBy && !this.yearOnly ? 'Reported by' : 'Evidence';
+  }
+
   get headingId(): string {
     return `${this.slug || 'company'}-interview-process`;
   }

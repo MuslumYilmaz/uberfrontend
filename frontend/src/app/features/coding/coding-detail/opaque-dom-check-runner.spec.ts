@@ -800,6 +800,138 @@ describe('OpaqueDomCheckRunner', () => {
     ]);
   });
 
+  it('clicks with Shift, Ctrl, Meta or Alt held as a mouse does, and keeps a plain click the element\'s own click()', async () => {
+    const page = `<!doctype html><html><body>
+      <button class="cell">Cell</button><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+          document.addEventListener(type, (event) => {
+            const keys = (event.shiftKey ? 'S' : '') + (event.ctrlKey ? 'C' : '') + (event.metaKey ? 'M' : '') + (event.altKey ? 'A' : '');
+            seen.textContent += ' ' + type + (keys ? '+' + keys : '');
+          });
+        }
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const results = await runner.runFramework(page, [
+      { id: 'plain', name: 'Plain', steps: [{ type: 'click', selector: '.cell' }, { type: 'expectText', selector: '.seen', text: 'click', match: 'equals' }] },
+      {
+        id: 'shift',
+        name: 'Shift',
+        steps: [
+          { type: 'click', selector: '.cell', shift: true },
+          { type: 'expectText', selector: '.seen', text: 'pointerdown+S mousedown+S pointerup+S mouseup+S click+S', match: 'equals' },
+        ],
+      },
+      { id: 'keys', name: 'Keys', steps: [{ type: 'click', selector: '.cell', ctrl: true, meta: true, alt: true }, { type: 'expectText', selector: '.seen', text: 'click+CMA', match: 'contains' }] },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Plain', passed: true },
+      { name: 'Shift', passed: true },
+      { name: 'Keys', passed: true },
+    ]);
+  });
+
+  // A 3x3 grid where a drag selects the rectangle between the cell pressed and the cell the pointer is over.
+  const gridApp = (handlers: string) => `import React, { useState } from 'react';
+const cells = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+const at = (cell: number) => [Math.floor(cell / 3), cell % 3];
+export default function App() {
+  const [anchor, setAnchor] = useState<number | null>(null);
+  const [end, setEnd] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [restored, setRestored] = useState('');
+  const inside = (cell: number) => {
+    if (anchor === null || end === null) return false;
+    const [r1, c1] = at(anchor); const [r2, c2] = at(end); const [r, c] = at(cell);
+    return r >= Math.min(r1, r2) && r <= Math.max(r1, r2) && c >= Math.min(c1, c2) && c <= Math.max(c1, c2);
+  };
+  return (
+    <div>
+      <div className="grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 40px)' }} onMouseUp={() => setDragging(false)}>
+        {cells.map((cell) => (
+          <div key={cell} className="cell" data-cell={cell} style={{ height: 40 }} ${handlers}>{cell}</div>
+        ))}
+      </div>
+      <p className="seen">{cells.filter(inside).join(',') || 'none'}</p>
+      <button className="probe" onClick={() => setRestored(String(Element.prototype.setPointerCapture).includes('native code') ? 'native' : 'patched')}>Probe</button>
+      <p className="restored">{restored}</p>
+    </div>
+  );
+}
+`;
+
+  it('drags through cells with the button down, so a grid that selects on mouse enter sees the rectangle', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': gridApp(`onMouseDown={() => { setAnchor(cell); setEnd(cell); setDragging(true); }}
+            onMouseEnter={() => { if (dragging) setEnd(cell); }}`),
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'through',
+        name: 'Through',
+        steps: [
+          { type: 'waitForCount', selector: '.cell', count: 9, timeoutMs: 3000 },
+          { type: 'drag', selector: '[data-cell="0"]', through: [{ selector: '[data-cell="1"]' }], to: { selector: '[data-cell="4"]' } },
+          { type: 'expectText', selector: '.seen', text: '0,1,3,4', match: 'equals' },
+        ],
+      },
+      {
+        // Without `through` the drag is a press and a release: no cell is entered, so the selection stays one cell.
+        id: 'jump',
+        name: 'Jump',
+        steps: [
+          { type: 'waitForCount', selector: '.cell', count: 9, timeoutMs: 3000 },
+          { type: 'drag', selector: '[data-cell="0"]', to: { selector: '[data-cell="4"]' } },
+          { type: 'expectText', selector: '.seen', text: '0', match: 'equals' },
+        ],
+      },
+      {
+        id: 'missing',
+        name: 'Missing',
+        steps: [
+          { type: 'waitForCount', selector: '.cell', count: 9, timeoutMs: 3000 },
+          { type: 'drag', selector: '[data-cell="0"]', through: [{ selector: '.nowhere' }], to: { selector: '[data-cell="4"]' } },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([
+      { name: 'Through', passed: true },
+      { name: 'Jump', passed: true },
+      { name: 'Missing', passed: false, error: '.nowhere was not found', failureKind: 'assertion', step: 2, steps: 2 },
+    ]);
+  });
+
+  it('gives a page that captures the pointer every later move on the captured element, then restores capture', async () => {
+    const html = makeReactPreviewHtml({
+      'src/App.tsx': gridApp(`onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setAnchor(cell); setEnd(cell); }}
+            onPointerMove={(event) => {
+              if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+              const over = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-cell]');
+              if (over) setEnd(Number(over.getAttribute('data-cell')));
+            }}
+            onPointerUp={(event) => event.currentTarget.releasePointerCapture(event.pointerId)}`),
+    }, window.location.origin);
+    const results = await runner.runFramework(html, [
+      {
+        id: 'captured',
+        name: 'Captured',
+        viewport: { width: 400, height: 300 },
+        steps: [
+          { type: 'waitForCount', selector: '.cell', count: 9, timeoutMs: 3000 },
+          { type: 'drag', selector: '[data-cell="0"]', through: [{ selector: '[data-cell="1"]' }], to: { selector: '[data-cell="5"]' } },
+          { type: 'expectText', selector: '.seen', text: '0,1,2,3,4,5', match: 'equals' },
+          { type: 'click', selector: '.probe' },
+          { type: 'expectText', selector: '.restored', text: 'native', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Captured', passed: true }]);
+  });
+
   it('measures how far an element sits below or above another and where its left edge is, within a pixel', async () => {
     const page = `<!doctype html><html><body style="margin: 0">
       <button class="anchor" style="position: absolute; top: 100px; left: 40px; width: 24px; height: 24px">i</button>

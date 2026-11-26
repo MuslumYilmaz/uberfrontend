@@ -1,6 +1,10 @@
-<section class="guide-sources company-source-list" [attr.aria-labelledby]="headingId()" data-testid="company-guide-sources">
-  <details class="guide-sources__details">
-    <summary class="guide-sources__summary"><h2 [attr.id]="headingId()">Sources ({{ sources().length }})</h2></summary>
+@if (method(); as note) {
+  <section class="guide-sources guide-sources--method" [attr.aria-labelledby]="methodHeadingId()" data-testid="company-guide-method">
+    <h2 class="guide-sources__method-title" [attr.id]="methodHeadingId()">{{ note.title }}</h2>
+    @for (paragraph of note.paragraphs; track $index) {
+      <p class="guide-sources__method-text">{{ paragraph }}</p>
+    }
+    <!-- With no list to close it in, the source boundary follows the method, open. -->
     @if (boundary(); as copy) {
       <div class="guide-sources__boundary">
         <p class="guide-sources__boundary-title">{{ copy.title }}</p>
@@ -9,33 +13,47 @@
         }
       </div>
     }
-    @if (viewer() === 'guest') {
-      <p class="guide-sources__gate" data-testid="company-guide-sources-gate">
-        The links open with a free account.
-        <a routerLink="/auth/signup" [queryParams]="signupParams()">Create a free account</a>
-        <span aria-hidden="true"> · </span>
-        <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
-      </p>
-    }
-    @if (hasAccounts()) {
-      <p class="guide-sources__scope">Each candidate's account describes one loop, not a fixed format.</p>
-    }
-    <ul class="guide-sources__list">
-      @for (row of sources(); track row.url) {
-        <li>
-          <p class="guide-sources__label">
-            @if (viewer() === 'guest') {
-              {{ row.label }}
-            } @else {
-              <a [href]="row.url" target="_blank" [attr.rel]="rel(row)">{{ row.label }}</a>
-            }
-          </p>
-          @if (row.who || row.date) {
-            <p class="guide-sources__who">{{ row.who }}@if (row.who && row.date) { · }{{ when(row) }}</p>
+  </section>
+} @else {
+  <section class="guide-sources company-source-list" [attr.aria-labelledby]="headingId()" data-testid="company-guide-sources">
+    <details class="guide-sources__details">
+      <summary class="guide-sources__summary"><h2 [attr.id]="headingId()">Sources ({{ sources().length }})</h2></summary>
+      @if (boundary(); as copy) {
+        <div class="guide-sources__boundary">
+          <p class="guide-sources__boundary-title">{{ copy.title }}</p>
+          @for (paragraph of copy.paragraphs; track $index) {
+            <p>{{ paragraph }}</p>
           }
-          <p class="guide-sources__note">{{ row.note }}</p>
-        </li>
+        </div>
       }
-    </ul>
-  </details>
-</section>
+      @if (viewer() === 'guest') {
+        <p class="guide-sources__gate" data-testid="company-guide-sources-gate">
+          The links open with a free account.
+          <a routerLink="/auth/signup" [queryParams]="signupParams()">Create a free account</a>
+          <span aria-hidden="true"> · </span>
+          <a routerLink="/auth/login" [queryParams]="signupParams()">Sign in</a>
+        </p>
+      }
+      @if (hasAccounts()) {
+        <p class="guide-sources__scope">Each candidate's account describes one loop, not a fixed format.</p>
+      }
+      <ul class="guide-sources__list">
+        @for (row of sources(); track row.url) {
+          <li>
+            <p class="guide-sources__label">
+              @if (viewer() === 'guest') {
+                {{ row.label }}
+              } @else {
+                <a [href]="row.url" target="_blank" [attr.rel]="rel(row)">{{ row.label }}</a>
+              }
+            </p>
+            @if (row.who || row.date) {
+              <p class="guide-sources__who">{{ row.who }}@if (row.who && row.date) { · }{{ when(row) }}</p>
+            }
+            <p class="guide-sources__note">{{ row.note }}</p>
+          </li>
+        }
+      </ul>
+    </details>
+  </section>
+}

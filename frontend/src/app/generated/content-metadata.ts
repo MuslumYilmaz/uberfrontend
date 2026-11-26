@@ -1533,8 +1533,8 @@ export const TAG_REGISTRY = {
 };
 
 export const SHOWCASE_STATS = {
-  "totalQuestions": 533,
-  "premiumPracticeCount": 196,
+  "totalQuestions": 542,
+  "premiumPracticeCount": 206,
   "companyCounts": {
     "agoda": {
       "all": 12,
@@ -1548,6 +1548,13 @@ export const SHOWCASE_STATS = {
       "coding": 2,
       "trivia": 2,
       "system": 1,
+      "debug": 0
+    },
+    "airwallex": {
+      "all": 5,
+      "coding": 4,
+      "trivia": 1,
+      "system": 0,
       "debug": 0
     },
     "amazon": {
@@ -1683,6 +1690,13 @@ export const SHOWCASE_STATS = {
       "system": 0,
       "debug": 0
     },
+    "notion": {
+      "all": 10,
+      "coding": 5,
+      "trivia": 4,
+      "system": 0,
+      "debug": 1
+    },
     "openai": {
       "all": 9,
       "coding": 3,
@@ -1736,6 +1750,13 @@ export const SHOWCASE_STATS = {
       "all": 5,
       "coding": 1,
       "trivia": 4,
+      "system": 0,
+      "debug": 0
+    },
+    "verkada": {
+      "all": 8,
+      "coding": 5,
+      "trivia": 3,
       "system": 0,
       "debug": 0
     },

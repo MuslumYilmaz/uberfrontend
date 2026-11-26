@@ -1,0 +1,57 @@
+{
+  "id": "react-command-palette-sources",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "35ac12151f18941d063a75a06f1e4ae46c6b0767cbc247c2aeee3534bfa8b3aa",
+  "pageHash": "5e03c0771ee8f92d68c6be6828e93bee01610574265a17ae76f5783a03add159",
+  "checksHash": "4efaddc760cc861ead1c04cc6f7c686688590ab5073a4c16afabe36768ddd122",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "review",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "review",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "review",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 2,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 4,
+      "passedAllChecks": 4
+    },
+    "A4": {
+      "count": 9,
+      "passedAllChecks": 4
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Closed under the stop rule agreed after five review rounds. (1) Telling a 100 ms debounce from 150 ms needs a fake clock; the 190 ms sample rules out searching with no debounce. (2) No results on an empty query or on first load is a follow-up. (3) Keyboard moves over a list with date and document options are a follow-up. (4) Dates count calendar days from TODAY, as the reference does; millisecond arithmetic fails only where a DST change falls between 12 March and 1 April, so the zone the checks run in decides whether it is caught.",
+    "A5": "Keyboard rules run on one list of four commands; a mixed list with date and document options, of another length, is a follow-up.",
+    "B4": "(a) A failed search has not answered with results, so everything has not answered and No results stays hidden; a clearer sentence is a follow-up. (b) in 5 day and in 1 days are neither stated nor checked. A command click and No results on an empty query are follow-ups.",
+    "C2": "The 190 ms sample proves the search did not answer without a debounce. Telling 100 ms from 150 ms, or showing that a second key inside the window drops the first search, needs a fake clock or a call count, which the runner does not have."
+  }
+}

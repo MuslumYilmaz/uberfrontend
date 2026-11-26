@@ -223,6 +223,97 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       },
     ],
   },
+  airwallex: {
+    variants: [
+      {
+        id: 'singapore',
+        title: 'Frontend engineers, Singapore, 2025',
+        from: 'three frontend loops in 2025, two of them in Singapore',
+        ask: 'Interviewing for a frontend role in Singapore?',
+        default: true,
+        rounds: [
+          { id: 'hr-screen', stage: 'Recruiter or HR screen', kinds: ['recruiter'] },
+          {
+            id: 'technical-round-1',
+            stage: 'Technical round 1',
+            kinds: ['coding'],
+            note: 'Live coding: a React task or coding problems explained on a shared screen.',
+          },
+          { id: 'technical-round-2', stage: 'Technical round 2', kinds: ['coding', 'people'] },
+          { id: 'third-round', stage: 'Third round', kinds: ['other'] },
+        ],
+      },
+      {
+        id: 'australia',
+        title: 'Frontend engineers, Australia, 2023 and 2025',
+        from: 'frontend loops in Sydney and Melbourne in 2023 and 2025',
+        ask: 'Interviewing for a frontend role in Australia?',
+        rounds: [
+          { id: 'recruiter-screen', stage: 'Recruiter screen', kinds: ['recruiter'] },
+          {
+            id: 'project-interview',
+            stage: 'Project and behaviour interview',
+            kinds: ['people'],
+            note: 'An hour with an engineering manager and a lead engineer on a recent project and its decisions.',
+          },
+          { id: 'coding-exercise', stage: 'Coding exercise', kinds: ['coding'] },
+          { id: 'take-home-review', stage: 'Take-home review panel', kinds: ['coding'] },
+          {
+            id: 'final',
+            stage: 'Final',
+            kinds: ['people', 'coding'],
+            note: 'An hour with a director and a senior engineer: a project deep dive, architecture and brain teasers.',
+          },
+        ],
+      },
+      {
+        id: 'official-2022',
+        title: 'The engineering process Airwallex published in 2022',
+        from: "Airwallex's own 2022 post on getting hired",
+        ask: 'Interviewing for a general engineering role?',
+        rounds: [
+          { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
+          { id: 'tech-screen', stage: 'Tech screen', kinds: ['coding'] },
+          {
+            id: 'take-home-or-live',
+            stage: 'Take-home or live coding',
+            kinds: ['coding'],
+            note: 'A take-home of about 3 to 4 hours, or a harder problem coded live in 60 minutes.',
+          },
+          { id: 'design-and-problem-solving', stage: 'System design and problem solving', kinds: ['design', 'coding'] },
+          { id: 'final-senior-leader', stage: 'Final with a senior leader', kinds: ['people'] },
+        ],
+      },
+      {
+        id: 'london-2026',
+        title: 'Engineering roles in London, 2026',
+        from: "Airwallex's own 2026 post on London",
+        ask: 'Interviewing for an engineering role in London?',
+        rounds: [
+          { id: 'coding-interview', stage: 'Coding interview', kinds: ['coding'] },
+          { id: 'system-design-interview', stage: 'System design interview', kinds: ['design'] },
+          { id: 'hiring-manager-interview', stage: 'Hiring manager interview', kinds: ['people'] },
+          {
+            id: 'bar-raiser',
+            stage: 'Bar raiser',
+            kinds: ['people'],
+            note: 'Motivations, behaviours, fit with the values and operating principles, and how you use AI.',
+          },
+        ],
+      },
+      {
+        id: 'early-careers',
+        title: 'Early careers, 2026',
+        from: "Airwallex's early-careers page and a 2026 intern account",
+        ask: 'Interviewing as an intern or graduate?',
+        students: true,
+        rounds: [
+          { id: 'early-careers-recruiter-screen', stage: 'Early-careers recruiter screen', kinds: ['recruiter'] },
+          { id: 'working-sessions', stage: 'Technical or working sessions', kinds: ['coding'] },
+        ],
+      },
+    ],
+  },
   amazon: {
     reportVariants: {
       'js-array-prototype-filter': ['experienced'],
@@ -1171,6 +1262,117 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
       },
     ],
   },
+  notion: {
+    variants: [
+      {
+        id: 'frontend',
+        title: 'Front End track and frontend-leaning loops, experienced, 2022 to 2026',
+        from: 'the Front End guide and frontend and software loops from 2022 to 2026',
+        ask: 'Interviewing for the Front End track or a software role?',
+        default: true,
+        rounds: [
+          { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
+          {
+            id: 'technical-screen',
+            stage: 'Technical screen',
+            kinds: ['coding'],
+            note: '60 minutes of live React coding on CodeSignal: a practical build in parts, with AI tools restricted.',
+          },
+          {
+            id: 'ai-enabled-coding',
+            stage: 'Onsite: AI-enabled coding',
+            kinds: ['coding'],
+            note: 'A small TypeScript codebase that may have failing tests, slow code or messy code, with AI tools encouraged.',
+          },
+          { id: 'code-review', stage: 'Onsite: code review', kinds: ['coding'], note: 'Listed in the 2026 Front End guide; no candidate describes it.' },
+          {
+            id: 'software-design',
+            stage: 'Onsite: software design',
+            kinds: ['design'],
+            note: 'An open-ended design on a diagramming tool; a calendar UI and data modelling are reported.',
+          },
+          {
+            id: 'career-history',
+            stage: 'Onsite: career history',
+            kinds: ['people'],
+            note: 'An hour with an engineering leader on your past teams, successes, challenges and transitions, and why Notion.',
+          },
+          {
+            id: 'second-coding-round',
+            stage: 'Before 2026: a second coding round',
+            kinds: ['coding'],
+            note: 'Onsites from 2022 to 2025 had a second coding round, an algorithm or backend one, beside frontend coding.',
+          },
+          {
+            id: 'hiring-manager-call',
+            stage: 'Hiring manager or executive call, and team match',
+            kinds: ['people', 'outcome'],
+            note: 'A talk about past projects; 2026 staff posts say it probed team conflicts. Then a team search.',
+          },
+          {
+            id: 'final-interview',
+            stage: 'Final interview',
+            kinds: ['people'],
+            note: 'With a leader; two 2026 accounts name the CEO: your experience, values and motivations.',
+          },
+          {
+            id: 'references',
+            stage: 'References and background check',
+            kinds: ['outcome'],
+            note: 'Reference checks, sometimes before the level and offer are discussed, and a background check.',
+          },
+        ],
+      },
+      {
+        id: 'early-career',
+        title: 'Interns and new grads, 2024 to 2026',
+        from: 'the intern and new-grad guides and loops from 2024 to 2026',
+        ask: 'Interviewing as an intern or new grad?',
+        students: true,
+        rounds: [
+          { id: 'initial-call', stage: 'Initial call', kinds: ['recruiter'] },
+          {
+            id: 'online-assessment',
+            stage: 'Online assessment',
+            kinds: ['coding'],
+            note: 'An online assessment before the take-home, in some 2025 and 2026 intern loops.',
+          },
+          { id: 'take-home', stage: 'Take-home', kinds: ['coding'] },
+          {
+            id: 'debugging',
+            stage: 'Onsite: debugging',
+            kinds: ['coding'],
+            note: 'A 10-minute review of your take-home, then 40 minutes of debugging a codebase.',
+          },
+          {
+            id: 'practical-coding',
+            stage: 'Onsite: practical coding',
+            kinds: ['coding'],
+            note: 'A practical coding interview that accounts call not LeetCode-style, such as a class for storing documents.',
+          },
+          { id: 'final-conversation', stage: 'Final conversation', kinds: ['people'] },
+          { id: 'values-capstone', stage: 'New grads: values capstone and references', kinds: ['people'] },
+          { id: 'background-check', stage: 'Background check', kinds: ['outcome'] },
+        ],
+      },
+      {
+        id: 'india',
+        title: 'India, 2023 to 2025',
+        from: 'three loops in India from 2023 to 2025',
+        ask: 'Interviewing in India?',
+        rounds: [
+          { id: 'assignment', stage: 'Assignment', kinds: ['coding'] },
+          {
+            id: 'technical-rounds',
+            stage: 'Technical rounds',
+            kinds: ['coding'],
+            note: 'React and JavaScript questions, text-editor functions, or code quality and pair programming, by account.',
+          },
+          { id: 'hr-round', stage: 'HR round', kinds: ['recruiter'] },
+        ],
+      },
+    ],
+  },
   openai: {
     variants: [
       {
@@ -1514,6 +1716,62 @@ export const COMPANY_PLAN_ROUNDS: Readonly<Record<string, CompanyPlanCompany>> =
           // The table's first sentence says the format; the old note named the design task of a locked question.
           { id: 'system-design', stage: 'System design', kinds: ['design'] },
           { id: 'collaboration-and-leadership', stage: 'Collaboration and leadership', kinds: ['people'] },
+        ],
+      },
+    ],
+  },
+  verkada: {
+    variants: [
+      {
+        id: 'frontend',
+        title: 'Frontend engineers, mid level to senior, United States, 2023 to 2026',
+        from: 'frontend loops from 2023 to 2026, in the United States where a place is given',
+        ask: 'Interviewing for a frontend role in the United States?',
+        default: true,
+        reported: { levels: ['mid', 'senior'], who: 'mid-level and senior frontend engineers' },
+        rounds: [
+          { id: 'recruiter-call', stage: 'Recruiter call', kinds: ['recruiter'] },
+          {
+            id: 'hiring-manager-screen',
+            stage: 'Hiring-manager screen',
+            kinds: ['people'],
+            note: 'Officially, behavioural and role-specific questions with the hiring manager; in 2023 it was the technical screen.',
+          },
+          {
+            id: 'technical-screen',
+            stage: 'Technical screen',
+            kinds: ['coding'],
+            note: 'Live coding on video; most screens reported in 2025 that name a task asked for a video player built from still frames.',
+          },
+          {
+            id: 'onsite',
+            stage: 'Onsite at the San Mateo office',
+            kinds: ['coding', 'design', 'people'],
+            note: 'Several technical interviews and a manager interview: selection in a grid, broken JavaScript, a camera grid design.',
+          },
+          { id: 'offer-and-checks', stage: 'Offer and checks', kinds: ['outcome'] },
+        ],
+      },
+      {
+        id: 'canada',
+        title: 'Software roles with a frontend round, Canada, 2024 to 2025',
+        from: 'two software loops in Canada in 2024 and 2025',
+        ask: 'Interviewing for a software role in Canada?',
+        rounds: [
+          { id: 'screening', stage: 'Recruiter call or screening', kinds: ['recruiter'] },
+          { id: 'frontend-technical-interview', stage: 'Frontend technical interview', kinds: ['coding'] },
+          { id: 'second-technical-interview', stage: 'Second technical interview', kinds: ['coding'] },
+          { id: 'behavioural-interview', stage: 'Behavioural interview', kinds: ['people'] },
+        ],
+      },
+      {
+        id: 'take-home-2019',
+        title: 'A frontend loop with a take-home, United States, 2019',
+        from: 'a 2019 frontend loop with a take-home',
+        ask: 'Interviewing through a staffing agency?',
+        rounds: [
+          { id: 'agency-and-recruiter-call', stage: 'Agency and recruiter call', kinds: ['recruiter'] },
+          { id: 'take-home', stage: 'Take-home', kinds: ['coding'] },
         ],
       },
     ],

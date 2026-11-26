@@ -379,6 +379,15 @@ test('seo: llms.txt is served with public discovery links only', async ({ page }
   expect(text).toContain(
     '[Binance frontend interview questions](https://frontendatlas.com/companies/binance/preview)',
   );
+  expect(text).toContain(
+    '[Verkada frontend interview questions](https://frontendatlas.com/companies/verkada/preview)',
+  );
+  expect(text).toContain(
+    '[Notion frontend interview questions](https://frontendatlas.com/companies/notion/preview)',
+  );
+  expect(text).toContain(
+    '[Airwallex frontend interview questions](https://frontendatlas.com/companies/airwallex/preview)',
+  );
 
   ['/dashboard', '/profile', '/admin', '/auth/', '/billing'].forEach((path) => {
     expect(text).not.toContain(path);

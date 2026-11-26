@@ -1,0 +1,30 @@
+{
+  "id": "js-debug-notes-app-repo",
+  "tech": "javascript",
+  "kind": "debug",
+  "hashVersion": 1,
+  "hash": "99d81bab9a4ba6895e0caebb0b3e2c1656d7a1795b363e8ebb596cd6e14b6f47",
+  "pageHash": "c048b0f2e0442341517eac07b642801fc1c6928922f368fb0d75e6115927f485",
+  "checksHash": "f9cd80705b339c97a8a286313cd7e67a62dc60c75c5fcf33d87f704639a52b23",
+  "reviewedAt": "2026-11-26",
+  "mode": "skip",
+  "skipReason": "Multi-file debug task: the review tool does not run file bundles yet. debug-bundle-regressions checks that each of the four starter bugs fails only its own tests, that the fix passes all nine and that the starter fails exactly those four.",
+  "result": "skipped",
+  "rules": {
+    "A1": "not-run",
+    "A2": "not-run",
+    "A3": "not-run",
+    "A4": "not-run",
+    "A5": "not-run",
+    "B1": "not-run",
+    "B2": "not-run",
+    "B3": "not-run",
+    "B4": "not-run",
+    "B5": "not-run",
+    "C1": "not-run",
+    "C2": "not-run",
+    "C3": "not-run",
+    "C4": "not-run",
+    "C5": "not-run"
+  }
+}

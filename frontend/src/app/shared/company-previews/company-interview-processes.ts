@@ -76,6 +76,12 @@ export type ReportedQuestion = {
   readonly practice?: { readonly label: string; readonly path: string };
   /** The id of the guide's practice prompt whose answer outline covers it. */
   readonly answerGuide?: string;
+  /**
+   * The loops it comes from when they are not experienced frontend ones: intern and new-grad loops ('early-career') or
+   * general software engineering loops ('general'). Such rows follow the others in their own closed group, and the
+   * list's headline, offer and round counts leave them out. Absent: an experienced frontend loop.
+   */
+  readonly audience?: 'early-career' | 'general';
 };
 
 /** A behavioural question the sources report. These stay open: a lock on "Why this company?" would only be bait. */
@@ -137,6 +143,12 @@ export type CompanyInterviewProcess = {
   readonly questions?: readonly ReportedQuestion[];
   /** The behavioural questions the sources report, shown open as a small group beside the question list. */
   readonly behaviouralQuestions?: readonly ReportedBehaviouralQuestion[];
+  /**
+   * 'year': the page names no source. Rows and rounds show only the years their accounts give, no reporter, site or
+   * link reaches the guide or the plan, and the guide ends with a note on how the questions were collected. The sources
+   * stay here for the counts and the checks.
+   */
+  readonly sourceDisplay?: 'year';
 };
 
 const AMAZON_FEE_PREP: InterviewProcessSource = {
@@ -3013,6 +3025,242 @@ const BINANCE_C10_CARD_2021: InterviewProcessSource = {
   location: 'Taiwan',
 };
 const BINANCE_FE_ROLE = 'Frontend engineers in the accounts';
+
+// Verkada, added 2026-11-26 from docs/references/verkada-questions-and-process-2026-11.md (ids in the trailing comments).
+// The guide names no source (sourceDisplay: 'year'): these constants feed the years, the counts and the checks, and
+// no reporter, site or link reaches the page. Take-homes known only from candidates' published solutions cite
+// nothing here; the guide describes them in its own text. Prep-site cards and curated stories are question banks:
+// they confirm a report and never stand as one.
+const VERKADA_CAREERS = official('Verkada careers: Interviewing at Verkada', 'https://www.verkada.com/careers/'); // O1
+const VERKADA_CANDIDATE_PRIVACY = official('Verkada candidate privacy policy', 'https://www.verkada.com/candidate-privacy-policy/'); // O2
+const VERKADA_FL1_2025: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-frontend-interview-experience/2093', '2025-06'),
+}; // FL1
+const VERKADA_FL2_2025: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-frontend-software-engineer-technical-interview/2574', '2025-09'),
+  role: 'Frontend software engineer (Software Engineer II)',
+}; // FL2
+const VERKADA_FL3_2025: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-frontend-phone-screen/2765', '2025-10'),
+  role: 'Senior software engineer',
+}; // FL3
+const VERKADA_FL4_2025: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-senior-fe-phone/2916', '2025-11'),
+  role: 'Senior frontend engineer',
+}; // FL4
+const VERKADA_FL5_2025: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-phone-screen/2931', '2025-11'),
+  role: 'Senior engineer',
+}; // FL5
+const VERKADA_FL6_2026: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-interview-experience/3318', '2026-03'),
+  role: 'Frontend engineer',
+}; // FL6
+const VERKADA_FL7_2026: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/verkada-frontend-engineer-interview-experience/3357', '2026-03'),
+  role: 'Frontend engineer',
+}; // FL7
+const VERKADA_TA1_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-front-end-developer-united-states-july-29-2025-no-offer-positive-32e1ef55/', '2025-07'); // TA1
+const VERKADA_TA2_2025: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-frontend-engineer-san-mateo-ca-july-1-2025-accepted-offer-positive-c0894851/', '2025-07'), role: 'Senior frontend engineer', location: 'United States' }; // TA2
+const VERKADA_TA3_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/verkada/experiences/software-engineer-canada-february-2-2025-no-offer-positive-2b4c33e4/', '2025-02'); // TA3
+const VERKADA_TA4_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/verkada/experiences/software-developer-canada-october-31-2024-no-offer-positive-ec2a77db/', '2024-10'); // TA4
+const VERKADA_TA5_2024 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-software-engineer-united-states-september-1-2024-no-offer-negative-16aa3df6/', '2024-09'); // TA5
+const VERKADA_TA6_2024: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-frontend-engineer-san-mateo-ca-june-1-2024-no-offer-positive-68669dbd/', '2024-06'), role: 'Senior frontend engineer', location: 'United States' }; // TA6
+const VERKADA_TA7_2024: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/front-end-lead-san-mateo-ca-may-1-2024-no-offer-negative-07f644c0/', '2024-05'), role: 'Front end lead', location: 'United States' }; // TA7
+const VERKADA_TA9_2023: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-frontend-software-engineer-san-mateo-ca-december-1-2023-no-offer-negative-74abc463/', '2023-12'), role: 'Senior frontend software engineer', location: 'United States' }; // TA9
+const VERKADA_TA10_2023 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/frontend-engineer-united-states-december-1-2023-no-offer-neutral-d025c3c1/', '2023-12'); // TA10
+const VERKADA_TA11_2023: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-software-engineer-san-mateo-ca-december-1-2023-no-offer-negative-cd0f189f/', '2023-12'), role: 'Senior software engineer', location: 'United States' }; // TA11
+const VERKADA_TA12_2019 = report('Taro', 'https://www.jointaro.com/interviews/companies/verkada/experiences/frontend-engineer-united-states-august-9-2019-no-offer-neutral-959b5497/', '2019-08'); // TA12
+const VERKADA_TG1_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/verkada/experiences/software-engineerinternship-united-states-march-3-2025-accepted-offer-positive-a78ab57c/', '2025-03'); // TG1
+const VERKADA_TG10_2024: InterviewProcessSource = { ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/verkada/experiences/senior-software-engineer-san-mateo-ca-march-1-2024-no-offer-neutral-5b59d592/', '2024-03'), role: 'Senior software engineer', location: 'United States' }; // TG10
+const VERKADA_B1_2025: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/verkada-onsite-frontend-interview-6v50jh22', '2025-03'),
+  role: 'Frontend candidate before the onsite',
+}; // B1
+// A 2020/21 backend new-grad loop, published in November 2021; cited for its culture questions only.
+const VERKADA_M1_2021: InterviewProcessSource = {
+  ...report('Medium', 'https://shauryas481.medium.com/unraveling-verkadas-interview-14e043a0c30c', '2021-11'),
+  role: 'Software backend engineer (full-time role)',
+  outcome: 'no offer',
+}; // M1
+// Prep-site cards and curated stories: their dates are the month they were read.
+const VERKADA_T5_DASHBOARD: InterviewProcessSource = {
+  ...report('PracHub card', 'https://prachub.com/interview-questions/build-a-react-dashboard-with-filters', '2026-11'),
+  reportForm: 'question-bank',
+}; // T5, new-grad frontend onsite, January 2026
+const VERKADA_PH_DP: InterviewProcessSource = {
+  ...report('PracHub card', 'https://prachub.com/coding-questions/implement-a-recency-cache-and-min-coins-dp', '2026-11'),
+  reportForm: 'question-bank',
+}; // PH-DP, new-grad frontend onsite, January 2026
+const VERKADA_PS3_ONSITE: InterviewProcessSource = {
+  ...report('PracHub story', 'https://prachub.com/interview-experiences/verkada-software-engineer-interview-experience-phone-screen-plus-a-four-round-onsite-no-feedback-after-two-weeks', '2026-11'),
+  reportForm: 'question-bank',
+}; // PS3, general onsite, January 2026
+const VERKADA_PS6_MOTION: InterviewProcessSource = {
+  ...report('PracHub story', 'https://prachub.com/interview-experiences/verkada-software-engineer-interview-experience-motion-thresholds-across-multiple-cameras', '2026-11'),
+  reportForm: 'question-bank',
+}; // PS6, general loop, April 2026
+const VERKADA_PS8_MOTION: InterviewProcessSource = {
+  ...report('PracHub story', 'https://prachub.com/interview-experiences/verkada-software-engineer-interview-experience-two-coding-rounds-no-system-design', '2026-11'),
+  reportForm: 'question-bank',
+}; // PS8, general loop, December 2025
+const VERKADA_FE_ROLE = 'Frontend engineers in the accounts';
+
+// Notion, added 2026-11-26 from docs/references/notion-questions-and-process-2026-11.md (ids in the trailing comments).
+// The guide names no source (sourceDisplay: 'year'): these constants feed the years, the counts and the checks, and
+// no reporter, site or link reaches the page. Notion's own interview guides are official sources. The take-home's
+// starter repository and candidates' solution repositories are not cited, and prep-site cards are left out.
+const NOTION_SWE_INTERVIEWS = official('Notion: Software Engineering Interviews', 'https://notion.notion.site/Software-Engineering-Interviews-63876cbf0aa9455fa0f0ffc854b40f6a'); // O1
+const NOTION_FRONT_END_PREP = official('Notion: Front End Interview Prep', 'https://notion.notion.site/Front-End-Interview-Prep-04fe1776e31f46ad960a6877a6d0ad72'); // O2
+const NOTION_INTERN_PREP = official('Notion: Intern Interview Prep', 'https://notion.notion.site/Intern-Interview-Prep-3c9efdeead05802594d2ef9d5dded673'); // O3
+const NOTION_NEW_GRAD_PREP = official('Notion: New Grad Interview Prep', 'https://notion.notion.site/New-Grad-Interview-Prep-3c9efdeead0580b4adeedbcd96f78893'); // O4
+// Read as the archive copy of 2026-06-10.
+const NOTION_INTERVIEWING = official('Notion: Interviewing at Notion', 'https://notion.notion.site/Interviewing-at-Notion-47f38b00bc0e4ceeaa56007e12e61d8b'); // O5
+const NOTION_HOW_NOTION_HIRES = official('Notion blog: How Notion hires', 'https://www.notion.com/blog/how-notion-hires'); // O9
+const NOTION_FL1_2026: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/notion-swe2-phone-screen/3477', '2026-05'),
+  role: 'Software engineer II (3 years)',
+}; // FL1
+const NOTION_FL2_2026: InterviewProcessSource = {
+  ...report('FrontendLead', 'https://frontendlead.com/discuss/t/notion-software-engineer-phone-screen/3430', '2026-04'),
+  role: 'Senior software engineer (6.5 years)',
+}; // FL2
+const NOTION_S1_2025: InterviewProcessSource = {
+  ...report('Substack', 'https://wildwildtech.substack.com/p/notion-interview-experience-2025', '2025-06'),
+  role: 'Software engineer',
+  outcome: 'no offer',
+}; // S1
+const NOTION_A1_2026: InterviewProcessSource = {
+  ...report('Aced', 'https://www.aced.io/experiences/notion-software-engineer-interview-f3bb8c', '2026-08'),
+  role: 'Software engineer (entry level, L3)',
+  location: 'United States',
+  outcome: 'no offer',
+}; // A1
+const NOTION_TA_C44A6831_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-frontend-new-york-ny-june-17-2025-no-offer-positive-c44a6831/', '2025-06');
+const NOTION_TA_F31BE7AB_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-december-16-2025-declined-offer-neutral-f31be7ab/', '2025-12');
+const NOTION_TA_04D19CFB_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-san-francisco-california-august-27-2026-no-offer-positive-04d19cfb/', '2026-08');
+const NOTION_TA_0B735320_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-september-1-2026-declined-offer-positive-0b735320/', '2026-09');
+const NOTION_TA_9DC5B31C_2025 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-united-states-april-1-2025-no-offer-neutral-9dc5b31c/', '2025-04');
+const NOTION_TA_41B2F3A3_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-march-22-2026-no-offer-positive-41b2f3a3/', '2026-03');
+const NOTION_TA_732C909C_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-san-francisco-ca-may-30-2024-no-offer-positive-732c909c/', '2024-05');
+const NOTION_TA_F07B58C3_2026: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-software-engineer-interview-new-york-april-3-2026-accepted-offer-positive-f07b58c3/', '2026-04'),
+  role: 'Software engineer',
+  location: 'United States',
+};
+const NOTION_TA_3D57B7C8_2026: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/senior-swe-senior-swe-interview-new-york-april-30-2026-accepted-offer-positive-3d57b7c8/', '2026-04'),
+  role: 'Senior software engineer',
+  location: 'United States',
+};
+const NOTION_TA_08D8CEC1_2026: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-internship-swe-intern-interview-apr-26-april-25-2026-accepted-offer-positive-08d8cec1/', '2026-04'),
+  role: 'Software engineer intern',
+};
+const NOTION_TA_614A76ED_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-internship-san-francisco-california-june-28-2026-no-offer-positive-614a76ed/', '2026-06');
+const NOTION_TA_EFF6EDEC_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-san-francisco-california-october-15-2026-no-offer-positive-eff6edec/', '2026-10');
+const NOTION_TA_CC580F1E_2026: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-new-grad-san-francisco-california-september-28-2026-no-offer-positive-cc580f1e/', '2026-09'),
+  role: 'Software engineer (new grad)',
+};
+const NOTION_TA_506B4163_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-new-york-new-york-january-28-2026-no-offer-positive-506b4163/', '2026-01');
+const NOTION_TA_C084FED3_2025 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/swe-intern-canada-september-1-2025-no-offer-negative-c084fed3/', '2025-09');
+const NOTION_TA_AD553F23_2025 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-india-june-1-2025-no-offer-negative-ad553f23/', '2025-06');
+const NOTION_TA_07D66912_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineerinternship-san-francisco-ca-october-4-2025-no-offer-positive-07d66912/', '2025-10');
+const NOTION_TA_0E71F7F0_2024 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-india-october-1-2024-no-offer-negative-0e71f7f0/', '2024-10');
+const NOTION_TA_CD9C6479_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineering-intern-united-states-october-2-2024-no-offer-positive-cd9c6479/', '2024-10');
+const NOTION_TA_685C6E6A_2024 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/senior-software-engineer-united-states-november-1-2024-no-offer-negative-685c6e6a/', '2024-11');
+const NOTION_TA_B858D70B_2024 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-united-states-may-1-2024-accepted-offer-positive-b858d70b/', '2024-05');
+const NOTION_TA_30F811C0_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-united-states-january-10-2024-no-offer-positive-30f811c0/', '2024-01');
+const NOTION_TA_5912ACF0_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-united-states-february-22-2024-no-offer-neutral-5912acf0/', '2024-02');
+// Kept by content: an undo and redo question asked under a backend title.
+const NOTION_TA_B1CA7BA6_2024: InterviewProcessSource = {
+  ...report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-backend-new-york-ny-april-1-2024-no-offer-neutral-b1ca7ba6/', '2024-04'),
+  role: 'Backend engineer',
+};
+const NOTION_TA_492DAD98_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-new-york-ny-september-19-2024-accepted-offer-positive-492dad98/', '2024-09');
+const NOTION_TA_52E52BBC_2023 = report('Taro', 'https://www.jointaro.com/interviews/companies/notion/experiences/frontend-developer-pune-december-3-2023-no-offer-positive-52e52bbc/', '2023-12');
+const NOTION_TA_8978FFA3_2025 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineering-intern-united-states-october-1-2025-no-offer-positive-8978ffa3/', '2025-10');
+const NOTION_TX_63909C92_2025 = report('Taro (approx.)', 'https://www.jointaro.com/interviews/companies/notion/experiences/software-engineer-san-francisco-ca-august-1-2025-no-offer-positive-63909c92/', '2025-08');
+const NOTION_B5_2026 = report('Blind', 'https://www.teamblind.com/post/notion-onsite-totvg2k1', '2026-03'); // B5
+const NOTION_B6_2026 = report('Blind', 'https://www.teamblind.com/post/notion-core-values-interview-eska3k0j', '2026-04'); // B6
+const NOTION_B7_2026: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/notion-core-values-interview-7huz2sw2', '2026-08'), role: 'Senior engineer' }; // B7
+const NOTION_B8_2026: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/notion-vs-stealth-ai-startup-ok4qheld', '2026-08') }; // B8
+const NOTION_B14_2026: InterviewProcessSource = {
+  ...report('Blind', 'https://www.teamblind.com/post/from-unemployed-to-a-bunch-of-offers-in-4-months-staff-swe-interview-experience-journey-81lk4aq3', '2026-05'),
+  role: 'Staff software engineer',
+}; // B14
+const NOTION_B15_2026: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/hiring-manager-exec-interview-failed-repeatedly-bnb15x3q', '2026-04'), role: 'Staff software engineer' }; // B15
+const NOTION_B17_2025: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/notion-staff-l5-offer-j7hq4z1y', '2025-06'), role: 'Staff software engineer (L5)' }; // B17
+const NOTION_B18_2025 = report('Blind', 'https://www.teamblind.com/post/notion-coding-screen-et2qlvcm', '2025-05'); // B18
+const NOTION_B27_2022 = report('Blind', 'https://www.teamblind.com/post/notion-interview-experience-7ruuqqkg', '2022-12'); // B27
+const NOTION_B28_2022: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/interview-summary-euo4pyrz', '2022-09'), outcome: 'no offer' }; // B28
+const NOTION_B31_2022: InterviewProcessSource = { ...report('Blind', 'https://www.teamblind.com/post/notion-phone-screen-swe-gwhweya7', '2022-04'), role: 'Software engineer' }; // B31
+const NOTION_FE_ROLE = 'Frontend and software engineers in the accounts';
+const NOTION_EARLY_CAREER = 'Interns and new grads';
+
+// Airwallex, added 2026-11-26 from docs/references/airwallex-questions-and-process-2026-11.md (ids in the trailing
+// comments). The guide names no source (sourceDisplay: 'year'): these constants feed the years, the counts and the
+// checks, and no reporter, site or link reaches the page. Airwallex's own pages are official sources. The take-home
+// known from candidates' solution repositories and a 2021 frontend candidate's notes hosted in a public repository are
+// not cited; the guide describes them in its own text. A curated first-person story stands as a report when it is a
+// row's only source, so the row reads "Reported once"; curated pages that only confirm a row are question banks.
+const AIRWALLEX_GETTING_HIRED = official('Airwallex Engineering: Getting Hired', 'https://medium.com/airwallex-engineering/getting-hired-cb59018b26e9'); // O1, 2022
+const AIRWALLEX_AI_FIRST = official('Airwallex careers blog: AI-first engineering interviews', 'https://careers.airwallex.com/blog/airwallex-ai-first/'); // O2, 2026
+const AIRWALLEX_LONDON = official('Airwallex careers blog: engineering in London', 'https://careers.airwallex.com/blog/why-engineer-returned-to-airwallex-london/'); // O6, 2026
+const AIRWALLEX_EARLY_CAREERS = official('Airwallex early careers', 'https://careers.airwallex.com/early-careers/'); // O7, 2026
+const AIRWALLEX_T1_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-engineer-singapore-february-27-2025-no-offer-neutral-55fafb14/', '2025-02'); // T1
+const AIRWALLEX_T2_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/middle-frontend-developer-may-6-2025-no-offer-negative-f4e22964/', '2025-05'); // T2
+const AIRWALLEX_T3_2025: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-software-engineer-melbourne-victoria-august-13-2025-no-offer-negative-f42fe8c1/', '2025-08'),
+  role: 'Frontend software engineer',
+  location: 'Australia',
+}; // T3
+const AIRWALLEX_T4_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/frontend-engineer-singapore-october-14-2025-no-offer-positive-396fbc40/', '2025-10'); // T4
+const AIRWALLEX_T5_2023: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/senior-software-engineer-front-end-sydney-new-south-wales-march-22-2023-no-offer-positive-f18b89a7/', '2023-03'),
+  role: 'Senior software engineer (front end)',
+  location: 'Australia',
+}; // T5
+const AIRWALLEX_T6_2021: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/software-engineer-front-end-december-13-2021-accepted-offer-positive-cf0cd988/', '2021-12'),
+  role: 'Software engineer (front end)',
+}; // T6
+const AIRWALLEX_T7_2019: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/senior-frontend-engineer-melbourne-victoria-november-23-2019-accepted-offer-neutral-59e9df87/', '2019-11'),
+  role: 'Senior frontend engineer',
+  location: 'Australia',
+}; // T7
+const AIRWALLEX_T8_2024: InterviewProcessSource = {
+  ...report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/staff-engineer-melbourne-victoria-november-20-2024-no-offer-negative-8f39b395/', '2024-11'),
+  role: 'Staff engineer',
+  location: 'Australia',
+}; // T8
+// General software-engineer pages, cited by their slugs' posting dates.
+const AIRWALLEX_TS1_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/senior-software-engineer-singapore-january-20-2026-accepted-offer-positive-6865147f/', '2026-01'); // TS1
+const AIRWALLEX_TS6_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/software-engineer-march-2-2026-no-offer-neutral-3287f7d7/', '2026-03'); // TS6
+const AIRWALLEX_TS7_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/software-engineer-ii-singapore-february-23-2026-no-offer-positive-4121d380/', '2026-02'); // TS7
+const AIRWALLEX_TS8_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/ai-engineer-ii-march-24-2026-no-offer-negative-fb99cd73/', '2026-03'); // TS8
+const AIRWALLEX_TS10_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/software-engineer-intern-may-24-2026-no-offer-positive-22a195ac/', '2026-05'); // TS10
+const AIRWALLEX_TS13_2026 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/software-engineer-singapore-october-11-2026-no-offer-positive-a12775f7/', '2026-10'); // TS13
+const AIRWALLEX_TS14_2025 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/senior-software-engineer-singapore-march-2-2025-no-offer-neutral-9a35d9d7/', '2025-03'); // TS14
+const AIRWALLEX_TS21_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/engineering-lead-may-26-2024-no-offer-negative-b060b182/', '2024-05'); // TS21
+const AIRWALLEX_TS22_2024 = report('Taro', 'https://www.jointaro.com/interviews/companies/airwallex/experiences/senior-software-engineer-singapore-october-7-2024-no-offer-negative-0c6f0789/', '2024-10'); // TS22
+const AIRWALLEX_R1_2026: InterviewProcessSource = {
+  ...report('PracHub story', 'https://prachub.com/interview-experiences/airwallex-frontend-engineer-interview-experience-two-oas-then-i-withdrew-over-red-flags', '2026-08'),
+  role: 'Frontend engineer',
+}; // R1, curated; the only source of two rows
+const AIRWALLEX_R3_BANK: InterviewProcessSource = {
+  ...report('PracHub story', 'https://prachub.com/interview-experiences/airwallex-backend-engineer-interview-experience-coding-ai-assisted-coding-system-design-and-a-bar-raiser', '2026-11'),
+  reportForm: 'question-bank',
+}; // R3, curated backend story; confirms a row only
+const AIRWALLEX_S2_2022 = report('Blind', 'https://www.teamblind.com/post/airwallex-review-k4rdcsj6', '2022-04'); // S2
+const AIRWALLEX_S6_2023: InterviewProcessSource = {
+  ...report('Nowcoder', 'https://www.nowcoder.com/discuss/465517667441516544', '2023-03'),
+  role: 'Backend engineer',
+  location: 'China',
+}; // S6
+const AIRWALLEX_FE_ROLE = 'Frontend engineers in the accounts';
 
 export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyInterviewProcess>> = {
   amazon: {
@@ -17118,6 +17366,1036 @@ export const COMPANY_INTERVIEW_PROCESSES: Readonly<Record<string, CompanyIntervi
         id: 'what-would-make-you-leave',
         question: 'At Binance, what would make you want to leave?',
         sources: [BINANCE_B4_INTERVIEWTW_2022],
+      },
+    ],
+  },
+  verkada: {
+    summary:
+      "Verkada's careers page describes four stages: a call with a recruiter, a talk with the hiring manager or a potential team member that mixes behavioural and role-specific questions, technical assessments that candidates may be asked to complete depending on the role, and interviews at an office that often include team members and technical exercises. In frontend accounts from 2023 to 2026, most of them senior loops, a recruiter call comes first, then live coding on video with an engineer, an hour in a 2024 account, then an onsite at the San Mateo office: four hours of frontend rounds in 2024, and a full day with lunch with the team in 2023. Most of the screens reported in 2025 that name a task asked for a video player built from still frames.",
+    caveat:
+      'Most 2025 and 2026 accounts are short posts about one coding round, and among the loops that reached an onsite, the newest to name a question is from 2024. No intern or new-grad frontend account could be read, and the take-homes that candidates published solutions for end in 2024.',
+    checkedAt: '2026-11-25',
+    sourceDisplay: 'year',
+    variants: [
+      {
+        title: 'Frontend engineers, mid level to senior, United States, 2023 to 2026',
+        note: 'Short accounts from 2025 and 2026 each describe one coding round, from mid level to senior, and name no place; accounts from 2023 to 2025 give the loop around it, all in the United States, and one 2025 loop ended in an offer just under a month after the application.',
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format:
+              'A short call about the role; officially the recruiter also asks about your background and career goals. It followed a message on LinkedIn in two 2023 loops and an application in 2024 and 2025. In a 2023 loop the role was filled after the call, and the recruiter came back a month later with a technical screen.',
+            appliesTo: VERKADA_FE_ROLE,
+            sources: [VERKADA_CAREERS, VERKADA_TA1_2025, VERKADA_TA2_2025, VERKADA_TA6_2024, VERKADA_TA9_2023, VERKADA_TA10_2023],
+          },
+          {
+            stage: 'Hiring-manager screen',
+            format:
+              "Officially, a conversation with behavioural and role-specific questions and a look at Verkada's current projects. In a 2023 loop the hiring manager ran the technical screen instead: mostly coding, and questions on React.",
+            appliesTo: 'Candidates, per the careers page',
+            sources: [VERKADA_CAREERS, VERKADA_TA10_2023],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'Live coding on video with an engineer, in an online editor; the one account that gives a length, from 2024, says an hour, and a senior screen reported in 2025 was on CodeSignal. Most of the screens reported in 2025 that name a task asked for a video player built from still frames, or for its controller. Other screens asked for a small UI built from a design file (2023 and 2025), a React component in three steps (2024) and a list fetched from an API (2026).',
+            appliesTo: VERKADA_FE_ROLE,
+            sources: [
+              VERKADA_FL1_2025,
+              VERKADA_FL2_2025,
+              VERKADA_FL3_2025,
+              VERKADA_FL4_2025,
+              VERKADA_FL5_2025,
+              VERKADA_FL6_2026,
+              VERKADA_TA1_2025,
+              VERKADA_TA5_2024,
+              VERKADA_TA6_2024,
+              VERKADA_TA9_2023,
+            ],
+            practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+          },
+          {
+            stage: 'Onsite at the San Mateo office',
+            format:
+              "Several technical interviews and a behavioural or manager interview: four hours in 2024, and in 2023 a full day of three technical interviews and a less technical manager interview, with lunch with the team. The questions these loops report, round not stated: selection in a grid, broken JavaScript to fix, the frontend architecture of a camera grid, and questions on React. The 2024 candidate met no LeetCode-style problem; in 2025 a candidate preparing for a frontend onsite wrote that it has one algorithm round, and the candidate who got an offer found the questions close to Verkada's business and the daily work.",
+            appliesTo: 'Candidates who pass the screen',
+            sources: [VERKADA_TA2_2025, VERKADA_TA6_2024, VERKADA_TA11_2023, VERKADA_B1_2025],
+            practice: { label: 'Onsite questions and story drill', path: '/companies/verkada/preview', fragment: 'verkada-round-onsite', drill: true },
+          },
+          {
+            stage: 'Offer and checks',
+            format:
+              "An offer just under a month after the application in a 2025 loop. Verkada's candidate privacy policy says it takes up reference, employment background and other checks before employment starts.",
+            appliesTo: 'Candidates who pass',
+            sources: [VERKADA_TA2_2025, VERKADA_CANDIDATE_PRIVACY],
+          },
+        ],
+      },
+      {
+        title: 'Software roles with a frontend round, Canada, 2024 to 2025',
+        note: 'A software engineer and a software developer in Canada; neither got an offer.',
+        stages: [
+          {
+            stage: 'Recruiter call or screening',
+            format: 'A call with a recruiter in 2025, and a screening in 2024.',
+            appliesTo: 'Software engineers and developers in the accounts',
+            sources: [VERKADA_TA3_2025, VERKADA_TA4_2024],
+          },
+          {
+            stage: 'Frontend technical interview',
+            format: 'For example a UI built in a timed session (2025), or a mockup built from a design in JavaScript, React and CSS (2024).',
+            appliesTo: 'Software engineers and developers in the accounts',
+            sources: [VERKADA_TA3_2025, VERKADA_TA4_2024],
+          },
+          {
+            stage: 'Second technical interview',
+            format: 'A LeetCode-style interview in 2025, and another technical interview in 2024.',
+            appliesTo: 'Software engineers and developers in the accounts',
+            sources: [VERKADA_TA3_2025, VERKADA_TA4_2024],
+          },
+          {
+            stage: 'Behavioural interview',
+            format: 'With the engineering manager in 2025; the one question listed is why the candidate wanted to work at Verkada.',
+            appliesTo: 'Software engineers and developers in the accounts',
+            sources: [VERKADA_TA3_2025, VERKADA_TA4_2024],
+          },
+        ],
+      },
+      {
+        title: 'A frontend loop with a take-home, United States, 2019',
+        note: 'One account, through a staffing agency; it reports no later stage. Older and later take-homes appear in the guide, from the solutions candidates published.',
+        stages: [
+          {
+            stage: 'Agency and recruiter call',
+            format: 'A first talk with the staffing agency, then a call in which the recruiter explained the company and its work.',
+            appliesTo: 'A frontend engineer who came through a staffing agency',
+            sources: [VERKADA_TA12_2019],
+          },
+          {
+            stage: 'Take-home',
+            format: 'A React take-home with one week to work on it.',
+            appliesTo: 'A frontend engineer who came through a staffing agency',
+            sources: [VERKADA_TA12_2019],
+          },
+        ],
+      },
+    ],
+    questions: [
+      {
+        id: 'fetch-and-display-a-list',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'Fetch and display a list',
+        question:
+          'Fetch items from an API and display them. That one line is all the phone screen account, posted in 2026, gives; its author gives four years of experience.',
+        sources: [VERKADA_FL6_2026],
+        practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+      },
+      {
+        id: 'video-player-from-still-frames',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'Video player from still frames',
+        question:
+          'Build a video player from a sequence of still frames that an API or a provided function returns: Play and Pause, and a start from any frame the user picks. One version adds a timeline with a marker per frame, from a provided function that returns an index and an image for frames 5 to 15 minutes apart, where a click on a marker shows its frame; another adds a control bar whose click sets where playback stops. Four 2025 phone screens and technical interviews, from mid level to senior: one candidate was given the API\'s sample response, and another likened the player to a carousel.',
+        sources: [VERKADA_FL1_2025, VERKADA_FL2_2025, VERKADA_FL3_2025, VERKADA_FL5_2025],
+        practice: { label: 'Frame sequence player: four tasks in one hour', path: '/react/coding/react-frame-sequence-player' },
+        answerGuide: 'frame-player-timers',
+      },
+      {
+        id: 'frame-player-controller',
+        round: 'Technical screen',
+        kind: 'JavaScript',
+        topic: 'Frame player controller',
+        question:
+          'Implement the controller of a frame-by-frame player: jump to any frame, play automatically and pause. A senior candidate with ten years of experience was set it on CodeSignal in a 2025 phone screen and was expected to be comfortable with timers and closures; whether React was allowed is not known.',
+        sources: [VERKADA_FL4_2025],
+        practice: { label: 'Frame player controller: play, seek and change speed on a clock', path: '/javascript/coding/js-frame-player-controller' },
+        answerGuide: 'frame-controller-state',
+      },
+      {
+        id: 'ui-from-a-design-file',
+        round: 'Technical screen',
+        kind: 'UI build',
+        topic: 'UI from a design file',
+        question:
+          'Build a small UI from a design file, in React or a framework of your choice, where styling counts and the interactions are basic, such as click handlers. A senior candidate in 2023 had the layout but not all of the styling details and heard nothing back; a 2024 candidate advises practising CSS and styling. Solutions candidates published show two such tasks from 2023 and 2024: a large preview with a list of events under it, and a landing page built around an autoplaying carousel, with an accordion in some solutions.',
+        sources: [VERKADA_TA9_2023, VERKADA_TA4_2024, VERKADA_TA1_2025],
+        practice: { label: 'Event log from a design spec', path: '/react/coding/react-event-log-design-spec' },
+        answerGuide: 'design-file-to-ui',
+      },
+      {
+        id: 'react-and-javascript-knowledge',
+        round: 'Technical screen',
+        kind: 'React concepts',
+        topic: 'React knowledge',
+        question:
+          'Questions on React. No account gives a question\'s wording: a hiring manager mixed coding with questions on React in a 2023 screen, and a 2023 senior loop asked mostly React questions.',
+        promptNotShared: true,
+        open: true,
+        sources: [VERKADA_TA10_2023, VERKADA_TA11_2023, VERKADA_FL4_2025],
+        practice: { label: 'Why React shows stale state in closures', path: '/react/trivia/react-stale-state-closures' },
+      },
+      {
+        id: 'grid-cell-selection',
+        kind: 'React build',
+        topic: 'Grid cell selection',
+        question:
+          'Build a grid that supports cell selection, or design a way to select a rectangular area of it. In 2024 the task was a grid with cell selection, in a loop whose onsite was all frontend; in 2023 a senior loop asked for a way to select a rectangle in a grid layout, which may have been a discussion rather than code. Neither account names the round.',
+        sources: [VERKADA_TA6_2024, VERKADA_TA11_2023],
+        practice: { label: 'Grid rectangle selection', path: '/react/coding/react-grid-rectangle-selection' },
+        answerGuide: 'grid-rectangle-selection',
+      },
+      {
+        id: 'camera-grid-architecture',
+        kind: 'Frontend system design',
+        topic: 'Camera grid architecture',
+        question:
+          'Design the frontend architecture for a camera display grid. A 2023 senior loop asked it, round not stated, beside broken JavaScript to fix and selection in a grid.',
+        sources: [VERKADA_TA11_2023],
+        practice: { label: 'Endless short-video feed: one active player at a time (system design)', path: '/system-design/endless-short-video-feed' },
+        answerGuide: 'camera-wall-architecture',
+      },
+      {
+        id: 'hover-to-play-video-cards',
+        kind: 'UI build',
+        topic: 'Hover-to-play video cards',
+        question:
+          'Build a small UI that combines data from two APIs into a list of cards, each with an image thumbnail. Hovering a card plays its video in place of the image; when the mouse leaves, the video stops and the image comes back. The 2026 account calls it a frontend coding round without naming the stage, rates it moderate for anyone used to everyday frontend UI work, and advises practising hover handling and media swaps in React or a framework of your choice.',
+        sources: [VERKADA_FL7_2026],
+        practice: { label: 'Implement Promise.all, for loading the two APIs at once', path: '/javascript/coding/js-promise-all' },
+        answerGuide: 'hover-video-cards',
+      },
+      {
+        id: 'fix-broken-javascript',
+        kind: 'JavaScript',
+        topic: 'Broken JavaScript',
+        question: 'Fix a piece of broken JavaScript. The 2023 account does not describe the code.',
+        promptNotShared: true,
+        open: true,
+        sources: [VERKADA_TA11_2023],
+        practice: { label: 'Fix a stale closure in a delayed autosave callback', path: '/javascript/debug/js-debug-stale-closure-autosave' },
+      },
+      {
+        id: 'css-animation-and-localization',
+        kind: 'Web fundamentals',
+        topic: 'CSS animation and localisation',
+        question:
+          'Are you familiar with CSS animation? A 2024 video call for a front-end lead role, with the lead of an engineering team under marketing, asked it, beside questions on content management systems and localization.',
+        open: true,
+        sources: [VERKADA_TA7_2024],
+        practice: { label: 'Hardware acceleration and compositing in CSS animation', path: '/css/trivia/css-hardware-acceleration' },
+      },
+      {
+        id: 'dashboard-with-filters',
+        kind: 'React build',
+        topic: 'Dashboard with filters',
+        question:
+          'A React dashboard with filters: controlled filter inputs, a responsive layout and an empty state. A question bank lists it for a 2026 new-grad frontend onsite, and no account confirms it.',
+        open: true,
+        audience: 'early-career',
+        sources: [VERKADA_T5_DASHBOARD],
+      },
+      {
+        id: 'lru-cache',
+        kind: 'Algorithm',
+        topic: 'LRU cache',
+        question:
+          'A cache that evicts the least recently used entry when it is full. A question bank lists it for a 2026 new-grad frontend onsite, and a general onsite the same month, also from a question bank, asked for a least frequently used cache as well; no account confirms either.',
+        open: true,
+        audience: 'early-career',
+        sources: [VERKADA_PH_DP, VERKADA_PS3_ONSITE],
+        practice: { label: 'Create an LRU cache with bounded memory', path: '/javascript/coding/js-create-lru-cache' },
+      },
+      {
+        id: 'fewest-coins',
+        kind: 'Algorithm',
+        topic: 'Fewest coins for an amount',
+        question:
+          'The fewest coins that make an amount, with dynamic programming. A question bank lists it beside the LRU cache for the same 2026 new-grad frontend onsite, and no account confirms it.',
+        open: true,
+        audience: 'early-career',
+        sources: [VERKADA_PH_DP],
+      },
+      {
+        id: 'periods-above-a-threshold',
+        kind: 'Algorithm',
+        topic: 'Periods above a threshold',
+        question:
+          "From time-ordered readings of one camera's motion level, return the periods at or above a threshold; then the periods when every camera is at or above it at once; then what slows that down with many cameras. A 2024 general software engineering loop asked for ranges above a threshold, and question banks add the three parts from loops in 2025 and 2026, in one of which the candidate could not answer part two.",
+        open: true,
+        audience: 'general',
+        sources: [VERKADA_TG10_2024, VERKADA_PS8_MOTION, VERKADA_PS6_MOTION],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'why-verkada',
+        question: 'Why do you want to work at Verkada?',
+        sources: [VERKADA_TA3_2025, VERKADA_M1_2021],
+      },
+      {
+        id: 'a-challenge-you-overcame',
+        question: 'Tell me about a time you overcame a challenge, or met a problem and solved it.',
+        sources: [VERKADA_TG1_2025, VERKADA_M1_2021],
+      },
+      {
+        id: 'company-you-would-most-like',
+        question: 'Describe the company you would most like to work at.',
+        sources: [VERKADA_M1_2021],
+      },
+      {
+        id: 'favourite-project',
+        question: 'What is your favourite project?',
+        sources: [VERKADA_M1_2021],
+      },
+      {
+        id: 'convince-your-team',
+        question: 'How would you convince your team to adopt an idea you proposed?',
+        sources: [VERKADA_M1_2021],
+      },
+      {
+        id: 'past-internships',
+        question: 'What did you do in your past internships?',
+        sources: [VERKADA_M1_2021],
+      },
+    ],
+  },
+  notion: {
+    summary:
+      "Notion's own interview guides give the 2026 shape. For the Front End track: a 30-minute call with the talent team, a 60-minute coding screen in React on CodeSignal by default, a 4-hour virtual onsite of an AI-enabled coding interview, code review, software design and career history, then a final interview with a leader, references and a background check. Interns and new grads take a 3-hour take-home and a 2-hour virtual onsite of debugging and coding instead. Most accounts from 2022 to 2026, the majority of them Software Engineer loops, describe practical, product-shaped coding rather than LeetCode-style problems, though some onsites before 2026 also had an algorithm round.",
+    caveat:
+      "Most accounts come from Software Engineer loops whose track they do not name, and only a few name the frontend track. No candidate describes the 2026 code review round, and the AI-enabled round is new in 2026, known mainly from Notion's own guide. The questions below are kept by content: frontend tasks and the general questions a frontend loop also asks.",
+    checkedAt: '2026-11-25',
+    sourceDisplay: 'year',
+    variants: [
+      {
+        title: 'Front End track and frontend-leaning loops, experienced, 2022 to 2026',
+        note: "Notion's Front End guide gives the 2026 rounds; accounts from 2022 to 2026 fill them in, and the round that accounts before 2026 describe and the Front End guide does not list is marked as such.",
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: '30 minutes with the talent team on the highlights of your experience and what you are looking for next. In 2026 a recruiter screen also asked why the candidate was interested in Notion.',
+            appliesTo: NOTION_FE_ROLE,
+            sources: [NOTION_SWE_INTERVIEWS, NOTION_FRONT_END_PREP, NOTION_TA_30F811C0_2024, NOTION_TA_0B735320_2026, NOTION_A1_2026],
+          },
+          {
+            stage: 'Technical screen',
+            format:
+              'A 60-minute coding interview with a Notion engineer, in React on CodeSignal by default, with AI coding tools restricted. Accounts describe a practical, product-shaped build in parts with follow-ups, such as a JSON viewer, a nested to-do list, undo and redo, or a menu component; recruiters send prep material, and one 2025 account says its screen question was very similar to it.',
+            appliesTo: NOTION_FE_ROLE,
+            sources: [
+              NOTION_FRONT_END_PREP,
+              NOTION_FL1_2026,
+              NOTION_FL2_2026,
+              NOTION_TA_30F811C0_2024,
+              NOTION_TA_F31BE7AB_2025,
+              NOTION_TA_04D19CFB_2026,
+              NOTION_TA_C44A6831_2025,
+              NOTION_TA_9DC5B31C_2025,
+              NOTION_TA_732C909C_2024,
+              NOTION_S1_2025,
+              NOTION_B18_2025,
+              NOTION_B31_2022,
+            ],
+            practice: { label: 'To-do list with local state', path: '/react/coding/react-todo-list' },
+          },
+          {
+            stage: 'Onsite: AI-enabled coding',
+            format:
+              'Part of the 4-hour virtual onsite: a small TypeScript codebase in CodeSignal, taken from a simplified part of the product, which may have failing tests, performance problems or poorly written code to fix together. AI coding tools are available and encouraged in this round only; the guide marks it as one to prepare for and names AI-enabled IDEs and command-line agents.',
+            appliesTo: NOTION_FE_ROLE,
+            sources: [NOTION_FRONT_END_PREP, NOTION_TA_F07B58C3_2026, NOTION_B5_2026],
+            practice: { label: 'Debug, speed up and tidy a small notes app', path: '/javascript/debug/js-debug-notes-app-repo' },
+          },
+          {
+            stage: 'Onsite: code review',
+            format: "Listed in Notion's 2026 Front End guide; no candidate describes it.",
+            appliesTo: NOTION_FE_ROLE,
+            sources: [NOTION_FRONT_END_PREP],
+          },
+          {
+            stage: 'Onsite: software design',
+            format:
+              'An open-ended problem drawn on a diagramming tool of your choice, such as Excalidraw. Accounts report a frontend design of a calendar UI (2025) and a design round about data modelling and APIs more than scale (2024).',
+            appliesTo: NOTION_FE_ROLE,
+            sources: [NOTION_SWE_INTERVIEWS, NOTION_FRONT_END_PREP, NOTION_TA_F31BE7AB_2025, NOTION_TA_B858D70B_2024, NOTION_S1_2025],
+          },
+          {
+            stage: 'Onsite: career history',
+            format:
+              "60 minutes with an engineering leader: past teams, successes and challenges, high and low points, transitions, strengths and weaknesses, and why Notion. Notion's guide advises fewer stories told in more detail.",
+            appliesTo: NOTION_FE_ROLE,
+            sources: [NOTION_SWE_INTERVIEWS, NOTION_FRONT_END_PREP, NOTION_INTERVIEWING, NOTION_TA_B858D70B_2024, NOTION_TA_492DAD98_2024, NOTION_B17_2025, NOTION_B27_2022],
+            practice: { label: 'Career history questions and story drill', path: '/companies/notion/preview', fragment: 'notion-round-career-history', drill: true },
+          },
+          {
+            stage: 'Before 2026: a second coding round',
+            format:
+              'Onsites from 2022 to 2025 had two or three coding rounds: frontend coding beside an algorithm round or backend coding. A 2022 onsite question came down to a topological sort.',
+            appliesTo: 'Loops in the accounts',
+            sources: [NOTION_TA_C44A6831_2025, NOTION_TA_B858D70B_2024, NOTION_TA_492DAD98_2024, NOTION_B17_2025, NOTION_B27_2022, NOTION_B28_2022],
+          },
+          {
+            stage: 'Hiring manager or executive call, and team match',
+            format:
+              'A conversation about past projects that, in two 2026 posts by staff candidates, probed team challenges and conflicts, in one of them after it was presented as an informal call; then a search for a team. A staff candidate in 2026 passed the onsite but found no team match.',
+            appliesTo: 'Candidates who pass the onsite',
+            sources: [NOTION_B14_2026, NOTION_B15_2026, NOTION_TA_B858D70B_2024],
+          },
+          {
+            stage: 'Final interview',
+            format:
+              "30 to 45 minutes with a member of the leadership team on your experience, values and motivations; two 2026 candidates say it was with the CEO. Read Notion's operating values first.",
+            appliesTo: 'Candidates who pass',
+            sources: [NOTION_SWE_INTERVIEWS, NOTION_FRONT_END_PREP, NOTION_B6_2026, NOTION_B7_2026, NOTION_B8_2026, NOTION_TA_F07B58C3_2026],
+          },
+          {
+            stage: 'References and background check',
+            format:
+              'Reference checks, which in one 2022 account came before the level and the offer were discussed, and a background check with employment verification.',
+            appliesTo: 'Offer stage',
+            sources: [NOTION_SWE_INTERVIEWS, NOTION_FRONT_END_PREP, NOTION_HOW_NOTION_HIRES, NOTION_B6_2026, NOTION_B27_2022, NOTION_TA_B858D70B_2024],
+          },
+        ],
+      },
+      {
+        title: 'Interns and new grads, 2024 to 2026',
+        note: "Notion's Intern and New Grad guides give this shape; accounts from 2024 to 2026 fill in the rounds.",
+        stages: [
+          {
+            stage: 'Initial call',
+            format: '15 minutes.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_CD9C6479_2024, NOTION_TA_07D66912_2025, NOTION_TA_CC580F1E_2026],
+          },
+          {
+            stage: 'Online assessment',
+            format: 'An online assessment before the take-home in some 2025 and 2026 intern loops; one 2025 intern\'s was CodeSignal\'s general coding assessment, and that intern was then scheduled for a third-party data-structures take-home.',
+            appliesTo: 'Some interns',
+            sources: [NOTION_TA_07D66912_2025, NOTION_TA_08D8CEC1_2026],
+          },
+          {
+            stage: 'Take-home',
+            format: 'Three hours. A 2026 account describes building a feature like one Notion has.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_08D8CEC1_2026, NOTION_TA_8978FFA3_2025, NOTION_TA_CC580F1E_2026, NOTION_TA_EFF6EDEC_2026],
+          },
+          {
+            stage: 'Onsite: debugging',
+            format:
+              'Part of a 2-hour virtual onsite: 5 minutes of introductions, a 10-minute review of your take-home, 40 minutes of debugging a codebase and 5 minutes for your questions.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_CD9C6479_2024, NOTION_TA_C084FED3_2025, NOTION_TA_08D8CEC1_2026, NOTION_TA_614A76ED_2026, NOTION_TA_EFF6EDEC_2026],
+          },
+          {
+            stage: 'Onsite: practical coding',
+            format: 'A practical coding interview that two accounts call not LeetCode-style: a 2024 account was asked for a class to store and retrieve documents, and a 2026 account built a feature with object-oriented code.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_CD9C6479_2024, NOTION_TA_08D8CEC1_2026, NOTION_TA_EFF6EDEC_2026, NOTION_TA_C084FED3_2025, NOTION_TA_8978FFA3_2025],
+          },
+          {
+            stage: 'Final conversation',
+            format: '45 minutes on your career so far; intern accounts describe it as a conversation with a hiring manager.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_08D8CEC1_2026, NOTION_TA_8978FFA3_2025],
+          },
+          {
+            stage: 'New grads: values capstone and references',
+            format: 'A 30-minute values interview, then reference checks.',
+            appliesTo: 'New grads',
+            sources: [NOTION_NEW_GRAD_PREP, NOTION_TA_CC580F1E_2026],
+          },
+          {
+            stage: 'Background check',
+            format: 'With employment verification, as the final step.',
+            appliesTo: NOTION_EARLY_CAREER,
+            sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP],
+          },
+        ],
+      },
+      {
+        title: 'India, 2023 to 2025',
+        note: 'Three accounts read: a frontend engineer in Pune in 2023 and two software engineers in 2024 and 2025; none of the three got an offer.',
+        stages: [
+          {
+            stage: 'Assignment',
+            format: "A frontend engineer in Pune was asked to rebuild Notion's homepage before the technical round (2023).",
+            appliesTo: 'A frontend engineer in Pune',
+            sources: [NOTION_TA_52E52BBC_2023],
+          },
+          {
+            stage: 'Technical rounds',
+            format:
+              'React and JavaScript questions ending with a data-structures question (2023); a text-editor exercise in a first coding round (2024); a screen on code quality and SOLID principles, then pair programming with a follow-up on readability, correctness and trade-offs (2025).',
+            appliesTo: 'Frontend and software engineers in India',
+            sources: [NOTION_TA_52E52BBC_2023, NOTION_TA_0E71F7F0_2024, NOTION_TA_AD553F23_2025],
+          },
+          {
+            stage: 'HR round',
+            format: 'A closing HR round in the 2023 loop.',
+            appliesTo: 'A frontend engineer in Pune',
+            sources: [NOTION_TA_52E52BBC_2023],
+          },
+        ],
+      },
+    ],
+    questions: [
+      {
+        id: 'stop-re-renders',
+        round: 'Technical rounds',
+        kind: 'React concepts',
+        topic: 'Stopping re-renders',
+        question:
+          'How do you stop container components from re-rendering? A frontend engineer in Pune was asked it in 2023, in a technical round of React and JavaScript questions that ended with a data-structures question.',
+        sources: [NOTION_TA_52E52BBC_2023],
+        practice: { label: "Why a component re-renders when its props didn't change", path: '/react/trivia/react-rerender-decision-and-render' },
+      },
+      {
+        id: 'json-viewer-in-stages',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'JSON viewer in React',
+        question:
+          'Render a JSON value as a collapsible tree in React, built in stages: an object of strings, numbers and booleans with an expand and collapse state; values that are objects, each with its own toggle; deep nesting; then arrays. A 2024 screen was an hour of live React in mini-challenges after a 30-minute recruiter call, and a senior candidate with six and a half years of experience was asked to visualise JSON in React in a phone screen reported in 2026.',
+        sources: [NOTION_TA_30F811C0_2024, NOTION_FL2_2026],
+        practice: { label: 'JSON viewer in stages', path: '/react/coding/react-json-tree-viewer' },
+        answerGuide: 'json-viewer-stages',
+      },
+      {
+        id: 'nested-to-do-list',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Nested to-do list',
+        question:
+          'Build a bulleted to-do list where a new item can be inserted at any position, then let items nest under a bullet. A 2026 account had 50 minutes for it; a 2025 candidate built it around parent-to-child indexes, and the interviewer suggested an easier way to move through the tree; a 2026 phone screen asked about implementing list features.',
+        sources: [NOTION_TA_04D19CFB_2026, NOTION_S1_2025, NOTION_TA_0B735320_2026],
+        practice: { label: 'Nested to-do outliner', path: '/react/coding/react-nested-todo-outliner' },
+        answerGuide: 'nested-to-do-outliner',
+      },
+      {
+        id: 'undo-and-redo',
+        round: 'Technical screen',
+        kind: 'Practical coding',
+        topic: 'Undo and redo for text',
+        question:
+          'Implement undo and redo for text edits, then discuss the low-level design. The accounts do not list the topics; how edits are recorded, what undo restores and when the redo history is dropped are the ones to prepare. A 2025 candidate solved it in about 35 minutes of a 40 to 45 minute screen, a phone screen reported in 2026, for a software engineer with three years of experience, asked to implement it and discuss the design, and a 2024 account was given a text editor class to add undo and redo to.',
+        sources: [NOTION_FL1_2026, NOTION_S1_2025, NOTION_TA_B1CA7BA6_2024],
+        practice: { label: 'Text editor with undo and redo', path: '/javascript/coding/js-text-editor-undo-redo' },
+        answerGuide: 'undo-redo-history',
+      },
+      {
+        id: 'react-menu-component',
+        round: 'Technical screen',
+        kind: 'React build',
+        topic: 'Menu component',
+        question:
+          'Build a menu component for the product in React. The 2025 account gives no spec; it was one of four tasks the account lists for its tech screen, beside a frontend design of a calendar UI, a JavaScript class for string manipulation and a project retrospective.',
+        sources: [NOTION_TA_F31BE7AB_2025],
+        practice: { label: 'Build a dropdown as a JavaScript class, then port it to React', path: '/react/coding/react-vanilla-dropdown-port' },
+        answerGuide: 'menu-component',
+      },
+      {
+        id: 'ai-enabled-codebase',
+        round: 'Onsite: AI-enabled coding',
+        kind: 'Practical coding',
+        topic: 'AI-enabled coding round',
+        question:
+          "Work in a small TypeScript codebase taken from a simplified part of the product: fix what is wrong with it, which may be failing tests, performance problems or poorly written code, with AI coding tools allowed and encouraged. Notion's 2026 Front End guide describes the round, and a 2026 candidate who got an offer said it requires a good understanding of modern AI tools such as Claude Code and Cursor.",
+        sources: [NOTION_FRONT_END_PREP, NOTION_TA_F07B58C3_2026, NOTION_B5_2026],
+        practice: { label: 'Debug, speed up and tidy a small notes app', path: '/javascript/debug/js-debug-notes-app-repo' },
+        answerGuide: 'ai-enabled-round',
+      },
+      {
+        id: 'calendar-ui-design',
+        round: 'Onsite: software design',
+        kind: 'Frontend system design',
+        topic: 'Calendar UI design',
+        question:
+          'Design the frontend of a calendar. The account gives no more than that; views, event layout, editing and data loading are the parts to prepare. A 2025 loop set a frontend system design of a calendar UI, and a 2025 general design round asked for a calendar application, whose capacity estimates and database parts are left out here.',
+        sources: [NOTION_TA_F31BE7AB_2025, NOTION_S1_2025],
+        answerGuide: 'calendar-frontend-design',
+      },
+      {
+        id: 'text-editor-class',
+        round: 'Technical rounds',
+        kind: 'JavaScript',
+        topic: 'Text editor class',
+        question:
+          "Implement the functions of a basic text editor class, checked against given test cases. A 2024 first coding round in India called it a simple problem with some test cases, and a 2025 loop listed a JavaScript class for string manipulation, possibly the same task; neither says whether undo and redo followed, as they do in Notion's undo and redo screen.",
+        sources: [NOTION_TA_0E71F7F0_2024, NOTION_TA_F31BE7AB_2025],
+        practice: { label: 'Text editor with undo and redo', path: '/javascript/coding/js-text-editor-undo-redo' },
+        answerGuide: 'text-editor-class',
+      },
+      {
+        id: 'what-are-hooks',
+        round: 'Technical rounds',
+        kind: 'React concepts',
+        topic: 'React hooks',
+        question: 'What are hooks in React? Asked in the 2023 technical round in Pune.',
+        open: true,
+        sources: [NOTION_TA_52E52BBC_2023],
+        practice: { label: 'Which React hooks have you used, and when would you choose each?', path: '/react/trivia/react-hooks-youve-used' },
+      },
+      {
+        id: 'useeffect-versus-usestate',
+        round: 'Technical rounds',
+        kind: 'React concepts',
+        topic: 'useEffect and useState',
+        question: 'What is the difference between useEffect and useState? Asked in the same 2023 round.',
+        open: true,
+        sources: [NOTION_TA_52E52BBC_2023],
+        practice: { label: 'useEffect: timing, dependencies and cleanup', path: '/react/trivia/react-useeffect-purpose' },
+      },
+      {
+        id: 'rebuild-the-homepage',
+        round: 'Assignment',
+        kind: 'UI build',
+        topic: 'Homepage rebuild',
+        question:
+          "An assignment to replicate the company's homepage, before the technical round of a 2023 frontend loop in Pune. Practise on a responsive page of your own rather than Notion's design.",
+        open: true,
+        sources: [NOTION_TA_52E52BBC_2023],
+        practice: { label: 'Semantic page layout', path: '/html/coding/html-semantic-layout' },
+      },
+      {
+        id: 'ui-from-a-blurry-screenshot',
+        kind: 'React build',
+        topic: 'UI from a screenshot',
+        question:
+          'Build a fairly simple UI in React from a blurry screenshot, with no design file, in a paired session. It was the seventh and last coding exercise of a 2024 senior loop; the candidate offered fancier hook APIs and the interviewers asked for plain hooks. The candidate was rejected as fine but not strong enough.',
+        sources: [NOTION_TA_685C6E6A_2024],
+        practice: { label: 'Event log from a design spec', path: '/react/coding/react-event-log-design-spec' },
+        answerGuide: 'ui-from-a-screenshot',
+      },
+      {
+        id: 'debugging-round',
+        round: 'Onsite: debugging',
+        kind: 'React debugging',
+        topic: 'Debugging round',
+        question:
+          'Find, diagnose and fix bugs in a small, Notion-like TypeScript codebase (React in at least one account). Accounts from 2024 to 2026, four of them from interns, describe it: TypeScript only in 2024, React and TypeScript in 2025, a mini Notion and a codebase to diagnose in 2026. CodeSignal is the default, and you can ask to use your own editor.',
+        audience: 'early-career',
+        sources: [NOTION_TA_CD9C6479_2024, NOTION_TA_C084FED3_2025, NOTION_TA_08D8CEC1_2026, NOTION_TA_614A76ED_2026, NOTION_TA_EFF6EDEC_2026],
+        practice: { label: 'Debug a product search that misuses its API', path: '/react/coding/react-debug-api-misuse' },
+        answerGuide: 'debugging-method',
+      },
+      {
+        id: 'early-career-take-home',
+        round: 'Take-home',
+        kind: 'React build',
+        topic: 'Early-career take-home',
+        question:
+          'The 2026/27 early-career take-home, in our words: in a plain text box, typing a trigger character and a few letters opens a menu of matching pages, people and dates from sources that answer at different speeds, and choosing one inserts a reference; then you extend it in one focused direction, such as keyboard navigation, fast typing, people results, dates or one ranking across kinds. Three hours, with a short write-up; reviewers look for product taste, reasoning and fundamentals, and deliberate trade-offs.',
+        audience: 'early-career',
+        sources: [NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP, NOTION_TA_EFF6EDEC_2026, NOTION_TA_CC580F1E_2026],
+        practice: { label: 'Command palette with three sources', path: '/react/coding/react-command-palette-sources' },
+        answerGuide: 'take-home-one-direction',
+      },
+      {
+        id: 'take-home-review',
+        round: 'Onsite: debugging',
+        kind: 'Practical coding',
+        topic: 'Take-home review',
+        question:
+          'Walk the interviewer through your take-home, then extend it with new features together with the team. A 2024 account says the project was reviewed with another engineer and then extended live in a technical interview; in 2026 the debugging slot sets aside 10 minutes for the review, after 5 minutes of introductions.',
+        open: true,
+        audience: 'early-career',
+        sources: [NOTION_TA_5912ACF0_2024, NOTION_INTERN_PREP, NOTION_NEW_GRAD_PREP],
+      },
+      {
+        id: 'document-store-classes',
+        kind: 'Practical coding',
+        topic: 'Classes for documents',
+        question:
+          'Design classes and functions to store, retrieve and manage documents. A 2025 software engineer screen followed the prep documents the recruiter sent very closely, and a 2024 intern round asked for a class to store and retrieve documents.',
+        open: true,
+        audience: 'general',
+        sources: [NOTION_TA_9DC5B31C_2025, NOTION_TA_CD9C6479_2024],
+      },
+      {
+        id: 'topological-sort',
+        round: 'Before 2026: a second coding round',
+        kind: 'Algorithm',
+        topic: 'Topological sort',
+        question:
+          'An onsite coding question that came down to a topological sort; the interviewer asked for its time complexity, and the candidate answered O(V+E) and learned from the feedback that the interviewer thought it wrong, with no reason given; O(V+E) is the usual bound, so state what V and E are for the given input. A 2022 general software engineering loop.',
+        open: true,
+        audience: 'general',
+        sources: [NOTION_B28_2022],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'why-notion',
+        question: 'Why Notion? Why are you interested in the company?',
+        sources: [NOTION_TA_0B735320_2026, NOTION_TA_07D66912_2025, NOTION_A1_2026],
+      },
+      {
+        id: 'what-you-want-next',
+        question: 'What do you want next in your career?',
+        sources: [NOTION_TA_0B735320_2026],
+      },
+      {
+        id: 'tell-me-about-a-project',
+        question: 'Tell me about a project.',
+        sources: [NOTION_TA_8978FFA3_2025, NOTION_TA_07D66912_2025],
+      },
+      {
+        id: 'project-retrospective',
+        question: 'Walk through a past project as a retrospective; it was used to decide which team you would join.',
+        sources: [NOTION_TA_F31BE7AB_2025],
+      },
+      {
+        id: 'ai-tools-you-use',
+        question: 'What AI tools have you used?',
+        sources: [NOTION_TA_506B4163_2026],
+      },
+      {
+        id: 'career-history',
+        question: 'Your career history: your biggest achievements and challenges, how you worked with others, high and low points, transitions, strengths and weaknesses.',
+        sources: [NOTION_FRONT_END_PREP, NOTION_TA_B858D70B_2024],
+      },
+      {
+        id: 'team-challenges-and-conflict',
+        question: 'In a call after the technical rounds: the team challenges and conflicts you have handled; one post says the call was presented as an informal chat.',
+        sources: [NOTION_B14_2026, NOTION_B15_2026],
+      },
+      {
+        id: 'values-and-motivations',
+        question: 'In the final interview (with the CEO in two 2026 accounts): your past experience, your values and what motivates you.',
+        sources: [NOTION_SWE_INTERVIEWS, NOTION_B6_2026, NOTION_B7_2026, NOTION_B8_2026, NOTION_TA_F07B58C3_2026, NOTION_TA_41B2F3A3_2026],
+      },
+      {
+        id: 'know-the-product',
+        question: 'How well do you understand Notion as a product? HR checked it.',
+        sources: [NOTION_TX_63909C92_2025],
+      },
+    ],
+  },
+  airwallex: {
+    summary:
+      "Airwallex's own 2022 post on how it hires engineers describes a recruiter call, a 60-minute tech screen, a choice between a take-home of about 3 to 4 hours and a 60-minute live coding problem, a design and problem-solving interview that opens with a review of your take-home if you chose one, and a final with a senior leader. In 2026 Airwallex says its engineering interviews test working with AI rather than banning it. Frontend accounts from 2019 to 2025, from Singapore, Melbourne and Sydney, describe live React tasks, a take-home with a review panel, and project deep dives with follow-up questions on your answers.",
+    caveat:
+      'No frontend account describes an AI-enabled round yet, the one frontend account from the United States, for a 2026 senior role, goes no further than the first HR call, and the newest frontend loop, a curated 2026 account, stops after two online assessments, where the candidate withdrew; the newest with later rounds is from October 2025. Published solutions of the take-home run from 2016 to April 2025 and we found none after that, so it may have been retired.',
+    checkedAt: '2026-11-25',
+    sourceDisplay: 'year',
+    variants: [
+      {
+        title: 'Frontend engineers, Singapore, 2025',
+        note: 'Three 2025 accounts, two from Singapore and one that names no place; none got an offer, and one took about two weeks.',
+        stages: [
+          {
+            stage: 'Recruiter or HR screen',
+            format: 'A phone screen with HR about your background and experience.',
+            appliesTo: AIRWALLEX_FE_ROLE,
+            sources: [AIRWALLEX_T4_2025],
+          },
+          {
+            stage: 'Technical round 1',
+            format:
+              'Live coding: a React task, with the interviewer giving some guidance and discussion (one account began with a self-introduction), or coding problems on a shared screen while you explain your approach. Basic frontend questions and an algorithm can sit beside the React task.',
+            appliesTo: AIRWALLEX_FE_ROLE,
+            sources: [AIRWALLEX_T1_2025, AIRWALLEX_T2_2025, AIRWALLEX_T4_2025],
+          },
+          {
+            stage: 'Technical round 2',
+            format: 'Your previous projects and one more algorithm.',
+            appliesTo: 'Candidates who pass round 1',
+            sources: [AIRWALLEX_T2_2025],
+          },
+          {
+            stage: 'Third round',
+            format: 'Not described in the account that reports it.',
+            appliesTo: 'Candidates in one loop',
+            sources: [AIRWALLEX_T4_2025],
+          },
+        ],
+      },
+      {
+        title: 'Frontend engineers, Australia, 2023 and 2025',
+        note: 'A senior loop in Sydney in 2023 and a Melbourne loop in 2025, each about two weeks long and neither ending in an offer.',
+        stages: [
+          {
+            stage: 'Recruiter screen',
+            format: '30 minutes.',
+            appliesTo: AIRWALLEX_FE_ROLE,
+            sources: [AIRWALLEX_T5_2023],
+          },
+          {
+            stage: 'Project and behaviour interview',
+            format: 'One hour with an engineering manager and a lead engineer on a recent project: how you worked, the technology decisions, the challenges and what you would do differently.',
+            appliesTo: AIRWALLEX_FE_ROLE,
+            sources: [AIRWALLEX_T5_2023],
+          },
+          {
+            stage: 'Coding exercise',
+            format:
+              'In Sydney in 2023, a take-home that builds a simple application. In Melbourne in 2025, a very easy code challenge that fetches data, does simple operations on it and shows it on a basic UI.',
+            appliesTo: AIRWALLEX_FE_ROLE,
+            sources: [AIRWALLEX_T5_2023, AIRWALLEX_T3_2025],
+            practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+          },
+          {
+            stage: 'Take-home review panel',
+            format: '1.5 hours with two senior members working through your code, your approach and your stack.',
+            appliesTo: 'Candidates who took the take-home',
+            sources: [AIRWALLEX_T5_2023],
+          },
+          {
+            stage: 'Final',
+            format:
+              'One hour with an engineering director and a senior engineer: a project deep dive with follow-up questions on your answers, architecture questions and brain teasers at the end. In Melbourne in 2025 the in-person stage was mostly general questions, which the candidate felt leaned on UI technologies.',
+            appliesTo: 'Candidates who pass',
+            sources: [AIRWALLEX_T5_2023, AIRWALLEX_T3_2025],
+          },
+        ],
+      },
+      {
+        title: 'The engineering process Airwallex published in 2022',
+        note: "Airwallex's own post on how it hires engineers. In 2026 Airwallex says its engineering interviews test working with AI rather than banning it.",
+        stages: [
+          {
+            stage: 'Recruiter call',
+            format: 'The role and the process.',
+            appliesTo: 'Engineering candidates',
+            sources: [AIRWALLEX_GETTING_HIRED],
+          },
+          {
+            stage: 'Tech screen',
+            format: '60 minutes: your background and a coding challenge at the level of easy and medium LeetCode problems.',
+            appliesTo: 'Engineering candidates',
+            sources: [AIRWALLEX_GETTING_HIRED],
+          },
+          {
+            stage: 'Take-home or live coding',
+            format:
+              'Your choice: a take-home that candidates typically finish in 3 to 4 hours, reviewed for whether it works, how readable it is and the quality of its tests; or a harder problem coded live in 60 minutes, with assumptions, edge cases, tests and the time complexity.',
+            appliesTo: 'Engineering candidates',
+            sources: [AIRWALLEX_GETTING_HIRED],
+          },
+          {
+            stage: 'System design and problem solving',
+            format:
+              '60 to 90 minutes. It opens with a review of your take-home if you chose one, then the technical design of a product, such as the architecture of a live messaging app, or an ambiguous real-world problem mapped to data structures, usually without code.',
+            appliesTo: 'Engineering candidates',
+            sources: [AIRWALLEX_GETTING_HIRED],
+          },
+          {
+            stage: 'Final with a senior leader',
+            format: '60 minutes, usually with the CEO, the CTO or a VP of Engineering: culture fit and company values.',
+            appliesTo: 'Engineering candidates',
+            sources: [AIRWALLEX_GETTING_HIRED],
+          },
+        ],
+      },
+      {
+        title: 'Engineering roles in London, 2026',
+        note: "Airwallex's own 2026 posts on London and on its AI-first culture. London hires backend and full-stack engineers and engineering leaders, so a frontend loop may differ.",
+        stages: [
+          {
+            stage: 'Coding interview',
+            format: 'Not described further. Airwallex says its engineering interviews now test working with AI rather than banning it.',
+            appliesTo: 'Engineers in London',
+            sources: [AIRWALLEX_LONDON, AIRWALLEX_AI_FIRST],
+          },
+          {
+            stage: 'System design interview',
+            format: 'Not described further.',
+            appliesTo: 'Engineers in London',
+            sources: [AIRWALLEX_LONDON],
+          },
+          {
+            stage: 'Hiring manager interview',
+            format: 'Your career background and project experience.',
+            appliesTo: 'Engineers in London',
+            sources: [AIRWALLEX_LONDON],
+          },
+          {
+            stage: 'Bar raiser',
+            format: "Your motivations, behaviours, fit with Airwallex's core values and operating principles, and how you use AI in your work.",
+            appliesTo: 'Engineers in London',
+            sources: [AIRWALLEX_LONDON],
+          },
+        ],
+      },
+      {
+        title: 'Early careers, 2026',
+        note: "Airwallex's early-careers page and a 2026 software engineering intern account; no frontend intern account was found.",
+        stages: [
+          {
+            stage: 'Early-careers recruiter screen',
+            format: 'A recruiter screen; a 2026 intern had 15 minutes on why Airwallex and their learning priorities.',
+            appliesTo: 'Interns and graduates',
+            sources: [AIRWALLEX_EARLY_CAREERS, AIRWALLEX_TS10_2026],
+          },
+          {
+            stage: 'Technical or working sessions',
+            format: 'One or two technical or working sessions. Airwallex says it cares about how you think and collaborate, not memorised frameworks.',
+            appliesTo: 'Interns and graduates',
+            sources: [AIRWALLEX_EARLY_CAREERS, AIRWALLEX_TS10_2026],
+          },
+        ],
+      },
+    ],
+    questions: [
+      {
+        id: 'fetch-process-and-show-data',
+        round: 'Coding exercise',
+        kind: 'UI build',
+        topic: 'Fetch, process and show data',
+        question:
+          'Fetch data, do simple operations on it and show the result on a basic UI. The Melbourne candidate in 2025 called it very easy, went further with a polished UI and a thorough analysis of the data, and passed to the next stage; the account does not say whether it was live or a take-home.',
+        sources: [AIRWALLEX_T3_2025],
+        practice: { label: 'Fetch and render a list with loading, error and empty states', path: '/react/coding/react-fetch-list-states' },
+      },
+      {
+        id: 'react-todo-list-in-parts',
+        round: 'Technical round 1',
+        kind: 'React build',
+        topic: 'React to-do list',
+        question:
+          'Build a to-do list in React, then add unit tests and calls to an API, in the order you choose. In the 2025 Singapore round it followed a self-introduction, with the interviewer giving some guidance and discussion; a 2025 mid-level account calls its two rounds not that hard and names a tree traversal beside the to-do list.',
+        sources: [AIRWALLEX_T1_2025, AIRWALLEX_T2_2025],
+        practice: { label: 'To-do list with local state', path: '/react/coding/react-todo-list' },
+        answerGuide: 'todo-list-in-parts',
+      },
+      {
+        id: 'invite-request-take-home',
+        round: 'Coding exercise',
+        kind: 'UI build',
+        topic: 'Landing page take-home',
+        question:
+          'A take-home, in our words: a one-page site for a service that has not launched, where a button opens a dialog with three required fields (a full name of at least three characters, an email and the email again); valid input is posted as JSON to a supplied endpoint with a sending state, success turns the dialog into a confirmation, and an error shows the server\'s own message and lets the user send again. The 2023 version required React and unit tests and asked for production quality. A 2021 frontend account names its theme, a 2023 senior take-home in Sydney, described only as a simple application, may be the same task, and Airwallex\'s 2022 post offers a take-home in place of live coding; solutions candidates published run from 2016 to April 2025.',
+        sources: [AIRWALLEX_T6_2021, AIRWALLEX_T5_2023, AIRWALLEX_GETTING_HIRED],
+        practice: { label: 'Contact form with an HTTP submit', path: '/react/coding/react-contact-form-starter' },
+        answerGuide: 'invite-take-home',
+      },
+      {
+        id: 'take-home-review',
+        round: 'Take-home review panel',
+        kind: 'Practical coding',
+        topic: 'Take-home review',
+        question:
+          'Walk reviewers through your take-home: your approach and your stack, how you would improve the code, and your tests. In Sydney in 2023 it was a 1.5-hour panel with two senior members; Airwallex\'s 2022 post opens its design interview with a review of your take-home; and a 2025 account from a senior software engineer in Singapore describes a code review of the submission beside a system design, with questions on testing and CI/CD.',
+        sources: [AIRWALLEX_T5_2023, AIRWALLEX_TS14_2025, AIRWALLEX_GETTING_HIRED],
+        practice: { label: 'Defending and extending a take-home in review', path: '/react/trivia/react-take-home-table-review-questions' },
+        answerGuide: 'take-home-review-panel',
+      },
+      {
+        id: 'react-performance-large-dataset',
+        kind: 'React concepts',
+        topic: 'React with a large dataset',
+        question:
+          "Can you explain how you would optimize the performance of a React application with a large dataset? A frontend engineer in Singapore was asked it in 2025; the account's technical round was coding on a shared screen, and it does not say which round asked this.",
+        sources: [AIRWALLEX_T4_2025],
+        practice: { label: 'Virtualized list: 10,000 rows, twenty nodes', path: '/react/coding/react-virtualized-list-recycling' },
+        answerGuide: 'react-large-dataset',
+      },
+      {
+        id: 'name-keyed-scheduler',
+        kind: 'JavaScript',
+        topic: 'Async task scheduler',
+        question:
+          'Write a scheduler for async functions keyed by name: tasks with the same name run one after another, and tasks with different names run concurrently and independently. Follow-ups: cancel the running task of a name and move on to its next task, and clear every running and queued task of a name. It was the first of two online assessments in a 2026 frontend loop, reported in one curated account; the prompt calls it a task scheduler and adds an event emitter in brackets, and the interface, errors and time box are not reported.',
+        sources: [AIRWALLEX_R1_2026],
+        practice: { label: 'Name-keyed task scheduler: one lane per name, with cancel and clear', path: '/javascript/coding/js-named-task-scheduler' },
+        answerGuide: 'name-keyed-scheduler',
+      },
+      {
+        id: 'autocomplete-input-design',
+        kind: 'Frontend system design',
+        topic: 'Autocomplete input design',
+        question:
+          'Design a reusable autocomplete search input on top of an existing search API: the API with pagination and a limit; the component architecture (input, label, field wrapper, popup, portal and a portal manager); throttling against debouncing; local result caching (an LRU, string distance or popular results); the public props; and which components are exported and which stay internal. It was the second online assessment of the same 2026 frontend loop, reported in one curated account.',
+        sources: [AIRWALLEX_R1_2026],
+        practice: { label: 'Real-time search with debounce and caching (system design)', path: '/system-design/realtime-search-debounce-cache' },
+        answerGuide: 'autocomplete-component-design',
+      },
+      {
+        id: 'tree-traversal',
+        kind: 'Algorithm',
+        topic: 'Tree traversal',
+        question: 'A tree traversal coding question, beside a React to-do list, in a 2025 mid-level frontend loop; the account does not describe the tree or say which of its two rounds asked it.',
+        promptNotShared: true,
+        open: true,
+        sources: [AIRWALLEX_T2_2025],
+        practice: { label: 'Build a tree from a flat list of nodes', path: '/javascript/coding/js-build-tree-from-flat-list' },
+      },
+      {
+        id: 'ambiguous-real-world-problems',
+        kind: 'Product design',
+        topic: 'Ambiguous real-world problems',
+        question:
+          'Ambiguous real-world problems scoped out loud and mapped to data structures, usually without code: Airwallex\'s own example is the fastest way to cross a city. A 2022 account was asked to explain how a CD player works, and a 2023 senior frontend final in Sydney ended with brain teasers; neither account says how the question was handled.',
+        open: true,
+        sources: [AIRWALLEX_T5_2023, AIRWALLEX_S2_2022, AIRWALLEX_GETTING_HIRED],
+      },
+      {
+        id: 'number-triangle-best-path',
+        kind: 'Algorithm',
+        topic: 'Number triangle path (DP)',
+        question:
+          'Dynamic programming: the largest sum along a path from the top of a triangle of numbers to the bottom, then the best path that must pass through a given cell. A 2026 account from a software engineer II in Singapore describes a modified triangle problem with a follow-up in one of two one-hour LeetCode-medium rounds, and a curated 2026 backend account spells out this version; another 2026 account and a 2021 frontend account name dynamic programming without the problem.',
+        open: true,
+        audience: 'general',
+        sources: [AIRWALLEX_TS7_2026, AIRWALLEX_R3_BANK],
+      },
+      {
+        id: 'connected-components',
+        kind: 'Algorithm',
+        topic: 'Connected components',
+        question: 'Count the connected components of an undirected graph. A 2026 account from a senior software engineer in Singapore who got an offer was asked it; two more 2026 accounts name graph questions without the problem.',
+        open: true,
+        audience: 'general',
+        sources: [AIRWALLEX_TS1_2026, AIRWALLEX_TS6_2026, AIRWALLEX_TS7_2026],
+      },
+      {
+        id: 'account-transfers-above-a-floor',
+        kind: 'Practical coding',
+        topic: 'Transfers between accounts',
+        question:
+          'Accounts hold balances: make transfers so that every account ends above a floor, output the transfers, then say what you would improve in engineering terms. A 2023 backend loop asked it in its first round, and a 2024 account from an engineering lead mentions a bank-account transfers question.',
+        open: true,
+        audience: 'general',
+        sources: [AIRWALLEX_S6_2023, AIRWALLEX_TS21_2024],
+      },
+      {
+        id: 'tic-tac-toe-with-ai',
+        kind: 'Practical coding',
+        topic: 'Tic-Tac-Toe with AI tools',
+        question:
+          'Build Tic-Tac-Toe. In the AI-assisted version, use AI tools to grow it into an app with a frontend, and show that you understand what the AI produced. A 2026 account from an AI engineer has the live game; a curated 2026 backend account describes the AI-assisted version, whose backend half is left out here.',
+        open: true,
+        audience: 'general',
+        sources: [AIRWALLEX_TS8_2026, AIRWALLEX_R3_BANK],
+      },
+      {
+        id: 'document-comments-design',
+        kind: 'Frontend system design',
+        topic: 'Document comments design',
+        question: 'Design a comment feature for an online document editor, like the comments in a shared document. It comes from a 2024 account by a senior software engineer in Singapore; the server storage and sync are left out here.',
+        open: true,
+        audience: 'general',
+        sources: [AIRWALLEX_TS22_2024],
+      },
+    ],
+    behaviouralQuestions: [
+      {
+        id: 'recent-project-deep-dive',
+        question:
+          'Tell me about a recent project: how you worked, the technology decisions, the challenges and how you solved them, and what you would do differently. Expect follow-up questions on your answers.',
+        sources: [AIRWALLEX_T5_2023, AIRWALLEX_T8_2024, AIRWALLEX_T2_2025, AIRWALLEX_T6_2021, AIRWALLEX_TS13_2026],
+      },
+      {
+        id: 'fx-experience',
+        question: 'Do you have prior experience with FX?',
+        sources: [AIRWALLEX_T7_2019],
+      },
+      {
+        id: 'why-airwallex',
+        question: 'Why Airwallex, and what are your learning priorities?',
+        sources: [AIRWALLEX_TS10_2026],
       },
     ],
   },

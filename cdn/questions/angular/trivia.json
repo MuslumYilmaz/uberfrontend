@@ -4030,7 +4030,7 @@
   },
   {
     "id": "angular-observables-rxjs",
-    "title": "Observables in Angular: what they are, why RxJS matters, and how to use them correctly (async pipe, cancellation, operators)",
+    "title": "Observables in Angular: what they are and how to use them (async pipe, cancellation)",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,

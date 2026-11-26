@@ -6,8 +6,10 @@
  *   - writes a total by hand ("nine public accounts", "six self-reported loops", "two official pages"),
  *   - names a prompt count that is not the number of prompts on the page ("5 practice prompts" with six prompts),
  *   - names a sub-count larger than the page's evidence ("twenty of the accounts" with ten),
- *   - carries a token the page cannot fill, or
- *   - models a prompt on a report the page's sources do not list.
+ *   - carries a token the page cannot fill,
+ *   - models a prompt on a report the page's sources do not list, or
+ *   - names no source by its process (`sourceDisplay: 'year'`) yet lists sources, lacks a method note, models a prompt
+ *     on a named report or names a source's site in its text; a guide that lists sources carries no method note.
  * Usage: node scripts/lint-company-counts.mjs
  */
 import fs from 'node:fs';
@@ -30,6 +32,57 @@ const PAGE_QUALIFIERS = new Set(['official', 'public']);
 const TOKEN = /\{#?[a-z]+\}/g;
 /** Prompts a visitor reads in full on an authored guide; the rest keep their answer guides for Premium (company-preview.component.ts). */
 const OPEN_PROMPTS = 3;
+
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Every string an authored guide renders, by its path in the content module. */
+function authoredStrings(value, field = '') {
+  if (typeof value === 'string') return [{ field, text: value }];
+  if (Array.isArray(value)) return value.flatMap((item, index) => authoredStrings(item, `${field}[${index}]`));
+  if (!value || typeof value !== 'object') return [];
+  return Object.entries(value).flatMap(([key, item]) => authoredStrings(item, field ? `${field}.${key}` : key));
+}
+
+/** The process text a guide renders: summary, caveat, stages and questions, never the sources themselves. */
+function processStrings(process) {
+  const strings = [{ field: 'process.summary', text: process.summary }, { field: 'process.caveat', text: process.caveat }];
+  if (process.title) strings.push({ field: 'process.title', text: process.title });
+  process.variants.forEach((variant, v) => {
+    strings.push({ field: `process.variants[${v}].title`, text: variant.title });
+    if (variant.note) strings.push({ field: `process.variants[${v}].note`, text: variant.note });
+    variant.stages.forEach((stage, i) => {
+      for (const key of ['stage', 'format', 'appliesTo']) strings.push({ field: `process.variants[${v}].stages[${i}].${key}`, text: stage[key] });
+    });
+  });
+  for (const question of process.questions ?? []) {
+    strings.push({ field: `process.questions.${question.id}.topic`, text: question.topic }, { field: `process.questions.${question.id}.question`, text: question.question });
+  }
+  for (const question of process.behaviouralQuestions ?? []) strings.push({ field: `process.behaviouralQuestions.${question.id}`, text: question.question });
+  return strings;
+}
+
+/**
+ * How a page could name a process's report sources: each site's host ("jointaro.com") and each label word that the
+ * host spells ("Taro", "FrontendLead", "Blind"), the word matched whole and in its own capitals.
+ */
+export function sourceNames(process) {
+  const all = [
+    ...process.variants.flatMap((variant) => variant.stages.flatMap((stage) => stage.sources)),
+    ...(process.questions ?? []).flatMap((question) => question.sources),
+    ...(process.behaviouralQuestions ?? []).flatMap((question) => question.sources),
+  ].filter((source) => source.kind === 'report');
+  const names = new Map();
+  for (const source of all) {
+    let host = '';
+    try { host = new URL(source.url).hostname.replace(/^www\./, ''); } catch { continue; }
+    names.set(host, new RegExp(escapeRegExp(host), 'i'));
+    const brand = host.split('.').slice(0, -1).join('.').toLowerCase();
+    for (const word of source.label.match(/[A-Za-z0-9]{3,}/g) ?? []) {
+      if (brand.includes(word.toLowerCase())) names.set(word, new RegExp(`\\b${escapeRegExp(word)}\\b`));
+    }
+  }
+  return names;
+}
 
 export function toNumber(word) {
   const lower = word.toLowerCase();
@@ -108,6 +161,24 @@ export function checkGuide(preview, process, evidenceModule) {
   for (const prompt of preview.prompts.items) {
     const url = prompt.reportedRound?.url;
     if (url && !urls.has(url)) errors.push(`[prompts.items.${prompt.id}] modelled on ${url}, which the sources do not list`);
+  }
+
+  // A guide whose process names no source ends with a method note instead of a sources list, and its text names no
+  // source either: not a site, not a host, not a report a prompt is modelled on.
+  if (process?.sourceDisplay === 'year') {
+    if (preview.sources) errors.push('[sources] the process names no source (sourceDisplay: \'year\'), so the guide ends with a methodNote, not a sources list');
+    if (!preview.methodNote?.paragraphs?.length) errors.push('[methodNote] a guide that names no source says how its questions were collected');
+    for (const prompt of preview.prompts.items) {
+      if (prompt.reportedRound) errors.push(`[prompts.items.${prompt.id}] a guide that names no source models no prompt on a named report`);
+    }
+    const names = sourceNames(process);
+    for (const { field, text } of [...authoredStrings(preview), ...processStrings(process)]) {
+      for (const [name, pattern] of names) if (pattern.test(text)) errors.push(`[${field}] names the source ${name} on a guide that names none`);
+    }
+  } else if (preview.methodNote) {
+    errors.push('[methodNote] only a guide whose process names no source (sourceDisplay: \'year\') carries a method note');
+  } else if (!preview.sources) {
+    errors.push('[sources] a guide lists its sources unless its process names none (sourceDisplay: \'year\')');
   }
 
   // A round decoder's "Rehearse…" call must land on something a visitor can open: one of the open prompts or a page,

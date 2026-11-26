@@ -240,6 +240,9 @@ describe('round sources and task links', () => {
     expect(roundSourcesLine({ sources })).toBe('Reported in Aced Jul 2026 and LeetCode Nov 2025');
     expect(roundSourcesLine({ sources, moreSources: 2 })).toBe('Reported in Aced Jul 2026, LeetCode Nov 2025 and 2 more');
     expect(roundSourcesLine({ sources: [] })).toBe('');
+    // A guide that names no source gives a round only the years of its accounts.
+    expect(roundSourcesLine({ sources: [], years: ['2025', '2026'] })).toBe('Reported in 2025 and 2026');
+    expect(roundSourcesLine({ sources: [], years: ['2024'] })).toBe('Reported in 2024');
   });
 
   it('gives practice the way back and Next, a walkthrough only the way back, and a guide nothing', () => {

@@ -173,8 +173,15 @@ export type FrameworkTestStep = {
   durationMs?: number;
   value?: string;
   key?: string;
-  /** key: hold Shift while pressing the key, as Shift+Tab does. */
+  /** key: hold Shift while pressing the key, as Shift+Tab does. click and drag: hold it through the click or the drag. */
   shift?: boolean;
+  /**
+   * click and drag: hold Control, Meta (Command) or Alt. A click with any key held comes as a mouse gives it, with its
+   * pointer and mouse down and up events before the click; a plain click stays the element's own click().
+   */
+  ctrl?: boolean;
+  meta?: boolean;
+  alt?: boolean;
   /**
    * key: when the page does not cancel the key, do what a browser does: a Tab moves focus to the next element in tab
    * order, and an Enter on a button or a link clicks it. A key step without a selector is pressed where focus is.
@@ -218,6 +225,13 @@ export type FrameworkTestStep = {
   than?: { selector?: string; by?: FrameworkTestLocator };
   /** drag: the element the press is released over. fileDrag: the element the pointer moves to (relatedTarget). */
   to?: { selector?: string; by?: FrameworkTestLocator };
+  /**
+   * drag: the elements the pointer passes over, in order, between the press and the release over `to`. With it (empty
+   * too) the pointer travels with the button down and each element gets the out, leave, over, enter and move events a
+   * browser sends, a frame apart; a page that captures the pointer gets them on the captured element. Without it, the
+   * drag is a press and a release only.
+   */
+  through?: { selector?: string; by?: FrameworkTestLocator }[];
   /**
    * fileDrag and chooseFiles: the files, made of zero bytes at the given sizes. fileDrag also drags `text` as
    * text/plain, and like a browser shows the files only on drop; before it, only `types` lists them.
