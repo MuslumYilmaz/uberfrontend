@@ -3664,12 +3664,12 @@ const HTML_CSS_ANCHOR_ITEMS: HtmlCssAnchorItem[] = [
 
 const HTML_CSS_KEYWORD_CLUSTERS: HtmlCssKeywordClusterItem[] = [
   {
-    label: 'Beginner',
+    label: 'HTML and CSS interview questions for beginners',
     targetId: 'iq-html-css-short-answers-title',
     detail: 'HTML structure, forms, labels, box model, cascade, and basic responsive rules.',
   },
   {
-    label: 'Experienced',
+    label: 'HTML and CSS interview questions for experienced developers',
     targetId: 'iq-html-css-audience-title',
     detail: 'Debugging, trade-offs, accessibility constraints, and production UI reasoning.',
   },

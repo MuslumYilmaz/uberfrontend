@@ -309,7 +309,7 @@ const CASES = [
   },
   {
     path: '/html-css/interview-questions',
-    titleIncludes: 'HTML & CSS Interview Questions and Answers',
+    titleIncludes: 'HTML and CSS Interview Questions and Answers: 65 Q&A',
     h1: 'HTML and CSS Interview Questions and Answers',
     indexable: true,
     bodyTextIncludes: [
