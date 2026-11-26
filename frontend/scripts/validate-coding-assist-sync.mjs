@@ -31,9 +31,12 @@ function unique(items) {
   return [...new Set(items)];
 }
 
+// react/coding.json passed the 1 MB default buffer in November 2026; a larger file must not read as "no change".
+const GIT_MAX_BUFFER = 64 * 1024 * 1024;
+
 function git(args) {
   try {
-    return execFileSync('git', args, { encoding: 'utf8' }).trim();
+    return execFileSync('git', args, { encoding: 'utf8', maxBuffer: GIT_MAX_BUFFER }).trim();
   } catch {
     return '';
   }
@@ -123,7 +126,7 @@ function listChangedFilesForCommit(commit) {
 
 function safeGitShow(spec) {
   try {
-    return execFileSync('git', ['show', spec], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    return execFileSync('git', ['show', spec], { encoding: 'utf8', maxBuffer: GIT_MAX_BUFFER, stdio: ['ignore', 'pipe', 'ignore'] });
   } catch {
     return null;
   }
