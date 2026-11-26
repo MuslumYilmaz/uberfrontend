@@ -1026,6 +1026,40 @@ export const routes: Routes = [
     },
   },
 
+  {
+    path: 'research',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/research/research-hub/research-hub.component').then((m) => m.ResearchHubComponent),
+        data: {
+          seo: {
+            title: 'Research: data studies of real frontend code',
+            description:
+              'Data studies of real-world frontend code. Each report publishes its method, its data and the tool behind it, so every number can be checked.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
+        path: 'angular-onpush-readiness',
+        loadComponent: () =>
+          import('./features/research/onpush-readiness/onpush-readiness-report.component').then(
+            (m) => m.OnpushReadinessReportComponent,
+          ),
+        data: {
+          seo: {
+            title: 'OnPush by default: how much real Angular code is ready?',
+            description:
+              'A static reading of 31,531 components in 225 open-source Angular apps: which components could drop the Eager stamp under OnPush by default, and what breaks.',
+            robots: 'index,follow',
+            ogType: 'article',
+          },
+        },
+      },
+    ],
+  },
   // NEW: Legal
   {
     path: 'legal',

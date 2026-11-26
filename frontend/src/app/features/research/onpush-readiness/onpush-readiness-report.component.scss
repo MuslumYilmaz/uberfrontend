@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+/* Code in a block is not inline code: drop the inline chip that the guide shell gives every code element. */
+.code-wrap pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.report-crumbs,
+.report-byline {
+  font-size: var(--uf-meta-size);
+  color: var(--uf-text-tertiary);
+}
+
+.report-crumbs {
+  margin: 0 0 var(--uf-space-2);
+}
+
+.report-byline {
+  margin: 0 0 var(--uf-space-5);
+}
+
+/* Charts are drawn for a 720-unit canvas; below that width they scroll sideways instead of shrinking their text. */
+.report-figure {
+  container-type: inline-size;
+  width: 100%;
+  max-width: none;
+  margin: var(--uf-space-5) 0;
+}
+
+.report-figure__hint {
+  display: none;
+}
+
+/* The hint shows whenever the figure is narrower than the chart's minimum width, on phones and on laptops with both side columns open. */
+@container (max-width: 659px) {
+  .report-figure__hint {
+    display: inline;
+  }
+}
+
+.report-figure__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  background: var(--uf-surface);
+}
+
+.report-figure__scroll:focus-visible {
+  outline: 2px solid var(--uf-accent);
+  outline-offset: 2px;
+}
+
+.report-figure figcaption {
+  margin-top: var(--uf-space-2);
+  font-size: var(--uf-meta-size);
+  color: var(--uf-text-tertiary);
+}
+
+.report-chart {
+  display: block;
+  width: 100%;
+  min-width: 660px;
+  height: auto;
+
+  text {
+    font-family: var(--uf-font-body);
+    fill: var(--uf-text-secondary);
+  }
+
+  .t { font-size: 14px; font-weight: 600; fill: var(--uf-text-primary); }
+  .sub { font-size: 12px; fill: var(--uf-text-secondary); }
+  .lab { font-size: 12px; fill: var(--uf-text-primary); }
+  .val { font-size: 11px; fill: var(--uf-text-secondary); font-variant-numeric: tabular-nums; }
+  .ax { font-size: 11px; fill: var(--uf-text-tertiary); font-variant-numeric: tabular-nums; }
+  .in { font-size: 11px; font-weight: 600; fill: var(--uf-chart-on-fill); }
+  .note { font-size: 11px; fill: var(--uf-text-tertiary); }
+  .grid { stroke: var(--uf-border-subtle); stroke-width: 1; }
+  .axis { stroke: var(--uf-border-strong); stroke-width: 1; }
+  .bg { fill: var(--uf-surface); }
+  .s0 { fill: var(--uf-border-strong); }
+  .s1 { fill: var(--uf-chart-1); }
+  .s2 { fill: var(--uf-chart-2); }
+  .s3 { fill: var(--uf-chart-3); }
+  .ring { stroke: var(--uf-surface); stroke-width: 2; }
+  .med { stroke: var(--uf-text-primary); stroke-width: 2; }
+}

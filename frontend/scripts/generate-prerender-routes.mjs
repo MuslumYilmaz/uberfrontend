@@ -179,6 +179,8 @@ function buildRoutes() {
     '/companies',
     '/system-design',
     '/tools/cv',
+    '/research',
+    '/research/angular-onpush-readiness',
     '/legal',
     '/legal/editorial-policy',
     '/legal/terms',
