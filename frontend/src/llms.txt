@@ -107,6 +107,11 @@
 - [xAI frontend interview questions](https://frontendatlas.com/companies/xai/preview): Public xAI (now SpaceXSI) prep guide: the rounds from closed 2025 to 2026 frontend postings and accounts, and 7 questions candidates reported.
 - [Zalando Frontend Interview Questions and Process](https://frontendatlas.com/companies/zalando/preview): What Zalando publishes about its hiring loop and what public reports add for frontend roles: a Codility take-home, JS fundamentals and system design rounds.
 
+## Research
+
+- [Research](https://frontendatlas.com/research): Data studies of real-world frontend code, each published with its method, its data and the tool behind it.
+- [OnPush by default: how much real Angular code is ready?](https://frontendatlas.com/research/angular-onpush-readiness): A static reading of 31,531 components in 225 open-source Angular apps: which components could drop the Eager stamp under OnPush by default, and what breaks.
+
 ## Policies and Discovery
 
 - [Editorial policy](https://frontendatlas.com/legal/editorial-policy): How FrontendAtlas creates, reviews, and updates learning content.
