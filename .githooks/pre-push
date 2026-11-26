@@ -46,12 +46,16 @@ PUSH_COMMITS="$(mktemp)"
 BACKEND_SOURCE_FILES="$(mktemp)"
 BACKEND_TEST_FILES="$(mktemp)"
 BACKEND_NODECHECK_FILES="$(mktemp)"
-trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$BACKEND_SOURCE_FILES" "$BACKEND_TEST_FILES" "$BACKEND_NODECHECK_FILES"' EXIT
+# "base head" per pushed ref, for the coding review record check.
+PUSH_RANGES="$(mktemp)"
+trap 'rm -f "$CHANGED_FILES" "$PUSH_COMMITS" "$BACKEND_SOURCE_FILES" "$BACKEND_TEST_FILES" "$BACKEND_NODECHECK_FILES" "$PUSH_RANGES"' EXIT
 FRONTEND_CHANGE_RE='^(frontend/|content-drafts/interview-mcq/|cdn/(questions/|incidents/|tradeoff-battles/|practice/)|cdn/data-version\.json$)'
 BACKEND_CHANGE_RE='^backend/'
 # Interview artifacts pin source catalogs, system-design bundles, sandbox assets,
 # and the generated MCQ bank even when no backend file changes.
 INTERVIEW_CONTENT_CHANGE_RE='^(backend/content/interview/|content-drafts/interview-mcq/generated/|cdn/questions/(system-design/|[^/]+/coding\.json$|pressure-modes/)|cdn/sb/)'
+# Paths that can change a coding or debug item's review hash (docs/ai-context/coding-item-checks.md).
+CODING_REVIEW_CHANGE_RE='^cdn/(questions/([^/]+/(coding|debug)\.json$|pressure-modes/)|sb/)'
 
 # Collect file paths included in refs being pushed.
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -72,6 +76,10 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     done < <(git rev-list "$local_sha" --not --remotes 2>/dev/null || true)
     if [ "${#commits[@]}" -eq 0 ]; then
       commits=("$local_sha")
+    else
+      # Compare against the commit on a remote that the new commits start from.
+      range_base="$(git rev-list --boundary "$local_sha" --not --remotes 2>/dev/null | sed -n 's/^-//p' | head -n 1 || true)"
+      echo "${range_base:+$range_base }$local_sha" >> "$PUSH_RANGES"
     fi
   else
     # Existing ref update: include all commits reachable in remote..local.
@@ -82,6 +90,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     if [ "${#commits[@]}" -eq 0 ]; then
       continue
     fi
+    echo "$remote_sha $local_sha" >> "$PUSH_RANGES"
   fi
 
   for commit in "${commits[@]}"; do
@@ -113,6 +122,15 @@ fi
 if [ "$HAVE_REFS" -eq 1 ] && [ "$HAS_FRONTEND_CHANGES" -eq 0 ] && [ "$HAS_BACKEND_CHANGES" -eq 0 ] && [ "$HAS_INTERVIEW_CONTENT_CHANGES" -eq 0 ]; then
   echo "[pre-push] No backend/frontend repo changes in push refs. Skipping checks."
   exit 0
+fi
+
+# Reads git only and never calls a model, so a retried push costs nothing.
+if grep -Eq "$CODING_REVIEW_CHANGE_RE" "$CHANGED_FILES"; then
+  echo "[pre-push] Checking coding item review records..."
+  if ! node frontend/scripts/check-coding-review-records.mjs --ranges "$PUSH_RANGES"; then
+    echo "[pre-push] ERROR: A changed coding item has no matching review record. Push aborted." >&2
+    exit 1
+  fi
 fi
 
 if [ "$HAS_BACKEND_CHANGES" -eq 1 ]; then

@@ -111,7 +111,7 @@
             "lineEnd": 38,
             "snippet": "if (effect !== 'allow' && effect !== 'deny' && effect !== null) throw new TypeError"
           },
-          "why": "A typo such as 'Deny', or undefined meant as a clear, would otherwise be stored as a rule, and with this canAccess it would read as a deny for a user and as an allow for a group. A subject like { users: 'ana' } would be filed under a key no check reads, and a time of NaN would break the sorted order. Checking all three before storing anything stops these mistakes where they are made; a misspelt folder id still goes through, since the task does not ask for a folder check.",
+          "why": "A typo such as 'Deny', or undefined meant as a clear, would otherwise be stored as a rule, and with this canAccess it would read as a deny for a user and as an allow for a group. A subject like { users: 'ana' } would be filed under a key no check reads, a time of NaN would break the sorted order, and a time of -Infinity would put a rule in force before every real change. Checking all three before storing anything stops these mistakes where they are made, and Number.isFinite turns away NaN and both infinities; a misspelt folder id still goes through, since the task does not ask for a folder check.",
           "alternative": "Store whatever arrives and compare with the expected strings when checking.",
           "tradeoff": "Nothing throws, but a mistyped rule silently changes who gets in, and the bug shows up as an access problem far from the call that caused it."
         }

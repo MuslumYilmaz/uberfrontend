@@ -2234,7 +2234,7 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
       ),
       actions: [
         'Return false for a file id that is not in files; judge a user in no group by their own rules; accept a rule on any folder id.',
-        "Throw a TypeError from setRule, before storing anything, for an effect other than 'allow', 'deny' or null, a subject that is not exactly { user } or { group } with a string id, or a time that is not a finite number.",
+        "Throw a TypeError from setRule, before storing anything, for an effect other than 'allow', 'deny' or null, a subject that is not exactly { user } or { group } with a string id, or a time that is not a finite number: NaN, Infinity and -Infinity included.",
         'Keep user and group rules apart even when the ids are the same string, and build your own maps instead of changing the input.',
       ],
       confidence: 0.84,
