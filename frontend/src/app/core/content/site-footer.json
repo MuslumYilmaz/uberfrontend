@@ -28,6 +28,7 @@
       "links": [
         { "label": "Pricing", "route": "/pricing" },
         { "label": "Changelog", "route": "/changelog" },
+        { "label": "Research", "route": "/research" },
         { "label": "Editorial policy", "route": "/legal/editorial-policy" },
         { "label": "GitHub", "href": "https://github.com/MuslumYilmaz/uberfrontend", "external": true },
         { "label": "Support", "href": "mailto:support@frontendatlas.com" }
