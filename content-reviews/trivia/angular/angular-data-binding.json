@@ -32,7 +32,7 @@
         ],
         "followUpConfusion": [
           "[disabled] sets the DOM property (actual runtime behavior). [attr.disabled] sets/removes the HTML attribute string.",
-          "Two-way binding is just sugar"
+          "Two-way data binding in Angular is one-way binding twice"
         ]
       },
       "theirEvidence": {
@@ -77,7 +77,7 @@
         ],
         "followUpConfusion": [
           "[disabled] sets the DOM property (actual runtime behavior). [attr.disabled] sets/removes the HTML attribute string.",
-          "Two-way binding is just sugar"
+          "Two-way data binding in Angular is one-way binding twice"
         ]
       },
       "theirEvidence": {

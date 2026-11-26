@@ -1320,7 +1320,7 @@
   },
   {
     "id": "angular-data-binding",
-    "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
+    "title": "Angular data binding: interpolation, property, event and two-way binding explained",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
@@ -1332,7 +1332,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Production mental model</strong><br><br>Angular binding is not “everything is two-way.” Most bindings are <strong>one-way in one direction at a time</strong>: component state flows into the DOM, events flow back into the component, and <code>[(...)]</code> is just sugar on top. That distinction matters when you debug stale UI, misuse <code>[attr.*]</code> versus real DOM properties, or overuse two-way binding in complex forms."
+          "text": "## Angular data binding: the one-way mental model\n\nAngular binding is not “everything is two-way.” Most bindings are <strong>one-way in one direction at a time</strong>: component state flows into the DOM, events flow back into the component, and <code>[(...)]</code> is just sugar on top. That distinction matters when you debug stale UI, misuse <code>[attr.*]</code> versus real DOM properties, or overuse two-way binding in complex forms."
         },
         {
           "type": "list",
@@ -1398,7 +1398,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Property vs Attribute (common interview trap)</strong><br><br><strong>[disabled]</strong> sets the DOM property (actual runtime behavior). <strong>[attr.disabled]</strong> sets/removes the HTML attribute string. For ARIA and many “string-only” attributes, you typically use <code>[attr.*]</code>. For real element state, use property binding."
+          "text": "## Property binding vs attribute binding: the common interview trap\n\n<strong>[disabled]</strong> sets the DOM property (actual runtime behavior). <strong>[attr.disabled]</strong> sets/removes the HTML attribute string. For ARIA and many “string-only” attributes, you typically use <code>[attr.*]</code>. For real element state, use property binding."
         },
         {
           "type": "code",
@@ -1412,11 +1412,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Two-way binding is just sugar</strong><br><br><code>[(x)]</code> expands to <code>[x]</code> + <code>(xChange)</code> for custom components. In forms, <code>[(ngModel)]</code> is provided by template-driven forms (requires importing <code>FormsModule</code>)."
+          "text": "## Two-way data binding in Angular: sugar for two one-way bindings\n\nTwo-way data binding in Angular is one-way binding twice: <code>[(x)]</code> expands to <code>[x]</code> + <code>(xChange)</code> for custom components. In forms, <code>[(ngModel)]</code> is provided by template-driven forms (requires importing <code>FormsModule</code>)."
         },
         {
           "type": "text",
-          "text": "<strong>Follow-up seniors mention: OnPush, signals, and debug mode</strong><br><br>The one-way mental model matters even more with <code>OnPush</code> and signal-driven UIs. Property bindings still update when their inputs change, but a stale UI usually means the state did not change in a way Angular can observe, or you bound the wrong target. In dev mode Angular may also surface mistakes earlier with checks like expression-changed errors; production may hide the warning while the mental-model bug is still there."
+          "text": "## Follow-ups seniors mention: OnPush, signals, and debug mode\n\nThe one-way mental model matters even more with <code>OnPush</code> and signal-driven UIs. Property bindings still update when their inputs change, but a stale UI usually means the state did not change in a way Angular can observe, or you bound the wrong target. In dev mode Angular may also surface mistakes earlier with checks like expression-changed errors; production may hide the warning while the mental-model bug is still there."
         },
         {
           "type": "code",
@@ -1527,9 +1527,9 @@
       "basics",
       "components"
     ],
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-11-26",
     "seo": {
-      "title": "Angular data binding: one-way flow, property vs attribute, two-way",
+      "title": "Angular Data Binding Explained: One-Way vs Two-Way",
       "description": "Explain Angular data binding through real debugging pitfalls: one-way flow, property vs attribute mistakes, OnPush and signal follow-ups, and when two-way binding hides state bugs."
     }
   },

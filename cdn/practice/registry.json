@@ -241,7 +241,7 @@
   {
     "id": "angular-data-binding",
     "family": "question",
-    "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
+    "title": "Angular data binding: interpolation, property, event and two-way binding explained",
     "route": "/angular/trivia/angular-data-binding",
     "tech": "angular",
     "difficulty": "intermediate",
@@ -255,7 +255,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-04-09",
+    "updatedAt": "2026-11-26",
     "schemaVersion": "question.v1",
     "assetRef": "questions/angular/trivia.json#angular-data-binding"
   },
@@ -2957,7 +2957,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-11-26",
     "schemaVersion": "question.v1",
     "assetRef": "questions/html/trivia.json#html-href-attribute"
   },
@@ -4864,7 +4864,7 @@
     ],
     "access": "free",
     "estimatedMinutes": 7,
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-11-26",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-compare-two-objects"
   },
