@@ -1,0 +1,56 @@
+{
+  "id": "js-named-task-scheduler",
+  "tech": "javascript",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "92759b7a9e575cfde84eab4a27e586a39a9c7181e79d1df060a519fa81542ad4",
+  "pageHash": "2222ad84992980b6b45dacd7af8c9eb6f012a99da55f13e4611b8033df72c95b",
+  "checksHash": "2250304f78b600f6f35f142b6d40c7fd906a7564f056fef6ba71a552773bb8bd",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "pass",
+    "B1": "review",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "pass",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 3,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 2,
+      "passedAllChecks": 2
+    },
+    "A4": {
+      "count": 6,
+      "passedAllChecks": 3
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet",
+      "haiku"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Re-review after fixing the clear check that failed a correct start-in-a-microtask solution; that variant now passes. Per the user's choice of one extra call, no further round: a late resolve of a cancelled task while the next task of that name runs, names that collide with Object.prototype, the DOMException check for queued tasks rejected by clear, and whether an idle name starts its task synchronously are logged as follow-ups.",
+    "B1": "Both Sonnet solvers pass 16/16. Haiku misses a task that throws before returning a promise, which the page states (reject with what it throws) and the check covers; a solver error, not a page gap."
+  }
+}

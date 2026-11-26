@@ -818,6 +818,257 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'js-frame-player-controller-timer',
+    questionId: 'js-frame-player-controller',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['every 1000 / fps', 'higher frame rate', 'pause holds', 'twice changes nothing', 'stops playback for good', 'its own frame']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-frame-player-controller-timer',
+      title: 'Keep one pending timer, and clear it on every stop',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests count the frames shown after the fake clock moves: after play, after play or pause twice, after a pause, after destroy and with two players side by side.',
+      ),
+      actions: [
+        'Schedule one timeout at a time and treat "a timeout is pending" as "playing", so play() while playing can return.',
+        'Clear the pending timeout with clearTimeout before setting it to null; forgetting it does not cancel it.',
+        'Stop scheduling after the last frame shows, and keep the frame, the rate and the timer inside createFramePlayer.',
+        'After destroy(), return from play, seek and setFps before looking at their arguments.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-frame-player-controller-seek',
+    questionId: 'js-frame-player-controller',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['seek shows', 'seek while playing', 'last frame while playing', 'starts again from frame 0', 'single frame', 'seek throws', 'bad seek']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-frame-player-controller-seek',
+      title: 'Validate, show the frame, then re-time',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests seek while paused and while playing, seek to the last frame, play from the last frame and pass indexes that are not frames, also while playing.',
+      ),
+      actions: [
+        'Throw a RangeError for anything but an integer from 0 to frameCount - 1, before changing the frame or touching the timer.',
+        'Call renderFrame at once, and while playing clear the pending timeout and schedule a new one, or stop on the last frame.',
+        'On play() while the last frame shows, show frame 0 first and then play on.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-frame-player-controller-callback',
+    questionId: 'js-frame-player-controller',
+    priority: 98,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['call the player back']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-frame-player-controller-callback',
+      title: 'Settle the timer before you call renderFrame',
+      why: buildProgressAwareWhy(snapshot, 'This test pauses, seeks and destroys the player from inside renderFrame, then counts the frames that follow.'),
+      actions: [
+        'In the tick, schedule the next frame or stop first, and call renderFrame last, so nothing after it can undo a pause or a destroy.',
+        'Do the same in play() and seek(): change the frame and the timer, then show the frame, so a seek from inside renderFrame leaves one timer.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'js-frame-player-controller-rate',
+    questionId: 'js-frame-player-controller',
+    priority: 90,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['setFps']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-frame-player-controller-rate',
+      title: 'Restart the countdown when the rate changes',
+      why: buildProgressAwareWhy(snapshot, 'These tests change the rate while playing and while paused, set the same rate again while playing, and pass rates that are not positive numbers.'),
+      actions: [
+        'Store the new rate, and while playing clear the pending timeout and schedule again, so the next frame comes 1000 / fps ms after the call, even when the rate did not change.',
+        'Throw a RangeError for 0, negative, NaN, Infinity and non-numbers, and keep the old rate.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'js-frame-player-controller-default',
+    questionId: 'js-frame-player-controller',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-frame-player-controller-default',
+      title: 'Show frame 0 and check the options first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every test creates a player on the fake clock and expects frame 0 to show once at creation before anything else.',
+      ),
+      actions: [
+        'Throw a RangeError for a frameCount that is not a positive integer or an fps that is not a positive, finite number, and a TypeError when renderFrame is not a function.',
+        'Call renderFrame(0) once, then return the seven methods, with play() moving to the next frame every 1000 / fps ms.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'js-named-task-scheduler-lanes',
+    questionId: 'js-named-task-scheduler',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['one after another', 'side by side', 'throws or rejects', 'schedule more work', 'own lanes and listeners']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-named-task-scheduler-lanes',
+      title: 'Keep one queue per name, and start the next task when one settles',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests read the order in which tasks start and end on the fake clock, for one name, for two names, after a failure and when a task schedules more work.',
+      ),
+      actions: [
+        'Keep a lane per name with the running task and a queue; start a task only when its lane has nothing running.',
+        'When a task settles, successfully or not, free its lane and start the next task under that name.',
+        'Call the task inside try, so a task that throws at once rejects like one that rejects later, and keep the lanes and the listeners inside createScheduler.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-named-task-scheduler-cancel',
+    questionId: 'js-named-task-scheduler',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['cancel aborts', 'its own signal', 'ignores its signal', 'rejects later', 'clear aborts', 'leave other names alone', 'nothing running']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-named-task-scheduler-cancel',
+      title: 'Settle a cancelled task once, then move its lane on',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests cancel and clear while tasks run, check the AbortError, the signal and the cancel events, and let a cancelled task resolve or reject late.',
+      ),
+      actions: [
+        "Give every task an AbortController of its own. On cancel, abort the running task's controller, reject its promise with the signal's reason, a DOMException named AbortError, and start the next task right away.",
+        'Mark every job once it settles, and ignore whatever a cancelled task returns or throws later: no event, and its lane stays with the next task.',
+        'On clear, reject the queued tasks as well, with one cancel event each and no start, and leave every other name alone.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-named-task-scheduler-events',
+    questionId: 'js-named-task-scheduler',
+    priority: 90,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['fires start', 'removes that listener']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-named-task-scheduler-events',
+      title: 'Fire one start and one ending event per task',
+      why: buildProgressAwareWhy(snapshot, 'These tests record every event across a done, an error and a cancel, and remove one of two listeners halfway.'),
+      actions: [
+        'Fire start when a task begins, then done with its value, error with its error, or cancel.',
+        "Report a finished or cancelled task before the next task under its name starts, and return a function from on that removes that one listener.",
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'js-named-task-scheduler-default',
+    questionId: 'js-named-task-scheduler',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-named-task-scheduler-default',
+      title: 'Run the tasks of one name in order first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every test schedules tasks on the fake clock and reads when each one starts and how its promise settles.',
+      ),
+      actions: [
+        'Return a promise from schedule that settles as the task does, and call the task with an AbortSignal.',
+        'Throw a TypeError, or reject with one, for a name that is not a non-empty string or a task that is not a function.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'js-text-editor-undo-redo-history',
+    questionId: 'js-text-editor-undo-redo',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['undo puts back', 'redo puts back', 'walk the history', 'drops the edits', 'changes nothing', 'not an edit', 'report whether', 'canUndo and canRedo', 'its own undo step', 'own text and history']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-text-editor-undo-redo-history',
+      title: 'Record each edit with the cursor on both sides',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests make edits, move the cursor, undo and redo, and read the text and the cursor after every step.',
+      ),
+      actions: [
+        'Store each edit as where it happened, the text it removed and inserted, and the cursor before and after it.',
+        'Undo reverts the latest edit and restores the cursor from before it; redo applies it again and restores the cursor from after it.',
+        'Empty the redo stack on every new edit, skip calls that change nothing, and leave the history alone when the cursor moves.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'js-text-editor-undo-redo-buffer',
+    questionId: 'js-text-editor-undo-redo',
+    priority: 95,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['starts with the given text', 'insert types', 'delete removes', 'moveCursor stays']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-text-editor-undo-redo-buffer',
+      title: 'Keep the text and the cursor in step',
+      why: buildProgressAwareWhy(snapshot, 'These tests read the text and the cursor after inserting, deleting and moving at the start, the middle and the end.'),
+      actions: [
+        'Start the cursor at the end of the starting text, and move it past what insert types.',
+        'Delete only back to the start of the text and move the cursor to where the deleted text began.',
+        'Clamp moveCursor to 0 and the length of the text.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'js-text-editor-undo-redo-arguments',
+    questionId: 'js-text-editor-undo-redo',
+    priority: 90,
+    matches: (snapshot) => snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['throws a TypeError', 'throws a RangeError']),
+    buildHint: (snapshot) => ({
+      ruleId: 'js-text-editor-undo-redo-arguments',
+      title: 'Check every argument before changing anything',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These tests pass text that is not a string and counts or positions that are not whole numbers, Infinity included, then check that nothing was recorded and redo still works.',
+      ),
+      actions: [
+        'Throw a TypeError from the constructor and insert when the text is not a string, null included.',
+        'Throw a RangeError from delete unless the count is an integer of 0 or more, and from moveCursor unless the position is an integer; Number.isInteger rejects NaN and Infinity.',
+        'Check before touching the text, the cursor or either stack, so a refused call leaves undo and redo as they were.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'js-text-editor-undo-redo-default',
+    questionId: 'js-text-editor-undo-redo',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'js-text-editor-undo-redo-default',
+      title: 'Keep a text and a cursor first',
+      why: buildProgressAwareWhy(snapshot, 'Every test creates an editor and reads getText() and getCursor() after each call.'),
+      actions: [
+        'Store the starting text and put the cursor at its end, then make insert and delete change the text at the cursor.',
+        'Throw a TypeError for text that is not a string and a RangeError for a count or position that is not a whole number, before changing anything.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
     ruleId: 'react-frame-sequence-player-timer',
     questionId: 'react-frame-sequence-player',
     priority: 100,

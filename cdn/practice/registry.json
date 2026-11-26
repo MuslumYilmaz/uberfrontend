@@ -3366,6 +3366,28 @@
     "assetRef": "questions/javascript/trivia.json#js-big-o-notation"
   },
   {
+    "id": "js-debug-notes-app-repo",
+    "family": "question",
+    "title": "Bug Squash: Failing Tests, a Slow Path and Messy Code in a Notes App",
+    "route": "/javascript/debug/js-debug-notes-app-repo",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Five files you have not seen and four failing tests: find the cause of each in a small notes app, fix a slow render path, tidy a tangled module and keep every passing test green.",
+    "tags": [
+      "debugging",
+      "modules",
+      "performance",
+      "caching",
+      "testing",
+      "strings"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 12,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/debug.json#js-debug-notes-app-repo"
+  },
+  {
     "id": "js-debug-bug-squash-invoices",
     "family": "question",
     "title": "Bug Squash: Fix an Unfamiliar Invoicing Repo",
@@ -4667,6 +4689,26 @@
     "assetRef": "questions/javascript/coding.json#js-format-date-timezone"
   },
   {
+    "id": "js-frame-player-controller",
+    "family": "question",
+    "title": "Frame Player Controller: Play, Seek and Change Speed on a Clock",
+    "route": "/javascript/coding/js-frame-player-controller",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build the controller of a frame-by-frame player with no UI: play at a frame rate, pause, jump to any frame and change speed while playing, all on timers that never pile up.",
+    "tags": [
+      "timers",
+      "closure",
+      "state",
+      "validation"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-frame-player-controller"
+  },
+  {
     "id": "js-garbage-collection-and-gc-pauses",
     "family": "question",
     "title": "Garbage Collection (GC) in JavaScript: Memory Pressure and Jank",
@@ -5449,6 +5491,27 @@
     "updatedAt": "2026-11-22",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-mock-vs-stub-vs-spy"
+  },
+  {
+    "id": "js-named-task-scheduler",
+    "family": "question",
+    "title": "Name-Keyed Task Scheduler: One Lane per Name, with Cancel and Clear",
+    "route": "/javascript/coding/js-named-task-scheduler",
+    "tech": "javascript",
+    "difficulty": "hard",
+    "summary": "Build a scheduler that runs async tasks one at a time per name and side by side across names, with cancel, clear and events, the kind of control a dashboard needs for background saves and uploads.",
+    "tags": [
+      "async",
+      "promises",
+      "concurrency",
+      "cancellation",
+      "events"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-named-task-scheduler"
   },
   {
     "id": "js-object-create-vs-new",
@@ -6296,6 +6359,27 @@
     "updatedAt": "2026-04-04",
     "schemaVersion": "question.v1",
     "assetRef": "questions/javascript/trivia.json#js-testing-edge-cases-strategy"
+  },
+  {
+    "id": "js-text-editor-undo-redo",
+    "family": "question",
+    "title": "Text Editor with Undo and Redo: Edits, a Cursor and a History",
+    "route": "/javascript/coding/js-text-editor-undo-redo",
+    "tech": "javascript",
+    "difficulty": "intermediate",
+    "summary": "Build a text buffer with a cursor, then give it undo and redo: record each edit so the text and the cursor can go back and forth, drop the redo history on a new edit and ignore edits that change nothing.",
+    "tags": [
+      "data-structures",
+      "state",
+      "oop",
+      "strings",
+      "design-patterns"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 18,
+    "updatedAt": "2026-11-26",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/javascript/coding.json#js-text-editor-undo-redo"
   },
   {
     "id": "js-throttle",

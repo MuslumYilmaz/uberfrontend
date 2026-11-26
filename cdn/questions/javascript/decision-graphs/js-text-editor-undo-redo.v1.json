@@ -1,0 +1,121 @@
+{
+  "questionId": "js-text-editor-undo-redo",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default class TextEditor {\n  #text;\n  #cursor;\n  // Each edit: where it happened, what it removed and inserted, and the cursor on either side of it.\n  #undoStack = [];\n  #redoStack = [];\n\n  constructor(text = '') {\n    if (typeof text !== 'string') throw new TypeError('text must be a string');\n    this.#text = text;\n    this.#cursor = text.length;\n  }\n\n  getText() {\n    return this.#text;\n  }\n\n  getCursor() {\n    return this.#cursor;\n  }\n\n  insert(text) {\n    if (typeof text !== 'string') throw new TypeError('text must be a string');\n    if (text === '') return;\n    const at = this.#cursor;\n    this.#record({ at, removed: '', inserted: text, cursorBefore: at, cursorAfter: at + text.length });\n  }\n\n  delete(count) {\n    if (!Number.isInteger(count) || count < 0) throw new RangeError('count must be a non-negative integer');\n    const from = Math.max(0, this.#cursor - count);\n    if (from === this.#cursor) return;\n    this.#record({ at: from, removed: this.#text.slice(from, this.#cursor), inserted: '', cursorBefore: this.#cursor, cursorAfter: from });\n  }\n\n  moveCursor(position) {\n    if (!Number.isInteger(position)) throw new RangeError('position must be an integer');\n    this.#cursor = Math.min(Math.max(position, 0), this.#text.length);\n  }\n\n  undo() {\n    const edit = this.#undoStack.pop();\n    if (!edit) return false;\n    this.#replace(edit.at, edit.inserted.length, edit.removed);\n    this.#cursor = edit.cursorBefore;\n    this.#redoStack.push(edit);\n    return true;\n  }\n\n  redo() {\n    const edit = this.#redoStack.pop();\n    if (!edit) return false;\n    this.#replace(edit.at, edit.removed.length, edit.inserted);\n    this.#cursor = edit.cursorAfter;\n    this.#undoStack.push(edit);\n    return true;\n  }\n\n  canUndo() {\n    return this.#undoStack.length > 0;\n  }\n\n  canRedo() {\n    return this.#redoStack.length > 0;\n  }\n\n  // Applies a new edit and remembers it. The undone edits followed the old text, so a new edit drops them.\n  #record(edit) {\n    this.#replace(edit.at, edit.removed.length, edit.inserted);\n    this.#cursor = edit.cursorAfter;\n    this.#undoStack.push(edit);\n    this.#redoStack = [];\n  }\n\n  #replace(at, length, text) {\n    this.#text = this.#text.slice(0, at) + text + this.#text.slice(at + length);\n  }\n}\n",
+      "nodes": [
+        {
+          "id": "n1-an-edit-remembers-both-cursors",
+          "title": "Record an edit with the cursor on both sides",
+          "anchor": {
+            "lineStart": 26,
+            "lineEnd": 26,
+            "snippet": "this.#record({ at, removed: '', inserted: text, cursorBefore: at, cursorAfter: at + text.length });"
+          },
+          "why": "Undo must put the cursor back where the edit found it and redo where the edit left it. Those are not derivable from the text alone once the cursor has moved in between, so the edit stores both.",
+          "alternative": "Store only the text changes and put the cursor at the end of the change.",
+          "tradeoff": "Smaller records, but undo after a delete would leave the cursor at the wrong side of the restored text."
+        },
+        {
+          "id": "n2-nothing-changed-nothing-recorded",
+          "title": "Skip calls that change nothing",
+          "anchor": {
+            "lineStart": 24,
+            "lineEnd": 24,
+            "snippet": "if (text === '') return;"
+          },
+          "why": "An empty insert or a delete at the start would push an edit that undo then \"reverts\" without any visible change, so the user would press undo twice to see one change go.",
+          "alternative": "Record everything and let undo skip empty edits.",
+          "tradeoff": "The check then runs on every undo, and canUndo() would answer true when nothing visible can be undone."
+        },
+        {
+          "id": "n3-delete-stops-at-the-start",
+          "title": "Clamp a delete at the start of the text",
+          "anchor": {
+            "lineStart": 31,
+            "lineEnd": 31,
+            "snippet": "const from = Math.max(0, this.#cursor - count);"
+          },
+          "why": "A count larger than the text before the cursor behaves like holding Backspace: it stops at the start. Without the clamp, a negative index makes slice count from the end and removes the wrong text.",
+          "alternative": "Throw when the count is larger than the cursor.",
+          "tradeoff": "Strict, but a UI that deletes a word by count would then have to measure first."
+        },
+        {
+          "id": "n4-clamp-the-cursor",
+          "title": "Keep the cursor inside the text",
+          "anchor": {
+            "lineStart": 38,
+            "lineEnd": 38,
+            "snippet": "this.#cursor = Math.min(Math.max(position, 0), this.#text.length);"
+          },
+          "why": "Every edit uses the cursor as a position in the text. Clamping on the way in means insert and delete never see a position outside the string.",
+          "alternative": "Store any position and clamp when it is used.",
+          "tradeoff": "getCursor() would then report a position that is not in the text."
+        },
+        {
+          "id": "n5-undo-restores-the-cursor-before",
+          "title": "Undo restores the cursor from before the edit",
+          "anchor": {
+            "lineStart": 45,
+            "lineEnd": 45,
+            "snippet": "this.#cursor = edit.cursorBefore;"
+          },
+          "why": "After undo the editor should look exactly as it did before the edit, cursor included, so the next keystroke lands where the user expects.",
+          "alternative": "Leave the cursor where it is.",
+          "tradeoff": "The text is right, but the cursor may sit in the middle of restored text or past the end."
+        },
+        {
+          "id": "n6-redo-takes-the-latest-undone",
+          "title": "Redo takes the latest undone edit",
+          "anchor": {
+            "lineStart": 51,
+            "lineEnd": 51,
+            "snippet": "const edit = this.#redoStack.pop();"
+          },
+          "why": "Undone edits are redone in the reverse order they were undone, so the redo stack is a stack too. Redo applies the edit forwards and restores the cursor it left.",
+          "alternative": "Keep one list and an index into it.",
+          "tradeoff": "One list with an index works as well: undo moves the index back, redo forward, and a new edit cuts the list at the index."
+        },
+        {
+          "id": "n7-a-new-edit-drops-redo",
+          "title": "A new edit drops the redo stack",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "this.#redoStack = [];"
+          },
+          "why": "The undone edits were made against the text as it was. After a new edit that text is gone, and replaying them would put changes in the wrong places.",
+          "alternative": "Keep the undone edits as a branch.",
+          "tradeoff": "A branching history keeps everything, but it needs a tree and a way to pick a branch, which this task does not ask for."
+        },
+        {
+          "id": "n8-one-way-to-change-the-text",
+          "title": "Change the text in one place",
+          "anchor": {
+            "lineStart": 76,
+            "lineEnd": 76,
+            "snippet": "this.#text = this.#text.slice(0, at) + text + this.#text.slice(at + length);"
+          },
+          "why": "Insert, delete, undo and redo all replace a stretch of text with another. One helper keeps the arithmetic in one place, and undo is just the same call with removed and inserted swapped.",
+          "alternative": "Write the slicing out in each method.",
+          "tradeoff": "More code to keep in step, and the off-by-one errors multiply."
+        },
+        {
+          "id": "n9-check-arguments-first",
+          "title": "Check arguments before touching the text",
+          "anchor": {
+            "lineStart": 30,
+            "lineEnd": 30,
+            "snippet": "if (!Number.isInteger(count) || count < 0) throw new RangeError('count must be a non-negative integer');"
+          },
+          "why": "A fractional or negative count would slice at a position that is not a character boundary or move the cursor forwards. Throwing before anything changes keeps the history free of broken edits.",
+          "alternative": "Round or clamp the count.",
+          "tradeoff": "Lenient, but a caller passing a wrong value never learns about it."
+        }
+      ]
+    }
+  }
+}

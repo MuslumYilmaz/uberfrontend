@@ -1,0 +1,55 @@
+{
+  "id": "js-frame-player-controller",
+  "tech": "javascript",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "e64cdc80a77de3f9d5982c937a400196b04583e4d8ce6197e22e7da201cae64e",
+  "pageHash": "14d62310d845903722f40e995cbdb53f94e29ce6f578c781579b172b8008aafb",
+  "checksHash": "386d14cddafaca8ca63e3c2026450a5e165cb543b129d532dd74576e3c3ceb1e",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "pass",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "pass",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 3,
+    "passedAllChecks": 3,
+    "reused": false
+  },
+  "variants": {
+    "A3": {
+      "count": 2,
+      "passedAllChecks": 2
+    },
+    "A4": {
+      "count": 2,
+      "passedAllChecks": 2
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet",
+      "haiku"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Second and last round under the agreed two-round stop rule. Both gaps are behaviors the page states and the reference implements, but the checks only sample them at tick boundaries: a second play() mid-interval must not restart the timer, and play() after a mid-interval pause counts a full interval from the call. Follow-up: one check for each."
+  }
+}

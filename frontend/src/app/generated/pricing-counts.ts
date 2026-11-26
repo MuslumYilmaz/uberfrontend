@@ -28,7 +28,7 @@ export interface PricingCounts {
 
 export const PRICING_COUNTS: PricingCounts = {
   "updatedMonth": "2026-11",
-  "companyGuides": 33,
+  "companyGuides": 36,
   "premiumRehearsals": 5,
   "areas": {
     "react": {
@@ -50,15 +50,15 @@ export const PRICING_COUNTS: PricingCounts = {
       "premiumHard": 0
     },
     "javascript": {
-      "total": 98,
+      "total": 101,
       "free": 44,
-      "premium": 54,
-      "premiumHard": 11
+      "premium": 57,
+      "premiumHard": 12
     },
     "debug": {
-      "total": 14,
+      "total": 15,
       "free": 10,
-      "premium": 4,
+      "premium": 5,
       "premiumHard": 1
     },
     "htmlCss": {

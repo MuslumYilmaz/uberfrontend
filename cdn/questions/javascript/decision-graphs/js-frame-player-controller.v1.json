@@ -1,0 +1,121 @@
+{
+  "questionId": "js-frame-player-controller",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "javascript",
+      "code": "export default function createFramePlayer({ frameCount, fps, renderFrame } = {}) {\n  if (!Number.isInteger(frameCount) || frameCount < 1) throw new RangeError('frameCount must be a positive integer');\n  if (!isRate(fps)) throw new RangeError('fps must be a positive, finite number');\n  if (typeof renderFrame !== 'function') throw new TypeError('renderFrame must be a function');\n\n  const last = frameCount - 1;\n  let frame = 0;\n  let rate = fps;\n  let timer = null;\n  let destroyed = false;\n\n  // One pending timeout at most: playing means a timer is set, and every way to stop clears it.\n  const schedule = () => {\n    timer = setTimeout(tick, 1000 / rate);\n  };\n  const stop = () => {\n    if (timer !== null) clearTimeout(timer);\n    timer = null;\n  };\n  // Each step settles the frame and the timer first and shows the frame last: renderFrame may call the\n  // player back, to pause on a marker or to skip ahead, and that call is then the last word.\n  const tick = () => {\n    frame += 1;\n    if (frame < last) schedule();\n    else stop();\n    renderFrame(frame);\n  };\n\n  renderFrame(frame);\n\n  return {\n    play() {\n      if (destroyed || timer !== null) return;\n      if (frame < last) {\n        schedule();\n        return;\n      }\n      // On the last frame, start again from frame 0; a single frame shows again and stays stopped.\n      frame = 0;\n      if (last > 0) schedule();\n      renderFrame(frame);\n    },\n    pause() {\n      stop();\n    },\n    seek(index) {\n      if (destroyed) return;\n      if (!Number.isInteger(index) || index < 0 || index > last) throw new RangeError(`no frame ${index}`);\n      frame = index;\n      // While playing, the next frame is one interval after the jump; on the last frame playback ends.\n      if (timer !== null) {\n        stop();\n        if (frame < last) schedule();\n      }\n      renderFrame(frame);\n    },\n    setFps(next) {\n      if (destroyed) return;\n      if (!isRate(next)) throw new RangeError('fps must be a positive, finite number');\n      rate = next;\n      if (timer !== null) {\n        stop();\n        schedule();\n      }\n    },\n    currentFrame() {\n      return frame;\n    },\n    isPlaying() {\n      return timer !== null;\n    },\n    destroy() {\n      stop();\n      destroyed = true;\n    },\n  };\n}\n\nfunction isRate(value) {\n  return typeof value === 'number' && Number.isFinite(value) && value > 0;\n}\n",
+      "nodes": [
+        {
+          "id": "n1-check-the-options-first",
+          "title": "Check the options before anything runs",
+          "anchor": {
+            "lineStart": 2,
+            "lineEnd": 2,
+            "snippet": "if (!Number.isInteger(frameCount) || frameCount < 1) throw new RangeError('frameCount must be a positive integer');"
+          },
+          "why": "A frameCount of 0 would leave no frame to show, a rate of 0 would make the interval infinite, and a missing renderFrame would only fail on the first tick, far from the call that caused it. Throwing at creation stops all three where they are made.",
+          "alternative": "Clamp the values to something playable, such as one frame and 1 fps.",
+          "tradeoff": "Clamping never throws, but it hides a caller bug behind a player that plays the wrong thing."
+        },
+        {
+          "id": "n2-state-in-the-closure",
+          "title": "Keep each player's state in its closure",
+          "anchor": {
+            "lineStart": 7,
+            "lineEnd": 7,
+            "snippet": "let frame = 0;"
+          },
+          "why": "The frame, the rate, the timer and the destroyed flag belong to one player. Declaring them inside createFramePlayer gives every player its own copy, so two players on one page never touch each other.",
+          "alternative": "A class with private fields.",
+          "tradeoff": "A class reads the same and shows the state in one place; it needs `this` to stay bound if the methods are passed around as callbacks."
+        },
+        {
+          "id": "n3-one-pending-timeout",
+          "title": "One pending timeout, which is also the play state",
+          "anchor": {
+            "lineStart": 14,
+            "lineEnd": 14,
+            "snippet": "timer = setTimeout(tick, 1000 / rate);"
+          },
+          "why": "Each tick schedules the next one, so at most one timeout is pending, and `timer !== null` is exactly \"playing\". There is no separate flag that could disagree with the timer.",
+          "alternative": "One setInterval while playing.",
+          "tradeoff": "An interval needs the same clearing on every stop and a restart on a seek or a new rate; a chain of timeouts makes stopping on the last frame a matter of not scheduling again."
+        },
+        {
+          "id": "n4-clear-before-forgetting",
+          "title": "Clear the timeout before forgetting it",
+          "anchor": {
+            "lineStart": 17,
+            "lineEnd": 17,
+            "snippet": "if (timer !== null) clearTimeout(timer);"
+          },
+          "why": "Setting `timer` to null alone does not cancel anything: the pending callback would still show a frame after a pause, a seek or destroy(). Every stop goes through this one function.",
+          "alternative": "Let the tick check a `playing` flag and return early.",
+          "tradeoff": "The flag stops the frame from showing, but the stale timeout still fires, and a play() right after a pause can then run two chains at once."
+        },
+        {
+          "id": "n5-settle-then-show",
+          "title": "Settle the timer, then show the frame",
+          "anchor": {
+            "lineStart": 23,
+            "lineEnd": 23,
+            "snippet": "frame += 1;"
+          },
+          "why": "The tick moves to the next frame, schedules the one after or stops on the last, and calls renderFrame last. A renderFrame that pauses on a marker, seeks or destroys the player then finds a settled state, and nothing after it undoes its call.",
+          "alternative": "Show the frame first, then schedule the next one.",
+          "tradeoff": "It reads in the order things appear on screen, but a pause inside renderFrame is overruled by the schedule that follows, and a seek inside it leaves two timers running."
+        },
+        {
+          "id": "n6-play-twice-is-harmless",
+          "title": "Make play() safe to call twice",
+          "anchor": {
+            "lineStart": 33,
+            "lineEnd": 33,
+            "snippet": "if (destroyed || timer !== null) return;"
+          },
+          "why": "A UI can call play() from a button and a keyboard shortcut at once. Returning while a timer is pending keeps one chain of frames; on the last frame play() starts again from frame 0 instead.",
+          "alternative": "Clear any pending timer and start a new one on every play().",
+          "tradeoff": "Restarting also prevents a second chain, but it re-times playback on every call, so pressing play twice delays the next frame."
+        },
+        {
+          "id": "n7-seek-validates-shows-retimes",
+          "title": "Validate, re-time, then show on seek",
+          "anchor": {
+            "lineStart": 48,
+            "lineEnd": 48,
+            "snippet": "if (!Number.isInteger(index) || index < 0 || index > last) throw new RangeError(`no frame ${index}`);"
+          },
+          "why": "A bad index is rejected before anything changes, even while playing. A good one moves the frame, restarts the countdown while playing (or ends playback on the last frame) and shows at once, so the next frame is a full interval after the jump.",
+          "alternative": "Only move the index and let the next tick show it.",
+          "tradeoff": "The screen then lags the jump by up to one interval, and a paused player never shows the frame it was sent to."
+        },
+        {
+          "id": "n8-retime-on-a-new-rate",
+          "title": "Restart the countdown on a new rate",
+          "anchor": {
+            "lineStart": 60,
+            "lineEnd": 60,
+            "snippet": "rate = next;"
+          },
+          "why": "The pending timeout was set for the old interval. Clearing it and scheduling again makes the new pace start from the call, as a speed control is expected to; while paused, storing the rate is enough.",
+          "alternative": "Store the rate and let the next tick use it.",
+          "tradeoff": "Nothing is cleared, but the first frame after the change still comes on the old interval, which a slow-to-fast switch makes visible."
+        },
+        {
+          "id": "n9-destroy-closes-the-door",
+          "title": "destroy() stops and closes the player",
+          "anchor": {
+            "lineStart": 74,
+            "lineEnd": 74,
+            "snippet": "destroyed = true;"
+          },
+          "why": "A player is destroyed when its UI unmounts. Clearing the timer stops the frames, and the flag keeps a late call from a stale handler from starting them again.",
+          "alternative": "Only clear the timer.",
+          "tradeoff": "Playback stops, but a later play() from a forgotten listener would quietly bring the player back."
+        }
+      ]
+    }
+  }
+}

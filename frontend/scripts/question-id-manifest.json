@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-25T17:50:22.845Z",
+  "generatedAt": "2026-11-26T07:46:16.806Z",
   "entries": [
     {
       "tech": "angular",
@@ -1109,6 +1109,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-frame-player-controller",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-get-by-path-1",
       "file": "javascript/coding.json"
     },
@@ -1194,6 +1200,12 @@
       "tech": "javascript",
       "kind": "coding",
       "id": "js-merge-sorted-arrays",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
+      "id": "js-named-task-scheduler",
       "file": "javascript/coding.json"
     },
     {
@@ -1373,6 +1385,12 @@
     {
       "tech": "javascript",
       "kind": "coding",
+      "id": "js-text-editor-undo-redo",
+      "file": "javascript/coding.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "coding",
       "id": "js-three-sum",
       "file": "javascript/coding.json"
     },
@@ -1458,6 +1476,12 @@
       "tech": "javascript",
       "kind": "debug",
       "id": "js-debug-mutating-input",
+      "file": "javascript/debug.json"
+    },
+    {
+      "tech": "javascript",
+      "kind": "debug",
+      "id": "js-debug-notes-app-repo",
       "file": "javascript/debug.json"
     },
     {
