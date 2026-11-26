@@ -1,0 +1,97 @@
+{
+  "questionId": "react-frame-sequence-player",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useState } from 'react';\nimport './App.css';\n\nexport type Camera = 'lobby' | 'garage' | 'roof';\n\nexport interface Frame {\n  /** 1-based position in the recording. */\n  index: number;\n  /** When the still was taken, as an ISO time in UTC. */\n  takenAt: string;\n  /** An image of the still. */\n  src: string;\n}\n\n/** How long each still stays on screen while playing, in milliseconds. */\nexport const FRAME_MS = 200;\n\n/** Minutes between stills: uneven, as a camera that shoots on motion takes them. */\nconst GAPS_MIN = [5, 12, 7, 15, 9, 6, 11, 14, 8, 10, 13, 5, 7, 12, 9];\nconst FIRST_SHOT = Date.UTC(2026, 2, 14, 8, 0);\n\nfunction stillImage(index: number, time: string): string {\n  const svg = '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\" viewBox=\"0 0 320 180\">'\n    + '<rect width=\"320\" height=\"180\" fill=\"#1f2937\"/>'\n    + `<text x=\"160\" y=\"84\" fill=\"#f9fafb\" font-family=\"sans-serif\" font-size=\"28\" text-anchor=\"middle\">Frame ${index}</text>`\n    + `<text x=\"160\" y=\"120\" fill=\"#9ca3af\" font-family=\"sans-serif\" font-size=\"18\" text-anchor=\"middle\">${time} UTC</text>`\n    + '</svg>';\n  return `data:image/svg+xml,${encodeURIComponent(svg)}`;\n}\n\n/** The lobby camera's sixteen stills, oldest first. */\nexport const FRAMES: Frame[] = [0, ...GAPS_MIN].reduce<Frame[]>((frames, gap, i) => {\n  const previous = frames[i - 1];\n  const takenAt = new Date((previous ? Date.parse(previous.takenAt) : FIRST_SHOT) + gap * 60000).toISOString();\n  return [...frames, { index: i + 1, takenAt, src: stillImage(i + 1, takenAt.slice(11, 16)) }];\n}, []);\n\n/** \"08:05\": the time of day a still was taken, in UTC. */\nexport function timeLabel(frame: Frame): string {\n  return frame.takenAt.slice(11, 16);\n}\n\n/**\n * The camera API: the lobby's stills, none for the garage and an error for the roof camera. The garage answers after\n * 150 ms and the others after 400 ms, so an answer can arrive after the camera has changed.\n */\nexport function fetchFrames(camera: Camera): Promise<Frame[]> {\n  return new Promise((resolve, reject) => {\n    window.setTimeout(() => {\n      if (camera === 'roof') reject(new Error('The roof camera is offline'));\n      else resolve(camera === 'lobby' ? FRAMES : []);\n    }, camera === 'garage' ? 150 : 400);\n  });\n}\n\ntype Load = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready'; frames: Frame[] };\n\nexport default function App() {\n  const [camera, setCamera] = useState<Camera>('lobby');\n  const [attempt, setAttempt] = useState(0);\n  const [load, setLoad] = useState<Load>({ kind: 'loading' });\n  const [index, setIndex] = useState(0);\n  const [playing, setPlaying] = useState(false);\n\n  // Task 1: one request per camera and per Retry. A camera starts on its first still, stopped, and an answer\n  // for a camera that is no longer selected is dropped.\n  useEffect(() => {\n    let current = true;\n    setLoad({ kind: 'loading' });\n    setIndex(0);\n    setPlaying(false);\n    fetchFrames(camera).then(\n      (frames) => {\n        if (current) setLoad({ kind: 'ready', frames });\n      },\n      () => {\n        if (current) setLoad({ kind: 'error' });\n      },\n    );\n    return () => {\n      current = false;\n    };\n  }, [camera, attempt]);\n\n  const frames = load.kind === 'ready' ? load.frames : [];\n  const last = frames.length - 1;\n  const atEnd = frames.length > 0 && index >= last;\n\n  // Task 2: one interval while playing. Pausing, reaching the end, switching cameras and unmounting all end it\n  // through the cleanup, and the tick reads the index React holds, not the one this render saw.\n  useEffect(() => {\n    if (!playing) return undefined;\n    const id = window.setInterval(() => {\n      setIndex((current) => Math.min(current + 1, last));\n    }, FRAME_MS);\n    return () => window.clearInterval(id);\n  }, [playing, last]);\n\n  useEffect(() => {\n    if (playing && index >= last) setPlaying(false);\n  }, [playing, index, last]);\n\n  const toggle = () => {\n    if (playing) {\n      setPlaying(false);\n      return;\n    }\n    if (atEnd) setIndex(0);\n    setPlaying(true);\n  };\n\n  const step = (delta: number) => setIndex((current) => Math.max(0, Math.min(current + delta, last)));\n\n  // Task 4: keys on the player itself; a key meant for a control inside it stays with that control.\n  const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {\n    if (event.target !== event.currentTarget || frames.length === 0) return;\n    if (event.key === 'ArrowRight') step(1);\n    else if (event.key === 'ArrowLeft') step(-1);\n    else if (event.key === ' ') toggle();\n    else return;\n    event.preventDefault();\n  };\n\n  const frame = frames[index];\n\n  return (\n    <main className=\"player\" tabIndex={0} onKeyDown={onKeyDown} aria-label=\"Camera stills\">\n      <header className=\"bar\">\n        <label className=\"camera-field\">\n          Camera\n          <select className=\"camera\" value={camera} onChange={(event) => setCamera(event.target.value as Camera)}>\n            <option value=\"lobby\">Lobby</option>\n            <option value=\"garage\">Garage</option>\n            <option value=\"roof\">Roof</option>\n          </select>\n        </label>\n      </header>\n\n      {load.kind === 'loading' && <p className=\"status status--loading\" role=\"status\">Loading frames…</p>}\n      {load.kind === 'error' && (\n        <p className=\"status status--error\" role=\"alert\">\n          Could not load frames.\n          <button type=\"button\" className=\"retry\" onClick={() => setAttempt((count) => count + 1)}>Retry</button>\n        </p>\n      )}\n      {load.kind === 'ready' && frames.length === 0 && <p className=\"empty\">No frames for this camera</p>}\n\n      {frame && (\n        <>\n          <figure className=\"viewer\">\n            <img className=\"frame\" src={frame.src} alt={`Frame ${index + 1} at ${timeLabel(frame)}`} />\n            <figcaption className=\"caption\">\n              <span className=\"position\">Frame {index + 1} of {frames.length}</span>\n              <span className=\"time\">{timeLabel(frame)}</span>\n            </figcaption>\n          </figure>\n\n          <div className=\"controls\">\n            <button type=\"button\" className=\"toggle\" onClick={toggle}>{playing ? 'Pause' : atEnd ? 'Replay' : 'Play'}</button>\n            <input\n              className=\"scrubber\"\n              type=\"range\"\n              min={1}\n              max={frames.length}\n              value={index + 1}\n              aria-label=\"Still\"\n              onChange={(event) => setIndex(Number(event.target.value) - 1)}\n            />\n          </div>\n\n          {/* Task 3: a marker changes the still and nothing else, so playback carries on from it or stays paused. */}\n          <ol className=\"timeline\" aria-label=\"Timeline\">\n            {frames.map((still, i) => (\n              <li key={still.index}>\n                <button\n                  type=\"button\"\n                  className=\"marker\"\n                  aria-label={timeLabel(still)}\n                  aria-current={i === index ? 'true' : undefined}\n                  onClick={() => setIndex(i)}\n                />\n              </li>\n            ))}\n          </ol>\n        </>\n      )}\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-load-state",
+          "title": "One load state per camera and per Retry",
+          "anchor": {
+            "lineStart": 56,
+            "lineEnd": 56,
+            "snippet": "type Load = { kind: 'loading' }"
+          },
+          "why": "Loading, error, empty and ready are one question with one answer at a time. Keying the request on the camera and a Retry counter makes both a camera change and Retry the same code path, and resetting the index there starts every camera on its first still.",
+          "alternative": "Keep separate loading and error booleans and reload from the Retry handler.",
+          "tradeoff": "Separate flags can both be true after a fast camera switch, and a second load path forgets the reset that the effect does."
+        },
+        {
+          "id": "a2-drop-stale-answer",
+          "title": "Drop an answer for a camera no longer selected",
+          "anchor": {
+            "lineStart": 68,
+            "lineEnd": 68,
+            "snippet": "let current = true;"
+          },
+          "why": "A camera picked while another one loads must win. The cleanup marks the old request as stale, so its answer cannot paint the stills of the wrong camera.",
+          "alternative": "Store the camera next to the answer and compare it before setting state.",
+          "tradeoff": "Comparing works too, but the flag needs no extra state and also covers Retry on the same camera."
+        },
+        {
+          "id": "a3-interval-effect",
+          "title": "One interval, owned by an effect",
+          "anchor": {
+            "lineStart": 93,
+            "lineEnd": 93,
+            "snippet": "const id = window.setInterval(() => {"
+          },
+          "why": "An effect keyed on `playing` starts at most one interval and clears it in its cleanup, so Pause, the last still, a camera switch and unmounting all stop it the same way.",
+          "alternative": "Start the interval in the Play handler and keep its id in a ref.",
+          "tradeoff": "A ref works if every exit clears it; forgetting one, such as unmounting, leaves a timer running, and a second Play can start a second interval."
+        },
+        {
+          "id": "a4-functional-update",
+          "title": "Advance with the latest index",
+          "anchor": {
+            "lineStart": 94,
+            "lineEnd": 94,
+            "snippet": "setIndex((current) => Math.min(current + 1, last));"
+          },
+          "why": "The interval's callback is created once per playback. A functional update reads the index React holds now; reading `index` from the render that started the interval would set the same next still on every tick.",
+          "alternative": "Keep the index in a ref as well and read the ref in the callback.",
+          "tradeoff": "A ref mirror works but has to be kept in step with every place that moves the index: markers, the range input and the keys."
+        },
+        {
+          "id": "a5-stop-at-end",
+          "title": "Stop on the last still",
+          "anchor": {
+            "lineStart": 100,
+            "lineEnd": 100,
+            "snippet": "if (playing && index >= last) setPlaying(false);"
+          },
+          "why": "Turning `playing` off when the index reaches the last still lets the interval effect clean up, and the button reads `Replay` from the same two values.",
+          "alternative": "Clear the interval inside the tick when it reaches the end.",
+          "tradeoff": "Clearing from inside the tick needs the interval id in scope and leaves `playing` true unless it is also set, so the button would still read `Pause`."
+        },
+        {
+          "id": "a6-marker-moves-index",
+          "title": "A marker only moves the index",
+          "anchor": {
+            "lineStart": 180,
+            "lineEnd": 180,
+            "snippet": "onClick={() => setIndex(i)}"
+          },
+          "why": "Because the timer reads the latest index, a jump needs no restart: playback carries on from the new still, and a paused player stays paused.",
+          "alternative": "Pause on every jump and let the reader press Play again.",
+          "tradeoff": "Pausing is simpler to reason about but changes what the reader chose; the task asks to keep the play state."
+        },
+        {
+          "id": "a7-keys-on-player",
+          "title": "Keys only when they start on the player",
+          "anchor": {
+            "lineStart": 116,
+            "lineEnd": 116,
+            "snippet": "if (event.target !== event.currentTarget || frames.length === 0) return;"
+          },
+          "why": "ArrowRight on the focused range input already moves it, and Space on a focused button already clicks it. Handling only keys whose target is the player itself keeps each key from acting twice.",
+          "alternative": "Listen on `window` for the arrow keys and Space.",
+          "tradeoff": "A window listener reacts while the reader types elsewhere on the page and has to be removed on unmount."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "id": "react-json-tree-viewer",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "1bd7ccdc84a6b93bbb46150aef3fda7af29155f8c8b2be32a790c7647dd175da",
+  "pageHash": "770b9e0a3389bcfd81b2e90cb132aa80fcc8914d173f23a6b1cef2b52d740004",
+  "checksHash": "cf63828571594d92217f66eedb3bb1715b26bbefbdb9f8df6944286368045e30",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "pass",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "pass",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "pass",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 2,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 6,
+      "passedAllChecks": 6
+    },
+    "A4": {
+      "count": 10,
+      "passedAllChecks": 3
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Closed under the stop rule agreed after five review rounds. (1) Whether an open container shows its summary is not stated on the page, so no check counts summaries on open nodes. (2) Escaping is read on one string with quotes and a backslash; a newline or tab case is a follow-up. (3) Empty or blank text is not JSON, so it should show .json-error; that case is a follow-up. The state mistakes the page names (key name, depth, value, pruning, resets) each fail their check."
+  }
+}

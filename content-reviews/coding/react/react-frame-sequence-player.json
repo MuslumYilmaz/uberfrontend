@@ -1,0 +1,59 @@
+{
+  "id": "react-frame-sequence-player",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "2cd202d0e7d3d8f9005a782fceb54cec132bde523f86a3c338389ac86cddf27e",
+  "pageHash": "784657657e7a922e6e4a0ac6fdc085230b943095405c13b30662b4d824a53089",
+  "checksHash": "fea4969cf774d7cd7086a938d624148c62f05b8a9491caf7479484a6d4e726d9",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "review",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "review",
+    "B4": "review",
+    "B5": "pass",
+    "C1": "pass",
+    "C2": "review",
+    "C3": "review",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 2,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 2,
+      "passedAllChecks": 2
+    },
+    "A4": {
+      "count": 4,
+      "passedAllChecks": 1
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Of the three suspects, a stale .empty beside Loading frames fails two checks (variant a4-5, 8/10). What Space does on the last still and what keys pressed on a control inside the player do are not stated on the page, so no check presses them there.",
+    "A5": "fetchFrames is given and only the lobby has stills, so the checks cannot tell its array from FRAMES; reading FRAMES directly is plain to see in review. Times come from the given timeLabel, which reads the ISO string and does not depend on the browser's zone.",
+    "B3": "The reference's status line ends with a period and holds the Retry button; the page and the check read the words Could not load frames, and the check uses contains.",
+    "B4": "The page says to show the current still as img.frame and the Frame type carries its src, so the src assertion reads a stated contract. Keys pressed on a control inside the player are not specified, so no check covers them.",
+    "C2": "The missing intermediate reads would catch a stale state left beside Loading frames, and that variant already fails two checks.",
+    "C3": "The step's 50 ms wait and the garage's 150 ms answer are timers on the same frame's event loop, and checks chain their steps as microtasks, so the loading assertion always runs before the answer lands, even on a slow machine."
+  }
+}

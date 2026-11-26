@@ -67,6 +67,14 @@ const noWrite = process.argv.includes('--no-write');
 // moves to 700,000, room for about ten more rows. The next wave's row redesign
 // should shrink every row; lower the threshold with it.
 //
+// 2026-11-25, Verkada, Notion and Airwallex pages: /coding measured 698,569
+// bytes on a clean build of dev. Their first wave adds nine locked coding tasks,
+// and a locked row averages 3,479 bytes (an open row 2,583), so the page reaches
+// about 730,000. The row redesign above did not make locked rows smaller (the
+// lock icon added markup), so the threshold moves to 740,000 instead of down,
+// room for about three more locked rows. Brotli puts the page near 36 KB, so
+// this cap guards DOM size rather than transfer size.
+//
 // "Eager JS" is the static import closure of the module scripts in index.html,
 // i.e. everything the browser must load before the app boots. The modulepreload
 // hints are not used as a budget: Angular only emits hints for the first ten
@@ -76,7 +84,7 @@ const noWrite = process.argv.includes('--no-write');
 const THRESHOLDS = {
   initialBytes: 1_475_000,
   eagerJsBytes: 1_260_000,
-  codingHtmlBytes: 700_000,
+  codingHtmlBytes: 740_000,
   totalHtmlBytes: 75_000_000,
   sentryLazyChunkBytes: 260_000,
   showcaseLazyHeavyBytes: 620_000,

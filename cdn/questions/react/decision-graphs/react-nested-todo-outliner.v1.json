@@ -1,0 +1,85 @@
+{
+  "questionId": "react-nested-todo-outliner",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useEffect, useRef, useState } from 'react';\nimport './App.css';\n\nexport interface Item {\n  id: string;\n  text: string;\n  done: boolean;\n  children: Item[];\n}\n\n/** The outline the page opens with. */\nexport const INITIAL: Item[] = [\n  {\n    id: 'plan',\n    text: 'Plan the launch',\n    done: false,\n    children: [\n      { id: 'draft', text: 'Draft the post', done: false, children: [] },\n      { id: 'date', text: 'Pick a date', done: false, children: [] },\n    ],\n  },\n  { id: 'venue', text: 'Book the venue', done: false, children: [] },\n  { id: 'invites', text: 'Send invites', done: false, children: [] },\n];\n\nlet created = 0;\n/** A fresh id for a new item. */\nexport function newId(): string {\n  created += 1;\n  return `item-${created}`;\n}\n\n// The tree operations are pure: each returns a new tree and leaves its input as it was.\n\n/** Where an item sits: the indices of its parents from the top, and its own index among its siblings. */\nfunction locate(items: Item[], id: string, parents: number[] = []): { parents: number[]; index: number } | null {\n  for (let index = 0; index < items.length; index += 1) {\n    if (items[index].id === id) return { parents, index };\n    const inside = locate(items[index].children, id, [...parents, index]);\n    if (inside) return inside;\n  }\n  return null;\n}\n\n/** Replaces the sibling list that `parents` leads to. */\nfunction withSiblings(items: Item[], parents: number[], change: (siblings: Item[]) => Item[]): Item[] {\n  if (parents.length === 0) return change(items);\n  const [first, ...rest] = parents;\n  return items.map((item, index) => (index === first ? { ...item, children: withSiblings(item.children, rest, change) } : item));\n}\n\nfunction insertAfter(items: Item[], id: string, fresh: Item): Item[] {\n  const at = locate(items, id);\n  if (!at) return items;\n  return withSiblings(items, at.parents, (siblings) => [...siblings.slice(0, at.index + 1), fresh, ...siblings.slice(at.index + 1)]);\n}\n\n/** The item becomes the last child of its previous sibling; a first child stays where it is. */\nfunction indent(items: Item[], id: string): Item[] {\n  const at = locate(items, id);\n  if (!at || at.index === 0) return items;\n  return withSiblings(items, at.parents, (siblings) => {\n    const item = siblings[at.index];\n    const previous = siblings[at.index - 1];\n    return siblings\n      .filter((sibling) => sibling.id !== id)\n      .map((sibling) => (sibling.id === previous.id ? { ...previous, children: [...previous.children, item] } : sibling));\n  });\n}\n\n/** The item becomes the next sibling of its parent; its later siblings stay with the parent. A top-level item stays. */\nfunction outdent(items: Item[], id: string): Item[] {\n  const at = locate(items, id);\n  if (!at || at.parents.length === 0) return items;\n  const parentIndex = at.parents[at.parents.length - 1];\n  return withSiblings(items, at.parents.slice(0, -1), (siblings) => {\n    const parent = siblings[parentIndex];\n    const item = parent.children[at.index];\n    const rest = { ...parent, children: parent.children.filter((child) => child.id !== id) };\n    return [...siblings.slice(0, parentIndex), rest, item, ...siblings.slice(parentIndex + 1)];\n  });\n}\n\nfunction remove(items: Item[], id: string): Item[] {\n  const at = locate(items, id);\n  if (!at) return items;\n  return withSiblings(items, at.parents, (siblings) => siblings.filter((sibling) => sibling.id !== id));\n}\n\nfunction update(items: Item[], id: string, change: Partial<Item>): Item[] {\n  const at = locate(items, id);\n  if (!at) return items;\n  return withSiblings(items, at.parents, (siblings) => siblings.map((sibling) => (sibling.id === id ? { ...sibling, ...change } : sibling)));\n}\n\n/** Every item in reading order. */\nfunction flatten(items: Item[]): Item[] {\n  return items.flatMap((item) => [item, ...flatten(item.children)]);\n}\n\nexport default function App() {\n  const [items, setItems] = useState<Item[]>(INITIAL);\n  const [focusId, setFocusId] = useState<string | null>(null);\n  const inputs = useRef(new Map<string, HTMLInputElement>());\n  const addButton = useRef<HTMLButtonElement | null>(null);\n\n  // An item that moves is a new element: focus follows its id once, after the change that asked for it.\n  useEffect(() => {\n    if (!focusId) return;\n    inputs.current.get(focusId)?.focus();\n    setFocusId(null);\n  }, [focusId]);\n\n  const all = flatten(items);\n  const done = all.filter((item) => item.done).length;\n\n  const onKeyDown = (item: Item, event: React.KeyboardEvent<HTMLInputElement>) => {\n    if (event.key === 'Enter') {\n      event.preventDefault();\n      const fresh: Item = { id: newId(), text: '', done: false, children: [] };\n      setItems((current) => insertAfter(current, item.id, fresh));\n      setFocusId(fresh.id);\n    } else if (event.key === 'Tab') {\n      event.preventDefault();\n      const out = event.shiftKey;\n      setItems((current) => (out ? outdent(current, item.id) : indent(current, item.id)));\n      setFocusId(item.id);\n    } else if (event.key === 'Backspace' && item.text === '' && item.children.length === 0) {\n      event.preventDefault();\n      const previous = all[all.findIndex((entry) => entry.id === item.id) - 1];\n      setItems((current) => remove(current, item.id));\n      setFocusId(previous ? previous.id : null);\n    } else if (event.key === 'Escape') {\n      // The way out of the outline for a keyboard: Tab indents inside it.\n      event.preventDefault();\n      setFocusId(null);\n      addButton.current?.focus();\n    }\n  };\n\n  const addItem = () => {\n    const fresh: Item = { id: newId(), text: '', done: false, children: [] };\n    setItems((current) => [...current, fresh]);\n    setFocusId(fresh.id);\n  };\n\n  const renderList = (list: Item[], className: string) => (\n    <ul className={className}>\n      {list.map((item) => (\n        <li key={item.id} className={item.done ? 'outline-item is-done' : 'outline-item'} data-id={item.id}>\n          <input\n            type=\"checkbox\"\n            className=\"item-done\"\n            checked={item.done}\n            aria-label={`Done: ${item.text || 'empty item'}`}\n            onChange={() => setItems((current) => update(current, item.id, { done: !item.done }))}\n          />\n          <input\n            className=\"item-text\"\n            value={item.text}\n            aria-label=\"Item\"\n            ref={(node) => {\n              if (node) inputs.current.set(item.id, node);\n              else inputs.current.delete(item.id);\n            }}\n            onChange={(event) => setItems((current) => update(current, item.id, { text: event.target.value }))}\n            onKeyDown={(event) => onKeyDown(item, event)}\n          />\n          {item.children.length > 0 && renderList(item.children, 'outline-children')}\n        </li>\n      ))}\n    </ul>\n  );\n\n  return (\n    <main className=\"outline-page\">\n      <p className=\"outline-count\" role=\"status\">{done} of {all.length} done</p>\n      {renderList(items, 'outline')}\n      <button type=\"button\" className=\"add-item\" ref={addButton} onClick={addItem}>New item</button>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-locate",
+          "title": "Find where the item sits",
+          "anchor": {
+            "lineStart": 36,
+            "lineEnd": 36,
+            "snippet": "function locate(items: Item[], id: string, parents: number[] = []): { parents: number[]; index: number } | null {"
+          },
+          "why": "Every operation needs the same two facts: which sibling list holds the item and where in it. One search that returns both keeps the operations short.",
+          "alternative": "Keep a parent pointer on each item.",
+          "tradeoff": "Parent pointers make lookups cheap but must be fixed on every move, and they make the tree harder to copy immutably."
+        },
+        {
+          "id": "a2-with-siblings",
+          "title": "Replace one sibling list, copy only its path",
+          "anchor": {
+            "lineStart": 46,
+            "lineEnd": 46,
+            "snippet": "function withSiblings(items: Item[], parents: number[], change: (siblings: Item[]) => Item[]): Item[] {"
+          },
+          "why": "Copying the lists along the path and reusing everything else gives a new tree for React without mutating the old one.",
+          "alternative": "Deep-clone the tree and mutate the clone.",
+          "tradeoff": "A clone is simple to write, but it copies the whole tree on every keystroke and gives every item a new identity."
+        },
+        {
+          "id": "a3-indent",
+          "title": "Indent under the previous sibling",
+          "anchor": {
+            "lineStart": 59,
+            "lineEnd": 59,
+            "snippet": "function indent(items: Item[], id: string): Item[] {"
+          },
+          "why": "An outliner nests an item under the one above it, so the item joins the end of its previous sibling's children. A first child has nothing above it at its level, so it stays.",
+          "alternative": "Make the item the first child of its previous sibling.",
+          "tradeoff": "Putting it first reorders the previous sibling's children, which a reader does not expect from one Tab."
+        },
+        {
+          "id": "a4-outdent",
+          "title": "Outdent to right after the parent",
+          "anchor": {
+            "lineStart": 72,
+            "lineEnd": 72,
+            "snippet": "function outdent(items: Item[], id: string): Item[] {"
+          },
+          "why": "The item becomes its parent's next sibling, and its later siblings stay where they were, so one Shift+Tab moves exactly one item.",
+          "alternative": "Take the later siblings along as the item's children.",
+          "tradeoff": "Some outliners do that; it keeps the visual order but changes several items at once, which this task does not ask for."
+        },
+        {
+          "id": "a5-focus-by-id",
+          "title": "Focus follows the id once, after the change",
+          "anchor": {
+            "lineStart": 110,
+            "lineEnd": 110,
+            "snippet": "inputs.current.get(focusId)?.focus();"
+          },
+          "why": "An item that moves to a new list is a new input element. Focusing by id in an effect after the update finds the element wherever it rendered, and clearing the id afterwards leaves focus alone on later edits.",
+          "alternative": "Call `focus()` in the key handler.",
+          "tradeoff": "In the handler the moved input does not exist yet, so focus would land on the old, unmounted element."
+        },
+        {
+          "id": "a6-escape-exit",
+          "title": "Escape is the way out",
+          "anchor": {
+            "lineStart": 137,
+            "lineEnd": 137,
+            "snippet": "addButton.current?.focus();"
+          },
+          "why": "Taking Tab for indentation removes the usual way to leave the outline, so Escape moves focus to the button after it.",
+          "alternative": "Leave Tab to the browser and indent with another shortcut.",
+          "tradeoff": "That avoids the trap, but outliners users know indent with Tab, and the task asks for it."
+        }
+      ]
+    }
+  }
+}

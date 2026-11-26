@@ -1,0 +1,85 @@
+{
+  "questionId": "react-event-log-design-spec",
+  "version": 1,
+  "defaultKey": "approach1",
+  "variants": {
+    "approach1": {
+      "language": "typescript",
+      "code": "import React, { useState } from 'react';\nimport './App.css';\n\nexport interface BuildingEvent {\n  id: string;\n  title: string;\n  subtitle: string;\n  place: string;\n  detail: string;\n  /** When it happened, in Unix seconds. */\n  at: number;\n  /** A picture from the camera nearest to the event. */\n  image: string;\n}\n\n/** The building's time zone: every time on screen is local to it. */\nexport const TIME_ZONE = 'America/New_York';\n\nfunction eventImage(title: string, fill: string): string {\n  const svg = '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\" viewBox=\"0 0 320 180\">'\n    + `<rect width=\"320\" height=\"180\" fill=\"${fill}\"/>`\n    + `<text x=\"160\" y=\"98\" fill=\"#ffffff\" font-family=\"sans-serif\" font-size=\"22\" text-anchor=\"middle\">${title}</text>`\n    + '</svg>';\n  return `data:image/svg+xml,${encodeURIComponent(svg)}`;\n}\n\n/** Four events from the building's access log, in the order the log lists them. */\nexport const EVENTS: BuildingEvent[] = [\n  {\n    id: 'e1',\n    title: 'Door held open',\n    subtitle: 'North lobby door',\n    place: 'Building A, floor 1',\n    detail: 'Held open for 2 min 10 s',\n    at: Date.UTC(2026, 2, 14, 13, 5) / 1000,\n    image: eventImage('North lobby door', '#1d4ed8'),\n  },\n  {\n    id: 'e2',\n    title: 'Badge denied',\n    subtitle: 'Server room',\n    place: 'Building A, floor 3',\n    detail: 'Expired badge, third try',\n    at: Date.UTC(2026, 2, 14, 0, 40) / 1000,\n    image: eventImage('Server room', '#b91c1c'),\n  },\n  {\n    id: 'e3',\n    title: 'Motion after hours',\n    subtitle: 'Loading dock',\n    place: 'Building B, ground floor',\n    detail: 'Two people, no badge scan',\n    at: Date.UTC(2026, 0, 14, 5, 12) / 1000,\n    image: eventImage('Loading dock', '#047857'),\n  },\n  {\n    id: 'e4',\n    title: 'Door forced open',\n    subtitle: 'East stairwell',\n    place: 'Building B, floor 2',\n    detail: 'Alarm cleared by security',\n    at: Date.UTC(2026, 2, 14, 16, 58) / 1000,\n    image: eventImage('East stairwell', '#7c3aed'),\n  },\n];\n\nconst timeFormat = new Intl.DateTimeFormat('en-US', { timeZone: TIME_ZONE, hour: 'numeric', minute: '2-digit', hour12: true });\n\n/** \"9:05 am\": an event's time of day in the building's time zone. */\nfunction localTime(at: number): string {\n  return timeFormat.format(new Date(at * 1000)).replace(/\\s+/g, ' ').toLowerCase();\n}\n\nexport default function App() {\n  const [selectedId, setSelectedId] = useState(EVENTS[0].id);\n  const [query, setQuery] = useState('');\n\n  const needle = query.trim().toLowerCase();\n  const visible = EVENTS.filter((event) => event.title.toLowerCase().includes(needle));\n  const selected = EVENTS.find((event) => event.id === selectedId) ?? EVENTS[0];\n\n  return (\n    <main className=\"events-screen\">\n      <section className=\"preview\" aria-label=\"Selected event\">\n        <img className=\"preview-image\" src={selected.image} alt={selected.title} />\n        <h1 className=\"preview-title\">{selected.title}</h1>\n      </section>\n\n      <section className=\"event-panel\" aria-label=\"Events\">\n        <label className=\"filter-field\">\n          Filter by title\n          <input className=\"filter\" value={query} onChange={(event) => setQuery(event.target.value)} />\n        </label>\n\n        {visible.length === 0 ? (\n          <p className=\"no-events\">No events match</p>\n        ) : (\n          <div className=\"event-list\">\n            {visible.map((event) => (\n              <button\n                key={event.id}\n                type=\"button\"\n                className=\"event-row\"\n                aria-pressed={event.id === selected.id}\n                onClick={() => setSelectedId(event.id)}\n              >\n                <img className=\"event-thumb\" src={event.image} alt=\"\" />\n                <span className=\"event-text\">\n                  <span className=\"event-title\">{event.title}</span>\n                  <span className=\"event-subtitle\">{event.subtitle}</span>\n                  <span className=\"event-meta\">{event.place} · {event.detail}</span>\n                  <span className=\"event-time\">{localTime(event.at)}</span>\n                </span>\n              </button>\n            ))}\n          </div>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "nodes": [
+        {
+          "id": "a1-classes-from-spec",
+          "title": "Markup that carries the spec's class names",
+          "anchor": {
+            "lineStart": 83,
+            "lineEnd": 83,
+            "snippet": "<main className=\"events-screen\">"
+          },
+          "why": "A design review compares named parts; the checks read the same names. Building the structure first means every CSS rule after it has a target.",
+          "alternative": "Style by element and nesting, such as `main > section:first-child`.",
+          "tradeoff": "Structural selectors break as soon as the markup moves, and nobody reading the CSS can tell which part of the design a rule implements."
+        },
+        {
+          "id": "a2-one-breakpoint",
+          "title": "One breakpoint on the screen grid",
+          "anchor": {
+            "lineStart": 84,
+            "lineEnd": 84,
+            "snippet": "<section className=\"preview\" aria-label=\"Selected event\">"
+          },
+          "why": "The spec has one breakpoint, so one media query on `.events-screen` switches the layout; the preview and the panel stay in the same order at every width.",
+          "alternative": "Use flexbox with `flex-wrap` and fixed widths.",
+          "tradeoff": "Wrapping flexbox stacks at whatever width the content forces, not at 900 px, so the layout would not match the spec at in-between widths."
+        },
+        {
+          "id": "a3-time-zone",
+          "title": "Format in the building's time zone",
+          "anchor": {
+            "lineStart": 67,
+            "lineEnd": 67,
+            "snippet": "const timeFormat = new Intl.DateTimeFormat('en-US', { timeZone: TIME_ZONE, hour: 'numeric', minute: '2-digit', hour12: true });"
+          },
+          "why": "The building is in New York, so two of the events fall on the previous evening there. One formatter with `timeZone` gives the local time whatever zone the browser is in.",
+          "alternative": "Shift the UTC hour by a fixed offset.",
+          "tradeoff": "A fixed offset is wrong for half the year, because daylight saving time changes it."
+        },
+        {
+          "id": "a4-selected-id",
+          "title": "Hold the selected id, not the event",
+          "anchor": {
+            "lineStart": 75,
+            "lineEnd": 75,
+            "snippet": "const [selectedId, setSelectedId] = useState(EVENTS[0].id);"
+          },
+          "why": "An id survives the filter and a re-render, and the preview, the pressed state and the style all derive from it.",
+          "alternative": "Store the selected event object.",
+          "tradeoff": "An object works while the list is fixed, but a refreshed list holds new objects, and an identity comparison would then select nothing."
+        },
+        {
+          "id": "a5-derived-rows",
+          "title": "Derive the visible rows from the filter",
+          "anchor": {
+            "lineStart": 79,
+            "lineEnd": 79,
+            "snippet": "const visible = EVENTS.filter((event) => event.title.toLowerCase().includes(needle));"
+          },
+          "why": "The visible rows are a function of the events and the text, so nothing has to be kept in step by hand.",
+          "alternative": "Keep a filtered copy in state and update it on every keystroke.",
+          "tradeoff": "A second copy can drift from the events, and every change to the events must remember to refilter it."
+        },
+        {
+          "id": "a6-pressed-state",
+          "title": "aria-pressed drives the selected style",
+          "anchor": {
+            "lineStart": 104,
+            "lineEnd": 104,
+            "snippet": "aria-pressed={event.id === selected.id}"
+          },
+          "why": "Each row is a toggle-like button, so `aria-pressed` tells assistive technology which one is selected, and styling `[aria-pressed='true']` keeps the look in step with it.",
+          "alternative": "Add an `is-selected` class and leave the attribute out.",
+          "tradeoff": "A class changes only the look; screen reader users would not hear which row is selected."
+        }
+      ]
+    }
+  }
+}

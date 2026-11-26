@@ -818,6 +818,342 @@ const QUESTION_HINT_RULES: QuestionHintRule[] = [
     }),
   },
   {
+    ruleId: 'react-frame-sequence-player-timer',
+    questionId: 'react-frame-sequence-player',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 &&
+      anyFailingTestNameIncludes(snapshot, ['one still at a time', 'Replay starts over', 'no second timer', 'Switching cameras', 'leaves no timer running']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-frame-sequence-player-timer',
+      title: 'Let one effect own the playback timer',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The playback checks wait for the still to move on, then look for any timer still running after a pause, the last still, a camera switch or unmounting.',
+      ),
+      actions: [
+        'Start the interval in an effect that runs while playing, and clear it in that effect\'s cleanup rather than in the click handler.',
+        'Move to the next still with a functional update; the callback was created by an older render, so `index` inside it is old.',
+        'On the last still, set playing to false so the cleanup runs, and let the button read `Replay` there.',
+        'Reset the still and the play state wherever a camera starts loading.',
+      ],
+      confidence: 0.84,
+    }),
+  },
+  {
+    ruleId: 'react-frame-sequence-player-timeline',
+    questionId: 'react-frame-sequence-player',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['marker shows its still', 'range input follows', 'Arrow keys step']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-frame-sequence-player-timeline',
+      title: 'Drive the timeline, the range input and the keys from one index',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The timeline checks click markers by their time, read `aria-current` and the range input\'s value, and press keys with focus on `.player`.',
+      ),
+      actions: [
+        'Name each `.marker` with `timeLabel` in `aria-label`, and give only the current one `aria-current="true"`.',
+        'Change only the index on a marker click, so playback carries on or stays paused.',
+        'Give `.scrubber` `min` 1 and `max` M, with the still\'s number as its value.',
+        'Make `.player` focusable with `tabIndex` 0 and handle ArrowLeft, ArrowRight and `\' \'` in its `onKeyDown`, within the first and last still.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'react-frame-sequence-player-default',
+    questionId: 'react-frame-sequence-player',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-frame-sequence-player-default',
+      title: 'Load the camera\'s stills with one state at a time',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check starts by waiting for `Frame 1 of 16` in `.position`, so the stills have to load before playback, the timeline or the keys can be checked.',
+      ),
+      actions: [
+        'Call `fetchFrames(camera)` in an effect keyed on the camera, and show `Loading frames…`, `Could not load frames` with `.retry`, or `No frames for this camera` one at a time.',
+        'Render the current still as `img.frame` with `Frame N at HH:MM`, and `Frame N of M` in `.position` with its `timeLabel` in `.time`.',
+        'Let Retry load the same camera again, for example by bumping a counter the effect depends on.',
+        'Drop an answer that arrives after the camera changed, for example with a flag the effect\'s cleanup clears.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'react-event-log-design-spec-layout',
+    questionId: 'react-event-log-design-spec',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['type scale', 'spacing, border and radius', 'side by side', 'under the preview', 'scrolls sideways']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-event-log-design-spec-layout',
+      title: 'Compare each failing value with the token it comes from',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The style checks read computed values at 1024, 600 and 375 px wide, so a browser default or a nearby number shows up as a failure with the value it found.',
+      ),
+      actions: [
+        'Read the failure message: it names the class, the property and the value the page computed, so set that property on that class to the spec\'s token.',
+        'Reset what a `button` brings by default on `.event-row`: font, padding, border and background.',
+        'Put the 900 px breakpoint on `.events-screen`, with 24 px between the two columns above it and 16 px between the stacked parts below it.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'react-event-log-design-spec-behaviour',
+    questionId: 'react-event-log-design-spec',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['building time zone', 'Clicking a row', 'Filter by title input', 'selection stays']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-event-log-design-spec-behaviour',
+      title: 'Check the time zone, the pressed state and the filter',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read text and attributes, not styles: the local times, `aria-pressed` on every row, the preview\'s picture and the filtered rows.',
+      ),
+      actions: [
+        'Format `at * 1000` with `Intl.DateTimeFormat` and `timeZone: TIME_ZONE`, then lower-case the day period.',
+        'Give every row `aria-pressed`, `true` on the selected one and `false` on the rest, and take the preview\'s `src` and `alt` from the selected event.',
+        'Compare only the title with the typed text, both in one case, and show `.no-events` when no row is left.',
+        'Keep the selected event\'s id rather than its place in the filtered list, so the selection survives the filter and a filtered row selects its own event.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'react-event-log-design-spec-default',
+    questionId: 'react-event-log-design-spec',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-event-log-design-spec-default',
+      title: 'Build the markup with the spec\'s class names first',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check starts by counting four `.event-row` buttons, so the structure has to be in place before any style can be compared.',
+      ),
+      actions: [
+        'Render `.preview` and `.event-panel` inside `.events-screen`, with `input.filter` above `.event-list`.',
+        'Render one `button.event-row` per event with `img.event-thumb`, `.event-title`, `.event-subtitle`, `.event-meta` and `.event-time`.',
+        'Then style the parts one by one from the spec\'s tokens.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'react-grid-rectangle-selection-mouse',
+    questionId: 'react-grid-rectangle-selection',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['drag selects', 'drag works in any direction', 'Shift and a click']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-grid-rectangle-selection-mouse',
+      title: 'Keep where the selection started and move only where it ends',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The drag and Shift-click checks press on one cell, pass over others with the button down and release on a last one, in every direction.',
+      ),
+      actions: [
+        'Hold the cell where the selection started and the cell where it is now, and derive the rectangle with the smaller and larger row and column.',
+        'While the button is down, move only the second cell to the cell under the pointer; end the drag on a `mouseup` anywhere.',
+        'With Shift, keep the first cell and move the second one to the cell clicked.',
+      ],
+      confidence: 0.83,
+    }),
+  },
+  {
+    ruleId: 'react-grid-rectangle-selection-keys',
+    questionId: 'react-grid-rectangle-selection',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['Arrow keys move', 'Shift and an arrow', 'Escape clears', 'makes it the active cell', 'one tab stop']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-grid-rectangle-selection-keys',
+      title: 'Move the active cell, its tabindex and the real focus together',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The keyboard checks focus a cell, press arrow keys and then read the summary, `tabindex` and which cell holds focus.',
+      ),
+      actions: [
+        'Handle the keys on the sheet, clamp the next cell to the edges, and call `focus()` on it.',
+        'Give the active cell `tabindex="0"` and every other cell `-1`.',
+        'Without Shift, select the new cell alone; with Shift, keep where the selection started. Escape clears the selection.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'react-grid-rectangle-selection-default',
+    questionId: 'react-grid-rectangle-selection',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-grid-rectangle-selection-default',
+      title: 'Select one cell on a press and show it',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check reads `aria-selected` on the cells and the text of `.selection-summary`, so a single selected cell has to show in both first.',
+      ),
+      actions: [
+        'Keep the selection in state and set `aria-selected` to `true` or `false` on every cell from it.',
+        'Select a cell when the mouse goes down on it; the checks press and release like a hand does.',
+        'Write `.selection-summary` as `No cells selected`, `C3 · 1 cell` or `B2:D6 · 15 cells`.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'react-json-tree-viewer-tree',
+    questionId: 'react-json-tree-viewer',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['nested object', 'Arrays show', 'Deep values', 'stays collapsed']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-json-tree-viewer-tree',
+      title: 'Recurse into containers and key the toggle state by path',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks open and close nodes by their `data-path`, at any depth, and change the text while a node is collapsed.',
+      ),
+      actions: [
+        'Build child paths as `${path}.${key}` and `${path}[${index}]` and pass them down to one recursive component.',
+        'Keep the collapsed paths in one set in the screen, not an open flag inside each node, so a parse error in between does not reset them.',
+        'Render `{}` or `[]` with no toggle for an empty container, and `1 key` or `1 item` in the singular.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'react-json-tree-viewer-default',
+    questionId: 'react-json-tree-viewer',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-json-tree-viewer-default',
+      title: 'Render the parsed value as entries with paths',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check starts by counting five `.json-entry` items for the track sample: the root and its four keys.',
+      ),
+      actions: [
+        'Parse the text with `JSON.parse` inside a try, and render `.json-error` when it fails.',
+        'Render one `li.json-entry` per value with `data-path`, the key in `.json-key` and a primitive in `.json-value` as `JSON.stringify` writes it.',
+        'Give each non-empty container a `.json-toggle` with `aria-expanded`, and a `.json-summary` such as `{…} 4 keys` when collapsed.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'react-nested-todo-outliner-moves',
+    questionId: 'react-nested-todo-outliner',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['Enter adds', 'Tab moves', 'Shift and Tab', 'Backspace in an empty', 'Escape leaves']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-nested-todo-outliner-moves',
+      title: 'Change the tree, then focus the item where it rendered',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The keyboard checks press a key in an item and then read where items sit by position and which input has focus.',
+      ),
+      actions: [
+        'Indent to the end of the previous sibling\'s children; outdent to right after the parent, leaving later siblings with the parent.',
+        'Keep the id of the item to focus in state and focus its input in an effect after the update; an item that moved is a new element.',
+        'Remove on Backspace only when the item is empty and has no children, and send focus to `.add-item` on Escape.',
+      ],
+      confidence: 0.82,
+    }),
+  },
+  {
+    ruleId: 'react-nested-todo-outliner-default',
+    questionId: 'react-nested-todo-outliner',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-nested-todo-outliner-default',
+      title: 'Render the items as nested lists of inputs',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check starts by counting five `.item-text` inputs, at two levels of nesting.',
+      ),
+      actions: [
+        'Render `ul.outline` with one `li.outline-item` per item: an `.item-done` checkbox, then an `.item-text` input, then `ul.outline-children` for its children.',
+        'Strike a done item\'s input through with `text-decoration: line-through` on the input itself.',
+        'Count done items over every level for `.outline-count`.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
+    ruleId: 'react-command-palette-sources-documents',
+    questionId: 'react-command-palette-sources',
+    priority: 100,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['debounce has passed', 'slower answer', 'failed document search', 'nothing matches']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-command-palette-sources-documents',
+      title: 'Let only the latest query write the documents',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'The document checks look for results too early, wait for a slow answer to an older query, and make the search fail on purpose.',
+      ),
+      actions: [
+        'Start the search in an effect keyed on the query, behind a `DEBOUNCE_MS` timer, and clear the timer in the effect\'s cleanup.',
+        'Pass an `AbortController` signal and abort it in the cleanup, or drop answers for a query that is no longer current.',
+        'Ignore an `AbortError`; show `.palette-error` only for a real failure, and keep the command and date options on screen.',
+      ],
+      confidence: 0.83,
+    }),
+  },
+  {
+    ruleId: 'react-command-palette-sources-local',
+    questionId: 'react-command-palette-sources',
+    priority: 90,
+    matches: (snapshot) =>
+      snapshot.passCount > 0 && anyFailingTestNameIncludes(snapshot, ['ranked by where', 'Date phrases', 'Arrow keys, Home and End', 'chooses an option', 'source order']),
+    buildHint: (snapshot) => ({
+      ruleId: 'react-command-palette-sources-local',
+      title: 'Rank, parse and navigate one option list',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'These checks read the order of the command options, the date label for each phrase, and which option is active as the keys move.',
+      ),
+      actions: [
+        'Rank commands 0 for a prefix, 1 for a word start, 2 for a match anywhere, then sort by rank and list order.',
+        'For `next <weekday>`, count to the first such day after today, so the same weekday is seven days away.',
+        'Keep one active index over commands, the date and documents; wrap at both ends, and point `aria-activedescendant` at the active option.',
+        'List the commands, then the date, then the documents, and set the active index back to the first option whenever the query changes.',
+      ],
+      confidence: 0.8,
+    }),
+  },
+  {
+    ruleId: 'react-command-palette-sources-default',
+    questionId: 'react-command-palette-sources',
+    priority: 40,
+    matches: () => true,
+    buildHint: (snapshot) => ({
+      ruleId: 'react-command-palette-sources-default',
+      title: 'Render the options as a combobox and a listbox',
+      why: buildProgressAwareWhy(
+        snapshot,
+        'Every check reads `.palette-option` elements with their `data-source`, inside a `role="listbox"` list the input controls.',
+      ),
+      actions: [
+        'Give `.palette-input` `role="combobox"`, `aria-controls` and `aria-expanded`, and render `.palette-list` with `role="listbox"`.',
+        'Render each option as `.palette-option` with `role="option"`, a unique `id` and `data-source` of `command`, `date` or `document`.',
+        'Write the chosen option\'s result in `.last-action`.',
+      ],
+      confidence: 0.7,
+    }),
+  },
+  {
     ruleId: 'react-webhook-deliveries-four-tasks-default',
     questionId: 'react-webhook-deliveries-four-tasks',
     priority: 40,

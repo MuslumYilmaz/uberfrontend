@@ -7204,6 +7204,29 @@
     "assetRef": "questions/react/coding.json#react-chat-streaming-ui"
   },
   {
+    "id": "react-command-palette-sources",
+    "family": "question",
+    "title": "Command Palette with Three Sources",
+    "route": "/react/coding/react-command-palette-sources",
+    "tech": "react",
+    "difficulty": "hard",
+    "summary": "Build a command palette in React that merges instant command matches, a parsed relative date and debounced document search in which only the latest query may answer, then drive it from the keyboard as an accessible combobox.",
+    "tags": [
+      "react",
+      "typescript",
+      "debounce",
+      "async",
+      "api-calls",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 75,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-command-palette-sources"
+  },
+  {
     "id": "react-conditional-rendering",
     "family": "question",
     "title": "Conditional rendering in React: patterns, trade-offs, and gotchas",
@@ -7355,6 +7378,28 @@
     "assetRef": "questions/react/coding.json#react-files-table-select-all"
   },
   {
+    "id": "react-event-log-design-spec",
+    "family": "question",
+    "title": "Event Log from a Design Spec",
+    "route": "/react/coding/react-event-log-design-spec",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build an event log from a written design spec in React and CSS, then make its rows selectable and filterable.",
+    "tags": [
+      "react",
+      "typescript",
+      "css",
+      "layout",
+      "responsive",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-event-log-design-spec"
+  },
+  {
     "id": "react-file-explorer",
     "family": "question",
     "title": "File Explorer Tree with Keyboard Navigation",
@@ -7377,6 +7422,30 @@
     "assetRef": "questions/react/coding.json#react-file-explorer"
   },
   {
+    "id": "react-frame-sequence-player",
+    "family": "question",
+    "title": "Frame Sequence Player: Four Tasks in One Hour",
+    "route": "/react/coding/react-frame-sequence-player",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a player for a camera's still images in four timed tasks: request states with Retry, play and pause on a timer, a timeline with markers and a range input, then keyboard control and cleanup.",
+    "tags": [
+      "react",
+      "typescript",
+      "timers",
+      "effects",
+      "state-management",
+      "loading-states",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-frame-sequence-player"
+  },
+  {
     "id": "react-functional-vs-class-components",
     "family": "question",
     "title": "Functional vs class components in React: what actually differs?",
@@ -7396,6 +7465,28 @@
     "updatedAt": "2026-01-31",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/trivia.json#react-functional-vs-class-components"
+  },
+  {
+    "id": "react-grid-rectangle-selection",
+    "family": "question",
+    "title": "Grid Rectangle Selection",
+    "route": "/react/coding/react-grid-rectangle-selection",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Make a sheet of cells selectable like a spreadsheet in React: one cell on a click, a rectangle on a drag or a Shift-click in any direction, arrow keys that move and extend the selection, and Escape to clear it.",
+    "tags": [
+      "react",
+      "typescript",
+      "grid",
+      "state-management",
+      "keyboard",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 45,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-grid-rectangle-selection"
   },
   {
     "id": "react-higher-order-components",
@@ -7681,6 +7772,28 @@
     "assetRef": "questions/react/coding.json#react-chips-input-autocomplete"
   },
   {
+    "id": "react-json-tree-viewer",
+    "family": "question",
+    "title": "JSON Viewer in Stages",
+    "route": "/react/coding/react-json-tree-viewer",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a read-only JSON tree in React in four stages, from an object of primitives to arrays at any depth and text that does not parse, with a toggle and a summary on every container.",
+    "tags": [
+      "react",
+      "typescript",
+      "recursion",
+      "tree",
+      "state-management",
+      "accessibility"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-json-tree-viewer"
+  },
+  {
     "id": "react-listing-booking-widget",
     "family": "question",
     "title": "Listing Booking Widget: Dates, Guests and Total Price",
@@ -7725,6 +7838,28 @@
     "updatedAt": "2026-01-30",
     "schemaVersion": "question.v1",
     "assetRef": "questions/react/coding.json#react-multi-step-signup"
+  },
+  {
+    "id": "react-nested-todo-outliner",
+    "family": "question",
+    "title": "Nested To-Do Outliner",
+    "route": "/react/coding/react-nested-todo-outliner",
+    "tech": "react",
+    "difficulty": "intermediate",
+    "summary": "Build a nested to-do outliner in React: insert anywhere with Enter, nest and un-nest with Tab and Shift+Tab, remove empty items with Backspace, and keep focus on the item that moved.",
+    "tags": [
+      "react",
+      "typescript",
+      "tree",
+      "recursion",
+      "keyboard",
+      "state-management"
+    ],
+    "access": "premium",
+    "estimatedMinutes": 50,
+    "updatedAt": "2026-11-25",
+    "schemaVersion": "question.v1",
+    "assetRef": "questions/react/coding.json#react-nested-todo-outliner"
   },
   {
     "id": "react-order-book-socket-feed",

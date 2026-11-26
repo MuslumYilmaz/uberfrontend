@@ -1,0 +1,56 @@
+{
+  "id": "react-grid-rectangle-selection",
+  "tech": "react",
+  "kind": "coding",
+  "hashVersion": 1,
+  "hash": "ba46ee6081e91640124a5422f9d0f87c6c7a5e818995bc506c48f1c504885c9a",
+  "pageHash": "be90220fbbf20a211f98fcf2d1e6154cdbbc9179dec49f2a499ddb10c1ea8465",
+  "checksHash": "23ed8b54290d9c7923189dd0b90bc6f08f3c5071ad7c332b29768b44c74837ad",
+  "reviewedAt": "2026-11-26",
+  "mode": "full",
+  "result": "pass",
+  "rules": {
+    "A1": "pass",
+    "A2": "pass",
+    "A3": "pass",
+    "A4": "review",
+    "A5": "pass",
+    "B1": "pass",
+    "B2": "pass",
+    "B3": "pass",
+    "B4": "pass",
+    "B5": "pass",
+    "C1": "review",
+    "C2": "review",
+    "C3": "pass",
+    "C4": "pass",
+    "C5": "not-run"
+  },
+  "solvers": {
+    "count": 2,
+    "passedAllChecks": 2,
+    "reused": true
+  },
+  "variants": {
+    "A3": {
+      "count": 5,
+      "passedAllChecks": 5
+    },
+    "A4": {
+      "count": 8,
+      "passedAllChecks": 4
+    }
+  },
+  "models": {
+    "solvers": [
+      "sonnet",
+      "sonnet"
+    ],
+    "reviewer": "sonnet"
+  },
+  "accepted": {
+    "A4": "Closed under the stop rule agreed after five review rounds. (1) The active cell after a drag is read only where the drag ends on the rectangle's bottom-right corner (D6, D4), so a bottom-right rule passes; a follow-up will read tabindex after the D6-to-B2 drag. (2) Live feedback during a drag needs a step that holds the button, which the runner does not have.",
+    "C1": "Those first steps record the starting state; the check still fails on the starter at its first click, so they cost nothing.",
+    "C2": "The runner's drag step is atomic (press, moves, release) and no step holds the button, so only end states can be read. Out-and-back drags check the end state of a shrink, to the pressed cell and part of the way."
+  }
+}

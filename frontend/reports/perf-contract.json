@@ -1,28 +1,28 @@
 {
-  "generatedAt": "2026-11-22T12:35:53.121Z",
+  "generatedAt": "2026-11-26T06:24:19.991Z",
   "strictMode": true,
   "buildDir": "dist/frontendatlas/browser",
   "thresholds": {
     "initialBytes": 1475000,
     "eagerJsBytes": 1260000,
-    "codingHtmlBytes": 660000,
+    "codingHtmlBytes": 740000,
     "totalHtmlBytes": 75000000,
     "sentryLazyChunkBytes": 260000,
     "showcaseLazyHeavyBytes": 620000
   },
   "metrics": {
-    "initialBytes": 1453244,
-    "eagerJsBytes": 1241532,
-    "eagerJsFileCount": 55,
-    "modulePreloadBytes": 74548,
+    "initialBytes": 1455460,
+    "eagerJsBytes": 1243873,
+    "eagerJsFileCount": 56,
+    "modulePreloadBytes": 72975,
     "modulePreloadCount": 10,
-    "entryScriptBytes": 281887,
+    "entryScriptBytes": 277722,
     "entryScriptCount": 2,
-    "stylesheetBytes": 211712,
+    "stylesheetBytes": 211587,
     "stylesheetCount": 14,
-    "totalHtmlBytes": 72305619,
-    "htmlFileCount": 662,
-    "codingHtmlBytes": 626781,
+    "totalHtmlBytes": 72909656,
+    "htmlFileCount": 668,
+    "codingHtmlBytes": 718408,
     "sentryLazyChunkBytes": 0,
     "sentryLazyChunkFile": null,
     "showcaseLazyHeavyBytes": 0,
@@ -32,102 +32,102 @@
     {
       "route": "/coding",
       "file": "dist/frontendatlas/browser/coding/index.html",
-      "bytes": 626781
+      "bytes": 718408
     },
     {
       "route": "/companies/shopee/preview",
       "file": "dist/frontendatlas/browser/companies/shopee/preview/index.html",
-      "bytes": 455376
+      "bytes": 461101
     },
     {
       "route": "/companies/walmart/preview",
       "file": "dist/frontendatlas/browser/companies/walmart/preview/index.html",
-      "bytes": 349155
+      "bytes": 352055
     },
     {
       "route": "/companies/apple/preview",
       "file": "dist/frontendatlas/browser/companies/apple/preview/index.html",
-      "bytes": 347765
+      "bytes": 350776
     },
     {
       "route": "/companies/bytedance/preview",
       "file": "dist/frontendatlas/browser/companies/bytedance/preview/index.html",
-      "bytes": 324423
+      "bytes": 327100
     },
     {
       "route": "/companies/binance/preview",
       "file": "dist/frontendatlas/browser/companies/binance/preview/index.html",
-      "bytes": 309973
+      "bytes": 313204
     },
     {
       "route": "/interview-questions/essential",
       "file": "dist/frontendatlas/browser/interview-questions/essential/index.html",
-      "bytes": 296734
+      "bytes": 291758
     },
     {
       "route": "/companies/microsoft/preview",
       "file": "dist/frontendatlas/browser/companies/microsoft/preview/index.html",
-      "bytes": 285192
+      "bytes": 287424
     },
     {
       "route": "/companies/agoda/preview",
       "file": "dist/frontendatlas/browser/companies/agoda/preview/index.html",
-      "bytes": 284074
+      "bytes": 285233
     },
     {
       "route": "/companies/uber/preview",
       "file": "dist/frontendatlas/browser/companies/uber/preview/index.html",
-      "bytes": 264986
-    },
-    {
-      "route": "/guides/framework-prep/angular-prep-path",
-      "file": "dist/frontendatlas/browser/guides/framework-prep/angular-prep-path/index.html",
-      "bytes": 256222
+      "bytes": 266648
     },
     {
       "route": "/companies/cloudflare/preview",
       "file": "dist/frontendatlas/browser/companies/cloudflare/preview/index.html",
-      "bytes": 254899
+      "bytes": 257403
+    },
+    {
+      "route": "/guides/framework-prep/angular-prep-path",
+      "file": "dist/frontendatlas/browser/guides/framework-prep/angular-prep-path/index.html",
+      "bytes": 256468
     },
     {
       "route": "/companies/crowdstrike/preview",
       "file": "dist/frontendatlas/browser/companies/crowdstrike/preview/index.html",
-      "bytes": 250758
+      "bytes": 253231
     },
     {
       "route": "/companies/disney/preview",
       "file": "dist/frontendatlas/browser/companies/disney/preview/index.html",
-      "bytes": 250499
+      "bytes": 253008
     },
     {
       "route": "/companies/tesla/preview",
       "file": "dist/frontendatlas/browser/companies/tesla/preview/index.html",
-      "bytes": 249758
+      "bytes": 251724
     },
     {
       "route": "/companies/stripe/preview",
       "file": "dist/frontendatlas/browser/companies/stripe/preview/index.html",
-      "bytes": 243656
-    },
-    {
-      "route": "/guides/framework-prep/vue-prep-path",
-      "file": "dist/frontendatlas/browser/guides/framework-prep/vue-prep-path/index.html",
-      "bytes": 241659
+      "bytes": 245327
     },
     {
       "route": "/companies/amazon/preview",
       "file": "dist/frontendatlas/browser/companies/amazon/preview/index.html",
-      "bytes": 241266
+      "bytes": 243670
+    },
+    {
+      "route": "/guides/framework-prep/vue-prep-path",
+      "file": "dist/frontendatlas/browser/guides/framework-prep/vue-prep-path/index.html",
+      "bytes": 242027
     },
     {
       "route": "/companies/airbnb/preview",
       "file": "dist/frontendatlas/browser/companies/airbnb/preview/index.html",
-      "bytes": 235451
+      "bytes": 237013
     },
     {
       "route": "/guides/framework-prep/react-prep-path",
       "file": "dist/frontendatlas/browser/guides/framework-prep/react-prep-path/index.html",
-      "bytes": 232475
+      "bytes": 232790
     }
   ],
   "bundleStatsSource": null,
