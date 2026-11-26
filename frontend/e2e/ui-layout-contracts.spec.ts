@@ -14,6 +14,13 @@ const SYSTEM_DESIGN_VIEWPORTS = [
   ['desktop', { width: 1440, height: 900 }],
 ] as const;
 
+const RESEARCH_REPORT_PATH = '/research/angular-onpush-readiness';
+
+const SIDEBAR_STATES = [
+  ['open', '0'],
+  ['collapsed', '1'],
+] as const;
+
 async function stabilizeLayout(page: Page): Promise<void> {
   await page.evaluate(() => document.fonts.ready);
   await page.addStyleTag({
@@ -182,6 +189,40 @@ async function expectSystemDesignContentFillsCenterColumn(page: Page, label: str
   }
 }
 
+async function expectReportTextCenteredBesideSidebar(page: Page, label: string): Promise<void> {
+  const geometry = await page.evaluate(() => {
+    const box = (selector: string) => {
+      const element = document.querySelector(selector);
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right };
+    };
+    return {
+      sidebar: box('#app-sidebar-drawer'),
+      main: box('fa-guide-shell .wrap > .main'),
+      title: box('fa-guide-shell .title'),
+      text: box('fa-guide-shell .content > h2'),
+      table: box('fa-guide-shell .content > .table-scroll'),
+      toc: box('fa-guide-shell .toc'),
+    };
+  });
+
+  const { sidebar, main, title, text, table, toc } = geometry;
+  expect(sidebar && main && title && text && table && toc, `${label}: report geometry must exist`).toBeTruthy();
+  expect(
+    Math.abs((text!.left - sidebar!.right) - (toc!.left - text!.right)),
+    `${label}: text must sit midway between the sidebar and the table of contents`,
+  ).toBeLessThanOrEqual(2);
+  expect(
+    Math.abs(title!.left - text!.left),
+    `${label}: the page title must share the text's left edge`,
+  ).toBeLessThanOrEqual(1);
+  expect(
+    Math.abs(table!.left - main!.left) + Math.abs(table!.right - main!.right),
+    `${label}: tables must keep the full column`,
+  ).toBeLessThanOrEqual(2);
+}
+
 test.describe('UI layout contracts', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'UI regression runs in Chromium.');
   test.use({
@@ -218,6 +259,19 @@ test.describe('UI layout contracts', () => {
       await stabilizeLayout(page);
       await expectNoDocumentHorizontalOverflow(page, `System design ${viewportName}`);
       await expectSystemDesignContentFillsCenterColumn(page, `System design ${viewportName}`);
+    });
+  }
+
+  for (const [stateName, collapsed] of SIDEBAR_STATES) {
+    test(`research report text sits midway between the sidebar and the contents with the sidebar ${stateName}`, async ({ page }) => {
+      await page.addInitScript((value) => localStorage.setItem('fa:sidebar:collapsed', value), collapsed);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(RESEARCH_REPORT_PATH);
+      await expect(page.locator(collapsed === '1' ? '#app-sidebar-drawer.is-collapsed' : '#app-sidebar-drawer:not(.is-collapsed)')).toBeVisible();
+      await expect(page.locator('fa-guide-shell .toc')).toBeVisible();
+      await stabilizeLayout(page);
+      await expectNoDocumentHorizontalOverflow(page, `Research report, sidebar ${stateName}`);
+      await expectReportTextCenteredBesideSidebar(page, `Research report, sidebar ${stateName}`);
     });
   }
 });
