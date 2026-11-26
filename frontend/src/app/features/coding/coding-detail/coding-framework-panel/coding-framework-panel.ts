@@ -1554,9 +1554,16 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         const id = String(item?.id || `framework-check-${index + 1}`).trim();
         const name = String(item?.name || id || `Framework check ${index + 1}`).trim();
         const steps = Array.isArray(item?.steps) ? item.steps : [];
+        // A check that sets a viewport lays out at that size, and one that sets media runs under those preferences,
+        // as web checks do; without a viewport the check frame stays 1 px wide and media queries never match.
+        const width = Number(item?.viewport?.width);
+        const height = Number(item?.viewport?.height);
+        const viewport = width > 0 ? { width, ...(height > 0 ? { height } : {}) } : null;
         return {
           id,
           name,
+          ...(viewport ? { viewport } : {}),
+          ...(item?.media && typeof item.media === 'object' ? { media: { ...item.media } } : {}),
           steps: steps
             .filter((step) => !!step && typeof step === 'object')
             .map((step) => ({ ...step })),

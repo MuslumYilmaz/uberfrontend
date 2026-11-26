@@ -309,6 +309,26 @@ describe('CodingFrameworkPanelComponent', () => {
     );
   });
 
+  it('keeps the viewport and media a framework check sets, so its layout checks run at that size', () => {
+    const component = createComponent();
+    component.question = {
+      id: 'react-layout-checks',
+      tags: ['react'],
+      frameworkTests: [
+        { id: 'wide', name: 'Wide', viewport: { width: 1024, height: 900 }, steps: [{ type: 'expectLayout', selector: '.card', columns: 2 }] },
+        { id: 'dark', name: 'Dark', media: { 'prefers-color-scheme': 'dark' }, steps: [{ type: 'expectExists', selector: '.card' }] },
+        { id: 'plain', name: 'Plain', viewport: { width: 0 }, steps: [{ type: 'expectExists', selector: '.card' }] },
+      ],
+    } as any;
+
+    component.initFromQuestion();
+
+    const [wide, dark, plain] = component.frameworkChecks();
+    expect(wide.viewport).toEqual({ width: 1024, height: 900 });
+    expect(dark.media).toEqual({ 'prefers-color-scheme': 'dark' } as any);
+    expect(plain.viewport).toBeUndefined();
+  });
+
   it('switches pressure checks without reinitializing the framework workspace', () => {
     const component = createComponent();
     const initSpy = spyOn(component, 'initFromQuestion');
