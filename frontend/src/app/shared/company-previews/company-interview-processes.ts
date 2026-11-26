@@ -76,6 +76,12 @@ export type ReportedQuestion = {
   readonly practice?: { readonly label: string; readonly path: string };
   /** The id of the guide's practice prompt whose answer outline covers it. */
   readonly answerGuide?: string;
+  /**
+   * The loops it comes from when they are not experienced frontend ones: intern and new-grad loops ('early-career') or
+   * general software engineering loops ('general'). Such rows follow the others in their own closed group, and the
+   * list's headline, offer and round counts leave them out. Absent: an experienced frontend loop.
+   */
+  readonly audience?: 'early-career' | 'general';
 };
 
 /** A behavioural question the sources report. These stay open: a lock on "Why this company?" would only be bait. */
@@ -137,6 +143,12 @@ export type CompanyInterviewProcess = {
   readonly questions?: readonly ReportedQuestion[];
   /** The behavioural questions the sources report, shown open as a small group beside the question list. */
   readonly behaviouralQuestions?: readonly ReportedBehaviouralQuestion[];
+  /**
+   * 'year': the page names no source. Rows and rounds show only the years their accounts give, no reporter, site or
+   * link reaches the guide or the plan, and the guide ends with a note on how the questions were collected. The sources
+   * stay here for the counts and the checks.
+   */
+  readonly sourceDisplay?: 'year';
 };
 
 const AMAZON_FEE_PREP: InterviewProcessSource = {

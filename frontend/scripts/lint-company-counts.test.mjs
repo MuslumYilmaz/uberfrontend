@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { loadTsModule } from './load-ts-module.mjs';
-import { EVIDENCE_MODULE, checkGuide, countClaims, lintCompanyCounts, toNumber } from './lint-company-counts.mjs';
+import { EVIDENCE_MODULE, checkGuide, countClaims, lintCompanyCounts, sourceNames, toNumber } from './lint-company-counts.mjs';
 
 const evidence = loadTsModule(EVIDENCE_MODULE);
 
@@ -88,6 +88,48 @@ test('a round decoder may rehearse on an open prompt or a page, never on a locke
   ]);
   const page = guide({ prompts: open.prompts, roundSpotlights: [{ ...spotlights('d')[0], practiceLink: { label: 'Rehearse it', path: '/javascript/trivia/js-closures' } }] });
   assert.deepEqual(checkGuide(page, null, evidence).filter((error) => error.includes('roundSpotlights')), []);
+});
+
+test('a guide whose process names no source ends with a method note and names no site, host or report', () => {
+  const quiet = {
+    ...table,
+    sourceDisplay: 'year',
+    variants: [{ title: 'Engineers', stages: [
+      { stage: 'Phone screen', format: 'A live React task.', appliesTo: '', sources: [{ label: 'Taro', url: 'https://www.jointaro.com/interview/1', kind: 'report', date: '2025-03' }] },
+      { stage: 'Onsite', format: '', appliesTo: '', sources: [{ label: 'FrontendLead forum', url: 'https://www.frontendlead.com/discuss/2', kind: 'report', date: '2026-01' }, { label: 'Acme careers', url: 'https://acme.example/careers', kind: 'official', date: '2026-10' }] },
+    ] }],
+  };
+  const method = { kicker: 'Method', title: 'How these questions were collected', paragraphs: ['We read {reports} public candidate accounts and the company\'s own pages, then wrote each task in our words.'] };
+  const plain = { kicker: 'k', title: 't', intro: 'Intro.', itemListName: 'n', items: [{ id: 'a' }, { id: 'b' }] };
+  assert.deepEqual(checkGuide(guide({ sources: undefined, methodNote: method, prompts: plain }), quiet, evidence), []);
+  assert.deepEqual(evidence.companyEvidence(guide({ sources: undefined, methodNote: method, prompts: plain }), quiet).counts.reports, 2);
+
+  const leaky = checkGuide(guide({
+    hero: { kicker: 'Guide', subtitle: 'Built from Taro pages and the FrontendLead forum.', caveat: 'Read on frontendlead.com.', chips: [] },
+  }), quiet, evidence);
+  assert.deepEqual(leaky, [
+    '[sources] the process names no source (sourceDisplay: \'year\'), so the guide ends with a methodNote, not a sources list',
+    '[methodNote] a guide that names no source says how its questions were collected',
+    '[prompts.items.a] a guide that names no source models no prompt on a named report',
+    '[hero.subtitle] names the source Taro on a guide that names none',
+    '[hero.subtitle] names the source FrontendLead on a guide that names none',
+    '[hero.caveat] names the source frontendlead.com on a guide that names none',
+  ]);
+  // A word the host does not spell ("forum") and a lower-case common word are not names.
+  assert.deepEqual([...sourceNames(quiet).keys()], ['jointaro.com', 'Taro', 'frontendlead.com', 'FrontendLead']);
+
+  assert.deepEqual(checkGuide(guide({ methodNote: method }), table, evidence), [
+    '[methodNote] only a guide whose process names no source (sourceDisplay: \'year\') carries a method note',
+  ]);
+  assert.deepEqual(checkGuide(guide({ sources: undefined }), table, evidence), [
+    '[sources] a guide lists its sources unless its process names none (sourceDisplay: \'year\')',
+  ]);
+});
+
+test('a question from an early-career or general loop stays out of the {questions} count', () => {
+  const rows = (audiences) => audiences.map((audience, index) => ({ id: `q${index}`, kind: 'JavaScript', topic: `Topic ${index}`, question: 'Q', sources: [], ...(audience ? { audience } : {}) }));
+  assert.equal(evidence.companyEvidence(guide(), { ...table, questions: rows([null, null, 'early-career', 'general']) }).counts.questions, 2);
+  assert.equal(evidence.companyEvidence(guide(), { ...table, questions: rows([null, null, null]) }).counts.questions, 3);
 });
 
 test('every authored guide states its counts from the page', () => {

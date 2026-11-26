@@ -25,6 +25,8 @@ export type QuestionListRow = {
   readonly open: boolean;
   /** Locked and comes with a practice task or an answer guide, so the one free unlock can open it. */
   readonly unlockable: boolean;
+  /** The row's group when it is not a lead row (see `ReportedQuestion.audience`); set by the guide's grouped summary. */
+  readonly audience?: 'early-career' | 'general';
 };
 
 /** An open behavioural question and how often the sources report it. */

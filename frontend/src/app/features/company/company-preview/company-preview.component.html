@@ -626,14 +626,14 @@
       </div>
     </section>
 
-    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-source-notes'" *ngIf="!features.sourcesAtEnd">
+    <section class="company-guide-section" [attr.aria-labelledby]="preview.slug + '-source-notes'" *ngIf="!features.sourcesAtEnd && preview.sources as sources">
       <div class="company-guide-section__head">
-        <p class="preview-kicker">{{ preview.sources.kicker }}</p>
-        <h2 [attr.id]="preview.slug + '-source-notes'">{{ preview.sources.title }}</h2>
-        <p>{{ preview.sources.intro }}</p>
+        <p class="preview-kicker">{{ sources.kicker }}</p>
+        <h2 [attr.id]="preview.slug + '-source-notes'">{{ sources.title }}</h2>
+        <p>{{ sources.intro }}</p>
       </div>
       <div class="company-source-list">
-        <article *ngFor="let source of preview.sources.items">
+        <article *ngFor="let source of sources.items">
           <h3>
             <a [href]="source.url" target="_blank" [attr.rel]="sourceRel(source)">{{ source.label }}</a>
           </h3>
@@ -894,6 +894,9 @@
   <!-- A guide's sources move here, closed and quiet, after everything a reader came for. -->
   <app-company-guide-sources *ngIf="features.sourcesAtEnd && guideSourceRows.length"
     [slug]="slug" [sources]="guideSourceRows" [boundary]="sourceBoundary" [viewer]="tier()"></app-company-guide-sources>
+  <!-- A guide that names no source ends with how its questions were collected, in the same place. -->
+  <app-company-guide-sources *ngIf="authoredPreview?.methodNote as note"
+    [slug]="slug" [sources]="[]" [method]="note" [viewer]="tier()"></app-company-guide-sources>
 
   <!-- Each day's title stays open; what the day holds opens with a free account. -->
   <ng-template #lockedPrepDays let-days>

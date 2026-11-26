@@ -167,12 +167,15 @@ export type AuthoredCompanyPreview = {
     readonly intro: string;
     readonly items: readonly AuthoredResourceLink[];
   };
-  readonly sources: {
+  /** Absent on a guide whose process names no source (`sourceDisplay: 'year'`); `methodNote` takes its place. */
+  readonly sources?: {
     readonly kicker: string;
     readonly title: string;
     readonly intro: string;
     readonly items: readonly AuthoredSource[];
   };
+  /** How the questions were collected, in a few sentences that name no site: the end of a guide that lists no sources. */
+  readonly methodNote?: AuthoredSectionCopy;
   readonly cta: {
     readonly kicker: string;
     readonly title: string;

@@ -188,8 +188,16 @@ export function planFrameworkLine(plan: CompanyPlan): { text: string; options: {
   return { text, options };
 }
 
-/** "Reported in Aced Jul 2026, Aced Nov 2025 and 2 more". Empty for a round without sources. */
-export function roundSourcesLine(round: { readonly sources: readonly { readonly label: string; readonly date: string }[]; readonly moreSources?: number }): string {
+/**
+ * "Reported in Aced Jul 2026, Aced Nov 2025 and 2 more", or "Reported in 2025 and 2026" for a guide that names no
+ * source. Empty for a round without sources.
+ */
+export function roundSourcesLine(round: {
+  readonly sources: readonly { readonly label: string; readonly date: string }[];
+  readonly moreSources?: number;
+  readonly years?: readonly string[];
+}): string {
+  if (round.years?.length) return `Reported in ${joinNames(round.years)}`;
   const named = round.sources.map((source) => (source.date ? `${source.label} ${shortMonth(source.date)}` : source.label));
   if (!named.length) return '';
   return `Reported in ${round.moreSources ? `${named.join(', ')} and ${round.moreSources} more` : joinNames(named)}`;

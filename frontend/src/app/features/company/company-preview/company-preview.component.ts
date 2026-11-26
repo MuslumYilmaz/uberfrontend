@@ -27,6 +27,7 @@ import { AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../../../shared/company-preview
 import type { CompanyEditorialNotes } from '../../../shared/company-previews/company-editorial-notes.model';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { UNCITED_SOURCE, companyEvidence, evidenceFrom, fillAuthoredPreview, fillCompanyCounts, type CompanyEvidence, type CompanyEvidenceCounts } from './company-evidence';
+import { withQuestionGroups } from './company-question-groups';
 import { COMPANY_OFFICIAL_GUIDES, type CompanyOfficialGuide } from '../../../shared/company-previews/company-official-guides';
 import {
   COMPANY_INTERVIEW_PROCESSES,
@@ -189,7 +190,7 @@ export class CompanyPreviewComponent implements OnInit {
 
   /** The sources only the process table cites, after the guide's own list. */
   extraSources(): readonly AuthoredSource[] {
-    const own = this.authoredPreview?.sources.items.length ?? (this.isNetflixPreview ? NETFLIX_SOURCES.length : 0);
+    const own = this.authoredPreview?.sources?.items.length ?? (this.isNetflixPreview ? NETFLIX_SOURCES.length : 0);
     return this.evidence?.sources.slice(own) ?? [];
   }
   /** The other company guides; built from the generated metadata so no company page re-dates. */
@@ -271,7 +272,7 @@ export class CompanyPreviewComponent implements OnInit {
    */
   readonly questionSummary = computed(() => {
     const process = COMPANY_INTERVIEW_PROCESSES[this.guide().slug];
-    return process ? summariseQuestionList(process) : null;
+    return process ? withQuestionGroups(summariseQuestionList(process), process) : null;
   });
 
   /** Study priorities, role lenses and the walkthrough are Premium once the list locks. */
@@ -508,7 +509,8 @@ export class CompanyPreviewComponent implements OnInit {
     const inline = this.isGooglePreview || this.isOpenAiPreview;
     const cited = evidenceFrom([], 0, this.interviewProcess).sources;
     const seen = new Set(cited.map((source) => source.url));
-    this.guideSourceRows = this.sourceRows(
+    // A guide that names no source lists none: its method note ends the page instead.
+    this.guideSourceRows = this.interviewProcess?.sourceDisplay === 'year' ? [] : this.sourceRows(
       this.evidence?.sources
         ?? [...cited, ...(inline ? [] : this.reportedItemSources(resolved?.reports ?? []).filter((source) => !seen.has(source.url)))],
     );

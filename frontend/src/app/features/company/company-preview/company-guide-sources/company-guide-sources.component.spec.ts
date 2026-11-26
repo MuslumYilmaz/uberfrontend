@@ -41,4 +41,25 @@ describe('CompanyGuideSourcesComponent', () => {
     ]);
     expect(host.querySelector('[data-testid="company-guide-sources-gate"]')).toBeNull();
   });
+
+  it('shows how the questions were collected in place of the list, open and without a source, on a guide that names none', () => {
+    TestBed.configureTestingModule({ imports: [CompanyGuideSourcesComponent], providers: [provideRouter([])] });
+    fixture = TestBed.createComponent(CompanyGuideSourcesComponent);
+    fixture.componentRef.setInput('slug', 'acme');
+    fixture.componentRef.setInput('sources', []);
+    fixture.componentRef.setInput('method', {
+      kicker: 'Method',
+      title: 'How these questions were collected',
+      paragraphs: ['We read public candidate accounts.', 'Each task is written in our words.'],
+    });
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const note = host.querySelector('[data-testid="company-guide-method"]') as HTMLElement;
+    expect(note.querySelector('details')).toBeNull();
+    expect(note.getAttribute('aria-labelledby')).toBe('acme-method');
+    expect(note.querySelector('h2')?.textContent?.trim()).toBe('How these questions were collected');
+    expect(Array.from(note.querySelectorAll('p')).map((p) => p.textContent?.trim())).toEqual(['We read public candidate accounts.', 'Each task is written in our words.']);
+    expect(host.querySelector('[data-testid="company-guide-sources"]')).toBeNull();
+    expect(host.querySelectorAll('a').length).toBe(0);
+  });
 });

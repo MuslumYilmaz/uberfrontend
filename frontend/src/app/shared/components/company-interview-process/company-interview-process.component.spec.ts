@@ -312,6 +312,24 @@ describe('CompanyInterviewProcessComponent', () => {
       expect(reporters).toEqual(['Acme hiring guide', 'Newest: Senior frontend engineer, Canada · Sep 2025']);
     });
 
+    it('names no reporter, site or link on a guide that names no source, only how strong a round\'s evidence is and when', async () => {
+      await TestBed.configureTestingModule({ imports: [CompanyInterviewProcessComponent], providers: [provideRouter([])] }).compileComponents();
+      const fixture = TestBed.createComponent(CompanyInterviewProcessComponent);
+      fixture.componentRef.setInput('slug', 'acme');
+      fixture.componentRef.setInput('companyLabel', 'Acme');
+      fixture.componentRef.setInput('process', { ...FIXTURE, sourceDisplay: 'year' });
+      fixture.componentRef.setInput('reportedBy', true);
+      fixture.detectChanges();
+      const host = fixture.nativeElement as HTMLElement;
+      expect(host.querySelector('thead')?.textContent).toContain('Evidence');
+      expect(host.querySelector('thead')?.textContent).not.toContain('Reported by');
+      expect(host.querySelectorAll('[data-testid="company-interview-process-reporter"]').length).toBe(0);
+      expect(host.querySelectorAll('.interview-process__sources, .interview-process__toggle, a[href^="http"]').length).toBe(0);
+      const evidence = Array.from(host.querySelectorAll('.interview-process__strength')).map((el) => el.textContent?.trim());
+      expect(evidence).toEqual(['Official page', '2 public reports, 2023–2025', 'One public report, 2025']);
+      expect(host.textContent).not.toMatch(/Taro|Blind|Sunnyvale|Fremont/);
+    });
+
     it('counts the reported questions of a round and those of no round, each linking to the list', async () => {
       const host = await renderReportedBy();
       const count = host.querySelector('[data-testid="company-interview-process-question-count"]') as HTMLAnchorElement;

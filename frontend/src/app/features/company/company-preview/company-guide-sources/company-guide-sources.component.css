@@ -15,6 +15,23 @@
   margin: 0;
 }
 
+/* A guide that names no source says how its questions were collected, in the same quiet place, open. */
+.guide-sources--method {
+  display: grid;
+  gap: 6px;
+}
+
+.guide-sources__method-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uf-text-secondary);
+}
+
+.guide-sources__method-text {
+  max-width: 76ch;
+}
+
 .guide-sources__summary {
   display: flex;
   align-items: center;

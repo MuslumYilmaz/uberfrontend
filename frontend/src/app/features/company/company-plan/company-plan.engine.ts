@@ -63,6 +63,8 @@ export type CompanyPlanDataRound = {
   readonly focus?: readonly string[];
   readonly sources: readonly { readonly label: string; readonly date: string }[];
   readonly moreSources?: number;
+  /** The years the round's accounts give, in place of `sources` when the guide names no source. */
+  readonly years?: readonly string[];
 };
 
 export type CompanyPlanDataList = {

@@ -222,8 +222,15 @@ function taskEntry({ companies, importance, ...task }, family) {
 
 const newestFirst = (a, b) => b.date.localeCompare(a.date) || a.publisher.localeCompare(b.publisher);
 
-/** Official pages first, then the newest accounts, so the short list shows the strongest evidence. */
-function roundSources(sources) {
+/**
+ * Official pages first, then the newest accounts, so the short list shows the strongest evidence. A guide that names no
+ * source (`sourceDisplay: 'year'`) gets only the years its accounts give.
+ */
+function roundSources(sources, yearOnly = false) {
+  if (yearOnly) {
+    const years = [...new Set(sources.filter((source) => source.kind === 'report' && !source.reportForm).map((source) => source.date.slice(0, 4)))].sort();
+    return { sources: [], ...(years.length ? { years } : {}) };
+  }
   const seen = new Set();
   const unique = sources.filter((source) => !seen.has(source.url) && seen.add(source.url));
   const ordered = [...unique].sort((a, b) => Number(b.kind === 'official') - Number(a.kind === 'official') || b.date.localeCompare(a.date));
@@ -266,6 +273,10 @@ function buildCompany(slug, context) {
 
   // Reported tasks merge by the task they land on, so a widget tagged in three frameworks is one row.
   const reported = new Map();
+  // A report row names its source on the task page and here, so a guide that names none has no report rows.
+  if (table.sourceDisplay === 'year' && (reports[slug] ?? []).length) {
+    throw new Error(`[gen-company-plan-data] ${slug} names no source, but catalog tasks cite sources for it (${reports[slug].map((row) => row.route).join(', ')}); drop those sources.`);
+  }
   for (const row of reports[slug] ?? []) {
     const task = catalog.get(row.route);
     if (!task) throw new Error(`[gen-company-plan-data] ${slug} reports ${row.route}, which is not in the catalog.`);
@@ -445,7 +456,7 @@ function buildCompany(slug, context) {
           kinds: round.kinds,
           note: noteFor(round, stage.format),
           ...(focus.length ? { focus } : {}),
-          ...roundSources(stage.sources),
+          ...roundSources(stage.sources, table.sourceDisplay === 'year'),
         };
       }),
       tasks: [...chosen.values()].sort((a, b) => Number(leads.has(b.id)) - Number(leads.has(a.id))),
@@ -473,7 +484,8 @@ function buildCompany(slug, context) {
     // The guide's practice prompts; the plan tells a phone reader which answer guides Premium opens there.
     promptCount: (context.prompts?.[slug] ?? []).length,
     // A guide with a question list shows its reported questions instead, the first one open.
-    ...(table.questions?.length ? { questionCount: table.questions.length } : {}),
+    // The guide's headline count: rows from early-career and general loops stand apart from it.
+    ...(table.questions?.length ? { questionCount: table.questions.filter((question) => !question.audience).length } : {}),
     variants,
   };
 }

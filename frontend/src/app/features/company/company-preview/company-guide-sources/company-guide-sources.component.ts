@@ -19,7 +19,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 /**
  * Every source behind a guide, once, at the end of the page: closed, small and quiet, so a reader is not led off the
  * page mid-read, yet the attribution and the notes stay in the HTML for anyone who looks. The links open with a free
- * account.
+ * account. A guide that names no source shows how its questions were collected in the same place instead, open.
  */
 @Component({
   selector: 'app-company-guide-sources',
@@ -35,8 +35,11 @@ export class CompanyGuideSourcesComponent {
   /** What the sources can and cannot establish, read before the list. */
   readonly boundary = input<AuthoredSectionCopy | null>(null);
   readonly viewer = input<CompanyGuideViewer>('guest');
+  /** How the questions were collected, for a guide that names no source; shown in place of the list. */
+  readonly method = input<AuthoredSectionCopy | null>(null);
 
   readonly headingId = computed(() => `${this.slug()}-sources`);
+  readonly methodHeadingId = computed(() => `${this.slug()}-method`);
   readonly hasAccounts = computed(() => this.sources().some((row) => row.kind === 'report'));
   readonly signupParams = computed(() => ({ redirectTo: `/companies/${this.slug()}/preview` }));
 

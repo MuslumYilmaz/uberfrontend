@@ -29,7 +29,7 @@ import { AUTHORED_COMPANY_PREVIEWS, AUTHORED_COMPANY_PREVIEWS_TOKEN } from '../.
 import { buildAuthoredCompanyPreviewFixture } from '../../../shared/company-previews/authored-company-preview.spec-fixture';
 import { COMPANY_EDITORIAL_NOTES, type CompanyEditorialNotesRegistry } from '../../../shared/company-previews/company-editorial-notes';
 import { buildCompanyEditorialNotesFixture } from '../../../shared/company-previews/company-editorial-notes.spec-fixture';
-import { COMPANY_INTERVIEW_PROCESSES } from '../../../shared/company-previews/company-interview-processes';
+import { COMPANY_INTERVIEW_PROCESSES, type CompanyInterviewProcess } from '../../../shared/company-previews/company-interview-processes';
 import { summariseQuestionList } from '../../../shared/company-previews/company-question-list';
 
 describe('CompanyPreviewComponent', () => {
@@ -461,6 +461,42 @@ describe('CompanyPreviewComponent', () => {
     expect(seo.updateTags.calls.mostRecent().args[0]?.canonical).toBe('/companies/netflix/preview');
   });
 
+  describe('a guide whose process names no source', () => {
+    const taro = (id: string, date: string) => ({ label: 'Taro', url: `https://www.jointaro.com/interviews/companies/acme/experiences/${id}/`, kind: 'report' as const, date });
+    const quiet: CompanyInterviewProcess = {
+      summary: 'A screen and a final loop.',
+      caveat: 'Loops differ by team.',
+      checkedAt: '2026-11-25',
+      sourceDisplay: 'year',
+      variants: [{ title: 'Engineers', stages: [{ stage: 'Coding round', format: 'A live React task.', appliesTo: 'All levels', sources: [taro('a', '2025-03'), taro('b', '2026-01')] }] }],
+      questions: [
+        { id: 'open-widget', round: 'Coding round', kind: 'React build', topic: 'Open widget', question: 'Build the widget.', sources: [taro('a', '2025-03')] },
+        { id: 'locked-widget', round: 'Coding round', kind: 'React build', topic: 'Locked widget', question: 'Build the locked widget.', sources: [taro('b', '2026-01'), taro('c', '2024-06')] },
+        { id: 'intern-widget', kind: 'React build', topic: 'Intern widget', question: 'Build the intern widget.', audience: 'early-career', sources: [taro('d', '2026-02')] },
+      ],
+    };
+    const method = { kicker: 'Method', title: 'How these questions were collected', paragraphs: ['We read {reports} public candidate accounts and wrote each task in our words.'] };
+    const registry = () => ({ acme: { ...buildAuthoredCompanyPreviewFixture(), sources: undefined, methodNote: method } });
+    const processes = COMPANY_INTERVIEW_PROCESSES as Record<string, CompanyInterviewProcess>;
+    beforeEach(() => { processes['acme'] = quiet; });
+    afterEach(() => { delete processes['acme']; });
+
+    it('ends with how its questions were collected and names no source, site or reporter anywhere', async () => {
+      await createComponent('acme', undefined, registry());
+      const host: HTMLElement = fixture.nativeElement;
+      expect(host.querySelector('[data-testid="company-guide-sources"]')).toBeNull();
+      const note = host.querySelector('[data-testid="company-guide-method"]') as HTMLElement;
+      expect(note.querySelector('h2')?.textContent?.trim()).toBe('How these questions were collected');
+      expect(note.textContent).toContain('We read four public candidate accounts');
+      expect(host.textContent).not.toMatch(/Taro|jointaro/i);
+      expect(host.innerHTML).not.toContain('jointaro.com');
+      expect(host.querySelectorAll('[data-testid="company-interview-process-reporter"]').length).toBe(0);
+      expect(host.querySelector('[data-testid="company-question-list"] h2')?.textContent?.trim()).toBe('2 questions candidates reported');
+      expect(host.querySelectorAll('[data-testid="company-question-group"]').length).toBe(1);
+      expect(JSON.stringify(seo.updateTags.calls.mostRecent().args[0])).not.toContain('jointaro');
+    });
+  });
+
   describe('registry-driven authored guides', () => {
     const acme = buildAuthoredCompanyPreviewFixture();
     const registry = { acme };
@@ -491,7 +527,7 @@ describe('CompanyPreviewComponent', () => {
 
       // The sources close the page: a visitor reads their names, and the links open with a free account.
       const sources = host.querySelector('[data-testid="company-guide-sources"]') as HTMLElement;
-      expect(sources.textContent).toContain(acme.sources.items[0].label);
+      expect(sources.textContent).toContain(acme.sources!.items[0].label);
       expect(sources.querySelectorAll('a[href^="http"]').length).toBe(0);
 
       const cta = host.querySelector('.company-guide-cta a') as HTMLAnchorElement;

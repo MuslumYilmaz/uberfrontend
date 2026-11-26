@@ -23,7 +23,7 @@ describe('companyEvidence', () => {
   it('counts the guide sources and the table sources once by URL, and lists the table-only ones after the guide ones', () => {
     const { counts, sources } = companyEvidence(acme, TABLE);
     expect(counts).toEqual({ reports: 2, official: 2, sources: 4, prompts: 2, questions: 0 });
-    expect(sources.slice(0, 2)).toEqual(acme.sources.items);
+    expect(sources.slice(0, 2)).toEqual(acme.sources!.items);
     expect(sources[2]).toEqual({
       label: 'LeetCode account, March 2025',
       url: 'https://reports.example.com/acme-phone',
@@ -49,7 +49,7 @@ describe('companyEvidence', () => {
         { id: 'tabs', kind: 'UI build', topic: 'Tabs', question: 'Build tabs.', sources: [bank] },
       ],
     };
-    const { sources } = companyEvidence({ ...acme, sources: { ...acme.sources, items: [] } }, table);
+    const { sources } = companyEvidence({ ...acme, sources: { ...acme.sources!, items: [] } }, table);
     expect(sources).toEqual([
       { label: 'Business Insider report, May 2026', url: press.url, kind: 'report', note: "A press report read for the process table, where it describes the Onsite, not a candidate's account." },
       { label: 'Blind question thread', url: bank.url, kind: 'report', note: 'A question bank candidates add to, read for two reported questions. It lists questions without the loop around them.' },
@@ -88,7 +88,7 @@ describe('fillAuthoredPreview', () => {
       studyPriorities: { ...acme.studyPriorities, paragraphs: ['{reports} accounts agree.'] },
       sourceBoundary: { ...acme.sourceBoundary, paragraphs: ['{reports} self-reported accounts inform this guide.', 'Plain.'] },
       prompts: { ...acme.prompts, intro: '{prompts} prompts follow.' },
-      sources: { ...acme.sources, intro: '{sources} sources.' },
+      sources: { ...acme.sources!, intro: '{sources} sources.' },
     };
     const filled = fillAuthoredPreview(tokened, companyEvidence(tokened, null).counts);
     expect(authoredCountFields(filled).map((entry) => entry.text)).toEqual([
@@ -105,6 +105,6 @@ describe('fillAuthoredPreview', () => {
       'Two sources.',
     ]);
     expect(filled.prompts.items).toBe(tokened.prompts.items);
-    expect(filled.sources.items).toBe(tokened.sources.items);
+    expect(filled.sources!.items).toBe(tokened.sources!.items);
   });
 });
