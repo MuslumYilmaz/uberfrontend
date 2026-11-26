@@ -21,6 +21,8 @@ export type GooglePrepDay = {
 export type GooglePreviewFaq = {
   readonly question: string;
   readonly answer: string;
+  /** An in-page anchor, such as the reported process table or one of its rows. */
+  readonly link?: { readonly label: string; readonly fragment: string };
 };
 
 export type GoogleResourceLink = {
@@ -186,6 +188,12 @@ export const GOOGLE_PREP_SEQUENCE: readonly GooglePrepDay[] = [
 
 export const GOOGLE_PREVIEW_FAQS: readonly GooglePreviewFaq[] = [
   {
+    question: 'What is the Google frontend interview process?',
+    answer:
+      'Google\'s hiring pages describe one process for every role: recruiter conversations, an assessment for some roles, a panel of interviews, then a hiring committee review and team matching. Front end accounts from 2019 to 2026 fill in the shape: one or two technical screens of about an hour of coding in a plain shared document, then four or five interviews that are mostly algorithm coding with usually one JavaScript or frontend round, a Googleyness interview and, from L5, a design round. In three 2026 accounts the Googleyness interview came in a first, virtual stage with one technical round, before the onsite coding. The reported process table above lists each stage with its sources.',
+    link: { label: 'See the reported process', fragment: 'google-interview-process-1' },
+  },
+  {
     question: 'Are these the real Google questions?',
     answer:
       'The technical ones come from public posts on LeetCode Discuss, Blind and Medium from 2019 to 2022, most of them by front end candidates, and from a 2020 Blind thread whose poster mixed their own interview questions with ones found online. The behavioural ones add software engineer loops from 2024 to 2026. We reworded them all, and Google has confirmed none.',
@@ -201,9 +209,9 @@ export const GOOGLE_PREVIEW_FAQS: readonly GooglePreviewFaq[] = [
       'Yes. Every loop in these accounts has algorithm coding, and most of its interviews are algorithm rounds. The 2021 candidate in India still advises putting more time into the frontend side: in that loop the algorithm questions felt simpler and the frontend round went deeper.',
   },
   {
-    question: 'Is system design included in every frontend loop?',
+    question: 'Does Google have a frontend design interview round?',
     answer:
-      'Not below L5 in these accounts. Blind posts from 2021 and 2022 describe a design round from L5, with a frontend and API focus in most cases; one L5 candidate\'s design round was not frontend at all. A 2019 front end onsite at an unstated level included an app design round.',
+      'From L5 in these accounts, as a system design round with a frontend and API focus in most cases: Blind posts from 2021 and 2022 describe it, and one L5 candidate\'s design round was not frontend at all. A 2019 front end onsite at an unstated level included an app design round. Below L5 no account reports a design interview, so ask your recruiter whether your loop has one and whether it is frontend design.',
   },
   {
     question: 'Can candidates use JavaScript?',
@@ -321,7 +329,7 @@ export const GOOGLE_GOOGLEYNESS_SPOTLIGHT: AuthoredRoundSpotlight = {
 /** The page's prose outside the lists, in the order it renders. Count tokens are filled from the page's evidence. */
 export const GOOGLE_COPY = {
   subtitle:
-    'Google\'s hiring pages describe one process for every role. Front end candidates\' accounts from 2019 to 2026 add the detail: one or two screens in a plain shared document, then four or five interviews that are mostly algorithm coding with usually one JavaScript or frontend round, a Googleyness interview and, from L5, a design round. Their {questions} reported questions follow the table, with the first one open; none comes from an account newer than July 2022.',
+    'Google\'s hiring pages describe one process for every role, so the Google frontend interview has no official guide of its own. Front end candidates\' accounts from 2019 to 2026 add the detail: one or two screens in a plain shared document, then four or five interviews that are mostly algorithm coding with usually one JavaScript or frontend round, a Googleyness interview and, from L5, a design round. Their {questions} reported questions follow the table, with the first one open; none comes from an account newer than July 2022.',
   caveat:
     'How many rounds are frontend varies: one in most accounts, three of the four onsite rounds in a 2023 loop that ended in an offer, none in a 2026 account. Google\'s pages say AI tools are not permitted in interviews, while a May 2026 press report describes a pilot for some US teams.',
   chips: ['{#questions} reported questions', '{#reports} public reports, 2019–2026'],
