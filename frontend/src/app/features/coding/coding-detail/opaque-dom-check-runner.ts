@@ -1175,6 +1175,130 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     };
     return poll();
   };
+  // The init of one pointer or mouse event, built fresh each time: no object spread in this code, which runs inside
+  // the check frame, where the production build's spread helper does not exist. The pointer is the mouse, id 1: a page
+  // that captures it on pointerdown throws for id 0, a pointer no browser has. The position is the centre of `at`.
+  const pointerInit = (
+    at: Element,
+    button: number,
+    buttons: number,
+    keys: FrameworkTestStep,
+    related: Element | null,
+    bubbles: boolean,
+  ): PointerEventInit => {
+    const box = at.getBoundingClientRect();
+    return {
+      bubbles,
+      cancelable: bubbles,
+      composed: true,
+      view: window,
+      pointerId: 1,
+      pointerType: 'mouse',
+      isPrimary: true,
+      button,
+      buttons,
+      clientX: box.left + box.width / 2,
+      clientY: box.top + box.height / 2,
+      shiftKey: keys.shift === true,
+      ctrlKey: keys.ctrl === true,
+      metaKey: keys.meta === true,
+      altKey: keys.alt === true,
+      relatedTarget: related,
+    };
+  };
+  const holdsKeys = (step: FrameworkTestStep) => step.shift === true || step.ctrl === true || step.meta === true || step.alt === true;
+  const commonAncestor = (first: Element, second: Element): Element => {
+    let common: Element | null = first;
+    while (common && !common.contains(second)) common = common.parentElement;
+    return common ?? document.body;
+  };
+  // A pointer that travels with the button down: it comes over `start`, presses, passes over each stop in turn and is
+  // released over the last, a frame apart so the page renders between events as it does under a hand. Synthetic events
+  // cannot be captured, so setPointerCapture is stood in for while the drag runs: once the page captures the pointer,
+  // every later pointer and mouse event goes to the captured element, with got- and lostpointercapture around it, and
+  // the click goes there too, as browsers send it.
+  const dragAlong = (start: Element, stops: Element[], keys: FrameworkTestStep): Promise<void> => {
+    const PointerCtor = window.PointerEvent || MouseEvent;
+    const proto = Element.prototype;
+    const setCapture = proto.setPointerCapture;
+    const releaseCapture = proto.releasePointerCapture;
+    const hasCapture = proto.hasPointerCapture;
+    let captured: Element | null = null;
+    let announced: Element | null = null;
+    proto.setPointerCapture = function (this: Element) { captured = this; };
+    proto.releasePointerCapture = function (this: Element) { if (captured === this) captured = null; };
+    proto.hasPointerCapture = function (this: Element) { return captured === this; };
+    const restore = () => {
+      proto.setPointerCapture = setCapture;
+      proto.releasePointerCapture = releaseCapture;
+      proto.hasPointerCapture = hasCapture;
+    };
+    const announce = (at: Element) => {
+      if (announced === captured) return;
+      if (announced) announced.dispatchEvent(new PointerCtor('lostpointercapture', pointerInit(at, 0, 0, keys, null, true)));
+      if (captured) captured.dispatchEvent(new PointerCtor('gotpointercapture', pointerInit(at, 0, 0, keys, null, true)));
+      announced = captured;
+    };
+    const send = (target: Element, at: Element, name: string, button: number, buttons: number, related: Element | null) => {
+      const bubbles = !/(enter|leave)$/.test(name);
+      const init = pointerInit(at, button, buttons, keys, related, bubbles);
+      target.dispatchEvent(name.indexOf('pointer') === 0 ? new PointerCtor(name, init) : new MouseEvent(name, init));
+    };
+    const arrive = (element: Element, from: Element | null, buttons: number) => {
+      if (from) {
+        send(from, element, 'pointerout', -1, buttons, element);
+        send(from, element, 'pointerleave', -1, buttons, element);
+        send(from, element, 'mouseout', 0, buttons, element);
+        send(from, element, 'mouseleave', 0, buttons, element);
+      }
+      send(element, element, 'pointerover', -1, buttons, from);
+      send(element, element, 'pointerenter', -1, buttons, from);
+      send(element, element, 'mouseover', 0, buttons, from);
+      send(element, element, 'mouseenter', 0, buttons, from);
+    };
+    const move = (at: Element, buttons: number) => {
+      announce(at);
+      const target = captured ?? at;
+      send(target, at, 'pointermove', -1, buttons, null);
+      send(target, at, 'mousemove', 0, buttons, null);
+    };
+    let current = start;
+    const moves: (() => void)[] = [
+      () => {
+        arrive(start, null, 0);
+        move(start, 0);
+      },
+      () => {
+        send(start, start, 'pointerdown', 0, 1, null);
+        send(start, start, 'mousedown', 0, 1, null);
+      },
+    ];
+    for (const stop of stops) {
+      moves.push(() => {
+        // A captured pointer moves without leaving or entering anything: the captured element keeps it.
+        if (!captured && stop !== current) arrive(stop, current, 1);
+        move(stop, 1);
+        current = stop;
+      });
+    }
+    moves.push(() => {
+      announce(current);
+      const holder = captured;
+      const target = holder ?? current;
+      send(target, current, 'pointerup', 0, 0, null);
+      send(target, current, 'mouseup', 0, 0, null);
+      captured = null;
+      announce(current);
+      send(holder ?? commonAncestor(start, current), current, 'click', 0, 0, null);
+    });
+    return runSequentially(moves, (next) => {
+      next();
+      return delay(16);
+    }).then(restore, (error: unknown) => {
+      restore();
+      throw error;
+    });
+  };
   const executeStep = (step: FrameworkTestStep): Promise<void> => {
     const type = String(step?.type || step?.action || '').trim();
     const target = describeTarget(step);
@@ -1514,6 +1638,17 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (type === 'click') {
       const clickable = element as HTMLElement;
       if (typeof clickable.click !== 'function') throw new Error(`${target} is not clickable`);
+      if (holdsKeys(step)) {
+        // A click with Shift, Ctrl, Meta or Alt held comes as a mouse gives it: pointer and mouse down and up on the
+        // target, then the click, each carrying the keys, so a page that extends a selection on any of them sees them.
+        const PointerCtor = window.PointerEvent || MouseEvent;
+        clickable.dispatchEvent(new PointerCtor('pointerdown', pointerInit(clickable, 0, 1, step, null, true)));
+        clickable.dispatchEvent(new MouseEvent('mousedown', pointerInit(clickable, 0, 1, step, null, true)));
+        clickable.dispatchEvent(new PointerCtor('pointerup', pointerInit(clickable, 0, 0, step, null, true)));
+        clickable.dispatchEvent(new MouseEvent('mouseup', pointerInit(clickable, 0, 0, step, null, true)));
+        clickable.dispatchEvent(new MouseEvent('click', pointerInit(clickable, 0, 0, step, null, true)));
+        return delay(50);
+      }
       clickable.click();
       return delay(50);
     }
@@ -1608,19 +1743,29 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (type === 'drag') {
       // A press on the target released over another element, as when a text selection ends outside its field.
       // Pointer and mouse down go to the target and up to the other element, and the click goes to the nearest
-      // element that contains both, where browsers send it.
+      // element that contains both, where browsers send it. With `through`, the pointer travels between them.
       const destination = { selector: step.to?.selector, by: step.to?.by } as FrameworkTestStep;
       const other = queryElement(destination);
       if (!other) throw new Error(`${describeTarget(destination)} was not found`);
+      if (Array.isArray(step.through)) {
+        const stops: Element[] = [];
+        for (const stop of step.through) {
+          const waypoint = { selector: stop?.selector, by: stop?.by } as FrameworkTestStep;
+          const found = queryElement(waypoint);
+          if (!found) throw new Error(`${describeTarget(waypoint)} was not found`);
+          stops.push(found);
+        }
+        stops.push(other);
+        return dragAlong(element, stops, step).then(() => delay(50));
+      }
       const PointerCtor = window.PointerEvent || MouseEvent;
-      const init: PointerEventInit = { bubbles: true, cancelable: true, button: 0, pointerType: 'mouse', isPrimary: true };
-      element.dispatchEvent(new PointerCtor('pointerdown', init));
-      element.dispatchEvent(new MouseEvent('mousedown', init));
-      other.dispatchEvent(new PointerCtor('pointerup', init));
-      other.dispatchEvent(new MouseEvent('mouseup', init));
-      let common: Element | null = element;
-      while (common && !common.contains(other)) common = common.parentElement;
-      (common ?? document.body).dispatchEvent(new MouseEvent('click', init));
+      // The press and the release happen at the centres of the two elements, so a page that hit-tests the pointer
+      // position finds them; pointerInit makes the pointer the mouse, id 1.
+      element.dispatchEvent(new PointerCtor('pointerdown', pointerInit(element, 0, 1, step, null, true)));
+      element.dispatchEvent(new MouseEvent('mousedown', pointerInit(element, 0, 1, step, null, true)));
+      other.dispatchEvent(new PointerCtor('pointerup', pointerInit(other, 0, 0, step, null, true)));
+      other.dispatchEvent(new MouseEvent('mouseup', pointerInit(other, 0, 0, step, null, true)));
+      commonAncestor(element, other).dispatchEvent(new MouseEvent('click', pointerInit(other, 0, 0, step, null, true)));
       return delay(50);
     }
     if (type === 'hover' || type === 'unhover') {
