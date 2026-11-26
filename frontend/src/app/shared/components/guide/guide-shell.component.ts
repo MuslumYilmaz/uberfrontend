@@ -77,6 +77,18 @@ const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
   margin-inline:auto;
 }
 
+/* centered measure (opt-in): beside the app sidebar the column widens when the sidebar collapses, and left-aligned
+   76ch text then hugs its left edge. Text, headings and the page header share one measure centered in the column;
+   code, tables, figures and FAQs keep the full column. 48rem is the 76ch body measure at the 14px root size. */
+.wrap.centered-measure > .main > :not(.content),
+.wrap.centered-measure .content > :not(.code-wrap, .table-scroll, figure, app-faq-section){
+  max-width:48rem;
+  margin-inline:auto;
+}
+.wrap.centered-measure .content > figure{
+  max-width:none;
+}
+
 /* mobile/tablet: collapsible menu + toc */
 .mobile-panels{
   display:none;
@@ -677,7 +689,7 @@ const GUIDE_SCROLL_THRESHOLDS = [25, 50, 75, 100];
 
 `],
     template: `
-  <div #shellRoot class="wrap" [class.has-left]="leftNav">
+  <div #shellRoot class="wrap" [class.has-left]="leftNav" [class.centered-measure]="centeredMeasure">
     <aside class="left" *ngIf="leftNav">
       <div #leftAnchor></div>
       <div #leftPanel class="left-fixed">
@@ -786,6 +798,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   @Input() next?: any[] | null;
   @Input() leftNav?: LeftNav;
   @Input() readerPromise?: string;
+  @Input() centeredMeasure = false;
 
   @ViewChild('shellRoot', { read: ElementRef }) shellRootRef!: ElementRef<HTMLElement>;
   @ViewChild('content', { read: ElementRef }) contentRef!: ElementRef<HTMLElement>;
