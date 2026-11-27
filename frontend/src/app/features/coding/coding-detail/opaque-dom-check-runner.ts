@@ -684,6 +684,29 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     if (lastRequestedFocus === this) lastRequestedFocus = null;
     nativeBlur.call(this);
   };
+  // From Chrome 158 the frame rejects native focus outright and body stays the active element, so page code that
+  // reads document.activeElement, such as a focus trap deciding where Tab wraps, would see no focus at all. There
+  // the active element reports the last focus request, while that element can still hold focus: connected, focusable,
+  // enabled, outside inert content and rendered. A focus the browser did move is reported as it is.
+  const nativeActiveElement = Object.getOwnPropertyDescriptor(Document.prototype, 'activeElement');
+  const canHoldFocus = (element: Element | null): element is HTMLElement => element instanceof HTMLElement
+    && element.isConnected
+    && (element.hasAttribute('tabindex') || element.tabIndex >= 0)
+    && (element as HTMLElement & { disabled?: boolean }).disabled !== true
+    && !element.closest('[inert]')
+    && element.getClientRects().length > 0;
+  if (nativeActiveElement?.get && nativeActiveElement.configurable) {
+    const readActiveElement = nativeActiveElement.get;
+    Object.defineProperty(Document.prototype, 'activeElement', {
+      configurable: true,
+      enumerable: nativeActiveElement.enumerable,
+      get(this: Document) {
+        const active = readActiveElement.call(this) as Element | null;
+        if (this !== document || (active && active !== this.body)) return active;
+        return canHoldFocus(lastRequestedFocus) ? lastRequestedFocus : active;
+      },
+    });
+  }
   /** Where focus is: the active element, or the last focus request when the frame did not honour native focus. */
   const focusedElement = (): Element => {
     const active = document.activeElement;
@@ -1036,10 +1059,12 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     try { field.setSelectionRange(start + 1, start + 1); } catch { }
     field.dispatchEvent(new InputEvent('input', { bubbles: true, data: character, inputType: 'insertText' }));
   };
-  // A frame without system focus, such as the hidden check frame, moves focus without firing focus events. When the
-  // browser fires none, these send the ones a focused window would, so React's onFocus and onBlur run.
+  // A frame without system focus, such as the hidden check frame, moves focus without firing focus events, and from
+  // Chrome 158 it does not move focus at all, leaving body active. When the browser fires none, these send the ones a
+  // focused window would, so React's onFocus and onBlur run, and they start from focusedElement(), which stands in for
+  // an active element the frame did not set.
   const moveFocus = (target: HTMLElement) => {
-    const previous = document.activeElement;
+    const previous = focusedElement();
     if (previous === target) return;
     let heard = false;
     const hear = () => { heard = true; };
@@ -1055,7 +1080,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
     target.dispatchEvent(new FocusEvent('focusin', { bubbles: true, relatedTarget: previous }));
   };
   const leaveFocus = () => {
-    const previous = document.activeElement;
+    const previous = focusedElement();
     if (!(previous instanceof HTMLElement) || previous === document.body) return;
     let heard = false;
     const hear = () => { heard = true; };
@@ -1084,7 +1109,7 @@ function opaqueChildBootstrap(config: ChildConfig): void {
   // previous one with Shift), or leaves the page past either end.
   const followTab = (backwards: boolean) => {
     const order = tabOrder();
-    const from = document.activeElement;
+    const from = focusedElement();
     const index = from instanceof HTMLElement ? order.indexOf(from) : -1;
     let next: HTMLElement | undefined;
     if (index >= 0) {

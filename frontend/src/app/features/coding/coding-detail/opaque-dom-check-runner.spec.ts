@@ -686,6 +686,42 @@ describe('OpaqueDomCheckRunner', () => {
     expect(results[1].passed).toBeFalse();
   });
 
+  it('keeps focus and Tab steps right in a frame that rejects native focus, as Chrome 158 does', async () => {
+    // From Chrome 158 the hidden check frame ignores focus(): body stays active and no focus event fires. A script
+    // ahead of <head> runs before the runner, so the runner keeps a focus that does nothing, on every browser.
+    const page = `<!doctype html><html><script>HTMLElement.prototype.focus = function focus() {};<\/script><head></head><body>
+      <button class="a">A</button><button class="b">B</button><button class="c">C</button><p class="seen"></p>
+      <script>
+        const seen = document.querySelector('.seen');
+        document.addEventListener('focusin', (event) => { seen.textContent += ' in:' + event.target.className; });
+        document.addEventListener('focusout', (event) => { seen.textContent += ' out:' + event.target.className; });
+        // Page code that reads the active element, as a focus trap does, sees the focus the page or the check set.
+        document.addEventListener('keydown', () => { seen.textContent += ' key@' + document.activeElement.className; });
+        setTimeout(() => window.__FA_NOTIFY_PREVIEW_READY('render-ready'), 0);
+      <\/script></body></html>`;
+    const tab = (extra: Record<string, unknown> = {}) => ({ type: 'key', key: 'Tab', defaultAction: true, ...extra });
+    const results = await runner.runFramework(page, [
+      {
+        id: 'rejected',
+        name: 'Rejected',
+        steps: [
+          { type: 'focus', selector: '.a' },
+          { type: 'focus', selector: '.a' },
+          { type: 'expectText', selector: '.seen', text: 'in:a', match: 'equals' },
+          { type: 'expectFocused', selector: '.a' },
+          tab(),
+          { type: 'expectFocused', selector: '.b' },
+          tab({ shift: true }),
+          { type: 'expectFocused', selector: '.a' },
+          tab({ shift: true }),
+          { type: 'expectText', selector: '.seen', text: 'in:a key@a out:a in:b key@b out:b in:a key@a out:a', match: 'equals' },
+        ],
+      },
+    ] as any);
+
+    expect(results).toEqual([{ name: 'Rejected', passed: true }]);
+  });
+
   it('presses a key without a target where focus is, and clicks a button or link for an Enter the page does not cancel', async () => {
     const page = `<!doctype html><html><body>
       <button class="one">One</button><button class="two">Two</button><a class="link" href="#later">Link</a>
