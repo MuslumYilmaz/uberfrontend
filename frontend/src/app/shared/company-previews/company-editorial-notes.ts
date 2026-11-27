@@ -668,13 +668,13 @@ export const COMPANY_EDITORIAL_NOTES: Readonly<Record<string, CompanyEditorialNo
   },
   stripe: {
     slug: 'stripe',
-    title: 'Stripe Frontend Interview Process and Practice Questions',
-    h1: 'Stripe Frontend Interview Questions and Process',
+    title: 'Stripe Frontend Engineer Interview: Process and Questions',
+    h1: 'Stripe Frontend Engineer Interview Questions and Process',
     description: 'How public reports describe Stripe frontend interviews: a 60-minute coding screen, then an onsite with a bug squash, integration and frontend design.',
     hero: {
       kicker: 'Public preview and process notes',
       subtitle:
-        'Stripe describes its process only in general terms, so the frontend loop here comes from people who went through it between 2022 and 2026: a recruiter call, an hour of live coding with an engineer, then four or five onsite interviews built around a bug squash, an integration exercise, a programming exercise, frontend design and a talk with the hiring manager. After the rounds come the questions they reported; the bug squash is open to every reader.',
+        'Stripe describes its process only in general terms, so the frontend engineer loop here comes from people who went through it between 2022 and 2026: a recruiter call, an hour of live coding with an engineer, then four or five onsite interviews built around a bug squash, an integration exercise, a programming exercise, frontend design and a talk with the hiring manager. After the rounds come the questions they reported; the bug squash is open to every reader.',
     },
     intro: [
       'Stripe’s careers FAQ, linked below, says most processes include a recruiter screen, a technical or skills-based assessment and a series of interviews with the team you would join, and that timelines vary by role, level and location. The rest comes from candidates: frontend accounts on Taro from 2022 to 2026 written from Canada, the United States, Spain, India, Sweden and Ireland, two Blind threads, a LeetCode post on a 2024 software engineer screen, a 2025 intern account on Medium, and web developer accounts from 2017 and 2018 that add behavioural questions.',

@@ -47,6 +47,8 @@ export const CONTEXTUAL_HUB_LINKS = [
     source: '/guides/interview-blueprint/quiz',
     targets: ['/html/interview-questions', '/css/interview-questions', '/javascript/interview-questions'],
   },
+  // The HTML hub hands joint markup-and-layout intent to the combined hub (CSS details never do).
+  { source: '/html/interview-questions', targets: ['/html-css/interview-questions'] },
 ];
 
 // Curated detail pages that the home page and /coding link to directly (core/content/priority-links.json).

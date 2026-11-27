@@ -50,6 +50,7 @@ const HTML_CSS_SEO_KEYWORDS = [
   'html and css interview questions and answers',
   'frontend ui interview questions',
   'html css coding interview questions',
+  'html and css interview questions and answers for experienced',
 ];
 
 const CSS_SEO_KEYWORDS = [
@@ -147,9 +148,9 @@ describe('HTML/CSS query ownership route contracts', () => {
       techs: ['html', 'css'],
     });
     expect(htmlCssSeo).toEqual({
-      title: 'HTML & CSS Interview Questions and Answers',
+      title: 'HTML and CSS Interview Questions and Answers: 65 Q&A',
       description:
-        'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
+        '65 HTML and CSS interview questions and answers: semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios.',
       keywords: HTML_CSS_SEO_KEYWORDS,
     });
 
@@ -1994,9 +1995,9 @@ describe('InterviewQuestionsLandingComponent', () => {
       techs: ['html', 'css'],
     };
     routeStub.snapshot.data.seo = {
-      title: 'HTML & CSS Interview Questions and Answers',
+      title: 'HTML and CSS Interview Questions and Answers: 65 Q&A',
       description:
-        'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
+        '65 HTML and CSS interview questions and answers: semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios.',
       keywords: HTML_CSS_SEO_KEYWORDS,
     };
     routeStub.snapshot.data.interviewQuestionsList = {

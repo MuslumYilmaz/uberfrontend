@@ -216,10 +216,10 @@ const AUTHORED_GUIDE_SMOKE = [
   {
     label: 'Amazon',
     route: '/companies/amazon/preview',
-    title: 'Amazon Frontend Interview Questions: 37 Reported + Prep Guide',
+    title: 'Amazon Front End Developer Interview Questions: 37 Reported + Guide',
     description:
       'Amazon front end engineer interview: the assessment, phone screen and loop explained, 37 reported questions and the Leadership Principles questions asked.',
-    h1: 'Amazon Frontend Interview Questions',
+    h1: 'Amazon Front End Developer Interview Questions',
     kicker: 'Public Amazon prep guide',
     headings: [
       'What Amazon front end loops reward: a working widget early, and a story for every principle',
@@ -801,8 +801,8 @@ const EDITORIAL_NOTE_SMOKE = [
   {
     label: 'Stripe',
     route: '/companies/stripe/preview',
-    title: 'Stripe Frontend Interview Process and Practice Questions',
-    h1: 'Stripe Frontend Interview Questions and Process',
+    title: 'Stripe Frontend Engineer Interview: Process and Questions',
+    h1: 'Stripe Frontend Engineer Interview Questions and Process',
     headings: [
       'A multi-part screen, then an onsite of four or five rounds',
       'Start with the bug squash',

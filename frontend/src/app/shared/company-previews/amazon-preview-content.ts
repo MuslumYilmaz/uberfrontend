@@ -41,8 +41,8 @@ const AMAZON_MEDIUM_2021_URL = 'https://medium.com/javarevisited/how-was-my-fron
 const AMAZON_MEDIUM_2025_URL =
   'https://javascript.plainenglish.io/my-interview-experience-amazon-for-frontend-developer-and-lessons-learned-a4c23221b9c6';
 
-export const AMAZON_PREVIEW_TITLE = 'Amazon Frontend Interview Questions: {#questions} Reported + Prep Guide';
-export const AMAZON_PREVIEW_H1 = 'Amazon Frontend Interview Questions';
+export const AMAZON_PREVIEW_TITLE = 'Amazon Front End Developer Interview Questions: {#questions} Reported + Guide';
+export const AMAZON_PREVIEW_H1 = 'Amazon Front End Developer Interview Questions';
 export const AMAZON_PREVIEW_DESCRIPTION =
   'Amazon front end engineer interview: the assessment, phone screen and loop explained, {#questions} reported questions and the Leadership Principles questions asked.';
 export const AMAZON_PREVIEW_CANONICAL_PATH = '/companies/amazon/preview';
@@ -60,7 +60,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
   hero: {
     kicker: 'Public Amazon prep guide',
     subtitle:
-      'Amazon\'s preparation page sets out the Front End Engineer loop: an online assessment, a 60-minute phone screen split between Leadership Principles and front-end coding, then four 55-minute interviews. Front end candidates\' accounts from 2019 to 2025 show how each round ran, and below the table are the {questions} questions they reported, starting with an open phone-screen widget from 2020.',
+      'Amazon\'s title for a front end developer is Front End Engineer (FEE), and its preparation page sets out that loop: an online assessment, a 60-minute phone screen split between Leadership Principles and front-end coding, then four 55-minute interviews. Front end candidates\' accounts from 2019 to 2025 show how each round ran, and below the table are the {questions} questions they reported, starting with an open phone-screen widget from 2020.',
     caveat:
       'Most questions come from candidates\' posts about interviews from 2020 to 2022; the newest technical account is a January 2025 Front End Engineer I loop in India. The behavioural questions come from the same kind of posts and stay open.',
     chips: ['{#questions} reported questions', '{#reports} public reports, 2019–2025', 'Full practice set requires Premium'],
@@ -349,6 +349,7 @@ export const AMAZON_COMPANY_PREVIEW: AuthoredCompanyPreview = {
     title: 'Common Amazon frontend interview preparation questions',
     items: [
       { question: 'Are these the real Amazon questions?', answer: 'They are questions front end candidates said they were asked, from their own posts on LeetCode Discuss, Blind and Medium, plus three items a 2020 community list on LeetCode tags as Amazon questions, written here in our words. Amazon has not confirmed any of them, and each technical question rests on one account.' },
+      { question: 'Are these Amazon front end developer or SDE questions?', answer: 'Front End Engineer ones. Amazon\'s title for a front end developer is Front End Engineer, FEE I and FEE II in the accounts here, and the loop follows Amazon\'s FEE preparation page: JavaScript questions in the assessment, a phone screen half on front-end coding and a front-end system design question in the loop. The March 2020 phone-screen poster says FEE interviews used different material from SDE ones, and three items from the 2020 community list are tagged Amazon without a role. If your recruiter calls the role SDE, Amazon\'s general interview loop page applies instead; the Leadership Principles questions are common to both.' },
       { question: 'What is on the online assessment?', answer: 'Amazon\'s page lists two coding questions in JavaScript in 90 minutes, 20 minutes of system design scenarios and an 8-minute work style survey on the Leadership Principles, and says the code must compile for every question. Accounts from 2020 and 2022 had two LeetCode-medium problems; a January 2025 Front End Engineer I candidate in India took a Mettl test with one coding question and multiple-choice questions, then a frontend assignment.' },
       { question: 'How much of the loop is Leadership Principles?', answer: 'Amazon\'s preparation page says half of the phone screen covers the Leadership Principles and that each interviewer asks two or three behavioural questions. Most accounts describe two or three principles questions in every interview, usually first, although the 2020 Seattle and 2024 accounts each had a round that opened with coding. The 2024 account reports thirty minutes of principles in each round.' },
       { question: 'Do front end engineer rounds include algorithm problems?', answer: 'Usually. Five of the seven loop accounts that describe their coding rounds name one or two problems of easy to medium difficulty, written in JavaScript or, in one 2024 loop, Python. The 2021 onsite and the 2022 Vancouver accounts name no algorithm problem, and the 2025 Hyderabad account reports only its principles questions. The 2020 Seattle candidate advises splitting preparation evenly between front-end work and data structures, and the 2025 India candidate\'s takeaway was that data structures still matter for frontend roles.' },

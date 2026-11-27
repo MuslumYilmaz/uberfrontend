@@ -244,7 +244,7 @@
       <div class="company-faq-list">
         <article *ngFor="let item of googleFaqs">
           <h3>{{ item.question }}</h3>
-          <p>{{ item.answer }}</p>
+          <p>{{ item.answer }} <a *ngIf="item.link as link" class="company-editorial-bullets__link" [attr.href]="'#' + link.fragment">{{ link.label }}</a></p>
         </article>
       </div>
     </section>

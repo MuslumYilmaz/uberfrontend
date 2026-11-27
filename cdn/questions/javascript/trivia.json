@@ -2843,7 +2843,16 @@
         },
         {
           "type": "text",
-          "text": "## Deep object comparison for nested values\n\nUse a scoped recursive comparison when nested arrays and ordinary objects must match by value. The example below supports arrays, <code>Date</code>, <code>RegExp</code>, cycles, and shared-reference topology. It intentionally does not define equality for <code>Map</code>, <code>Set</code>, typed arrays, custom class instances, symbol keys, or non-enumerable properties; production code should make those rules explicit or use a library that matches its data contract."
+          "text": "## Deep compare JavaScript objects: a small deepEqual first\n\nTo deep compare JavaScript objects, recurse: two values are equal when <code>Object.is</code> says so, or when both are objects of the same kind whose keys match and whose values are deep-equal in turn. The small version below covers what an interviewer asks for first: <code>null</code>, arrays versus plain objects, <code>Date</code>, and a key-count check so that an extra property fails the comparison."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function deepEqualSmall(a, b) {\n  if (Object.is(a, b)) return true;\n  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;\n  if (Array.isArray(a) !== Array.isArray(b)) return false;\n  if (a instanceof Date || b instanceof Date) {\n    return a instanceof Date && b instanceof Date && Object.is(a.getTime(), b.getTime());\n  }\n\n  const keysA = Object.keys(a);\n  const keysB = Object.keys(b);\n  if (keysA.length !== keysB.length) return false;\n\n  return keysA.every(\n    (key) => Object.prototype.hasOwnProperty.call(b, key) && deepEqualSmall(a[key], b[key]),\n  );\n}\n\nconsole.log(deepEqualSmall({ id: 1, tags: ['js'] }, { id: 1, tags: ['js'] })); // true\nconsole.log(deepEqualSmall({ id: 1 }, { id: 1, extra: true }));                // false (key count)\nconsole.log(deepEqualSmall([1, 2], { 0: 1, 1: 2 }));                            // false (array vs object)"
+        },
+        {
+          "type": "text",
+          "text": "## The production deepEqual: prototypes, RegExp and cycles\n\nThe small version has three gaps: it treats a class instance and a plain object with the same keys as equal, it calls two different regular expressions equal because neither has own enumerable keys, and it overflows the stack on a cyclic graph. The version below adds a prototype check, <code>RegExp</code> support, and pair tracking with two <code>WeakMap</code>s so cycles and shared references compare by topology. It intentionally does not define equality for <code>Map</code>, <code>Set</code>, typed arrays, custom class instances, symbol keys, or non-enumerable properties; production code should make those rules explicit or use a library that matches its data contract."
         },
         {
           "type": "code",
@@ -2874,12 +2883,12 @@
         },
         {
           "type": "text",
-          "text": "## Example: comparing filter objects\n\nA product filter panel compares previous and next query objects to decide whether to refetch results. A reference check treats separately created but equal-by-value objects as different, while an unconditional deep comparison can add work on every keystroke. For flat filter state, stable object creation plus a targeted shallow comparison is usually the clearer contract.\n\n<strong>Common pitfalls</strong>\n- Using <code>===</code> when the requirement is value equality.\n- Using <code>JSON.stringify</code> where insertion order, omitted values, special types, or cycles matter.\n- Deep-comparing large objects in hot render paths without measuring the cost.\n\n## Practice the decision\n\nImplement recursive comparison in the <a href=\"/javascript/coding/js-deep-equal\">JavaScript deep-equality challenge</a>, distinguish equality from copying with <a href=\"/javascript/trivia/js-shallow-vs-deep-copy\">shallow versus deep copy</a>, or apply state and data-shape decisions in <a href=\"/machine-coding\">frontend machine-coding practice</a>."
+          "text": "## Example: comparing filter objects\n\nA product filter panel compares previous and next query objects to decide whether to refetch results. A reference check treats separately created but equal-by-value objects as different, while an unconditional deep comparison can add work on every keystroke. For flat filter state, stable object creation plus a targeted shallow comparison is usually the clearer contract.\n\n<strong>Common pitfalls</strong>\n- Using <code>===</code> when the requirement is value equality.\n- Using <code>JSON.stringify</code> where insertion order, omitted values, special types, or cycles matter.\n- Deep-comparing large objects in hot render paths without measuring the cost.\n\n## Practice the decision\n\nImplement recursive comparison in the <a href=\"/javascript/coding/js-deep-equal\">JavaScript deep-equality challenge</a> (Premium), or start with the free <a href=\"/javascript/coding/js-arrays-equal\">compare two arrays</a> task. Distinguish equality from copying with <a href=\"/javascript/trivia/js-shallow-vs-deep-copy\">shallow versus deep copy</a> and the free <a href=\"/javascript/coding/js-shallow-clone\">shallow clone</a> exercise, or apply state and data-shape decisions in <a href=\"/machine-coding\">frontend machine-coding practice</a>."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-10-07",
+    "updatedAt": "2026-11-26",
     "seo": {
       "title": "Compare Two Objects in JavaScript: Shallow vs Deep",
       "description": "Use === for the same reference, compare top-level keys for flat objects, and use deep equality for nested values; do not rely on JSON.stringify."

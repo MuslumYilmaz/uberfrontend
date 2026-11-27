@@ -46,7 +46,7 @@ export const PUBLIC_QUESTION_NAVIGATION: readonly PublicQuestionNavigationItem[]
   {
     "tech": "angular",
     "kind": "trivia",
-    "title": "Angular data binding: interpolation, property/attribute/class/style, events, and two-way ([(...)])",
+    "title": "Angular data binding: interpolation, property, event and two-way binding explained",
     "route": "/angular/trivia/angular-data-binding"
   },
   {

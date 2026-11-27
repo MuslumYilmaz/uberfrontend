@@ -1169,7 +1169,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "## What does href stand for?\n\n`href` stands for <strong>hypertext reference</strong>. It is the HTML attribute that holds the destination of a link or a linked resource, and the browser reads it to decide where to navigate or what to load. On an `<a>` element it is what turns the text into a hyperlink. The same idea powers anchors, stylesheets, base URLs, and image-map areas.\n\nIn production, a missing or fake `href` (for example `href=\"#\"` on an element that only runs JavaScript) breaks keyboard access, open in new tab, browser history, and crawling. That is why the attribute matters beyond decoration."
+          "text": "## What does href stand for?\n\n`href` stands for <strong>hypertext reference</strong>. It is the HTML attribute that holds the destination of a link or a linked resource, and the browser reads it to decide where to navigate or what to load. On an `<a>` element it is what turns the text into a hyperlink. The same idea powers anchors, stylesheets, base URLs, and image-map areas.\n\nThe href meaning in HTML, in one line: the attribute that says where a link or linked resource points. Its value is a URL, absolute or relative, a `#fragment` on the same page, a `mailto:` or `tel:` address, or a file.\n\nIn production, a missing or fake `href` (for example `href=\"#\"` on an element that only runs JavaScript) breaks keyboard access, open in new tab, browser history, and crawling. That is why the attribute matters beyond decoration."
         },
         {
           "type": "text",
@@ -1225,6 +1225,15 @@
         },
         {
           "type": "text",
+          "text": "## What does href=\"#\" mean?\n\n`href=\"#\"` points at an empty fragment of the current page. Activating it loads nothing: the browser scrolls to the top of the document and adds a trailing `#` to the URL, which the Back button then has to step through. Developers use it as a placeholder on elements that only run JavaScript, and that is where it goes wrong: the page still jumps to the top unless the handler calls `event.preventDefault()`, and screen readers announce a link that behaves like a button.\n\n- `href=\"#\"`: an empty fragment. Valid, scrolls to the top, changes the URL.\n- `href=\"#!\"`: a fragment that matches no element id, so the page does not scroll, but the URL still changes.\n- `href=\"javascript:void(0)\"`: a <code>javascript:</code> URL that evaluates to <code>undefined</code>, so nothing navigates. A Content Security Policy without `unsafe-inline` blocks <code>javascript:</code> URLs, linters flag them, and <a href=\"/javascript/coding/js-sanitize-href-url\">sanitizing an href URL</a> exists to strip them from user input.\n- An element that only runs JavaScript should be a `<button>` with `type=\"button\"`; keep `<a>` for a real destination."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Placeholder link: jumps to the top and is announced as a link -->\n<a href=\"#\" onclick=\"openMenu()\">Menu</a>\n\n<!-- Same behavior without a destination: a button is the right element -->\n<button type=\"button\" onclick=\"openMenu()\">Menu</button>\n\n<!-- A link that stays a link: a real destination, enhanced once JavaScript runs -->\n<a href=\"/menu\" onclick=\"openMenu(event)\">Menu</a>\n<!-- openMenu(event) calls event.preventDefault() before it opens the panel -->"
+        },
+        {
+          "type": "text",
           "text": "<strong>Other Common Uses</strong>\n\n- **Email links:** Opens the user’s default email client.\n  ``<code>html\n  &lt;a href=\"mailto:support@example.com\"&gt;Contact Support&lt;/a&gt;\n  </code>``\n- **Phone links:** Opens a phone dialer on mobile devices.\n  ``<code>html\n  &lt;a href=\"tel:+123456789\"&gt;Call Us&lt;/a&gt;\n  </code>``\n- **Download links:** When combined with the `download` attribute, triggers file downloads.\n  ``<code>html\n  &lt;a href=\"files/report.pdf\" download&gt;Download Report&lt;/a&gt;\n  </code>``"
         },
         {
@@ -1250,7 +1259,7 @@
       "basics",
       "anchor"
     ],
-    "updatedAt": "2026-10-09",
+    "updatedAt": "2026-11-26",
     "incidentCard": {
       "title": "Destination Wiring Check",
       "scenario": "A teammate says, \"The anchor tag already tells the browser this is a link. The `href` value is optional detail, so we can add click handlers later and still consider it a proper hyperlink.\" Another teammate says, \"That misses the core role of `href`. It is the destination reference that tells the browser where the link or resource points. Without it, you lose the real navigation target and a lot of expected browser behavior.\" Which explanation is better?",

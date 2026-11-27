@@ -182,7 +182,7 @@ const criticalRouteContracts = [
   },
   {
     route: '/html-css/interview-questions',
-    title: 'HTML & CSS Interview Questions and Answers',
+    title: 'HTML and CSS Interview Questions and Answers: 65 Q&A',
     h1: 'HTML and CSS Interview Questions and Answers',
     descriptionTerms: [
       'semantic HTML',
@@ -540,8 +540,8 @@ const PUBLISH_COPY_CONTRACTS = [
   },
   {
     route: '/html-css/interview-questions',
-    title: 'HTML & CSS Interview Questions and Answers',
-    description: 'Expect semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios in HTML/CSS interview rounds.',
+    title: 'HTML and CSS Interview Questions and Answers: 65 Q&A',
+    description: '65 HTML and CSS interview questions and answers: semantic HTML, accessibility, forms, layout, browser behavior, responsive UI, and code scenarios.',
   },
   {
     route: '/guides/interview-blueprint/intro',
