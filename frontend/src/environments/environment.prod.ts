@@ -5,7 +5,7 @@ export const environment = {
     dataVersion: "2025-08-19a", // already there
     gaMeasurementId: 'G-XJ9FBR8HBL',
     // Microsoft Clarity (heatmaps, session recordings). Empty keeps the tag off.
-    clarityProjectId: '',
+    clarityProjectId: 'zkk7cp3knb',
     apiBase: "https://api.frontendatlas.com",
     frontendBase: "https://frontendatlas.com",
     sentryDsn: SENTRY_DSN,
