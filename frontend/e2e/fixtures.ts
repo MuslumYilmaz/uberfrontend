@@ -100,6 +100,13 @@ export const test = baseTest.extend<{
       });
     });
 
+    // Clarity never runs in E2E: the dev environment has no project id and the
+    // service skips automation visitors. Aborting its hosts keeps that true for
+    // production-config runs and for any change to either rule.
+    await page.route(/^https:\/\/(?:[a-z0-9-]+\.)*clarity\.ms\//, async (route) => {
+      await route.abort();
+    });
+
     if (!realBackendRequests) {
       // Keep E2E deterministic in frontend-only runs: avoid backend/proxy dependency
       // for assist sync while preserving request shape/flow on the client.

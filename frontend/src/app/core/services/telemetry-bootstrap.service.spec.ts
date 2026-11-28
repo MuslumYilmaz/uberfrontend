@@ -5,6 +5,7 @@ import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { environment } from '../../../environments/environment';
 import { AuthService, User } from './auth.service';
 import { AnalyticsService } from './analytics.service';
+import { ClarityService } from './clarity.service';
 import { createTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
 import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
 import {
@@ -54,6 +55,7 @@ describe('TelemetryBootstrapService', () => {
     setUser: jasmine.Spy;
   };
   let analytics: jasmine.SpyObj<AnalyticsService>;
+  let clarity: jasmine.SpyObj<ClarityService>;
   let doc: Document;
   let originalRequestIdleCallback: unknown;
   let originalVisibilityStateDescriptor: PropertyDescriptor | undefined;
@@ -92,6 +94,7 @@ describe('TelemetryBootstrapService', () => {
     analytics.getVisitorClass.and.returnValue('human');
     analytics.isInitialized.and.returnValue(true);
     analytics.trackDecisionSessionQualified.and.returnValue(true);
+    clarity = jasmine.createSpyObj<ClarityService>('ClarityService', ['ensureLoaded', 'set', 'event', 'upgrade']);
 
     originalRequestIdleCallback = (window as any).requestIdleCallback;
     (window as any).requestIdleCallback = (callback: () => void) => {
@@ -106,6 +109,10 @@ describe('TelemetryBootstrapService', () => {
         {
           provide: AnalyticsService,
           useValue: analytics,
+        },
+        {
+          provide: ClarityService,
+          useValue: clarity,
         },
         {
           provide: AuthService,
@@ -639,6 +646,23 @@ describe('TelemetryBootstrapService', () => {
 
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
     expect(analytics.trackDecisionSessionQualified).not.toHaveBeenCalled();
+    service.ngOnDestroy();
+  }));
+
+  it('loads Clarity on page load for every route, ahead of the GA gate', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    setDocumentVisibility('hidden');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/pricing');
+    expect(clarity.ensureLoaded).toHaveBeenCalledTimes(1);
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+
+    service.armForUrl('/javascript/trivia/js-escape-vs-sanitize');
+    tick(30_000);
+    expect(clarity.ensureLoaded).toHaveBeenCalledTimes(2);
+    expect(analytics.ensureInitialized).not.toHaveBeenCalled();
     service.ngOnDestroy();
   }));
 

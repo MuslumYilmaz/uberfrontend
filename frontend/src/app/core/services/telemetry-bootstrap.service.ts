@@ -19,6 +19,7 @@ import { environment } from '../../../environments/environment';
 import { AnalyticsService } from './analytics.service';
 import type { DecisionSessionQualificationMethod } from './analytics.service';
 import { AuthService } from './auth.service';
+import { ClarityService } from './clarity.service';
 import { getApiBase, getDeploymentEnvironment } from '../utils/api-base';
 import { isMarketingPath } from '../utils/marketing-route.util';
 import { isTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
@@ -391,6 +392,7 @@ function isNonEmptyString(value: unknown): boolean {
 export class TelemetryBootstrapService implements OnDestroy {
   private readonly analytics = inject(AnalyticsService);
   private readonly auth = inject(AuthService);
+  private readonly clarity = inject(ClarityService);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
@@ -416,6 +418,10 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (!this.isBrowser) return;
 
     this.interviewRouteActive = INTERVIEW_PAGE_ROUTE_PATTERN.test(url);
+    // Clarity (heatmaps, recordings) loads on page load rather than behind the
+    // GA gate below: the first seconds of a visit are what the recordings are
+    // for. ClarityService itself skips automation visitors and empty ids.
+    this.clarity.ensureLoaded();
     // GA loads only once the session qualifies as human (a trusted interaction,
     // 15 visible seconds, or a search-engine referrer); scripted visitors that
     // render and leave never reach Google Analytics. Page views queue in
