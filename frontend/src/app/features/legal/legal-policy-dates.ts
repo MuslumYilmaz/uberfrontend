@@ -4,5 +4,5 @@
  */
 export const LEGAL_POLICY_LAST_UPDATED = {
   terms: '2026-11-24',
-  cookies: '2026-03-21',
+  cookies: '2026-11-28',
 } as const;

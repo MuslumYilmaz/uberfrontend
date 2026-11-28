@@ -31,7 +31,7 @@ const COMPANY_PLAN_SOURCE = /^company_plan_(?!general$)[a-z0-9_-]+$/;
     imports: [CommonModule, RouterModule, PricingPlansSectionComponent, PricingCountedTableComponent, CompanyPlanPricingStripComponent],
     styleUrls: ['./pricing.component.css'],
     template: `
-    <section class="pricing-page">
+    <section class="pricing-page" data-clarity-unmask="true">
       @if (waitingPlan(); as waiting) {
         <app-company-plan-pricing-strip [copy]="waiting"></app-company-plan-pricing-strip>
       }

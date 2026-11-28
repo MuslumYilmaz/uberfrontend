@@ -3,7 +3,7 @@ import { NgZone, signal, DOCUMENT } from '@angular/core';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { BrowserTestingModule } from '@angular/platform-browser/testing';
 import { environment } from '../../../environments/environment';
-import { AuthService, User } from './auth.service';
+import { AuthService, type AuthUiState, User } from './auth.service';
 import { AnalyticsService } from './analytics.service';
 import { ClarityService } from './clarity.service';
 import { createTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
@@ -48,6 +48,7 @@ describe('TelemetryBootstrapService', () => {
   };
 
   let authUser: ReturnType<typeof signal<User | null>>;
+  let authUiState: ReturnType<typeof signal<AuthUiState>>;
   let sentry: {
     browserTracingIntegration: jasmine.Spy;
     captureMessage: jasmine.Spy;
@@ -77,6 +78,7 @@ describe('TelemetryBootstrapService', () => {
     delete (window as any).__FA_DEPLOYMENT_CONFIG__;
 
     authUser = signal<User | null>(null);
+    authUiState = signal<AuthUiState>('signed_out');
     sentry = {
       browserTracingIntegration: jasmine.createSpy('browserTracingIntegration').and.returnValue({ name: 'browserTracing' }),
       captureMessage: jasmine.createSpy('captureMessage'),
@@ -86,7 +88,9 @@ describe('TelemetryBootstrapService', () => {
     // Keep the page-wide reporter detached from these fake clients.
     spyOn(userVisibleFailures, 'attachSentry');
     analytics = jasmine.createSpyObj<AnalyticsService>('AnalyticsService', [
+      'addTrackListener',
       'ensureInitialized',
+      'getTrafficType',
       'getVisitorClass',
       'isInitialized',
       'trackDecisionSessionQualified',
@@ -94,7 +98,10 @@ describe('TelemetryBootstrapService', () => {
     analytics.getVisitorClass.and.returnValue('human');
     analytics.isInitialized.and.returnValue(true);
     analytics.trackDecisionSessionQualified.and.returnValue(true);
-    clarity = jasmine.createSpyObj<ClarityService>('ClarityService', ['ensureLoaded', 'set', 'event', 'upgrade']);
+    analytics.getTrafficType.and.returnValue(null);
+    analytics.addTrackListener.and.returnValue(() => undefined);
+    clarity = jasmine.createSpyObj<ClarityService>('ClarityService', ['ensureLoaded', 'isLoaded', 'set', 'event', 'upgrade']);
+    clarity.isLoaded.and.returnValue(true);
 
     originalRequestIdleCallback = (window as any).requestIdleCallback;
     (window as any).requestIdleCallback = (callback: () => void) => {
@@ -118,6 +125,7 @@ describe('TelemetryBootstrapService', () => {
           provide: AuthService,
           useValue: {
             user: authUser,
+            authUiState,
           } satisfies Partial<AuthService>,
         },
         {
@@ -663,6 +671,77 @@ describe('TelemetryBootstrapService', () => {
     tick(30_000);
     expect(clarity.ensureLoaded).toHaveBeenCalledTimes(2);
     expect(analytics.ensureInitialized).not.toHaveBeenCalled();
+    service.ngOnDestroy();
+  }));
+
+  it('tags the Clarity session once with traffic, tags each page group, upgrades pricing and mirrors funnel events', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    analytics.getTrafficType.and.returnValue('bot_suspect');
+    const mirrors: Array<(name: string) => void> = [];
+    analytics.addTrackListener.and.callFake((listener) => {
+      mirrors.push(listener);
+      return () => {
+        mirrors.splice(mirrors.indexOf(listener), 1);
+      };
+    });
+    setDocumentVisibility('hidden');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/pricing?src=company_plan_meta');
+    service.armForUrl('/javascript/coding/throttle');
+
+    expect(clarity.set.calls.allArgs().filter(([key]) => key !== 'tier')).toEqual([
+      ['traffic', 'bot_suspect'],
+      ['page_group', 'pricing'],
+      ['page_group', 'coding'],
+    ]);
+    expect(clarity.upgrade).toHaveBeenCalledOnceWith('pricing');
+
+    expect(mirrors.length).toBe(1);
+    mirrors[0]('pricing_plan_cta_clicked');
+    mirrors[0]('trivia_lab_viewed');
+    expect(clarity.event.calls.allArgs()).toEqual([['pricing_plan_cta_clicked']]);
+
+    service.ngOnDestroy();
+    expect(mirrors).toEqual([]);
+  }));
+
+  it('tags the tier once the session is resolved and again when it changes', () => {
+    authUiState.set('pending');
+    TestBed.inject(TelemetryBootstrapService);
+    TestBed.flushEffects();
+    const tierTags = () => clarity.set.calls.allArgs().filter(([key]) => key === 'tier');
+    expect(tierTags()).toEqual([]);
+
+    authUiState.set('signed_out');
+    TestBed.flushEffects();
+    expect(tierTags()).toEqual([['tier', 'guest']]);
+
+    authUser.set({ ...sampleUser, accessTier: 'premium' });
+    authUiState.set('authenticated');
+    TestBed.flushEffects();
+    expect(tierTags()).toEqual([['tier', 'guest'], ['tier', 'pro']]);
+
+    authUser.set(null);
+    authUiState.set('signed_out');
+    TestBed.flushEffects();
+    expect(tierTags()).toEqual([['tier', 'guest'], ['tier', 'pro'], ['tier', 'guest']]);
+  });
+
+  it('adds no visit tags and no event mirror when the Clarity tag did not load', fakeAsync(() => {
+    environment.production = false;
+    analytics.isInitialized.and.returnValue(false);
+    clarity.isLoaded.and.returnValue(false);
+    setDocumentVisibility('hidden');
+
+    const service = TestBed.inject(TelemetryBootstrapService);
+    service.armForUrl('/pricing');
+
+    expect(clarity.ensureLoaded).toHaveBeenCalledTimes(1);
+    expect(clarity.set.calls.allArgs().filter(([key]) => key !== 'tier')).toEqual([]);
+    expect(clarity.upgrade).not.toHaveBeenCalled();
+    expect(analytics.addTrackListener).not.toHaveBeenCalled();
     service.ngOnDestroy();
   }));
 

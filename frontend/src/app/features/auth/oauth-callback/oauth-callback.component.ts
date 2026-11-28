@@ -11,7 +11,7 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
     selector: 'app-oauth-callback',
     imports: [CommonModule],
     template: `
-    <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6" data-testid="oauth-callback-page">
+    <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6" data-testid="oauth-callback-page" data-clarity-mask="true">
       <div class="max-w-md w-full text-center">
         <h1 class="text-xl font-semibold mb-3">Signing you in…</h1>
         <p class="text-white/70">Completing authentication.</p>

@@ -12,7 +12,7 @@ const TOKEN_STORAGE_KEY = 'fa:email-verification-token';
     imports: [CommonModule, RouterModule, FaButtonComponent],
     styleUrls: ['./verify-email.component.css'],
     template: `
-    <main class="verify-shell" data-testid="verify-email-page">
+    <main class="verify-shell" data-testid="verify-email-page" data-clarity-mask="true">
       <section class="verify-card" aria-live="polite">
         <h1>{{ success() ? 'Email verified' : 'Verify your email' }}</h1>
         <p *ngIf="loading()">Checking your verification link…</p>

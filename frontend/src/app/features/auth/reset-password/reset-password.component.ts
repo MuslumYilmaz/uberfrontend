@@ -18,7 +18,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
     selector: 'app-reset-password',
     imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
     template: `
-    <main class="verify-shell" data-testid="reset-password-page">
+    <main class="verify-shell" data-testid="reset-password-page" data-clarity-mask="true">
       <section class="verify-card" aria-labelledby="reset-password-title">
         <h1 id="reset-password-title">Choose a new password</h1>
 

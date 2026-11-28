@@ -353,6 +353,49 @@ describe('AnalyticsService', () => {
     expect(eventCall[2]).not.toEqual(jasmine.objectContaining({ traffic_type: jasmine.anything() }));
   });
 
+  it('tells track listeners every event name at call time, before GA initializes, and never page views', () => {
+    const service = TestBed.inject(AnalyticsService);
+    const heard: string[] = [];
+    const remove = service.addTrackListener((name) => heard.push(name));
+
+    service.trackPageView('/pricing');
+    service.track('pricing_viewed', { surface: 'pricing_page' });
+
+    expect(heard).toEqual(['pricing_viewed']);
+    expect(doc.getElementById('ga4-gtag-script')).toBeNull();
+
+    remove();
+    service.track('begin_checkout');
+    expect(heard).toEqual(['pricing_viewed']);
+  });
+
+  it('keeps tracking when a listener throws', () => {
+    const service = TestBed.inject(AnalyticsService);
+    service.addTrackListener(() => {
+      throw new Error('mirror down');
+    });
+
+    expect(service.track('pricing_viewed')).toBeTrue();
+    service.ensureInitialized();
+    const eventCalls = (win.dataLayer || [])
+      .map((entry) => Array.from(entry as IArguments))
+      .filter((entry) => entry[0] === 'event');
+    expect(eventCalls.map((entry) => entry[1])).toEqual(['pricing_viewed']);
+  });
+
+  it('reports no traffic type for an ordinary visitor and bot_suspect for a suspect browser', () => {
+    expect(TestBed.inject(AnalyticsService).getTrafficType()).toBeNull();
+
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [BrowserTestingModule],
+      providers: [AnalyticsService],
+    });
+    Object.defineProperty(win.navigator, 'languages', { configurable: true, get: () => [] });
+
+    expect(TestBed.inject(AnalyticsService).getTrafficType()).toBe('bot_suspect');
+  });
+
   it('keeps suspect browsers but tags every hit with traffic_type=bot_suspect', () => {
     Object.defineProperty(win.navigator, 'languages', { configurable: true, get: () => [] });
 
