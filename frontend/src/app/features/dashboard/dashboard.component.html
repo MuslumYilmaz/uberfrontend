@@ -1,4 +1,4 @@
-<div class="dash" data-testid="dashboard-page">
+<div class="dash" data-testid="dashboard-page" data-clarity-mask="true">
   <div class="container">
     <section faCard elevated class="command-center" [class.command-center--guest]="dashboardMode() === 'guest'">
       <ng-container *ngIf="dashboardMode() === 'guest'; else memberCommandCenter">

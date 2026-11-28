@@ -24,6 +24,8 @@ type PendingAnalyticsDispatch =
 export type DecisionSessionQualificationMethod = 'trusted_interaction' | 'foreground_15s' | 'search_referrer';
 export type AnalyticsTrafficClass = 'internal' | 'test';
 export type AnalyticsVisitorClass = 'human' | 'suspect' | 'automation';
+/** Hears the name of every event passed to `track()`; see `addTrackListener`. */
+export type AnalyticsTrackListener = (name: string) => void;
 
 const BOT_SUSPECT_TRAFFIC_TYPE = 'bot_suspect';
 // Crawlers, HTTP clients and automation runtimes that identify themselves never
@@ -69,6 +71,7 @@ export class AnalyticsService {
   private decisionSessionQualified = false;
   private pendingDispatches: PendingAnalyticsDispatch[] = [];
   private decisionSessionId: string | null | undefined;
+  private readonly trackListeners = new Set<AnalyticsTrackListener>();
 
   /**
    * PII-free, tab-scoped identifier for joining qualified pricing activity to
@@ -99,6 +102,7 @@ export class AnalyticsService {
   }
 
   track(name: string, params?: Record<string, unknown>): boolean {
+    this.notifyTrackListeners(name);
     if (!this.analyticsEnabled) return false;
     const safeParams = this.sanitizeEventParams(params);
     if (!this.initialized) {
@@ -155,6 +159,33 @@ export class AnalyticsService {
   /** `automation` never loads GA; `suspect` loads GA but tags every hit with `traffic_type=bot_suspect`. */
   getVisitorClass(): AnalyticsVisitorClass {
     return this.visitorClass;
+  }
+
+  /** The `traffic_type` GA hits carry: a team marker, `bot_suspect`, or null for an ordinary visitor. */
+  getTrafficType(): string | null {
+    return this.effectiveTrafficType();
+  }
+
+  /**
+   * Hears every event name handed to `track()` at call time, ahead of the GA
+   * gate and without parameters, so another tool can mirror the funnel. Page
+   * views are not reported. Returns the function that removes the listener.
+   */
+  addTrackListener(listener: AnalyticsTrackListener): () => void {
+    this.trackListeners.add(listener);
+    return () => {
+      this.trackListeners.delete(listener);
+    };
+  }
+
+  private notifyTrackListeners(name: string) {
+    this.trackListeners.forEach((listener) => {
+      try {
+        listener(name);
+      } catch {
+        // A mirror must never break GA tracking.
+      }
+    });
   }
 
   private dispatchEvent(name: string, params?: Record<string, unknown>) {

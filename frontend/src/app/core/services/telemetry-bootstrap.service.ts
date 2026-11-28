@@ -19,7 +19,9 @@ import { environment } from '../../../environments/environment';
 import { AnalyticsService } from './analytics.service';
 import type { DecisionSessionQualificationMethod } from './analytics.service';
 import { AuthService } from './auth.service';
+import { ClarityService } from './clarity.service';
 import { getApiBase, getDeploymentEnvironment } from '../utils/api-base';
+import { clarityPageGroupFor, clarityTierFor, shouldMirrorEventToClarity } from '../utils/clarity-tags.util';
 import { isMarketingPath } from '../utils/marketing-route.util';
 import { isTrackedMonacoWorker } from '../utils/monaco-worker-tracker';
 import { userVisibleFailures } from '../utils/user-visible-failure-reporter';
@@ -391,6 +393,7 @@ function isNonEmptyString(value: unknown): boolean {
 export class TelemetryBootstrapService implements OnDestroy {
   private readonly analytics = inject(AnalyticsService);
   private readonly auth = inject(AuthService);
+  private readonly clarity = inject(ClarityService);
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly zone = inject(NgZone);
@@ -405,10 +408,17 @@ export class TelemetryBootstrapService implements OnDestroy {
   private qualificationVisibleStartedAt: number | null = null;
   private qualificationForegroundElapsedMs = 0;
   private qualificationCompleted = false;
+  private clarityTrafficTagged = false;
+  private clarityTier: string | null = null;
+  private removeClarityEventMirror: (() => void) | null = null;
 
   constructor() {
     effect(() => {
-      this.applySentryUser(this.auth.user()?._id ?? null);
+      const user = this.auth.user();
+      this.applySentryUser(user?._id ?? null);
+      // The tier tag waits for a resolved session, so a signed-in visitor is not
+      // also tagged as a guest while the session is still being restored.
+      if (this.auth.authUiState() !== 'pending') this.applyClarityTier(clarityTierFor(user));
     });
   }
 
@@ -416,6 +426,11 @@ export class TelemetryBootstrapService implements OnDestroy {
     if (!this.isBrowser) return;
 
     this.interviewRouteActive = INTERVIEW_PAGE_ROUTE_PATTERN.test(url);
+    // Clarity (heatmaps, recordings) loads on page load rather than behind the
+    // GA gate below: the first seconds of a visit are what the recordings are
+    // for. ClarityService itself skips automation visitors and empty ids.
+    this.clarity.ensureLoaded();
+    this.tagClarityVisit(url);
     // GA loads only once the session qualifies as human (a trusted interaction,
     // 15 visible seconds, or a search-engine referrer); scripted visitors that
     // render and leave never reach Google Analytics. Page views queue in
@@ -434,6 +449,36 @@ export class TelemetryBootstrapService implements OnDestroy {
   ngOnDestroy(): void {
     this.disarmOnFirstInteraction();
     this.disarmDecisionSessionQualification();
+    this.removeClarityEventMirror?.();
+    this.removeClarityEventMirror = null;
+  }
+
+  /**
+   * Session tags for the Clarity filters and the funnel-event mirror. Nothing
+   * happens when the tag did not load (no project id, automation, server).
+   */
+  private tagClarityVisit(url: string): void {
+    if (!this.clarity.isLoaded()) return;
+
+    if (!this.clarityTrafficTagged) {
+      this.clarityTrafficTagged = true;
+      // Same value GA hits carry, so the two dashboards exclude the same sessions.
+      this.clarity.set('traffic', this.analytics.getTrafficType() ?? 'human');
+      this.removeClarityEventMirror = this.analytics.addTrackListener((name) => {
+        if (shouldMirrorEventToClarity(name)) this.clarity.event(name);
+      });
+    }
+
+    const group = clarityPageGroupFor(url);
+    this.clarity.set('page_group', group);
+    // Pricing sessions are the ones the recordings are for.
+    if (group === 'pricing') this.clarity.upgrade('pricing');
+  }
+
+  private applyClarityTier(tier: string): void {
+    if (tier === this.clarityTier) return;
+    this.clarityTier = tier;
+    this.clarity.set('tier', tier);
   }
 
   private readonly onDecisionSessionInteraction = (event: Event): void => {

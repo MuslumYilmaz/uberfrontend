@@ -10,7 +10,7 @@ import { FaButtonComponent } from '../../../shared/ui/button/fa-button.component
     selector: 'app-forgot-password',
     imports: [CommonModule, ReactiveFormsModule, RouterLink, FaButtonComponent],
     template: `
-    <main class="verify-shell" data-testid="forgot-password-page">
+    <main class="verify-shell" data-testid="forgot-password-page" data-clarity-mask="true">
       <section class="verify-card" aria-labelledby="forgot-password-title">
         <h1 id="forgot-password-title">Reset your password</h1>
         <p>Enter your account email. If an account matches, we’ll send a reset link.</p>

@@ -69,7 +69,10 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
         <p>
           We use analytics cookies to understand how users interact with our website. They help us
           measure traffic sources, identify popular pages, and improve usability. For example, we may
-          use Google Analytics to gather anonymized usage statistics.
+          use Google Analytics to gather anonymized usage statistics. We also use Microsoft Clarity,
+          which records how pages are used (mouse movement, clicks, scrolling and page changes) to
+          build heatmaps and session recordings. Text you type is always masked, and account, billing,
+          interview and CV pages are masked entirely.
         </p>
 
         <h3>2.3 Functional Cookies</h3>
@@ -109,6 +112,7 @@ import { LEGAL_POLICY_LAST_UPDATED } from '../legal-policy-dates';
         </p>
         <ul>
           <li><strong>Google Analytics</strong> – for understanding site traffic and usage.</li>
+          <li><strong>Microsoft Clarity</strong> – for heatmaps and session recordings. It sets the first-party cookies _clck and _clsk; Microsoft sets CLID, ANONCHK, MR, MUID and SM.</li>
           <li><strong>Stripe</strong> – for secure payment processing.</li>
           <li><strong>YouTube / Vimeo</strong> – for embedded media playback.</li>
         </ul>

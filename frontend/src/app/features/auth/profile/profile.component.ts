@@ -39,7 +39,7 @@ type ProfileShelfBadge = DashboardAchievement & {
     imports: [CommonModule, FormsModule, DialogModule, FaDialogFocusDirective, RouterModule, FaGlyphComponent, FaButtonComponent],
     styleUrls: ['./profile.component.css'],
     template: `
-    <div class="profile-layout" *ngIf="user(); else loadingTpl">
+    <div class="profile-layout" data-clarity-mask="true" *ngIf="user(); else loadingTpl">
       <!-- Sidebar -->
       <aside class="profile-sidebar">
         <div class="profile-header">

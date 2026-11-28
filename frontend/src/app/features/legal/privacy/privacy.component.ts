@@ -82,7 +82,7 @@ import { RouterModule } from '@angular/router';
         <h3>2.3 Automatically Collected Information</h3>
         <ul>
           <li><strong>Device & tech data</strong> — browser, OS, screen size, device identifiers, IP address, language.</li>
-          <li><strong>Usage data</strong> — pages viewed, features used, time on page, referrers, error logs.</li>
+          <li><strong>Usage data</strong> — pages viewed, features used, time on page, referrers, error logs, and session recordings and heatmaps of mouse movement, clicks and scrolling (Microsoft Clarity; text you type is masked, and account, billing, interview and CV pages are masked entirely).</li>
           <li><strong>Approximate location</strong> — derived from IP (city/region level) for fraud prevention, localization, and analytics.</li>
           <li><strong>Cookies & similar</strong> — see <a href="#cookies">Cookies & Similar Technologies</a>.</li>
         </ul>
@@ -106,7 +106,7 @@ import { RouterModule } from '@angular/router';
         <h2>4) How We Share Information</h2>
         <p>We do <strong>not</strong> sell your personal information. We share limited data only as described below:</p>
         <ul>
-          <li><strong>Service providers</strong> — vendors that host infrastructure, provide analytics, email delivery, and customer support (bound by confidentiality and data-protection terms).</li>
+          <li><strong>Service providers</strong> — vendors that host infrastructure, provide analytics (Google Analytics, Microsoft Clarity), email delivery, and customer support (bound by confidentiality and data-protection terms).</li>
           <li><strong>Merchant of Record</strong> — our online reseller, currently {{ merchantOfRecord }}, which processes orders, payments, invoicing, and taxes for every purchase and receives the billing details needed to do so.</li>
           <li><strong>Legal & safety</strong> — when required by law or to protect our rights, users, or the public.</li>
           <li><strong>Business transfers</strong> — in mergers, acquisitions, or reorganizations, data may be transferred as part of the transaction.</li>
@@ -182,7 +182,7 @@ import { RouterModule } from '@angular/router';
       <section id="transfers">
         <h2>10) International Transfers</h2>
         <p>
-          Our infrastructure and service providers may be located in countries outside your own.
+          Our infrastructure and service providers (for example Google and Microsoft, in the United States) may be located in countries outside your own.
           Where required, we rely on appropriate safeguards (e.g., Standard Contractual Clauses) to protect personal data.
         </p>
       </section>
@@ -385,6 +385,6 @@ export class PrivacyComponent {
   readonly operatorLocation = 'Istanbul, Türkiye';
   readonly merchantOfRecord = 'Polar (Polar Software, Inc.)';
   /** Prefer a fixed, explicit date for compliance/versioning. */
-  readonly effectiveDate = 'November 24, 2026';
+  readonly effectiveDate = 'November 28, 2026';
   readonly contactEmail = 'support@frontendatlas.com';
 }

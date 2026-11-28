@@ -57,7 +57,7 @@ export type MonacoLoadError = {
 @Component({
     selector: 'app-monaco-editor',
     imports: [CommonModule],
-    template: `<div #editorContainer class="w-full"></div>`,
+    template: `<div #editorContainer class="w-full" data-clarity-mask="true"></div>`,
     styles: [`
     :host { display:block; width:100%; }
     /* When autoHeight=false, give container a default height so it doesn't collapse */
